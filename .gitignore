@@ -1,0 +1,46 @@
+.venv/
+.codex/
+.agents/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local solver and test outputs
+*.log
+*.core
+core
+core.*
+*.dmp
+
+examples/*/runs/
+
+# Generated fixed-grid evidence and OpenFOAM runtime trees. The reusable
+# porous_force_3d_fd_base template keeps its source dictionaries, while its
+# time directories, meshes, logs, and post-processing outputs stay local.
+examples/fixed_grid_backend_spike/report/
+examples/fixed_grid_backend_spike/openfoam/porosity_based_R10x_init/
+examples/fixed_grid_backend_spike/openfoam/porous_force_3d_fd_minus/
+examples/fixed_grid_backend_spike/openfoam/porous_force_3d_fd_plus/
+examples/fixed_grid_backend_spike/openfoam/porous_force_dual/
+examples/fixed_grid_backend_spike/openfoam/porous_force_fd_base/
+examples/fixed_grid_backend_spike/openfoam/porous_force_fd_downforce_single/
+examples/fixed_grid_backend_spike/openfoam/porous_force_fd_minus/
+examples/fixed_grid_backend_spike/openfoam/porous_force_fd_plus/
+examples/fixed_grid_backend_spike/openfoam/porous_force_smoke/
+examples/fixed_grid_backend_spike/openfoam/**/0/
+examples/fixed_grid_backend_spike/openfoam/**/[1-9]*/
+examples/fixed_grid_backend_spike/openfoam/**/processor*/
+examples/fixed_grid_backend_spike/openfoam/**/VTK/
+examples/fixed_grid_backend_spike/openfoam/**/optimisation/
+examples/fixed_grid_backend_spike/openfoam/**/reEval/
+examples/fixed_grid_backend_spike/openfoam/**/constant/polyMesh/
+examples/fixed_grid_backend_spike/openfoam/**/log.*
+examples/fixed_grid_backend_spike/openfoam/**/openfoam_run_summary.json
+
+# OpenFOAM build products; keep the extension source and Make metadata.
+openfoam_extensions/**/lib/*.so
+openfoam_extensions/**/Make/*/
+openfoam_extensions/**/lnInclude/*
+openfoam_extensions/**/*.o
+openfoam_extensions/**/*.dep

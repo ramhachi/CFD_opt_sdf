@@ -1,0 +1,58 @@
+geometry:
+  fixed_solids:
+    - id: vehicle_nose
+      file: geometry/vehicle_nose.stl
+    - id: tire_fl
+      file: geometry/tire_fl.stl
+    - id: tire_fr
+      file: geometry/tire_fr.stl
+    - id: ground
+      file: geometry/ground.stl
+
+  design_geometry:
+    - id: front_wing_initial
+      file: geometry/front_wing_initial.stl
+
+  design_domains:
+    - id: allowed_front_box
+      file: geometry/allowed_front_box.stl
+
+  forbidden_regions:
+    - id: forbidden_tire_clearance
+      file: geometry/forbidden_tire_clearance.stl
+
+roots:
+  - id: root_mount_left
+    type: stl
+    file: geometry/root_mount_left.stl
+  - id: root_mount_right
+    type: stl
+    file: geometry/root_mount_right.stl
+
+grid:
+  voxel_size_m: 0.04
+  padding_m: 0.12
+  band_width_m: 0.20
+  max_points: 8000000
+
+constraints:
+  min_thickness_mm: 10.0
+  rule_margin_mm: 5.0
+  require_eroded_connectivity: true
+  front_downforce_ratio:
+    enabled: true
+    enforce: false
+    x_split_m: 0.0
+    min: 0.40
+    max: 0.60
+
+objective:
+  type: maximize_downforce_with_efficiency_constraint
+  efficiency_min: 3.0
+
+operating_point:
+  velocity_mps: 11.0
+  density: 1.229
+  viscosity: 1.73e-5
+
+output_dir: runs/front_wing_demo

@@ -1,0 +1,129 @@
+schema_version: 2
+problem_id: generic_external_flow
+units:
+  length: m
+  time: s
+  mass: kg
+coordinate_frame:
+  id: global_frame
+  origin_m: [0.0, 0.0, 0.0]
+  basis:
+    x: [1.0, 0.0, 0.0]
+    y: [0.0, 1.0, 0.0]
+    z: [0.0, 0.0, 1.0]
+grid:
+  kind: uniform_cartesian
+  voxel_size_m: 0.02
+  padding_m: 0.15
+reference_values:
+  area_m2: 1.2
+  length_m: 0.8
+  moment_center_m: [0.25, 0.0, 0.0]
+geometry_regions:
+  - id: vehicle
+    role: fixed_solid
+    file: geometry/vehicle.stl
+  - id: initial_surface
+    role: initial_design
+    file: geometry/initial_surface.stl
+  - id: design_domain
+    role: design_domain
+    file: geometry/design_domain.stl
+  - id: keepout
+    role: forbidden_region
+    file: geometry/keepout.stl
+  - id: mount
+    role: root
+    file: geometry/mount.stl
+flow_cases:
+  - id: straight
+    freestream_velocity_mps: [30.0, 0.0, 0.0]
+    fluid:
+      model: incompressible_newtonian
+      density_kg_m3: 1.225
+      dynamic_viscosity_pa_s: 1.8e-5
+    turbulence:
+      model: k_omega_sst
+    boundary_conditions:
+      inlet: freestream
+      outlet: pressure_outlet
+      ground: moving_wall
+    motion_profiles:
+      moving_ground:
+        kind: translation
+        velocity_mps: [30.0, 0.0, 0.0]
+  - id: yawed
+    freestream_velocity_mps: [29.5, 5.2, 0.0]
+    fluid:
+      model: incompressible_newtonian
+      density_kg_m3: 1.225
+      dynamic_viscosity_pa_s: 1.8e-5
+    turbulence:
+      model: k_omega_sst
+    boundary_conditions:
+      inlet: freestream
+      outlet: pressure_outlet
+      ground: moving_wall
+    motion_profiles: {}
+responses:
+  - id: rotated_force
+    kind: force
+    flow_case_id: straight
+    direction: [0.70710678, 0.70710678, 0.0]
+  - id: pitch_moment
+    kind: moment
+    flow_case_id: yawed
+    direction: [0.0, 1.0, 0.0]
+  - id: duct_loss
+    kind: pressure_loss
+    flow_case_id: straight
+    options:
+      from_boundary_id: inlet
+      to_boundary_id: outlet
+  - id: outlet_flow
+    kind: flow_rate
+    flow_case_id: straight
+    options:
+      boundary_id: outlet
+  - id: wake_metric
+    kind: plugin
+    flow_case_id: yawed
+    options:
+      plugin_id: wake_uniformity
+      sample_radius_m: 0.1
+objectives:
+  - id: multipoint_objective
+    sense: minimize
+    terms:
+      - coefficient: 0.7
+        flow_case_id: straight
+        response_id: rotated_force
+      - coefficient: 0.3
+        flow_case_id: yawed
+        response_id: pitch_moment
+constraints:
+  - id: pitch_limit
+    relation: <=
+    limit: 5.0
+    terms:
+      - coefficient: 1.0
+        flow_case_id: yawed
+        response_id: pitch_moment
+topology_policy:
+  root_groups:
+    - id: mounts
+      region_ids: [mount]
+  solid_connectivity:
+    mode: required_root_groups
+    required_root_group_ids: [mounts]
+    max_components: 2
+    evaluate_eroded: true
+  void_connectivity:
+    mode: disabled
+    required_root_group_ids: []
+    max_components: null
+    evaluate_eroded: false
+  minimum_solid_width_m: 0.01
+  minimum_void_width_m: 0.012
+  minimum_gap_m: 0.008
+  erosion_radius_m: 0.004

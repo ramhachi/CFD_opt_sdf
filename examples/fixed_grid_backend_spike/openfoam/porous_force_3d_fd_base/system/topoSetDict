@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+actions
+(
+    {
+        name    inletBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0 -0.8 -0.6) (-0.75 0.8 0.6);
+    }
+    {
+        name    outletBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (1.75 -0.8 -0.6) (2.0 0.8 0.6);
+    }
+    {
+        name    spanMinBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0 -0.8 -0.6) (2.0 -0.55 0.6);
+    }
+    {
+        name    spanMaxBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0 0.55 -0.6) (2.0 0.8 0.6);
+    }
+    {
+        name    lowerBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0 -0.8 -0.6) (2.0 0.8 -0.38);
+    }
+    {
+        name    upperBuffer;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0 -0.8 0.38) (2.0 0.8 0.6);
+    }
+    {
+        name    initialPlate;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (-0.25 -0.4 -0.1);
+        i       (0.8 0 0.14);
+        j       (0 0.8 0);
+        k       (-0.02 0 0.12);
+    }
+);
