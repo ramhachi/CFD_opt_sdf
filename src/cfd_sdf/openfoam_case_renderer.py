@@ -405,8 +405,11 @@ def _fv_schemes(model: str) -> str:
         turbulence_divs = (
             "    div(phi,k)      bounded Gauss upwind;\n"
             "    div(phi,omega)  bounded Gauss upwind;\n"
-            "    div(phi,ka)     bounded Gauss upwind;\n"
-            "    div(phi,wa)     bounded Gauss upwind;\n"
+            # The adjoint transport equations use the reverse primal flux.
+            # This is the v2512 kOmegaSST tutorial form (with the generated
+            # field names substituted for the tutorial's ``ka``/``wa``).
+            "    div(-phi,ka)    bounded Gauss linearUpwind grad(ka);\n"
+            "    div(-phi,wa)    bounded Gauss linearUpwind grad(wa);\n"
         )
     return _dictionary_header("fvSchemes") + (
         "ddtSchemes\n"
@@ -426,6 +429,7 @@ def _fv_schemes(model: str) -> str:
         "    div(phi,U)        bounded Gauss linearUpwind grad(U);\n"
         "    div((nuEff*dev2(T(grad(U))))) Gauss linear;\n"
         "    div(phia,Ua)      bounded Gauss linearUpwind grad(Ua);\n"
+        "    div(-phi,Ua)      bounded Gauss linearUpwind grad(Ua);\n"
         "    div(-phia,U)      Gauss linearUpwind grad(U);\n"
         f"{turbulence_divs}"
         "}\n\n"
@@ -455,22 +459,7 @@ def _fv_solution(
         _OPENFOAM_V2512_INITIALIZATION_SOLVERS[field_name]
         for field_name in initialization_solver_fields
     )
-    turbulence_solver = ""
-    turbulence_relaxation = ""
-    if model == "k_omega_sst":
-        turbulence_solver = (
-            "    \"(k|ka.*|omega|wa.*)\"\n"
-            "    {\n"
-            "        solver          smoothSolver;\n"
-            "        smoother        symGaussSeidel;\n"
-            "        tolerance       1e-8;\n"
-            "        relTol          0.1;\n"
-            "    }\n"
-        )
-        turbulence_relaxation = "        \"(k|ka.*|omega|wa.*)\" 0.7;\n"
-    return _dictionary_header("fvSolution") + (
-        "solvers\n"
-        "{\n"
+    pressure_solver = (
         "    \"(p|pa.*)\"\n"
         "    {\n"
         "        solver          GAMG;\n"
@@ -478,7 +467,8 @@ def _fv_solution(
         "        relTol          0.05;\n"
         "        smoother        GaussSeidel;\n"
         "    }\n"
-        f"{initialization_solvers}"
+    )
+    velocity_solver = (
         "    \"(U|Ua.*|yWall|da)\"\n"
         "    {\n"
         "        solver          smoothSolver;\n"
@@ -486,7 +476,50 @@ def _fv_solution(
         "        tolerance       1e-8;\n"
         "        relTol          0.1;\n"
         "    }\n"
-        f"{turbulence_solver}"
+    )
+    field_relaxation = "        \"(p|pa.*)\" 0.3;\n"
+    equation_relaxation = "        \"(U|Ua.*|yWall|da)\" 0.7;\n"
+    if model == "k_omega_sst":
+        # Match the OpenFOAM v2512 adjointkOmegaSST tutorial's segregated
+        # solvers.  GAMG/smoothSolver looked harmless in a short smoke test,
+        # but left the nonlinear adjoint residuals at a plateau after 500
+        # adjoint iterations.  PCG/DIC and PBiCGStab/DILU are the tutorial's
+        # compatible choices for the pressure and coupled velocity/turbulence
+        # equations respectively.
+        pressure_solver = (
+            "    \"(p|pa.*)\"\n"
+            "    {\n"
+            "        solver          PCG;\n"
+            "        preconditioner  DIC;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0.01;\n"
+            "    }\n"
+        )
+        velocity_solver = (
+            "    \"(U|Ua.*|yWall|da|k|ka.*|omega|wa.*)\"\n"
+            "    {\n"
+            "        solver          PBiCGStab;\n"
+            "        preconditioner  DILU;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0.1;\n"
+            "    }\n"
+        )
+        field_relaxation = (
+            "        p 0.5;\n"
+            "        \"pa.*\" 0.5;\n"
+        )
+        equation_relaxation = (
+            "        U 0.7;\n"
+            "        \"Ua.*\" 0.7;\n"
+            "        \"(k|ka.*|omega|wa.*)\" 0.7;\n"
+            "        \"(yWall|da)\" 0.7;\n"
+        )
+    return _dictionary_header("fvSolution") + (
+        "solvers\n"
+        "{\n"
+        f"{pressure_solver}"
+        f"{initialization_solvers}"
+        f"{velocity_solver}"
         "}\n\n"
         "SIMPLE\n"
         "{\n"
@@ -496,12 +529,11 @@ def _fv_solution(
         "{\n"
         "    fields\n"
         "    {\n"
-        "        \"(p|pa.*)\" 0.3;\n"
+        f"{field_relaxation}"
         "    }\n"
         "    equations\n"
         "    {\n"
-        "        \"(U|Ua.*|yWall|da)\" 0.7;\n"
-        f"{turbulence_relaxation}"
+        f"{equation_relaxation}"
         "    }\n"
         "}\n"
     )
