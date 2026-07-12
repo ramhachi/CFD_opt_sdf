@@ -1,9 +1,9 @@
 # Fixed-Grid Topology Backend Decision
 
 Date: 2026-07-02
-Status: selected; OpenFOAM v2512 passed T0
-Roadmap: `TSV Roadmap`
-Roadmap phase: T0
+Status: selected backend decision record
+Current roadmap: `docs/phase_plan.md`
+Evidence class: canonical capability, not target-physics qualification
 
 Scope note, 2026-07-10: the evidence in this decision is a front-wing/solver
 capability benchmark. It supports backend selection and implementation

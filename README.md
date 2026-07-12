@@ -5,9 +5,11 @@ arbitrary topology, using fixed-grid density/Brinkman search, SDF refinement,
 and body-fitted verification. The front wing is the first complex integration
 benchmark, not a hard-coded definition of the final problem class.
 
-Current status: the G1 generic problem/artifact contract is implemented. Real
-solver execution still uses the existing v1 front-wing/capability paths; the G2
-solver compiler and v2 artifact writers remain implementation work.
+Current status: G1 is complete. The G2 generic OpenFOAM case compiler,
+requested/generated manifest, execution-asset staging, patch mapping, and
+convergence evaluator are implemented. G2 runtime qualification is pending:
+generated topology/primal/adjoint fields still need complete mesh-boundary
+compatibility before target-physics evidence can begin.
 
 ## Generic v2 Contract Quick Check
 
@@ -22,17 +24,17 @@ This validates and fingerprints the contract. It does not compile or run a CFD
 case and does not replace the later geometry/resolution preflight. See
 `docs/problem_contract_v2.md` and `docs/fixed_grid_data_contract_v2.md`.
 
-## Roadmap Names
+## Authoritative Documentation
 
-- **New and authoritative:** `TSV Roadmap`  
-  Fixed-Grid Topology -> SDF Refinement -> Body-Fitted Verification  
-  Document: `docs/phase_plan.md`
-- **Old and historical:** `Legacy A-K Body-Fitted Adjoint Roadmap`  
-  Parametric/density-to-STL, repeated body-fitted remeshing, and surface-adjoint
-  adapter development  
-  Document: `docs/phase_plan_legacy_body_fitted.md`
+- `docs/phase_plan.md` is the only roadmap and status source.
+- `docs/problem_contract_v2.md` is the active problem schema.
+- `docs/fixed_grid_data_contract_v2.md` is the active Stage T artifact schema.
+- `docs/README.md` is the documentation index and compatibility policy.
 
-The target architecture in the `TSV Roadmap` is:
+Historical v1 artifacts remain readable, but there is no separate active v1
+roadmap or specification for new development.
+
+The target architecture in the authoritative roadmap is:
 
 ```text
 fixed-grid density/Brinkman topology search
@@ -60,10 +62,10 @@ Use this as the goal-command objective:
 Implement the arbitrary-topology external-aerodynamic optimizer defined in
 docs/phase_plan.md, using the front wing as a complex integration benchmark
 rather than the problem definition. Preserve STL-only fixed, design-domain,
-forbidden, root, and initial geometry roles. Build on the completed G1 generic
-problem/artifact contract, then implement G2 solver-case compilation and its
-manifest/convergence gates, G3 geometry and physical-resolution preflight, G4
-benchmark qualification, and the production T5 constrained optimizer. Convert
+forbidden, root, and initial geometry roles. Build on the completed G1 contract
+and implemented G2 compiler foundation. Finish G2 runtime and target-physics
+qualification, then implement G3 geometry and physical-resolution preflight,
+G4 benchmark qualification, and the production Stage T optimizer. Convert
 qualified density results to SDF for Stage S sharp-interface refinement and use
 Stage V body-fitted OpenFOAM for final verification. Keep canonical JSON,
 CSV, Markdown, ParaView, hash/snapshot, and reproducible Windows Docker/WSL
@@ -72,9 +74,9 @@ artifacts throughout.
 
 ## Quick Start
 
-These commands exercise the Geometry Service and historical body-fitted
-verification path. Stage T fixed-grid topology work now starts with the T1/T2
-commands below rather than the legacy candidate loops.
+These commands exercise the Geometry Service and compatibility body-fitted
+utilities. They are not the active Stage T production sequence; use
+`docs/phase_plan.md` for the current implementation order.
 
 ```powershell
 .\scripts\bootstrap.ps1
@@ -559,17 +561,15 @@ Use `progress.json` or `run_summary.md` as the first place to monitor long
 runs. `best_design/` is a copy of the current best candidate, including the
 candidate project, STL, SDF outputs, and any generated OpenFOAM dry-run case.
 
-For adjoint/topology development, `design_state.json` and `density.vti` are the
-authoritative design-variable artifacts. The STL is treated as a derived CFD
-input. The existing body-fitted adapter contract and the new Stage T roadmap
-are documented in:
+For current topology development, the v2 problem binding and fixed-grid
+artifacts are authoritative. STL is an input role or a derived exchange and
+verification artifact. Start from the documentation index:
 
 ```text
+docs/README.md
 docs/phase_plan.md
-docs/fixed_grid_backend_decision.md
-docs/adjoint_data_contract.md
-docs/adjoint_solver_selection.md
-docs/verification_report.md
+docs/problem_contract_v2.md
+docs/fixed_grid_data_contract_v2.md
 ```
 
 Outputs are written under:
@@ -664,7 +664,8 @@ handoff, the initial one-step adjoint topology loop, T4 fixed-grid
 connectivity state evaluation, and finite-difference reference connectivity
 derivatives.
 
-The current Phase K verification record is in `docs/verification_report.md`.
+Historical capabilities are retained in tests and summarized in the current
+roadmap; there is no separate active legacy verification report.
 
 ## Current Scope
 
@@ -700,6 +701,9 @@ Implemented and reusable:
   linearized efficiency, connectivity, and volume constraints. The adapter now
   supports both the original projected-gradient smoke backend and an
   SLSQP-based linearized constrained subproblem backend.
+- G2 generic OpenFOAM case compilation for the currently supported force-only
+  profile, including multipoint manifests, turbulence/BC rendering, execution
+  asset staging, mesh patch mapping, and fail-closed convergence evaluation.
 
 Implemented but not part of the main topology route:
 
@@ -710,8 +714,9 @@ Implemented but not part of the main topology route:
 
 Missing from the intended optimizer:
 
-- G2 solver-case compiler, requested/generated manifest, convergence gates,
-  and real-solver v2 primal/sensitivity writers.
+- G2 runtime qualification: complete field/mesh boundary compatibility, real
+  history extraction, porous-aware turbulence/wall-distance qualification,
+  simple porous/body-fitted comparisons, and real-solver v2 writers.
 - G3 STL quality, geometry-role, feature-resolution, and density-to-SDF
   preflight gates.
 - G4 benchmark ladder from manufactured/simple cases through generic 3D and
@@ -725,7 +730,7 @@ Missing from the intended optimizer:
 - SDF sharp-interface IBM/cut-cell refinement.
 - Mesh-epoch adaptation.
 
-The next task is G2: implement the solver-case compiler, requested/generated
-manifest, and convergence gate. Complete G3 preflight and G4 qualification
-before replacing the T5 linearized smoke backend with production GCMMA or an
-equivalent constrained optimizer and running nonlinear multi-iteration cases.
+The next task is to finish G2 runtime qualification, starting with generated
+field/mesh boundary compatibility and an OpenFOAM smoke run. Complete G3
+preflight and G4 B0--B2 qualification before replacing the linearized smoke
+backend with production GCMMA or an equivalent constrained optimizer.

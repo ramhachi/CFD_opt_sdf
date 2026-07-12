@@ -450,7 +450,7 @@ def summarize_fixed_grid_primal_case(
     summary = {
         "schema_version": FIXED_GRID_PRIMAL_SCHEMA_VERSION,
         "kind": "fixed_grid_primal_summary",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T2",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": status,
@@ -994,7 +994,7 @@ def _case_metadata(
     return {
         "schema_version": FIXED_GRID_PRIMAL_SCHEMA_VERSION,
         "kind": "fixed_grid_primal_case",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T2",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "case_dir": str(case_dir),
@@ -1218,7 +1218,7 @@ def _suite_summary(
     return {
         "schema_version": FIXED_GRID_PRIMAL_SCHEMA_VERSION,
         "kind": "fixed_grid_primal_suite_summary",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T2",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "ok": bool(ok),
