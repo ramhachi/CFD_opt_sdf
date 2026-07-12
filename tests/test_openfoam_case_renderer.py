@@ -122,6 +122,9 @@ def test_laminar_renders_exact_physics_and_boundary_files(tmp_path: Path) -> Non
     assert "div((nuEff*dev2(T(grad(U))))) Gauss linear;" in artifacts.fv_schemes.read_text(
         encoding="utf-8"
     )
+    assert "div(-phi,Ua)      bounded Gauss linearUpwind grad(Ua);" in artifacts.fv_schemes.read_text(
+        encoding="utf-8"
+    )
     mass_dict = artifacts.normalized_mass_imbalance_function_dict.read_text(encoding="utf-8")
     assert "cfdSdfMassSigned0" in mass_dict
     assert "cfdSdfMassMagnitude1" in mass_dict
@@ -183,15 +186,20 @@ def test_sst_renders_k_omega_nut_and_wall_functions(tmp_path: Path) -> None:
         "div(phi,k)",
         "div(phi,omega)",
         "div(phia,Ua)",
-        "div(phi,ka)",
-        "div(phi,wa)",
+        "div(-phi,Ua)",
+        "div(-phi,ka)",
+        "div(-phi,wa)",
         "method            meshWave;",
     ):
         assert token in schemes
     solution = artifacts.fv_solution.read_text(encoding="utf-8")
     assert '"(p|pa.*)"' in solution
-    assert '"(U|Ua.*|yWall|da)"' in solution
-    assert '"(k|ka.*|omega|wa.*)"' in solution
+    assert "solver          PCG;" in solution
+    assert "preconditioner  DIC;" in solution
+    assert '"(U|Ua.*|yWall|da|k|ka.*|omega|wa.*)"' in solution
+    assert "solver          PBiCGStab;" in solution
+    assert "preconditioner  DILU;" in solution
+    assert '"pa.*" 0.5;' in solution
     metadata = json.loads(artifacts.metadata_json.read_text(encoding="utf-8"))
     assert metadata["generated"]["wall_distance"] == {
         "method": "meshWave",
