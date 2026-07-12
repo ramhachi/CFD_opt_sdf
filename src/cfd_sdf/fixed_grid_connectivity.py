@@ -217,7 +217,7 @@ def build_fixed_grid_connectivity_state(
     summary = {
         "schema_version": FIXED_GRID_CONNECTIVITY_SCHEMA_VERSION,
         "kind": "fixed_grid_connectivity_summary",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T4",
         "created_at_utc": created_at,
         "status": status,
@@ -498,7 +498,7 @@ def build_fixed_grid_connectivity_derivatives(
         "schema_version": FIXED_GRID_CONNECTIVITY_SCHEMA_VERSION,
         "kind": "fixed_grid_sensitivity_summary",
         "derivative_summary_kind": "fixed_grid_connectivity_derivative_summary",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T4",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": status,

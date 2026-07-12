@@ -17,10 +17,10 @@ coordinate frame, one or more flow cases, STL geometry roles, named responses,
 weighted objectives and constraints, and typed topology policies. The current
 executable profile is a uniform Cartesian grid.
 
-The contract does not compile a solver case, inspect STL mesh quality, prove
-that a requested feature is resolved, run a primal or adjoint solver, or prove
-target-physics accuracy. Those are later G2--G4 gates in `phase_plan.md` and
-require implementation where marked there.
+The contract parser does not itself compile or run a solver case, inspect STL
+mesh quality, prove feature resolution, or prove target-physics accuracy. The
+G2 compiler consumes this contract; G2 runtime qualification and the G3--G4
+gates remain separate as defined in `phase_plan.md`.
 
 ## Authoritative YAML Fields
 
@@ -123,10 +123,10 @@ Every flow case declares:
 - optional `boundary_conditions` mapping;
 - zero or more named `motion_profiles`, each represented by a mapping.
 
-This is a declarative interface. For example, a moving-ground or rotating-wall
-profile can be represented without source-code changes, but G2 still needs a
-solver compiler and a manifest that demonstrate how every declared value was
-translated. **Implementation required in G2.**
+This is a declarative interface. The G2 compiler and manifest translate the
+currently supported subset. Translation motion and moving-wall profiles are
+implemented. Rotating-wall motion and unsupported response/solver options must
+fail explicitly until their compiler paths are implemented.
 
 ## Response Kinds
 

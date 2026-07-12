@@ -1,13 +1,14 @@
 # Fixed-Grid Primal And Sensitivity Data Contract v2
 
-Status: v2 schema, readers, and semantic validation implemented; solver writers
-and G2 case-compiler integration pending. **Implementation required.**
+Status: authoritative v2 artifact contract. Schema, readers, and semantic
+validation are implemented. Native real-solver v2 writers remain
+**implementation required**.
 
 This document defines the JSON summary layer that binds fixed-grid primal
 values and cellwise gradient arrays to the generic problem contract in
-`problem_contract_v2.md`. The v1 field/grid rules in
-`fixed_grid_data_contract.md` remain authoritative for existing v1 VTI
-artifacts until v2 writers are integrated.
+`problem_contract_v2.md`. Historical v1 artifacts remain readable through the
+non-destructive compatibility adapter, but v1 is not an active specification
+for new implementation work.
 
 The implemented canonical readers and validators are in
 `src/cfd_sdf/fixed_grid_artifacts.py`.
@@ -222,5 +223,6 @@ These functions verify:
 
 Passing semantic validation proves namespace consistency, not numerical
 correctness, field-array presence, mesh compatibility, solver convergence, or
-gradient accuracy. Existing field/grid checks remain necessary, and v2 solver
-writers plus G2 compiler integration are still **implementation required**.
+gradient accuracy. Existing field/grid checks remain necessary. The G2 case
+compiler and convergence evaluator are implemented; native v2 writers from
+completed real solver runs remain **implementation required**.

@@ -269,7 +269,7 @@ def run_fixed_grid_constrained_density_step(
     summary = {
         "schema_version": FIXED_GRID_OPTIMIZER_SCHEMA_VERSION,
         "kind": "fixed_grid_constrained_step_summary",
-        "roadmap": "TSV Roadmap",
+        "roadmap": "Generic Aerodynamic Topology Optimization",
         "roadmap_phase": "T5",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "linearized_accept" if accepted_by_linearization else "linearized_reject",
