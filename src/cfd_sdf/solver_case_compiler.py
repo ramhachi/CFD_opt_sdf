@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 import hashlib
 import json
+from math import isfinite
 from pathlib import Path
 import re
 import shutil
@@ -13,7 +14,10 @@ import tempfile
 from types import MappingProxyType
 from typing import Any
 
-from .openfoam_case_renderer import render_openfoam_physics_files
+from .openfoam_case_renderer import (
+    openfoam_retained_field_boundary_specs,
+    render_openfoam_physics_files,
+)
 from .openfoam_response_renderer import render_openfoam_force_response_files
 from .problem_spec import ProblemSpec
 from .solver_case_manifest import (
@@ -46,6 +50,7 @@ _KNOWN_REPOSITORY_LIBRARIES = {
         "libcfdSdfPorousObjectives.so"
     ),
 }
+_REQUIRED_RETAINED_INITIAL_FIELDS = ("alpha", "Ua", "pa")
 
 
 @dataclass(frozen=True)
@@ -62,6 +67,21 @@ class _FoamToken:
     value: str
     start: int
     end: int
+
+
+@dataclass(frozen=True)
+class _FoamFieldBoundaryEntry:
+    name: str
+    body_open: _FoamToken
+    body_close: _FoamToken
+    type_token: _FoamToken
+    type_value: _FoamToken
+    value_component_spans: tuple[tuple[int, int], ...] | None
+
+
+@dataclass(frozen=True)
+class _FoamFieldBoundary:
+    entries: Mapping[str, _FoamFieldBoundaryEntry]
 
 
 def compile_openfoam_solver_case_bundle(
@@ -133,10 +153,21 @@ def compile_openfoam_solver_case_bundle(
 
     _validate_template(template)
     execution_contract, execution_unsupported = _audit_execution_contract(template)
+    fv_solution_initialization_contract, fv_solution_unsupported = (
+        _audit_fv_solution_initialization_contract(template)
+    )
     mesh_boundary_contract, mesh_unsupported = _audit_mesh_boundary_contract(
         template, manifest
     )
-    execution_unsupported = (*execution_unsupported, *mesh_unsupported)
+    field_boundary_contract, field_unsupported = _audit_field_boundary_contract(
+        template, manifest, mesh_boundary_contract
+    )
+    execution_unsupported = (
+        *execution_unsupported,
+        *fv_solution_unsupported,
+        *mesh_unsupported,
+        *field_unsupported,
+    )
     if execution_unsupported:
         manifest = replace(
             manifest,
@@ -166,7 +197,11 @@ def compile_openfoam_solver_case_bundle(
             template_files=_template_provenance(template),
         )
         bundle["execution_contract"] = execution_contract
+        bundle["fv_solution_initialization_contract"] = (
+            fv_solution_initialization_contract
+        )
         bundle["mesh_boundary_contract"] = mesh_boundary_contract
+        bundle["field_boundary_contract"] = field_boundary_contract
         _write_json(bundle_path, bundle)
         artifacts = OpenFOAMCaseBundleArtifacts(
             output_dir=output,
@@ -205,6 +240,9 @@ def compile_openfoam_solver_case_bundle(
                 case_mesh_boundary_contract = _stage_mesh_boundary_contract(
                     plan, case_staging
                 )
+                case_field_boundary_contract = _stage_retained_field_boundary_contract(
+                    plan, case_staging
+                )
 
                 physics_staging = Path(
                     tempfile.mkdtemp(
@@ -212,13 +250,22 @@ def compile_openfoam_solver_case_bundle(
                     )
                 )
                 try:
-                    physics = render_openfoam_physics_files(plan, physics_staging)
+                    physics = render_openfoam_physics_files(
+                        plan,
+                        physics_staging,
+                        fv_solution_initialization_solver_fields=tuple(
+                            fv_solution_initialization_contract[
+                                "required_solver_fields"
+                            ]
+                        ),
+                    )
                     physics_owned = (
                         physics.transport_properties,
                         physics.turbulence_properties,
                         physics.adjoint_turbulence_properties,
                         physics.fv_schemes,
                         physics.fv_solution,
+                        physics.normalized_mass_imbalance_function_dict,
                         physics.velocity_field,
                         physics.pressure_field,
                         physics.metadata_json,
@@ -238,6 +285,10 @@ def compile_openfoam_solver_case_bundle(
                 finally:
                     if physics_staging.exists():
                         shutil.rmtree(physics_staging)
+
+                case_field_boundary_contract = _validate_staged_field_boundary_contract(
+                    case_staging, case_field_boundary_contract
+                )
 
                 responses = render_openfoam_force_response_files(
                     plan,
@@ -265,6 +316,9 @@ def compile_openfoam_solver_case_bundle(
                     "physics": {
                         "metadata_sha256": _file_sha256(physics_marker),
                         "files_sha256": dict(physics.file_sha256),
+                        "fv_solution_initialization_solver_fields": list(
+                            physics.fv_solution_initialization_solver_fields
+                        ),
                     },
                     "responses": {
                         "metadata_sha256": _file_sha256(response_marker),
@@ -272,6 +326,7 @@ def compile_openfoam_solver_case_bundle(
                     },
                     "execution_contract": case_execution_contract,
                     "mesh_boundary_contract": case_mesh_boundary_contract,
+                    "field_boundary_contract": case_field_boundary_contract,
                     "status": "compiled",
                     "execution_qualification": "not_run",
                 }
@@ -312,7 +367,11 @@ def compile_openfoam_solver_case_bundle(
         failed_bundle["error_type"] = type(exc).__name__
         failed_bundle["error_message"] = str(exc)
         failed_bundle["execution_contract"] = execution_contract
+        failed_bundle["fv_solution_initialization_contract"] = (
+            fv_solution_initialization_contract
+        )
         failed_bundle["mesh_boundary_contract"] = mesh_boundary_contract
+        failed_bundle["field_boundary_contract"] = field_boundary_contract
         _write_json(bundle_path, failed_bundle)
         raise
 
@@ -327,7 +386,11 @@ def compile_openfoam_solver_case_bundle(
         template_files=template_files,
     )
     bundle["execution_contract"] = execution_contract
+    bundle["fv_solution_initialization_contract"] = (
+        fv_solution_initialization_contract
+    )
     bundle["mesh_boundary_contract"] = mesh_boundary_contract
+    bundle["field_boundary_contract"] = field_boundary_contract
     _write_json(bundle_path, bundle)
     return OpenFOAMCaseBundleArtifacts(
         output_dir=output,
@@ -476,6 +539,176 @@ def _audit_execution_contract(template: Path) -> tuple[dict[str, Any], tuple[str
     return contract, tuple(unsupported)
 
 
+def _audit_fv_solution_initialization_contract(
+    template: Path,
+) -> tuple[dict[str, Any], tuple[str, ...]]:
+    """Determine v2512 solver entries needed before the optimisation loop.
+
+    ``topO`` design variables only solve the temporary Helmholtz field
+    ``bTilda`` during startup when their regularisation is explicitly enabled.
+    The template owns that choice, so the compiler inspects its
+    ``optimisationDict`` instead of unconditionally adding a solver entry to
+    every generated flow case.
+    """
+
+    path = template / "system/optimisationDict"
+    contract: dict[str, Any] = {
+        "path": "system/optimisationDict",
+        "openfoam_version": "v2512",
+        "design_variables_type": None,
+        "regularisation": {
+            "enabled": None,
+            "source": "not_inspected",
+        },
+        "required_solver_fields": [],
+        "validation": "resolved_for_staging",
+    }
+    unsupported: list[str] = []
+    try:
+        text = path.read_text(encoding="utf-8")
+        tokens = _foam_tokens(text)
+        optimisation = _find_unique_direct_dictionary(tokens, None, "optimisation")
+        if optimisation is None:
+            raise ValueError("missing_optimisation_dictionary")
+        design_variables = _find_unique_direct_dictionary(
+            tokens, optimisation, "designVariables"
+        )
+        if design_variables is None:
+            raise ValueError("missing_design_variables_dictionary")
+        design_type = _find_unique_direct_scalar(tokens, design_variables, "type")
+        if design_type is None:
+            raise ValueError("missing_design_variables_type")
+        contract["design_variables_type"] = design_type
+        if design_type != "topO":
+            contract["regularisation"] = {
+                "enabled": False,
+                "source": "not_applicable_to_non_topology_design",
+            }
+            return contract, ()
+
+        regularisation = _find_unique_direct_dictionary(
+            tokens, design_variables, "regularisation"
+        )
+        if regularisation is None:
+            regularise = False
+            regularisation_source = "openfoam_v2512_default_false"
+        else:
+            configured = _find_unique_direct_scalar(
+                tokens, regularisation, "regularise"
+            )
+            if configured is None:
+                regularise = False
+                regularisation_source = "openfoam_v2512_default_false"
+            elif configured == "true":
+                regularise = True
+                regularisation_source = "template"
+            elif configured == "false":
+                regularise = False
+                regularisation_source = "template"
+            else:
+                raise ValueError("unsupported_regularise_switch")
+        contract["regularisation"] = {
+            "enabled": regularise,
+            "source": regularisation_source,
+        }
+        if regularise:
+            # v2512's topO Helmholtz regularisation calls smoothEqn.solve() on
+            # the temporary scalar field bTilda before the first primal solve.
+            contract["required_solver_fields"] = ["bTilda"]
+    except UnicodeDecodeError:
+        unsupported.append("optimisation_dict_not_utf8")
+    except ValueError as exc:
+        unsupported.append(
+            "malformed_optimisation_dict_for_fv_solution_initialization:"
+            + str(exc)
+        )
+
+    if unsupported:
+        contract["validation"] = "unsupported"
+    return contract, tuple(unsupported)
+
+
+def _find_unique_direct_dictionary(
+    tokens: Sequence[_FoamToken],
+    parent: tuple[int, int] | None,
+    name: str,
+) -> tuple[int, int] | None:
+    """Find one direct dictionary child, rejecting ambiguous OpenFOAM input."""
+
+    start = 0 if parent is None else parent[0] + 1
+    end = len(tokens) if parent is None else parent[1]
+    matches: list[tuple[int, int]] = []
+    brace_depth = 0
+    paren_depth = 0
+    for index in range(start, end):
+        token = tokens[index]
+        if (
+            token.value == name
+            and brace_depth == 0
+            and paren_depth == 0
+            and index + 1 < end
+            and tokens[index + 1].value == "{"
+        ):
+            closing = _matching_token(tokens, index + 1, "{", "}")
+            if closing >= end:
+                raise ValueError(f"dictionary_escapes_parent:{name}")
+            matches.append((index + 1, closing))
+        if token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+        if brace_depth < 0 or paren_depth < 0:
+            raise ValueError("unbalanced_delimiter")
+    if brace_depth != 0 or paren_depth != 0:
+        raise ValueError("unbalanced_delimiter")
+    if len(matches) > 1:
+        raise ValueError(f"ambiguous_dictionary:{name}")
+    return matches[0] if matches else None
+
+
+def _find_unique_direct_scalar(
+    tokens: Sequence[_FoamToken],
+    parent: tuple[int, int],
+    name: str,
+) -> str | None:
+    """Read one direct ``key value;`` statement from a dictionary body."""
+
+    start = parent[0] + 1
+    end = parent[1]
+    values: list[str] = []
+    brace_depth = 0
+    paren_depth = 0
+    for index in range(start, end):
+        token = tokens[index]
+        if token.value == name and brace_depth == 0 and paren_depth == 0:
+            if (
+                index + 2 >= end
+                or tokens[index + 1].value in {"{", "}", "(", ")", ";"}
+                or tokens[index + 2].value != ";"
+            ):
+                raise ValueError(f"invalid_scalar_entry:{name}")
+            values.append(tokens[index + 1].value)
+        if token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+        if brace_depth < 0 or paren_depth < 0:
+            raise ValueError("unbalanced_delimiter")
+    if brace_depth != 0 or paren_depth != 0:
+        raise ValueError("unbalanced_delimiter")
+    if len(values) > 1:
+        raise ValueError(f"ambiguous_scalar_entry:{name}")
+    return values[0] if values else None
+
+
 def _audit_mesh_boundary_contract(
     template: Path, manifest: SolverCaseManifest
 ) -> tuple[dict[str, Any], tuple[str, ...]]:
@@ -576,6 +809,600 @@ def _stage_mesh_boundary_contract(
         "staged_patch_types_after": staged_types,
         "pre_patch_sha256": hashlib.sha256(original).hexdigest(),
         "post_patch_sha256": hashlib.sha256(staged).hexdigest(),
+        "validation": "pass",
+    }
+
+
+def _audit_field_boundary_contract(
+    template: Path,
+    manifest: SolverCaseManifest,
+    mesh_boundary_contract: Mapping[str, Any],
+) -> tuple[dict[str, Any], tuple[str, ...]]:
+    """Validate retained initial fields against each flow's final mesh types."""
+
+    initial_dir = template / "0.orig"
+    fields, scan_unsupported = _scan_initial_field_boundaries(initial_dir)
+    unsupported = list(scan_unsupported)
+    unsupported.extend(_audit_required_root_initial_fields(initial_dir))
+
+    raw_template_types = mesh_boundary_contract.get("template_patch_types", {})
+    template_types = (
+        {str(key): str(value) for key, value in raw_template_types.items()}
+        if isinstance(raw_template_types, Mapping)
+        else {}
+    )
+    flow_cases: dict[str, Any] = {}
+    for plan in manifest.flow_cases:
+        final_mesh_types = _final_mesh_patch_types(template_types, plan)
+        try:
+            policy = openfoam_retained_field_boundary_specs(plan)
+        except ValueError as exc:
+            reason = f"invalid_retained_field_boundary_policy:{plan.flow_case_id}:{exc}"
+            unsupported.append(reason)
+            flow_cases[plan.flow_case_id] = {
+                "validation": "unsupported",
+                "reason": reason,
+            }
+            continue
+
+        renderer_owned = _renderer_owned_initial_fields(plan)
+        retained = {
+            field_name: boundary
+            for field_name, boundary in fields.items()
+            if field_name not in renderer_owned
+        }
+        flow_reasons: list[str] = []
+        field_records: dict[str, Any] = {}
+        for field_name, boundary in retained.items():
+            overrides = policy.get(field_name, {})
+            reasons = _field_boundary_compatibility_reasons(
+                flow_case_id=plan.flow_case_id,
+                field_name=field_name,
+                boundary=boundary,
+                mesh_patch_types=final_mesh_types,
+                type_overrides=overrides,
+            )
+            flow_reasons.extend(reasons)
+            field_records[field_name] = {
+                "template_path": f"0.orig/{field_name}",
+                "template_patch_types": {
+                    patch_id: entry.type_value.value
+                    for patch_id, entry in sorted(boundary.entries.items())
+                },
+                "manifest_patched_types": {
+                    patch_id: str(spec["type"])
+                    for patch_id, spec in sorted(overrides.items())
+                },
+                "validation": "pass" if not reasons else "unsupported",
+            }
+        unsupported.extend(flow_reasons)
+        flow_cases[plan.flow_case_id] = {
+            "final_mesh_patch_types": final_mesh_types,
+            "renderer_owned_fields": sorted(renderer_owned),
+            "retained_fields": field_records,
+            "validation": "pass" if not flow_reasons else "unsupported",
+        }
+
+    return (
+        {
+            "path": "0.orig",
+            "required_retained_fields": list(_REQUIRED_RETAINED_INITIAL_FIELDS),
+            "template_fields": sorted(fields),
+            "flow_cases": flow_cases,
+            "validation": "unsupported" if unsupported else "resolved_for_staging",
+        },
+        tuple(dict.fromkeys(unsupported)),
+    )
+
+
+def _final_mesh_patch_types(
+    template_types: Mapping[str, str], plan: Any
+) -> dict[str, str]:
+    result = dict(template_types)
+    generated = _mapping(plan.generated, "plan.generated")
+    boundaries = _mapping(
+        generated.get("boundary_conditions"), "plan.generated.boundary_conditions"
+    )
+    for raw_patch_id, raw_spec in boundaries.items():
+        patch_id = str(raw_patch_id)
+        if patch_id not in result:
+            continue
+        spec = _mapping(raw_spec, f"boundary_conditions.{patch_id}")
+        patch_type = spec.get("patch_type")
+        if not isinstance(patch_type, str) or not patch_type:
+            raise ValueError(f"Missing generated patch type for {patch_id}")
+        result[patch_id] = patch_type
+    return result
+
+
+def _renderer_owned_initial_fields(plan: Any) -> set[str]:
+    generated = _mapping(plan.generated, "plan.generated")
+    turbulence = _mapping(generated.get("turbulence"), "plan.generated.turbulence")
+    owned = {"U", "p"}
+    if turbulence.get("model") == "k_omega_sst":
+        owned.update({"k", "omega", "nut", "ka", "wa"})
+    return owned
+
+
+def _audit_required_root_initial_fields(initial_dir: Path) -> tuple[str, ...]:
+    """Require compiler-patched fields to be valid, unique root-level files."""
+
+    unsupported: list[str] = []
+    for field_name in _REQUIRED_RETAINED_INITIAL_FIELDS:
+        root_path = initial_dir / field_name
+        if not root_path.is_file():
+            unsupported.append(f"required_initial_field_not_root_level:{field_name}")
+            continue
+        nested_matches = sorted(
+            path
+            for path in initial_dir.rglob(field_name)
+            if path != root_path and path.is_file()
+        )
+        for nested in nested_matches:
+            relative = nested.relative_to(initial_dir).as_posix()
+            unsupported.append(
+                f"duplicate_required_initial_field_path:{field_name}:{relative}"
+            )
+        raw = root_path.read_bytes()
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            unsupported.append(f"non_utf8_required_initial_field:{field_name}")
+            continue
+        try:
+            boundary = _parse_openfoam_field_boundary(text)
+        except ValueError as exc:
+            unsupported.append(
+                f"malformed_required_initial_field_boundary:{field_name}:{exc}"
+            )
+            continue
+        if boundary is None:
+            unsupported.append(f"missing_required_initial_field_boundary:{field_name}")
+    return tuple(unsupported)
+
+
+def _scan_initial_field_boundaries(
+    initial_dir: Path,
+) -> tuple[dict[str, _FoamFieldBoundary], tuple[str, ...]]:
+    fields: dict[str, _FoamFieldBoundary] = {}
+    unsupported: list[str] = []
+    if not initial_dir.is_dir():
+        return fields, ("missing_initial_field_directory:0.orig",)
+    for path in sorted(initial_dir.rglob("*")):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(initial_dir).as_posix()
+        raw = path.read_bytes()
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            if b"boundaryField" in raw:
+                unsupported.append(f"non_utf8_initial_field:{relative}")
+            continue
+        try:
+            boundary = _parse_openfoam_field_boundary(text)
+        except ValueError as exc:
+            unsupported.append(f"malformed_initial_field_boundary:{relative}:{exc}")
+            continue
+        if boundary is None:
+            continue
+        field_name = path.name
+        if field_name in fields:
+            unsupported.append(f"duplicate_initial_field_name:{field_name}")
+            continue
+        fields[field_name] = boundary
+    return fields, tuple(unsupported)
+
+
+def _field_boundary_compatibility_reasons(
+    *,
+    flow_case_id: str,
+    field_name: str,
+    boundary: _FoamFieldBoundary,
+    mesh_patch_types: Mapping[str, str],
+    type_overrides: Mapping[str, Mapping[str, Any]],
+) -> list[str]:
+    reasons: list[str] = []
+    field_patches = set(boundary.entries)
+    mesh_patches = set(mesh_patch_types)
+    for patch_id in sorted(mesh_patches - field_patches):
+        reasons.append(
+            f"field_boundary_missing_patch:{flow_case_id}:{field_name}:{patch_id}"
+        )
+    for patch_id in sorted(field_patches - mesh_patches):
+        reasons.append(
+            f"field_boundary_unknown_patch:{flow_case_id}:{field_name}:{patch_id}"
+        )
+    for patch_id in sorted(field_patches & mesh_patches):
+        entry = boundary.entries[patch_id]
+        override = type_overrides.get(patch_id)
+        field_type = (
+            str(override["type"])
+            if override is not None and isinstance(override.get("type"), str)
+            else entry.type_value.value
+        )
+        mesh_type = str(mesh_patch_types[patch_id])
+        if not _field_patch_type_is_compatible(field_type, mesh_type):
+            reasons.append(
+                "field_patch_type_incompatible:"
+                f"{flow_case_id}:{field_name}:{patch_id}:{field_type}:{mesh_type}"
+            )
+    return reasons
+
+
+def _field_patch_type_is_compatible(field_type: str, mesh_type: str) -> bool:
+    if field_type == "symmetryPlane":
+        return mesh_type == "symmetryPlane"
+    if field_type in {"empty", "wedge", "cyclic", "cyclicAMI"}:
+        return mesh_type == field_type
+    if field_type == "adjointWallVelocity" or field_type.endswith("WallFunction"):
+        return mesh_type == "wall"
+    if field_type in {
+        "adjointInletVelocity",
+        "adjointOutletVelocity",
+        "adjointOutletPressure",
+        "adjointZeroInlet",
+        "adjointOutletKa",
+        "adjointOutletWa",
+    }:
+        return mesh_type == "patch"
+    if field_type in {"fixedValue", "zeroGradient", "calculated"}:
+        return mesh_type in {"patch", "wall"}
+    return False
+
+
+def _parse_openfoam_field_boundary(text: str) -> _FoamFieldBoundary | None:
+    tokens = _foam_tokens(text)
+    candidates: list[int] = []
+    brace_depth = 0
+    paren_depth = 0
+    for index, token in enumerate(tokens):
+        if (
+            token.value == "boundaryField"
+            and brace_depth == 0
+            and paren_depth == 0
+            and index + 1 < len(tokens)
+            and tokens[index + 1].value == "{"
+        ):
+            candidates.append(index + 1)
+        if token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+        if brace_depth < 0 or paren_depth < 0:
+            raise ValueError("unbalanced_delimiter")
+    if brace_depth != 0 or paren_depth != 0:
+        raise ValueError("unbalanced_delimiter")
+    if not candidates:
+        return None
+    if len(candidates) != 1:
+        raise ValueError("ambiguous_boundary_field")
+
+    opening = candidates[0]
+    closing = _matching_token(tokens, opening, "{", "}")
+    entries: dict[str, _FoamFieldBoundaryEntry] = {}
+    index = opening + 1
+    while index < closing:
+        if tokens[index].value == ";":
+            index += 1
+            continue
+        name = tokens[index].value
+        if index + 1 >= closing or tokens[index + 1].value != "{":
+            raise ValueError("invalid_boundary_field_patch_entry")
+        if name in entries:
+            raise ValueError(f"duplicate_field_patch:{name}")
+        body_open = index + 1
+        body_close = _matching_token(tokens, body_open, "{", "}")
+        if body_close >= closing:
+            raise ValueError("field_patch_dictionary_escapes_boundary_field")
+        type_token, type_value = _field_patch_type_tokens(
+            tokens, body_open, body_close, name
+        )
+        value_component_spans = _field_patch_value_component_spans(
+            tokens, body_open, body_close, name
+        )
+        entries[name] = _FoamFieldBoundaryEntry(
+            name=name,
+            body_open=tokens[body_open],
+            body_close=tokens[body_close],
+            type_token=type_token,
+            type_value=type_value,
+            value_component_spans=value_component_spans,
+        )
+        index = body_close + 1
+        if index < closing and tokens[index].value == ";":
+            index += 1
+    if not entries:
+        raise ValueError("empty_boundary_field")
+    return _FoamFieldBoundary(entries=MappingProxyType(entries))
+
+
+def _field_patch_type_tokens(
+    tokens: Sequence[_FoamToken], body_open: int, body_close: int, patch_name: str
+) -> tuple[_FoamToken, _FoamToken]:
+    matches: list[tuple[_FoamToken, _FoamToken]] = []
+    brace_depth = 0
+    paren_depth = 0
+    for index in range(body_open + 1, body_close):
+        token = tokens[index]
+        if token.value == "type" and brace_depth == 0 and paren_depth == 0:
+            if (
+                index + 2 >= body_close
+                or tokens[index + 2].value != ";"
+                or tokens[index + 1].value in "{}();"
+            ):
+                raise ValueError(f"invalid_field_patch_type:{patch_name}")
+            matches.append((token, tokens[index + 1]))
+        if token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+    if len(matches) != 1:
+        raise ValueError(f"ambiguous_field_patch_type:{patch_name}")
+    return matches[0]
+
+
+def _field_patch_value_component_spans(
+    tokens: Sequence[_FoamToken], body_open: int, body_close: int, patch_name: str
+) -> tuple[tuple[int, int], ...] | None:
+    matches: list[tuple[tuple[int, int], ...]] = []
+    brace_depth = 0
+    paren_depth = 0
+    for index in range(body_open + 1, body_close):
+        token = tokens[index]
+        if token.value == "value" and brace_depth == 0 and paren_depth == 0:
+            terminator = _field_statement_terminator(tokens, index, body_close)
+            matches.append(
+                _uniform_value_component_spans(tokens, index, terminator, patch_name)
+            )
+        if token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+    if len(matches) > 1:
+        raise ValueError(f"ambiguous_field_patch_value:{patch_name}")
+    return matches[0] if matches else None
+
+
+def _uniform_value_component_spans(
+    tokens: Sequence[_FoamToken], value_index: int, terminator: int, patch_name: str
+) -> tuple[tuple[int, int], ...]:
+    uniform_index = value_index + 1
+    if uniform_index >= terminator or tokens[uniform_index].value != "uniform":
+        raise ValueError(f"unsupported_field_patch_value:{patch_name}")
+    first_value = uniform_index + 1
+    if first_value >= terminator:
+        raise ValueError(f"unsupported_field_patch_value:{patch_name}")
+    if tokens[first_value].value != "(":
+        if first_value + 1 != terminator or tokens[first_value].value in "{}();":
+            raise ValueError(f"unsupported_field_patch_value:{patch_name}")
+        return ((tokens[first_value].start, tokens[first_value].end),)
+    closing = _matching_token(tokens, first_value, "(", ")")
+    if closing + 1 != terminator:
+        raise ValueError(f"unsupported_field_patch_value:{patch_name}")
+    component_tokens = [
+        token
+        for token in tokens[first_value + 1 : closing]
+        if token.value not in {"(", ")", "{", "}", ";"}
+    ]
+    if not component_tokens:
+        raise ValueError(f"unsupported_field_patch_value:{patch_name}")
+    return tuple((token.start, token.end) for token in component_tokens)
+
+
+def _field_statement_terminator(
+    tokens: Sequence[_FoamToken], start: int, body_close: int
+) -> int:
+    paren_depth = 0
+    brace_depth = 0
+    for index in range(start + 1, body_close):
+        token = tokens[index]
+        if token.value == "(":
+            paren_depth += 1
+        elif token.value == ")":
+            paren_depth -= 1
+        elif token.value == "{":
+            brace_depth += 1
+        elif token.value == "}":
+            brace_depth -= 1
+        elif token.value == ";" and brace_depth == 0 and paren_depth == 0:
+            return index
+    raise ValueError("unterminated_field_patch_value")
+
+
+def _stage_retained_field_boundary_contract(
+    plan: Any, case_staging: Path
+) -> dict[str, Any]:
+    mesh_path = case_staging / "system/blockMeshDict"
+    mesh_types = {
+        patch_id: str(record["type"])
+        for patch_id, record in _parse_block_mesh_boundary(
+            mesh_path.read_bytes().decode("utf-8")
+        ).items()
+    }
+    initial_dir = case_staging / "0.orig"
+    fields, scan_unsupported = _scan_initial_field_boundaries(initial_dir)
+    if scan_unsupported:
+        raise ValueError("Invalid staged initial field(s): " + ", ".join(scan_unsupported))
+    missing = [name for name in _REQUIRED_RETAINED_INITIAL_FIELDS if name not in fields]
+    if missing:
+        raise ValueError(f"Missing required staged initial field(s): {missing!r}")
+    policy = openfoam_retained_field_boundary_specs(plan)
+
+    patched_fields: dict[str, Any] = {}
+    for field_name in _REQUIRED_RETAINED_INITIAL_FIELDS:
+        path = initial_dir / field_name
+        source = path.read_bytes()
+        try:
+            text = source.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError(f"Staged initial field is not UTF-8: {field_name}") from exc
+        boundary = _parse_openfoam_field_boundary(text)
+        if boundary is None:
+            raise ValueError(f"Staged initial field is missing boundaryField: {field_name}")
+        specs = policy[field_name]
+        patched = _patch_openfoam_field_boundary(text, boundary, specs)
+        if patched != text:
+            path.write_bytes(patched.encode("utf-8"))
+        patched_fields[field_name] = {
+            "path": f"0.orig/{field_name}",
+            "pre_patch_sha256": hashlib.sha256(source).hexdigest(),
+            "post_patch_sha256": _file_sha256(path),
+            "manifest_patch_types": {
+                patch_id: str(spec["type"])
+                for patch_id, spec in sorted(specs.items())
+            },
+            "validation": "staged_pending_final_validation",
+        }
+    return {
+        "path": "0.orig",
+        "flow_case_id": plan.flow_case_id,
+        "final_mesh_patch_types": mesh_types,
+        "manifest_patched_fields": patched_fields,
+        "validation": "staged_pending_final_validation",
+    }
+
+
+def _patch_openfoam_field_boundary(
+    text: str,
+    boundary: _FoamFieldBoundary,
+    specs: Mapping[str, Mapping[str, Any]],
+) -> str:
+    replacements: list[tuple[int, int, str]] = []
+    newline = "\r\n" if "\r\n" in text else "\n"
+    for patch_id, spec in sorted(specs.items()):
+        entry = boundary.entries.get(patch_id)
+        if entry is None:
+            raise ValueError(f"Retained field is missing manifest patch: {patch_id}")
+        field_type = spec.get("type")
+        if not isinstance(field_type, str) or not field_type:
+            raise ValueError(f"Retained-field policy is missing a type: {patch_id}")
+        replacements.append((entry.type_value.start, entry.type_value.end, field_type))
+        if "value" not in spec:
+            continue
+        value_statement = f"value           uniform {_format_uniform_field_value(spec['value'])};"
+        components = _format_uniform_field_components(spec["value"])
+        if entry.value_component_spans is not None:
+            if len(entry.value_component_spans) != len(components):
+                raise ValueError(
+                    f"Retained-field value shape does not match policy: {patch_id}"
+                )
+            replacements.extend(
+                (start, end, component)
+                for (start, end), component in zip(entry.value_component_spans, components)
+            )
+            continue
+        insertion_start, insertion = _missing_value_insertion(
+            text, entry, value_statement, newline
+        )
+        replacements.append((insertion_start, insertion_start, insertion))
+    return _replace_text_spans(text, replacements)
+
+
+def _missing_value_insertion(
+    text: str,
+    entry: _FoamFieldBoundaryEntry,
+    value_statement: str,
+    newline: str,
+) -> tuple[int, str]:
+    close_line_start = text.rfind("\n", 0, entry.body_close.start) + 1
+    close_line_prefix = text[close_line_start:entry.body_close.start]
+    if close_line_prefix.strip():
+        return entry.body_close.start, f" {value_statement} "
+    type_line_start = text.rfind("\n", 0, entry.type_token.start) + 1
+    indent = text[type_line_start:entry.type_token.start]
+    return close_line_start, f"{indent}{value_statement}{newline}"
+
+
+def _format_uniform_field_value(value: Any) -> str:
+    components = _format_uniform_field_components(value)
+    return "(" + " ".join(components) + ")" if len(components) == 3 else components[0]
+
+
+def _format_uniform_field_components(value: Any) -> tuple[str, ...]:
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        if len(value) != 3:
+            raise ValueError("Retained-field vector value must contain three components")
+        return tuple(_format_field_number(item) for item in value)
+    return (_format_field_number(value),)
+
+
+def _format_field_number(value: Any) -> str:
+    if isinstance(value, bool):
+        raise ValueError("Retained-field values must be finite numbers")
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Retained-field values must be finite numbers") from exc
+    if not isfinite(numeric):
+        raise ValueError("Retained-field values must be finite numbers")
+    if numeric == 0.0:
+        return "0"
+    return format(numeric, ".12g")
+
+
+def _replace_text_spans(text: str, replacements: Sequence[tuple[int, int, str]]) -> str:
+    result = text
+    previous_start = len(text) + 1
+    for start, end, replacement in sorted(replacements, reverse=True):
+        if start < 0 or end < start or end > len(text) or end > previous_start:
+            raise ValueError("Overlapping retained-field patch spans")
+        result = result[:start] + replacement + result[end:]
+        previous_start = start
+    return result
+
+
+def _validate_staged_field_boundary_contract(
+    case_staging: Path, staged_contract: Mapping[str, Any]
+) -> dict[str, Any]:
+    mesh_path = case_staging / "system/blockMeshDict"
+    mesh_types = {
+        patch_id: str(record["type"])
+        for patch_id, record in _parse_block_mesh_boundary(
+            mesh_path.read_bytes().decode("utf-8")
+        ).items()
+    }
+    fields, scan_unsupported = _scan_initial_field_boundaries(case_staging / "0.orig")
+    reasons = list(scan_unsupported)
+    for field_name in _REQUIRED_RETAINED_INITIAL_FIELDS:
+        if field_name not in fields:
+            reasons.append(f"missing_required_initial_field:{field_name}")
+    records: dict[str, Any] = {}
+    for field_name, boundary in fields.items():
+        field_reasons = _field_boundary_compatibility_reasons(
+            flow_case_id=str(staged_contract["flow_case_id"]),
+            field_name=field_name,
+            boundary=boundary,
+            mesh_patch_types=mesh_types,
+            type_overrides={},
+        )
+        reasons.extend(field_reasons)
+        records[field_name] = {
+            "path": f"0.orig/{field_name}",
+            "patch_types": {
+                patch_id: entry.type_value.value
+                for patch_id, entry in sorted(boundary.entries.items())
+            },
+            "validation": "pass" if not field_reasons else "unsupported",
+        }
+    if reasons:
+        raise ValueError("Staged field boundary validation failed: " + ", ".join(reasons))
+    return {
+        **_json_copy(staged_contract),
+        "final_mesh_patch_types": mesh_types,
+        "all_initial_fields": records,
         "validation": "pass",
     }
 
@@ -972,6 +1799,12 @@ def _is_relative_to(path: Path, parent: Path) -> bool:
 
 def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _mapping(value: Any, context: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{context} must be a mapping")
+    return value
 
 
 def _write_json(path: Path, value: Mapping[str, Any]) -> None:

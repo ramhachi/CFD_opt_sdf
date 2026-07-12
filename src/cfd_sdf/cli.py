@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -51,6 +52,8 @@ from .fixed_grid_sensitivity import (
 from .gradient_check import run_finite_difference_gradient_check
 from .openfoam import generate_openfoam_case
 from .optimization import run_parametric_optimization
+from .openfoam_evidence import extract_openfoam_flow_case_evidence
+from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
 from .parametric import default_parameters, parameters_to_dict, write_parametric_front_wing_stl
 from .porous_force_validation import (
     validate_efficiency_constraint_gradient,
@@ -77,6 +80,11 @@ from .validation import validate_outputs
 
 app = typer.Typer(help="Generic topology and SDF tools for CFD optimization problems.")
 console = Console()
+
+_OPENFOAM_FLOW_CASE_EVIDENCE_KIND = "openfoam_flow_case_convergence_evidence"
+_OPENFOAM_EVIDENCE_PROVENANCE_KIND = "openfoam_convergence_evidence_provenance"
+_OPENFOAM_EVIDENCE_PROVENANCE_SCHEMA_VERSION = 1
+_COMPILED_OPENFOAM_MANIFEST_NAME = "openfoam_solver_case_manifest.json"
 
 
 @app.command()
@@ -235,12 +243,20 @@ def qualify_openfoam_convergence(
         manifest = build_openfoam_solver_case_manifest(
             spec, available_patch_ids=None
         )
-        raw = json.loads(evidence_json.read_text(encoding="utf-8"))
+        evidence_payload = evidence_json.read_bytes()
+        raw = json.loads(evidence_payload)
         if not isinstance(raw, dict) or set(raw) != {"flow_cases"}:
             raise ValueError("evidence JSON must contain only a flow_cases mapping")
         evidence = raw["flow_cases"]
         if not isinstance(evidence, dict):
             raise ValueError("evidence flow_cases must be a mapping")
+        _validate_openfoam_evidence_provenance(
+            evidence_json,
+            evidence_payload=evidence_payload,
+            evidence_by_flow_case=evidence,
+            expected_problem_id=spec.problem_id,
+            expected_problem_spec_sha256=problem_spec_sha256(spec),
+        )
         result = evaluate_openfoam_convergence_bundle(manifest, evidence)
         artifact = write_openfoam_convergence_qualification(result, output_json)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
@@ -262,6 +278,92 @@ def qualify_openfoam_convergence(
     )
     if not result["qualified"]:
         raise typer.Exit(code=1)
+
+
+@app.command("extract-openfoam-convergence-evidence")
+def extract_openfoam_convergence_evidence(
+    bundle_dir: Path = typer.Argument(
+        ..., help="Compiled OpenFOAM case-bundle directory."
+    ),
+    output_json: Path = typer.Argument(
+        ..., help="Output JSON consumable by qualify-openfoam-convergence."
+    ),
+) -> None:
+    """Extract post-run numerical evidence without claiming qualification."""
+    try:
+        (
+            bundle,
+            flow_case_dirs,
+            metadata_path,
+        ) = _load_compiled_openfoam_bundle_flow_case_dirs(bundle_dir)
+        evidence = {
+            flow_case_id: extract_openfoam_flow_case_evidence(case_dir)
+            for flow_case_id, case_dir in flow_case_dirs.items()
+        }
+        artifact, provenance = _write_openfoam_convergence_evidence_bundle(
+            evidence,
+            output_json,
+            bundle=bundle,
+            metadata_path=metadata_path,
+            flow_case_dirs=flow_case_dirs,
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    complete = all(item["complete"] for item in evidence.values())
+    typer.echo(
+        json.dumps(
+            {
+                "kind": "openfoam_convergence_evidence_extraction",
+                "status": "complete" if complete else "incomplete",
+                "complete": complete,
+                "problem_id": bundle["problem_id"],
+                "flow_cases": {
+                    flow_case_id: item["status"]
+                    for flow_case_id, item in evidence.items()
+                },
+                "artifact_json": str(artifact.resolve()),
+                "provenance_json": str(provenance.resolve()),
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("produce-openfoam-normalized-mass-imbalance")
+def produce_openfoam_normalized_mass_imbalance_command(
+    case_dir: Path = typer.Argument(
+        ..., help="Compiled, already-run OpenFOAM flow-case directory."
+    ),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    docker_image: str | None = typer.Option(None, help="Docker image when backend=docker."),
+    timeout_seconds: int | None = typer.Option(None, min=1, help="Optional postProcess timeout."),
+    overwrite: bool = typer.Option(False, help="Replace an existing structured flux artifact."),
+) -> None:
+    """Measure open-patch ``phi`` fluxes and write normalized mass evidence."""
+    try:
+        artifact = produce_openfoam_normalized_mass_imbalance(
+            case_dir,
+            backend=backend,
+            docker_image=docker_image,
+            timeout_seconds=timeout_seconds,
+            overwrite=overwrite,
+        )
+    except (OSError, RuntimeError, ValueError, FileExistsError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(
+        json.dumps(
+            {
+                "kind": artifact["kind"],
+                "flow_case_id": artifact["flow_case_id"],
+                "measurements": len(artifact["measurements"]),
+                "artifact_json": str(
+                    (case_dir / "cfd_sdf_normalized_mass_imbalance.json").resolve()
+                ),
+            },
+            indent=2,
+        )
+    )
 
 
 @app.command("build-sdf")
@@ -1604,6 +1706,254 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+def _load_compiled_openfoam_bundle_flow_case_dirs(
+    bundle_dir: Path,
+) -> tuple[dict, dict[str, Path], Path]:
+    """Read only compiler-declared, contained flow-case directories."""
+
+    root = bundle_dir.resolve()
+    if not root.is_dir():
+        raise ValueError(f"Compiled OpenFOAM bundle directory does not exist: {root}")
+
+    metadata_path = root / "openfoam_case_bundle.json"
+    if not metadata_path.is_file():
+        raise ValueError(f"Missing compiled bundle metadata: {metadata_path}")
+    metadata_path = metadata_path.resolve()
+    try:
+        metadata_path.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("Bundle metadata escapes the bundle directory") from exc
+    raw = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict) or raw.get("kind") != "openfoam_case_bundle":
+        raise ValueError("Bundle metadata must have kind=openfoam_case_bundle")
+    if raw.get("status") != "compiled" or raw.get("compile_ready") is not True:
+        raise ValueError("Bundle metadata is not a compile-ready compiled bundle")
+    if not isinstance(raw.get("problem_id"), str) or not raw["problem_id"]:
+        raise ValueError("Bundle metadata has an invalid problem_id")
+    if not _is_sha256(raw.get("problem_spec_sha256")):
+        raise ValueError("Bundle metadata has an invalid problem_spec_sha256")
+
+    flow_cases = raw.get("flow_cases")
+    if not isinstance(flow_cases, dict) or not flow_cases:
+        raise ValueError("Bundle metadata must declare at least one flow case")
+    if any(
+        not isinstance(flow_case_id, str) or not flow_case_id
+        for flow_case_id in flow_cases
+    ):
+        raise ValueError("Bundle metadata has an invalid flow-case ID")
+
+    case_dirs: dict[str, Path] = {}
+    seen_dirs: set[Path] = set()
+    for flow_case_id in sorted(flow_cases):
+        flow_metadata = flow_cases[flow_case_id]
+        if not isinstance(flow_metadata, dict):
+            raise ValueError(
+                f"Bundle metadata flow case {flow_case_id!r} must be a mapping"
+            )
+        if flow_metadata.get("status") != "compiled":
+            raise ValueError(
+                f"Bundle metadata flow case {flow_case_id!r} is not compiled"
+            )
+        case_dir_name = flow_metadata.get("case_dir")
+        if not isinstance(case_dir_name, str):
+            raise ValueError(
+                f"Bundle metadata flow case {flow_case_id!r} has no case_dir"
+            )
+        relative_case_dir = Path(case_dir_name)
+        if relative_case_dir.is_absolute() or len(relative_case_dir.parts) != 1:
+            raise ValueError(f"Unsafe case directory name: {case_dir_name!r}")
+        case_dir = (root / relative_case_dir).resolve()
+        try:
+            case_dir.relative_to(root)
+        except ValueError as exc:
+            raise ValueError(
+                f"Case directory escapes bundle: {case_dir_name!r}"
+            ) from exc
+        if case_dir == root or case_dir in seen_dirs:
+            raise ValueError(f"Invalid duplicate case directory: {case_dir_name!r}")
+        if not case_dir.is_dir():
+            raise ValueError(f"Compiled flow-case directory does not exist: {case_dir}")
+        seen_dirs.add(case_dir)
+        case_dirs[flow_case_id] = case_dir
+    return raw, case_dirs, metadata_path
+
+
+def _write_openfoam_convergence_evidence_bundle(
+    evidence_by_flow_case: dict[str, dict],
+    output_json: Path,
+    *,
+    bundle: dict,
+    metadata_path: Path,
+    flow_case_dirs: dict[str, Path],
+) -> tuple[Path, Path]:
+    """Write qualifier-compatible evidence and a separately bound provenance record."""
+
+    target = output_json.resolve()
+    provenance_path = _openfoam_evidence_provenance_path(target)
+    _validate_openfoam_evidence_output_paths(
+        (target, provenance_path),
+        bundle=bundle,
+        metadata_path=metadata_path,
+        flow_case_dirs=flow_case_dirs,
+    )
+    evidence_payload = json.dumps(
+        {
+            "flow_cases": {
+                flow_case_id: evidence_by_flow_case[flow_case_id]
+                for flow_case_id in sorted(evidence_by_flow_case)
+            }
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(evidence_payload)
+    provenance = {
+        "schema_version": _OPENFOAM_EVIDENCE_PROVENANCE_SCHEMA_VERSION,
+        "kind": _OPENFOAM_EVIDENCE_PROVENANCE_KIND,
+        "problem_id": bundle["problem_id"],
+        "problem_spec_sha256": bundle["problem_spec_sha256"],
+        "bundle_metadata_sha256": hashlib.sha256(
+            metadata_path.read_bytes()
+        ).hexdigest(),
+        "evidence_sha256": hashlib.sha256(evidence_payload).hexdigest(),
+        "flow_case_ids": sorted(evidence_by_flow_case),
+    }
+    provenance_path.write_text(
+        json.dumps(
+            provenance,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    return target, provenance_path
+
+
+def _openfoam_evidence_provenance_path(evidence_json: Path) -> Path:
+    target = evidence_json.resolve()
+    return target.with_name(f"{target.name}.provenance.json")
+
+
+def _validate_openfoam_evidence_output_paths(
+    targets: tuple[Path, ...],
+    *,
+    bundle: dict,
+    metadata_path: Path,
+    flow_case_dirs: dict[str, Path],
+) -> None:
+    root = metadata_path.resolve().parent
+    protected = {
+        metadata_path.resolve(): "openfoam_case_bundle.json",
+        (root / _COMPILED_OPENFOAM_MANIFEST_NAME).resolve(): (
+            "compiled OpenFOAM manifest"
+        ),
+    }
+    manifest_path = bundle.get("manifest_path")
+    if isinstance(manifest_path, str):
+        declared = _contained_bundle_path(root, manifest_path)
+        if declared is not None:
+            protected[declared] = "compiled OpenFOAM manifest"
+
+    for target in targets:
+        for protected_path, description in protected.items():
+            if _same_existing_path(target, protected_path):
+                if description == "openfoam_case_bundle.json":
+                    raise ValueError(
+                        "Evidence output must not replace openfoam_case_bundle.json"
+                    )
+                raise ValueError("Evidence output must not replace compiled OpenFOAM manifest")
+        for flow_case_id, case_dir in flow_case_dirs.items():
+            if _is_within(target, case_dir):
+                raise ValueError(
+                    "Evidence output must not be placed inside compiled flow-case "
+                    f"directory {flow_case_id!r}"
+                )
+
+
+def _validate_openfoam_evidence_provenance(
+    evidence_json: Path,
+    *,
+    evidence_payload: bytes,
+    evidence_by_flow_case: dict,
+    expected_problem_id: str,
+    expected_problem_spec_sha256: str,
+) -> None:
+    provenance_path = _openfoam_evidence_provenance_path(evidence_json)
+    requires_provenance = any(
+        isinstance(item, dict)
+        and item.get("kind") == _OPENFOAM_FLOW_CASE_EVIDENCE_KIND
+        for item in evidence_by_flow_case.values()
+    )
+    if not provenance_path.is_file():
+        if requires_provenance:
+            raise ValueError(
+                "Extractor-shaped evidence requires an adjacent provenance sidecar: "
+                f"{provenance_path}"
+            )
+        return
+
+    provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    if not isinstance(provenance, dict):
+        raise ValueError("Evidence provenance sidecar must be a mapping")
+    if provenance.get("schema_version") != _OPENFOAM_EVIDENCE_PROVENANCE_SCHEMA_VERSION:
+        raise ValueError("Evidence provenance sidecar has an unsupported schema_version")
+    if provenance.get("kind") != _OPENFOAM_EVIDENCE_PROVENANCE_KIND:
+        raise ValueError("Evidence provenance sidecar has an invalid kind")
+    if provenance.get("evidence_sha256") != hashlib.sha256(evidence_payload).hexdigest():
+        raise ValueError("Evidence provenance sidecar does not match evidence JSON bytes")
+    if provenance.get("problem_id") != expected_problem_id:
+        raise ValueError("Evidence provenance problem_id does not match the problem specification")
+    if provenance.get("problem_spec_sha256") != expected_problem_spec_sha256:
+        raise ValueError(
+            "Evidence provenance problem_spec_sha256 does not match the problem specification"
+        )
+    if not _is_sha256(provenance.get("bundle_metadata_sha256")):
+        raise ValueError("Evidence provenance has an invalid bundle_metadata_sha256")
+    if provenance.get("flow_case_ids") != sorted(evidence_by_flow_case):
+        raise ValueError("Evidence provenance flow_case_ids do not match evidence JSON")
+
+
+def _contained_bundle_path(root: Path, relative_path: str) -> Path | None:
+    candidate = Path(relative_path)
+    if candidate.is_absolute():
+        return None
+    resolved = (root / candidate).resolve()
+    return resolved if _is_within(resolved, root) else None
+
+
+def _is_within(path: Path, directory: Path) -> bool:
+    try:
+        path.resolve().relative_to(directory.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def _same_existing_path(left: Path, right: Path) -> bool:
+    if left == right:
+        return True
+    if not left.exists() or not right.exists():
+        return False
+    try:
+        return left.samefile(right)
+    except OSError:
+        return False
+
+
+def _is_sha256(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
 
 
 def _load_or_build(config):

@@ -64,6 +64,77 @@ def _spec(tmp_path: Path, data: dict, name: str = "problem.yaml"):
     return load_problem_spec(path)
 
 
+def _write_required_initial_fields(
+    template: Path,
+    patch_names: tuple[str, ...],
+    *,
+    newline: str = "\n",
+) -> None:
+    field_definitions = {
+        "alpha": ("volScalarField", "[0 0 0 0 0 0 0]", "0", "zeroGradient"),
+        "Ua": ("volVectorField", "[0 1 -1 0 0 0 0]", "(0 0 0)", "symmetryPlane"),
+        "pa": ("volScalarField", "[0 2 -2 0 0 0 0]", "0", "symmetryPlane"),
+    }
+    for field_name, (field_class, dimensions, internal, patch_type) in field_definitions.items():
+        entries = []
+        for patch_name in patch_names:
+            entries.extend(
+                (
+                    f"    {patch_name} // retain field comment {{ }}",
+                    "    {",
+                    f"        type /* preserve comment */ {patch_type};",
+                    "    }",
+                )
+            )
+        text = newline.join(
+            (
+                "FoamFile",
+                "{",
+                f"    class {field_class};",
+                f"    object {field_name};",
+                "}",
+                f"dimensions {dimensions};",
+                f"internalField uniform {internal};",
+                "boundaryField",
+                "{",
+                *entries,
+                "}",
+                "",
+            )
+        )
+        (template / "0.orig" / field_name).write_bytes(text.encode("utf-8"))
+
+
+def _write_scalar_initial_field(
+    template: Path,
+    field_name: str,
+    patch_types: dict[str, str],
+) -> None:
+    entries = []
+    for patch_name, patch_type in patch_types.items():
+        entries.extend(
+            (
+                f"    {patch_name}",
+                "    {",
+                f"        type {patch_type};",
+                "    }",
+            )
+        )
+    text = "\n".join(
+        (
+            "FoamFile { class volScalarField; object " + field_name + "; }",
+            "dimensions [0 0 0 0 0 0 0];",
+            "internalField uniform 0;",
+            "boundaryField",
+            "{",
+            *entries,
+            "}",
+            "",
+        )
+    )
+    (template / "0.orig" / field_name).write_text(text, encoding="utf-8")
+
+
 def _template(tmp_path: Path, *, malformed_fv: bool = False) -> Path:
     template = tmp_path / "template"
     for directory in ("0.orig", "constant", "system", "0", "postProcessing"):
@@ -106,17 +177,7 @@ optimisation
         'application adjointOptimisationFoam;\nlibs ("libcfdSdfPorousObjectives.so");\n',
         encoding="utf-8",
     )
-    patch_names = (
-        "inlet",
-        "outlet",
-        "ground",
-        "spanMin",
-        "spanMax",
-        "lower",
-        "upper",
-        "custom_inlet",
-        "custom_outlet",
-    )
+    patch_names = ("inlet", "outlet", "ground")
     boundary = "\n".join(
         f"    {name}\n    {{\n        type patch;\n        faces ();\n    }}"
         for name in patch_names
@@ -125,11 +186,34 @@ optimisation
         f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
         encoding="utf-8",
     )
+    _write_required_initial_fields(template, patch_names)
     (template / "Allrun").write_text("#!/bin/sh\nset -e\n", encoding="utf-8")
     (template / "Allclean").write_text("#!/bin/sh\nrm -rf 0\n", encoding="utf-8")
     (template / "lib").mkdir()
     (template / "lib/libcfdSdfPorousObjectives.so").write_bytes(b"test-library")
     return template
+
+
+def _set_topo_regularisation(template: Path, *, regularise: str) -> None:
+    path = template / "system/optimisationDict"
+    source = path.read_text(encoding="utf-8")
+    updated = source.replace(
+        "designVariables { type density; }",
+        "\n".join(
+            (
+                "designVariables",
+                "{",
+                "    type topO;",
+                "    regularisation",
+                "    {",
+                f"        regularise {regularise};",
+                "    }",
+                "}",
+            )
+        ),
+    )
+    assert updated != source
+    path.write_text(updated, encoding="utf-8")
 
 
 def _compile(tmp_path: Path, *, turbulence: str = "laminar", overwrite: bool = False):
@@ -235,6 +319,59 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     assert bundle["manifest_sha256"] == hashlib.sha256(artifacts.manifest_json.read_bytes()).hexdigest()
 
 
+def test_topo_regularisation_stages_v2512_b_tilda_solver(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    _set_topo_regularisation(template, regularise="true")
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "topo_regularised_bundle",
+        available_patch_ids=PATCHES,
+    )
+
+    straight = artifacts.case_dirs["straight"]
+    solution = (straight / "system/fvSolution").read_text(encoding="utf-8")
+    assert "    bTilda\n    {" in solution
+    assert "        solver          PCG;" in solution
+    assert "        preconditioner  DIC;" in solution
+    compilation = json.loads(
+        (straight / "openfoam_case_compilation.json").read_text(encoding="utf-8")
+    )
+    assert compilation["physics"]["fv_solution_initialization_solver_fields"] == [
+        "bTilda"
+    ]
+    bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
+    assert bundle["fv_solution_initialization_contract"] == {
+        "path": "system/optimisationDict",
+        "openfoam_version": "v2512",
+        "design_variables_type": "topO",
+        "regularisation": {"enabled": True, "source": "template"},
+        "required_solver_fields": ["bTilda"],
+        "validation": "resolved_for_staging",
+    }
+
+
+def test_topo_without_regularisation_does_not_stage_b_tilda_solver(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    _set_topo_regularisation(template, regularise="false")
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "topo_unregularised_bundle",
+        available_patch_ids=PATCHES,
+    )
+
+    straight = artifacts.case_dirs["straight"]
+    solution = (straight / "system/fvSolution").read_text(encoding="utf-8")
+    assert "    bTilda\n    {" not in solution
+    compilation = json.loads(
+        (straight / "openfoam_case_compilation.json").read_text(encoding="utf-8")
+    )
+    assert compilation["physics"]["fv_solution_initialization_solver_fields"] == []
+
+
 def test_sst_bundle_contains_k_omega_nut_fields(tmp_path: Path) -> None:
     artifacts = _compile(tmp_path, turbulence="sst")
 
@@ -261,6 +398,7 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
     source = _block_mesh_bytes(patch_names, newline="\r\n")
     (template / "system/blockMeshDict").write_bytes(source)
+    _write_required_initial_fields(template, patch_names, newline="\r\n")
 
     artifacts = compile_openfoam_solver_case_bundle(
         _g2_spec(tmp_path),
@@ -277,6 +415,14 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     text = staged.decode("utf-8")
     assert "lower // comment with braces { }\r\n    {\r\n        type /* preserve this comment */ wall;" in text
     assert "upper // comment with braces { }\r\n    {\r\n        type /* preserve this comment */ symmetryPlane;" in text
+    alpha = (artifacts.case_dirs["straight"] / "0.orig/alpha").read_bytes()
+    ua = (artifacts.case_dirs["straight"] / "0.orig/Ua").read_bytes()
+    pa = (artifacts.case_dirs["straight"] / "0.orig/pa").read_bytes()
+    assert alpha.count(b"\n") == alpha.count(b"\r\n")
+    assert b"lower // retain field comment { }\r\n    {\r\n        type /* preserve comment */ zeroGradient;" in alpha
+    assert b"type /* preserve comment */ adjointWallVelocity;" in ua
+    assert b"value           uniform (0 0 0);" in ua
+    assert b"type /* preserve comment */ zeroGradient;" in pa
     compilation = json.loads(
         (artifacts.case_dirs["straight"] / "openfoam_case_compilation.json").read_text(
             encoding="utf-8"
@@ -287,6 +433,117 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     assert mesh["generated_patch_types"]["lower"] == "wall"
     assert mesh["staged_patch_types_after"]["lower"] == "wall"
     assert mesh["validation"] == "pass"
+    fields = compilation["field_boundary_contract"]
+    assert fields["validation"] == "pass"
+    assert fields["all_initial_fields"]["alpha"]["patch_types"]["lower"] == "zeroGradient"
+    assert fields["all_initial_fields"]["Ua"]["patch_types"]["lower"] == "adjointWallVelocity"
+
+
+def test_compact_retained_field_entry_inserts_value_inside_its_patch(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    (template / "0.orig/Ua").write_text(
+        "\n".join(
+            (
+                "FoamFile { class volVectorField; object Ua; }",
+                "dimensions [0 1 -1 0 0 0 0];",
+                "internalField uniform (0 0 0);",
+                "boundaryField",
+                "{",
+                "    inlet { type symmetryPlane; }",
+                "    outlet { type symmetryPlane; }",
+                "    ground { type symmetryPlane; }",
+                "}",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "compact_field_bundle",
+        available_patch_ids=PATCHES,
+    )
+
+    text = (artifacts.case_dirs["straight"] / "0.orig/Ua").read_text(encoding="utf-8")
+    assert "ground { type adjointWallVelocity;  value           uniform (0 0 0); }" in text
+    assert "value           uniform (0 0 0);ground" not in text
+
+
+def test_existing_value_comments_are_preserved_while_components_patch(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    (template / "0.orig/Ua").write_text(
+        "\n".join(
+            (
+                "FoamFile { class volVectorField; object Ua; }",
+                "dimensions [0 1 -1 0 0 0 0];",
+                "internalField uniform (0 0 0);",
+                "boundaryField",
+                "{",
+                "    inlet { type symmetryPlane; value /* keep prefix */ uniform (4 /* x */ 5 /* y */ 6 /* z */); }",
+                "    outlet { type symmetryPlane; value /* keep prefix */ uniform (4 /* x */ 5 /* y */ 6 /* z */); }",
+                "    ground { type symmetryPlane; value /* keep prefix */ uniform (4 /* x */ 5 /* y */ 6 /* z */); }",
+                "}",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "commented_value_bundle",
+        available_patch_ids=PATCHES,
+    )
+
+    text = (artifacts.case_dirs["straight"] / "0.orig/Ua").read_text(encoding="utf-8")
+    assert "/* keep prefix */" in text
+    assert "/* x */" in text
+    assert "/* y */" in text
+    assert "/* z */" in text
+    assert "uniform (0 /* x */ 0 /* y */ 0 /* z */);" in text
+
+
+def test_nested_required_initial_field_is_unsupported_before_staging(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    nested = template / "0.orig/nested"
+    nested.mkdir()
+    (template / "0.orig/alpha").replace(nested / "alpha")
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "nested_field_bundle",
+        available_patch_ids=PATCHES,
+        require_compile_ready=False,
+    )
+
+    assert artifacts.manifest.compile_ready is False
+    assert "required_initial_field_not_root_level:alpha" in artifacts.manifest.unsupported
+    assert artifacts.case_dirs == {}
+
+
+def test_invalid_root_required_field_cannot_be_replaced_by_nested_field(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    nested = template / "0.orig/nested"
+    nested.mkdir()
+    alpha = template / "0.orig/alpha"
+    alpha.replace(nested / "alpha")
+    alpha.write_text("template sentinel, not an OpenFOAM field\n", encoding="utf-8")
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _spec(tmp_path, _valid_data()),
+        template_case_dir=template,
+        output_dir=tmp_path / "invalid_root_field_bundle",
+        available_patch_ids=PATCHES,
+        require_compile_ready=False,
+    )
+
+    assert artifacts.manifest.compile_ready is False
+    assert "missing_required_initial_field_boundary:alpha" in artifacts.manifest.unsupported
+    assert artifacts.case_dirs == {}
 
 
 def test_missing_block_mesh_patch_is_unsupported_without_cases(tmp_path: Path) -> None:
@@ -305,6 +562,73 @@ def test_missing_block_mesh_patch_is_unsupported_without_cases(tmp_path: Path) -
     assert artifacts.manifest.compile_ready is False
     assert "missing_block_mesh_patch:straight:lower" in artifacts.manifest.unsupported
     assert "missing_block_mesh_patch:yawed:lower" in artifacts.manifest.unsupported
+    assert artifacts.case_dirs == {}
+
+
+def test_missing_retained_field_patch_is_unsupported_without_cases(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+    alpha = template / "0.orig/alpha"
+    alpha.write_text(
+        alpha.read_text(encoding="utf-8").replace(
+            "    lower // retain field comment { }\n"
+            "    {\n"
+            "        type /* preserve comment */ zeroGradient;\n"
+            "    }\n",
+            "",
+        ),
+        encoding="utf-8",
+    )
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "missing_field_patch",
+        available_patch_ids=patch_names,
+        require_compile_ready=False,
+    )
+
+    assert artifacts.manifest.compile_ready is False
+    assert (
+        "field_boundary_missing_patch:straight:alpha:lower"
+        in artifacts.manifest.unsupported
+    )
+    assert artifacts.case_dirs == {}
+
+
+def test_incompatible_unmanaged_retained_field_is_unsupported(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+    _write_scalar_initial_field(
+        template,
+        "customDesignState",
+        {
+            "inlet": "zeroGradient",
+            "outlet": "zeroGradient",
+            "spanMin": "symmetryPlane",
+            "spanMax": "symmetryPlane",
+            "lower": "symmetryPlane",
+            "upper": "symmetryPlane",
+        },
+    )
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "incompatible_field",
+        available_patch_ids=patch_names,
+        require_compile_ready=False,
+    )
+
+    assert artifacts.manifest.compile_ready is False
+    assert (
+        "field_patch_type_incompatible:straight:customDesignState:lower:symmetryPlane:wall"
+        in artifacts.manifest.unsupported
+    )
     assert artifacts.case_dirs == {}
 
 

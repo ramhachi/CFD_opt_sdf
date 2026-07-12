@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 import json
 from math import isfinite
 from pathlib import Path
+import re
 from typing import Any
 
 from .solver_case_manifest import SolverCaseManifest, SolverFlowCasePlan
@@ -15,9 +16,16 @@ CONVERGENCE_QUALIFICATION_SCHEMA_VERSION = 1
 _FATAL_LOG_PATTERNS = (
     "FOAM FATAL",
     "Segmentation fault",
-    "Floating point exception",
     "inconsistent patch and patchField types",
     "MPI_ABORT",
+)
+_FPE_FAILURE_PATTERN = re.compile(
+    r"\b(?:floating point exception|foam_sigfpe|sigfpe)\b", flags=re.IGNORECASE
+)
+_TRAP_FPE_STARTUP_PATTERN = re.compile(
+    r"^\s*trapFpe:\s+floating point exception trapping enabled\s+"
+    r"\(foam_sigfpe\)\.\s*$",
+    flags=re.IGNORECASE,
 )
 
 
@@ -116,6 +124,9 @@ def _evaluate_flow_case(
             float(criteria["adjoint_final_residual_max"]),
         ),
     }
+    extractor_completeness = _extractor_completeness_gate(evidence)
+    if extractor_completeness is not None:
+        gates["evidence_extraction"] = extractor_completeness
     failed = [name for name, gate in gates.items() if gate["status"] != "pass"]
     return {
         "status": "fail" if failed else "pass",
@@ -139,13 +150,48 @@ def _failed_flow(criteria: Mapping[str, Any], reason: str) -> dict[str, Any]:
 def _completion_gate(value: Any) -> dict[str, Any]:
     if not isinstance(value, str) or not value.strip():
         return _gate_fail("missing_solver_log")
-    fatal = [pattern for pattern in _FATAL_LOG_PATTERNS if pattern.lower() in value.lower()]
+    fatal = _fatal_log_patterns(value)
     end_marker = any(line.strip() == "End" for line in value.splitlines())
     if fatal:
         return _gate_fail("fatal_solver_log_pattern", fatal_patterns=fatal)
     if not end_marker:
         return _gate_fail("missing_solver_end_marker")
     return {"status": "pass", "end_marker": True, "fatal_patterns": []}
+
+
+def _fatal_log_patterns(value: str) -> list[str]:
+    lower = value.lower()
+    fatal = [pattern for pattern in _FATAL_LOG_PATTERNS if pattern.lower() in lower]
+    for line in value.splitlines():
+        if _TRAP_FPE_STARTUP_PATTERN.fullmatch(line):
+            continue
+        if _FPE_FAILURE_PATTERN.search(line):
+            fatal.append("Floating point exception")
+            break
+    return fatal
+
+
+def _extractor_completeness_gate(
+    evidence: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Honor explicit incompleteness from the OpenFOAM evidence extractor.
+
+    Historical evidence fixtures contain only the five numerical categories and
+    therefore omit both markers.  They remain valid inputs.  Once an extractor
+    explicitly reports an incomplete result, however, its parsed histories
+    cannot be used to qualify a flow case selectively.
+    """
+
+    complete = evidence.get("complete")
+    status = evidence.get("status")
+    if complete is not False and status != "incomplete":
+        return None
+
+    return _gate_fail(
+        "extractor_evidence_incomplete",
+        extractor_complete=complete,
+        extractor_status=status,
+    )
 
 
 def _residual_gate(value: Any, maximum: float) -> dict[str, Any]:
