@@ -54,7 +54,17 @@ def test_prepare_fixed_grid_primal_case_writes_density_alpha_and_no_remesh(
     control = (artifacts.case_dir / "system" / "controlDict").read_text(
         encoding="utf-8"
     )
-    assert "./lib/libcfdSdfPorousObjectives.so" in control
+    extension_library = Path(
+        "openfoam_extensions/porousDirectionalForce/lib/libcfdSdfPorousObjectives.so"
+    )
+    if extension_library.exists():
+        assert "./lib/libcfdSdfPorousObjectives.so" in control
+    else:
+        # The platform-specific OpenFOAM binary is intentionally not tracked.
+        # A source-only checkout must preserve the declared library name and
+        # report staging as unavailable rather than assuming a local .so.
+        assert 'libs ("libcfdSdfPorousObjectives.so");' in control
+        assert "./lib/libcfdSdfPorousObjectives.so" not in control
 
 
 def test_filtered_perturbation_is_deterministic_and_masked(tmp_path: Path) -> None:
