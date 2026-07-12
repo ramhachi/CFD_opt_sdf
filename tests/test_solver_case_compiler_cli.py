@@ -16,7 +16,40 @@ runner = CliRunner()
 EXAMPLE = Path("examples/g2_openfoam_compile/project.yaml")
 
 
-def _template(tmp_path: Path) -> Path:
+def _write_required_initial_fields(template: Path, patch_names: tuple[str, ...]) -> None:
+    fields = {
+        "alpha": ("volScalarField", "[0 0 0 0 0 0 0]", "0", "zeroGradient"),
+        "Ua": ("volVectorField", "[0 1 -1 0 0 0 0]", "(0 0 0)", "symmetryPlane"),
+        "pa": ("volScalarField", "[0 2 -2 0 0 0 0]", "0", "symmetryPlane"),
+    }
+    for name, (field_class, dimensions, internal, patch_type) in fields.items():
+        entries = "\n".join(
+            f"    {patch}\n    {{\n        type {patch_type};\n    }}"
+            for patch in patch_names
+        )
+        (template / "0.orig" / name).write_text(
+            "\n".join(
+                (
+                    "FoamFile {",
+                    f"    class {field_class};",
+                    f"    object {name};",
+                    "}",
+                    f"dimensions {dimensions};",
+                    f"internalField uniform {internal};",
+                    "boundaryField",
+                    "{",
+                    entries,
+                    "}",
+                    "",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+
+def _template(
+    tmp_path: Path, *, patch_names: tuple[str, ...] = DEFAULT_FIXED_GRID_PATCH_IDS
+) -> Path:
     template = tmp_path / "template"
     for directory in ("0.orig", "constant", "system"):
         (template / directory).mkdir(parents=True)
@@ -58,16 +91,6 @@ topologySource
         'application adjointOptimisationFoam;\nlibs ("libcfdSdfPorousObjectives.so");\n',
         encoding="utf-8",
     )
-    patch_names = (
-        "inlet",
-        "outlet",
-        "spanMin",
-        "spanMax",
-        "lower",
-        "upper",
-        "custom_inlet",
-        "custom_outlet",
-    )
     boundary = "\n".join(
         f"    {name}\n    {{\n        type patch;\n        faces ();\n    }}"
         for name in patch_names
@@ -76,6 +99,7 @@ topologySource
         f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
         encoding="utf-8",
     )
+    _write_required_initial_fields(template, patch_names)
     (template / "Allrun").write_text("#!/bin/sh\nset -e\n", encoding="utf-8")
     (template / "Allclean").write_text("#!/bin/sh\nrm -rf 0\n", encoding="utf-8")
     (template / "lib").mkdir()
@@ -133,7 +157,7 @@ def test_compile_cli_repeated_custom_patch_option(tmp_path: Path) -> None:
         }
         case["motion_profiles"] = {}
     source = _write_data(tmp_path, data, "custom_patches.yaml")
-    template = _template(tmp_path)
+    template = _template(tmp_path, patch_names=("custom_inlet", "custom_outlet"))
     output = tmp_path / "custom_bundle"
 
     result = runner.invoke(

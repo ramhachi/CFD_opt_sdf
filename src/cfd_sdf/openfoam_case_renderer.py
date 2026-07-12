@@ -12,12 +12,69 @@ import re
 from types import MappingProxyType
 from typing import Any
 
+from .openfoam_mass_imbalance import (
+    normalized_mass_imbalance_contract,
+    render_openfoam_mass_imbalance_function_dict,
+)
 from .solver_case_manifest import SolverFlowCasePlan
 
 
 _ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 _PATCH_ID_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_.-]{0,127}$")
 _MARKER_NAME = "generated_openfoam_physics.json"
+
+
+# ``adjointOptimisationFoam`` v2512 constructs this temporary field while
+# initialising a regularised ``topO`` design.  It is deliberately an explicit
+# entry rather than being folded into the pressure regex: the Helmholtz
+# equation is symmetric positive definite and the stock v2512 topology
+# tutorial uses PCG/DIC for it.  The compiler only requests it after auditing
+# ``optimisationDict``; callers cannot inject arbitrary fvSolution snippets.
+_OPENFOAM_V2512_INITIALIZATION_SOLVERS = {
+    "bTilda": (
+        "    bTilda\n"
+        "    {\n"
+        "        solver          PCG;\n"
+        "        preconditioner  DIC;\n"
+        "        tolerance       1e-9;\n"
+        "        relTol          0.1;\n"
+        "    }\n"
+    ),
+}
+
+
+# These fields are supplied by the topology-optimisation template rather than
+# rendered as wholly new fields.  Their boundary types still have to follow the
+# compiled mesh patch type.  The wall choices mirror the OpenFOAM v2512
+# porosity-based topology-optimisation tutorial: alpha/pa use zeroGradient and
+# Ua uses adjointWallVelocity with a zero value.
+_RETAINED_FIELD_BOUNDARY_SPECS = {
+    "freestream": {
+        "alpha": {"type": "zeroGradient"},
+        "Ua": {"type": "adjointInletVelocity", "value": (0.0, 0.0, 0.0)},
+        "pa": {"type": "zeroGradient"},
+    },
+    "pressure_outlet": {
+        "alpha": {"type": "fixedValue", "value": 0.0},
+        "Ua": {"type": "adjointOutletVelocity", "value": (0.0, 0.0, 0.0)},
+        "pa": {"type": "adjointOutletPressure", "value": 0.0},
+    },
+    "symmetry": {
+        "alpha": {"type": "symmetryPlane"},
+        "Ua": {"type": "symmetryPlane"},
+        "pa": {"type": "symmetryPlane"},
+    },
+    "stationary_wall": {
+        "alpha": {"type": "zeroGradient"},
+        "Ua": {"type": "adjointWallVelocity", "value": (0.0, 0.0, 0.0)},
+        "pa": {"type": "zeroGradient"},
+    },
+    "moving_wall": {
+        "alpha": {"type": "zeroGradient"},
+        "Ua": {"type": "adjointWallVelocity", "value": (0.0, 0.0, 0.0)},
+        "pa": {"type": "zeroGradient"},
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -28,6 +85,8 @@ class OpenFOAMPhysicsArtifacts:
     adjoint_turbulence_properties: Path
     fv_schemes: Path
     fv_solution: Path
+    normalized_mass_imbalance_function_dict: Path
+    fv_solution_initialization_solver_fields: tuple[str, ...]
     velocity_field: Path
     pressure_field: Path
     turbulent_kinetic_energy_field: Path | None
@@ -39,11 +98,64 @@ class OpenFOAMPhysicsArtifacts:
     file_sha256: Mapping[str, str]
 
 
+def openfoam_retained_field_boundary_specs(
+    plan: SolverFlowCasePlan,
+) -> Mapping[str, Mapping[str, Mapping[str, Any]]]:
+    """Return compiler-owned boundary policies for retained template fields.
+
+    ``alpha``, ``Ua``, and ``pa`` stay template-owned because they may carry
+    topology initialisation or solver-specific settings.  Their boundary
+    entries are nevertheless derived from the manifest so a converted wall
+    mesh patch cannot retain an incompatible ``symmetryPlane`` field entry.
+    """
+
+    requested = _mapping(plan.requested, "requested")
+    generated = _mapping(plan.generated, "generated")
+    requested_boundaries = _mapping(
+        requested.get("boundary_conditions"), "requested.boundary_conditions"
+    )
+    generated_boundaries = _mapping(
+        generated.get("boundary_conditions"), "generated.boundary_conditions"
+    )
+    if set(requested_boundaries) != set(generated_boundaries):
+        raise ValueError("Generated and requested boundary patch sets must match exactly")
+
+    fields: dict[str, dict[str, Mapping[str, Any]]] = {
+        "alpha": {},
+        "Ua": {},
+        "pa": {},
+    }
+    for raw_patch_id, raw_kind in requested_boundaries.items():
+        patch_id = str(raw_patch_id)
+        _validate_patch_id(patch_id)
+        if not isinstance(raw_kind, str) or raw_kind not in _RETAINED_FIELD_BOUNDARY_SPECS:
+            raise ValueError(f"Unsupported retained-field boundary kind: {raw_kind!r}")
+        generated_spec = _mapping(
+            generated_boundaries.get(raw_patch_id), f"generated.boundary_conditions.{patch_id}"
+        )
+        expected_patch_type = "symmetryPlane" if raw_kind == "symmetry" else (
+            "wall" if raw_kind in {"stationary_wall", "moving_wall"} else "patch"
+        )
+        if generated_spec.get("patch_type") != expected_patch_type:
+            raise ValueError(
+                f"Generated patch type does not match retained-field boundary kind: {patch_id}"
+            )
+        for field_name, spec in _RETAINED_FIELD_BOUNDARY_SPECS[raw_kind].items():
+            fields[field_name][patch_id] = MappingProxyType(dict(spec))
+    return MappingProxyType(
+        {
+            field_name: MappingProxyType(dict(specs))
+            for field_name, specs in fields.items()
+        }
+    )
+
+
 def render_openfoam_physics_files(
     plan: SolverFlowCasePlan,
     case_dir: str | Path,
     *,
     overwrite: bool = False,
+    fv_solution_initialization_solver_fields: Sequence[str] = (),
 ) -> OpenFOAMPhysicsArtifacts:
     """Write only compiler-owned OpenFOAM physics files into ``case_dir``."""
 
@@ -64,6 +176,9 @@ def render_openfoam_physics_files(
             raise FileExistsError(f"Generated case already exists; use overwrite=True: {target}")
     target.mkdir(parents=True, exist_ok=True)
 
+    initialization_solver_fields = _normalize_fv_solution_initialization_solver_fields(
+        fv_solution_initialization_solver_fields
+    )
     generated = _mapping(plan.generated, "generated")
     requested = _mapping(plan.requested, "requested")
     _validate_response_bindings(plan, requested, generated)
@@ -84,13 +199,28 @@ def render_openfoam_physics_files(
         raise ValueError("Generated and requested boundary patch sets must match exactly")
     for patch_id in boundaries:
         _validate_patch_id(str(patch_id))
+    open_patch_ids = tuple(
+        sorted(
+            str(patch_id)
+            for patch_id, kind in requested_boundaries.items()
+            if kind in {"freestream", "pressure_outlet"}
+        )
+    )
+    if not open_patch_ids:
+        raise ValueError("A flow case needs at least one freestream or pressure_outlet patch")
 
     texts: dict[str, str] = {
         "constant/transportProperties": _transport_properties(nu),
         "constant/turbulenceProperties": _turbulence_properties(str(model)),
         "constant/adjointRASProperties": _adjoint_turbulence_properties(str(model)),
         "system/fvSchemes": _fv_schemes(str(model)),
-        "system/fvSolution": _fv_solution(str(model)),
+        "system/fvSolution": _fv_solution(
+            str(model),
+            initialization_solver_fields=initialization_solver_fields,
+        ),
+        "system/cfdSdfMassImbalanceDict": render_openfoam_mass_imbalance_function_dict(
+            open_patch_ids
+        ),
         "0.orig/U": _field_text(
             name="U",
             field_class="volVectorField",
@@ -184,6 +314,11 @@ def render_openfoam_physics_files(
         "case_directory_name": plan.case_directory_name,
         "requested": _json_copy(plan.requested),
         "generated": generated_snapshot,
+        "fv_solution": {
+            "openfoam_version": "v2512",
+            "initialization_solver_fields": list(initialization_solver_fields),
+        },
+        "normalized_mass_imbalance": normalized_mass_imbalance_contract(open_patch_ids),
         "generated_files": {
             relative: {
                 "sha256": digest,
@@ -210,6 +345,8 @@ def render_openfoam_physics_files(
         adjoint_turbulence_properties=target / "constant/adjointRASProperties",
         fv_schemes=target / "system/fvSchemes",
         fv_solution=target / "system/fvSolution",
+        normalized_mass_imbalance_function_dict=target / "system/cfdSdfMassImbalanceDict",
+        fv_solution_initialization_solver_fields=initialization_solver_fields,
         velocity_field=target / "0.orig/U",
         pressure_field=target / "0.orig/p",
         turbulent_kinetic_energy_field=k_path,
@@ -285,8 +422,9 @@ def _fv_schemes(model: str) -> str:
         "}\n\n"
         "divSchemes\n"
         "{\n"
-        "    default           none;\n"
+        "    default           Gauss linear;\n"
         "    div(phi,U)        bounded Gauss linearUpwind grad(U);\n"
+        "    div((nuEff*dev2(T(grad(U))))) Gauss linear;\n"
         "    div(phia,Ua)      bounded Gauss linearUpwind grad(Ua);\n"
         "    div(-phia,U)      Gauss linearUpwind grad(U);\n"
         f"{turbulence_divs}"
@@ -310,7 +448,13 @@ def _fv_schemes(model: str) -> str:
     )
 
 
-def _fv_solution(model: str) -> str:
+def _fv_solution(
+    model: str, *, initialization_solver_fields: Sequence[str] = ()
+) -> str:
+    initialization_solvers = "".join(
+        _OPENFOAM_V2512_INITIALIZATION_SOLVERS[field_name]
+        for field_name in initialization_solver_fields
+    )
     turbulence_solver = ""
     turbulence_relaxation = ""
     if model == "k_omega_sst":
@@ -334,6 +478,7 @@ def _fv_solution(model: str) -> str:
         "        relTol          0.05;\n"
         "        smoother        GaussSeidel;\n"
         "    }\n"
+        f"{initialization_solvers}"
         "    \"(U|Ua.*|yWall|da)\"\n"
         "    {\n"
         "        solver          smoothSolver;\n"
@@ -360,6 +505,25 @@ def _fv_solution(model: str) -> str:
         "    }\n"
         "}\n"
     )
+
+
+def _normalize_fv_solution_initialization_solver_fields(
+    fields: Sequence[str],
+) -> tuple[str, ...]:
+    if isinstance(fields, (str, bytes, bytearray)):
+        raise ValueError("fvSolution initialization solver fields must be a sequence")
+    normalized: list[str] = []
+    for field_name in fields:
+        if not isinstance(field_name, str):
+            raise ValueError("fvSolution initialization solver fields must be strings")
+        if field_name not in _OPENFOAM_V2512_INITIALIZATION_SOLVERS:
+            raise ValueError(
+                "Unsupported OpenFOAM v2512 fvSolution initialization solver field: "
+                f"{field_name!r}"
+            )
+        if field_name not in normalized:
+            normalized.append(field_name)
+    return tuple(normalized)
 
 
 def _dictionary_header(object_name: str) -> str:
@@ -574,4 +738,8 @@ def _json_copy(value: Any) -> Any:
     return value
 
 
-__all__ = ["OpenFOAMPhysicsArtifacts", "render_openfoam_physics_files"]
+__all__ = [
+    "OpenFOAMPhysicsArtifacts",
+    "openfoam_retained_field_boundary_specs",
+    "render_openfoam_physics_files",
+]

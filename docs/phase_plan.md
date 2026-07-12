@@ -79,7 +79,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Compiler implemented; runtime qualification pending | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. The generated turbulent case still fails field/mesh boundary compatibility for the topology field before solver qualification. |
+| G2 case compiler | Smoke gate passed; numerical and physics qualification pending | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. The OpenFOAM v2512 Docker smoke completes both configured flows through one optimization cycle without a fatal setup error. Real logs plus boundary-`phi` measurements provide complete primal, response, adjoint, and normalized-mass evidence. The current short profile still fails the adjoint-residual threshold, and porous/body-fitted physics comparisons remain unqualified. |
 | G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
@@ -107,7 +107,7 @@ G1 completion is contract evidence only.
 
 ## 6. G2 — solver compiler and target-physics bridge
 
-Status: compiler implemented; runtime and physics gates pending.
+Status: smoke gate passed; numerical and physics gates pending.
 
 Implemented:
 
@@ -123,6 +123,11 @@ Implemented:
 - mesh patch-type compilation and requested/generated validation;
 - primal/adjoint residual, normalized mass balance, response stationarity, and
   fatal-log convergence qualification.
+- OpenFOAM v2512 Docker smoke execution for both configured G2 flow cases;
+- real log extraction with response-to-adjoint context and provenance-bound,
+  fail-closed convergence evidence.
+- explicit boundary-`phi` mass-flux measurement and normalized-mass artifacts;
+  raw continuity-error text is never converted into that metric.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -130,14 +135,13 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Compile and validate every required `0.orig` field against generated mesh
-   patch types, including `alpha`, primal fields, and base adjoint fields.
-2. Rerun the two-flow smoke case in OpenFOAM without a fatal setup error.
-3. Extract real solver histories into the convergence-evidence schema.
-4. Produce native v2 primal and sensitivity artifacts from real runs.
-5. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
+1. Tune and validate the declared primal/adjoint convergence controls against
+   the numerical thresholds; a complete short-run artifact is not numerical
+   qualification by itself.
+2. Produce native v2 primal and sensitivity artifacts from real runs.
+3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
-6. Compare porous and body-fitted pressure force, skin friction, total force,
+4. Compare porous and body-fitted pressure force, skin friction, total force,
    and gradient direction on simple geometries.
 
 G2 smoke gate:
@@ -231,10 +235,10 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Finish G2 field/mesh boundary compatibility and rerun the OpenFOAM smoke
-   case. **Implementation required.**
-2. Connect real log/history extraction to the convergence evaluator and write
-   native v2 run artifacts. **Implementation required.**
+1. Tune and qualify G2 primal/adjoint convergence using complete runtime
+   evidence. **Implementation required.**
+2. Write native v2 primal and sensitivity run artifacts. **Implementation
+   required.**
 3. Qualify simple porous versus body-fitted cases. **Implementation required.**
 4. Implement all G3 fail-closed geometry/resolution gates. **Implementation
    required.**
