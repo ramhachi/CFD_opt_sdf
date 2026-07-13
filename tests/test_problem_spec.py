@@ -1077,9 +1077,9 @@ def test_g2_domain_bounds_match_the_openfoam_block_mesh_extent() -> None:
     grid = canonical_uniform_cartesian_cell_grid(spec)
 
     assert spec.grid.domain_bounds_m is not None
-    assert spec.grid.domain_bounds_m.lower == pytest.approx((-1.0, -0.8, -0.6))
-    assert spec.grid.domain_bounds_m.upper == pytest.approx((2.0, 0.8, 0.6))
-    assert grid.cell_shape == (150, 80, 60)
+    assert spec.grid.domain_bounds_m.lower == pytest.approx((-1.0, -1.2, -0.6))
+    assert spec.grid.domain_bounds_m.upper == pytest.approx((2.0, 1.2, 0.7))
+    assert grid.cell_shape == (150, 120, 65)
 
 
 def test_canonical_hash_changes_with_typed_topology_semantics(tmp_path: Path) -> None:

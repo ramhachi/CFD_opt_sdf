@@ -16,18 +16,25 @@ grid:
   voxel_size_m: 0.02
   padding_m: 0.15
   domain_bounds_m:
-    lower: [-1.0, -0.8, -0.6]
-    upper: [2.0, 0.8, 0.6]
+    lower: [-1.0, -1.2, -0.6]
+    upper: [2.0, 1.2, 0.7]
 reference_values:
   area_m2: 1.2
   length_m: 0.8
   moment_center_m: [0.25, 0.0, 0.0]
 geometry_regions:
-  - {id: vehicle, role: fixed_solid, file: geometry/vehicle.stl}
-  - {id: initial_surface, role: initial_design, file: geometry/initial_surface.stl}
-  - {id: design_domain, role: design_domain, file: geometry/design_domain.stl}
-  - {id: keepout, role: forbidden_region, file: geometry/keepout.stl}
-  - {id: mount, role: root, file: geometry/mount.stl}
+  # The front-wing geometry directory is the authoritative asset source.
+  # Tire solids remain outside the fixed-solid mask; their clearance envelope
+  # may cover fixed vehicle or mount solids, which take precedence in masks.
+  - {id: vehicle_nose, role: fixed_solid, file: ../front_wing/geometry/vehicle_nose.stl}
+  - {id: ground, role: fixed_solid, file: ../front_wing/geometry/ground.stl}
+  - {id: front_wing_initial, role: initial_design, file: ../front_wing/geometry/front_wing_initial.stl}
+  - {id: allowed_front_box, role: design_domain, file: ../front_wing/geometry/allowed_front_box.stl}
+  - {id: tire_clearance, role: forbidden_region, file: ../front_wing/geometry/forbidden_tire_clearance.stl}
+  - {id: root_mount_left_fixed, role: fixed_solid, file: ../front_wing/geometry/root_mount_left.stl}
+  - {id: root_mount_right_fixed, role: fixed_solid, file: ../front_wing/geometry/root_mount_right.stl}
+  - {id: root_mount_left, role: root, file: ../front_wing/geometry/root_mount_left.stl}
+  - {id: root_mount_right, role: root, file: ../front_wing/geometry/root_mount_right.stl}
 flow_cases:
   - id: straight
     freestream_velocity_mps: [30.0, 0.0, 0.0]
@@ -96,7 +103,7 @@ constraints:
       - {coefficient: 1.0, flow_case_id: yawed, response_id: yaw_side_force}
 topology_policy:
   root_groups:
-    - {id: mounts, region_ids: [mount]}
+    - {id: mounts, region_ids: [root_mount_left, root_mount_right]}
   solid_connectivity:
     mode: required_root_groups
     required_root_group_ids: [mounts]

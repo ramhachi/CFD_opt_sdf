@@ -1,6 +1,6 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-07-12
+Date: 2026-07-14
 Status: authoritative
 Scope: generic rigid-object external aerodynamics with topology change
 
@@ -79,8 +79,8 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Requalification required after canonical-domain binding | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for the prior G2 specification passed the declared primal, response, adjoint, and normalized-mass convergence qualification. Adding the explicit canonical domain changed the ProblemSpec hash, so new domain-bound cases must be compiled, executed, and qualified before that result is claimed for the current specification. Porous/body-fitted force and gradient comparisons remain unqualified. |
-| G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
+| G2 case compiler | Requalification required after geometry/domain contract change | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for a previous G2 specification passed the declared primal, response, adjoint, and normalized-mass convergence qualification. That result is historical only: the canonical domain and the approved declaration of existing front-wing STL assets as G2 semantic roles change the ProblemSpec/geometry contract. New cases must be rendered, executed, and qualified before any current G2 numerical qualification is claimed. Porous/body-fitted force and gradient comparisons remain unqualified. |
+| G3 geometry/resolution gates | In progress — G2 fixture mask verified | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576. Physical feature-resolution and density-to-SDF fidelity gates remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
 | Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
@@ -107,8 +107,15 @@ G1 completion is contract evidence only.
 
 ## 6. G2 — solver compiler and target-physics bridge
 
-Status: prior-spec numerical convergence gate passed; current canonical-domain
-specification requires runtime requalification before physics qualification.
+Status: prior-spec numerical convergence gate passed; the current G2
+geometry/domain contract requires rendering and runtime requalification before
+any numerical or physics qualification is claimed.
+
+The existing front-wing STL files are the canonical geometry source for the G2
+benchmark. G2 declares their semantic roles directly; it does not create a
+second, copied-and-renamed geometry set. This keeps the benchmark an explicit
+consumer of the generic STL-role contract while preserving a single source of
+truth for the assets.
 
 Implemented:
 
@@ -138,6 +145,10 @@ Implemented:
 - source-grid reconstruction for one ungraded, axis-aligned `blockMesh` hex,
   plus hash-bound canonical-grid snapshots and exact-overlap transfer
   primitives. These contracts do not yet perform a real G2 transfer.
+- direct declaration of the existing front-wing STL assets as G2 semantic
+  roles, with a passed 0.02 m, 1,170,000-cell canonical geometry-mask build
+  and hash-bound manifest verification: 82,160 active, 39,060 forbidden,
+  46,388 fixed, and 576 root cells.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -145,17 +156,24 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Supply and qualify semantic bindings for native v2 primal and sensitivity
-   artifacts from real runs. First recompile, rerun, and requalify both G2
-   flows because `grid.domain_bounds_m` changed the ProblemSpec hash. The
-   current G2 run is correctly refused: its
+1. Re-render, execute, and requalify both G2 flows after the geometry/domain
+   contract change. The previous convergence qualification is historical and
+   must not be attached to the new ProblemSpec hash. **Implementation
+   required.**
+2. Supply and qualify semantic bindings for native v2 primal and sensitivity
+   artifacts from those real runs. The current G2 artifact is correctly
+   refused: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
    its final `topOSens` to `rho` chain has not passed finite-difference
    validation, its reconstructed mesh fields have not been transferred to a
    canonical-grid snapshot, and it has no topology-policy values.
-2. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
+3. Transfer reconstructed mesh fields to the verified canonical grid and run
+   finite-difference direction checks for the transferred `topOSens` to
+   `rho` chain before writing native v2 artifacts. **Implementation
+   required.**
+4. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
-3. Compare porous and body-fitted pressure force, skin friction, total force,
+5. Compare porous and body-fitted pressure force, skin friction, total force,
    and gradient direction on simple geometries.
 
 G2 smoke gate:
@@ -176,7 +194,14 @@ G2 qualification gate:
 
 ## 7. G3 — geometry and physical-resolution gates
 
-Status: missing — implementation required.
+Status: the G2 fixture geometry masks and their manifest are verified;
+remaining physical-resolution and density-to-SDF gates require implementation.
+
+The existing front-wing STL source is declared directly in the G2 role
+configuration. Its full 0.02 m canonical-grid mask build contains 1,170,000
+cells and passed manifest verification with 82,160 active, 39,060 forbidden,
+46,388 fixed, and 576 root cells. The next gate is G2 case rendering and
+runtime requalification under this verified geometry/domain contract.
 
 Implement:
 
@@ -250,18 +275,21 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Recompile, rerun, and numerically requalify G2 under the explicit canonical
-   domain; bind response units, `rho` gradient convention, mesh-grid mapping,
-   and topology-policy values; then write native v2 primal and sensitivity run
-   artifacts. **Implementation required.**
-2. Qualify simple porous versus body-fitted cases. **Implementation required.**
-3. Implement all G3 fail-closed geometry/resolution gates. **Implementation
-   required.**
-4. Execute G4 B0–B2 before production optimizer work. **Implementation
-   required.**
-5. Implement production Stage T derivatives and nonlinear optimizer.
+1. Re-render the G2 cases and rerun numerical qualification under the approved
+   geometry/domain contract. The previous qualification remains historical.
    **Implementation required.**
-6. Advance through B3–B5, then Stage S and Stage V.
+2. Transfer the reconstructed real-run fields to the verified canonical grid,
+   execute finite-difference direction checks for `topOSens` to `rho`, then
+   bind response units, gradient convention, mesh-grid mapping, and
+   topology-policy values for native v2 artifacts. **Implementation required.**
+3. Qualify simple porous versus body-fitted cases. **Implementation required.**
+4. Implement the remaining G3 fail-closed physical-resolution and
+   density-to-SDF gates. **Implementation required.**
+5. Execute G4 B0–B2 before production optimizer work. **Implementation
+   required.**
+6. Implement production Stage T derivatives and nonlinear optimizer.
+   **Implementation required.**
+7. Advance through B3–B5, then Stage S and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
 
