@@ -131,6 +131,12 @@ Implemented:
 - fail-closed native v2 primal/sensitivity writer and readiness CLI. It writes
   only when an explicit semantic binding proves response units, `rho` gradient
   convention, mesh-grid correspondence, and topology-policy values.
+- fail-closed reconstruction of final decomposed `topOSens`, `alphaTilda`,
+  `beta`, and raw-`alpha` provenance in OpenFOAM global-cell-label order;
+  raw `topologySens` remains audit-only.
+- source-grid reconstruction for one ungraded, axis-aligned `blockMesh` hex,
+  plus hash-bound canonical-grid snapshots and exact-overlap transfer
+  primitives. These contracts do not yet perform a real G2 transfer.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -141,8 +147,9 @@ Remaining implementation:
 1. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from real runs. The current G2 run is correctly refused: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
-   its `topologySens`/`topOSens` to `rho` convention is undefined, its mesh is
-   not bound to the canonical grid, and it has no topology-policy values.
+   its final `topOSens` to `rho` chain has not passed finite-difference
+   validation, its reconstructed mesh fields have not been transferred to a
+   canonical-grid snapshot, and it has no topology-policy values.
 2. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
 3. Compare porous and body-fitted pressure force, skin friction, total force,
