@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 from pathlib import Path
+import re
 
 import numpy as np
 import pytest
@@ -9,6 +10,12 @@ import pytest
 from cfd_sdf.openfoam_field_reconstruction import (
     GLOBAL_CELL_LABEL_ORDER,
     reconstruct_final_decomposed_openfoam_fields,
+)
+
+
+_RUNTIME_G2_STRAIGHT_CASE = (
+    Path(__file__).resolve().parents[1]
+    / "examples/g2_openfoam_compile/runs/compiled_cases/flow_straight"
 )
 
 
@@ -177,3 +184,56 @@ def test_raw_topology_sensitivity_is_explicitly_audit_only(tmp_path: Path) -> No
     assert candidates[0]["status"] == "audit_only_not_output"
     assert candidates[0]["field_name"] == "topologySensresp_force"
     assert not hasattr(result, "topology_sensitivity")
+
+
+@pytest.mark.skipif(
+    not _RUNTIME_G2_STRAIGHT_CASE.is_dir(),
+    reason="ignored G2 Docker runtime artifact is not available in this checkout",
+)
+def test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenance() -> None:
+    """Exercise the reader against the actual v2512 four-processor G2 run.
+
+    The ignored artifact is intentionally optional for CI clones.  When it is
+    present, this prevents synthetic fixtures from masking a parser drift in
+    OpenFOAM's real labelList or topOVars serialization.
+    """
+
+    result = reconstruct_final_decomposed_openfoam_fields(
+        _RUNTIME_G2_STRAIGHT_CASE,
+        adjoint_solver_id="resp_rotated_force",
+    )
+
+    assert result.global_cell_labels.tolist() == list(range(8192))
+    assert result.global_cell_labels.size == 8192
+    provenance = result.provenance
+    assert provenance["final_time"] == "1"
+    assert provenance["ordering"] == GLOBAL_CELL_LABEL_ORDER
+    for field_key, field_name in (
+        ("top_o_sensitivity", "topOSensresp_rotated_force"),
+        ("alpha_tilda", "alphaTilda"),
+        ("beta", "beta"),
+    ):
+        field = provenance["fields"][field_key]
+        assert field["openfoam_field_name"] == field_name
+        assert field["time"] == "1"
+        assert field["ordering"] == GLOBAL_CELL_LABEL_ORDER
+        assert field["cell_count"] == 8192
+        assert len(field["source_files"]) == 4
+        assert all(len(item["sha256"]) == 64 for item in field["source_files"])
+
+    raw = provenance["fields"]["raw_alpha"]
+    assert raw["status"] == "reconstructed"
+    assert raw["source_stage"] == "final_topOVars_mixed_alpha"
+    assert result.raw_alpha is not None
+    assert result.raw_alpha[0] == pytest.approx(0.0)
+    # processor0's v2512 topOVars is the expected uniform alpha=0 source.
+    with gzip.open(
+        _RUNTIME_G2_STRAIGHT_CASE / "processor0/1/uniform/topOVars.gz",
+        "rt",
+        encoding="utf-8",
+    ) as handle:
+        assert re.search(r"\balpha\s+uniform\s+0\s*;", handle.read())
+
+    audit = provenance["raw_topology_sensitivity_audit_candidates"]
+    assert len(audit) == 4
+    assert all(item["status"] == "audit_only_not_output" for item in audit)
