@@ -49,7 +49,10 @@ def test_prepares_and_validates_native_fd_with_declared_force_units(tmp_path: Pa
         assert payload["plus_source_alpha"] == pytest.approx([0.53])
         assert payload["minus_source_alpha"] == pytest.approx([0.47])
     assert "nonuniform List<scalar>" in (artifacts.plus_case_dir / "0.orig/alpha").read_text(encoding="utf-8")
-    assert "cp 0.orig/alpha 0/alpha" in (artifacts.plus_case_dir / "Allrun").read_text(encoding="utf-8")
+    allrun_bytes = (artifacts.plus_case_dir / "Allrun").read_bytes()
+    assert allrun_bytes.startswith(b"#!/bin/sh\n")
+    assert b"\r\n" not in allrun_bytes
+    assert b"cp 0.orig/alpha 0/alpha" in allrun_bytes
 
     # Raw porousDirectionalForce coefficients.  The declared conversion is
     # 100 N/coefficient and the selected objective coefficient is 0.7.
@@ -231,7 +234,9 @@ def _write_bundle_and_baseline(root: Path, spec) -> tuple[Path, Path]:
     (case / "0.orig").mkdir()
     _write_block_mesh(case / "system/blockMeshDict")
     (case / "0.orig/alpha").write_text(_alpha_template(), encoding="utf-8")
-    (case / "Allrun").write_text("#!/bin/sh\nrunApplication setFields\nrunApplication solver\n", encoding="utf-8")
+    # Deliberately model a Windows-generated template.  Staging must publish a
+    # POSIX-LF shell script for Docker/WSL bash.
+    (case / "Allrun").write_bytes(b"#!/bin/sh\r\nrunApplication setFields\r\nrunApplication solver\r\n")
     (case / "openfoam_case_compilation.json").write_text("{}", encoding="utf-8")
     (bundle / "openfoam_case_bundle.json").write_text(
         json.dumps(

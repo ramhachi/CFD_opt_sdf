@@ -22,6 +22,7 @@ from math import isfinite, sqrt
 from pathlib import Path
 import re
 import shutil
+import stat
 from typing import Any
 
 import numpy as np
@@ -506,7 +507,10 @@ def _force_conversion(spec: ProblemSpec, response: Any) -> dict[str, object]:
 def _write_alpha_field(path: Path, values: np.ndarray) -> None:
     if not path.is_file():
         raise FileNotFoundError(f"compiled case alpha template is missing: {path}")
-    text = path.read_text(encoding="utf-8")
+    # ``Path.write_text`` uses the host newline convention.  This staging
+    # happens on Windows as well as Linux, while the resulting script is run
+    # by Docker/WSL bash; normalize first and write bytes so it stays POSIX LF.
+    text = path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
     replacement = "internalField nonuniform List<scalar>\n" + str(values.size) + "\n(\n" + "\n".join(f"{value:.17g}" for value in values) + "\n)\n;"
     rendered, count = _INTERNAL_FIELD.subn(replacement, text, count=1)
     if count != 1:
@@ -530,8 +534,13 @@ def _patch_allrun_to_restore_fd_alpha(path: Path) -> None:
     marker = "runApplication setFields"
     if text.count(marker) != 1:
         raise ValueError(f"Allrun must contain exactly one {marker!r}: {path}")
+    if not text.startswith("#!/"):
+        raise ValueError(f"Allrun must start with a POSIX shell shebang: {path}")
     patched = text.replace(marker, marker + "\n# Restore the provenance-bound cellwise FD alpha after setFields.\ncp 0.orig/alpha 0/alpha")
-    path.write_text(patched, encoding="utf-8")
+    path.write_bytes(patched.encode("utf-8"))
+    # Preserve/correct the executable bit for local and WSL invocation. Docker
+    # also runs chmod defensively, but the staged artifact itself is usable.
+    path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 
 def _read_final_response_coefficient(case_dir: Path, response_id: str) -> float:
