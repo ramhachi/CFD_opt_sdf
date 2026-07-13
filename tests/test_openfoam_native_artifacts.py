@@ -7,7 +7,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from typer.testing import CliRunner
 
+from cfd_sdf.cli import app
 from cfd_sdf.fixed_grid_artifacts import (
     read_fixed_grid_primal_summary,
     read_fixed_grid_sensitivity_summary,
@@ -19,6 +21,9 @@ from cfd_sdf.openfoam_native_artifacts import (
     write_native_openfoam_v2_artifacts,
 )
 from cfd_sdf.problem_spec import load_problem_spec, problem_spec_sha256, topology_constraint_ids
+
+
+runner = CliRunner()
 
 
 def test_unbound_run_is_explicitly_refused_without_writing_v2_artifacts(tmp_path: Path) -> None:
@@ -47,6 +52,52 @@ def test_unbound_run_is_explicitly_refused_without_writing_v2_artifacts(tmp_path
             output_dir=output,
         )
     assert not output.exists()
+
+
+def test_readiness_cli_writes_manifest_style_g2_diagnostic_without_binding(tmp_path: Path) -> None:
+    project = _write_project(tmp_path)
+    bundle_dir = tmp_path / "compiled_cases"
+    bundle_dir.mkdir()
+    # The compiler's manifest is deliberately present.  It is not a semantic
+    # native-artifact binding and must never be mistaken for one.
+    _write_json(
+        bundle_dir / "openfoam_solver_case_manifest.json",
+        {"schema_version": 1, "kind": "openfoam_solver_case_manifest"},
+    )
+    _write_json(
+        bundle_dir / "openfoam_case_bundle.json",
+        {
+            "schema_version": 1,
+            "kind": "openfoam_case_bundle",
+            "manifest_path": "openfoam_solver_case_manifest.json",
+            "status": "compiled",
+            "compile_ready": True,
+        },
+    )
+    output = tmp_path / "readiness.json"
+
+    result = runner.invoke(
+        app,
+        [
+            "assess-native-openfoam-v2-artifact-readiness",
+            str(project),
+            str(bundle_dir),
+            str(output),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    reported = json.loads(result.output)
+    assert saved["ready"] is False
+    assert saved["reasons"] == [
+        "missing_native_artifact_binding",
+        "response_value_unit_provenance_not_bound",
+        "rho_gradient_convention_not_bound",
+        "mesh_grid_mapping_not_bound",
+        "topology_constraint_values_not_available",
+    ]
+    assert reported == {**saved, "artifact_json": str(output.resolve())}
 
 
 def test_fully_bound_synthetic_run_writes_and_verifies_native_v2_artifacts(tmp_path: Path) -> None:

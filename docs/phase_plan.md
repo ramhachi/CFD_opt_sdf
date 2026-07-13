@@ -83,7 +83,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
-| Stage T production optimizer | Missing — implementation required | Real v2 writers, generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
+| Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
 | Stage S | Handoff prototype only | Density-to-STL/SDF conversion exists; quantitative fidelity and a qualified sharp-interface solver do not. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
 
@@ -128,6 +128,9 @@ Implemented:
   fail-closed convergence evidence.
 - explicit boundary-`phi` mass-flux measurement and normalized-mass artifacts;
   raw continuity-error text is never converted into that metric.
+- fail-closed native v2 primal/sensitivity writer and readiness CLI. It writes
+  only when an explicit semantic binding proves response units, `rho` gradient
+  convention, mesh-grid correspondence, and topology-policy values.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -138,7 +141,11 @@ Remaining implementation:
 1. Tune and validate the declared primal/adjoint convergence controls against
    the numerical thresholds; a complete short-run artifact is not numerical
    qualification by itself.
-2. Produce native v2 primal and sensitivity artifacts from real runs.
+2. Supply and qualify semantic bindings for native v2 primal and sensitivity
+   artifacts from real runs. The current G2 run is correctly refused: its
+   `porousDirectionalForce` output is a coefficient rather than proven `N`,
+   its `topologySens`/`topOSens` to `rho` convention is undefined, its mesh is
+   not bound to the canonical grid, and it has no topology-policy values.
 3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
 4. Compare porous and body-fitted pressure force, skin friction, total force,
@@ -204,7 +211,8 @@ G3/G4 gates pass.
 
 Implementation order:
 
-1. Native v2 primal/sensitivity writers for real multipoint runs.
+1. Qualify real-run semantic bindings for the implemented fail-closed native
+   v2 primal/sensitivity writer.
 2. Generic response/objective/aggregate derivative assembly.
 3. Production analytic/adjoint nominal and eroded connectivity derivatives.
 4. Filter/projection continuation with explicit chain-rule metadata.
@@ -237,8 +245,9 @@ cross-fidelity comparison with Stage T/Stage S.
 
 1. Tune and qualify G2 primal/adjoint convergence using complete runtime
    evidence. **Implementation required.**
-2. Write native v2 primal and sensitivity run artifacts. **Implementation
-   required.**
+2. Bind G2 response units, `rho` gradient convention, mesh-grid mapping, and
+   topology-policy values; then write native v2 primal and sensitivity run
+   artifacts. **Implementation required.**
 3. Qualify simple porous versus body-fitted cases. **Implementation required.**
 4. Implement all G3 fail-closed geometry/resolution gates. **Implementation
    required.**

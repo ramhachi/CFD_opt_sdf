@@ -54,6 +54,7 @@ from .openfoam import generate_openfoam_case
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
+from .openfoam_native_artifacts import assess_native_openfoam_v2_artifact_readiness
 from .parametric import default_parameters, parameters_to_dict, write_parametric_front_wing_stl
 from .porous_force_validation import (
     validate_efficiency_constraint_gradient,
@@ -328,6 +329,35 @@ def extract_openfoam_convergence_evidence(
             indent=2,
         )
     )
+
+
+@app.command("assess-native-openfoam-v2-artifact-readiness")
+def assess_native_openfoam_v2_artifact_readiness_command(
+    project_yaml: Path = typer.Argument(..., help="Generic problem specification YAML."),
+    bundle_dir: Path = typer.Argument(..., help="Completed OpenFOAM case-bundle directory."),
+    output_json: Path = typer.Argument(..., help="Output readiness diagnostic JSON."),
+) -> None:
+    """Assess whether qualified OpenFOAM output has the semantic bindings required by v2.
+
+    An unready result is a diagnostic outcome, not a command failure.  The
+    native writer remains fail-closed and will refuse to write v2 artifacts
+    until this artifact reports ``ready: true``.
+    """
+
+    try:
+        assessment = assess_native_openfoam_v2_artifact_readiness(
+            project_yaml=project_yaml,
+            bundle_dir=bundle_dir,
+        )
+        target = output_json.resolve()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(assessment, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({**assessment, "artifact_json": str(target)}, indent=2))
 
 
 @app.command("produce-openfoam-normalized-mass-imbalance")
