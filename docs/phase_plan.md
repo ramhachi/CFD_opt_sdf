@@ -79,7 +79,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Numerical runtime qualification passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed two-flow Docker OpenFOAM v2512 qualification. Straight: primal `1.01830105805e-08`, adjoint `2.42353921739e-08`, normalized mass `2.27430420178188e-11`; yawed: primal `1.08941955537e-08`, adjoint `7.32084064496e-09`, normalized mass `6.179363361222259e-12`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_requalification_20260714_a500/`. Canonical field transfer, finite-difference gradient validation, native-v2 semantic bindings, and porous/body-fitted comparisons remain unqualified. |
+| G2 case compiler | Numerical runtime qualification and canonical transfer passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed two-flow Docker OpenFOAM v2512 qualification on the physical `blockMesh` bounds `[-1, -1.2, -0.6]` to `[2, 1.2, 0.7]` with `32 x 16 x 16` cells. Straight: primal `1.67370751295e-08`, adjoint `1.03357192705e-08`, normalized mass `1.5598386779634098e-11`; yawed: primal `7.99508862341e-09`, adjoint `6.58865956728e-08`, normalized mass `2.61841637267506e-11`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_domain_bound_requalification_20260714/`. Domain-bound canonical gradient transfer also passed for both flows with full coverage of all 1,170,000 canonical indices. The native G2 finite-difference harness, semantic bindings, and porous/body-fitted comparisons remain unqualified. |
 | G3 geometry/resolution gates | In progress — G2 fixture mask verified | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576. Physical feature-resolution and density-to-SDF fidelity gates remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
@@ -144,20 +144,24 @@ Implemented:
   raw `topologySens` remains audit-only.
 - source-grid reconstruction for one ungraded, axis-aligned `blockMesh` hex,
   plus hash-bound canonical-grid snapshots and exact-overlap transfer
-  primitives. These contracts do not yet perform a real G2 transfer.
+  primitives; domain-bound transfer of both qualified G2 flow fields passed
+  with full coverage of all 1,170,000 canonical indices.
 - direct declaration of the existing front-wing STL assets as G2 semantic
   roles, with a passed 0.02 m, 1,170,000-cell canonical geometry-mask build
   and hash-bound manifest verification: 82,160 active, 39,060 forbidden,
   46,388 fixed, and 576 root cells.
 - Docker OpenFOAM v2512 numerical runtime qualification for the front-wing-role/
   domain ProblemSpec hash
-  `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a`.
-  Straight flow measured primal `1.01830105805e-08`, adjoint
-  `2.42353921739e-08`, and normalized mass `2.27430420178188e-11`; yawed flow
-  measured primal `1.08941955537e-08`, adjoint `7.32084064496e-09`, and
-  normalized mass `6.179363361222259e-12`. The generated, ignored evidence
-  bundle is
-  `examples/g2_openfoam_compile/runs/g2_front_wing_roles_requalification_20260714_a500/`.
+  `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a`, using
+  physical `blockMesh` bounds `[-1, -1.2, -0.6]` to `[2, 1.2, 0.7]` and
+  `32 x 16 x 16` cells. Straight flow measured primal `1.67370751295e-08`,
+  adjoint `1.03357192705e-08`, and normalized mass
+  `1.5598386779634098e-11`; yawed flow measured primal `7.99508862341e-09`,
+  adjoint `6.58865956728e-08`, and normalized mass
+  `2.61841637267506e-11`. The generated, ignored evidence bundle is
+  `examples/g2_openfoam_compile/runs/g2_front_wing_roles_domain_bound_requalification_20260714/`.
+- domain-bound canonical gradient transfer from both qualified flow fields,
+  with full coverage of all 1,170,000 canonical indices.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -165,9 +169,10 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Transfer reconstructed mesh fields from the qualified real G2 runs to the
-   verified canonical grid and run finite-difference direction checks for the
-   transferred `topOSens` to `rho` chain. **Implementation required.**
+1. Run the native G2 finite-difference harness for the transferred `topOSens`
+   to `rho` chain. The domain-bound canonical transfer itself has passed for
+   both flows with full coverage of all 1,170,000 canonical indices.
+   **Implementation required.**
 2. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from those real runs. The current G2 artifact is correctly
    refused: its
@@ -204,9 +209,10 @@ The existing front-wing STL source is declared directly in the G2 role
 configuration. Its full 0.02 m canonical-grid mask build contains 1,170,000
 cells and passed manifest verification with 82,160 active, 39,060 forbidden,
 46,388 fixed, and 576 root cells. The current G2 front-wing-role/domain
-ProblemSpec has also passed Docker OpenFOAM v2512 runtime qualification; the
-next gate is transfer of the real reconstructed fields to this canonical grid
-and finite-difference validation of the transferred sensitivity chain.
+ProblemSpec has also passed Docker OpenFOAM v2512 runtime qualification and
+domain-bound canonical gradient transfer for both flows, with full coverage of
+all 1,170,000 canonical indices. The next G2 gate is the native
+finite-difference validation of the transferred sensitivity chain.
 
 Implement:
 
