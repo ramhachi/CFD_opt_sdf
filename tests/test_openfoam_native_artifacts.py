@@ -113,11 +113,22 @@ def test_fully_bound_synthetic_run_writes_and_verifies_native_v2_artifacts(tmp_p
     primal = read_fixed_grid_primal_summary(artifacts.primal_summary_json)
     sensitivity = read_fixed_grid_sensitivity_summary(artifacts.sensitivity_summary_json)
     assert primal.status == "converged"
-    assert primal.response_values[next(iter(primal.response_values))].value == pytest.approx(2.5)
+    assert primal.response_values[next(iter(primal.response_values))].value == pytest.approx(125.0)
     assert len(sensitivity.gradient_bindings) == 1
     with np.load(artifacts.sensitivity_fields_npz) as fields:
         assert fields["global_cell_ids"].tolist() == [0, 1]
-        assert fields["d_force_x_d_rho"].tolist() == pytest.approx([1.25, -0.5])
+        assert fields["d_force_x_d_rho"].tolist() == pytest.approx([62.5, -25.0])
+    primal_raw = json.loads(artifacts.primal_summary_json.read_text(encoding="utf-8"))
+    conversion = primal_raw["response_values"][0]["conversion"]
+    assert conversion == {
+        "source_quantity": "porous_directional_force_coefficient",
+        "conversion_kind": "dynamic_pressure_area",
+        "factor_N_per_coefficient": 50.0,
+        "density_kg_m3": 1.0,
+        "reference_area_m2": 1.0,
+        "freestream_speed_mps": 10.0,
+        "freestream_velocity_mps": [10.0, 0.0, 0.0],
+    }
     verify_native_openfoam_v2_artifacts(
         output_dir=artifacts.output_dir,
         bundle_dir=bundle_dir,
@@ -172,6 +183,34 @@ def test_identity_filter_projection_binding_is_refused(tmp_path: Path) -> None:
 
     assert readiness["ready"] is False
     assert readiness["reasons"] == ["rho_gradient_convention_not_bound"]
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("source_quantity", "force_newtons"),
+        ("conversion_kind", "identity"),
+        ("units", "1"),
+        ("conversion_factor", 50.0),
+    ],
+)
+def test_unbound_or_custom_force_conversion_is_refused(
+    tmp_path: Path, field: str, value: object
+) -> None:
+    project = _write_project(tmp_path)
+    bundle_dir = _write_bound_synthetic_bundle(tmp_path / "bundle", project)
+    binding_path = bundle_dir / "native_openfoam_v2_artifact_binding.json"
+    binding = json.loads(binding_path.read_text(encoding="utf-8"))
+    binding["response_value_bindings"][0][field] = value
+    _write_json(binding_path, binding)
+
+    readiness = assess_native_openfoam_v2_artifact_readiness(
+        project_yaml=project,
+        bundle_dir=bundle_dir,
+    )
+
+    assert readiness["ready"] is False
+    assert readiness["reasons"] == ["response_value_unit_provenance_not_bound"]
 
 
 def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
@@ -295,6 +334,8 @@ def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
                 "response_id": "force_x",
                 "units": "N",
                 "source": "qualified_solver_force",
+                "source_quantity": "porous_directional_force_coefficient",
+                "conversion_kind": "dynamic_pressure_area",
             }
         ],
         "gradient_bindings": [

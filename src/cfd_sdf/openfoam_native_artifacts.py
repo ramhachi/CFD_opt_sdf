@@ -14,7 +14,7 @@ import gzip
 import hashlib
 import io
 import json
-from math import isfinite
+from math import isfinite, sqrt
 from pathlib import Path
 import re
 import shutil
@@ -215,6 +215,8 @@ def write_native_openfoam_v2_artifacts(
     response_values: list[dict[str, object]] = []
     response_gradients: dict[str, np.ndarray] = {}
     response_gradient_details: dict[str, dict[str, object]] = {}
+    response_conversions: dict[str, dict[str, object]] = {}
+    response_value_bindings = _binding_response_values(binding, spec)
     expected_global_cell_ids: np.ndarray | None = None
     for response in spec.responses:
         flow_entry = flow_entries[response.flow_case_id]
@@ -252,19 +254,26 @@ def write_native_openfoam_v2_artifacts(
         source_hashes[
             f"{response.flow_case_id}/{objective_file.relative_to(case_dir).as_posix()}"
         ] = _sha256_bytes(objective_bytes)
-        value = _read_final_objective_value(objective_file)
+        raw_value = _read_final_objective_value(objective_file)
+        value_binding = response_value_bindings[(response.flow_case_id, response.id)]
+        conversion = _force_conversion(spec, response, value_binding)
+        value = _finite_scaled_value(
+            raw_value,
+            conversion["factor_N_per_coefficient"],
+            f"response {response.flow_case_id}/{response.id}",
+        )
+        response_conversions[f"{response.flow_case_id}/{response.id}"] = conversion
         response_values.append(
             {
                 "flow_case_id": response.flow_case_id,
                 "response_id": response.id,
                 "value": value,
-                "units": _binding_response_values(binding, spec)[
-                    (response.flow_case_id, response.id)
-                ]["units"],
+                "units": value_binding["units"],
                 "status": "converged",
-                "source": _binding_response_values(binding, spec)[
-                    (response.flow_case_id, response.id)
-                ]["source"],
+                "source": value_binding["source"],
+                "raw_value": raw_value,
+                "raw_units": "1",
+                "conversion": conversion,
             }
         )
 
@@ -292,8 +301,11 @@ def write_native_openfoam_v2_artifacts(
                 "Response sensitivity fields do not share the same undecomposed OpenFOAM "
                 "cell-label ordering"
             )
-        response_gradients[array_name] = values
-        response_gradient_details[array_name] = details
+        converted_values = values * float(conversion["factor_N_per_coefficient"])
+        if not np.isfinite(converted_values).all():
+            raise ValueError(f"Converted OpenFOAM sensitivity is non-finite for {response.id!r}")
+        response_gradients[array_name] = converted_values
+        response_gradient_details[array_name] = {**details, "conversion": conversion}
 
     if expected_global_cell_ids is None:
         raise ValueError("No response sensitivity fields were extracted")
@@ -316,6 +328,7 @@ def write_native_openfoam_v2_artifacts(
         "response_values": response_values,
         "objective_values": objective_values,
         "constraint_values": constraint_values,
+        "response_conversions": response_conversions,
         "producer": "openfoam_native_v2_artifacts",
     }
     sensitivity_summary = {
@@ -325,6 +338,7 @@ def write_native_openfoam_v2_artifacts(
         "flow_case_ids": [flow.id for flow in spec.flow_cases],
         "status": "extracted",
         "gradient_bindings": gradient_bindings,
+        "response_conversions": response_conversions,
         "producer": "openfoam_native_v2_artifacts",
     }
 
@@ -367,6 +381,7 @@ def write_native_openfoam_v2_artifacts(
             "kind": NATIVE_OPENFOAM_V2_ARTIFACT_PROVENANCE_KIND,
             **_problem_binding_dict(spec),
             "bundle_metadata_sha256": bundle_sha256,
+            "response_conversions": response_conversions,
             "source_files_sha256": dict(sorted(source_hashes.items())),
             "output_files_sha256": {
                 primal_path.name: _sha256_file(primal_path),
@@ -757,6 +772,7 @@ def _response_gradient_bindings(
                 "units": declared["units"],
                 "status": "extracted",
                 "source": declared["source"],
+                "conversion": item_details["conversion"],
             }
         )
     return bindings
@@ -766,6 +782,59 @@ def _response_units(kind: str) -> str:
     if kind == "force":
         return "N"
     raise ValueError(f"Native OpenFOAM artifact writer does not support response kind: {kind!r}")
+
+
+def _force_conversion(
+    spec: ProblemSpec,
+    response: Any,
+    binding: Mapping[str, object],
+) -> dict[str, object]:
+    """Derive the only supported porous coefficient-to-force conversion."""
+
+    if response.kind != "force":
+        raise ValueError("Coefficient-to-force conversion is only supported for force responses")
+    if binding.get("source_quantity") != "porous_directional_force_coefficient":
+        raise ValueError("Native force binding source_quantity must be porous_directional_force_coefficient")
+    if binding.get("conversion_kind") != "dynamic_pressure_area":
+        raise ValueError("Native force binding conversion_kind must be dynamic_pressure_area")
+    if binding.get("units") != "N":
+        raise ValueError("Native force binding output units must be N")
+    forbidden = {"conversion_factor", "factor", "factor_N_per_coefficient"}.intersection(binding)
+    if forbidden:
+        raise ValueError(
+            "Native force binding must not provide a custom conversion factor: "
+            + ", ".join(sorted(forbidden))
+        )
+    if spec.reference_values is None or spec.reference_values.area_m2 is None:
+        raise ValueError("Coefficient-to-force conversion requires reference_values.area_m2")
+    area = float(spec.reference_values.area_m2)
+    flow = next((item for item in spec.flow_cases if item.id == response.flow_case_id), None)
+    if flow is None:  # Defensive: ProblemSpec validation normally makes this unreachable.
+        raise ValueError(f"Response {response.id!r} references an unknown flow case")
+    density = float(flow.fluid.density_kg_m3)
+    velocity = tuple(float(component) for component in flow.freestream_velocity_mps)
+    speed = sqrt(sum(component * component for component in velocity))
+    factor = 0.5 * density * area * speed * speed
+    if not all(isfinite(value) and value > 0.0 for value in (density, area, speed, factor)):
+        raise ValueError("Coefficient-to-force conversion inputs must be finite and positive")
+    return {
+        "source_quantity": "porous_directional_force_coefficient",
+        "conversion_kind": "dynamic_pressure_area",
+        "factor_N_per_coefficient": factor,
+        "density_kg_m3": density,
+        "reference_area_m2": area,
+        "freestream_speed_mps": speed,
+        "freestream_velocity_mps": list(velocity),
+    }
+
+
+def _finite_scaled_value(value: float, factor: object, context: str) -> float:
+    if not isinstance(factor, (int, float)) or isinstance(factor, bool) or not isfinite(float(factor)):
+        raise ValueError(f"Coefficient-to-force factor is invalid for {context}")
+    result = float(value) * float(factor)
+    if not isfinite(result):
+        raise ValueError(f"Coefficient-to-force result is non-finite for {context}")
+    return result
 
 
 def _validate_native_binding_header(
@@ -803,6 +872,7 @@ def _binding_response_values(
         units = _required_text(item, "units", "native response value binding")
         if units != _response_units(expected[key].kind):
             raise ValueError("Native response value units are not bound to the declared response kind")
+        _force_conversion(spec, expected[key], item)
         _required_text(item, "source", "native response value binding")
         values[key] = item
     if set(values) != set(expected):
