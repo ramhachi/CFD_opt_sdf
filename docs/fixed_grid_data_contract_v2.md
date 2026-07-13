@@ -1,8 +1,11 @@
 # Fixed-Grid Primal And Sensitivity Data Contract v2
 
 Status: authoritative v2 artifact contract. Schema, readers, and semantic
-validation are implemented. Native real-solver v2 writers remain
-**implementation required**.
+validation are implemented. The native real-solver writer is implemented as a
+**fail-closed exporter**: it writes v2 summaries and a provenance-bound
+cell-label field artifact only after an explicit semantic binding is present.
+The current G2 OpenFOAM run has no such binding and is intentionally refused;
+it must not be presented as a native v2 force or `rho`-gradient artifact.
 
 This document defines the JSON summary layer that binds fixed-grid primal
 values and cellwise gradient arrays to the generic problem contract in
@@ -12,6 +15,29 @@ for new implementation work.
 
 The implemented canonical readers and validators are in
 `src/cfd_sdf/fixed_grid_artifacts.py`.
+
+## Native OpenFOAM Writer Readiness
+
+`assess-native-openfoam-v2-artifact-readiness PROJECT_YAML BUNDLE_DIR
+OUTPUT_JSON` writes a non-mutating readiness diagnostic and returns success
+even when it reports `ready: false`. This makes a missing semantic binding an
+inspectable workflow state rather than an accidental partial export.
+
+`write_native_openfoam_v2_artifacts` refuses unless its adjacent
+`native_openfoam_v2_artifact_binding.json` binds all of the following to the
+specific qualified bundle, convergence evidence, and qualification artifact:
+
+- declared response units and the solver quantity used for each response;
+- the `rho` derivative convention and filter/projection chain rule for each
+  gradient field;
+- an OpenFOAM-cell-label to canonical-grid mapping; and
+- values and sources for every topology-policy constraint.
+
+The existing G2 `porousDirectionalForce` output is a directional coefficient,
+not proven force in `N`; `topologySens`/`topOSens` are not yet bound to the
+canonical `rho` convention; the OpenFOAM mesh is not proven equal to the
+canonical grid; and topology-policy values are absent. The readiness artifact
+therefore reports five refusal reasons and the writer produces no v2 files.
 
 ## Common Problem Binding
 
@@ -224,5 +250,6 @@ These functions verify:
 Passing semantic validation proves namespace consistency, not numerical
 correctness, field-array presence, mesh compatibility, solver convergence, or
 gradient accuracy. Existing field/grid checks remain necessary. The G2 case
-compiler and convergence evaluator are implemented; native v2 writers from
-completed real solver runs remain **implementation required**.
+compiler, convergence evaluator, and native v2 fail-closed writer are
+implemented; semantic bindings from completed real solver runs remain
+**implementation required**.
