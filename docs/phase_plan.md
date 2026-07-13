@@ -79,7 +79,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Requalification required after geometry/domain contract change | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for a previous G2 specification passed the declared primal, response, adjoint, and normalized-mass convergence qualification. That result is historical only: the canonical domain and the approved declaration of existing front-wing STL assets as G2 semantic roles change the ProblemSpec/geometry contract. New cases must be rendered, executed, and qualified before any current G2 numerical qualification is claimed. Porous/body-fitted force and gradient comparisons remain unqualified. |
+| G2 case compiler | Numerical runtime qualification passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed two-flow Docker OpenFOAM v2512 qualification. Straight: primal `1.01830105805e-08`, adjoint `2.42353921739e-08`, normalized mass `2.27430420178188e-11`; yawed: primal `1.08941955537e-08`, adjoint `7.32084064496e-09`, normalized mass `6.179363361222259e-12`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_requalification_20260714_a500/`. Canonical field transfer, finite-difference gradient validation, native-v2 semantic bindings, and porous/body-fitted comparisons remain unqualified. |
 | G3 geometry/resolution gates | In progress — G2 fixture mask verified | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576. Physical feature-resolution and density-to-SDF fidelity gates remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
@@ -107,9 +107,9 @@ G1 completion is contract evidence only.
 
 ## 6. G2 — solver compiler and target-physics bridge
 
-Status: prior-spec numerical convergence gate passed; the current G2
-geometry/domain contract requires rendering and runtime requalification before
-any numerical or physics qualification is claimed.
+Status: numerical runtime qualification passed for the current front-wing-role/
+domain contract; native artifact binding and target-physics qualification
+remain incomplete.
 
 The existing front-wing STL files are the canonical geometry source for the G2
 benchmark. G2 declares their semantic roles directly; it does not create a
@@ -149,6 +149,15 @@ Implemented:
   roles, with a passed 0.02 m, 1,170,000-cell canonical geometry-mask build
   and hash-bound manifest verification: 82,160 active, 39,060 forbidden,
   46,388 fixed, and 576 root cells.
+- Docker OpenFOAM v2512 numerical runtime qualification for the front-wing-role/
+  domain ProblemSpec hash
+  `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a`.
+  Straight flow measured primal `1.01830105805e-08`, adjoint
+  `2.42353921739e-08`, and normalized mass `2.27430420178188e-11`; yawed flow
+  measured primal `1.08941955537e-08`, adjoint `7.32084064496e-09`, and
+  normalized mass `6.179363361222259e-12`. The generated, ignored evidence
+  bundle is
+  `examples/g2_openfoam_compile/runs/g2_front_wing_roles_requalification_20260714_a500/`.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -156,24 +165,18 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Re-render, execute, and requalify both G2 flows after the geometry/domain
-   contract change. The previous convergence qualification is historical and
-   must not be attached to the new ProblemSpec hash. **Implementation
-   required.**
+1. Transfer reconstructed mesh fields from the qualified real G2 runs to the
+   verified canonical grid and run finite-difference direction checks for the
+   transferred `topOSens` to `rho` chain. **Implementation required.**
 2. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from those real runs. The current G2 artifact is correctly
    refused: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
-   its final `topOSens` to `rho` chain has not passed finite-difference
-   validation, its reconstructed mesh fields have not been transferred to a
-   canonical-grid snapshot, and it has no topology-policy values.
-3. Transfer reconstructed mesh fields to the verified canonical grid and run
-   finite-difference direction checks for the transferred `topOSens` to
-   `rho` chain before writing native v2 artifacts. **Implementation
-   required.**
-4. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
+   its final `topOSens` to `rho` chain requires the preceding finite-difference
+   validation, and it has no topology-policy values.
+3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
-5. Compare porous and body-fitted pressure force, skin friction, total force,
+4. Compare porous and body-fitted pressure force, skin friction, total force,
    and gradient direction on simple geometries.
 
 G2 smoke gate:
@@ -200,8 +203,10 @@ remaining physical-resolution and density-to-SDF gates require implementation.
 The existing front-wing STL source is declared directly in the G2 role
 configuration. Its full 0.02 m canonical-grid mask build contains 1,170,000
 cells and passed manifest verification with 82,160 active, 39,060 forbidden,
-46,388 fixed, and 576 root cells. The next gate is G2 case rendering and
-runtime requalification under this verified geometry/domain contract.
+46,388 fixed, and 576 root cells. The current G2 front-wing-role/domain
+ProblemSpec has also passed Docker OpenFOAM v2512 runtime qualification; the
+next gate is transfer of the real reconstructed fields to this canonical grid
+and finite-difference validation of the transferred sensitivity chain.
 
 Implement:
 
@@ -275,21 +280,18 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Re-render the G2 cases and rerun numerical qualification under the approved
-   geometry/domain contract. The previous qualification remains historical.
-   **Implementation required.**
-2. Transfer the reconstructed real-run fields to the verified canonical grid,
+1. Transfer the reconstructed real-run fields to the verified canonical grid,
    execute finite-difference direction checks for `topOSens` to `rho`, then
    bind response units, gradient convention, mesh-grid mapping, and
    topology-policy values for native v2 artifacts. **Implementation required.**
-3. Qualify simple porous versus body-fitted cases. **Implementation required.**
-4. Implement the remaining G3 fail-closed physical-resolution and
+2. Qualify simple porous versus body-fitted cases. **Implementation required.**
+3. Implement the remaining G3 fail-closed physical-resolution and
    density-to-SDF gates. **Implementation required.**
-5. Execute G4 B0–B2 before production optimizer work. **Implementation
+4. Execute G4 B0–B2 before production optimizer work. **Implementation
    required.**
-6. Implement production Stage T derivatives and nonlinear optimizer.
+5. Implement production Stage T derivatives and nonlinear optimizer.
    **Implementation required.**
-7. Advance through B3–B5, then Stage S and Stage V.
+6. Advance through B3–B5, then Stage S and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
 
