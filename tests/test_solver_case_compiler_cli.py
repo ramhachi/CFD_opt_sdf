@@ -96,7 +96,33 @@ topologySource
         for name in patch_names
     )
     (template / "system/blockMeshDict").write_text(
-        f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
+        "\n".join(
+            (
+                "FoamFile { object blockMeshDict; }",
+                "scale 1;",
+                "vertices",
+                "(",
+                "    (-1 -0.8 -0.6)",
+                "    (2 -0.8 -0.6)",
+                "    (2 0.8 -0.6)",
+                "    (-1 0.8 -0.6)",
+                "    (-1 -0.8 0.6)",
+                "    (2 -0.8 0.6)",
+                "    (2 0.8 0.6)",
+                "    (-1 0.8 0.6)",
+                ");",
+                "blocks",
+                "(",
+                "    hex (0 1 2 3 4 5 6 7) (32 16 16) simpleGrading (1 1 1)",
+                ");",
+                "edges ();",
+                "boundary",
+                "(",
+                boundary,
+                ");",
+                "",
+            )
+        ),
         encoding="utf-8",
     )
     _write_required_initial_fields(template, patch_names)

@@ -8,6 +8,7 @@ import pytest
 import yaml
 
 import cfd_sdf.solver_case_compiler as compiler_module
+from cfd_sdf.openfoam_blockmesh_grid import read_openfoam_blockmesh_uniform_cartesian_grid
 from cfd_sdf.problem_spec import load_problem_spec
 from cfd_sdf.solver_case_compiler import compile_openfoam_solver_case_bundle
 
@@ -178,14 +179,7 @@ optimisation
         encoding="utf-8",
     )
     patch_names = ("inlet", "outlet", "ground")
-    boundary = "\n".join(
-        f"    {name}\n    {{\n        type patch;\n        faces ();\n    }}"
-        for name in patch_names
-    )
-    (template / "system/blockMeshDict").write_text(
-        f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
-        encoding="utf-8",
-    )
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
     _write_required_initial_fields(template, patch_names)
     (template / "Allrun").write_text("#!/bin/sh\nset -e\n", encoding="utf-8")
     (template / "Allclean").write_text("#!/bin/sh\nrm -rf 0\n", encoding="utf-8")
@@ -256,6 +250,23 @@ def _block_mesh_bytes(patch_names: tuple[str, ...], *, newline: str = "\n") -> b
         (
             "FoamFile { object blockMeshDict; }",
             "// fake boundary ( fake { type wall; } )",
+            "scale 1;",
+            "vertices",
+            "(",
+            "    (-1 -0.8 -0.6)",
+            "    (2 -0.8 -0.6)",
+            "    (2 0.8 -0.6)",
+            "    (-1 0.8 -0.6)",
+            "    (-1 -0.8 0.6)",
+            "    (2 -0.8 0.6)",
+            "    (2 0.8 0.6)",
+            "    (-1 0.8 0.6)",
+            ");",
+            "blocks",
+            "(",
+            "    hex (0 1 2 3 4 5 6 7) (32 16 16) simpleGrading (1 1 1)",
+            ");",
+            "edges ();",
             "boundary",
             "(",
             *entries,
@@ -391,7 +402,7 @@ def test_sst_bundle_contains_k_omega_nut_fields(tmp_path: Path) -> None:
         assert physics["generated"]["wall_distance"]["qualification"] == "not_qualified"
 
 
-def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
+def test_g2_rendered_block_mesh_binds_domain_and_preserves_crlf_boundary_content(
     tmp_path: Path,
 ) -> None:
     template = _template(tmp_path)
@@ -399,6 +410,10 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     source = _block_mesh_bytes(patch_names, newline="\r\n")
     (template / "system/blockMeshDict").write_bytes(source)
     _write_required_initial_fields(template, patch_names, newline="\r\n")
+    template_grid = read_openfoam_blockmesh_uniform_cartesian_grid(
+        template / "system/blockMeshDict"
+    )
+    assert template_grid.lower == pytest.approx((-1.0, -0.8, -0.6))
 
     artifacts = compile_openfoam_solver_case_bundle(
         _g2_spec(tmp_path),
@@ -433,10 +448,54 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     assert mesh["generated_patch_types"]["lower"] == "wall"
     assert mesh["staged_patch_types_after"]["lower"] == "wall"
     assert mesh["validation"] == "pass"
+    domain = compilation["mesh_domain_contract"]
+    assert domain["binding"] == "bound"
+    assert domain["source_cell_shape"] == [32, 16, 16]
+    assert domain["rendered_lower_m"] == pytest.approx([-1.0, -1.2, -0.6])
+    assert domain["rendered_upper_m"] == pytest.approx([2.0, 1.2, 0.7])
+    rendered_grid = read_openfoam_blockmesh_uniform_cartesian_grid(
+        artifacts.case_dirs["straight"] / "system/blockMeshDict"
+    )
+    assert rendered_grid.lower == pytest.approx((-1.0, -1.2, -0.6))
+    assert tuple(
+        rendered_grid.lower[axis]
+        + rendered_grid.spacing[axis] * rendered_grid.cell_shape[axis]
+        for axis in range(3)
+    ) == pytest.approx((2.0, 1.2, 0.7))
+    assert rendered_grid.cell_shape == (32, 16, 16)
     fields = compilation["field_boundary_contract"]
     assert fields["validation"] == "pass"
     assert fields["all_initial_fields"]["alpha"]["patch_types"]["lower"] == "zeroGradient"
     assert fields["all_initial_fields"]["Ua"]["patch_types"]["lower"] == "adjointWallVelocity"
+
+
+def test_g2_rendered_block_mesh_binds_physical_domain_with_non_unit_scale(
+    tmp_path: Path,
+) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    source = _block_mesh_bytes(patch_names).replace(b"scale 1;", b"scale 0.5;")
+    (template / "system/blockMeshDict").write_bytes(source)
+    _write_required_initial_fields(template, patch_names)
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "g2_scaled_bundle",
+        available_patch_ids=patch_names,
+    )
+
+    rendered_path = artifacts.case_dirs["straight"] / "system/blockMeshDict"
+    rendered = read_openfoam_blockmesh_uniform_cartesian_grid(rendered_path)
+    assert rendered.scale == pytest.approx(0.5)
+    assert rendered.lower == pytest.approx((-1.0, -1.2, -0.6))
+    assert tuple(
+        rendered.lower[axis] + rendered.spacing[axis] * rendered.cell_shape[axis]
+        for axis in range(3)
+    ) == pytest.approx((2.0, 1.2, 0.7))
+    text = rendered_path.read_text(encoding="utf-8")
+    assert "    (-2 -2.4 -1.2)" in text
+    assert "    (4 2.4 1.4)" in text
 
 
 def test_compact_retained_field_entry_inserts_value_inside_its_patch(tmp_path: Path) -> None:
