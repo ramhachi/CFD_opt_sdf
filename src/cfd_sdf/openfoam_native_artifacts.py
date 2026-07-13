@@ -118,6 +118,7 @@ def assess_native_openfoam_v2_artifact_readiness(
         binding = _read_json_mapping(binding_path)
         _validate_native_binding_header(binding, spec, root)
         _binding_gradients(binding, spec)
+        _validate_bound_sensitivity_sources(binding, spec, root)
     except ValueError:
         reasons.append("rho_gradient_convention_not_bound")
     try:
@@ -154,7 +155,7 @@ def write_native_openfoam_v2_artifacts(
     convergence artifact and its provenance-bound evidence, checks the case
     bundle against the requested problem, verifies every evidence source that
     established numerical completion, and requires one final objective result
-    plus an unambiguous decomposed ``topologySens`` field per response.
+    plus an unambiguous decomposed final ``topOSens`` field per response.
 
     No files are published to ``output_dir`` unless every preflight and source
     extraction succeeds.
@@ -270,7 +271,11 @@ def write_native_openfoam_v2_artifacts(
         array_name = f"d_{response.id}_d_rho"
         if array_name in response_gradients:
             raise ValueError(f"Duplicate native response gradient array name: {array_name!r}")
-        global_cell_ids, values, details, field_hashes = _read_decomposed_topology_sensitivity(
+        _validate_topo_sensitivity_case_source(
+            case_dir,
+            adjoint_solver_id=_required_text(mapping, "adjoint_solver_id", "response mapping"),
+        )
+        global_cell_ids, values, details, field_hashes = _read_decomposed_topo_sensitivity(
             case_dir,
             adjoint_solver_id=_required_text(mapping, "adjoint_solver_id", "response mapping"),
         )
@@ -583,7 +588,7 @@ def _read_final_objective_value(path: Path) -> float:
     return final
 
 
-def _read_decomposed_topology_sensitivity(
+def _read_decomposed_topo_sensitivity(
     case_dir: Path,
     *,
     adjoint_solver_id: str,
@@ -592,7 +597,7 @@ def _read_decomposed_topology_sensitivity(
     entries: list[tuple[int, np.ndarray, np.ndarray]] = []
     hashes: dict[str, str] = {}
     dimensions: str | None = None
-    field_object = f"topologySens{adjoint_solver_id}"
+    field_object = f"topOSens{adjoint_solver_id}"
     for processor_index, processor_dir in processor_dirs:
         field_path = _required_file(processor_dir / "1" / f"{field_object}.gz")
         labels_path = _required_file(
@@ -608,7 +613,7 @@ def _read_decomposed_topology_sensitivity(
         if dimensions is None:
             dimensions = field_dimensions
         elif dimensions != field_dimensions:
-            raise ValueError("OpenFOAM topology sensitivity fields have inconsistent dimensions")
+            raise ValueError("OpenFOAM final topO sensitivity fields have inconsistent dimensions")
         entries.append((processor_index, labels, values))
         hashes[str(field_path.relative_to(case_dir).as_posix())] = _sha256_file(field_path)
         hashes[str(labels_path.relative_to(case_dir).as_posix())] = _sha256_file(labels_path)
@@ -626,9 +631,9 @@ def _read_decomposed_topology_sensitivity(
             "OpenFOAM cellProcAddressing must cover contiguous undecomposed cell labels starting at zero"
         )
     if not np.isfinite(values).all():
-        raise ValueError("OpenFOAM topology sensitivity contains non-finite values")
+        raise ValueError("OpenFOAM final topO sensitivity contains non-finite values")
     return global_ids, values, {
-        "source": "openfoam.topologySens",
+        "source": "openfoam.topOSens",
         "openfoam_object": field_object,
         "openfoam_dimensions": dimensions,
         "processor_count": len(entries),
@@ -823,8 +828,18 @@ def _binding_gradients(
             raise ValueError("Native gradient binding design variable must be rho")
         if item.get("gradient_convention") != "d_response_d_rho_cell_integrated":
             raise ValueError("Native gradient binding does not define the rho derivative convention")
-        if item.get("filter_projection_chain_rule") != "identity":
-            raise ValueError("Native gradient binding does not define a supported filter/projection mapping")
+        if item.get("source_design_variable") != "alpha":
+            raise ValueError("Native gradient binding source design variable must be alpha")
+        if item.get("filtered_field") != "alphaTilda":
+            raise ValueError("Native gradient binding filtered field must be alphaTilda")
+        if item.get("projected_field") != "beta":
+            raise ValueError("Native gradient binding projected field must be beta")
+        if item.get("gradient_field_kind") != "topOSens":
+            raise ValueError("Native gradient binding must use the final topOSens field")
+        if item.get("filter_projection_chain_rule") != "alpha_to_alphaTilda_to_beta_complete":
+            raise ValueError(
+                "Native gradient binding must declare the complete alpha-to-alphaTilda-to-beta chain rule"
+            )
         _required_text(item, "units", "native gradient binding")
         _required_text(item, "source", "native gradient binding")
         _required_text(item, "openfoam_dimensions", "native gradient binding")
@@ -832,6 +847,47 @@ def _binding_gradients(
     if set(values) != expected:
         raise ValueError("Native gradient bindings do not cover all declared responses")
     return values
+
+
+def _validate_bound_sensitivity_sources(
+    binding: Mapping[str, Any], spec: ProblemSpec, bundle_dir: Path
+) -> None:
+    """Ensure a binding refers to real final topO fields, not raw sensitivities."""
+
+    bundle = _read_json_mapping(_required_file(bundle_dir / "openfoam_case_bundle.json"))
+    flow_entries = _bundle_flow_entries(bundle, spec)
+    _binding_gradients(binding, spec)
+    for response in spec.responses:
+        case_dir = _contained_case_dir(bundle_dir, flow_entries[response.flow_case_id]["case_dir"])
+        metadata = _read_json_mapping(_required_file(case_dir / "generated_openfoam_responses.json"))
+        mapping = _response_mapping(metadata, response.flow_case_id, response.id)
+        _validate_topo_sensitivity_case_source(
+            case_dir,
+            adjoint_solver_id=_required_text(mapping, "adjoint_solver_id", "response mapping"),
+        )
+
+
+def _validate_topo_sensitivity_case_source(case_dir: Path, *, adjoint_solver_id: str) -> None:
+    """Validate the OpenFOAM topO chain and final-field object identity."""
+
+    optimisation_dict = _required_file(case_dir / "system" / "optimisationDict")
+    text = optimisation_dict.read_text(encoding="utf-8", errors="strict")
+    required_entries = {
+        "designVariables type": r"\btype\s+topO\s*;",
+        "designVariables sensitivityType": r"\bsensitivityType\s+topO\s*;",
+        "designVariables writeFieldSens": r"\bwriteFieldSens\s+true\s*;",
+    }
+    for description, pattern in required_entries.items():
+        if re.search(pattern, text) is None:
+            raise ValueError(f"OpenFOAM optimisationDict is missing {description}")
+
+    if not (case_dir / "0" / "alpha").is_file():
+        raise ValueError("OpenFOAM topO source alpha field is missing")
+    field_object = f"topOSens{adjoint_solver_id}"
+    for _, processor_dir in _processor_dirs(case_dir):
+        for field_name in ("alphaTilda", "beta", field_object):
+            field_path = _required_file(processor_dir / "1" / f"{field_name}.gz")
+            _read_openfoam_scalar_field(field_path, expected_object=field_name)
 
 
 def _binding_mesh(binding: Mapping[str, Any], spec: ProblemSpec) -> Mapping[str, object]:

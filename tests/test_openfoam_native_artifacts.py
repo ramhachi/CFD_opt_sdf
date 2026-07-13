@@ -134,6 +134,46 @@ def test_fully_bound_synthetic_run_writes_and_verifies_native_v2_artifacts(tmp_p
         )
 
 
+def test_raw_topology_sens_only_is_refused_even_with_other_semantic_bindings(tmp_path: Path) -> None:
+    project = _write_project(tmp_path)
+    bundle_dir = _write_bound_synthetic_bundle(tmp_path / "bundle", project)
+    processor = bundle_dir / "flow_straight" / "processor0" / "1"
+    final_field = processor / "topOSensresp_force_x.gz"
+    raw_field = processor / "topologySensresp_force_x.gz"
+    final_field.replace(raw_field)
+
+    readiness = assess_native_openfoam_v2_artifact_readiness(
+        project_yaml=project,
+        bundle_dir=bundle_dir,
+    )
+
+    assert readiness["ready"] is False
+    assert readiness["reasons"] == ["rho_gradient_convention_not_bound"]
+    with pytest.raises(NativeOpenFoamArtifactRefused, match="rho_gradient_convention_not_bound"):
+        write_native_openfoam_v2_artifacts(
+            project_yaml=project,
+            bundle_dir=bundle_dir,
+            output_dir=tmp_path / "native-v2",
+        )
+
+
+def test_identity_filter_projection_binding_is_refused(tmp_path: Path) -> None:
+    project = _write_project(tmp_path)
+    bundle_dir = _write_bound_synthetic_bundle(tmp_path / "bundle", project)
+    binding_path = bundle_dir / "native_openfoam_v2_artifact_binding.json"
+    binding = json.loads(binding_path.read_text(encoding="utf-8"))
+    binding["gradient_bindings"][0]["filter_projection_chain_rule"] = "identity"
+    _write_json(binding_path, binding)
+
+    readiness = assess_native_openfoam_v2_artifact_readiness(
+        project_yaml=project,
+        bundle_dir=bundle_dir,
+    )
+
+    assert readiness["ready"] is False
+    assert readiness["reasons"] == ["rho_gradient_convention_not_bound"]
+
+
 def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
     spec = load_problem_spec(project)
     root.mkdir(parents=True)
@@ -154,9 +194,19 @@ def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
     _write_json(response_metadata_path, response_metadata)
     _write_text(case / "log.adjointOptimisationFoam", "End\n")
     _write_text(case / "optimisation" / "objective" / "0" / "force_xresp_force_x", "1 2.5 2.5\n")
+    _write_text(case / "system" / "optimisationDict", _topo_optimisation_dict())
+    _write_text(case / "0" / "alpha", _scalar_field("alpha", "[0 0 0 0 0 0 0]", [0.2, 0.8]))
     _write_gzip(
-        case / "processor0" / "1" / "topologySensresp_force_x.gz",
-        _scalar_field("topologySensresp_force_x", "[1 1 -2 0 0 0 0]", [1.25, -0.5]),
+        case / "processor0" / "1" / "alphaTilda.gz",
+        _scalar_field("alphaTilda", "[0 0 0 0 0 0 0]", [0.3, 0.7]),
+    )
+    _write_gzip(
+        case / "processor0" / "1" / "beta.gz",
+        _scalar_field("beta", "[0 0 0 0 0 0 0]", [0.35, 0.65]),
+    )
+    _write_gzip(
+        case / "processor0" / "1" / "topOSensresp_force_x.gz",
+        _scalar_field("topOSensresp_force_x", "[1 1 -2 0 0 0 0]", [1.25, -0.5]),
     )
     _write_gzip(
         case / "processor0" / "constant" / "polyMesh" / "cellProcAddressing.gz",
@@ -253,7 +303,11 @@ def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
                 "response_id": "force_x",
                 "design_variable_id": "rho",
                 "gradient_convention": "d_response_d_rho_cell_integrated",
-                "filter_projection_chain_rule": "identity",
+                "source_design_variable": "alpha",
+                "filtered_field": "alphaTilda",
+                "projected_field": "beta",
+                "gradient_field_kind": "topOSens",
+                "filter_projection_chain_rule": "alpha_to_alphaTilda_to_beta_complete",
                 "units": "N",
                 "source": "qualified_solver_d_force_d_rho",
                 "openfoam_dimensions": "1 1 -2 0 0 0 0",
@@ -348,6 +402,19 @@ def _label_list(values: list[int]) -> str:
 {' '.join(map(str, values))}
 )
 ;
+"""
+
+
+def _topo_optimisation_dict() -> str:
+    return """optimisation
+{
+    designVariables
+    {
+        type topO;
+        sensitivityType topO;
+        writeFieldSens true;
+    }
+}
 """
 
 
