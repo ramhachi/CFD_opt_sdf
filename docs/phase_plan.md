@@ -79,7 +79,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Numerical gate passed; physics qualification pending | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for both configured flows pass the declared primal, response, adjoint, and normalized-mass convergence qualification. Porous/body-fitted force and gradient comparisons remain unqualified. |
+| G2 case compiler | Requalification required after canonical-domain binding | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for the prior G2 specification passed the declared primal, response, adjoint, and normalized-mass convergence qualification. Adding the explicit canonical domain changed the ProblemSpec hash, so new domain-bound cases must be compiled, executed, and qualified before that result is claimed for the current specification. Porous/body-fitted force and gradient comparisons remain unqualified. |
 | G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
@@ -107,7 +107,8 @@ G1 completion is contract evidence only.
 
 ## 6. G2 — solver compiler and target-physics bridge
 
-Status: numerical convergence gate passed; physics qualification pending.
+Status: prior-spec numerical convergence gate passed; current canonical-domain
+specification requires runtime requalification before physics qualification.
 
 Implemented:
 
@@ -145,7 +146,9 @@ explicitly until implemented.
 Remaining implementation:
 
 1. Supply and qualify semantic bindings for native v2 primal and sensitivity
-   artifacts from real runs. The current G2 run is correctly refused: its
+   artifacts from real runs. First recompile, rerun, and requalify both G2
+   flows because `grid.domain_bounds_m` changed the ProblemSpec hash. The
+   current G2 run is correctly refused: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
    its final `topOSens` to `rho` chain has not passed finite-difference
    validation, its reconstructed mesh fields have not been transferred to a
@@ -247,8 +250,9 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Bind G2 response units, `rho` gradient convention, mesh-grid mapping, and
-   topology-policy values; then write native v2 primal and sensitivity run
+1. Recompile, rerun, and numerically requalify G2 under the explicit canonical
+   domain; bind response units, `rho` gradient convention, mesh-grid mapping,
+   and topology-policy values; then write native v2 primal and sensitivity run
    artifacts. **Implementation required.**
 2. Qualify simple porous versus body-fitted cases. **Implementation required.**
 3. Implement all G3 fail-closed geometry/resolution gates. **Implementation
