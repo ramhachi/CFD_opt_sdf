@@ -298,6 +298,16 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
         encoding="utf-8"
     )
     assert "nIters 7;" in (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    straight_optimisation = (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    yawed_optimisation = (yawed / "system/optimisationDict").read_text(encoding="utf-8")
+    assert "useSolverNameForFields true;" in straight_optimisation
+    assert "useSolverNameForFields true;" in yawed_optimisation
+    assert "names (U Uaresp_straight_force);" in (straight / "system/fvOptions").read_text(
+        encoding="utf-8"
+    )
+    assert "names (U Uaresp_yaw_force);" in (yawed / "system/fvOptions").read_text(
+        encoding="utf-8"
+    )
     assert (straight / "system/template_sentinel").read_text(encoding="utf-8") == "system"
     assert not (straight / "0").exists()
     assert not (straight / "postProcessing").exists()

@@ -137,6 +137,7 @@ def test_one_force_response_maps_to_solver_field_and_objective(tmp_path: Path) -
     assert "Aref 1.2;" in optimisation
     assert "UInf 30;" in optimisation
     assert "nIters 17;" in optimisation
+    assert "useSolverNameForFields true;" in optimisation
     assert '"pa.*" 5e-7;' in optimisation
     assert '"Ua.*" 5e-7;' in optimisation
     assert "names (U Uaresp_rotated_force);" in fv_options
@@ -149,6 +150,19 @@ def test_two_force_responses_preserve_requested_order(tmp_path: Path) -> None:
 
     optimisation = artifacts.optimisation_dict.read_text(encoding="utf-8")
     assert optimisation.index("resp_drag") < optimisation.index("resp_side_force")
+    assert optimisation.count("useSolverNameForFields true;") == 2
+    response_ids = ("drag", "side_force")
+    for index, response_id in enumerate(response_ids):
+        solver_start = optimisation.index(f"resp_{response_id}\n")
+        solver_end = (
+            optimisation.index(f"resp_{response_ids[index + 1]}\n", solver_start + 1)
+            if index + 1 < len(response_ids)
+            else optimisation.index("        }\n    }\n}", solver_start)
+        )
+        assert (
+            "useSolverNameForFields true;"
+            in optimisation[solver_start:solver_end]
+        )
     assert "names (U Uaresp_drag Uaresp_side_force);" in artifacts.fv_options.read_text(
         encoding="utf-8"
     )

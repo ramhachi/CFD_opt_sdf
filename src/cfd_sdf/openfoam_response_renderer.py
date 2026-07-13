@@ -199,6 +199,7 @@ def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
         "                active true;\n"
         "                type incompressible;\n"
         "                solver adjointSimple;\n"
+        "                useSolverNameForFields true;\n"
         "                isConstraint false;\n"
         "                objectives\n"
         "                {\n"
