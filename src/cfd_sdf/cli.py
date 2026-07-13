@@ -5,6 +5,7 @@ import json
 import shutil
 from pathlib import Path
 
+import numpy as np
 import typer
 from rich.console import Console
 
@@ -55,6 +56,11 @@ from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
 from .openfoam_native_artifacts import assess_native_openfoam_v2_artifact_readiness
+from .native_g2_fd_validation import (
+    execute_native_g2_openfoam_fd_direction,
+    prepare_native_g2_openfoam_fd_direction,
+    validate_native_g2_openfoam_fd_direction,
+)
 from .parametric import default_parameters, parameters_to_dict, write_parametric_front_wing_stl
 from .porous_force_validation import (
     validate_efficiency_constraint_gradient,
@@ -358,6 +364,88 @@ def assess_native_openfoam_v2_artifact_readiness_command(
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps({**assessment, "artifact_json": str(target)}, indent=2))
+
+
+@app.command("prepare-native-g2-openfoam-fd-direction")
+def prepare_native_g2_openfoam_fd_direction_command(
+    project_yaml: Path = typer.Argument(..., help="Generic problem specification YAML."),
+    bundle_dir: Path = typer.Argument(..., help="Compiled OpenFOAM bundle used as the clean case template."),
+    baseline_case_dir: Path = typer.Argument(..., help="Completed decomposed baseline run for the selected response."),
+    canonical_snapshot_json: Path = typer.Argument(..., help="Verified canonical grid snapshot JSON."),
+    canonical_gradient_dir: Path = typer.Argument(..., help="Canonical topOSens transfer artifact directory."),
+    direction_npy: Path = typer.Argument(..., help="One canonical density-direction value per cell (.npy)."),
+    output_dir: Path = typer.Option(..., help="New output directory for staged plus/minus cases."),
+    flow_case_id: str = typer.Option(..., help="Declared flow-case ID."),
+    response_id: str = typer.Option(..., help="Declared force-response ID."),
+    objective_id: str = typer.Option(..., help="Declared objective containing the response exactly once."),
+    epsilon: float = typer.Option(1.0e-3, help="Centered perturbation in the source alpha design variable."),
+    final_time: str | None = typer.Option(None, help="Explicit final decomposed OpenFOAM time directory."),
+    execute: bool = typer.Option(False, help="Run the two staged OpenFOAM cases after preparation."),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, min=1, help="Optional timeout per staged case."),
+    docker_image: str | None = typer.Option(None, help="Docker image when backend=docker."),
+) -> None:
+    """Stage a fail-closed native G2 central-FD direction check.
+
+    The command accepts a canonical direction but reconstructs the baseline
+    OpenFOAM state from the completed run; it refuses any inverse state-grid
+    transfer, clipping, missing provenance, or out-of-bounds perturbation.
+    """
+
+    try:
+        direction = np.load(direction_npy, allow_pickle=False)
+        artifacts = prepare_native_g2_openfoam_fd_direction(
+            project_yaml=project_yaml,
+            bundle_dir=bundle_dir,
+            baseline_case_dir=baseline_case_dir,
+            canonical_snapshot_json=canonical_snapshot_json,
+            canonical_gradient_dir=canonical_gradient_dir,
+            flow_case_id=flow_case_id,
+            response_id=response_id,
+            objective_id=objective_id,
+            canonical_density_direction=direction,
+            epsilon=epsilon,
+            output_dir=output_dir,
+            final_time=final_time,
+        )
+        execution = None
+        if execute:
+            plus, minus = execute_native_g2_openfoam_fd_direction(
+                artifacts,
+                backend=backend,
+                timeout_seconds=timeout_seconds,
+                docker_image=docker_image,
+            )
+            execution = {
+                "plus": plus.to_dict() if hasattr(plus, "to_dict") else str(plus),
+                "minus": minus.to_dict() if hasattr(minus, "to_dict") else str(minus),
+            }
+    except (OSError, RuntimeError, ValueError, FileExistsError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    result = artifacts.to_dict()
+    result["execution"] = execution
+    typer.echo(json.dumps(result, indent=2))
+
+
+@app.command("validate-native-g2-openfoam-fd-direction")
+def validate_native_g2_openfoam_fd_direction_command(
+    prepared_dir: Path = typer.Argument(..., help="Prepared native G2 FD direction directory."),
+    relative_error_tolerance: float = typer.Option(
+        0.25, help="Allowed symmetric relative error between central FD and transferred adjoint."
+    ),
+) -> None:
+    """Parse declared-force results from staged cases and compare with the adjoint."""
+
+    try:
+        result = validate_native_g2_openfoam_fd_direction(
+            prepared_dir,
+            relative_error_tolerance=relative_error_tolerance,
+        )
+    except (OSError, ValueError, FileNotFoundError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result.to_dict(), indent=2))
+    if not result.ok:
+        raise typer.Exit(code=1)
 
 
 @app.command("produce-openfoam-normalized-mass-imbalance")
