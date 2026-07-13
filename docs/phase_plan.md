@@ -79,7 +79,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Smoke gate passed; numerical and physics qualification pending | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. The OpenFOAM v2512 Docker smoke completes both configured flows through one optimization cycle without a fatal setup error. Real logs plus boundary-`phi` measurements provide complete primal, response, adjoint, and normalized-mass evidence. The current short profile still fails the adjoint-residual threshold, and porous/body-fitted physics comparisons remain unqualified. |
+| G2 case compiler | Numerical gate passed; physics qualification pending | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for both configured flows pass the declared primal, response, adjoint, and normalized-mass convergence qualification. Porous/body-fitted force and gradient comparisons remain unqualified. |
 | G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
@@ -107,7 +107,7 @@ G1 completion is contract evidence only.
 
 ## 6. G2 — solver compiler and target-physics bridge
 
-Status: smoke gate passed; numerical and physics gates pending.
+Status: numerical convergence gate passed; physics qualification pending.
 
 Implemented:
 
@@ -138,17 +138,14 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Tune and validate the declared primal/adjoint convergence controls against
-   the numerical thresholds; a complete short-run artifact is not numerical
-   qualification by itself.
-2. Supply and qualify semantic bindings for native v2 primal and sensitivity
+1. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from real runs. The current G2 run is correctly refused: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
    its `topologySens`/`topOSens` to `rho` convention is undefined, its mesh is
    not bound to the canonical grid, and it has no topology-policy values.
-3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
+2. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
-4. Compare porous and body-fitted pressure force, skin friction, total force,
+3. Compare porous and body-fitted pressure force, skin friction, total force,
    and gradient direction on simple geometries.
 
 G2 smoke gate:
@@ -243,19 +240,17 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Tune and qualify G2 primal/adjoint convergence using complete runtime
-   evidence. **Implementation required.**
-2. Bind G2 response units, `rho` gradient convention, mesh-grid mapping, and
+1. Bind G2 response units, `rho` gradient convention, mesh-grid mapping, and
    topology-policy values; then write native v2 primal and sensitivity run
    artifacts. **Implementation required.**
-3. Qualify simple porous versus body-fitted cases. **Implementation required.**
-4. Implement all G3 fail-closed geometry/resolution gates. **Implementation
+2. Qualify simple porous versus body-fitted cases. **Implementation required.**
+3. Implement all G3 fail-closed geometry/resolution gates. **Implementation
    required.**
-5. Execute G4 B0–B2 before production optimizer work. **Implementation
+4. Execute G4 B0–B2 before production optimizer work. **Implementation
    required.**
-6. Implement production Stage T derivatives and nonlinear optimizer.
+5. Implement production Stage T derivatives and nonlinear optimizer.
    **Implementation required.**
-7. Advance through B3–B5, then Stage S and Stage V.
+6. Advance through B3–B5, then Stage S and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
 
