@@ -33,7 +33,7 @@ match `^[a-z][a-z0-9_]{0,63}$`.
 | `problem_id` | Stable ID used to bind all downstream artifacts. |
 | `units` | Must declare the SI base units `length: m`, `time: s`, and `mass: kg`. |
 | `coordinate_frame` | `id`, `origin_m`, and an orthonormal right-handed `basis` containing unit vectors `x`, `y`, and `z`. |
-| `grid` | `kind`, positive `voxel_size_m`, and non-negative `padding_m`. `uniform_cartesian` is executable in v2; `octree_amr` is reserved in the contract but is not execution-ready. |
+| `grid` | `kind`, positive `voxel_size_m`, and non-negative `padding_m`. Optional `domain_bounds_m.lower`/`upper` declare an explicit canonical Cartesian transfer domain; each finite extent must be positive and an integer multiple of `voxel_size_m` (relative tolerance `1e-10`, absolute tolerance `1e-12 m`). `uniform_cartesian` is executable in v2; `octree_amr` is reserved in the contract but is not execution-ready. |
 | `reference_values` | Optional mapping with positive `area_m2`, positive `length_m`, and `moment_center_m`. All three are required for `execution_ready: true`. |
 | `geometry_regions[]` | Portable relative STL paths with `id`, typed `role`, and `file`. |
 | `flow_cases[]` | One or more named flow cases with a nonzero freestream vector, fluid properties, optional turbulence declaration, boundary-condition mapping, motion-profile mapping, and optional typed `convergence_criteria`. |

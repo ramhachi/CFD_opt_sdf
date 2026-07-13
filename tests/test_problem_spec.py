@@ -10,6 +10,7 @@ import yaml
 
 from cfd_sdf.config import load_project
 from cfd_sdf.problem_spec import (
+    canonical_uniform_cartesian_cell_grid,
     canonical_problem_spec_json,
     load_problem_spec,
     problem_spec_sha256,
@@ -1011,6 +1012,74 @@ def test_canonical_hash_changes_when_problem_semantics_change(tmp_path: Path) ->
     changed = load_problem_spec(_write_yaml(tmp_path, changed_data, "changed.yaml"))
 
     assert problem_spec_sha256(baseline) != problem_spec_sha256(changed)
+
+
+def test_explicit_domain_bounds_are_canonical_and_build_the_target_grid(tmp_path: Path) -> None:
+    data = _v2_data()
+    data["grid"]["domain_bounds_m"] = {
+        "lower": [-0.04, -0.02, 0.0],
+        "upper": [0.02, 0.02, 0.04],
+    }
+
+    spec = load_problem_spec(_write_yaml(tmp_path, data, "domain.yaml"))
+    content = problem_spec_to_dict(spec)
+    grid = canonical_uniform_cartesian_cell_grid(spec)
+
+    assert spec.grid.domain_bounds_m is not None
+    assert spec.grid.domain_bounds_m.lower == pytest.approx((-0.04, -0.02, 0.0))
+    assert content["grid"]["domain_bounds_m"] == data["grid"]["domain_bounds_m"]
+    assert "domain_bounds_m" not in spec.grid.options
+    assert grid.origin == pytest.approx((-0.04, -0.02, 0.0))
+    assert grid.spacing == pytest.approx((0.02, 0.02, 0.02))
+    assert grid.cell_shape == (3, 2, 2)
+
+
+@pytest.mark.parametrize(
+    "bounds,match",
+    [
+        ({"lower": [0.0, 0.0, 0.0], "upper": [0.0, 0.02, 0.02]}, "lower < upper"),
+        ({"lower": [0.0, 0.0, 0.0], "upper": [0.03, 0.02, 0.02]}, "integer multiple"),
+        ({"lower": [0.0, 0.0, 0.0], "upper": [float("inf"), 0.02, 0.02]}, "finite"),
+        (
+            {"lower": [0.0, 0.0, 0.0], "upper": [0.02, 0.02, 0.02], "extra": 1},
+            "unknown keys",
+        ),
+    ],
+)
+def test_explicit_domain_bounds_are_strictly_validated(
+    tmp_path: Path, bounds: dict, match: str
+) -> None:
+    data = _v2_data()
+    data["grid"]["domain_bounds_m"] = bounds
+
+    with pytest.raises(ValueError, match=match):
+        load_problem_spec(_write_yaml(tmp_path, data, "invalid_domain.yaml"))
+
+
+def test_explicit_domain_bounds_change_hash_but_omission_remains_compatible(tmp_path: Path) -> None:
+    baseline = load_problem_spec(_write_yaml(tmp_path, _v2_data(), "baseline.yaml"))
+    changed_data = _v2_data()
+    changed_data["grid"]["domain_bounds_m"] = {
+        "lower": [0.0, 0.0, 0.0],
+        "upper": [0.04, 0.04, 0.04],
+    }
+    changed = load_problem_spec(_write_yaml(tmp_path, changed_data, "domain.yaml"))
+
+    assert baseline.grid.domain_bounds_m is None
+    assert "domain_bounds_m" not in problem_spec_to_dict(baseline)["grid"]
+    assert problem_spec_sha256(baseline) != problem_spec_sha256(changed)
+    with pytest.raises(ValueError, match="domain_bounds_m"):
+        canonical_uniform_cartesian_cell_grid(baseline)
+
+
+def test_g2_domain_bounds_match_the_openfoam_block_mesh_extent() -> None:
+    spec = load_problem_spec(Path("examples/g2_openfoam_compile/project.yaml"))
+    grid = canonical_uniform_cartesian_cell_grid(spec)
+
+    assert spec.grid.domain_bounds_m is not None
+    assert spec.grid.domain_bounds_m.lower == pytest.approx((-1.0, -0.8, -0.6))
+    assert spec.grid.domain_bounds_m.upper == pytest.approx((2.0, 0.8, 0.6))
+    assert grid.cell_shape == (150, 80, 60)
 
 
 def test_canonical_hash_changes_with_typed_topology_semantics(tmp_path: Path) -> None:

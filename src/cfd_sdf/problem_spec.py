@@ -37,6 +37,8 @@ DEFAULT_NORMALIZED_MASS_IMBALANCE_MAX = 1.0e-4
 DEFAULT_RESPONSE_STATIONARITY_WINDOW = 20
 DEFAULT_RESPONSE_RELATIVE_RANGE_MAX = 1.0e-3
 DEFAULT_ADJOINT_FINAL_RESIDUAL_MAX = 1.0e-6
+DOMAIN_BOUNDS_ALIGNMENT_RELATIVE_TOLERANCE = 1.0e-10
+DOMAIN_BOUNDS_ALIGNMENT_ABSOLUTE_TOLERANCE_M = 1.0e-12
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,15 @@ class GridSpec:
     voxel_size_m: float
     padding_m: float
     options: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
+    domain_bounds_m: "DomainBoundsSpec | None" = None
+
+
+@dataclass(frozen=True)
+class DomainBoundsSpec:
+    """Explicit lower/upper corners of a canonical Cartesian cell domain."""
+
+    lower: Vector3
+    upper: Vector3
 
 
 @dataclass(frozen=True)
@@ -284,6 +295,16 @@ def problem_spec_to_dict(spec: ProblemSpec) -> dict[str, Any]:
             "kind": spec.grid.kind,
             "voxel_size_m": spec.grid.voxel_size_m,
             "padding_m": spec.grid.padding_m,
+            **(
+                {
+                    "domain_bounds_m": {
+                        "lower": spec.grid.domain_bounds_m.lower,
+                        "upper": spec.grid.domain_bounds_m.upper,
+                    }
+                }
+                if spec.grid.domain_bounds_m is not None
+                else {}
+            ),
             **spec.grid.options,
         },
         "reference_values": references,
@@ -394,6 +415,32 @@ def problem_spec_sha256(spec: ProblemSpec) -> str:
     return hashlib.sha256(canonical_problem_spec_json(spec).encode("utf-8")).hexdigest()
 
 
+def canonical_uniform_cartesian_cell_grid(spec: ProblemSpec):
+    """Build the explicit canonical transfer target declared by ``spec``.
+
+    This helper deliberately refuses a legacy/implicit geometry extent.  A
+    caller that needs a provenance-bound fixed-grid target must use a native
+    ``uniform_cartesian`` problem with ``grid.domain_bounds_m``; geometry/SDF
+    generation remains responsible for producing its masks separately.
+    """
+
+    if not isinstance(spec, ProblemSpec):
+        raise ValueError("spec must be ProblemSpec")
+    if spec.grid.kind != "uniform_cartesian":
+        raise ValueError("canonical Cartesian cell grid requires grid.kind=uniform_cartesian")
+    bounds = spec.grid.domain_bounds_m
+    if bounds is None:
+        raise ValueError("canonical Cartesian cell grid requires grid.domain_bounds_m")
+    counts = _domain_cell_shape(bounds, spec.grid.voxel_size_m)
+    from .openfoam_grid_transfer import UniformCartesianCellGrid
+
+    return UniformCartesianCellGrid(
+        origin=bounds.lower,
+        spacing=(spec.grid.voxel_size_m,) * 3,
+        cell_shape=counts,
+    )
+
+
 def write_problem_spec_snapshot(spec: ProblemSpec, path: str | Path) -> Path:
     """Write portable canonical content and migration provenance."""
 
@@ -466,13 +513,20 @@ def _load_v2(path: Path, raw: Mapping[str, Any]) -> ProblemSpec:
     grid_kind = _required_text(grid_raw, "kind", "grid")
     if grid_kind not in {"uniform_cartesian", "octree_amr"}:
         raise ValueError("grid.kind must be 'uniform_cartesian' or 'octree_amr'")
+    voxel_size_m = _positive_float(grid_raw.get("voxel_size_m"), "grid.voxel_size_m")
+    domain_bounds_m = _load_domain_bounds(grid_raw.get("domain_bounds_m"), voxel_size_m)
     grid = GridSpec(
         kind=grid_kind,
-        voxel_size_m=_positive_float(grid_raw.get("voxel_size_m"), "grid.voxel_size_m"),
+        voxel_size_m=voxel_size_m,
         padding_m=_nonnegative_float(grid_raw.get("padding_m"), "grid.padding_m"),
         options=_freeze_mapping(
-            {key: value for key, value in grid_raw.items() if key not in {"kind", "voxel_size_m", "padding_m"}}
+            {
+                key: value
+                for key, value in grid_raw.items()
+                if key not in {"kind", "voxel_size_m", "padding_m", "domain_bounds_m"}
+            }
         ),
+        domain_bounds_m=domain_bounds_m,
     )
 
     reference_values = _load_reference_values(raw.get("reference_values"))
@@ -1147,6 +1201,47 @@ def _is_v2_execution_ready(
     )
 
 
+def _load_domain_bounds(value: Any, voxel_size_m: float) -> DomainBoundsSpec | None:
+    if value is None:
+        return None
+    raw = _as_mapping(value, "grid.domain_bounds_m")
+    _reject_unknown_keys(raw, {"lower", "upper"}, "grid.domain_bounds_m")
+    bounds = DomainBoundsSpec(
+        lower=_vector3(raw.get("lower"), "grid.domain_bounds_m.lower"),
+        upper=_vector3(raw.get("upper"), "grid.domain_bounds_m.upper"),
+    )
+    _domain_cell_shape(bounds, voxel_size_m)
+    return bounds
+
+
+def _domain_cell_shape(bounds: DomainBoundsSpec, voxel_size_m: float) -> tuple[int, int, int]:
+    counts: list[int] = []
+    for axis, (lower, upper) in enumerate(zip(bounds.lower, bounds.upper, strict=True)):
+        extent = upper - lower
+        if not isfinite(extent) or extent <= 0.0:
+            axis_name = "xyz"[axis]
+            raise ValueError(
+                "grid.domain_bounds_m must satisfy lower < upper on every axis; "
+                f"axis {axis_name!r} has lower={lower!r}, upper={upper!r}"
+            )
+        raw_count = extent / voxel_size_m
+        rounded_count = round(raw_count)
+        expected_extent = rounded_count * voxel_size_m
+        tolerance = max(
+            DOMAIN_BOUNDS_ALIGNMENT_ABSOLUTE_TOLERANCE_M,
+            DOMAIN_BOUNDS_ALIGNMENT_RELATIVE_TOLERANCE * max(abs(extent), abs(expected_extent)),
+        )
+        if rounded_count <= 0 or abs(extent - expected_extent) > tolerance:
+            axis_name = "xyz"[axis]
+            raise ValueError(
+                "grid.domain_bounds_m extent must be an integer multiple of "
+                f"grid.voxel_size_m on axis {axis_name!r}; extent={extent:.17g}, "
+                f"voxel_size_m={voxel_size_m:.17g}, tolerance={tolerance:.17g}"
+            )
+        counts.append(int(rounded_count))
+    return tuple(counts)  # type: ignore[return-value]
+
+
 def _validate_basis(basis: BasisSpec) -> None:
     tolerance = 1.0e-6
     for name, vector in (("x", basis.x), ("y", basis.y), ("z", basis.z)):
@@ -1321,6 +1416,9 @@ __all__ = [
     "ConvergenceCriteriaSpec",
     "ConnectivityPolicySpec",
     "CoordinateFrameSpec",
+    "DOMAIN_BOUNDS_ALIGNMENT_ABSOLUTE_TOLERANCE_M",
+    "DOMAIN_BOUNDS_ALIGNMENT_RELATIVE_TOLERANCE",
+    "DomainBoundsSpec",
     "FlowCaseSpec",
     "FluidSpec",
     "GeometryRegionSpec",
@@ -1336,6 +1434,7 @@ __all__ = [
     "TurbulenceSpec",
     "UnitsSpec",
     "WeightedTermSpec",
+    "canonical_uniform_cartesian_cell_grid",
     "canonical_problem_spec_json",
     "load_problem_spec",
     "problem_spec_sha256",
