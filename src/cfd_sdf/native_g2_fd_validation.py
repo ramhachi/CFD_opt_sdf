@@ -42,6 +42,8 @@ _INTERNAL_FIELD = re.compile(
     r"\binternalField\s+(?:uniform\s+[^;]+|nonuniform\s+List<scalar>\s+\d+\s*\(\s*.*?\s*\))\s*;",
     flags=re.DOTALL,
 )
+_PROCESSOR_DIRECTORY = re.compile(r"^processor[0-9]+$")
+_NUMERIC_TIME_DIRECTORY = re.compile(r"^[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$")
 
 
 @dataclass(frozen=True)
@@ -183,6 +185,8 @@ def prepare_native_g2_openfoam_fd_direction(
         minus_case = staging / "minus"
         shutil.copytree(template_case, plus_case)
         shutil.copytree(template_case, minus_case)
+        plus_removed = _reset_staged_case_for_fresh_execution(plus_case, staging_root=staging)
+        minus_removed = _reset_staged_case_for_fresh_execution(minus_case, staging_root=staging)
         _write_alpha_field(plus_case / "0.orig" / "alpha", plus_alpha)
         _write_alpha_field(minus_case / "0.orig" / "alpha", minus_alpha)
         _patch_allrun_to_restore_fd_alpha(plus_case / "Allrun")
@@ -253,6 +257,11 @@ def prepare_native_g2_openfoam_fd_direction(
                 "minus_alpha_sha256": _sha256_file(minus_case / "0.orig" / "alpha"),
                 "plus_allrun_sha256": _sha256_file(plus_case / "Allrun"),
                 "minus_allrun_sha256": _sha256_file(minus_case / "Allrun"),
+            },
+            "fresh_execution_reset": {
+                "removed_from_plus": plus_removed,
+                "removed_from_minus": minus_removed,
+                "preserved": ["0.orig", "constant", "system", "Allrun", "Allclean"],
             },
             "gradient_source": gradient_provenance,
         }
@@ -518,6 +527,53 @@ def _write_alpha_field(path: Path, values: np.ndarray) -> None:
     if re.search(r"\bclass\s+volScalarField\s*;", rendered) is None or re.search(r"\bobject\s+alpha\s*;", rendered) is None:
         raise ValueError(f"alpha template has an unexpected OpenFOAM header: {path}")
     path.write_text(rendered, encoding="utf-8")
+
+
+def _reset_staged_case_for_fresh_execution(case_dir: Path, *, staging_root: Path) -> list[str]:
+    """Remove only known runtime artifacts from one copied FD case.
+
+    Qualification bundles may intentionally retain solver output as evidence.
+    The FD copies must instead look like an unrun case or OpenFOAM can reuse
+    stale decompositions/logs and skip the new alpha perturbation.  The caller
+    supplies ``staging_root`` so this destructive operation cannot target the
+    source bundle or the evidence-bearing baseline case.
+    """
+
+    resolved_case = case_dir.resolve()
+    resolved_staging = staging_root.resolve()
+    try:
+        resolved_case.relative_to(resolved_staging)
+    except ValueError as exc:
+        raise ValueError("fresh-execution reset case must be inside the staging directory") from exc
+    if not resolved_case.is_dir():
+        raise FileNotFoundError(f"staged OpenFOAM case is missing: {resolved_case}")
+    for required in ("0.orig", "constant", "system", "Allrun", "Allclean"):
+        if not (resolved_case / required).exists():
+            raise FileNotFoundError(f"staged OpenFOAM case lacks required preserved input: {resolved_case / required}")
+
+    removed: list[str] = []
+    for child in sorted(resolved_case.iterdir(), key=lambda item: item.name):
+        name = child.name
+        generated_directory = (
+            _PROCESSOR_DIRECTORY.fullmatch(name) is not None
+            or _NUMERIC_TIME_DIRECTORY.fullmatch(name) is not None
+            or name in {"optimisation", "postProcessing", "VTK"}
+        )
+        generated_file = name.startswith("log.") or name in {
+            "openfoam_run_summary.json",
+            "case.foam",
+        }
+        if generated_directory:
+            if not child.is_dir():
+                raise ValueError(f"expected generated OpenFOAM artifact directory is not a directory: {child}")
+            shutil.rmtree(child)
+            removed.append(name + "/")
+        elif generated_file:
+            if not child.is_file():
+                raise ValueError(f"expected generated OpenFOAM artifact is not a file: {child}")
+            child.unlink()
+            removed.append(name)
+    return removed
 
 
 def _patch_allrun_to_restore_fd_alpha(path: Path) -> None:
