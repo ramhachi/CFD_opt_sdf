@@ -77,13 +77,13 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 
 | Workstream | Status | Current evidence and gap |
 | --- | --- | --- |
-| G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
+| G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. `AGENTS.md` requires a bounded `sol_<topic>` sub-agent review before any decision that materially affects physical correctness, numerical validation, OpenFOAM semantics, artifact provenance, public contracts, or the roadmap. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Numerical runtime qualification and canonical transfer passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed two-flow Docker OpenFOAM v2512 qualification on the physical `blockMesh` bounds `[-1, -1.2, -0.6]` to `[2, 1.2, 0.7]` with `32 x 16 x 16` cells. Straight: primal `1.67370751295e-08`, adjoint `1.03357192705e-08`, normalized mass `1.5598386779634098e-11`; yawed: primal `7.99508862341e-09`, adjoint `6.58865956728e-08`, normalized mass `2.61841637267506e-11`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_domain_bound_requalification_20260714/`. Domain-bound canonical gradient transfer also passed for both flows with full coverage of all 1,170,000 canonical indices. The native G2 finite-difference harness, semantic bindings, and porous/body-fitted comparisons remain unqualified. |
+| G2 case compiler | Numerical runtime qualification, canonical transfer, and straight-flow FD direction check passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed the named-adjoint, absolute-linear-tolerance two-flow Docker OpenFOAM v2512 qualification. Straight: primal `7.28932450665e-09`, adjoint max `6.98776718537e-10`, normalized mass `3.4188037016180413e-11`; yawed: primal `7.99508862341e-09`, adjoint max `9.79649119374e-10`, normalized mass `2.61841637267506e-11`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_named_adjoint_absolute_requalification_20260714/`. Canonical gradient transfer passed with full coverage for both flows. The real straight-flow FD direction check passed in N: at ε=`0.005`, FD `28.1184973209` versus adjoint `28.8034576418` (2.378%); at ε=`0.01`, FD `28.0971302028` versus the same adjoint (2.452%); tolerance 25%. Native v2 response/provenance/topology bindings and porous/body-fitted comparisons remain unqualified. |
 | G3 geometry/resolution gates | In progress — G2 fixture mask verified | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576. Physical feature-resolution and density-to-SDF fidelity gates remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
-| Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
+| Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist. The real G2 straight-flow FD direction check now qualifies the transferred force-sensitivity chain, but native v2 remains blocked on explicit response-unit/provenance, `rho`-gradient convention, mesh-grid mapping, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
 | Stage S | Handoff prototype only | Density-to-STL/SDF conversion exists; quantitative fidelity and a qualified sharp-interface solver do not. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
 
@@ -108,8 +108,9 @@ G1 completion is contract evidence only.
 ## 6. G2 — solver compiler and target-physics bridge
 
 Status: numerical runtime qualification passed for the current front-wing-role/
-domain contract; native artifact binding and target-physics qualification
-remain incomplete.
+domain contract; canonical transfer and straight-flow FD direction validation
+passed; native artifact binding and target-physics qualification remain
+incomplete.
 
 The existing front-wing STL files are the canonical geometry source for the G2
 benchmark. G2 declares their semantic roles directly; it does not create a
@@ -153,15 +154,19 @@ Implemented:
 - Docker OpenFOAM v2512 numerical runtime qualification for the front-wing-role/
   domain ProblemSpec hash
   `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a`, using
-  physical `blockMesh` bounds `[-1, -1.2, -0.6]` to `[2, 1.2, 0.7]` and
-  `32 x 16 x 16` cells. Straight flow measured primal `1.67370751295e-08`,
-  adjoint `1.03357192705e-08`, and normalized mass
-  `1.5598386779634098e-11`; yawed flow measured primal `7.99508862341e-09`,
-  adjoint `6.58865956728e-08`, and normalized mass
-  `2.61841637267506e-11`. The generated, ignored evidence bundle is
-  `examples/g2_openfoam_compile/runs/g2_front_wing_roles_domain_bound_requalification_20260714/`.
-- domain-bound canonical gradient transfer from both qualified flow fields,
-  with full coverage of all 1,170,000 canonical indices.
+  native v2512 adjoint sources with named-adjoint absolute linear tolerances.
+  The generated, ignored evidence bundle is
+  `examples/g2_openfoam_compile/runs/g2_front_wing_roles_named_adjoint_absolute_requalification_20260714/`.
+  Straight flow measured primal `7.28932450665e-09`, adjoint max
+  `6.98776718537e-10`, and normalized mass `3.4188037016180413e-11`; yawed
+  flow measured primal `7.99508862341e-09`, adjoint max
+  `9.79649119374e-10`, and normalized mass `2.61841637267506e-11`.
+- canonical gradient transfer from both qualified flow fields, with full
+  coverage of all 1,170,000 canonical indices.
+- real straight-flow finite-difference direction validation of the transferred
+  `topOSens` to `rho` chain in N. At ε=`0.005`, FD was `28.1184973209` versus
+  adjoint `28.8034576418` (2.378%); at ε=`0.01`, FD was `28.0971302028`
+  versus the same adjoint (2.452%). Both pass the declared 25% tolerance.
 
 Current supported response compilation is force-only. Moment, pressure loss,
 flow rate, rotating-wall motion, and plugin responses must be rejected
@@ -169,16 +174,15 @@ explicitly until implemented.
 
 Remaining implementation:
 
-1. Run the native G2 finite-difference harness for the transferred `topOSens`
-   to `rho` chain. The domain-bound canonical transfer itself has passed for
-   both flows with full coverage of all 1,170,000 canonical indices.
-   **Implementation required.**
-2. Supply and qualify semantic bindings for native v2 primal and sensitivity
-   artifacts from those real runs. The current G2 artifact is correctly
-   refused: its
-   `porousDirectionalForce` output is a coefficient rather than proven `N`,
-   its final `topOSens` to `rho` chain requires the preceding finite-difference
-   validation, and it has no topology-policy values.
+1. Supply and qualify semantic bindings for native v2 primal and sensitivity
+   artifacts from the real runs. The straight-flow finite-difference check now
+   qualifies the transferred `topOSens` to `rho` direction chain, but the
+   current G2 artifact is still correctly refused: response unit/provenance,
+   `rho`-gradient convention, mesh-grid mapping, and topology-policy values
+   are not yet bound.
+2. Execute the same real-run finite-difference direction validation for the
+   remaining configured flow(s) before treating their sensitivity chain as
+   qualified. **Implementation required.**
 3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
 4. Compare porous and body-fitted pressure force, skin friction, total force,
@@ -209,10 +213,11 @@ The existing front-wing STL source is declared directly in the G2 role
 configuration. Its full 0.02 m canonical-grid mask build contains 1,170,000
 cells and passed manifest verification with 82,160 active, 39,060 forbidden,
 46,388 fixed, and 576 root cells. The current G2 front-wing-role/domain
-ProblemSpec has also passed Docker OpenFOAM v2512 runtime qualification and
-domain-bound canonical gradient transfer for both flows, with full coverage of
-all 1,170,000 canonical indices. The next G2 gate is the native
-finite-difference validation of the transferred sensitivity chain.
+ProblemSpec has passed native-v2512 named-adjoint absolute-tolerance runtime
+qualification and canonical gradient transfer for both flows, with full
+coverage of all 1,170,000 canonical indices. The real straight-flow
+finite-difference direction check also passed. The next G2 gate is native v2
+semantic binding and readiness; physical-resolution gates remain separate.
 
 Implement:
 
@@ -286,10 +291,10 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Transfer the reconstructed real-run fields to the verified canonical grid,
-   execute finite-difference direction checks for `topOSens` to `rho`, then
-   bind response units, gradient convention, mesh-grid mapping, and
-   topology-policy values for native v2 artifacts. **Implementation required.**
+1. Bind response units/provenance, gradient convention, mesh-grid mapping, and
+   topology-policy values for native v2 artifacts; write the artifacts and run
+   the readiness gate. Also complete finite-difference direction validation
+   for each remaining configured flow. **Implementation required.**
 2. Qualify simple porous versus body-fitted cases. **Implementation required.**
 3. Implement the remaining G3 fail-closed physical-resolution and
    density-to-SDF gates. **Implementation required.**
