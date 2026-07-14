@@ -218,14 +218,26 @@ def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:
     root.mkdir(parents=True)
     case = root / "flow_straight"
     response_metadata = {
-        "schema_version": 1,
+        "schema_version": 2,
         "kind": "generated_openfoam_responses",
+        "native_source_strategy": {
+            "openfoam_version": "v2512",
+            "static_toposource_fields": ["U"],
+            "adjoint_source_strategy": "designVariables.addFvOptions",
+            "adjoint_source_value": True,
+        },
         "response_mappings": [
             {
                 "flow_case_id": "straight",
                 "response_id": "force_x",
                 "objective_name": "force_x",
                 "adjoint_solver_id": "resp_force_x",
+                "native_adjoint_source": {
+                    "enabled": True,
+                    "strategy": "v2512_design_variables_addFvOptions",
+                    "dictionary_path": "optimisation.designVariables.addFvOptions",
+                    "adjoint_velocity_field": "Uaresp_force_x",
+                },
             }
         ],
     }

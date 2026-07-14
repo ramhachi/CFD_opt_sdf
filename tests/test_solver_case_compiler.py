@@ -160,7 +160,7 @@ adjointManagers
 }
 optimisation
 {
-    designVariables { type density; }
+    designVariables { type topO; }
     updateMethod { type mma; }
 }
 """,
@@ -192,7 +192,7 @@ def _set_topo_regularisation(template: Path, *, regularise: str) -> None:
     path = template / "system/optimisationDict"
     source = path.read_text(encoding="utf-8")
     updated = source.replace(
-        "designVariables { type density; }",
+        "designVariables { type topO; }",
         "\n".join(
             (
                 "designVariables",
@@ -302,12 +302,14 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     yawed_optimisation = (yawed / "system/optimisationDict").read_text(encoding="utf-8")
     assert "useSolverNameForFields true;" in straight_optimisation
     assert "useSolverNameForFields true;" in yawed_optimisation
-    assert "names (U Uaresp_straight_force);" in (straight / "system/fvOptions").read_text(
+    assert "names (U);" in (straight / "system/fvOptions").read_text(
         encoding="utf-8"
     )
-    assert "names (U Uaresp_yaw_force);" in (yawed / "system/fvOptions").read_text(
+    assert "names (U);" in (yawed / "system/fvOptions").read_text(
         encoding="utf-8"
     )
+    assert straight_optimisation.count("addFvOptions true;") == 1
+    assert yawed_optimisation.count("addFvOptions true;") == 1
     assert (straight / "system/template_sentinel").read_text(encoding="utf-8") == "system"
     assert not (straight / "0").exists()
     assert not (straight / "postProcessing").exists()
@@ -335,6 +337,11 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     assert compilation["physics"]["metadata_sha256"] == hashlib.sha256(
         (straight / "generated_openfoam_physics.json").read_bytes()
     ).hexdigest()
+    response_metadata = json.loads(
+        (straight / "generated_openfoam_responses.json").read_text(encoding="utf-8")
+    )
+    assert response_metadata["native_source_strategy"]["static_toposource_fields"] == ["U"]
+    assert response_metadata["response_mappings"][0]["native_adjoint_source"]["enabled"] is True
     bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
     assert bundle["status"] == "compiled"
     assert bundle["manifest_sha256"] == hashlib.sha256(artifacts.manifest_json.read_bytes()).hexdigest()

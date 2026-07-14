@@ -68,7 +68,7 @@ adjointManagers
 }
 optimisation
 {
-    designVariables { type density; }
+    designVariables { type topO; }
     updateMethod { type mma; }
 }
 """,
