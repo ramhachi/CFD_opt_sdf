@@ -17,6 +17,7 @@ from .solver_case_manifest import SolverFlowCasePlan
 
 _ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 _MARKER_NAME = "generated_openfoam_responses.json"
+_NAMED_ADJOINT_ITERATIONS = 4000
 
 
 @dataclass(frozen=True)
@@ -67,7 +68,7 @@ def render_openfoam_force_response_files(
     fv_options_before_bytes = fv_options_path.read_bytes()
     optimisation_before = optimisation_before_bytes.decode("utf-8")
     fv_options_before = fv_options_before_bytes.decode("utf-8")
-    manager_block = _adjoint_managers_block(responses, adjoint_iterations)
+    manager_block = _adjoint_managers_block(responses)
     optimisation_after = _replace_unique_top_level_block(
         optimisation_before, "adjointManagers", manager_block
     )
@@ -106,7 +107,8 @@ def render_openfoam_force_response_files(
         "kind": "generated_openfoam_responses",
         "flow_case_id": plan.flow_case_id,
         "case_directory_name": plan.case_directory_name,
-        "adjoint_iterations": adjoint_iterations,
+        "adjoint_iterations": _NAMED_ADJOINT_ITERATIONS,
+        "requested_adjoint_iterations": adjoint_iterations,
         "native_source_strategy": {
             "openfoam_version": "v2512",
             "static_toposource_fields": list(static_toposource_fields),
@@ -184,11 +186,9 @@ def _validated_responses(plan: SolverFlowCasePlan) -> tuple[dict[str, Any], ...]
     return tuple(responses)
 
 
-def _adjoint_managers_block(
-    responses: tuple[dict[str, Any], ...], adjoint_iterations: int
-) -> str:
+def _adjoint_managers_block(responses: tuple[dict[str, Any], ...]) -> str:
     solver_blocks = "\n".join(
-        _adjoint_solver_block(response, adjoint_iterations) for response in responses
+        _adjoint_solver_block(response) for response in responses
     )
     return (
         "adjointManagers\n"
@@ -205,7 +205,7 @@ def _adjoint_managers_block(
     )
 
 
-def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
+def _adjoint_solver_block(response: Mapping[str, Any]) -> str:
     response_id = str(response["response_id"])
     direction = "(" + " ".join(_format_number(value) for value in response["direction"]) + ")"
     return (
@@ -238,11 +238,13 @@ def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
         "                }\n"
         "                solutionControls\n"
         "                {\n"
-        f"                    nIters {iterations};\n"
+        f"                    nIters {_NAMED_ADJOINT_ITERATIONS};\n"
         "                    residualControl\n"
         "                    {\n"
         "                        \"pa.*\" 5e-7;\n"
         "                        \"Ua.*\" 5e-7;\n"
+        "                        \"ka.*\" 5e-7;\n"
+        "                        \"wa.*\" 5e-7;\n"
         "                    }\n"
         "                }\n"
         "            }"

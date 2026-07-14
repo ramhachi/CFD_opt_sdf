@@ -297,7 +297,7 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     assert "direction (0 1 0);" in (yawed / "system/optimisationDict").read_text(
         encoding="utf-8"
     )
-    assert "nIters 7;" in (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    assert "nIters 4000;" in (straight / "system/optimisationDict").read_text(encoding="utf-8")
     straight_optimisation = (straight / "system/optimisationDict").read_text(encoding="utf-8")
     yawed_optimisation = (yawed / "system/optimisationDict").read_text(encoding="utf-8")
     assert "useSolverNameForFields true;" in straight_optimisation

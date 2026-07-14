@@ -169,7 +169,7 @@ def test_compile_cli_success_uses_default_patches_and_writes_summary(tmp_path: P
     velocity = (straight / "0.orig/U").read_text(encoding="utf-8")
     for patch_id in DEFAULT_FIXED_GRID_PATCH_IDS:
         assert f"    {patch_id}\n" in velocity
-    assert "nIters 9;" in (straight / "system/optimisationDict").read_text(
+    assert "nIters 4000;" in (straight / "system/optimisationDict").read_text(
         encoding="utf-8"
     )
 

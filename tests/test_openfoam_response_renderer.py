@@ -136,10 +136,15 @@ def test_one_force_response_maps_to_solver_field_and_objective(tmp_path: Path) -
     assert "direction (1 0 0);" in optimisation
     assert "Aref 1.2;" in optimisation
     assert "UInf 30;" in optimisation
-    assert "nIters 17;" in optimisation
+    assert "nIters 4000;" in optimisation
     assert "useSolverNameForFields true;" in optimisation
     assert '"pa.*" 5e-7;' in optimisation
     assert '"Ua.*" 5e-7;' in optimisation
+    assert '"ka.*" 5e-7;' in optimisation
+    assert '"wa.*" 5e-7;' in optimisation
+    metadata = json.loads(artifacts.metadata_json.read_text(encoding="utf-8"))
+    assert metadata["adjoint_iterations"] == 4000
+    assert metadata["requested_adjoint_iterations"] == 17
     assert "names (U);" in fv_options
     assert "Uaresp_rotated_force" not in fv_options
     assert optimisation.count("addFvOptions true;") == 1
