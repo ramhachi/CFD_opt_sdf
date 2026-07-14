@@ -18,6 +18,22 @@ grid:
   domain_bounds_m:
     lower: [-1.0, -1.2, -0.6]
     upper: [2.0, 1.2, 0.7]
+# This local 2 mm design grid is authoritative for topology constraints.  It
+# intentionally remains separate from the coarser global CFD transfer grid.
+design_grid:
+  kind: uniform_cartesian
+  design_domain_region_id: allowed_front_box
+  voxel_size_m: 0.002
+  domain_bounds_m:
+    lower: [0.245, -0.725, 0.01]
+    upper: [1.395, 0.725, 0.43]
+  expected_cell_shape: [575, 725, 210]
+  expected_cell_count: 87543750
+  topology_resolution:
+    minimum_solid_width_cells: 5
+    minimum_void_width_cells: 6
+    minimum_gap_cells: 4
+    erosion_radius_cells: 2
 reference_values:
   area_m2: 1.2
   length_m: 0.8

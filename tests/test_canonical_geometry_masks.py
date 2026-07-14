@@ -45,6 +45,10 @@ def _write_problem(
     _write_box(geometry / "keepout.stl", center=forbidden_center, extents=(0.3, 0.3, 0.3))
     _write_box(geometry / "mount.stl", center=root_center, extents=(0.3, 0.3, 0.3))
     data = _base_data()
+    # Synthetic-mask fixtures deliberately do not opt into the production
+    # local-design-grid contract; their box geometry is intentionally tiny and
+    # unrelated to the authoritative front-wing design domain.
+    data.pop("design_grid", None)
     data["grid"] = {
         "kind": "uniform_cartesian",
         "voxel_size_m": 0.5,

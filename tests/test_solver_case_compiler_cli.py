@@ -140,6 +140,14 @@ def _write_data(tmp_path: Path, data: dict, name: str) -> Path:
     return path
 
 
+def _synthetic_g2_data() -> dict:
+    """Return a standalone compiler fixture without production STL coupling."""
+
+    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data.pop("design_grid", None)
+    return data
+
+
 def test_compile_cli_success_uses_default_patches_and_writes_summary(tmp_path: Path) -> None:
     template = _template(tmp_path)
     output = tmp_path / "bundle"
@@ -175,7 +183,7 @@ def test_compile_cli_success_uses_default_patches_and_writes_summary(tmp_path: P
 
 
 def test_compile_cli_repeated_custom_patch_option(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     for case in data["flow_cases"]:
         case["boundary_conditions"] = {
             "custom_inlet": "freestream",
@@ -208,7 +216,7 @@ def test_compile_cli_repeated_custom_patch_option(tmp_path: Path) -> None:
 
 
 def test_unsupported_allow_returns_zero_without_cases(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     data["responses"].append(
         {
             "id": "unsupported_moment",
@@ -241,7 +249,7 @@ def test_unsupported_allow_returns_zero_without_cases(tmp_path: Path) -> None:
 
 
 def test_unsupported_require_returns_one_after_manifest_and_marker(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     data["grid"]["kind"] = "octree_amr"
     source = _write_data(tmp_path, data, "unsupported_require.yaml")
     output = tmp_path / "unsupported_require"

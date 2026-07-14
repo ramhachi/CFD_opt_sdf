@@ -222,9 +222,14 @@ def _compile(tmp_path: Path, *, turbulence: str = "laminar", overwrite: bool = F
 
 
 def _g2_spec(tmp_path: Path):
+    data = yaml.safe_load(G2_EXAMPLE.read_text(encoding="utf-8"))
+    # This compiler fixture writes a standalone synthetic problem without the
+    # authoritative front-wing STL directory.  Do not inherit the production
+    # local-design-grid contract into that synthetic copy.
+    data.pop("design_grid", None)
     return _spec(
         tmp_path,
-        yaml.safe_load(G2_EXAMPLE.read_text(encoding="utf-8")),
+        data,
         "g2_problem.yaml",
     )
 

@@ -6,10 +6,12 @@ import json
 from pathlib import Path
 
 import pytest
+import trimesh
 import yaml
 
 from cfd_sdf.config import load_project
 from cfd_sdf.problem_spec import (
+    canonical_local_design_grid,
     canonical_uniform_cartesian_cell_grid,
     canonical_problem_spec_json,
     load_problem_spec,
@@ -168,6 +170,31 @@ def _write_yaml(tmp_path: Path, data: dict, name: str = "problem.yaml") -> Path:
     path = tmp_path / name
     path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
     return path
+
+
+def _add_local_design_grid_contract(data: dict, tmp_path: Path) -> None:
+    """Attach a small, real STL-backed design-grid contract to a v2 fixture."""
+
+    geometry_dir = tmp_path / "geometry"
+    geometry_dir.mkdir(parents=True, exist_ok=True)
+    trimesh.creation.box(
+        extents=(0.02, 0.024, 0.008),
+        transform=trimesh.transformations.translation_matrix((0.01, 0.012, 0.004)),
+    ).export(geometry_dir / "design_box.stl")
+    data["design_grid"] = {
+        "kind": "uniform_cartesian",
+        "design_domain_region_id": "design_box",
+        "voxel_size_m": 0.002,
+        "domain_bounds_m": {"lower": [0.0, 0.0, 0.0], "upper": [0.02, 0.024, 0.008]},
+        "expected_cell_shape": [10, 12, 4],
+        "expected_cell_count": 480,
+        "topology_resolution": {
+            "minimum_solid_width_cells": 5,
+            "minimum_void_width_cells": 6,
+            "minimum_gap_cells": 4,
+            "erosion_radius_cells": 2,
+        },
+    }
 
 
 def test_load_v2_two_cases_rotated_force_moment_and_weighted_terms(tmp_path: Path) -> None:
@@ -1080,6 +1107,66 @@ def test_g2_domain_bounds_match_the_openfoam_block_mesh_extent() -> None:
     assert spec.grid.domain_bounds_m.lower == pytest.approx((-1.0, -1.2, -0.6))
     assert spec.grid.domain_bounds_m.upper == pytest.approx((2.0, 1.2, 0.7))
     assert grid.cell_shape == (150, 120, 65)
+
+
+def test_local_design_grid_is_stl_bound_resolution_checked_and_hashed(tmp_path: Path) -> None:
+    data = _v2_data()
+    _add_local_design_grid_contract(data, tmp_path)
+    spec = load_problem_spec(_write_yaml(tmp_path, data))
+    design_grid = canonical_local_design_grid(spec)
+
+    assert spec.design_grid is not None
+    assert design_grid.origin == pytest.approx((0.0, 0.0, 0.0))
+    assert design_grid.spacing == pytest.approx((0.002, 0.002, 0.002))
+    assert design_grid.cell_shape == (10, 12, 4)
+    assert design_grid.cell_count == 480
+    assert spec.design_grid.topology_resolution.minimum_solid_width_cells == 5
+    assert spec.design_grid.topology_resolution.minimum_void_width_cells == 6
+    content = problem_spec_to_dict(spec)
+    assert content["design_grid"]["design_domain_region_id"] == "design_box"
+    assert content["design_grid"]["expected_cell_count"] == 480
+
+    changed_data = _v2_data()
+    _add_local_design_grid_contract(changed_data, tmp_path / "changed")
+    changed_data["design_grid"]["topology_resolution"]["minimum_solid_width_cells"] = 4
+    changed = load_problem_spec(_write_yaml(tmp_path / "changed", changed_data))
+    assert problem_spec_sha256(changed) != problem_spec_sha256(spec)
+
+
+def test_local_design_grid_fails_closed_for_stl_extent_and_policy_resolution(tmp_path: Path) -> None:
+    extent_data = _v2_data()
+    _add_local_design_grid_contract(extent_data, tmp_path / "extent")
+    extent_data["design_grid"]["domain_bounds_m"] = {
+        "lower": [-0.002, 0.0, 0.0],
+        "upper": [0.018, 0.024, 0.008],
+    }
+    with pytest.raises(ValueError, match="must exactly match"):
+        load_problem_spec(_write_yaml(tmp_path / "extent", extent_data))
+
+    resolution_data = _v2_data()
+    _add_local_design_grid_contract(resolution_data, tmp_path / "resolution")
+    resolution_data["design_grid"]["topology_resolution"]["minimum_solid_width_cells"] = 6
+    with pytest.raises(ValueError, match="below required 6"):
+        load_problem_spec(_write_yaml(tmp_path / "resolution", resolution_data))
+
+
+def test_g2_local_design_grid_covers_authoritative_front_box_and_policy() -> None:
+    spec = load_problem_spec(Path("examples/g2_openfoam_compile/project.yaml"))
+    grid = canonical_local_design_grid(spec)
+
+    assert spec.design_grid is not None
+    assert spec.design_grid.design_domain_region_id == "allowed_front_box"
+    assert grid.origin == pytest.approx((0.245, -0.725, 0.01))
+    assert grid.cell_shape == (575, 725, 210)
+    assert grid.cell_count == 87_543_750
+    assert spec.topology_policy.minimum_solid_width_m == pytest.approx(0.01)
+    assert spec.topology_policy.minimum_void_width_m == pytest.approx(0.012)
+    assert spec.topology_policy.minimum_gap_m == pytest.approx(0.008)
+    assert spec.topology_policy.erosion_radius_m == pytest.approx(0.004)
+    assert spec.design_grid.topology_resolution.minimum_solid_width_cells == 5
+    assert spec.design_grid.topology_resolution.minimum_void_width_cells == 6
+    assert spec.design_grid.topology_resolution.minimum_gap_cells == 4
+    assert spec.design_grid.topology_resolution.erosion_radius_cells == 2
 
 
 def test_canonical_hash_changes_with_typed_topology_semantics(tmp_path: Path) -> None:
