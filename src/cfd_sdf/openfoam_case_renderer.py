@@ -480,28 +480,56 @@ def _fv_solution(
     field_relaxation = "        \"(p|pa.*)\" 0.3;\n"
     equation_relaxation = "        \"(U|Ua.*|yWall|da)\" 0.7;\n"
     if model == "k_omega_sst":
-        # Match the OpenFOAM v2512 adjointkOmegaSST tutorial's segregated
-        # solvers.  GAMG/smoothSolver looked harmless in a short smoke test,
-        # but left the nonlinear adjoint residuals at a plateau after 500
-        # adjoint iterations.  PCG/DIC and PBiCGStab/DILU are the tutorial's
-        # compatible choices for the pressure and coupled velocity/turbulence
-        # equations respectively.
+        # Keep the primal field controls stable while giving every named
+        # adjoint field a strict linear-solve target.  In particular, do not
+        # fold ``pa.*``/``Ua.*``/``ka.*``/``wa.*`` into a primal regex: v2512
+        # applies the first matching block, so a primal ``relTol`` can leave
+        # an adjoint solve under-converged even when the nonlinear loop runs
+        # to its configured iteration limit.
         pressure_solver = (
-            "    \"(p|pa.*)\"\n"
+            "    p\n"
             "    {\n"
             "        solver          PCG;\n"
             "        preconditioner  DIC;\n"
             "        tolerance       1e-9;\n"
             "        relTol          0.01;\n"
             "    }\n"
+            "    \"pa.*\"\n"
+            "    {\n"
+            "        solver          PCG;\n"
+            "        preconditioner  DIC;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0;\n"
+            "    }\n"
         )
         velocity_solver = (
-            "    \"(U|Ua.*|yWall|da|k|ka.*|omega|wa.*)\"\n"
+            "    \"(U|yWall|da|k|omega)\"\n"
             "    {\n"
             "        solver          PBiCGStab;\n"
             "        preconditioner  DILU;\n"
             "        tolerance       1e-9;\n"
             "        relTol          0.1;\n"
+            "    }\n"
+            "    \"Ua.*\"\n"
+            "    {\n"
+            "        solver          PBiCGStab;\n"
+            "        preconditioner  DILU;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0;\n"
+            "    }\n"
+            "    \"ka.*\"\n"
+            "    {\n"
+            "        solver          PBiCGStab;\n"
+            "        preconditioner  DILU;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0;\n"
+            "    }\n"
+            "    \"wa.*\"\n"
+            "    {\n"
+            "        solver          PBiCGStab;\n"
+            "        preconditioner  DILU;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0;\n"
             "    }\n"
         )
         field_relaxation = (

@@ -193,12 +193,22 @@ def test_sst_renders_k_omega_nut_and_wall_functions(tmp_path: Path) -> None:
     ):
         assert token in schemes
     solution = artifacts.fv_solution.read_text(encoding="utf-8")
-    assert '"(p|pa.*)"' in solution
-    assert "solver          PCG;" in solution
-    assert "preconditioner  DIC;" in solution
-    assert '"(U|Ua.*|yWall|da|k|ka.*|omega|wa.*)"' in solution
-    assert "solver          PBiCGStab;" in solution
-    assert "preconditioner  DILU;" in solution
+    assert "    p\n    {\n        solver          PCG;\n        preconditioner  DIC;\n        tolerance       1e-9;\n        relTol          0.01;\n    }" in solution
+    assert '"(U|yWall|da|k|omega)"' in solution
+    assert "        relTol          0.1;" in solution
+    assert '"(p|pa.*)"' not in solution
+    assert '"(U|Ua.*|yWall|da|k|ka.*|omega|wa.*)"' not in solution
+    assert "    \"pa.*\"\n    {\n        solver          PCG;\n        preconditioner  DIC;\n        tolerance       1e-9;\n        relTol          0;\n    }" in solution
+    for field_name in ("Ua.*", "ka.*", "wa.*"):
+        assert (
+            f"    \"{field_name}\"\n"
+            "    {\n"
+            "        solver          PBiCGStab;\n"
+            "        preconditioner  DILU;\n"
+            "        tolerance       1e-9;\n"
+            "        relTol          0;\n"
+            "    }"
+        ) in solution
     assert '"pa.*" 0.5;' in solution
     metadata = json.loads(artifacts.metadata_json.read_text(encoding="utf-8"))
     assert metadata["generated"]["wall_distance"] == {
