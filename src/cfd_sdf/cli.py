@@ -81,6 +81,10 @@ from .localized_reference_topology import (
     LOCALIZED_REFERENCE_TOPOLOGY_FILENAME,
     evaluate_localized_reference_topology,
 )
+from .g4_b1_numerical_topology import (
+    G4_B1_NUMERICAL_TOPOLOGY_FILENAME,
+    run_g4_b1_numerical_topology_benchmark,
+)
 from .localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
     prepare_localized_g2_openfoam_fd_direction,
@@ -246,6 +250,31 @@ def evaluate_localized_reference_topology_command(
         )
     )
     if report.status == "rejected":
+        raise typer.Exit(code=1)
+
+
+@app.command("run-g4-b1-numerical-topology-benchmark")
+def run_g4_b1_numerical_topology_benchmark_command(
+    output_dir: Path = typer.Argument(..., help="New immutable output directory for the STL-independent canonical B1 pack."),
+) -> None:
+    """Run the deterministic G4 B1 topology/filter/projection numerical pack.
+
+    This command only validates discrete voxel topology and the local
+    filter/projection transform derivative.  It does not run or qualify CFD.
+    """
+    try:
+        result = run_g4_b1_numerical_topology_benchmark(output_dir=output_dir)
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b1_numerical_topology_benchmark",
+        "status": result.status,
+        "index_path": str(output_dir / G4_B1_NUMERICAL_TOPOLOGY_FILENAME),
+        "index_sha256": result.index_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+    if result.status != "success":
         raise typer.Exit(code=1)
 
 
