@@ -151,16 +151,19 @@ def _evaluate_to_dict(spec: ProblemSpec, bundle: LocalizedReferenceStateBundle, 
         return _report_base(spec, bundle, inputs, status="rejected", reasons=unsupported, checks={})
 
     active = _as_3d(inputs.active, spatial_shape)
-    forbidden = _as_3d(inputs.forbidden, spatial_shape)
-    fixed = _as_3d(inputs.fixed, spatial_shape)
     root = _as_3d(inputs.root, spatial_shape)
     rho = _as_3d(inputs.rho_projected, spatial_shape)
     d = _new_bool(work / "design_domain.npy", spatial_shape)
     solid = _new_bool(work / "solid.npy", spatial_shape)
     void = _new_bool(work / "void.npy", spatial_shape)
     try:
-        d[:] = active | fixed | forbidden
-        solid[:] = fixed | (active & (rho >= 0.5))
+        # The topology decision is deliberately about the mutable design and
+        # its declared attachments only.  Non-root fixed solids (for example
+        # the vehicle nose or ground) remain immutable CFD geometry, but they
+        # are not design topology material and must not create an unrooted
+        # component or a manufacturing-feature candidate here.
+        d[:] = active | root
+        solid[:] = (active & (rho >= 0.5)) | root
         void[:] = d & ~solid
         d.flush(); solid.flush(); void.flush()
         reasons: list[str] = []
@@ -235,10 +238,10 @@ def _erosion_checks(
     distance = _edt(solid, grid, work / "solid_edt.npy")
     eroded = _new_bool(work / "solid_eroded.npy", solid.shape)
     try:
-        eroded[:] = root  # root is a subset of fixed; mount union is preserved.
-        # Fixed solid must persist even if it is not a root; derive it from
-        # solid & ~active, because only active cells are mutable state.
-        eroded[:] |= solid & ~active
+        # The declared root union is the only immutable material inside the
+        # design-topology solid.  Other fixed-solid geometry is intentionally
+        # outside this evaluator's topology scope.
+        eroded[:] = root
         eroded[:] |= active & solid & (distance > radius)
         removed_active = int(np.count_nonzero(active & solid & ~eroded))
         active_solid = int(np.count_nonzero(active & solid))

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -60,12 +61,90 @@ def test_erosion_no_effect_is_rejected(tmp_path: Path) -> None:
     active = np.zeros(grid.cell_count, dtype=bool)
     active.reshape((7, 7, 7))[3, 3, 3] = True
     root = np.zeros_like(active)
-    root.reshape((7, 7, 7))[3, 3, 0] = True
-    fixed = ~active
-    # The sole mutable voxel is embedded in fixed solid, so exact erosion must
-    # retain it.  This exercises the no-op guard without changing a radius.
+    root.reshape((7, 7, 7))[1:6, 1:6, 1:6] = True
+    root.reshape((7, 7, 7))[3, 3, 3] = False
+    fixed = root.copy()
+    # A declared root shell, rather than unrelated fixed geometry, preserves
+    # the sole active voxel through erosion.  This exercises the no-op guard
+    # without widening the design-topology scope.
     report = _evaluate_to_dict(spec, _bundle(tmp_path), _inputs(grid, active, np.zeros_like(active), fixed, root, np.ones(grid.cell_count)), tmp_path / "work")
     assert "erosion_no_effect" in report["reasons"]
+
+
+def test_nonroot_fixed_solid_is_excluded_from_design_topology_checks(tmp_path: Path) -> None:
+    spec = _project()
+    grid = _grid((11, 9, 9))
+    shape = (9, 9, 11)
+    active = np.zeros(grid.cell_count, dtype=bool)
+    root = np.zeros_like(active)
+    fixed = np.zeros_like(active)
+    active_3d = active.reshape(shape)
+    root_3d = root.reshape(shape)
+    fixed_3d = fixed.reshape(shape)
+    # A thick, root-attached design block is separated from a non-root fixed
+    # nose slab.  The latter is immutable CFD geometry, not design material.
+    active_3d[:, :, 1:8] = True
+    root_3d[:, :, 0] = True
+    fixed_3d[:, :, 0] = True
+    fixed_3d[:, :, 10] = True
+    report = _evaluate_to_dict(
+        spec,
+        _bundle(tmp_path),
+        _inputs(grid, active, np.zeros_like(active), fixed, root, np.ones(grid.cell_count)),
+        tmp_path / "work",
+    )
+    assert report["status"] == "success"
+    assert "solid_component_without_root_nominal" not in report["reasons"]
+    assert "solid_component_without_root_eroded" not in report["reasons"]
+    assert report["checks"]["solid_connectivity_nominal"]["component_count"] == 1
+    assert report["checks"]["solid_connectivity_eroded"]["component_count"] == 1
+
+
+def test_unrooted_active_design_island_remains_rejected(tmp_path: Path) -> None:
+    spec = _project()
+    grid = _grid((11, 9, 9))
+    shape = (9, 9, 11)
+    active = np.zeros(grid.cell_count, dtype=bool)
+    root = np.zeros_like(active)
+    fixed = np.zeros_like(active)
+    active_3d = active.reshape(shape)
+    root_3d = root.reshape(shape)
+    fixed_3d = fixed.reshape(shape)
+    active_3d[:, :, 1:5] = True
+    active_3d[4, 4, 8] = True
+    root_3d[:, :, 0] = True
+    fixed_3d[:, :, 0] = True
+    report = _evaluate_to_dict(
+        spec,
+        _bundle(tmp_path),
+        _inputs(grid, active, np.zeros_like(active), fixed, root, np.ones(grid.cell_count)),
+        tmp_path / "work",
+    )
+    assert report["status"] == "rejected"
+    assert "solid_component_without_root_nominal" in report["reasons"]
+
+
+def test_multiple_required_root_groups_without_group_masks_fail_closed(tmp_path: Path) -> None:
+    spec = _project()
+    connectivity = replace(
+        spec.topology_policy.solid_connectivity,
+        required_root_group_ids=("mounts", "secondary_mounts"),
+    )
+    spec = replace(spec, topology_policy=replace(spec.topology_policy, solid_connectivity=connectivity))
+    grid = _grid((7, 7, 7))
+    active = np.ones(grid.cell_count, dtype=bool)
+    root = np.zeros_like(active)
+    fixed = np.zeros_like(active)
+    root.reshape((7, 7, 7))[:, :, 0] = True
+    fixed[:] = root
+    report = _evaluate_to_dict(
+        spec,
+        _bundle(tmp_path),
+        _inputs(grid, active, np.zeros_like(active), fixed, root, np.ones(grid.cell_count)),
+        tmp_path / "work",
+    )
+    assert report["status"] == "rejected"
+    assert report["reasons"] == ["multiple_required_root_groups_unsupported"]
 
 
 def test_external_gap_and_enclosed_void_are_distinguished(tmp_path: Path) -> None:
