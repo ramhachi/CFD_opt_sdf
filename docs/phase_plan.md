@@ -84,7 +84,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. `AGENTS.md` requires a bounded `sol_<topic>` sub-agent review before any decision that materially affects physical correctness, numerical validation, OpenFOAM semantics, artifact provenance, public contracts, or the roadmap. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
 | G2 case compiler | Numerical runtime qualification, canonical transfer, and both-flow FD direction checks passed; target-physics bridge remains | The front-wing-role/domain ProblemSpec hash `54619a571b08a447e484856fa8e9c0d4c66d2fae2a89e58ab9660e4522a0d08a` passed the named-adjoint, absolute-linear-tolerance two-flow Docker OpenFOAM v2512 qualification. Straight: primal `7.28932450665e-09`, adjoint max `6.98776718537e-10`, normalized mass `3.4188037016180413e-11`; yawed: primal `7.99508862341e-09`, adjoint max `9.79649119374e-10`, normalized mass `2.61841637267506e-11`. The generated, ignored evidence bundle is `examples/g2_openfoam_compile/runs/g2_front_wing_roles_named_adjoint_absolute_requalification_20260714/`. Canonical gradient transfer passed with full coverage for both flows. Straight FD passed in N at ε=`0.005`: `28.1184973209` versus `28.8034576418` (2.378%), and ε=`0.01`: `28.0971302028` versus the same adjoint (2.452%). Yawed FD also passed: ε=`0.005` had 11.04% relative error and ε=`0.01` had 7.72%; both have the same sign as the adjoint. The declared tolerance remains 25%. Native v2 response/provenance/topology bindings and porous/body-fitted comparisons remain unqualified. |
-| G3 geometry/resolution gates | In progress — 2 mm localized design-grid path selected; implementation required | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576; this is G2 CFD-transfer-grid evidence, not physical topology-resolution evidence. The selected physical-policy path is a 2 mm localized canonical design grid over `allowed_front_box` (87,543,750 cells), with explicit CFD sensitivity transfer. Its grid/state contract, preflight, transfer, and density-to-SDF fidelity gates remain implementation required. |
+| G3 geometry/resolution gates | In progress — localized geometry snapshot and alpha-reference contract pass; physical-state/transfer qualification remains | The existing front-wing STL assets are declared as G2 semantic roles. The 0.02 m, 1,170,000-cell canonical mask build and its hash-bound manifest verification passed: active 82,160 cells, forbidden 39,060, fixed 46,388, and root 576; this is G2 CFD-transfer-grid evidence, not physical topology-resolution evidence. The selected physical-policy path is a 2 mm localized canonical design grid over `allowed_front_box` (87,543,750 cells). Its generated, ignored geometry snapshot passed independent verification: active 85,967,750, fixed 1,576,000, root 729,000, forbidden 0. The hash-bound localized state and alpha-reference artifact contracts now have focused tests, but no localized state has been written to/read from OpenFOAM and no localized finite-difference check has run. Native v2 therefore remains unqualified. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
 | Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist. The real G2 two-flow FD checks qualify the current transferred force-sensitivity chains, but native v2 remains blocked on explicit response-unit/provenance, `rho`-gradient convention, mesh-grid mapping, and topology-value bindings from the new localized canonical design state. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
@@ -215,8 +215,9 @@ G2 qualification gate:
 ## 7. G3 — geometry and physical-resolution gates
 
 Status: the G2 fixture geometry masks and their manifest are verified. The
-localized 2 mm canonical design-grid path is selected; its physical-resolution,
-transfer, and density-to-SDF gates require implementation.
+localized 2 mm canonical design-grid path has a verified geometry-mask
+snapshot and tested state/alpha-reference artifact contracts; physical-state,
+OpenFOAM transfer, and density-to-SDF gates remain unqualified.
 
 The existing front-wing STL source is declared directly in the G2 role
 configuration. Its full 0.02 m canonical-grid mask build contains 1,170,000
@@ -235,6 +236,29 @@ the `allowed_front_box` (`575 x 725 x 210 = 87,543,750` cells), described in
 outer 20 mm OpenFOAM grid remains separate. Native v2 is not ready until the
 localized topology design state and explicit transfer are implemented and
 qualified.
+
+The first real localized geometry snapshot is generated output, deliberately
+ignored by Git, at
+`examples/g2_openfoam_compile/runs/local_design_geometry_snapshot_v3_20260730/`.
+It independently verifies under schema v3 with snapshot identifier
+`381423ea5d095017756beff729bdc1dea2da38afe730b1d9c11e539cfaf37f64`,
+ProblemSpec SHA-256
+`0fb37503b272080a3b773649023370b8283087a410cc297b64bdbc233500fb43`, and
+localized-grid SHA-256
+`3c612b5e77804f2a36bb07e4cbb73ed453f84ee5c5d655d83e5a0cd3afceba01`.
+The 87,543,750 cells contain 85,967,750 active, 1,576,000 fixed, 729,000
+root, and zero forbidden cells. Zero forbidden cells is geometrically correct:
+the `tire_clearance` volumes begin at `y = +/-0.740 m`, while
+`allowed_front_box` ends at `y = +/-0.725 m`, leaving about 15 mm separation.
+The global 20 mm forbidden region is consequently outside this localized
+design domain. This is contract/geometry evidence only, not a topology result.
+
+The localized alpha-reference contract is implemented and focused-tested. It
+permits only the one-way, unclipped relation
+`alpha = alpha_reference + E @ (rho_projected - rho_projected_reference)` and
+hash-binds the two reference artifacts. It has not yet written or reread an
+OpenFOAM field, nor has a localized finite-difference direction check run;
+native v2 stays fail-closed until those qualifications are complete.
 
 Implement:
 

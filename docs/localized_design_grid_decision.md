@@ -1,13 +1,13 @@
 # Decision Record: Localized Canonical Design Grid for Physical Topology Policy
 
-Date: 2026-07-14
-Status: selected architecture; implementation required
+Date: 2026-07-14 (evidence updated 2026-07-30)
+Status: selected architecture; geometry snapshot and alpha-reference contract implemented; runtime qualification required
 Scope: front-wing G2 fixture and the generic arbitrary-topology product path
 
 This record supports the authoritative roadmap in
 [`phase_plan.md`](phase_plan.md).  It chooses the next design-state
-architecture; it does not claim that the new grid, transfer, or native-v2
-artifact path has been implemented or qualified.
+architecture; it does not claim localized OpenFOAM transfer or native-v2
+runtime qualification.
 
 ## Decision
 
@@ -60,15 +60,50 @@ would require 1,170,000,000 cells and is also not the selected near-term path.
 Localizing the canonical state to the allowed design box preserves the
 physical policy while keeping the design-state scope bounded.
 
+### Verified G2 localized geometry evidence
+
+The first full-resolution G2 geometry-mask snapshot was generated in the
+ignored run directory
+`examples/g2_openfoam_compile/runs/local_design_geometry_snapshot_v3_20260730/`
+and independently revalidated. Its snapshot identifier is
+`381423ea5d095017756beff729bdc1dea2da38afe730b1d9c11e539cfaf37f64`; it binds
+ProblemSpec SHA-256
+`0fb37503b272080a3b773649023370b8283087a410cc297b64bdbc233500fb43` and local
+grid SHA-256 `3c612b5e77804f2a36bb07e4cbb73ed453f84ee5c5d655d83e5a0cd3afceba01`.
+For the `575 x 725 x 210 = 87,543,750` cell grid, the verified counts are:
+
+| Mask | True cells |
+| --- | ---: |
+| active design | 85,967,750 |
+| fixed solid | 1,576,000 |
+| root | 729,000 |
+| forbidden | 0 |
+
+The zero forbidden count is not a clearance omission. The two
+`tire_clearance` volumes start at `y = +/-0.740 m`; the `allowed_front_box`
+ends at `y = +/-0.725 m`, so they are separated by about 15 mm. The global
+20 mm G2 forbidden region therefore lies outside this local design domain.
+This is verified geometry/contract evidence, not a claim that tire clearance
+has been weakened or that a topology result exists.
+
+The hash-bound localized-state and alpha-reference contracts are implemented
+and focused-tested. The allowed alpha source is exactly
+`alpha = alpha_reference + E @ (rho_projected - rho_projected_reference)`,
+with no clipping or inverse reconstruction. There has been no OpenFOAM
+write/read of this alpha, no localized finite-difference direction check, and
+no native-v2 readiness qualification.
+
 ## Required implementation and validation
 
-Before native-v2 topology values can become ready, implementation must:
+Before native-v2 topology values can become ready, implementation and
+qualification must:
 
-1. add a hash-bound localized design-grid/state contract and masks for the
-   allowed design domain;
+1. create and validate a localized projected state against the hash-bound
+   geometry snapshot and state contract for the allowed design domain;
 2. implement the fail-closed G3 representability gate using the stated
    three-cell feature and two-cell erosion criteria;
-3. implement the explicit CFD-density/sensitivity transfer contract, including
+3. implement and qualify the explicit CFD-density/sensitivity transfer,
+   including
    operator direction, source/target grid and mask hashes, coverage, and the
    `rho`/solver-`alpha` binding;
 4. verify the transfer with deterministic identity/conservation and
