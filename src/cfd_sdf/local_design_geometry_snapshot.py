@@ -27,7 +27,8 @@ from .localized_design_state_manifest import LocalizedDesignGrid
 from .problem_spec import ProblemSpec, canonical_local_design_grid, load_problem_spec, problem_spec_sha256
 
 
-LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION = 2
+LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION = 3
+_SUPPORTED_LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSIONS = frozenset({2, 3})
 LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND = "local_design_geometry_mask_snapshot"
 LOCAL_DESIGN_GEOMETRY_SNAPSHOT_FILENAME = "local_geometry_masks.json"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -152,6 +153,12 @@ def write_local_design_geometry_mask_snapshot(snapshot: LocalDesignGeometryMaskS
     """Streaming-validate then write deterministic snapshot metadata."""
 
     validate_local_design_geometry_mask_snapshot(snapshot)
+    # Snapshot v2 remains readable for already-published artifacts, but new
+    # artifacts must never re-embed a path that is interpreted as local mask
+    # storage.  In particular, do not use this writer as an implicit v2->v3
+    # migration mechanism: migration needs the original ProblemSpec context.
+    if snapshot.schema_version != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION:
+        raise ValueError("local design geometry snapshot writer only emits schema_version 3")
     snapshot.path.write_text(
         json.dumps(_snapshot_to_dict(snapshot), sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n",
         encoding="utf-8",
@@ -289,7 +296,8 @@ def _snapshot_to_dict(snapshot: LocalDesignGeometryMaskSnapshot) -> dict[str, An
 def _snapshot_from_dict(path: Path, raw: Any) -> LocalDesignGeometryMaskSnapshot:
     data = _mapping(raw, "local design geometry snapshot")
     _exact_keys(data, {"schema_version", "kind", "problem_spec_sha256", "grid", "grid_sha256", "topology_resolution", "classifier_regions", "masks"}, "local design geometry snapshot")
-    if _int(data["schema_version"], "schema_version") != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION:
+    schema_version = _int(data["schema_version"], "schema_version")
+    if schema_version not in _SUPPORTED_LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSIONS:
         raise ValueError("Unsupported local design geometry snapshot schema_version")
     if data["kind"] != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND:
         raise ValueError("Unsupported local design geometry snapshot kind")
@@ -298,7 +306,7 @@ def _snapshot_from_dict(path: Path, raw: Any) -> LocalDesignGeometryMaskSnapshot
     if grid_sha256 != grid.sha256:
         raise ValueError("local design geometry snapshot grid_sha256 does not match grid geometry")
     topology_resolution = _topology_from_dict(data["topology_resolution"])
-    regions = _regions_from_dict(data["classifier_regions"])
+    regions = _regions_from_dict(data["classifier_regions"], schema_version=schema_version)
     masks_raw = _mapping(data["masks"], "masks")
     if set(masks_raw) != set(MASK_IDS):
         raise ValueError(f"masks must contain exactly {list(MASK_IDS)!r}")
@@ -317,7 +325,7 @@ def _snapshot_from_dict(path: Path, raw: Any) -> LocalDesignGeometryMaskSnapshot
         )
     return LocalDesignGeometryMaskSnapshot(
         path=path,
-        schema_version=LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION,
+        schema_version=schema_version,
         kind=LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND,
         problem_spec_sha256=_sha256(data["problem_spec_sha256"], "problem_spec_sha256"),
         grid=grid,
@@ -331,13 +339,16 @@ def _snapshot_from_dict(path: Path, raw: Any) -> LocalDesignGeometryMaskSnapshot
 def _validate_metadata(snapshot: LocalDesignGeometryMaskSnapshot) -> None:
     if not isinstance(snapshot, LocalDesignGeometryMaskSnapshot):
         raise ValueError("snapshot must be LocalDesignGeometryMaskSnapshot")
-    if snapshot.schema_version != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION or snapshot.kind != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND:
+    if (
+        snapshot.schema_version not in _SUPPORTED_LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSIONS
+        or snapshot.kind != LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND
+    ):
         raise ValueError("local design geometry snapshot schema binding is invalid")
     _sha256(snapshot.problem_spec_sha256, "problem_spec_sha256")
     if not isinstance(snapshot.grid, LocalizedDesignGrid) or snapshot.grid_sha256 != snapshot.grid.sha256:
         raise ValueError("local design geometry snapshot grid binding is invalid")
     _topology_from_dict(snapshot.topology_resolution)
-    _regions_from_dict(snapshot.classifier_regions)
+    _regions_from_dict(snapshot.classifier_regions, schema_version=snapshot.schema_version)
     if set(snapshot.masks) != set(MASK_IDS):
         raise ValueError(f"masks must contain exactly {list(MASK_IDS)!r}")
     for identifier in MASK_IDS:
@@ -370,12 +381,36 @@ def _topology_from_dict(raw: Any) -> dict[str, int]:
 
 
 def _canonical_regions(raw: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
-    # Round-trip through the parser now, so the generated artifact obeys the
+    """Bind classifier inputs to the v3 external-source contract.
+
+    ``LocalDesignSTLRoleClassifier`` necessarily resolves and opens an STL
+    while building masks.  That implementation detail must not leak into the
+    immutable snapshot: a snapshot records only the ProblemSpec-declared STL
+    locator, never a path which a snapshot reader may resolve or open.
+    """
+
+    converted: dict[str, dict[str, Any]] = {}
+    for identifier, value in raw.items():
+        item = _mapping(value, f"classifier region {identifier}")
+        # Classifier provenance is deliberately normalized here rather than
+        # copied wholesale, which drops v2's resolved_relative_source_path.
+        converted[identifier] = {
+            "role": item.get("role"),
+            "source_ref": {
+                "kind": "problem_spec_relative_stl",
+                "declared_path": item.get("relative_source_path"),
+                "materialization": "external_not_embedded",
+            },
+            "sha256": item.get("sha256"),
+            "bounds_m": item.get("bounds_m"),
+            "classifier": item.get("classifier"),
+        }
+    # Round-trip through the v3 parser now, so generated artifacts obey the
     # same strict portable contract as an untrusted one read later.
-    return {key: dict(value) for key, value in _regions_from_dict(raw).items()}
+    return {key: dict(value) for key, value in _regions_from_dict(converted, schema_version=3).items()}
 
 
-def _regions_from_dict(raw: Any) -> dict[str, Mapping[str, Any]]:
+def _regions_from_dict(raw: Any, *, schema_version: int) -> dict[str, Mapping[str, Any]]:
     data = _mapping(raw, "classifier_regions")
     if not data:
         raise ValueError("classifier_regions must not be empty")
@@ -384,11 +419,20 @@ def _regions_from_dict(raw: Any) -> dict[str, Mapping[str, Any]]:
         if not isinstance(identifier, str) or not identifier:
             raise ValueError("classifier region id must be non-empty text")
         item = _mapping(value, f"classifier region {identifier}")
-        _exact_keys(
-            item,
-            {"role", "relative_source_path", "resolved_relative_source_path", "sha256", "bounds_m", "classifier"},
-            f"classifier region {identifier}",
-        )
+        if schema_version == 2:
+            _exact_keys(
+                item,
+                {"role", "relative_source_path", "resolved_relative_source_path", "sha256", "bounds_m", "classifier"},
+                f"classifier region {identifier}",
+            )
+        elif schema_version == 3:
+            _exact_keys(
+                item,
+                {"role", "source_ref", "sha256", "bounds_m", "classifier"},
+                f"classifier region {identifier}",
+            )
+        else:  # Defensive: callers validate the schema before reaching here.
+            raise ValueError("Unsupported local design geometry snapshot schema_version")
         bounds = _mapping(item["bounds_m"], f"classifier region {identifier}.bounds_m")
         _exact_keys(bounds, {"lower", "upper"}, f"classifier region {identifier}.bounds_m")
         lower = _vector3(bounds["lower"], f"classifier region {identifier}.bounds_m.lower")
@@ -418,10 +462,8 @@ def _regions_from_dict(raw: Any) -> dict[str, Mapping[str, Any]]:
             key: _positive_int(mesh_counts[key], f"classifier region {identifier}.classifier.mesh_counts.{key}")
             for key in sorted(mesh_counts)
         }
-        result[identifier] = {
+        parsed: dict[str, Any] = {
             "role": _text(item["role"], f"classifier region {identifier}.role"),
-            "relative_source_path": _safe_relative_path(item["relative_source_path"], f"classifier region {identifier}.relative_source_path"),
-            "resolved_relative_source_path": _safe_relative_path(item["resolved_relative_source_path"], f"classifier region {identifier}.resolved_relative_source_path"),
             "sha256": _sha256(item["sha256"], f"classifier region {identifier}.sha256"),
             "bounds_m": {"lower": list(lower), "upper": list(upper)},
             "classifier": {
@@ -431,6 +473,21 @@ def _regions_from_dict(raw: Any) -> dict[str, Mapping[str, Any]]:
                 "mesh_counts": counts,
             },
         }
+        if schema_version == 2:
+            # v2 readers retain their historical safe-artifact-path contract;
+            # the fields are not interpreted or opened by this parser.
+            parsed["relative_source_path"] = _safe_relative_path(
+                item["relative_source_path"], f"classifier region {identifier}.relative_source_path"
+            )
+            parsed["resolved_relative_source_path"] = _safe_relative_path(
+                item["resolved_relative_source_path"],
+                f"classifier region {identifier}.resolved_relative_source_path",
+            )
+        else:
+            parsed["source_ref"] = _external_stl_source_ref(
+                item["source_ref"], f"classifier region {identifier}.source_ref"
+            )
+        result[identifier] = parsed
     return result
 
 
@@ -500,6 +557,53 @@ def _safe_relative_path(value: Any, context: str) -> str:
     if path.is_absolute() or path.drive or not path.parts or any(part in {"", ".", ".."} for part in path.parts):
         raise ValueError(f"{context} must be a safe relative path")
     return path.as_posix()
+
+
+def _external_stl_source_ref(value: Any, context: str) -> dict[str, str]:
+    """Validate a declarative ProblemSpec STL locator without resolving it.
+
+    This is intentionally *not* ``_safe_relative_path``.  A geometry source
+    belongs to the ProblemSpec, so declarations such as ``../shared/a.stl``
+    and ``./geometry/a.stl`` are valid.  Mask artifacts belong below a
+    snapshot directory and therefore retain the stricter traversal ban.
+    """
+
+    data = _mapping(value, context)
+    _exact_keys(data, {"kind", "declared_path", "materialization"}, context)
+    if data["kind"] != "problem_spec_relative_stl":
+        raise ValueError(f"{context}.kind is unsupported")
+    if data["materialization"] != "external_not_embedded":
+        raise ValueError(f"{context}.materialization is unsupported")
+    declared_path = _problem_spec_relative_stl_path(data["declared_path"], f"{context}.declared_path")
+    return {
+        "kind": "problem_spec_relative_stl",
+        "declared_path": declared_path,
+        "materialization": "external_not_embedded",
+    }
+
+
+def _problem_spec_relative_stl_path(value: Any, context: str) -> str:
+    """Require a textual POSIX relative ``.stl`` declaration.
+
+    No ``Path.resolve``, file existence check, or file open is permitted here:
+    snapshot validation authenticates its generated mask artifacts, while
+    STL acquisition is exclusively a ProblemSpec/materialization operation.
+    """
+
+    if not isinstance(value, str) or not value or "\x00" in value:
+        raise ValueError(f"{context} must be a non-empty POSIX relative STL path")
+    if "\\" in value or value.startswith("/") or value.startswith("//"):
+        raise ValueError(f"{context} must be a POSIX relative STL path")
+    # Reject both drive-absolute (C:/...) and drive-relative (C:foo) forms,
+    # independent of the host platform currently reading the snapshot.
+    if re.match(r"^[A-Za-z]:", value):
+        raise ValueError(f"{context} must not contain a drive prefix")
+    parts = value.split("/")
+    if any(part == "" for part in parts):
+        raise ValueError(f"{context} must be a normalized POSIX relative STL path")
+    if not value.lower().endswith(".stl"):
+        raise ValueError(f"{context} must have a .stl suffix")
+    return value
 
 
 def _sha256_file(path: Path) -> str:
