@@ -311,10 +311,14 @@ def _declared_path(spec: ProblemSpec, path: Path) -> str:
 
 def _verify_raw_manifest(raw: dict[str, Any], root: Path, grid: LocalizedDesignGrid, geometry: LocalDesignGeometryMaskSnapshot, stl_hash: str) -> None:
     required = {"schema_version", "kind", "stl_sha256", "role", "component_count", "grid_sha256", "active_design_mask_sha256", "method", "subcell_offsets", "surface_rejection_tolerance_m", "rho_raw_relative_path", "rho_raw_sha256", "rho_raw_dtype", "rho_raw_shape", "occupancy_volume_m3"}
-    if set(raw) != required or raw["schema_version"] != 1 or raw["kind"] != "local_initial_design_rho_raw" or raw["role"] != "initial_design":
+    schema_version = raw.get("schema_version")
+    expected = required if schema_version == 1 else required | {"surface_resolution"}
+    if set(raw) != expected or schema_version not in {1, 2} or raw["kind"] != "local_initial_design_rho_raw" or raw["role"] != "initial_design":
         raise ValueError("raw initial-design manifest schema is invalid")
     if raw["stl_sha256"] != stl_hash or raw["grid_sha256"] != grid.sha256 or raw["method"] != "direct_stl_union_occupancy_2x2x2":
         raise ValueError("raw initial-design manifest provenance is invalid")
+    if schema_version == 2:
+        _verify_surface_resolution(raw["surface_resolution"])
     rho_path = _safe_under(root / "raw", raw["rho_raw_relative_path"])
     if _sha256_file(rho_path) != raw["rho_raw_sha256"]:
         raise ValueError("raw rho hash mismatch")
@@ -329,11 +333,36 @@ def _verify_raw_manifest(raw: dict[str, Any], root: Path, grid: LocalizedDesignG
             values, active_chunk = rho[start:start + _CHUNK], active[start:start + _CHUNK]
             if not np.isfinite(values).all() or np.any(values < 0) or np.any(values > 1) or np.any(values[~active_chunk] != 0):
                 raise ValueError("raw rho values violate active-mask contract")
-            if np.any(values[active_chunk] * 8.0 != np.rint(values[active_chunk] * 8.0)):
-                raise ValueError("raw rho values must be exact eighth fractions")
+            denominator = 16.0 if schema_version == 2 else 8.0
+            if np.any(values[active_chunk] * denominator != np.rint(values[active_chunk] * denominator)):
+                raise ValueError("raw rho values must be exact declared subcell fractions")
     finally:
         del rho
         del active
+
+
+def _verify_surface_resolution(value: Any) -> None:
+    if not isinstance(value, dict):
+        raise ValueError("raw surface_resolution is invalid")
+    required = {
+        "kind", "surface_tolerance_m", "normal_offset_m", "tie_point_count",
+        "contribution_counts", "sampler_implementation", "sampler_version",
+    }
+    if set(value) != required or value["kind"] != "symmetric_normal_offset_union":
+        raise ValueError("raw surface_resolution schema is invalid")
+    if value["surface_tolerance_m"] != 1.0e-9 or value["normal_offset_m"] != 1.0e-6:
+        raise ValueError("raw surface_resolution parameters are invalid")
+    if value["sampler_implementation"] != "cfd_sdf.local_initial_design_rho" or value["sampler_version"] != 2:
+        raise ValueError("raw surface_resolution sampler is invalid")
+    count = value["tie_point_count"]
+    counts = value["contribution_counts"]
+    if (
+        not isinstance(count, int) or isinstance(count, bool) or count < 0
+        or not isinstance(counts, dict) or set(counts) != {"zero", "half", "one"}
+        or any(not isinstance(item, int) or isinstance(item, bool) or item < 0 for item in counts.values())
+        or count != sum(counts.values())
+    ):
+        raise ValueError("raw surface_resolution counts are invalid")
 
 
 def _verify_state_uses_copied_geometry(state: Any, root: Path, geometry: LocalDesignGeometryMaskSnapshot) -> None:

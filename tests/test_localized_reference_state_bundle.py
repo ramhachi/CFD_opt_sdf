@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -160,6 +161,22 @@ def test_verifier_rejects_tampered_artifacts(tmp_path: Path, target: str) -> Non
         path.write_text(json.dumps(data), encoding="utf-8")
     with pytest.raises(ValueError):
         verify_localized_reference_state_bundle(bundle, problem=project)
+
+
+def test_verifier_remains_compatible_with_legacy_v1_raw_manifest(tmp_path: Path) -> None:
+    project, bundle = _bundle(tmp_path)
+    raw_manifest = bundle / "raw" / "local_initial_design_rho_raw.json"
+    raw = json.loads(raw_manifest.read_text(encoding="utf-8"))
+    assert raw["schema_version"] == 2
+    assert raw["surface_resolution"]["tie_point_count"] == 0
+    raw["schema_version"] = 1
+    del raw["surface_resolution"]
+    raw_manifest.write_text(json.dumps(raw, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+    ledger_path = bundle / LOCALIZED_REFERENCE_STATE_FILENAME
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    ledger["raw_manifest_sha256"] = hashlib.sha256(raw_manifest.read_bytes()).hexdigest()
+    ledger_path.write_text(json.dumps(ledger, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+    assert verify_localized_reference_state_bundle(bundle, problem=project).path == bundle
 
 
 def test_cli_builds_fixed_contract_bundle_and_prints_verified_hashes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

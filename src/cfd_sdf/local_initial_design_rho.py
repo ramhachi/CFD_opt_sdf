@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 import trimesh
@@ -28,11 +28,16 @@ import trimesh
 from .localized_design_state_manifest import LocalizedDesignGrid
 
 
-LOCAL_INITIAL_DESIGN_RHO_SCHEMA_VERSION = 1
+LOCAL_INITIAL_DESIGN_RHO_SCHEMA_VERSION = 2
+SUPPORTED_LOCAL_INITIAL_DESIGN_RHO_SCHEMA_VERSIONS = frozenset({1, 2})
 LOCAL_INITIAL_DESIGN_RHO_KIND = "local_initial_design_rho_raw"
 LOCAL_INITIAL_DESIGN_RHO_FILENAME = "local_initial_design_rho_raw.json"
 LOCAL_INITIAL_DESIGN_RHO_ARRAY_FILENAME = "rho_raw.npy"
 _SURFACE_TOLERANCE_M = 1.0e-9
+_NORMAL_OFFSET_M = 1.0e-6
+_SURFACE_RESOLUTION_KIND = "symmetric_normal_offset_union"
+_SURFACE_SAMPLER_IMPLEMENTATION = "cfd_sdf.local_initial_design_rho"
+_SURFACE_SAMPLER_VERSION = 2
 _SAMPLE_Q = np.asarray((0.25, 0.75), dtype=np.float64)
 # The ordering is part of the artifact contract.  ``qx`` is the fastest
 # subcell index, followed by ``qy`` then ``qz``.
@@ -61,6 +66,50 @@ class LocalInitialDesignRhoRawManifest:
     rho_raw_dtype: str
     rho_raw_shape: tuple[int, ...]
     occupancy_volume_m3: float
+    surface_resolution: "LocalInitialDesignSurfaceResolution"
+
+
+@dataclass(frozen=True)
+class LocalInitialDesignSurfaceResolution:
+    """Immutable evidence for exact-on-surface sample handling."""
+
+    kind: str
+    surface_tolerance_m: float
+    normal_offset_m: float
+    tie_point_count: int
+    contribution_counts: Mapping[str, int]
+    sampler_implementation: str
+    sampler_version: int
+
+
+@dataclass
+class _SurfaceResolutionStats:
+    tie_point_count: int = 0
+    zero_count: int = 0
+    half_count: int = 0
+    one_count: int = 0
+
+    def record(self, value: float) -> None:
+        self.tie_point_count += 1
+        if value == 0.0:
+            self.zero_count += 1
+        elif value == 0.5:
+            self.half_count += 1
+        elif value == 1.0:
+            self.one_count += 1
+        else:  # The two binary displaced union queries permit no other value.
+            raise ValueError("surface-resolution contribution is not 0, 1/2, or 1")
+
+    def manifest_value(self) -> LocalInitialDesignSurfaceResolution:
+        return LocalInitialDesignSurfaceResolution(
+            kind=_SURFACE_RESOLUTION_KIND,
+            surface_tolerance_m=_SURFACE_TOLERANCE_M,
+            normal_offset_m=_NORMAL_OFFSET_M,
+            tie_point_count=self.tie_point_count,
+            contribution_counts={"zero": self.zero_count, "half": self.half_count, "one": self.one_count},
+            sampler_implementation=_SURFACE_SAMPLER_IMPLEMENTATION,
+            sampler_version=_SURFACE_SAMPLER_VERSION,
+        )
 
 
 @dataclass(frozen=True)
@@ -120,7 +169,7 @@ def build_local_initial_design_rho_raw(
     staging = Path(tempfile.mkdtemp(prefix=f".{destination.name}.tmp-", dir=destination.parent))
     try:
         rho_path = staging / LOCAL_INITIAL_DESIGN_RHO_ARRAY_FILENAME
-        occupancy_sum = _write_rho_raw(
+        occupancy_sum, surface_resolution = _write_rho_raw(
             rho_path,
             grid=grid,
             active=active,
@@ -144,6 +193,7 @@ def build_local_initial_design_rho_raw(
             rho_raw_dtype=np.dtype(np.float64).name,
             rho_raw_shape=(grid.cell_count,),
             occupancy_volume_m3=float(occupancy_sum * np.prod(grid.spacing, dtype=np.float64)),
+            surface_resolution=surface_resolution,
         )
         manifest_path = staging / LOCAL_INITIAL_DESIGN_RHO_FILENAME
         _write_manifest(manifest_path, manifest)
@@ -169,10 +219,11 @@ def _write_rho_raw(
     components: tuple[trimesh.Trimesh, ...],
     z_chunk_size: int,
     point_chunk_size: int,
-) -> float:
+) -> tuple[float, LocalInitialDesignSurfaceResolution]:
     nx, ny, nz = grid.cell_shape
     values = np.lib.format.open_memmap(path, mode="w+", dtype=np.float64, shape=(grid.cell_count,))
     occupancy_sum = 0.0
+    surface_stats = _SurfaceResolutionStats()
     try:
         for z_start in range(0, nz, z_chunk_size):
             z_stop = min(z_start + z_chunk_size, nz)
@@ -189,7 +240,9 @@ def _write_rho_raw(
                 if len(active_cells):
                     cell_indices = cell_start + active_cells
                     points = _subcell_points_for_cells(grid, cell_indices)
-                    contained = _union_contains(components, points.reshape(-1, 3, order="C"))
+                    contained = _union_contains(
+                        components, points.reshape(-1, 3, order="C"), surface_stats=surface_stats
+                    )
                     occupancy = contained.reshape((len(active_cells), 8), order="C").mean(axis=1, dtype=np.float64)
                     written[active_cells] = occupancy
                 values[cell_start:cell_stop] = written
@@ -198,7 +251,7 @@ def _write_rho_raw(
     finally:
         # Drop the Windows mapping before the staging directory is renamed.
         _close_memmap(values)
-    return occupancy_sum
+    return occupancy_sum, surface_stats.manifest_value()
 
 
 def _subcell_points(grid: LocalizedDesignGrid, start: int, stop: int) -> np.ndarray:
@@ -223,8 +276,52 @@ def _subcell_points_for_cells(grid: LocalizedDesignGrid, cells: np.ndarray) -> n
     return lower + spacing * (indices[:, np.newaxis, :] + _SUBCELL_OFFSETS[np.newaxis, :, :])
 
 
-def _union_contains(components: tuple[trimesh.Trimesh, ...], points: np.ndarray) -> np.ndarray:
-    """Classify points in the union, querying only each component's AABB."""
+def _union_contains(
+    components: tuple[trimesh.Trimesh, ...],
+    points: np.ndarray,
+    *,
+    surface_stats: _SurfaceResolutionStats | None = None,
+) -> np.ndarray:
+    """Classify a union, resolving only admissible exact-on-surface points.
+
+    Ordinary samples retain binary union occupancy.  A point at a source
+    surface is not arbitrarily assigned to either side: it has one possible
+    deterministic treatment, and every unresolved geometric ambiguity fails
+    the raw initializer before any bundle can be published.
+    """
+
+    samples = _points(points)
+    result = _binary_union_contains(components, samples).astype(np.float64)
+    near_surface = _surface_near_mask(components, samples)
+    for index in np.flatnonzero(near_surface):
+        result[index] = _resolve_surface_point(components, samples[index])
+        if surface_stats is not None:
+            surface_stats.record(float(result[index]))
+    return result
+
+
+def _binary_union_contains(components: tuple[trimesh.Trimesh, ...], points: np.ndarray) -> np.ndarray:
+    """Return parity containment only after callers established clearance."""
+
+    result = np.zeros(len(points), dtype=np.bool_)
+    for component in components:
+        bounds = np.asarray(component.bounds, dtype=np.float64)
+        candidates = np.flatnonzero(np.all((points >= bounds[0]) & (points <= bounds[1]), axis=1))
+        if len(candidates) == 0:
+            continue
+        candidate_points = points[candidates]
+        try:
+            inside = component.contains(candidate_points)
+        except Exception as exc:
+            raise ValueError("Unable to determine initial_design STL containment") from exc
+        if inside.dtype != np.dtype(np.bool_) or inside.shape != (len(candidate_points),):
+            raise ValueError("initial_design STL containment returned an invalid mask")
+        result[candidates] |= inside
+    return result
+
+
+def _surface_near_mask(components: tuple[trimesh.Trimesh, ...], points: np.ndarray) -> np.ndarray:
+    """Identify every sample within the exact surface tolerance of any part."""
 
     result = np.zeros(len(points), dtype=np.bool_)
     for component in components:
@@ -238,23 +335,97 @@ def _union_contains(components: tuple[trimesh.Trimesh, ...], points: np.ndarray)
         )
         if len(candidates) == 0:
             continue
-        candidate_points = points[candidates]
-        try:
-            _, distances, _ = trimesh.proximity.closest_point(component, candidate_points)
-        except Exception as exc:
-            raise ValueError("Unable to calculate initial_design STL surface distance") from exc
-        if not np.isfinite(distances).all():
-            raise ValueError("initial_design STL surface distance is non-finite")
-        if np.any(distances <= _SURFACE_TOLERANCE_M):
-            raise ValueError("initial_design STL occupancy is ambiguous: a sample lies on the STL surface")
-        try:
-            inside = component.contains(candidate_points)
-        except Exception as exc:
-            raise ValueError("Unable to determine initial_design STL containment") from exc
-        if inside.dtype != np.dtype(np.bool_) or inside.shape != (len(candidate_points),):
-            raise ValueError("initial_design STL containment returned an invalid mask")
-        result[candidates] |= inside
+        distances = _closest_surface_distances(component, points[candidates])
+        result[candidates] |= distances <= _SURFACE_TOLERANCE_M
     return result
+
+
+def _resolve_surface_point(
+    components: tuple[trimesh.Trimesh, ...], point: np.ndarray, *, normal_offset_m: float = _NORMAL_OFFSET_M
+) -> float:
+    """Resolve a unique face-interior tie by symmetric displaced union tests."""
+
+    component, face_index, closest = _unique_nearest_face(components, point)
+    triangle = np.asarray(component.triangles[face_index], dtype=np.float64)
+    normal = np.cross(triangle[1] - triangle[0], triangle[2] - triangle[0])
+    normal_norm = float(np.linalg.norm(normal))
+    if not np.isfinite(normal_norm) or normal_norm <= 0.0:
+        raise ValueError("initial_design STL surface resolution requires a nondegenerate nearest face")
+    barycentric = trimesh.triangles.points_to_barycentric(triangle[np.newaxis, :, :], closest[np.newaxis, :])[0]
+    if not np.isfinite(barycentric).all() or np.any(barycentric <= 0.0):
+        raise ValueError("initial_design STL surface resolution rejects an edge or vertex projection")
+    unit_normal = normal / normal_norm
+    if not np.isfinite(normal_offset_m) or normal_offset_m <= _SURFACE_TOLERANCE_M:
+        raise ValueError("initial_design STL surface resolution normal offset is invalid")
+    plus = point + normal_offset_m * unit_normal
+    minus = point - normal_offset_m * unit_normal
+    _require_displaced_clearance(components, plus)
+    _require_displaced_clearance(components, minus)
+    return (float(_binary_union_contains(components, plus[np.newaxis, :])[0]) + float(_binary_union_contains(components, minus[np.newaxis, :])[0])) / 2.0
+
+
+def _unique_nearest_face(components: tuple[trimesh.Trimesh, ...], point: np.ndarray) -> tuple[trimesh.Trimesh, int, np.ndarray]:
+    """Return one global nearest face, refusing tolerance-scale face ties."""
+
+    candidates: list[tuple[float, trimesh.Trimesh, int, np.ndarray]] = []
+    for component in components:
+        bounds = np.asarray(component.bounds, dtype=np.float64)
+        # A nearest face at ``d`` makes another face at ``d + tolerance`` a
+        # numerically unresolved tie.  The expanded AABB cull is therefore
+        # deliberately 2*tolerance, not merely the surface-hit threshold.
+        if _point_aabb_distance(point, bounds) > 2.0 * _SURFACE_TOLERANCE_M:
+            continue
+        triangles = np.asarray(component.triangles, dtype=np.float64)
+        if triangles.ndim != 3 or triangles.shape[1:] != (3, 3) or len(triangles) == 0:
+            raise ValueError("initial_design STL surface resolution received invalid faces")
+        repeated = np.broadcast_to(point, (len(triangles), 3))
+        closest = trimesh.triangles.closest_point(triangles, repeated)
+        distances = np.linalg.norm(closest - point, axis=1)
+        if not np.isfinite(distances).all() or not np.isfinite(closest).all():
+            raise ValueError("initial_design STL surface resolution found non-finite nearest-face data")
+        for face_index in np.flatnonzero(distances <= 2.0 * _SURFACE_TOLERANCE_M):
+            candidates.append((float(distances[face_index]), component, int(face_index), np.asarray(closest[face_index], dtype=np.float64)))
+    if not candidates:
+        raise ValueError("initial_design STL surface resolution could not find a nearest face")
+    minimum = min(item[0] for item in candidates)
+    nearest = [item for item in candidates if item[0] <= minimum + _SURFACE_TOLERANCE_M]
+    if len(nearest) != 1:
+        raise ValueError("initial_design STL surface resolution requires a unique nearest face")
+    _, component, face_index, closest = nearest[0]
+    return component, face_index, closest
+
+
+def _require_displaced_clearance(components: tuple[trimesh.Trimesh, ...], point: np.ndarray) -> None:
+    for component in components:
+        bounds = np.asarray(component.bounds, dtype=np.float64)
+        # The surface is a subset of its component AABB, so this safe cull
+        # cannot hide a source face closer than the declared tolerance.
+        if _point_aabb_distance(point, bounds) > _SURFACE_TOLERANCE_M:
+            continue
+        if bool(np.any(_closest_surface_distances(component, point[np.newaxis, :]) <= _SURFACE_TOLERANCE_M)):
+            raise ValueError("initial_design STL surface resolution displaced sample remains on a surface")
+
+
+def _closest_surface_distances(component: trimesh.Trimesh, points: np.ndarray) -> np.ndarray:
+    try:
+        _, distances, _ = trimesh.proximity.closest_point(component, points)
+    except Exception as exc:
+        raise ValueError("Unable to calculate initial_design STL surface distance") from exc
+    if not np.isfinite(distances).all():
+        raise ValueError("initial_design STL surface distance is non-finite")
+    return np.asarray(distances, dtype=np.float64)
+
+
+def _point_aabb_distance(point: np.ndarray, bounds: np.ndarray) -> float:
+    delta = np.maximum(np.maximum(bounds[0] - point, 0.0), point - bounds[1])
+    return float(np.linalg.norm(delta))
+
+
+def _points(value: np.ndarray) -> np.ndarray:
+    points = np.asarray(value, dtype=np.float64)
+    if points.ndim != 2 or points.shape[1] != 3 or not np.isfinite(points).all():
+        raise ValueError("initial_design STL occupancy points must be finite Nx3 coordinates")
+    return points
 
 
 def _load_initial_design_components(path: Path, expected_component_count: int) -> tuple[trimesh.Trimesh, ...]:
@@ -289,9 +460,12 @@ def _load_initial_design_components(path: Path, expected_component_count: int) -
             raise ValueError(f"initial_design STL component {index} has non-finite geometry")
         if not component.is_watertight:
             raise ValueError(f"initial_design STL component {index} must be watertight")
-        if not component.is_volume:
+        # Parity containment and the symmetric +/- normal treatment are
+        # intentionally orientation-independent.  A globally flipped, but
+        # otherwise consistently wound, STL must therefore sample identically.
+        if not component.is_winding_consistent:
             raise ValueError(
-                f"initial_design STL component {index} must be consistently wound with positive volume"
+                f"initial_design STL component {index} must be consistently wound"
             )
     _reject_supported_nested_components(components)
     return components
@@ -351,8 +525,15 @@ def _validate_published_artifacts(path: Path, manifest: LocalInitialDesignRhoRaw
                 raise ValueError("published rho_raw contains non-finite values")
             if np.any(chunk[~active[start:stop]] != 0.0):
                 raise ValueError("published rho_raw must be exactly zero outside active_design_mask")
+            # Each ordinary sample has binary weight and an admissible surface
+            # sample has only half weight.  Eight subcells consequently make
+            # v2 values exact sixteenth fractions (v1 had no half weights).
+            denominator = 16 if manifest.schema_version == 2 else 8
+            if np.any(chunk[active[start:stop]] * denominator != np.rint(chunk[active[start:stop]] * denominator)):
+                raise ValueError("published rho_raw has an invalid subcell occupancy fraction")
     finally:
         del values
+    _validate_surface_resolution(manifest.surface_resolution)
     if _file_sha256(path) != manifest.rho_raw_sha256:
         raise ValueError("published rho_raw hash does not match manifest")
 
@@ -362,6 +543,26 @@ def _write_manifest(path: Path, manifest: LocalInitialDesignRhoRawManifest) -> N
     raw["subcell_offsets"] = [list(offset) for offset in manifest.subcell_offsets]
     raw["rho_raw_shape"] = list(manifest.rho_raw_shape)
     path.write_text(json.dumps(raw, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8")
+
+
+def _validate_surface_resolution(value: LocalInitialDesignSurfaceResolution) -> None:
+    if not isinstance(value, LocalInitialDesignSurfaceResolution):
+        raise ValueError("surface_resolution is invalid")
+    if (
+        value.kind != _SURFACE_RESOLUTION_KIND
+        or value.surface_tolerance_m != _SURFACE_TOLERANCE_M
+        or value.normal_offset_m != _NORMAL_OFFSET_M
+        or value.sampler_implementation != _SURFACE_SAMPLER_IMPLEMENTATION
+        or value.sampler_version != _SURFACE_SAMPLER_VERSION
+    ):
+        raise ValueError("surface_resolution contract is invalid")
+    counts = value.contribution_counts
+    if set(counts) != {"zero", "half", "one"} or any(
+        not isinstance(item, int) or isinstance(item, bool) or item < 0 for item in counts.values()
+    ):
+        raise ValueError("surface_resolution contribution counts are invalid")
+    if value.tie_point_count != sum(counts.values()) or value.tie_point_count < 0:
+        raise ValueError("surface_resolution tie-point count is invalid")
 
 
 def _file_sha256(path: Path) -> str:
@@ -400,7 +601,9 @@ __all__ = [
     "LOCAL_INITIAL_DESIGN_RHO_FILENAME",
     "LOCAL_INITIAL_DESIGN_RHO_KIND",
     "LOCAL_INITIAL_DESIGN_RHO_SCHEMA_VERSION",
+    "SUPPORTED_LOCAL_INITIAL_DESIGN_RHO_SCHEMA_VERSIONS",
     "LocalInitialDesignRhoRawArtifacts",
     "LocalInitialDesignRhoRawManifest",
+    "LocalInitialDesignSurfaceResolution",
     "build_local_initial_design_rho_raw",
 ]
