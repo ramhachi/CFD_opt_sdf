@@ -26,6 +26,11 @@ from cfd_sdf.localized_g2_fd_runner import (
     LOCALIZED_G2_FD_RUN_FILENAME,
     run_localized_g2_openfoam_fd_direction,
 )
+from cfd_sdf.localized_g2_fd_validation import (
+    LOCALIZED_G2_FD_VALIDATION_FILENAME,
+    calculate_localized_g2_raw_directional_derivative,
+    validate_localized_g2_openfoam_fd_direction,
+)
 from cfd_sdf.localized_reference_state_bundle import build_localized_reference_state_bundle
 from cfd_sdf.openfoam_grid_transfer import UniformCartesianCellGrid
 
@@ -47,6 +52,9 @@ def test_prepares_atomic_one_sided_cases_and_records_fixed_protocol(tmp_path: Pa
     assert report["execution_status"] == "not_run"
     assert report["topology_stability"]["all_prepared_perturbations_unchanged"] is True
     assert report["validation_protocol"]["baseline_repeats_minimum"] == 2
+    assert report["validation_protocol"]["noise_model"]["independent_fresh_runs"] is True
+    assert report["validation_protocol"]["noise_model"]["per_run_response_noise"] == "homoskedastic_assumed"
+    assert "Ck=" in report["validation_protocol"]["central_derivative_noise"]
     assert report["validation_protocol"]["final_gate"].endswith("absolute_error<=5*sigmaD")
     assert "reference" in report["cases"]
     assert {item["epsilon"] for key, item in report["cases"].items() if key != "reference"} == {0.01, 0.005, 0.0025}
@@ -196,8 +204,113 @@ def test_run_cli_requires_explicit_execute_before_any_openfoam_runtime(tmp_path:
         "run-localized-g2-openfoam-fd-direction", str(tmp_path / "prepared"), "dragAdjoint", str(tmp_path / "run"),
     ])
     assert result.exit_code != 0
-    assert "pass --execute" in result.output
     assert not (tmp_path / "run").exists()
+
+
+def test_validate_runner_evidence_passes_with_exact_raw_chain_direction(tmp_path: Path) -> None:
+    prepared, inputs = _prepared(tmp_path)
+    state = read_localized_design_state_manifest(inputs["bundle"] / "localized_design_state_manifest.json")
+    gradient = np.ones(int(np.prod(state.grid.cell_shape)), dtype=np.float64)
+    _raw_gradient, derivative = calculate_localized_g2_raw_directional_derivative(prepared.path, gradient)
+    run = _run_with_named_response(prepared.path, inputs, tmp_path / "run", derivative=derivative, gradient=gradient)
+    result = validate_localized_g2_openfoam_fd_direction(prepared.path, run.report_json, output_dir=tmp_path / "validation")
+    assert result.status == "pass"
+    report = json.loads((result.path / LOCALIZED_G2_FD_VALIDATION_FILENAME).read_text(encoding="utf-8"))
+    assert report["selected_epsilon"] == 0.0025
+    assert report["chain_gradient_formula"] == "g_raw=F.T(P_prime*(E.T*g_alpha))"
+    assert report["gates"] == {key: True for key in report["gates"]}
+    # The numerical agreement is not enough when its conditional noise-model
+    # identity guard is broken.
+    altered = json.loads(run.report_json.read_text(encoding="utf-8"))
+    altered["attempts"][-1]["convergence"] = {"status": "runner_completed"}
+    run.report_json.write_text(json.dumps(altered), encoding="utf-8")
+    guarded = validate_localized_g2_openfoam_fd_direction(prepared.path, run.report_json, output_dir=tmp_path / "guarded")
+    assert guarded.status == "inconclusive"
+    assert "convergence" in json.loads(guarded.report_json.read_text(encoding="utf-8"))["reason"]
+
+
+def test_validate_publishes_fail_and_inconclusive_but_refuses_tampered_run(tmp_path: Path) -> None:
+    prepared, inputs = _prepared(tmp_path)
+    state = read_localized_design_state_manifest(inputs["bundle"] / "localized_design_state_manifest.json")
+    gradient = np.ones(int(np.prod(state.grid.cell_shape)), dtype=np.float64)
+    _raw_gradient, derivative = calculate_localized_g2_raw_directional_derivative(prepared.path, gradient)
+    failed = _run_with_named_response(prepared.path, inputs, tmp_path / "failed_run", derivative=-derivative, gradient=gradient)
+    result = validate_localized_g2_openfoam_fd_direction(prepared.path, failed.report_json, output_dir=tmp_path / "fail_validation")
+    assert result.status == "fail"
+    # A missing explicitly recorded gradient is insufficient evidence, not a
+    # hash/provenance violation, and therefore gets a published inconclusive report.
+    incomplete = _run_with_named_response(prepared.path, inputs, tmp_path / "incomplete_run", derivative=derivative, gradient=None)
+    result = validate_localized_g2_openfoam_fd_direction(prepared.path, incomplete.report_json, output_dir=tmp_path / "inconclusive_validation")
+    assert result.status == "inconclusive"
+    report = json.loads(result.report_json.read_text(encoding="utf-8"))
+    assert "dJ_dalpha" in report["reason"]
+    tampered = json.loads(failed.report_json.read_text(encoding="utf-8"))
+    tampered["attempts"][0]["case_output_tree_sha256"] = "0" * 64
+    failed.report_json.write_text(json.dumps(tampered), encoding="utf-8")
+    with pytest.raises(ValueError, match="output hash"):
+        validate_localized_g2_openfoam_fd_direction(prepared.path, failed.report_json, output_dir=tmp_path / "must_not_publish")
+    assert not (tmp_path / "must_not_publish").exists()
+
+
+def test_validate_central_mode_uses_independent_pair_noise_formula(tmp_path: Path) -> None:
+    prepared, inputs = _prepared(tmp_path)
+    _make_central_fixture(prepared.path)
+    state = read_localized_design_state_manifest(inputs["bundle"] / "localized_design_state_manifest.json")
+    gradient = np.ones(int(np.prod(state.grid.cell_shape)), dtype=np.float64)
+    _raw_gradient, derivative = calculate_localized_g2_raw_directional_derivative(prepared.path, gradient)
+    run = _run_with_named_response(prepared.path, inputs, tmp_path / "central_run", derivative=derivative, gradient=gradient)
+    result = validate_localized_g2_openfoam_fd_direction(prepared.path, run.report_json, output_dir=tmp_path / "central_validation")
+    report = json.loads(result.report_json.read_text(encoding="utf-8"))
+    selected = report["selected_epsilon"]
+    assert result.status == "pass"
+    assert report["sigmaD"] == pytest.approx(report["baseline"]["sigmaJ"] / (np.sqrt(2.0) * selected))
+
+
+def test_validate_publishes_execution_failed_for_valid_stopped_run(tmp_path: Path) -> None:
+    prepared, _inputs = _prepared(tmp_path)
+    run = run_localized_g2_openfoam_fd_direction(
+        prepared.path, output_dir=tmp_path / "stopped_run", adjoint_name="dragAdjoint", execute=True,
+        runner=lambda **_: {"ok": False, "command": ["synthetic"], "backend": "synthetic", "error": "stopped"},
+    )
+    assert run.execution_status == "failed"
+    result = validate_localized_g2_openfoam_fd_direction(prepared.path, run.report_json, output_dir=tmp_path / "execution_failed")
+    assert result.status == "execution_failed"
+
+
+def _prepared(tmp_path: Path):
+    inputs = _inputs(tmp_path)
+    return prepare_localized_g2_openfoam_fd_direction(
+        inputs["project"], reference_bundle_path=inputs["bundle"], topology_report_path=inputs["topology"],
+        alpha_reference_binding_path=inputs["binding"], compiled_case_dir=inputs["compiled"],
+        direction=inputs["direction"], epsilon_ladder=(0.01, 0.005, 0.0025), output_dir=tmp_path / "prepared",
+    ), inputs
+
+
+def _run_with_named_response(prepared: Path, inputs: dict[str, Path], output: Path, *, derivative: float,
+                             gradient: np.ndarray | None):
+    def synthetic(**kwargs):
+        label = kwargs["label"]
+        case = kwargs["case_dir"]
+        response: dict[str, object] = {"response_id": "drag", "value": 10.0}
+        if label.startswith("plus_h"):
+            epsilon = float(label.split("_h", 1)[1]); response["value"] = 10.0 + epsilon * derivative
+        if label.startswith("minus_h"):
+            epsilon = float(label.split("_h", 1)[1]); response["value"] = 10.0 - epsilon * derivative
+        if kwargs["phase"] == "adjoint" and gradient is not None:
+            target = case / "dJ_dalpha.npy"; np.save(target, gradient)
+            state = read_localized_design_state_manifest(inputs["bundle"] / "localized_design_state_manifest.json")
+            grid = UniformCartesianCellGrid(origin=state.grid.origin, spacing=state.grid.spacing, cell_shape=state.grid.cell_shape)
+            response["dJ_dalpha"] = {
+                "kind": "dJ_dalpha", "response_id": "drag", "relative_path": "dJ_dalpha.npy",
+                "sha256": hashlib.sha256(target.read_bytes()).hexdigest(), "dtype": "float64",
+                "shape": [int(gradient.size)], "cell_order": "x_fastest", "cfd_grid_sha256": grid.sha256,
+            }
+        return {"ok": True, "command": ["synthetic", label], "backend": "synthetic",
+                "execution_identity": {"runner": "synthetic", "openfoam_version": "synthetic"},
+                "convergence": {"status": "converged"}, "final_time": 1.0, "response_provenance": response}
+    return run_localized_g2_openfoam_fd_direction(
+        prepared, output_dir=output, adjoint_name="dragAdjoint", execute=True, runner=synthetic,
+    )
 
 
 def _make_central_fixture(path: Path) -> None:

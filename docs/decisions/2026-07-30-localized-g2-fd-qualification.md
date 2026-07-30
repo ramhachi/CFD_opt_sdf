@@ -67,12 +67,45 @@ sigmaD,k = sigmaJ * sqrt(1 + 1/n0) / hk
 SNRk = |Jk - Jbar0| / (sigmaJ * sqrt(1 + 1/n0)) >= 10
 ```
 
+For the already allowed central mode, the two fresh perturbation executions
+are independent and do not share `Jbar0` in their finite difference:
+
+```text
+Ck = (Jplus,k - Jminus,k) / 2
+Dk = Ck / hk
+sigmaD,k = sigmaJ / (sqrt(2) * hk)
+SNRk = |Ck| / (sigmaJ / sqrt(2)) >= 10
+```
+
+For central mode, `Jscale` uses both baseline repeats and every executed
+plus/minus response: `max(rms(J0), max_s,k |Js,k-Jbar0|)`.  Baselines remain
+mandatory to estimate `sigmaJ`, but their variance is not added to a central
+difference.
+
+These central formulas are conditional on independent fresh runs with
+homoskedastic per-run response noise.  `sigmaJ` is the baseline sample
+standard deviation with the declared scale floor.  Perturbation-state noise
+is not independently replicated, so the validator must report `inconclusive`
+rather than pass unless every execution reports the same runner/backend,
+container/OpenFOAM identity, declared mesh/grid identity where supplied,
+explicit `converged` status, final time, and named response binding as the
+reference baseline.
+
 For adjacent steps `hc=2hk`, the stability metric is:
 
 ```text
 sigmaDelta = sigmaJ * sqrt(1/hk^2 + 1/hc^2 + (1/hc - 1/hk)^2/n0)
 Mstab = |Dk - Dc| / (0.05 * max(|Dk|, |Dc|) + 2 * sigmaDelta) <= 1
 ```
+
+For central mode, the corresponding independent-pair propagation is:
+
+```text
+sigmaDelta = sigmaJ/sqrt(2) * sqrt(1/hk^2 + 1/hc^2)
+```
+
+The SNR, stability, signal, sign, relative-error, and absolute-error
+thresholds themselves are unchanged.
 
 Select the smallest of `h/2` and `h/4` satisfying its own and its
 coarse-neighbour SNR/stability gates.  If none does, report
@@ -88,6 +121,9 @@ feasibility, immutable input bindings, and discrete-topology stability rule.
 SNR, stability, and final comparison formulas above.  The implementation
 records these formulas in each preparation report; execute/validate remain
 separate work so no prepared artifact can be mistaken for numerical evidence.
+`sol_local_filter_projection_contract` clarified the conditional central-mode
+variance propagation without changing any acceptance threshold or roadmap
+criterion.
 
 ## Limitations
 

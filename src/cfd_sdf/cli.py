@@ -86,6 +86,7 @@ from .localized_g2_fd_preparation import (
     prepare_localized_g2_openfoam_fd_direction,
 )
 from .localized_g2_fd_runner import run_localized_g2_openfoam_fd_direction
+from .localized_g2_fd_validation import validate_localized_g2_openfoam_fd_direction
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -339,6 +340,28 @@ def run_localized_g2_openfoam_fd_direction_command(
         "execution_status": result.execution_status, "validation_status": "not_run",
         "report_path": str(result.report_json), "baseline_repeats": result.baseline_repeats,
         "mode": result.mode,
+    }, sort_keys=True))
+
+
+@app.command("validate-localized-g2-openfoam-fd-direction")
+def validate_localized_g2_openfoam_fd_direction_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable localized G2 FD preparation directory."),
+    run_report: Path = typer.Argument(..., help="Immutable run report produced by run-localized-g2-openfoam-fd-direction."),
+    output_dir: Path = typer.Argument(..., help="New validation directory; existing paths are refused."),
+) -> None:
+    """Apply the fixed localized G2 FD protocol; do not rerun OpenFOAM."""
+    try:
+        result = validate_localized_g2_openfoam_fd_direction(
+            prepared_experiment, run_report, output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="validation_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_validation", "status": result.status,
+        "report_path": str(result.report_json), "markdown_path": str(result.report_markdown),
+        "mode": result.mode, "selected_epsilon": result.selected_epsilon,
     }, sort_keys=True))
 
 
