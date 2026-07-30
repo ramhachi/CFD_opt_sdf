@@ -189,8 +189,16 @@ Remaining implementation:
 2. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from the real runs, including response unit/provenance,
    `rho`-gradient convention, mesh-grid mapping, and topology-policy values
-   from the localized canonical state. The artifact must remain refused until
-   those bindings exist. **Implementation required.**
+   from the localized canonical state. For localized raw-alpha FD, this now
+   requires a version-pinned OpenCFD v2512 solver/adjoint patch which emits a
+   response-specific total derivative after the complete
+   `alpha -> alphaTilda -> beta -> response` chain. Existing direct
+   `dJ/dbeta`, `topOSens`, and `topologySens` fields remain audit-only and
+   must not be relabelled by metadata. The artifact must remain refused until
+   the pinned source, patch/build provenance, alpha/grid/order binding, and
+   filter/projection-enabled directional-FD evidence exist. See
+   [`2026-07-30-localized-g2-native-raw-alpha-gradient-path.md`](decisions/2026-07-30-localized-g2-native-raw-alpha-gradient-path.md).
+   **Implementation required.**
 3. Qualify wall-distance/turbulence treatment; current `meshWave` metadata is
    not porous-aware and remains unqualified.
 4. Compare porous and body-fitted pressure force, skin friction, total force,
