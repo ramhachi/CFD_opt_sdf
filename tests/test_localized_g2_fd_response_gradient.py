@@ -110,6 +110,63 @@ def test_reconstructs_declared_processor_global_labels_in_canonical_order(tmp_pa
     assert np.array_equal(np.load(extracted.gradient_npy, allow_pickle=False), gradient)
 
 
+def test_v2_coefficient_contract_converts_response_and_raw_alpha_gradient_to_newtons(tmp_path: Path) -> None:
+    prepared, inputs = _prepared(tmp_path)
+    state = read_localized_design_state_manifest(inputs["bundle"] / "localized_design_state_manifest.json")
+    gradient = np.ones(state.grid.cell_count, dtype=np.float64)
+    binding = load_and_verify_localized_alpha_reference_binding(inputs["binding"])
+    contract = _write_contract(tmp_path, inputs["compiled"], binding.binding.cfd_grid_sha256, binding.binding.cfd_grid.cell_count)
+    data = json.loads(contract.read_text(encoding="utf-8"))
+    factor = 661.5
+    scale = {
+        "kind": "coefficient_to_force_N", "factor": factor,
+        "conversion": "q_ref_times_area", "q_ref_pa": 551.25,
+        "density_kg_m3": 1.225, "speed_mps": 30.0, "area_m2": 1.2,
+    }
+    data["schema_version"] = 2
+    data["block_mesh_sha256"] = hashlib.sha256((inputs["compiled"] / "system" / "blockMeshDict").read_bytes()).hexdigest()
+    data["compiler"] = {
+        "compilation_metadata_sha256": data["compiler"]["compilation_metadata_sha256"],
+        "serial_runtime_sha256": "a" * 64,
+    }
+    data["primal_response"]["scale"] = scale
+    data["adjoint_gradient"]["scale"] = scale
+    script = b"#!/bin/sh\nexit 0\n"
+    proof = {
+        "status": "proved", "block_mesh_sha256": data["block_mesh_sha256"],
+        "grid_sha256": data["cfd_grid_sha256"], "cell_count": data["cfd_cell_count"],
+        "cell_order": "x-fastest",
+    }
+    for case in (prepared.path / "cases").iterdir():
+        (case / "AllrunAdjoint").write_bytes(script)
+        proof_path = case / "localized_g2_cell_centre_ordering.json"
+        proof_path.write_text(json.dumps(proof), encoding="utf-8")
+        runtime = {
+            "schema_version": 1, "kind": "localized_g2_serial_runtime_contract", "status": "compiled",
+            "flow_case_id": "straight", "response_id": "drag", "named_adjoint_id": "dragAdjoint",
+            "compiler": {"compilation_metadata_sha256": data["compiler"]["compilation_metadata_sha256"]},
+            "serial_execution": {"required": True, "decomposition": "forbidden"},
+            "block_mesh": {
+                "sha256": data["block_mesh_sha256"], "grid_sha256": data["cfd_grid_sha256"],
+                "cell_count": data["cfd_cell_count"], "cell_order": "x-fastest",
+            },
+            "adjoint_script": {"path": "AllrunAdjoint", "sha256": hashlib.sha256(script).hexdigest()},
+            "cell_centre_ordering_proof": {"path": proof_path.name, "sha256": hashlib.sha256(proof_path.read_bytes()).hexdigest()},
+        }
+        runtime_path = case / "localized_g2_serial_runtime.json"
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+        data["compiler"]["serial_runtime_sha256"] = hashlib.sha256(runtime_path.read_bytes()).hexdigest()
+    contract.write_text(json.dumps(data), encoding="utf-8")
+    run = _run_with_explicit_field_tree(prepared.path, tmp_path / "run", gradient)
+    extracted = extract_localized_g2_fd_response_gradient(
+        prepared.path, run.report_json, contract,
+        flow_case_id="straight", response_id="drag", adjoint_name="dragAdjoint", output_dir=tmp_path / "converted",
+    )
+    report = json.loads(extracted.report_json.read_text(encoding="utf-8"))
+    assert report["primal_responses"][0]["value"] == pytest.approx(10.0 * factor)
+    assert np.array_equal(np.load(extracted.gradient_npy, allow_pickle=False), gradient * factor)
+
+
 def _run_with_explicit_field_tree(prepared: Path, output: Path, gradient: np.ndarray, *, processor_shards: bool = False):
     def synthetic(**kwargs):
         case = kwargs["case_dir"]

@@ -520,6 +520,67 @@ def test_g2_rendered_block_mesh_binds_physical_domain_with_non_unit_scale(
     assert "    (4 2.4 1.4)" in text
 
 
+def test_opt_in_localized_g2_serial_runtime_emits_hash_bound_contracts(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "serial_g2_bundle",
+        available_patch_ids=patch_names,
+        localized_g2_serial_runtime_contract=True,
+    )
+
+    case = artifacts.case_dirs["straight"]
+    compilation_sha = hashlib.sha256((case / "openfoam_case_compilation.json").read_bytes()).hexdigest()
+    runtime = json.loads((case / "localized_g2_serial_runtime.json").read_text(encoding="utf-8"))
+    contract = json.loads((case / "localized_g2_response_gradient_contract.json").read_text(encoding="utf-8"))
+    proof = json.loads((case / "localized_g2_cell_centre_ordering.json").read_text(encoding="utf-8"))
+    script = (case / "AllrunAdjoint").read_bytes()
+    mesh = read_openfoam_blockmesh_uniform_cartesian_grid(case / "system/blockMeshDict")
+    assert runtime["compiler"]["compilation_metadata_sha256"] == compilation_sha
+    assert runtime["block_mesh"]["sha256"] == mesh.block_mesh_sha256
+    assert runtime["block_mesh"]["cell_count"] == mesh.grid.cell_count
+    assert runtime["block_mesh"]["cell_order"] == "x-fastest"
+    assert runtime["serial_execution"]["decomposition"] == "forbidden"
+    assert proof["cell_order"] == "x-fastest"
+    assert proof["cell_count"] == mesh.grid.cell_count
+    assert len(proof["float64_le_c_order_sha256"]) == 64
+    assert b"\r" not in script
+    assert b"localized G2 alpha hash mismatch" in script
+    assert runtime["adjoint_script"]["sha256"] == hashlib.sha256(script).hexdigest()
+    assert runtime["adjoint_script"]["command"] == ["adjointOptimisationFoam", "-case", "."]
+    assert contract["schema_version"] == 2
+    assert contract["flow_case_id"] == "straight"
+    assert contract["response_id"] == "rotated_force"
+    assert contract["named_adjoint_id"] == "resp_rotated_force"
+    assert contract["block_mesh_sha256"] == mesh.block_mesh_sha256
+    factor = 0.5 * 1.225 * 30.0**2 * 1.2
+    assert contract["primal_response"]["scale"]["factor"] == pytest.approx(factor)
+    assert contract["adjoint_gradient"]["scale"] == contract["primal_response"]["scale"]
+    assert artifacts.bundle_metadata_json.is_file()
+    bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
+    assert bundle["flow_cases"]["straight"]["localized_g2_serial_runtime"]["status"] == "compiled"
+
+
+def test_opt_in_localized_g2_serial_runtime_rejects_parallel_template(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+    (template / "Allrun").write_text("#!/bin/sh\nrunApplication decomposePar\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="rejects parallel command"):
+        compile_openfoam_solver_case_bundle(
+            _g2_spec(tmp_path), template_case_dir=template,
+            output_dir=tmp_path / "parallel_g2_bundle", available_patch_ids=patch_names,
+            localized_g2_serial_runtime_contract=True,
+        )
+
+
 def test_compact_retained_field_entry_inserts_value_inside_its_patch(tmp_path: Path) -> None:
     template = _template(tmp_path)
     (template / "0.orig/Ua").write_text(

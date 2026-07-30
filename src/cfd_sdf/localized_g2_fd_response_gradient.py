@@ -27,6 +27,11 @@ from .localized_g2_fd_preparation import LOCALIZED_G2_FD_PREPARATION_FILENAME
 from .localized_g2_fd_runner import LOCALIZED_G2_FD_RUN_FILENAME, _verify_prepared_experiment
 from .localized_g2_fd_validation import _verified_attempts, _verify_run_report
 from .localized_openfoam_alpha_case import validate_localized_openfoam_alpha_case
+from .localized_g2_serial_runtime_contract import (
+    LOCALIZED_G2_CELL_CENTRE_PROOF_FILENAME,
+    LOCALIZED_G2_SERIAL_RUNTIME_FILENAME,
+    LOCALIZED_G2_SERIAL_RUNTIME_KIND,
+)
 from .openfoam_blockmesh_grid import read_openfoam_blockmesh_uniform_cartesian_grid
 from .openfoam_grid_transfer import CANONICAL_CELL_ORDER
 
@@ -114,7 +119,8 @@ def extract_localized_g2_fd_response_gradient(
             )
             common_case_contract = _require_same_case_contract(common_case_contract, record, label)
             source = _resolve_source(record["case"], _mapping(_mapping(contract, "primal_response"), "source"), time_token, "primal response")
-            value = _read_json_scalar(source, str(_mapping(_mapping(contract, "primal_response"), "source")["json_pointer"]))
+            raw_value = _read_json_scalar(source, str(_mapping(_mapping(contract, "primal_response"), "source")["json_pointer"]))
+            value = raw_value * _scale_factor(_mapping(contract, "primal_response")["scale"])
             responses.append({
                 "label": label,
                 "value": value,
@@ -133,6 +139,7 @@ def extract_localized_g2_fd_response_gradient(
         adjoint_case = _verify_case_contract(run_root, adjoint_attempt, contract, label="adjoint")
         common_case_contract = _require_same_case_contract(common_case_contract, adjoint_case, "adjoint")
         gradient, gradient_sources = _read_gradient(adjoint_case["case"], _mapping(contract, "adjoint_gradient"), adjoint_time, int(common_case_contract["cfd_cell_count"]))
+        gradient = gradient * _scale_factor(_mapping(contract, "adjoint_gradient")["scale"])
         if gradient.dtype != np.dtype(np.float64) or not gradient.dtype.isnative or gradient.ndim != 1 or not np.isfinite(gradient).all():
             raise ValueError("named adjoint dJ_dalpha must be a finite native float64 vector")
         gradient_path = staging / LOCALIZED_G2_FD_RESPONSE_GRADIENT_ARRAY_FILENAME
@@ -197,9 +204,12 @@ def extract_localized_g2_fd_response_gradient(
 def _read_contract(path: str | Path) -> tuple[Path, Mapping[str, object]]:
     source = Path(path).resolve()
     data = _read_json(source)
-    if data.get("schema_version") != LOCALIZED_G2_FD_RESPONSE_GRADIENT_CONTRACT_SCHEMA_VERSION or data.get("kind") != LOCALIZED_G2_FD_RESPONSE_GRADIENT_CONTRACT_KIND or data.get("status") != "compiled":
+    version = data.get("schema_version")
+    if version not in {1, 2} or data.get("kind") != LOCALIZED_G2_FD_RESPONSE_GRADIENT_CONTRACT_KIND or data.get("status") != "compiled":
         raise ValueError("response/gradient contract has an unsupported compiler-generated schema")
     required = {"schema_version", "kind", "status", "flow_case_id", "response_id", "named_adjoint_id", "compiler", "cfd_grid_sha256", "cfd_cell_count", "cell_order", "primal_response", "adjoint_gradient"}
+    if version == 2:
+        required |= {"block_mesh_sha256"}
     if set(data) != required:
         raise ValueError("response/gradient contract has unexpected or missing fields")
     _require_sha(data.get("cfd_grid_sha256"), "contract cfd_grid_sha256")
@@ -208,13 +218,19 @@ def _read_contract(path: str | Path) -> tuple[Path, Mapping[str, object]]:
     if data.get("cell_order") != CANONICAL_CELL_ORDER:
         raise ValueError("contract must declare canonical x-fastest CFD cell order")
     compiler = _mapping(data, "compiler")
-    if set(compiler) != {"compilation_metadata_sha256"}:
+    expected_compiler_keys = {"compilation_metadata_sha256"} if version == 1 else {"compilation_metadata_sha256", "serial_runtime_sha256"}
+    if set(compiler) != expected_compiler_keys:
         raise ValueError("response/gradient contract compiler provenance is invalid")
     _require_sha(compiler.get("compilation_metadata_sha256"), "contract compilation_metadata_sha256")
+    if version == 2:
+        _require_sha(compiler.get("serial_runtime_sha256"), "contract serial_runtime_sha256")
+        _require_sha(data.get("block_mesh_sha256"), "contract block_mesh_sha256")
     _validate_response_contract(_mapping(data, "primal_response"))
     _validate_gradient_contract(_mapping(data, "adjoint_gradient"))
     if _mapping(data, "primal_response")["units"] != _mapping(data, "adjoint_gradient")["units"]:
         raise ValueError("primal response and raw-alpha gradient units must match for dimensionless alpha")
+    if _mapping(data, "primal_response")["scale"] != _mapping(data, "adjoint_gradient")["scale"]:
+        raise ValueError("primal response and raw-alpha gradient must use the same conversion factor")
     return source, data
 
 
@@ -235,7 +251,7 @@ def _validate_response_contract(value: Mapping[str, object]) -> None:
         raise ValueError("primal response contract is invalid")
     _validate_json_scalar_source(_mapping(value, "source"), "primal response")
     _require_text(value.get("units"), "primal response units")
-    _validate_identity_scale(_mapping(value, "scale"), "primal response")
+    _validate_scale(_mapping(value, "scale"), "primal response")
     if value.get("final_time_selection") != "recorded_attempt_final_time":
         raise ValueError("primal response final-time selection must be recorded_attempt_final_time")
 
@@ -246,7 +262,7 @@ def _validate_gradient_contract(value: Mapping[str, object]) -> None:
     if value.get("variable") != "raw_alpha" or value.get("meaning") != "dJ=sum_i g_alpha[i]*d(alpha_i)":
         raise ValueError("adjoint gradient must explicitly be dJ/d(raw_alpha) with the declared meaning")
     _require_text(value.get("units"), "adjoint gradient units")
-    _validate_identity_scale(_mapping(value, "scale"), "adjoint gradient")
+    _validate_scale(_mapping(value, "scale"), "adjoint gradient")
     if value.get("final_time_selection") != "recorded_attempt_final_time":
         raise ValueError("adjoint gradient final-time selection must be recorded_attempt_final_time")
     decomposition = _mapping(value, "decomposition")
@@ -300,9 +316,29 @@ def _validate_relative_template(value: object, context: str) -> None:
         raise ValueError(f"{context} source path must be a safe case-relative path")
 
 
-def _validate_identity_scale(value: Mapping[str, object], context: str) -> None:
-    if value != {"kind": "identity", "factor": 1.0, "conversion": "none"}:
-        raise ValueError(f"{context} scale/conversion is unknown or non-identity")
+def _validate_scale(value: Mapping[str, object], context: str) -> None:
+    if value == {"kind": "identity", "factor": 1.0, "conversion": "none"}:
+        return
+    required = {"kind", "factor", "conversion", "q_ref_pa", "density_kg_m3", "speed_mps", "area_m2"}
+    if set(value) != required or value.get("kind") != "coefficient_to_force_N" or value.get("conversion") != "q_ref_times_area":
+        raise ValueError(f"{context} scale/conversion is unknown")
+    numbers: dict[str, float] = {}
+    for key in ("factor", "q_ref_pa", "density_kg_m3", "speed_mps", "area_m2"):
+        item = value.get(key)
+        if isinstance(item, bool) or not isinstance(item, (int, float)) or not math.isfinite(float(item)) or float(item) <= 0.0:
+            raise ValueError(f"{context} coefficient-to-force conversion {key} is invalid")
+        numbers[key] = float(item)
+    expected_q = 0.5 * numbers["density_kg_m3"] * numbers["speed_mps"] ** 2
+    expected = expected_q * numbers["area_m2"]
+    if not math.isclose(numbers["q_ref_pa"], expected_q, rel_tol=1.0e-13, abs_tol=0.0) or not math.isclose(numbers["factor"], expected, rel_tol=1.0e-13, abs_tol=0.0):
+        raise ValueError(f"{context} coefficient-to-force conversion does not equal q_ref_times_area")
+
+
+def _scale_factor(value: object) -> float:
+    if not isinstance(value, Mapping):
+        raise ValueError("response/gradient scale must be a mapping")
+    _validate_scale(value, "response/gradient")
+    return float(value["factor"])
 
 
 def _verify_case_contract(run_root: Path, attempt: Mapping[str, object], contract: Mapping[str, object], *, label: str) -> dict[str, object]:
@@ -314,6 +350,10 @@ def _verify_case_contract(run_root: Path, attempt: Mapping[str, object], contrac
     grid_hash, cell_count = contract["cfd_grid_sha256"], contract["cfd_cell_count"]
     if mesh.grid_sha256 != grid_hash or mesh.grid.cell_count != cell_count or mesh.grid.cell_order != CANONICAL_CELL_ORDER:
         raise ValueError(f"runtime case {label} blockMesh/grid does not match the response/gradient contract")
+    if contract.get("schema_version") == 2 and mesh.block_mesh_sha256 != contract.get("block_mesh_sha256"):
+        raise ValueError(f"runtime case {label} blockMesh hash does not match the serial response/gradient contract")
+    if contract.get("schema_version") == 2:
+        _verify_serial_runtime_contract(case, contract)
     source = _mapping(manifest, "alpha_source")
     binding = _mapping(manifest, "alpha_binding")
     block = _mapping(manifest, "block_mesh")
@@ -333,6 +373,53 @@ def _verify_case_contract(run_root: Path, attempt: Mapping[str, object], contrac
         "alpha_values_sha256": alpha.alpha_values_sha256,
         "alpha_binding_sha256": binding.get("binding_sha256"),
     }
+
+
+def _verify_serial_runtime_contract(case: Path, contract: Mapping[str, object]) -> None:
+    """Require every v2 extraction input to retain the compiler serial proof."""
+
+    path = case / LOCALIZED_G2_SERIAL_RUNTIME_FILENAME
+    runtime = _read_json(path)
+    if runtime.get("schema_version") != 1 or runtime.get("kind") != LOCALIZED_G2_SERIAL_RUNTIME_KIND or runtime.get("status") != "compiled":
+        raise ValueError("runtime case serial runtime contract is invalid")
+    compiler = _mapping(contract, "compiler")
+    if _sha256_file(path) != compiler.get("serial_runtime_sha256"):
+        raise ValueError("runtime case serial runtime contract hash does not match the response/gradient contract")
+    for key in ("flow_case_id", "response_id", "named_adjoint_id"):
+        if runtime.get(key) != contract.get(key):
+            raise ValueError(f"runtime case serial runtime {key} does not match the response/gradient contract")
+    runtime_compiler = _mapping(runtime, "compiler")
+    if runtime_compiler.get("compilation_metadata_sha256") != compiler.get("compilation_metadata_sha256"):
+        raise ValueError("runtime case serial runtime compiler provenance does not match the response/gradient contract")
+    serial = _mapping(runtime, "serial_execution")
+    if serial.get("required") is not True or serial.get("decomposition") != "forbidden":
+        raise ValueError("runtime case serial runtime does not require non-decomposed execution")
+    if any(item.is_dir() and re.fullmatch(r"processor[0-9]+", item.name) for item in case.iterdir()):
+        raise ValueError("runtime case serial runtime refuses processor directories")
+    block = _mapping(runtime, "block_mesh")
+    if block.get("sha256") != contract.get("block_mesh_sha256") or block.get("grid_sha256") != contract.get("cfd_grid_sha256") or block.get("cell_count") != contract.get("cfd_cell_count") or block.get("cell_order") != CANONICAL_CELL_ORDER:
+        raise ValueError("runtime case serial runtime blockMesh/grid does not match the response/gradient contract")
+    script = _mapping(runtime, "adjoint_script")
+    script_path = _serial_contract_relative_path(case, script.get("path"), "serial adjoint script path")
+    if script_path.name != "AllrunAdjoint" or not script_path.is_file() or script.get("sha256") != _sha256_file(script_path):
+        raise ValueError("runtime case AllrunAdjoint hash does not match the serial runtime contract")
+    proof = _mapping(runtime, "cell_centre_ordering_proof")
+    proof_path = _serial_contract_relative_path(case, proof.get("path"), "cell-centre proof path")
+    if proof_path.name != LOCALIZED_G2_CELL_CENTRE_PROOF_FILENAME or not proof_path.is_file() or proof.get("sha256") != _sha256_file(proof_path):
+        raise ValueError("runtime case cell-centre ordering proof hash does not match the serial runtime contract")
+    proof_data = _read_json(proof_path)
+    if proof_data.get("status") != "proved" or proof_data.get("block_mesh_sha256") != contract.get("block_mesh_sha256") or proof_data.get("grid_sha256") != contract.get("cfd_grid_sha256") or proof_data.get("cell_count") != contract.get("cfd_cell_count") or proof_data.get("cell_order") != CANONICAL_CELL_ORDER:
+        raise ValueError("runtime case cell-centre ordering proof does not match the response/gradient contract")
+
+
+def _serial_contract_relative_path(case: Path, value: object, context: str) -> Path:
+    raw = _require_text(value, context)
+    candidate = Path(raw)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        raise ValueError(f"{context} must be a safe case-relative path")
+    resolved = (case / candidate).resolve()
+    _descendant(resolved, case, f"{context} escapes runtime case")
+    return resolved
 
 
 def _require_same_case_contract(previous: dict[str, object] | None, current: dict[str, object], label: str) -> dict[str, object]:

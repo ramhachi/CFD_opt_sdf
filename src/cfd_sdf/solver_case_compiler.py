@@ -20,6 +20,11 @@ from .openfoam_case_renderer import (
 )
 from .openfoam_blockmesh_grid import read_openfoam_blockmesh_uniform_cartesian_grid
 from .openfoam_response_renderer import render_openfoam_force_response_files
+from .localized_g2_serial_runtime_contract import (
+    LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME,
+    LOCALIZED_G2_SERIAL_RUNTIME_FILENAME,
+    emit_localized_g2_serial_runtime_contract,
+)
 from .problem_spec import ProblemSpec
 from .solver_case_manifest import (
     SolverCaseManifest,
@@ -94,6 +99,7 @@ def compile_openfoam_solver_case_bundle(
     adjoint_iterations: int = 1,
     overwrite: bool = False,
     require_compile_ready: bool = True,
+    localized_g2_serial_runtime_contract: bool = False,
 ) -> OpenFOAMCaseBundleArtifacts:
     """Compile a per-flow bundle without copying runtime result directories."""
 
@@ -103,6 +109,8 @@ def compile_openfoam_solver_case_bundle(
         or adjoint_iterations <= 0
     ):
         raise ValueError("adjoint_iterations must be a positive integer")
+    if not isinstance(localized_g2_serial_runtime_contract, bool):
+        raise ValueError("localized_g2_serial_runtime_contract must be a boolean")
     template = Path(template_case_dir).resolve()
     output = Path(output_dir).resolve()
     if template == output or _is_relative_to(template, output):
@@ -337,6 +345,29 @@ def compile_openfoam_solver_case_bundle(
                 }
                 _write_json(compilation_path, compilation)
                 compilation_sha = _file_sha256(compilation_path)
+                if localized_g2_serial_runtime_contract:
+                    generated_responses = tuple(
+                        _mapping(plan.generated, "generated responses").get("responses", ())
+                    )
+                    if len(generated_responses) != 1 or not isinstance(generated_responses[0], Mapping):
+                        raise ValueError(
+                            "localized G2 serial runtime requires exactly one supported force response per flow case"
+                        )
+                    requested_fluid = _mapping(plan.requested, "flow requested").get("fluid")
+                    if not isinstance(requested_fluid, Mapping):
+                        raise ValueError("localized G2 serial runtime flow fluid metadata is invalid")
+                    density = requested_fluid.get("density_kg_m3")
+                    staged_mesh = read_openfoam_blockmesh_uniform_cartesian_grid(
+                        case_staging / "system" / "blockMeshDict"
+                    )
+                    runtime = emit_localized_g2_serial_runtime_contract(
+                        case_dir=case_staging,
+                        flow_case_id=plan.flow_case_id,
+                        response=generated_responses[0],
+                        density_kg_m3=float(density),
+                        compilation_metadata_sha256=compilation_sha,
+                        mesh=staged_mesh,
+                    )
                 case_staging.replace(case_dir)
                 committed_case_dirs.append(case_dir)
                 case_dirs[plan.flow_case_id] = case_dir
@@ -348,6 +379,18 @@ def compile_openfoam_solver_case_bundle(
                     "compilation_sha256": compilation_sha,
                     "status": "compiled",
                 }
+                if localized_g2_serial_runtime_contract:
+                    flow_metadata[plan.flow_case_id]["localized_g2_serial_runtime"] = {
+                        "path": f"{plan.case_directory_name}/{LOCALIZED_G2_SERIAL_RUNTIME_FILENAME}",
+                        "sha256": _file_sha256(case_dir / LOCALIZED_G2_SERIAL_RUNTIME_FILENAME),
+                        "response_gradient_contract": (
+                            f"{plan.case_directory_name}/{LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME}"
+                        ),
+                        "response_gradient_contract_sha256": _file_sha256(
+                            case_dir / LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME
+                        ),
+                        "status": runtime["status"],
+                    }
             finally:
                 if case_staging.exists():
                     shutil.rmtree(case_staging)

@@ -419,6 +419,11 @@ def compile_openfoam_problem_cases(
         help="Available template patch ID; repeat for each patch. Defaults to the fixed-grid profile.",
     ),
     adjoint_iterations: int = typer.Option(1, help="Adjoint iterations written per force response."),
+    localized_g2_serial_runtime_contract: bool = typer.Option(
+        False,
+        "--localized-g2-serial-runtime-contract",
+        help="Emit the opt-in serial-only localized G2 response/gradient and AllrunAdjoint runtime contract.",
+    ),
     overwrite: bool = typer.Option(False, help="Replace a compiler-owned bundle only."),
     require_compile_ready: bool = typer.Option(
         True,
@@ -439,6 +444,7 @@ def compile_openfoam_problem_cases(
             adjoint_iterations=adjoint_iterations,
             overwrite=overwrite,
             require_compile_ready=False,
+            localized_g2_serial_runtime_contract=localized_g2_serial_runtime_contract,
         )
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc

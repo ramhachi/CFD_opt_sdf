@@ -32,6 +32,10 @@ from .localized_alpha_reference_binding import load_and_verify_localized_alpha_r
 from .localized_design_state_manifest import localized_design_state_manifest_sha256
 from .localized_reference_state_bundle import LOCALIZED_REFERENCE_STATE_FILENAME
 from .localized_openfoam_alpha_case import validate_localized_openfoam_alpha_case
+from .localized_g2_serial_runtime_contract import (
+    LOCALIZED_G2_SERIAL_RUNTIME_FILENAME,
+    LOCALIZED_G2_SERIAL_RUNTIME_KIND,
+)
 
 
 LOCALIZED_G2_FD_RUN_SCHEMA_VERSION = 1
@@ -398,12 +402,18 @@ def _default_runner(*, backend: str, docker_image: str | None, timeout_seconds: 
         script = case_dir / adjoint_script
         if not script.is_file():
             raise FileNotFoundError(f"named localized FD adjoint script is missing: {script}")
+        serial_runtime = _verify_serial_runtime_if_declared(
+            case_dir, script_name=adjoint_script, adjoint_name=adjoint_name
+        )
         command = _adjoint_command(selected_backend, case_dir, image, adjoint_script)
         completed = subprocess.run(command, cwd=case_dir, timeout=timeout_seconds, check=False, capture_output=True, text=True)
         stdout = case_dir / "log.localizedG2Adjoint.stdout"; stderr = case_dir / "log.localizedG2Adjoint.stderr"
         stdout.write_text(completed.stdout, encoding="utf-8"); stderr.write_text(completed.stderr, encoding="utf-8")
         ok = completed.returncode == 0
-        return {"ok": ok, "command": command, "backend": selected_backend, "execution_identity": _runtime_identity(selected_backend, image if selected_backend == "docker" else None),
+        identity = _runtime_identity(selected_backend, image if selected_backend == "docker" else None)
+        if serial_runtime is not None:
+            identity["localized_g2_serial_runtime"] = serial_runtime
+        return {"ok": ok, "command": command, "backend": selected_backend, "execution_identity": identity,
                 "convergence": _convergence_from_case(case_dir, ok=ok), "final_time": _final_time(case_dir),
                 "response_provenance": _response_provenance(case_dir), "error": None if ok else f"adjoint return code {completed.returncode}"}
     return execute
@@ -420,6 +430,47 @@ def _adjoint_command(backend: str, case_dir: Path, docker_image: str, script: st
         return ["docker", "run", "--rm", "--entrypoint", "bash", "--mount",
                 f"type=bind,source={case_dir},target=/case", "-w", "/case", docker_image, "-lc", shell]
     raise ValueError(f"unsupported named-adjoint backend: {backend}")
+
+
+def _verify_serial_runtime_if_declared(
+    case_dir: Path, *, script_name: str, adjoint_name: str
+) -> dict[str, object] | None:
+    """Fail before launch when a compiler-declared serial contract is altered."""
+
+    path = case_dir / LOCALIZED_G2_SERIAL_RUNTIME_FILENAME
+    if not path.is_file():
+        return None
+    payload = _read_json(path)
+    if payload.get("schema_version") != 1 or payload.get("kind") != LOCALIZED_G2_SERIAL_RUNTIME_KIND or payload.get("status") != "compiled":
+        raise ValueError("localized G2 serial runtime contract is invalid")
+    if payload.get("named_adjoint_id") != adjoint_name:
+        raise ValueError("named adjoint does not match the compiler-declared serial runtime contract")
+    script = payload.get("adjoint_script")
+    if not isinstance(script, Mapping) or script.get("path") != script_name:
+        raise ValueError("adjoint script does not match the compiler-declared serial runtime contract")
+    expected = script.get("sha256")
+    actual = _sha256_file(case_dir / script_name)
+    if not isinstance(expected, str) or _SHA256.fullmatch(expected) is None or actual != expected:
+        raise ValueError("AllrunAdjoint hash does not match the compiler-declared serial runtime contract")
+    serial = payload.get("serial_execution")
+    if not isinstance(serial, Mapping) or serial.get("required") is not True or serial.get("decomposition") != "forbidden":
+        raise ValueError("localized G2 serial runtime does not require serial execution")
+    processor_dirs = [item.name for item in case_dir.iterdir() if item.is_dir() and re.fullmatch(r"processor[0-9]+", item.name)]
+    if processor_dirs:
+        raise ValueError("localized G2 serial runtime refuses processor directories: " + ", ".join(sorted(processor_dirs)))
+    # This verifies the exact canonical float64 alpha hash and its bound mesh
+    # before the script copies the field into the fresh adjoint runtime.
+    alpha = validate_localized_openfoam_alpha_case(case_dir)
+    block = payload.get("block_mesh")
+    if not isinstance(block, Mapping) or block.get("sha256") != _sha256_file(case_dir / "system" / "blockMeshDict"):
+        raise ValueError("localized G2 serial runtime blockMesh hash mismatch")
+    return {
+        "contract_sha256": _sha256_file(path),
+        "script_sha256": actual,
+        "alpha_values_sha256": alpha.alpha_values_sha256,
+        "declared_command": script.get("command"),
+        "serial": True,
+    }
 
 
 def _runtime_identity(backend: str, docker_image: str | None) -> dict[str, object]:
