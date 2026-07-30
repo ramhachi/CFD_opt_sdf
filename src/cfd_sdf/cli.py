@@ -87,6 +87,10 @@ from .localized_g2_fd_preparation import (
 )
 from .localized_g2_fd_runner import run_localized_g2_openfoam_fd_direction
 from .localized_g2_fd_validation import validate_localized_g2_openfoam_fd_direction
+from .localized_g2_fd_response_gradient import (
+    LOCALIZED_G2_FD_RESPONSE_GRADIENT_FILENAME,
+    extract_localized_g2_fd_response_gradient,
+)
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -362,6 +366,35 @@ def validate_localized_g2_openfoam_fd_direction_command(
         "kind": "localized_g2_openfoam_fd_validation", "status": result.status,
         "report_path": str(result.report_json), "markdown_path": str(result.report_markdown),
         "mode": result.mode, "selected_epsilon": result.selected_epsilon,
+    }, sort_keys=True))
+
+
+@app.command("extract-localized-g2-fd-response-gradient")
+def extract_localized_g2_fd_response_gradient_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable localized G2 FD preparation directory."),
+    run_report: Path = typer.Argument(..., help="Completed immutable run report from run-localized-g2-openfoam-fd-direction."),
+    response_gradient_contract: Path = typer.Argument(..., help="Compiler-generated explicit response/raw-alpha-gradient contract JSON."),
+    flow_case_id: str = typer.Argument(..., help="Declared flow case ID bound by the compiler contract."),
+    response_id: str = typer.Argument(..., help="Declared named response ID bound by the compiler contract."),
+    adjoint_name: str = typer.Argument(..., help="Named adjoint identifier recorded in the completed run."),
+    output_dir: Path = typer.Argument(..., help="New immutable response/gradient artifact directory."),
+) -> None:
+    """Extract raw-alpha evidence only; do not apply the localized chain rule."""
+    try:
+        result = extract_localized_g2_fd_response_gradient(
+            prepared_experiment, run_report, response_gradient_contract,
+            flow_case_id=flow_case_id, response_id=response_id,
+            adjoint_name=adjoint_name, output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="response_gradient_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_response_gradient", "status": "extracted",
+        "report_path": str(result.report_json), "gradient_path": str(result.gradient_npy),
+        "flow_case_id": result.flow_case_id, "response_id": result.response_id,
+        "adjoint_name": result.adjoint_name, "cfd_cell_count": result.cfd_cell_count,
     }, sort_keys=True))
 
 
