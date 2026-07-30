@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -106,7 +107,8 @@ def test_cli_help_exposes_exactly_three_arguments_and_no_tuning_controls() -> No
     result = runner.invoke(app, ["evaluate-localized-reference-topology", "--help"])
 
     assert result.exit_code == 0, result.output
-    normalized = " ".join(result.output.lower().split())
+    plain_output = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", result.output)
+    normalized = " ".join(plain_output.lower().split())
     assert "project_yaml" in normalized
     assert "reference_bundle" in normalized
     assert "output_dir" in normalized
