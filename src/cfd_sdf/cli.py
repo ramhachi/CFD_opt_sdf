@@ -81,6 +81,10 @@ from .localized_reference_topology import (
     LOCALIZED_REFERENCE_TOPOLOGY_FILENAME,
     evaluate_localized_reference_topology,
 )
+from .localized_g2_fd_preparation import (
+    LOCALIZED_G2_FD_PREPARATION_FILENAME,
+    prepare_localized_g2_openfoam_fd_direction,
+)
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -219,8 +223,6 @@ def build_localized_reference_state(
             sort_keys=True,
         )
     )
-
-
 @app.command("evaluate-localized-reference-topology")
 def evaluate_localized_reference_topology_command(
     project_yaml: Path = typer.Argument(..., help="Project YAML bound to the immutable reference bundle."),
@@ -263,6 +265,47 @@ def evaluate_localized_reference_topology_command(
     )
     if report.status == "rejected":
         raise typer.Exit(code=1)
+
+
+@app.command("prepare-localized-g2-openfoam-fd-direction")
+def prepare_localized_g2_openfoam_fd_direction_command(
+    project_yaml: Path = typer.Argument(..., help="Project YAML bound to every immutable input."),
+    reference_bundle: Path = typer.Argument(..., help="Verified published localized v2 reference-state bundle."),
+    topology_report: Path = typer.Argument(..., help="Successful immutable topology report for that exact bundle."),
+    alpha_reference_binding: Path = typer.Argument(..., help="Verified alpha-reference binding for the actual CFD grid."),
+    compiled_case: Path = typer.Argument(..., help="Read-only compiled OpenFOAM case template."),
+    direction_npy: Path = typer.Argument(..., help="Canonical x-fastest, native float64 rho_raw direction NPY."),
+    epsilon_h: float = typer.Argument(..., help="Predeclared positive h; protocol fixes the ladder to h, h/2, h/4."),
+    output_dir: Path = typer.Argument(..., help="New immutable FD-preparation output directory."),
+    mode: str = typer.Option("one_sided", "--mode", help="one_sided (default) or central; central needs both raw sides feasible."),
+) -> None:
+    """Stage localized G2 FD cases; never execute OpenFOAM or validate FD here."""
+    try:
+        h = float(epsilon_h)
+        result = prepare_localized_g2_openfoam_fd_direction(
+            project_yaml,
+            reference_bundle_path=reference_bundle,
+            topology_report_path=topology_report,
+            alpha_reference_binding_path=alpha_reference_binding,
+            compiled_case_dir=compiled_case,
+            direction=direction_npy,
+            epsilon_ladder=(h, h / 2.0, h / 4.0),
+            output_dir=output_dir,
+            mode=mode,  # validated by the immutable preparation core
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="fd_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_preparation",
+        "status": result.status,
+        "mode": result.mode,
+        "report_path": str(result.report_json),
+        "epsilon_ladder": list(result.epsilon_ladder),
+        "cases": [str(item) for item in result.cases],
+        "execution_status": "not_run",
+    }, sort_keys=True))
 
 
 def _localized_topology_error_parameter(exc: OSError | ValueError) -> str:
