@@ -1,0 +1,23 @@
+schema_version: 1
+kind: g4_b0_generic_geometry_fixture_pack
+fixtures:
+  - id: sphere
+    family: sphere
+    project: sphere/project.yaml
+    expectation: pass
+  - id: box
+    family: box
+    project: box/project.yaml
+    expectation: pass
+  - id: plate
+    family: finite_thickness_plate
+    project: plate/project.yaml
+    expectation: pass
+  - id: multi_component
+    family: multi_component
+    project: multi_component/project.yaml
+    expectation: pass
+  - id: invalid_stl
+    family: invalid_stl
+    project: invalid_stl/project.yaml
+    expectation: reject

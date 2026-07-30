@@ -69,7 +69,7 @@ from .porous_force_validation import (
 from .problem_spec import (
     load_problem_spec,
     problem_spec_sha256,
-    topology_constraint_ids,
+    problem_spec_validation_summary,
     write_problem_spec_snapshot,
 )
 from .localized_reference_state_bundle import (
@@ -150,31 +150,7 @@ def validate_problem_spec(
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc), param_hint="problem_yaml") from exc
 
-    geometry_role_counts = {
-        role: sum(region.role == role for region in spec.geometry_regions)
-        for role in (
-            "fixed_solid",
-            "initial_design",
-            "design_domain",
-            "forbidden_region",
-            "root",
-        )
-    }
-    summary = {
-        "kind": "problem_spec_validation",
-        "schema_version": spec.schema_version,
-        "problem_id": spec.problem_id,
-        "problem_spec_sha256": problem_spec_sha256(spec),
-        "migrated": spec.migration.migrated,
-        "source_schema_version": spec.migration.source_schema_version,
-        "execution_ready": spec.migration.execution_ready,
-        "geometry_role_counts": geometry_role_counts,
-        "flow_case_ids": [case.id for case in spec.flow_cases],
-        "response_ids": [response.id for response in spec.responses],
-        "objective_ids": [objective.id for objective in spec.objectives],
-        "aggregate_constraint_ids": [constraint.id for constraint in spec.constraints],
-        "topology_constraint_ids": list(topology_constraint_ids(spec)),
-    }
+    summary = problem_spec_validation_summary(spec)
     typer.echo(json.dumps(summary, indent=2))
 
     if output_dir is not None:

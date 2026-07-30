@@ -1,0 +1,41 @@
+schema_version: 2
+problem_id: g4_b0_plate
+units: {length: m, time: s, mass: kg}
+coordinate_frame:
+  id: global_frame
+  origin_m: [0.0, 0.0, 0.0]
+  basis: {x: [1.0, 0.0, 0.0], y: [0.0, 1.0, 0.0], z: [0.0, 0.0, 1.0]}
+grid:
+  kind: uniform_cartesian
+  voxel_size_m: 0.25
+  padding_m: 0.0
+  domain_bounds_m: {lower: [-2.0, -2.0, -2.0], upper: [2.0, 2.0, 2.0]}
+reference_values: {area_m2: 1.0, length_m: 1.0, moment_center_m: [0.0, 0.0, 0.0]}
+geometry_regions:
+  - {id: vehicle, role: fixed_solid, file: ../common/fixed_root.stl}
+  - {id: initial_surface, role: initial_design, file: geometry/initial_surface.stl}
+  - {id: design_domain, role: design_domain, file: ../common/design_domain.stl}
+  - {id: keepout, role: forbidden_region, file: ../common/forbidden.stl}
+  - {id: mount, role: root, file: ../common/fixed_root.stl}
+flow_cases:
+  - id: baseline
+    freestream_velocity_mps: [20.0, 0.0, 0.0]
+    fluid: {model: incompressible_newtonian, density_kg_m3: 1.225, dynamic_viscosity_pa_s: 1.8e-5}
+    turbulence: {model: k_omega_sst}
+    boundary_conditions: {inlet: freestream, outlet: pressure_outlet, ground: moving_wall}
+    motion_profiles: {}
+responses:
+  - {id: drag, kind: force, flow_case_id: baseline, direction: [1.0, 0.0, 0.0]}
+objectives:
+  - id: minimize_drag
+    sense: minimize
+    terms: [{coefficient: 1.0, flow_case_id: baseline, response_id: drag}]
+constraints: []
+topology_policy:
+  root_groups: [{id: mounts, region_ids: [mount]}]
+  solid_connectivity: {mode: required_root_groups, required_root_group_ids: [mounts], max_components: 2, evaluate_eroded: true}
+  void_connectivity: {mode: disabled, required_root_group_ids: [], max_components: null, evaluate_eroded: false}
+  minimum_solid_width_m: 0.01
+  minimum_void_width_m: 0.01
+  minimum_gap_m: 0.01
+  erosion_radius_m: 0.005

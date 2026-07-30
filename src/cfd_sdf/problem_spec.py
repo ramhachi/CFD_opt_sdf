@@ -477,6 +477,36 @@ def problem_spec_sha256(spec: ProblemSpec) -> str:
     return hashlib.sha256(canonical_problem_spec_json(spec).encode("utf-8")).hexdigest()
 
 
+def problem_spec_validation_summary(spec: ProblemSpec) -> dict[str, Any]:
+    """Return the stable generic preflight/role report used by the CLI."""
+
+    geometry_role_counts = {
+        role: sum(region.role == role for region in spec.geometry_regions)
+        for role in (
+            "fixed_solid",
+            "initial_design",
+            "design_domain",
+            "forbidden_region",
+            "root",
+        )
+    }
+    return {
+        "kind": "problem_spec_validation",
+        "schema_version": spec.schema_version,
+        "problem_id": spec.problem_id,
+        "problem_spec_sha256": problem_spec_sha256(spec),
+        "migrated": spec.migration.migrated,
+        "source_schema_version": spec.migration.source_schema_version,
+        "execution_ready": spec.migration.execution_ready,
+        "geometry_role_counts": geometry_role_counts,
+        "flow_case_ids": [case.id for case in spec.flow_cases],
+        "response_ids": [response.id for response in spec.responses],
+        "objective_ids": [objective.id for objective in spec.objectives],
+        "aggregate_constraint_ids": [constraint.id for constraint in spec.constraints],
+        "topology_constraint_ids": list(topology_constraint_ids(spec)),
+    }
+
+
 def canonical_uniform_cartesian_cell_grid(spec: ProblemSpec):
     """Build the explicit canonical transfer target declared by ``spec``.
 
@@ -1746,6 +1776,7 @@ __all__ = [
     "load_problem_spec",
     "problem_spec_sha256",
     "problem_spec_to_dict",
+    "problem_spec_validation_summary",
     "topology_constraint_ids",
     "write_problem_spec_snapshot",
 ]
