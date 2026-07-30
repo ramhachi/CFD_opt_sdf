@@ -72,6 +72,10 @@ from .problem_spec import (
     topology_constraint_ids,
     write_problem_spec_snapshot,
 )
+from .localized_reference_state_bundle import (
+    LOCALIZED_REFERENCE_STATE_FILENAME,
+    build_localized_reference_state_bundle,
+)
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -170,6 +174,42 @@ def validate_problem_spec(
 
     if require_execution_ready and not spec.migration.execution_ready:
         raise typer.Exit(code=1)
+
+
+@app.command("build-localized-reference-state")
+def build_localized_reference_state(
+    problem_yaml: Path = typer.Argument(..., help="Project YAML declaring the local design grid and initial STL."),
+    geometry_snapshot: Path = typer.Argument(..., help="Verified local_geometry_masks.json manifest."),
+    output_dir: Path = typer.Argument(..., help="New immutable localized reference-state bundle directory."),
+) -> None:
+    """Build the fixed-contract local STL reference-state bundle.
+
+    Filter/projection parameters and the front-wing ten-component source
+    contract are intentionally not CLI options: their immutable values belong
+    to the Sol-approved initial-state contract, not per-run tuning.
+    """
+    try:
+        bundle = build_localized_reference_state_bundle(
+            problem_yaml,
+            geometry_snapshot_path=geometry_snapshot,
+            output_dir=output_dir,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    typer.echo(
+        json.dumps(
+            {
+                "kind": "localized_reference_state_build",
+                "bundle_path": str(bundle.path),
+                "ledger_path": str(bundle.path / LOCALIZED_REFERENCE_STATE_FILENAME),
+                "geometry_snapshot_sha256": bundle.geometry_snapshot.sha256,
+                "state_manifest_sha256": bundle.state_manifest_sha256,
+                "raw_manifest_sha256": bundle.raw_manifest_sha256,
+                "initial_design_stl_sha256": bundle.initial_design_stl_sha256,
+            },
+            sort_keys=True,
+        )
+    )
 
 
 @app.command("compile-openfoam-problem-cases")
