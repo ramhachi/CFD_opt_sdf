@@ -77,12 +77,20 @@ class VerifiedLocalizedAlphaReferenceBinding:
 
 @dataclass(frozen=True)
 class LocalizedAlphaSource:
-    """In-memory alpha source ready for a future, separately-authorized writer."""
+    """Calculated alpha plus the CFD-grid contract required by a case writer.
+
+    This is not an interchangeable raw vector.  Downstream OpenFOAM staging
+    must prove its own parsed ``blockMeshDict`` is exactly this CFD grid and
+    preserve both the binding and canonical x-fastest ordering.
+    """
 
     alpha: np.ndarray
     binding_sha256: str
     current_state_manifest_sha256: str
     alpha_sha256: str
+    cfd_grid_sha256: str
+    cfd_cell_count: int
+    cell_order: str
 
 
 def create_localized_alpha_reference_binding(
@@ -254,6 +262,9 @@ def calculate_localized_alpha_source(
         binding_sha256=verified_binding.binding.sha256,
         current_state_manifest_sha256=localized_design_state_manifest_sha256(current_manifest),
         alpha_sha256=_sha256_values(alpha),
+        cfd_grid_sha256=verified_binding.binding.cfd_grid_sha256,
+        cfd_cell_count=verified_binding.binding.cfd_grid.cell_count,
+        cell_order=verified_binding.binding.cfd_grid.cell_order,
     )
 
 

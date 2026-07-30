@@ -118,6 +118,9 @@ def test_reference_binding_round_trip_and_one_way_alpha_source(tmp_path) -> None
     assert np.array_equal(reference.alpha, np.array([0.4, 0.6, 0.0, 0.0], dtype=np.float64))
     assert current.binding_sha256 == binding.binding.sha256
     assert len(current.alpha_sha256) == 64
+    assert current.cfd_grid_sha256 == binding.binding.cfd_grid_sha256
+    assert current.cfd_cell_count == 4
+    assert current.cell_order == "x-fastest"
     raw = json.loads(binding_path.read_text(encoding="utf-8"))
     assert raw["reference_rho_projected_sha256"] == binding.reference_state.manifest.states["rho_projected"].byte_sha256
     assert raw["provenance_sha256"] == binding.binding.provenance_sha256
