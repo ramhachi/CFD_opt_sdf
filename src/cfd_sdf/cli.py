@@ -77,6 +77,10 @@ from .localized_reference_state_bundle import (
     build_localized_reference_state_bundle,
     localized_reference_state_failure_report_path,
 )
+from .localized_reference_topology import (
+    LOCALIZED_REFERENCE_TOPOLOGY_FILENAME,
+    evaluate_localized_reference_topology,
+)
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -215,6 +219,60 @@ def build_localized_reference_state(
             sort_keys=True,
         )
     )
+
+
+@app.command("evaluate-localized-reference-topology")
+def evaluate_localized_reference_topology_command(
+    project_yaml: Path = typer.Argument(..., help="Project YAML bound to the immutable reference bundle."),
+    reference_bundle: Path = typer.Argument(..., help="Verified immutable localized reference-state bundle."),
+    output_dir: Path = typer.Argument(..., help="New directory for the atomic topology evaluation report."),
+) -> None:
+    """Evaluate the fixed discrete topology policy for one verified reference bundle.
+
+    The evaluator's resource guards and topology parameters are deliberately
+    not CLI options.  They are part of the immutable bundle/policy contract,
+    so a command invocation cannot silently weaken a qualification gate.
+    """
+    try:
+        report = evaluate_localized_reference_topology(
+            project_yaml,
+            reference_bundle_path=reference_bundle,
+            output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(
+            str(exc),
+            param_hint=_localized_topology_error_parameter(exc),
+        ) from exc
+
+    if report.status not in {"success", "rejected"}:
+        raise RuntimeError(f"localized topology evaluator returned unsupported status: {report.status}")
+    typer.echo(
+        json.dumps(
+            {
+                "kind": "localized_reference_topology_evaluation",
+                "reasons": list(report.reasons),
+                "report_path": str(output_dir / LOCALIZED_REFERENCE_TOPOLOGY_FILENAME),
+                "status": report.status,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
+    if report.status == "rejected":
+        raise typer.Exit(code=1)
+
+
+def _localized_topology_error_parameter(exc: OSError | ValueError) -> str:
+    """Point expected topology-evaluation errors at the actionable argument."""
+    message = str(exc).lower()
+    if "requires at least" in message or "refusing to overwrite" in message:
+        return "output_dir"
+    if "project" in message or "yaml" in message:
+        return "project_yaml"
+    return "reference_bundle"
 
 
 @app.command("compile-openfoam-problem-cases")
