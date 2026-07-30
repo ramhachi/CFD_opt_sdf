@@ -85,6 +85,7 @@ from .localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
     prepare_localized_g2_openfoam_fd_direction,
 )
+from .localized_g2_fd_runner import run_localized_g2_openfoam_fd_direction
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
@@ -305,6 +306,39 @@ def prepare_localized_g2_openfoam_fd_direction_command(
         "epsilon_ladder": list(result.epsilon_ladder),
         "cases": [str(item) for item in result.cases],
         "execution_status": "not_run",
+    }, sort_keys=True))
+
+
+@app.command("run-localized-g2-openfoam-fd-direction")
+def run_localized_g2_openfoam_fd_direction_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable output of prepare-localized-g2-openfoam-fd-direction."),
+    adjoint_name: str = typer.Argument(..., help="Declared name for the one fresh reference adjoint."),
+    output_dir: Path = typer.Argument(..., help="New run-evidence directory; an existing path is refused."),
+    baseline_repeats: int = typer.Option(2, "--baseline-repeats", min=2, help="Fresh reference primal runs; protocol requires at least 2."),
+    backend: str = typer.Option("auto", "--backend", help="Primal OpenFOAM backend: auto or local for the default runner."),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Declared Docker image for the default primal runner."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1, help="Per-case timeout for the default runner."),
+    adjoint_script: str = typer.Option("AllrunAdjoint", "--adjoint-script", help="Fresh named-adjoint script in the staged reference copy."),
+    execute: bool = typer.Option(False, "--execute", help="Actually launch fresh OpenFOAM cases; required."),
+) -> None:
+    """Execute a prepared localized FD experiment; never validate its numbers."""
+    if not execute:
+        raise typer.BadParameter("runtime execution is opt-in; pass --execute", param_hint="--execute")
+    try:
+        result = run_localized_g2_openfoam_fd_direction(
+            prepared_experiment, output_dir=output_dir, adjoint_name=adjoint_name,
+            baseline_repeats=baseline_repeats, execute=True, backend=backend,
+            docker_image=docker_image, timeout_seconds=timeout_seconds, adjoint_script=adjoint_script,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="prepared_experiment") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_run", "status": result.status,
+        "execution_status": result.execution_status, "validation_status": "not_run",
+        "report_path": str(result.report_json), "baseline_repeats": result.baseline_repeats,
+        "mode": result.mode,
     }, sort_keys=True))
 
 

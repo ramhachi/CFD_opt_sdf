@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import shutil
 
 import numpy as np
 import pytest
@@ -20,6 +21,10 @@ from cfd_sdf.localized_design_state_manifest import read_localized_design_state_
 from cfd_sdf.localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
     prepare_localized_g2_openfoam_fd_direction,
+)
+from cfd_sdf.localized_g2_fd_runner import (
+    LOCALIZED_G2_FD_RUN_FILENAME,
+    run_localized_g2_openfoam_fd_direction,
 )
 from cfd_sdf.localized_reference_state_bundle import build_localized_reference_state_bundle
 from cfd_sdf.openfoam_grid_transfer import UniformCartesianCellGrid
@@ -106,6 +111,115 @@ def test_cli_stages_but_does_not_execute(tmp_path: Path) -> None:
     summary = json.loads(result.output)
     assert summary["execution_status"] == "not_run"
     assert summary["report_path"] == str(out / LOCALIZED_G2_FD_PREPARATION_FILENAME)
+
+
+def test_runner_uses_fresh_exact_reference_then_one_sided_ladder_without_validation(tmp_path: Path) -> None:
+    inputs = _inputs(tmp_path)
+    prepared = prepare_localized_g2_openfoam_fd_direction(
+        inputs["project"], reference_bundle_path=inputs["bundle"], topology_report_path=inputs["topology"],
+        alpha_reference_binding_path=inputs["binding"], compiled_case_dir=inputs["compiled"],
+        direction=inputs["direction"], epsilon_ladder=(0.01, 0.005, 0.0025), output_dir=tmp_path / "prepared",
+    )
+    original_hash = hashlib.sha256(prepared.report_json.read_bytes()).hexdigest()
+    calls: list[tuple[str, str, Path | None]] = []
+
+    def synthetic(**kwargs):
+        calls.append((kwargs["phase"], kwargs["label"], kwargs["reference_case_dir"]))
+        case = kwargs["case_dir"]
+        (case / "2").mkdir(exist_ok=True)
+        objective = case / "optimisation" / "objective"; objective.mkdir(parents=True, exist_ok=True)
+        (objective / "drag.dat").write_text("0 0 1\n", encoding="utf-8")
+        return {"ok": True, "command": ["synthetic", kwargs["phase"], kwargs["label"]], "backend": "synthetic",
+                "execution_identity": {"openfoam_version": "synthetic-v1"}, "convergence": {"status": "converged"},
+                "final_time": 2.0, "response_provenance": {"response_id": "drag", "source": "synthetic"}}
+
+    result = run_localized_g2_openfoam_fd_direction(
+        prepared.path, output_dir=tmp_path / "run", adjoint_name="dragAdjoint", execute=True, runner=synthetic,
+    )
+    assert result.status == "run_complete"
+    assert hashlib.sha256(prepared.report_json.read_bytes()).hexdigest() == original_hash
+    assert [(phase, label) for phase, label, _ in calls] == [
+        ("primal", "reference_001"), ("primal", "reference_002"), ("adjoint", "dragAdjoint"),
+        ("primal", "plus_h0.01"), ("primal", "plus_h0.0050000000000000001"), ("primal", "plus_h0.0025000000000000001"),
+    ]
+    assert calls[2][2] is not None and calls[2][2].name == "reference_001"
+    report = json.loads((result.path / LOCALIZED_G2_FD_RUN_FILENAME).read_text(encoding="utf-8"))
+    assert report["validation_status"] == "not_run"
+    assert report["attempts"][0]["case_input_tree_sha256"] != report["attempts"][0]["case_output_tree_sha256"]
+    assert report["attempts"][2]["reference_primal_relative_path"] == "primal/reference_001"
+
+
+def test_runner_honors_central_minus_cases_and_publishes_failure_status(tmp_path: Path) -> None:
+    inputs = _inputs(tmp_path)
+    prepared = prepare_localized_g2_openfoam_fd_direction(
+        inputs["project"], reference_bundle_path=inputs["bundle"], topology_report_path=inputs["topology"],
+        alpha_reference_binding_path=inputs["binding"], compiled_case_dir=inputs["compiled"],
+        direction=inputs["direction"], epsilon_ladder=(0.01, 0.005, 0.0025), output_dir=tmp_path / "prepared",
+    )
+    _make_central_fixture(prepared.path)
+    calls: list[str] = []
+
+    def synthetic(**kwargs):
+        calls.append(kwargs["label"])
+        if kwargs["label"].startswith("minus_h"):
+            return {"ok": False, "command": ["synthetic"], "backend": "synthetic", "error": "intentional failure"}
+        return {"ok": True, "command": ["synthetic"], "backend": "synthetic"}
+
+    result = run_localized_g2_openfoam_fd_direction(
+        prepared.path, output_dir=tmp_path / "failed", adjoint_name="adj", execute=True, runner=synthetic,
+    )
+    assert result.status == "execution_failed"
+    assert calls[-1].startswith("minus_h")
+    report = json.loads((result.path / LOCALIZED_G2_FD_RUN_FILENAME).read_text(encoding="utf-8"))
+    assert str(report["failure"]["label"]).startswith("minus_h")
+    assert report["validation_status"] == "not_run"
+
+
+def test_runner_refuses_tampered_prepared_case_before_creating_output(tmp_path: Path) -> None:
+    inputs = _inputs(tmp_path)
+    prepared = prepare_localized_g2_openfoam_fd_direction(
+        inputs["project"], reference_bundle_path=inputs["bundle"], topology_report_path=inputs["topology"],
+        alpha_reference_binding_path=inputs["binding"], compiled_case_dir=inputs["compiled"],
+        direction=inputs["direction"], epsilon_ladder=(0.01, 0.005, 0.0025), output_dir=tmp_path / "prepared",
+    )
+    (prepared.path / "cases" / "reference" / "0.orig" / "alpha").write_text("tampered", encoding="utf-8")
+    with pytest.raises(ValueError, match="alpha"):
+        run_localized_g2_openfoam_fd_direction(
+            prepared.path, output_dir=tmp_path / "must_not_exist", adjoint_name="adj", execute=True,
+            runner=lambda **_: {"ok": True, "command": [], "backend": "synthetic"},
+        )
+    assert not (tmp_path / "must_not_exist").exists()
+
+
+def test_run_cli_requires_explicit_execute_before_any_openfoam_runtime(tmp_path: Path) -> None:
+    result = runner.invoke(app, [
+        "run-localized-g2-openfoam-fd-direction", str(tmp_path / "prepared"), "dragAdjoint", str(tmp_path / "run"),
+    ])
+    assert result.exit_code != 0
+    assert "pass --execute" in result.output
+    assert not (tmp_path / "run").exists()
+
+
+def _make_central_fixture(path: Path) -> None:
+    """Extend a valid one-sided fixture solely to exercise run ordering.
+
+    Preparation itself owns raw-feasibility and topology proof; this tiny test
+    fixture copies already validated staged cases to assert that the runner
+    neither invents minus cases for one-sided input nor skips declared ones.
+    """
+    report_path = path / LOCALIZED_G2_FD_PREPARATION_FILENAME
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    cases = report["cases"]
+    for epsilon in report["epsilon_ladder"]:
+        plus = f"plus_h{float(epsilon):.17g}".replace("+", "p").replace("-", "m")
+        minus = f"minus_h{float(epsilon):.17g}".replace("+", "p").replace("-", "m")
+        source = path / cases[plus]["case_relative_path"]
+        target = path / "cases" / minus
+        shutil.copytree(source, target)
+        copied = dict(cases[plus]); copied["sign"] = "minus"; copied["case_relative_path"] = f"cases/{minus}"
+        cases[minus] = copied
+    report["mode"] = "central"; report["status"] = "prepared_central"
+    report_path.write_text(json.dumps(report, sort_keys=True), encoding="utf-8")
 
 
 def _inputs(tmp_path: Path) -> dict[str, Path]:

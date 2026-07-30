@@ -36,6 +36,24 @@ case-staging failure rejects preparation and publishes no output directory.
 The resulting directory is atomically published and says only `not_run`; it is
 not an OpenFOAM execution, an FD result, or native-v2 qualification.
 
+## Prepare/run boundary
+
+`prepare-localized-g2-openfoam-fd-direction` is the immutable-input boundary.
+It neither launches OpenFOAM nor contains solver output.  The separate
+`run-localized-g2-openfoam-fd-direction` command accepts only that prepared
+directory, verifies every staged alpha-case manifest and its recorded hashes,
+then copies each case into a new atomically published run-evidence directory.
+It refuses an existing output path and never mutates the prepared directory.
+
+The run phase explicitly requires `--execute`.  It runs at least two fresh
+reference primals, then one fresh named adjoint copied from the first exact
+reference-alpha baseline, then the prepared `+h,+h/2,+h/4` ladder (and the
+negative ladder only for an already prepared central experiment).  It records
+commands, runner identity, case input/output tree hashes, convergence/final
+time/response provenance, and failures.  A run report is still not a
+validation: it leaves `validation_status: not_run`, selects no FD step, and
+makes no numerical acceptance claim.
+
 ## Immutable numerical protocol for the later run/validate phases
 
 At least `n0 >= 2` independently executed baseline cases are required.  Let
