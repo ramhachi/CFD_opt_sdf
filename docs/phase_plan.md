@@ -91,6 +91,18 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Stage S | Handoff prototype only | Density-to-STL/SDF conversion exists; quantitative fidelity and a qualified sharp-interface solver do not. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
 
+### Current front-wing blocker
+
+The localized 2 mm front-wing state has no qualified feasible initializer under
+the unchanged policy. The raw repair reached a fixed point; the subsequent
+filter-support repair correctly rejected a 7,130-cell solid/void support
+conflict. Therefore localized front-wing native-v2, FD, and optimizer work is
+stopped until a separately approved initializer produces a full-checker-success
+derived state, provenance/difference evidence, and a fresh alpha binding. This
+does not block generic topology infrastructure or a separately qualified simple
+benchmark. See
+[`2026-07-30-localized-feasible-derived-starting-state.md`](decisions/2026-07-30-localized-feasible-derived-starting-state.md).
+
 ## 5. G1 — generic problem and artifact contract
 
 Status: complete.

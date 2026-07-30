@@ -89,3 +89,32 @@ counts/first indices, source and transition deltas, target and zero/one-buffer
 hashes/counts, conflict data, and the support radius/offsets/weights/hash.
 The derived state must retain nonzero overlap with the source threshold solid;
 metrics describe STL divergence but introduce no unapproved maximum threshold.
+
+## First support-buffer evidence: rejected conflict
+
+The first full-resolution support-buffer attempt produced no derived bundle.
+Its fail-closed diagnostic is
+`examples/g2_openfoam_compile/runs/.localized_feasible_support_buffer_v2_20260730.feasibility-failure.json`.
+The thin-solid removal phase left 3,536 minimum-solid-width and 26,182
+minimum-gap violations. The subsequent fill buffer overlapped the already
+required zero buffer at 7,130 active raw cells, so the operation stopped with
+`add_remove_support_conflict_rejected`. No priority was silently chosen:
+forcing the same raw cell to both endpoints would invalidate the forward
+support guarantee. This is evidence that the local support-buffer operator is
+insufficient for this benchmark state, not evidence of a feasible start.
+
+## Front-wing benchmark blocker
+
+The Sol review selects a stop for the front-wing localized FD/optimizer line
+under the current immutable policy. The support conflict makes a deterministic
+local repair insufficient, and choosing removal or fill priority would silently
+break one of the required topology conditions. A new global feasible-init
+optimization or a new geometry-repair policy would introduce objectives and
+acceptance criteria beyond this roadmap decision and must be separately
+approved before implementation.
+
+This blocks front-wing G2 native-v2, FD, and optimizer qualification only. It
+does not block generic topology infrastructure or a separately qualified
+simple-geometry benchmark. Restarting the front-wing line requires an approved
+initializer that produces a full-checker-success derived state with its
+divergence/provenance evidence and a fresh alpha binding.
