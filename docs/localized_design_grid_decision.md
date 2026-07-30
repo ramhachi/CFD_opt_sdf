@@ -89,9 +89,20 @@ has been weakened or that a topology result exists.
 The hash-bound localized-state and alpha-reference contracts are implemented
 and focused-tested. The allowed alpha source is exactly
 `alpha = alpha_reference + E @ (rho_projected - rho_projected_reference)`,
-with no clipping or inverse reconstruction. There has been no OpenFOAM
-write/read of this alpha, no localized finite-difference direction check, and
-no native-v2 readiness qualification.
+with no clipping or inverse reconstruction. The strict field codec and
+fresh-case stager have unit-tested OpenFOAM write/read and `Allrun` placement:
+they reject any disagreement in alpha value, current-state, reference-binding,
+canonical `x-fastest` order, or parsed `blockMeshDict` grid hashes. No full
+localized reference state has been written to an actual compiled case, no
+localized finite-difference direction check has run, and there is no native-v2
+readiness qualification.
+
+The Sol-reviewed initializer uses `front_wing_initial.stl` as the sole source
+of the localized raw density: the union of its ten watertight components is
+sampled at the fixed `2 x 2 x 2` subcell offsets `{0.25, 0.75}^3`, only for
+active cells. A source/grid/mask-hash-bound memmap writer and its small-grid
+tests are implemented; it deliberately does not yet apply filter/projection
+or publish the full 87,543,750-cell projected reference state.
 
 ## Required implementation and validation
 

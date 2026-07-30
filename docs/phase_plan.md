@@ -256,9 +256,22 @@ design domain. This is contract/geometry evidence only, not a topology result.
 The localized alpha-reference contract is implemented and focused-tested. It
 permits only the one-way, unclipped relation
 `alpha = alpha_reference + E @ (rho_projected - rho_projected_reference)` and
-hash-binds the two reference artifacts. It has not yet written or reread an
-OpenFOAM field, nor has a localized finite-difference direction check run;
-native v2 stays fail-closed until those qualifications are complete.
+hash-binds the two reference artifacts. A strict `0.orig/alpha` codec and a
+fresh-case stager now write and reread a grid-bound alpha only after its value,
+current-state, reference-binding, canonical `x-fastest` order, and parsed
+`blockMeshDict` grid hashes agree. This is unit-level prepared/not-run
+evidence, not a full localized reference-state write to a compiled G2 case and
+not a localized finite-difference direction check; native v2 stays fail-closed
+until those qualifications are complete.
+
+The Sol-reviewed initializer is also fixed: `front_wing_initial.stl` is the
+only geometric source for `rho_raw`. Each active local cell uses the union of
+the ten watertight STL components at the deterministic `2 x 2 x 2` subcell
+offsets `{0.25, 0.75}^3`; inactive cells remain exactly zero. The raw-density
+memmap writer, its source/grid/mask-hash manifest, and small-grid rejection
+tests are implemented. Filter/projection, the full 87,543,750-cell reference
+artifact, and its topology validation are still implementation/qualification
+work.
 
 Implement:
 
