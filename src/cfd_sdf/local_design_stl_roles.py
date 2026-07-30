@@ -37,6 +37,9 @@ class _STLRoleSource:
     sha256: str
     bounds: np.ndarray
     mesh: trimesh.Trimesh
+    classifier_method: str
+    classifier_validation: Mapping[str, Any]
+    mesh_counts: Mapping[str, int]
 
 
 class LocalDesignSTLRoleClassifier:
@@ -90,6 +93,12 @@ class LocalDesignSTLRoleClassifier:
                     "lower": [float(value) for value in source.bounds[0]],
                     "upper": [float(value) for value in source.bounds[1]],
                 },
+                "classifier": {
+                    "method": source.classifier_method,
+                    "validation": dict(source.classifier_validation),
+                    "surface_tolerance_m": self._surface_tolerance,
+                    "mesh_counts": dict(source.mesh_counts),
+                },
             }
             for source in self._sources
         }
@@ -127,6 +136,14 @@ class LocalDesignSTLRoleClassifier:
             axis=1,
         )
         candidate_indices = np.flatnonzero(candidates)
+        if source.classifier_method == "analytic_aabb":
+            return _contains_strict_aabb(
+                source,
+                points,
+                candidate_indices,
+                surface_tolerance=self._surface_tolerance,
+                chunk_size=self._chunk_size,
+            )
         for start in range(0, len(candidate_indices), self._chunk_size):
             indices = candidate_indices[start : start + self._chunk_size]
             candidate_points = points[indices]
@@ -171,6 +188,21 @@ def _load_sources(spec: ProblemSpec) -> tuple[_STLRoleSource, ...]:
         if not path.is_file():
             raise ValueError(f"Geometry STL is missing for region {region.id!r}: {region.file}")
         mesh = _load_closed_mesh(path, region.id)
+        bounds = np.asarray(mesh.bounds, dtype=np.float64)
+        mesh_counts = _mesh_counts(mesh)
+        if region.role not in _CLASSIFIED_ROLES:
+            method = "not_classified"
+            validation: Mapping[str, Any] = {
+                "status": "not_classified",
+                "reason": "initial_design_source_provenance_only",
+            }
+        else:
+            accepted, reason = _is_strict_aabb_surface(mesh, bounds)
+            method = "analytic_aabb" if accepted else "generic_trimesh"
+            validation = {
+                "status": "accepted" if accepted else "fallback",
+                "reason": "strict_aabb_surface" if accepted else reason,
+            }
         try:
             resolved_relative = Path(os.path.relpath(path, spec.base_dir)).as_posix()
         except ValueError as exc:  # Different drives on Windows are not portable.
@@ -183,13 +215,146 @@ def _load_sources(spec: ProblemSpec) -> tuple[_STLRoleSource, ...]:
                 resolved_relative_path=resolved_relative,
                 path=path,
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                bounds=np.asarray(mesh.bounds, dtype=np.float64),
+                bounds=bounds,
                 mesh=mesh,
+                classifier_method=method,
+                classifier_validation=validation,
+                mesh_counts=mesh_counts,
             )
         )
     if not sources:
         raise ValueError("local-design STL role classifier requires at least one geometry region")
     return tuple(sources)
+
+
+def _contains_strict_aabb(
+    source: _STLRoleSource,
+    points: np.ndarray,
+    candidate_indices: np.ndarray,
+    *,
+    surface_tolerance: float,
+    chunk_size: int,
+) -> np.ndarray:
+    """Classify a detector-approved box without invoking mesh containment.
+
+    The detector is intentionally far stricter than an AABB bounds check.  A
+    positive result therefore has exactly the same closed solid as the mesh;
+    points within the existing surface tolerance remain ambiguous and are
+    refused rather than assigned to either side.
+    """
+
+    result = np.zeros(len(points), dtype=np.bool_)
+    lower, upper = source.bounds
+    for start in range(0, len(candidate_indices), chunk_size):
+        indices = candidate_indices[start : start + chunk_size]
+        candidate_points = points[indices]
+        distance = _aabb_surface_distance(candidate_points, lower, upper)
+        if np.any(~np.isfinite(distance)):
+            raise ValueError(f"Containment distance is non-finite for region {source.region_id!r}")
+        if np.any(distance <= surface_tolerance):
+            raise ValueError(
+                f"Containment is ambiguous for region {source.region_id!r}: "
+                "a local-design cell centre lies on the STL surface"
+            )
+        # A point can only be inside an exact closed AABB when it lies strictly
+        # between every pair of faces.  The tolerance has already rejected the
+        # surface neighbourhood above, but retaining it here makes this
+        # invariant explicit and resilient to future caller changes.
+        result[indices] = np.all(
+            (candidate_points > lower + surface_tolerance)
+            & (candidate_points < upper - surface_tolerance),
+            axis=1,
+        )
+    return result
+
+
+def _aabb_surface_distance(points: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> np.ndarray:
+    """Exact Euclidean distance to the boundary of an axis-aligned box."""
+
+    inside = np.all((points >= lower) & (points <= upper), axis=1)
+    result = np.empty(len(points), dtype=np.float64)
+    if np.any(inside):
+        result[inside] = np.min(
+            np.minimum(points[inside] - lower, upper - points[inside]),
+            axis=1,
+        )
+    if np.any(~inside):
+        outside_delta = np.maximum(np.maximum(lower - points[~inside], 0.0), points[~inside] - upper)
+        result[~inside] = np.linalg.norm(outside_delta, axis=1)
+    return result
+
+
+def _mesh_counts(mesh: trimesh.Trimesh) -> Mapping[str, int]:
+    return {
+        "vertex_count": int(len(mesh.vertices)),
+        "face_count": int(len(mesh.faces)),
+        "connected_component_count": int(len(mesh.split(only_watertight=False))),
+    }
+
+
+def _is_strict_aabb_surface(mesh: trimesh.Trimesh, bounds: np.ndarray) -> tuple[bool, str]:
+    """Accept only a processed, single connected, triangulated AABB surface.
+
+    This deliberately does *not* attempt to recognize approximately box-like
+    meshes.  Any topology or coordinate variation falls back to trimesh's
+    general distance-and-containment path, preserving correctness over speed.
+    """
+
+    if len(mesh.split(only_watertight=False)) != 1:
+        return False, "connected_component_count_not_one"
+    if len(mesh.vertices) != 8:
+        return False, "vertex_count_not_eight"
+    if len(mesh.faces) != 12:
+        return False, "face_count_not_twelve"
+    lower, upper = bounds
+    if not np.all(upper > lower):
+        return False, "non_positive_bounds_extent"
+
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    # Exact equality is intentional: the surface must literally be the AABB
+    # formed by its parsed coordinates, not merely close enough to look like
+    # one under a chosen tolerance.
+    on_bound = (vertices == lower) | (vertices == upper)
+    if not np.all(on_bound):
+        return False, "vertex_coordinate_not_exact_bound"
+    expected_corners = {
+        tuple(float(value) for value in corner)
+        for corner in np.array(np.meshgrid(*zip(lower, upper), indexing="ij")).reshape(3, -1).T
+    }
+    corners = {tuple(float(value) for value in vertex) for vertex in vertices}
+    if len(corners) != 8 or corners != expected_corners:
+        return False, "vertices_not_the_eight_unique_bounds_corners"
+
+    expected_side_vertices: dict[tuple[int, int], set[int]] = {}
+    for axis in range(3):
+        for bound_index, bound in enumerate((lower[axis], upper[axis])):
+            expected_side_vertices[(axis, bound_index)] = {
+                index for index, vertex in enumerate(vertices) if vertex[axis] == bound
+            }
+
+    faces_by_side: dict[tuple[int, int], list[np.ndarray]] = {key: [] for key in expected_side_vertices}
+    for face in np.asarray(mesh.faces, dtype=np.int64):
+        face_vertices = vertices[face]
+        sides = [
+            (axis, bound_index)
+            for axis in range(3)
+            for bound_index, bound in enumerate((lower[axis], upper[axis]))
+            if np.all(face_vertices[:, axis] == bound)
+        ]
+        if len(sides) != 1:
+            return False, "face_not_on_exactly_one_aabb_side"
+        faces_by_side[sides[0]].append(face)
+
+    for side, faces in faces_by_side.items():
+        if len(faces) != 2:
+            return False, "aabb_side_does_not_have_two_triangles"
+        side_vertices = set(np.concatenate(faces).tolist())
+        if side_vertices != expected_side_vertices[side] or len(side_vertices) != 4:
+            return False, "aabb_side_triangles_do_not_tile_four_corners"
+        # A valid two-triangle rectangle shares one diagonal (two vertices).
+        if len(set(faces[0].tolist()) & set(faces[1].tolist())) != 2:
+            return False, "aabb_side_triangles_do_not_share_one_diagonal"
+    return True, "strict_aabb_surface"
 
 
 def _load_closed_mesh(path: Path, region_id: str) -> trimesh.Trimesh:

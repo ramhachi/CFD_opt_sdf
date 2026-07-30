@@ -21,6 +21,33 @@ def _write_box(path: Path, center: tuple[float, float, float], extents: tuple[fl
     ).export(path)
 
 
+def _write_notched_prism(path: Path) -> None:
+    """Write one connected watertight L-prism (a box with a corner notch)."""
+
+    polygon = np.array(((0.0, 0.0), (0.02, 0.0), (0.02, 0.01), (0.01, 0.01), (0.01, 0.024), (0.0, 0.024)))
+    lower = np.column_stack((polygon, np.zeros(len(polygon))))
+    upper = np.column_stack((polygon, np.full(len(polygon), 0.008)))
+    vertices = np.vstack((lower, upper))
+    top = ((0, 1, 3), (0, 3, 5), (1, 2, 3), (3, 4, 5))
+    faces: list[tuple[int, int, int]] = [(c, b, a) for a, b, c in top]
+    faces.extend((a + 6, b + 6, c + 6) for a, b, c in top)
+    for index in range(len(polygon)):
+        next_index = (index + 1) % len(polygon)
+        faces.extend(((index, next_index, next_index + 6), (index, next_index + 6, index + 6)))
+    mesh = trimesh.Trimesh(vertices=vertices, faces=np.asarray(faces), process=False)
+    assert mesh.is_watertight
+    if not mesh.is_volume:
+        mesh.invert()
+    assert mesh.is_volume
+    mesh.export(path)
+
+
+def _generic_contains(mesh: trimesh.Trimesh, points: np.ndarray, tolerance: float) -> np.ndarray:
+    _, distances, _ = trimesh.proximity.closest_point(mesh, points)
+    assert np.all(distances > tolerance)
+    return mesh.contains(points)
+
+
 def _problem(tmp_path: Path) -> Path:
     """Create a 10 x 12 x 4 local grid with every relevant STL role."""
 
@@ -115,6 +142,17 @@ def test_stl_role_callback_is_deterministic_and_uses_memmap_derivation(tmp_path:
     assert metadata["design"]["relative_source_path"] == "geometry/design.stl"
     assert metadata["design"]["resolved_relative_source_path"] == "geometry/design.stl"
     assert metadata["design"]["bounds_m"]["upper"] == pytest.approx([0.02, 0.024, 0.008])
+    assert metadata["design"]["classifier"] == {
+        "method": "analytic_aabb",
+        "validation": {"status": "accepted", "reason": "strict_aabb_surface"},
+        "surface_tolerance_m": pytest.approx(2.0e-13),
+        "mesh_counts": {"vertex_count": 8, "face_count": 12, "connected_component_count": 1},
+    }
+    assert metadata["initial"]["classifier"]["method"] == "not_classified"
+    assert metadata["initial"]["classifier"]["validation"] == {
+        "status": "not_classified",
+        "reason": "initial_design_source_provenance_only",
+    }
     assert metadata["design"]["sha256"] == hashlib.sha256(
         (tmp_path / "geometry" / "design.stl").read_bytes()
     ).hexdigest()
@@ -142,3 +180,76 @@ def test_rejects_point_on_declared_stl_surface(tmp_path: Path) -> None:
     lower = trimesh.load_mesh(tmp_path / "geometry" / "forbidden.stl", process=True).bounds[0, 0]
     with pytest.raises(ValueError, match="Containment is ambiguous"):
         classifier(np.array([[lower, 0.003, 0.003]], dtype=np.float64))
+
+
+def test_accepted_aabb_uses_exact_distance_and_matches_generic_containment(tmp_path: Path) -> None:
+    problem = _problem(tmp_path)
+    classifier = local_design_stl_role_classifier(problem, containment_chunk_size=2)
+    metadata = classifier.provenance_metadata["design"]["classifier"]
+    assert metadata["method"] == "analytic_aabb"
+    mesh = trimesh.load_mesh(tmp_path / "geometry" / "design.stl", process=True)
+    points = np.array(
+        (
+            (0.001, 0.001, 0.001),  # strict interior
+            (0.019, 0.023, 0.007),  # strict interior near the opposite corner
+            (-0.001, 0.012, 0.004),  # exterior
+            (0.021, 0.012, 0.004),  # exterior
+        ),
+        dtype=np.float64,
+    )
+    assert np.array_equal(
+        classifier(points)["design_domain"],
+        _generic_contains(mesh, points, float(metadata["surface_tolerance_m"])),
+    )
+    lower_x, upper_x = mesh.bounds[:, 0]
+    for surface_point in (
+        np.array([[lower_x, 0.012, 0.004]], dtype=np.float64),
+        np.array([[lower_x - 1.0e-14, 0.012, 0.004]], dtype=np.float64),
+        np.array([[upper_x + 1.0e-14, 0.012, 0.004]], dtype=np.float64),
+    ):
+        with pytest.raises(ValueError, match="Containment is ambiguous"):
+            classifier(surface_point)
+
+
+@pytest.mark.parametrize("kind", ("rotated", "multiple", "notched"))
+def test_noncanonical_box_like_meshes_fall_back_to_generic_classifier(tmp_path: Path, kind: str) -> None:
+    problem = _problem(tmp_path)
+    # The design-domain STL is bound to the declared local-grid bounds.  Use a
+    # fixed role so these deliberately non-box meshes do not invalidate that
+    # independent ProblemSpec contract before the classifier is reached.
+    target = tmp_path / "geometry" / "fixed.stl"
+    if kind == "rotated":
+        mesh = trimesh.creation.box(extents=(0.012, 0.012, 0.006))
+        rotation = trimesh.transformations.rotation_matrix(np.deg2rad(20.0), (0.0, 0.0, 1.0))
+        rotation[:3, 3] = (0.01, 0.012, 0.004)
+        mesh.apply_transform(rotation)
+        mesh.export(target)
+    elif kind == "multiple":
+        mesh = trimesh.util.concatenate(
+            (
+                trimesh.creation.box(extents=(0.004, 0.004, 0.004), transform=trimesh.transformations.translation_matrix((0.004, 0.004, 0.004))),
+                trimesh.creation.box(extents=(0.004, 0.004, 0.004), transform=trimesh.transformations.translation_matrix((0.016, 0.02, 0.004))),
+            )
+        )
+        mesh.export(target)
+    else:
+        _write_notched_prism(target)
+    metadata = local_design_stl_role_classifier(problem).provenance_metadata["fixed"]["classifier"]
+    assert metadata["method"] == "generic_trimesh"
+    assert metadata["validation"]["status"] == "fallback"
+    assert metadata["validation"]["reason"] != "strict_aabb_surface"
+
+
+def test_actual_g2_roles_have_expected_classifier_methods_without_building_large_masks() -> None:
+    metadata = local_design_stl_role_classifier("examples/g2_openfoam_compile/project.yaml").provenance_metadata
+    assert {identifier: entry["classifier"]["method"] for identifier, entry in metadata.items()} == {
+        "vehicle_nose": "analytic_aabb",
+        "ground": "analytic_aabb",
+        "front_wing_initial": "not_classified",
+        "allowed_front_box": "analytic_aabb",
+        "tire_clearance": "generic_trimesh",
+        "root_mount_left_fixed": "analytic_aabb",
+        "root_mount_right_fixed": "analytic_aabb",
+        "root_mount_left": "analytic_aabb",
+        "root_mount_right": "analytic_aabb",
+    }

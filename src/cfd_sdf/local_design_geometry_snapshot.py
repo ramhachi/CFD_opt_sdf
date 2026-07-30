@@ -27,7 +27,7 @@ from .localized_design_state_manifest import LocalizedDesignGrid
 from .problem_spec import ProblemSpec, canonical_local_design_grid, load_problem_spec, problem_spec_sha256
 
 
-LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION = 1
+LOCAL_DESIGN_GEOMETRY_SNAPSHOT_SCHEMA_VERSION = 2
 LOCAL_DESIGN_GEOMETRY_SNAPSHOT_KIND = "local_design_geometry_mask_snapshot"
 LOCAL_DESIGN_GEOMETRY_SNAPSHOT_FILENAME = "local_geometry_masks.json"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -384,19 +384,52 @@ def _regions_from_dict(raw: Any) -> dict[str, Mapping[str, Any]]:
         if not isinstance(identifier, str) or not identifier:
             raise ValueError("classifier region id must be non-empty text")
         item = _mapping(value, f"classifier region {identifier}")
-        _exact_keys(item, {"role", "relative_source_path", "resolved_relative_source_path", "sha256", "bounds_m"}, f"classifier region {identifier}")
+        _exact_keys(
+            item,
+            {"role", "relative_source_path", "resolved_relative_source_path", "sha256", "bounds_m", "classifier"},
+            f"classifier region {identifier}",
+        )
         bounds = _mapping(item["bounds_m"], f"classifier region {identifier}.bounds_m")
         _exact_keys(bounds, {"lower", "upper"}, f"classifier region {identifier}.bounds_m")
         lower = _vector3(bounds["lower"], f"classifier region {identifier}.bounds_m.lower")
         upper = _vector3(bounds["upper"], f"classifier region {identifier}.bounds_m.upper")
         if any(low > high for low, high in zip(lower, upper, strict=True)):
             raise ValueError(f"classifier region {identifier}.bounds_m lower must not exceed upper")
+        classifier = _mapping(item["classifier"], f"classifier region {identifier}.classifier")
+        _exact_keys(classifier, {"method", "validation", "surface_tolerance_m", "mesh_counts"}, f"classifier region {identifier}.classifier")
+        method = _text(classifier["method"], f"classifier region {identifier}.classifier.method")
+        if method not in {"analytic_aabb", "generic_trimesh", "not_classified"}:
+            raise ValueError(f"classifier region {identifier}.classifier.method is unsupported")
+        validation = _mapping(classifier["validation"], f"classifier region {identifier}.classifier.validation")
+        _exact_keys(validation, {"status", "reason"}, f"classifier region {identifier}.classifier.validation")
+        status = _text(validation["status"], f"classifier region {identifier}.classifier.validation.status")
+        reason = _text(validation["reason"], f"classifier region {identifier}.classifier.validation.reason")
+        expected_status = {
+            "analytic_aabb": "accepted",
+            "generic_trimesh": "fallback",
+            "not_classified": "not_classified",
+        }[method]
+        if status != expected_status:
+            raise ValueError(f"classifier region {identifier}.classifier.validation does not match method")
+        tolerance = _positive_float(classifier["surface_tolerance_m"], f"classifier region {identifier}.classifier.surface_tolerance_m")
+        mesh_counts = _mapping(classifier["mesh_counts"], f"classifier region {identifier}.classifier.mesh_counts")
+        _exact_keys(mesh_counts, {"vertex_count", "face_count", "connected_component_count"}, f"classifier region {identifier}.classifier.mesh_counts")
+        counts = {
+            key: _positive_int(mesh_counts[key], f"classifier region {identifier}.classifier.mesh_counts.{key}")
+            for key in sorted(mesh_counts)
+        }
         result[identifier] = {
             "role": _text(item["role"], f"classifier region {identifier}.role"),
             "relative_source_path": _safe_relative_path(item["relative_source_path"], f"classifier region {identifier}.relative_source_path"),
             "resolved_relative_source_path": _safe_relative_path(item["resolved_relative_source_path"], f"classifier region {identifier}.resolved_relative_source_path"),
             "sha256": _sha256(item["sha256"], f"classifier region {identifier}.sha256"),
             "bounds_m": {"lower": list(lower), "upper": list(upper)},
+            "classifier": {
+                "method": method,
+                "validation": {"status": status, "reason": reason},
+                "surface_tolerance_m": tolerance,
+                "mesh_counts": counts,
+            },
         }
     return result
 
@@ -522,6 +555,15 @@ def _nonnegative_int(value: Any, context: str) -> int:
     result = _int(value, context)
     if result < 0:
         raise ValueError(f"{context} must be non-negative")
+    return result
+
+
+def _positive_float(value: Any, context: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{context} must be a positive finite number")
+    result = float(value)
+    if not np.isfinite(result) or result <= 0.0:
+        raise ValueError(f"{context} must be a positive finite number")
     return result
 
 
