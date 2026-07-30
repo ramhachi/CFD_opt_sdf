@@ -186,6 +186,13 @@ Remaining implementation:
    [`localized_design_grid_decision.md`](localized_design_grid_decision.md).
    The current 20 mm G2 transfer grid cannot supply topology-policy values.
    **Implementation required.**
+   The direct-STL localized state is now published and its role-aware topology
+   evaluation correctly rejects real minimum-width/gap violations. Implement
+   the separate forward-only feasible derived starting-state initializer
+   selected in
+   [`2026-07-30-localized-feasible-derived-starting-state.md`](decisions/2026-07-30-localized-feasible-derived-starting-state.md), then require a
+   new successful full-resolution topology report and alpha binding before
+   localized FD can begin. **Implementation required.**
 2. Supply and qualify semantic bindings for native v2 primal and sensitivity
    artifacts from the real runs, including response unit/provenance,
    `rho`-gradient convention, mesh-grid mapping, and topology-policy values
