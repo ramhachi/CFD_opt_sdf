@@ -54,3 +54,38 @@ erosion, minimum solid/void width, and gap checks. A failed attempt publishes
 only failure diagnostics, never a partial feasible state. A changed projected
 state requires a new alpha reference and binding before FD preparation; the
 direct-STL alpha reference may not be reused.
+
+## First implementation evidence: rejected
+
+The first full-resolution attempt used the bounded raw-only opening/gap-fill
+initializer with at most three iterations. It produced no derived bundle. Its
+diagnostic is
+`examples/g2_openfoam_compile/runs/.localized_feasible_derived_state_v1_20260730.feasibility-failure.json`.
+The direct source bundle and rejected report remain unchanged. Iteration zero
+and the first repaired state both retained `minimum_solid_width` and
+`minimum_gap`; the raw repair then reached a fixed point. This is a failed
+initializer attempt, not evidence that the constraints passed or that the
+front-wing benchmark is ready for FD.
+
+## Next operator: support-buffer repair
+
+The bounded Sol review selected a filter/projection-aware conservative repair,
+not a new constrained initialization solver or a relaxation of the policy.
+The repair reads the final projected topology check and modifies raw density
+only. For every thin-solid violation target it writes zero to every active raw
+cell with positive cone-filter support; for every external-gap violation target
+it writes one to the corresponding active support. With the existing
+active-source normalized cone filter, a support forced entirely to zero or one
+forces the target filtered value, and the unchanged Heaviside maps those
+endpoints to zero or one. This is a forward guarantee, not inverse projection.
+
+Removal runs before gap filling. Each phase reruns raw -> filter -> projection
+and the full checker. Add/remove conflicts, repeated state hashes, cycles,
+resource failures, and iteration limits are rejected. The operator does not
+declare feasibility; only the final unchanged checker may do so.
+
+Failure diagnostics must retain the complete checker payload and violation
+counts/first indices, source and transition deltas, target and zero/one-buffer
+hashes/counts, conflict data, and the support radius/offsets/weights/hash.
+The derived state must retain nonzero overlap with the source threshold solid;
+metrics describe STL divergence but introduce no unapproved maximum threshold.
