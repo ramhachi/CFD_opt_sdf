@@ -39,3 +39,30 @@ docker run --rm `
   opencfd/openfoam-default:2512 `
   -lc "source /usr/lib/openfoam/openfoam2512/etc/bashrc && export FOAM_USER_LIBBIN=/work/openfoam_extensions/porousDirectionalForce/lib && wmake libso"
 ```
+
+## Staged raw-alpha response-gradient export
+
+`stagedRawAlphaGradientExporter` is the solver-side boundary for the
+localized G2 response-gradient artifact.  Its contract is deliberately
+response-specific and must declare `flowCaseId`, `responseId`,
+`namedAdjointId`, `gradientVariable staged_raw_alpha`, the exact derivative
+meaning `dJ=sum_i g_alpha[i]*d(alpha_i)`, and the complete internal chain
+`alpha->alphaTilda->beta->response`.  It also requires a raw-coefficient
+formula/units, Newton conversion factor/formula/units, source path and
+SHA-256, and records the solver final time when an audited export becomes
+available.
+
+The current v2512 extension does **not** provide a public, audited solver API
+that returns this complete staged-raw-alpha derivative.  The function object
+therefore validates the explicit contract and then fails closed without
+writing an artifact.  This is intentional: `dJ/dbeta`, or an existing
+sensitivity field chosen by name, cannot be relabelled as `dJ/d(raw alpha)`.
+It also rejects parallel execution; the first qualification contract is
+strictly serial and does not accept an implicit processor ordering.
+
+Do not add this function object to a production run until the missing solver
+API is implemented and audited.  The required future artifact is one per
+named response and must contain a finite native-float64 vector in canonical
+serial cell order (or a strictly defined native scalar-field equivalent), the
+above provenance, final time, source path/hash, and the declared unit
+conversion.  No G2 qualification is implied by this extension scaffold.
