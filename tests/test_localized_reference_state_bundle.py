@@ -10,11 +10,13 @@ import yaml
 from typer.testing import CliRunner
 
 import cfd_sdf.cli as cli_module
+import cfd_sdf.localized_reference_state_bundle as bundle_module
 from cfd_sdf.cli import app
 from cfd_sdf.local_design_geometry_snapshot import create_local_design_geometry_mask_snapshot
 from cfd_sdf.localized_reference_state_bundle import (
     LOCALIZED_REFERENCE_STATE_FILENAME,
     build_localized_reference_state_bundle,
+    localized_reference_state_failure_report_path,
     verify_localized_reference_state_bundle,
 )
 
@@ -109,6 +111,38 @@ def test_refuses_mismatched_snapshot_source_and_cleans_staging(tmp_path: Path) -
         )
     assert not (tmp_path / "bundle").exists()
     assert not list(tmp_path.glob(".bundle.tmp-*"))
+
+
+def test_injected_build_failure_closes_staging_and_publishes_only_diagnostic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    project = _project(tmp_path)
+    snapshot = create_local_design_geometry_mask_snapshot(
+        project, output_dir=tmp_path / "snapshot", z_chunk_size=1, containment_chunk_size=8
+    )
+
+    def fail_after_active_mask(**_kwargs):
+        raise ValueError("injected raw-state failure")
+
+    monkeypatch.setattr(bundle_module, "build_local_initial_design_rho_raw", fail_after_active_mask)
+    output = tmp_path / "bundle"
+    with pytest.raises(ValueError, match="injected raw-state failure"):
+        build_localized_reference_state_bundle(
+            project,
+            geometry_snapshot_path=snapshot.snapshot.path,
+            output_dir=output,
+            expected_component_count=1,
+            disk_free_bytes=lambda _path: 9 * 1024**3,
+            available_memory_bytes=lambda: 9 * 1024**3,
+        )
+    assert not output.exists()
+    assert not list(tmp_path.glob(".bundle.tmp-*"))
+    report_path = localized_reference_state_failure_report_path(output)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["kind"] == "localized_reference_state_build_failure"
+    assert report["status"] == "build_failed"
+    assert report["failed_stage"] == "build_raw_initial_design_rho"
+    assert report["exception_type"] == "ValueError"
+    assert report["exception_message"] == "injected raw-state failure"
+    assert report["staging_cleanup"] == "removed"
 
 
 @pytest.mark.parametrize("target", ["raw", "filter_config", "manifest"])

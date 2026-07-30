@@ -54,6 +54,8 @@ from .problem_spec import ProblemSpec, canonical_local_design_grid, load_problem
 LOCALIZED_REFERENCE_STATE_SCHEMA_VERSION = 1
 LOCALIZED_REFERENCE_STATE_KIND = "localized_reference_state_bundle"
 LOCALIZED_REFERENCE_STATE_FILENAME = "localized_reference_state.json"
+LOCALIZED_REFERENCE_STATE_FAILURE_SCHEMA_VERSION = 1
+LOCALIZED_REFERENCE_STATE_FAILURE_KIND = "localized_reference_state_build_failure"
 _MIN_RESOURCE_BYTES = 8 * 1024**3
 _CHUNK = 1_048_576
 
@@ -65,6 +67,18 @@ class LocalizedReferenceStateBundle:
     state_manifest_sha256: str
     raw_manifest_sha256: str
     initial_design_stl_sha256: str
+
+
+def localized_reference_state_failure_report_path(output_dir: str | Path) -> Path:
+    """Return the diagnostic sidecar path for one requested bundle output.
+
+    This sidecar is deliberately a sibling of the requested output directory,
+    never a member of a published bundle.  It records only a failed build; it
+    is not a topology evaluation or a partially valid state artifact.
+    """
+
+    destination = Path(output_dir)
+    return destination.parent / f".{destination.name}.build-failure.json"
 
 
 def build_localized_reference_state_bundle(
@@ -108,15 +122,21 @@ def build_localized_reference_state_bundle(
         raise ValueError("geometry snapshot grid does not match project local design grid")
     initial_stl, initial_sha = _declared_initial_design(spec, geometry)
     staging = Path(tempfile.mkdtemp(prefix=f".{destination.name}.tmp-", dir=destination.parent))
+    stage = "copy_geometry_snapshot"
+    active: np.memmap | None = None
     try:
         geometry_dir = staging / "geometry_snapshot"
         shutil.copytree(geometry.path.parent, geometry_dir, copy_function=shutil.copy2)
+        stage = "verify_copied_geometry_snapshot"
         copied_geometry = load_and_verify_local_design_geometry_mask_snapshot(
             geometry_dir / LOCAL_DESIGN_GEOMETRY_SNAPSHOT_FILENAME,
             expected_problem_spec_sha256=expected_problem_hash,
         ).snapshot
         active_path = geometry_dir / copied_geometry.masks["active_design_mask"].relative_path
         active = np.load(active_path, mmap_mode="r", allow_pickle=False)
+        if not isinstance(active, np.memmap):
+            raise ValueError("copied active_design_mask must be a memory-mappable NPY array")
+        stage = "build_raw_initial_design_rho"
         raw = build_local_initial_design_rho_raw(
             grid=grid,
             active_design_mask=active,
@@ -129,19 +149,29 @@ def build_localized_reference_state_bundle(
             raise ValueError("raw initial-design provenance does not match declared STL")
         states = staging / "states"
         states.mkdir()
-        filtered_path = write_localized_cone_filtered_npy(
-            np.load(raw.rho_raw_path, mmap_mode="r", allow_pickle=False), active, grid,
-            output_path=states / "rho_filtered.npy", config=filter_config, z_slab_size=z_slab_size,
-        )
+        stage = "filter_raw_initial_design_rho"
+        raw_values = np.load(raw.rho_raw_path, mmap_mode="r", allow_pickle=False)
+        try:
+            filtered_path = write_localized_cone_filtered_npy(
+                raw_values, active, grid,
+                output_path=states / "rho_filtered.npy", config=filter_config, z_slab_size=z_slab_size,
+            )
+        finally:
+            _close_memmap(raw_values)
         projected_path = states / "rho_projected.npy"
         projected = np.lib.format.open_memmap(projected_path, mode="w+", dtype=np.float64, shape=(grid.cell_count,))
         try:
-            apply_localized_heaviside_projection(
-                np.load(filtered_path, mmap_mode="r", allow_pickle=False), active, config=projection_config, out=projected
-            )
+            stage = "project_filtered_initial_design_rho"
+            filtered_values = np.load(filtered_path, mmap_mode="r", allow_pickle=False)
+            try:
+                apply_localized_heaviside_projection(
+                    filtered_values, active, config=projection_config, out=projected
+                )
+            finally:
+                _close_memmap(filtered_values)
             projected.flush()
         finally:
-            del projected
+            _close_memmap(projected)
         configs = staging / "configs"
         configs.mkdir()
         filter_path = configs / "filter_config.json"
@@ -157,9 +187,10 @@ def build_localized_reference_state_bundle(
             filter_config_path=filter_path, projection_config_path=projection_path,
         )
         write_localized_design_state_manifest(state_manifest)
-        # ``active`` is a Windows NPY mapping.  Drop it before the final
+        # ``active`` is a Windows NPY mapping.  Close it before the final
         # directory rename; a live mapping keeps the parent directory busy.
-        del active
+        _close_memmap(active)
+        active = None
         state_hash = localized_design_state_manifest_sha256(state_manifest)
         raw_hash = _sha256_file(raw.manifest_path)
         _write_json(staging / LOCALIZED_REFERENCE_STATE_FILENAME, {
@@ -177,12 +208,25 @@ def build_localized_reference_state_bundle(
             "filter_config_sha256": filter_hash,
             "projection_config_sha256": projection_hash,
         })
+        stage = "verify_staged_bundle"
         verify_localized_reference_state_bundle(staging, problem=spec)
         gc.collect()
+        stage = "publish_bundle"
         os.replace(staging, destination)
-    except Exception:
-        if staging.exists():
-            shutil.rmtree(staging, ignore_errors=True)
+    except BaseException as exc:
+        _close_memmap(active)
+        active = None
+        gc.collect()
+        cleanup_error = _remove_staging_directory(staging)
+        report = _write_failure_report(
+            destination=destination,
+            staging=staging,
+            failed_stage=stage,
+            error=exc,
+            cleanup_error=cleanup_error,
+        )
+        if report is not None and hasattr(exc, "add_note"):
+            exc.add_note(f"localized reference-state diagnostic report: {report}")
         raise
     return verify_localized_reference_state_bundle(destination, problem=spec)
 
@@ -372,6 +416,75 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8", newline="\n")
 
 
+def _close_memmap(value: Any) -> None:
+    """Close an NPY mapping now rather than relying on CPython refcounts.
+
+    Directory rename and recursive deletion have stricter sharing semantics
+    on Windows.  ``np.memmap`` exposes its underlying mapping specifically so
+    a private staging tree can be released before it is removed or published.
+    """
+
+    if isinstance(value, np.memmap):
+        mapping = getattr(value, "_mmap", None)
+        if mapping is not None:
+            mapping.close()
+
+
+def _remove_staging_directory(staging: Path) -> OSError | None:
+    if not staging.exists():
+        return None
+    try:
+        shutil.rmtree(staging)
+    except OSError as exc:
+        return exc
+    return None
+
+
+def _write_failure_report(
+    *,
+    destination: Path,
+    staging: Path,
+    failed_stage: str,
+    error: BaseException,
+    cleanup_error: OSError | None,
+) -> Path | None:
+    """Atomically record a build failure without publishing a bundle.
+
+    Reporting must never hide the original build exception.  A forced process
+    termination cannot run this handler; the report therefore documents only
+    failures that reached ordinary Python exception handling.
+    """
+
+    report = localized_reference_state_failure_report_path(destination)
+    payload = {
+        "schema_version": LOCALIZED_REFERENCE_STATE_FAILURE_SCHEMA_VERSION,
+        "kind": LOCALIZED_REFERENCE_STATE_FAILURE_KIND,
+        "status": "build_failed",
+        "requested_output_directory": str(destination),
+        "staging_directory": str(staging),
+        "failed_stage": failed_stage,
+        "exception_type": type(error).__name__,
+        "exception_message": str(error),
+        "staging_cleanup": "removed" if cleanup_error is None and not staging.exists() else "failed",
+        "staging_cleanup_error": None if cleanup_error is None else str(cleanup_error),
+    }
+    try:
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{report.name}.tmp-", dir=report.parent
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n")
+            os.replace(temporary, report)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+    except OSError:
+        return None
+    return report
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -422,5 +535,7 @@ def _logical_bool_hash(values: np.ndarray) -> str:
 
 __all__ = [
     "LOCALIZED_REFERENCE_STATE_FILENAME", "LOCALIZED_REFERENCE_STATE_KIND", "LOCALIZED_REFERENCE_STATE_SCHEMA_VERSION",
-    "LocalizedReferenceStateBundle", "build_localized_reference_state_bundle", "verify_localized_reference_state_bundle",
+    "LOCALIZED_REFERENCE_STATE_FAILURE_KIND", "LOCALIZED_REFERENCE_STATE_FAILURE_SCHEMA_VERSION",
+    "LocalizedReferenceStateBundle", "build_localized_reference_state_bundle", "localized_reference_state_failure_report_path",
+    "verify_localized_reference_state_bundle",
 ]

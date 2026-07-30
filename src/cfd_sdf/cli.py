@@ -75,6 +75,7 @@ from .problem_spec import (
 from .localized_reference_state_bundle import (
     LOCALIZED_REFERENCE_STATE_FILENAME,
     build_localized_reference_state_bundle,
+    localized_reference_state_failure_report_path,
 )
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
@@ -195,7 +196,11 @@ def build_localized_reference_state(
             output_dir=output_dir,
         )
     except (OSError, ValueError) as exc:
-        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+        message = str(exc)
+        report = localized_reference_state_failure_report_path(output_dir)
+        if report.is_file():
+            message += f"; diagnostic report: {report}"
+        raise typer.BadParameter(message, param_hint="output_dir") from exc
     typer.echo(
         json.dumps(
             {

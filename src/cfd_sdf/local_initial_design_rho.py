@@ -197,7 +197,7 @@ def _write_rho_raw(
         values.flush()
     finally:
         # Drop the Windows mapping before the staging directory is renamed.
-        del values
+        _close_memmap(values)
     return occupancy_sum
 
 
@@ -370,6 +370,15 @@ def _file_sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1_048_576), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _close_memmap(value: Any) -> None:
+    """Release a file mapping before atomic staging cleanup on Windows."""
+
+    if isinstance(value, np.memmap):
+        mapping = getattr(value, "_mmap", None)
+        if mapping is not None:
+            mapping.close()
 
 
 def _bool_vector_sha256(values: np.ndarray) -> str:
