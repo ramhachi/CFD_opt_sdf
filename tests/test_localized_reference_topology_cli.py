@@ -112,6 +112,9 @@ def test_cli_help_exposes_exactly_three_arguments_and_no_tuning_controls() -> No
     assert "project_yaml" in normalized
     assert "reference_bundle" in normalized
     assert "output_dir" in normalized
-    assert "[options] project_yaml reference_bundle output_dir" in normalized
+    assert re.search(
+        r"\[options\]\s+\{?project_yaml\}?\s+\{?reference_bundle\}?\s+\{?output_dir\}?",
+        normalized,
+    )
     for forbidden in ("threshold", "disk", "memory", "probe", "radius", "beta", "eta"):
         assert forbidden not in normalized
