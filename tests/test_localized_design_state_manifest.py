@@ -12,7 +12,14 @@ from cfd_sdf.localized_design_state_manifest import (
     load_and_verify_localized_design_state_manifest,
     localized_design_state_manifest_sha256,
     read_localized_design_state_manifest,
+    require_localized_design_state_manifest_v2,
     write_localized_design_state_manifest,
+)
+from cfd_sdf.localized_filter_projection import (
+    LocalizedConeFilterConfig,
+    LocalizedHeavisideProjectionConfig,
+    write_canonical_filter_config,
+    write_canonical_projection_config,
 )
 
 
@@ -161,3 +168,35 @@ def test_reader_refuses_path_escape_and_geometry_hash_mismatch(tmp_path) -> None
     written.write_text(json.dumps(raw), encoding="utf-8")
     with pytest.raises(ValueError, match="grid_sha256"):
         read_localized_design_state_manifest(written)
+
+
+def test_schema_v2_binds_canonical_config_artifacts_and_v1_remains_readable(tmp_path) -> None:
+    mask_paths, state_paths = _write_artifacts(tmp_path)
+    filter_path = tmp_path / "filter_config.json"
+    projection_path = tmp_path / "projection_config.json"
+    filter_hash = write_canonical_filter_config(filter_path, LocalizedConeFilterConfig())
+    projection_hash = write_canonical_projection_config(projection_path, LocalizedHeavisideProjectionConfig())
+    manifest = create_localized_design_state_manifest(
+        path=tmp_path / "v2.json",
+        problem_spec_sha256=_HASH,
+        grid=LocalizedDesignGrid(origin=(0.0, 0.0, 0.0), spacing=(.002, .002, .002), cell_shape=(2, 2, 1)),
+        masks=mask_paths,
+        states=state_paths,
+        filter_config_sha256=filter_hash,
+        projection_config_sha256=projection_hash,
+        filter_config_path="filter_config.json",
+        projection_config_path="projection_config.json",
+    )
+    path = write_localized_design_state_manifest(manifest)
+    verified = load_and_verify_localized_design_state_manifest(path)
+    assert verified.manifest.schema_version == 2
+    assert require_localized_design_state_manifest_v2(verified).manifest.filter_config is not None
+    # Old explicit hash-only artifacts still parse and validate; they simply
+    # cannot become a full-resolution reference.
+    v1 = _create(tmp_path / "v1")
+    v1_path = write_localized_design_state_manifest(v1)
+    with pytest.raises(ValueError, match="requires schema-v2"):
+        require_localized_design_state_manifest_v2(load_and_verify_localized_design_state_manifest(v1_path))
+    filter_path.write_text(filter_path.read_text(encoding="utf-8").replace("0.004", "0.005"), encoding="utf-8")
+    with pytest.raises(ValueError, match="filter_config hash mismatch"):
+        load_and_verify_localized_design_state_manifest(path)

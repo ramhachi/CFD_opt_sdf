@@ -25,7 +25,8 @@ from typing import Any
 import numpy as np
 
 
-LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION = 1
+LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION_V1 = 1
+LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION = 2
 LOCALIZED_DESIGN_STATE_MANIFEST_KIND = "localized_design_state_manifest"
 LOCALIZED_DESIGN_GRID_KIND = "uniform_cartesian_local_design_grid"
 LOCALIZED_DESIGN_MASK_IDS = (
@@ -97,6 +98,14 @@ class LocalizedArrayArtifact:
 
 
 @dataclass(frozen=True)
+class LocalizedConfigArtifact:
+    """Portable, canonical JSON configuration bound into schema-v2 state."""
+
+    relative_path: str
+    byte_sha256: str
+
+
+@dataclass(frozen=True)
 class LocalizedDesignStateManifest:
     """Parsed local state manifest.  Call :func:`validate` before use."""
 
@@ -110,6 +119,8 @@ class LocalizedDesignStateManifest:
     states: Mapping[str, LocalizedArrayArtifact]
     filter_config_sha256: str
     projection_config_sha256: str
+    filter_config: LocalizedConfigArtifact | None = None
+    projection_config: LocalizedConfigArtifact | None = None
 
     @property
     def sha256(self) -> str:
@@ -134,6 +145,8 @@ def create_localized_design_state_manifest(
     states: Mapping[str, str | Path],
     filter_config_sha256: str,
     projection_config_sha256: str,
+    filter_config_path: str | Path | None = None,
+    projection_config_path: str | Path | None = None,
 ) -> LocalizedDesignStateManifest:
     """Create metadata for pre-existing local ``.npy`` artifacts.
 
@@ -146,6 +159,8 @@ def create_localized_design_state_manifest(
     _required_sha256(problem_spec_sha256, "problem_spec_sha256")
     _required_sha256(filter_config_sha256, "filter_config_sha256")
     _required_sha256(projection_config_sha256, "projection_config_sha256")
+    if (filter_config_path is None) != (projection_config_path is None):
+        raise ValueError("filter_config_path and projection_config_path must be supplied together")
     if not isinstance(grid, LocalizedDesignGrid):
         raise ValueError("grid must be LocalizedDesignGrid")
     _require_exact_ids(masks, LOCALIZED_DESIGN_MASK_IDS, "masks")
@@ -171,9 +186,11 @@ def create_localized_design_state_manifest(
         )
         for identifier in LOCALIZED_DESIGN_STATE_IDS
     }
+    filter_config = _make_config_artifact(manifest_path.parent, filter_config_path, filter_config_sha256, "filter") if filter_config_path is not None else None
+    projection_config = _make_config_artifact(manifest_path.parent, projection_config_path, projection_config_sha256, "projection") if projection_config_path is not None else None
     manifest = LocalizedDesignStateManifest(
         path=manifest_path,
-        schema_version=LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION,
+        schema_version=LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION if filter_config is not None else LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION_V1,
         kind=LOCALIZED_DESIGN_STATE_MANIFEST_KIND,
         problem_spec_sha256=problem_spec_sha256,
         grid=grid,
@@ -182,6 +199,8 @@ def create_localized_design_state_manifest(
         states=state_artifacts,
         filter_config_sha256=filter_config_sha256,
         projection_config_sha256=projection_config_sha256,
+        filter_config=filter_config,
+        projection_config=projection_config,
     )
     validate_localized_design_state_manifest(manifest)
     return manifest
@@ -234,6 +253,10 @@ def validate_localized_design_state_manifest(
     active = verified_masks["active_design_mask"]
     for identifier in LOCALIZED_DESIGN_STATE_IDS:
         _verify_artifact(manifest, manifest.states[identifier], False, active_mask=active)
+    if manifest.schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+        assert manifest.filter_config is not None and manifest.projection_config is not None
+        _verify_config_artifact(manifest, manifest.filter_config, "filter", manifest.filter_config_sha256)
+        _verify_config_artifact(manifest, manifest.projection_config, "projection", manifest.projection_config_sha256)
     return VerifiedLocalizedDesignStateManifest(manifest=manifest)
 
 
@@ -248,6 +271,23 @@ def load_and_verify_localized_design_state_manifest(
         read_localized_design_state_manifest(path),
         expected_problem_spec_sha256=expected_problem_spec_sha256,
     )
+
+
+def require_localized_design_state_manifest_v2(
+    verified: VerifiedLocalizedDesignStateManifest,
+) -> VerifiedLocalizedDesignStateManifest:
+    """Refuse legacy v1 manifests where full-resolution state is consumed.
+
+    V1 remains readable for old artifacts, but it binds only configuration
+    hashes.  A physical full-resolution reference must instead carry the
+    portable canonical configuration files introduced by schema v2.
+    """
+
+    if not isinstance(verified, VerifiedLocalizedDesignStateManifest):
+        raise ValueError("verified must be VerifiedLocalizedDesignStateManifest")
+    if verified.manifest.schema_version != LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+        raise ValueError("full-resolution localized design state requires schema-v2 manifest")
+    return verified
 
 
 def localized_design_state_manifest_sha256(manifest: LocalizedDesignStateManifest) -> str:
@@ -299,20 +339,43 @@ def _artifact_input_path(root: Path, value: str | Path) -> Path:
     return resolved
 
 
+def _config_input_path(root: Path, value: str | Path, config_name: str) -> Path:
+    value_path = Path(value)
+    candidate = value_path if value_path.is_absolute() else root / value_path
+    resolved = candidate.resolve()
+    try:
+        relative = resolved.relative_to(root.resolve())
+    except ValueError as exc:
+        raise ValueError(f"{config_name}_config_path must be below manifest directory") from exc
+    if not relative.parts or any(part in {".", ".."} for part in relative.parts):
+        raise ValueError(f"{config_name}_config_path must be a safe relative path")
+    if resolved.suffix.lower() != ".json" or not resolved.is_file():
+        raise ValueError(f"{config_name}_config_path must be an existing .json file")
+    return resolved
+
+
 def _manifest_from_dict(path: Path, raw: Any) -> LocalizedDesignStateManifest:
     data = _mapping(raw, "localized design state manifest")
-    expected = {
+    v1_expected = {
         "schema_version", "kind", "problem_spec_sha256", "grid", "grid_sha256", "masks", "states",
         "filter_config_sha256", "projection_config_sha256",
     }
-    _require_exact_keys(data, expected, "localized design state manifest")
     schema_version = _exact_int(data["schema_version"], "localized design state manifest.schema_version")
-    if schema_version != LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+    v2_expected = v1_expected | {"filter_config", "projection_config"}
+    if schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION_V1:
+        _require_exact_keys(data, v1_expected, "localized design state manifest")
+    elif schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+        _require_exact_keys(data, v2_expected, "localized design state manifest")
+    else:
         raise ValueError(f"Unsupported localized design state manifest schema_version: {schema_version}")
     kind = _required_text(data["kind"], "localized design state manifest.kind")
     if kind != LOCALIZED_DESIGN_STATE_MANIFEST_KIND:
         raise ValueError(f"Unsupported localized design state manifest kind: {kind}")
     grid, grid_sha256 = _grid_from_dict(data["grid"], data["grid_sha256"])
+    filter_hash = _required_sha256(data["filter_config_sha256"], "filter_config_sha256")
+    projection_hash = _required_sha256(data["projection_config_sha256"], "projection_config_sha256")
+    filter_config = _config_artifact_from_dict(data["filter_config"], "filter", filter_hash) if schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION else None
+    projection_config = _config_artifact_from_dict(data["projection_config"], "projection", projection_hash) if schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION else None
     return LocalizedDesignStateManifest(
         path=path,
         schema_version=schema_version,
@@ -322,13 +385,15 @@ def _manifest_from_dict(path: Path, raw: Any) -> LocalizedDesignStateManifest:
         grid_sha256=grid_sha256,
         masks=_artifacts_from_dict(data["masks"], LOCALIZED_DESIGN_MASK_IDS, True),
         states=_artifacts_from_dict(data["states"], LOCALIZED_DESIGN_STATE_IDS, False),
-        filter_config_sha256=_required_sha256(data["filter_config_sha256"], "filter_config_sha256"),
-        projection_config_sha256=_required_sha256(data["projection_config_sha256"], "projection_config_sha256"),
+        filter_config_sha256=filter_hash,
+        projection_config_sha256=projection_hash,
+        filter_config=filter_config,
+        projection_config=projection_config,
     )
 
 
 def _manifest_to_dict(manifest: LocalizedDesignStateManifest) -> dict[str, Any]:
-    return {
+    result = {
         "schema_version": manifest.schema_version,
         "kind": manifest.kind,
         "problem_spec_sha256": manifest.problem_spec_sha256,
@@ -345,6 +410,12 @@ def _manifest_to_dict(manifest: LocalizedDesignStateManifest) -> dict[str, Any]:
         "filter_config_sha256": manifest.filter_config_sha256,
         "projection_config_sha256": manifest.projection_config_sha256,
     }
+    if manifest.schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+        if manifest.filter_config is None or manifest.projection_config is None:
+            raise ValueError("schema-v2 localized state manifest requires filter and projection config artifacts")
+        result["filter_config"] = _config_artifact_to_dict(manifest.filter_config)
+        result["projection_config"] = _config_artifact_to_dict(manifest.projection_config)
+    return result
 
 
 def _artifact_to_dict(artifact: LocalizedArrayArtifact) -> dict[str, Any]:
@@ -357,6 +428,33 @@ def _artifact_to_dict(artifact: LocalizedArrayArtifact) -> dict[str, Any]:
     if artifact.true_count is not None:
         result["true_count"] = artifact.true_count
     return result
+
+
+def _config_artifact_to_dict(artifact: LocalizedConfigArtifact) -> dict[str, Any]:
+    return {"relative_path": artifact.relative_path, "byte_sha256": artifact.byte_sha256}
+
+
+def _make_config_artifact(
+    root: Path, value: str | Path, expected_sha256: str, config_name: str
+) -> LocalizedConfigArtifact:
+    path = _config_input_path(root, value, config_name)
+    actual = _sha256_file(path)
+    if actual != expected_sha256:
+        raise ValueError(f"{config_name}_config_path hash does not match {config_name}_config_sha256")
+    _validate_canonical_json(path, config_name)
+    return LocalizedConfigArtifact(relative_path=_relative_artifact_path(root, path), byte_sha256=actual)
+
+
+def _config_artifact_from_dict(raw: Any, config_name: str, expected_sha256: str) -> LocalizedConfigArtifact:
+    data = _mapping(raw, f"{config_name}_config")
+    _require_exact_keys(data, {"relative_path", "byte_sha256"}, f"{config_name}_config")
+    artifact = LocalizedConfigArtifact(
+        relative_path=_safe_relative_path(data["relative_path"], f"{config_name}_config.relative_path"),
+        byte_sha256=_required_sha256(data["byte_sha256"], f"{config_name}_config.byte_sha256"),
+    )
+    if artifact.byte_sha256 != expected_sha256:
+        raise ValueError(f"{config_name}_config hash does not match {config_name}_config_sha256")
+    return artifact
 
 
 def _grid_from_dict(raw: Any, grid_sha256: Any) -> tuple[LocalizedDesignGrid, str]:
@@ -398,13 +496,23 @@ def _artifacts_from_dict(raw: Any, identifiers: tuple[str, ...], is_mask: bool) 
 
 
 def _validate_manifest_metadata(manifest: LocalizedDesignStateManifest) -> None:
-    if manifest.schema_version != LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+    if manifest.schema_version not in {
+        LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION_V1,
+        LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION,
+    }:
         raise ValueError("localized design state manifest has unsupported schema_version")
     if manifest.kind != LOCALIZED_DESIGN_STATE_MANIFEST_KIND:
         raise ValueError("localized design state manifest has unsupported kind")
     _required_sha256(manifest.problem_spec_sha256, "problem_spec_sha256")
     _required_sha256(manifest.filter_config_sha256, "filter_config_sha256")
     _required_sha256(manifest.projection_config_sha256, "projection_config_sha256")
+    if manifest.schema_version == LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION:
+        if manifest.filter_config is None or manifest.projection_config is None:
+            raise ValueError("schema-v2 localized state manifest requires filter and projection config artifacts")
+        _validate_config_artifact_metadata(manifest.filter_config, "filter", manifest.filter_config_sha256)
+        _validate_config_artifact_metadata(manifest.projection_config, "projection", manifest.projection_config_sha256)
+    elif manifest.filter_config is not None or manifest.projection_config is not None:
+        raise ValueError("schema-v1 localized state manifest must not contain config artifacts")
     if not isinstance(manifest.grid, LocalizedDesignGrid) or manifest.grid_sha256 != manifest.grid.sha256:
         raise ValueError("localized design state manifest grid binding is invalid")
     _require_exact_ids(manifest.masks, LOCALIZED_DESIGN_MASK_IDS, "masks")
@@ -427,6 +535,31 @@ def _validate_artifact_metadata(artifact: LocalizedArrayArtifact, identifier: st
         raise ValueError(f"localized design mask metadata has invalid true_count: {identifier}")
     if not is_mask and artifact.true_count is not None:
         raise ValueError(f"localized design state metadata must not have true_count: {identifier}")
+
+
+def _validate_config_artifact_metadata(
+    artifact: LocalizedConfigArtifact, config_name: str, expected_sha256: str
+) -> None:
+    if not isinstance(artifact, LocalizedConfigArtifact):
+        raise ValueError(f"{config_name}_config metadata is invalid")
+    _safe_relative_path(artifact.relative_path, f"{config_name}_config.relative_path")
+    _required_sha256(artifact.byte_sha256, f"{config_name}_config.byte_sha256")
+    if artifact.byte_sha256 != expected_sha256:
+        raise ValueError(f"{config_name}_config hash does not match {config_name}_config_sha256")
+
+
+def _verify_config_artifact(
+    manifest: LocalizedDesignStateManifest,
+    artifact: LocalizedConfigArtifact,
+    config_name: str,
+    expected_sha256: str,
+) -> None:
+    path = _resolve_artifact_path(manifest.path.parent, artifact.relative_path)
+    if path.suffix.lower() != ".json" or not path.is_file():
+        raise ValueError(f"{config_name}_config is missing or is not a .json file")
+    if _sha256_file(path) != expected_sha256:
+        raise ValueError(f"{config_name}_config hash mismatch")
+    _validate_canonical_json(path, config_name)
 
 
 def _verify_artifact(
@@ -517,6 +650,40 @@ def _sha256_json(value: Any) -> str:
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
     ).hexdigest()
+
+
+def _validate_canonical_json(path: Path, config_name: str) -> None:
+    expected_kind = {
+        "filter": "localized_active_cone_filter",
+        "projection": "localized_tanh_heaviside_projection",
+    }.get(config_name)
+    if expected_kind is None:
+        raise ValueError("unknown localized config kind")
+    try:
+        payload = path.read_bytes()
+        value = json.loads(payload.decode("utf-8"))
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8") + b"\n"
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError) as exc:
+        raise ValueError(f"{config_name}_config must contain finite canonical JSON") from exc
+    if payload != canonical or not isinstance(value, Mapping):
+        raise ValueError(f"{config_name}_config JSON is not canonical")
+    if value.get("schema_version") != 1 or value.get("kind") != expected_kind:
+        raise ValueError(f"{config_name}_config has unsupported kind or schema_version")
+    expected_fields = {
+        "filter": {"schema_version", "kind", "radius_m"},
+        "projection": {"schema_version", "kind", "beta", "eta"},
+    }[config_name]
+    if set(value) != expected_fields:
+        raise ValueError(f"{config_name}_config has unsupported or missing fields")
+    numeric_fields = ("radius_m",) if config_name == "filter" else ("beta", "eta")
+    for field in numeric_fields:
+        number = value[field]
+        if isinstance(number, bool) or not isinstance(number, (int, float)) or not np.isfinite(number):
+            raise ValueError(f"{config_name}_config has non-finite numeric values")
+    if value.get("radius_m", 1.0) <= 0.0 or value.get("beta", 1.0) <= 0.0:
+        raise ValueError(f"{config_name}_config has invalid positive parameters")
+    if config_name == "projection" and not 0.0 <= value["eta"] <= 1.0:
+        raise ValueError("projection_config eta must be in [0, 1]")
 
 
 def _manifest_path(path: str | Path) -> Path:
@@ -640,7 +807,9 @@ __all__ = [
     "LOCALIZED_DESIGN_STATE_IDS",
     "LOCALIZED_DESIGN_STATE_MANIFEST_KIND",
     "LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION",
+    "LOCALIZED_DESIGN_STATE_MANIFEST_SCHEMA_VERSION_V1",
     "LocalizedArrayArtifact",
+    "LocalizedConfigArtifact",
     "LocalizedDesignGrid",
     "LocalizedDesignStateManifest",
     "VerifiedLocalizedDesignStateManifest",
@@ -648,6 +817,7 @@ __all__ = [
     "load_and_verify_localized_design_state_manifest",
     "localized_design_state_manifest_sha256",
     "read_localized_design_state_manifest",
+    "require_localized_design_state_manifest_v2",
     "validate_localized_design_state_manifest",
     "write_localized_design_state_manifest",
 ]

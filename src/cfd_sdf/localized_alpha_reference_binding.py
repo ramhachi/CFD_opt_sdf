@@ -29,6 +29,7 @@ from .localized_design_state_manifest import (
     VerifiedLocalizedDesignStateManifest,
     load_and_verify_localized_design_state_manifest,
     localized_design_state_manifest_sha256,
+    require_localized_design_state_manifest_v2,
     validate_localized_design_state_manifest,
 )
 from .localized_design_transfer import LocalizedDesignToCfdTransfer
@@ -117,7 +118,9 @@ def create_localized_alpha_reference_binding(
     alpha_path = _input_artifact_path(
         binding_path.parent, alpha_reference_path, ".npy", "alpha reference"
     )
-    reference_state = load_and_verify_localized_design_state_manifest(reference_path)
+    reference_state = require_localized_design_state_manifest_v2(
+        load_and_verify_localized_design_state_manifest(reference_path)
+    )
     if not isinstance(cfd_grid, UniformCartesianCellGrid):
         raise ValueError("cfd_grid must be UniformCartesianCellGrid")
     alpha = _load_alpha_reference(alpha_path, cfd_grid.cell_count)
@@ -197,8 +200,10 @@ def validate_localized_alpha_reference_binding(
     reference_path = _resolve_relative_path(
         binding.path.parent, binding.reference_state_manifest_relative_path, ".json", "reference state manifest"
     )
-    reference_state = load_and_verify_localized_design_state_manifest(
-        reference_path, expected_problem_spec_sha256=binding.problem_spec_sha256
+    reference_state = require_localized_design_state_manifest_v2(
+        load_and_verify_localized_design_state_manifest(
+            reference_path, expected_problem_spec_sha256=binding.problem_spec_sha256
+        )
     )
     manifest = reference_state.manifest
     if localized_design_state_manifest_sha256(manifest) != binding.reference_state_manifest_sha256:
@@ -280,8 +285,8 @@ def _verified_state(
     value: LocalizedDesignStateManifest | VerifiedLocalizedDesignStateManifest,
 ) -> VerifiedLocalizedDesignStateManifest:
     if isinstance(value, VerifiedLocalizedDesignStateManifest):
-        return validate_localized_design_state_manifest(value.manifest)
-    return validate_localized_design_state_manifest(value)
+        return require_localized_design_state_manifest_v2(validate_localized_design_state_manifest(value.manifest))
+    return require_localized_design_state_manifest_v2(validate_localized_design_state_manifest(value))
 
 
 def _validate_current_state_contract(

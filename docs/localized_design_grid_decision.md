@@ -104,6 +104,14 @@ active cells. A source/grid/mask-hash-bound memmap writer and its small-grid
 tests are implemented; it deliberately does not yet apply filter/projection
 or publish the full 87,543,750-cell projected reference state.
 
+The declared transform for that raw density is an active-mask-normalized
+Euclidean cone filter with 4 mm radius, then a tanh Heaviside projection with
+`beta=2` and `eta=0.5`. Non-active cells are neither filter sources nor
+normalizers and stay exactly zero; fixed/root material is added only while
+evaluating topology. Canonical filter/projection JSON is bound by the
+schema-v2 state manifest. This implemented small-grid contract is not evidence
+that the full projected state or its physical topology checks have passed.
+
 ## Required implementation and validation
 
 Before native-v2 topology values can become ready, implementation and

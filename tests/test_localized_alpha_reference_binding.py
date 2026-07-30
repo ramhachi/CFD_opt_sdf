@@ -18,6 +18,12 @@ from cfd_sdf.localized_design_state_manifest import (
     write_localized_design_state_manifest,
 )
 from cfd_sdf.localized_design_transfer import LocalizedDesignToCfdTransfer
+from cfd_sdf.localized_filter_projection import (
+    LocalizedConeFilterConfig,
+    LocalizedHeavisideProjectionConfig,
+    write_canonical_filter_config,
+    write_canonical_projection_config,
+)
 from cfd_sdf.openfoam_grid_transfer import UniformCartesianCellGrid
 
 
@@ -54,6 +60,12 @@ def _state(root, *, rho_projected: np.ndarray, active_design_mask: np.ndarray | 
         path = root / "arrays" / f"{identifier}.npy"
         np.save(path, values)
         state_paths[identifier] = path.relative_to(root).as_posix()
+    filter_path = root / "filter_config.json"
+    projection_path = root / "projection_config.json"
+    filter_hash = write_canonical_filter_config(filter_path, LocalizedConeFilterConfig(radius_m=0.004))
+    projection_hash = write_canonical_projection_config(
+        projection_path, LocalizedHeavisideProjectionConfig(beta=2.0, eta=0.5)
+    )
     manifest = create_localized_design_state_manifest(
         path=root / "state.json",
         problem_spec_sha256=_PROBLEM_HASH,
@@ -62,8 +74,10 @@ def _state(root, *, rho_projected: np.ndarray, active_design_mask: np.ndarray | 
         ),
         masks=mask_paths,
         states=state_paths,
-        filter_config_sha256=_FILTER_HASH,
-        projection_config_sha256=_PROJECTION_HASH,
+        filter_config_sha256=filter_hash,
+        projection_config_sha256=projection_hash,
+        filter_config_path=filter_path.relative_to(root).as_posix(),
+        projection_config_path=projection_path.relative_to(root).as_posix(),
     )
     return write_localized_design_state_manifest(manifest)
 

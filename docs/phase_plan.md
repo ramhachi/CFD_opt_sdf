@@ -273,6 +273,14 @@ tests are implemented. Filter/projection, the full 87,543,750-cell reference
 artifact, and its topology validation are still implementation/qualification
 work.
 
+The next state transform is now specified and implemented in small-grid tests:
+an active-mask-normalized 4 mm Euclidean cone filter followed by a tanh
+Heaviside projection (`beta=2`, `eta=0.5`). Its exact transpose and projection
+derivative are implemented for the future sensitivity chain. Schema-v2 state
+manifests bind canonical filter/projection JSON bytes; v1 remains readable but
+cannot provide a full-resolution alpha-reference state. The 0.5 topology-solid
+threshold is intentionally separate from the projection center.
+
 Implement:
 
 - unit and coordinate-frame validation;
