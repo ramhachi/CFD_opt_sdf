@@ -50,6 +50,57 @@ def test_non_aligned_transfer_conserves_integrated_design_volume_and_is_chunk_in
     )
 
 
+def test_forward_difference_matches_materialized_difference_and_is_chunk_invariant() -> None:
+    transfer = _nonaligned_transfer()
+    reference = np.linspace(0.1, 0.8, transfer.design_cell_count, dtype=np.float64)
+    current = np.linspace(0.8, -0.2, transfer.design_cell_count, dtype=np.float64)
+
+    expected = transfer.apply_forward(current - reference)
+    streamed = transfer.apply_forward_difference(current, reference)
+    chunked = transfer.apply_forward_difference(current, reference, target_z_chunk_size=1)
+
+    # The default path uses the same arithmetic as a materialized difference;
+    # it is intended as a transparent bounded-memory replacement.
+    assert np.array_equal(streamed, expected)
+    assert chunked == pytest.approx(expected, abs=1.0e-12)
+
+
+def test_forward_difference_accepts_float64_memmaps_without_state_materialization(tmp_path) -> None:
+    transfer = _nonaligned_transfer()
+    current_path = tmp_path / "current.npy"
+    reference_path = tmp_path / "reference.npy"
+    current = np.lib.format.open_memmap(
+        current_path, mode="w+", dtype=np.float64, shape=(transfer.design_cell_count,)
+    )
+    reference = np.lib.format.open_memmap(
+        reference_path, mode="w+", dtype=np.float64, shape=(transfer.design_cell_count,)
+    )
+    current[:] = np.linspace(-0.4, 0.9, transfer.design_cell_count)
+    reference[:] = np.linspace(0.5, -0.2, transfer.design_cell_count)
+    current.flush()
+    reference.flush()
+
+    actual = transfer.apply_forward_difference(current, reference, target_z_chunk_size=1)
+    expected = transfer.apply_forward(np.asarray(current) - np.asarray(reference), target_z_chunk_size=1)
+    assert actual == pytest.approx(expected, abs=1.0e-12)
+
+
+@pytest.mark.parametrize(
+    ("current", "reference", "match"),
+    [
+        (np.ones(15, dtype=np.float64), np.ones(16, dtype=np.float64), "current_design_rho"),
+        (np.ones(16, dtype=np.float32), np.ones(16, dtype=np.float64), "current_design_rho"),
+        (np.ones(16, dtype=np.float64), np.ones(16, dtype=np.float32), "reference_design_rho"),
+        (np.full(16, np.nan, dtype=np.float64), np.ones(16, dtype=np.float64), "current_design_rho"),
+        (np.ones(16, dtype=np.float64), np.full(16, np.inf, dtype=np.float64), "reference_design_rho"),
+    ],
+)
+def test_forward_difference_refuses_mismatched_or_nonfinite_states(current, reference, match) -> None:
+    transfer = _nonaligned_transfer()
+    with pytest.raises(ValueError, match=match):
+        transfer.apply_forward_difference(current, reference)
+
+
 def test_euclidean_adjoint_identity_and_chunk_iterator() -> None:
     transfer = _nonaligned_transfer()
     design_direction = np.linspace(-0.5, 0.8, transfer.design_cell_count)

@@ -198,6 +198,58 @@ class LocalizedDesignToCfdTransfer:
             result += np.einsum("kz,zji->kji", wz[:, start:stop], xy_reduced, optimize=True)
         return result.reshape(-1, order="C")
 
+    def apply_forward_difference(
+        self,
+        current_design_rho: np.ndarray,
+        reference_design_rho: np.ndarray,
+        *,
+        target_z_chunk_size: int | None = None,
+    ) -> np.ndarray:
+        """Return ``E @ (current_design_rho - reference_design_rho)``.
+
+        Unlike spelling this operation as
+        ``apply_forward(current_design_rho - reference_design_rho)``, this
+        method never materializes a full localized design-difference vector.
+        It reads both canonical x-fastest state vectors in target-z slabs,
+        subtracts the matching slab, and immediately contracts it into the
+        CFD result.  Consequently it accepts ``float64`` ``ndarray`` values
+        and ``numpy.memmap`` state files without defeating their bounded-memory
+        purpose.
+
+        The two state vectors are deliberately validated independently: a
+        malformed or non-finite reference must not be hidden by subtraction.
+        """
+
+        current_values = _float64_design_state(
+            current_design_rho, self.design_cell_count, "current_design_rho"
+        )
+        reference_values = _float64_design_state(
+            reference_design_rho, self.design_cell_count, "reference_design_rho"
+        )
+        chunk = _target_z_chunk_size(target_z_chunk_size, self._design.cell_shape[2])
+        tx, ty, tz = self._design.cell_shape
+        sx, sy, sz = self._cfd.cell_shape
+        wx, wy, wz = self.axis_weights
+        current_zyx = current_values.reshape((tz, ty, tx), order="C")
+        reference_zyx = reference_values.reshape((tz, ty, tx), order="C")
+        result = np.zeros((sz, sy, sx), dtype=np.float64)
+        for start in range(0, tz, chunk):
+            stop = min(tz, start + chunk)
+            current_slab = current_zyx[start:stop]
+            reference_slab = reference_zyx[start:stop]
+            _require_finite_slab(current_slab, "current_design_rho")
+            _require_finite_slab(reference_slab, "reference_design_rho")
+            # Keep the only design-sized temporary bounded to the target-z
+            # slab.  The explicit dtype avoids an accidental promotion when
+            # this method is later called through an ndarray subclass.
+            difference = np.subtract(
+                current_slab, reference_slab, dtype=np.float64
+            )
+            x_reduced = np.einsum("it,zyt->zyi", wx, difference, optimize=True)
+            xy_reduced = np.einsum("jt,zti->zji", wy, x_reduced, optimize=True)
+            result += np.einsum("kz,zji->kji", wz[:, start:stop], xy_reduced, optimize=True)
+        return result.reshape(-1, order="C")
+
     def iter_adjoint_design_chunks(
         self,
         cfd_gradient: np.ndarray | Sequence[float],
@@ -368,6 +420,26 @@ def _finite_values(values: np.ndarray | Sequence[float], count: int, name: str) 
     if not np.isfinite(array).all():
         raise ValueError(f"{name} must contain only finite values")
     return array
+
+
+def _float64_design_state(values: np.ndarray, count: int, name: str) -> np.ndarray:
+    """Validate a state vector without converting or copying a memmap.
+
+    A forward difference is specifically the large-state path.  Requiring
+    native float64 prevents ``np.asarray(..., dtype=float64)`` from silently
+    allocating a complete replacement state vector before slab processing.
+    """
+
+    if not isinstance(values, np.ndarray) or values.shape != (count,) or values.dtype != np.dtype(np.float64):
+        raise ValueError(f"{name} must be a float64 vector with shape ({count},)")
+    return values
+
+
+def _require_finite_slab(values: np.ndarray, name: str) -> None:
+    """Reject non-finite state data while retaining the slab memory bound."""
+
+    if not np.isfinite(values).all():
+        raise ValueError(f"{name} must contain only finite values")
 
 
 def _target_z_chunk_size(value: int | None, target_z_count: int) -> int:
