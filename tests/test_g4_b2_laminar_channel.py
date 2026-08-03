@@ -83,6 +83,11 @@ def test_three_grid_compilation_binds_identical_physics_and_exact_channel_contra
     assert "type noSlip" in medium_u
     assert "frontAndBack { type empty; }" in medium_u
     assert (root / "fine" / "Allrun").read_text(encoding="utf-8").startswith("#!/usr/bin/env bash\nset -eu\n")
+    expected_divergence_scheme = "div((nuEff*dev2(T(grad(U))))) Gauss linear;"
+    assert all(
+        expected_divergence_scheme in (root / case["grid_id"] / "system" / "fvSchemes").read_text(encoding="utf-8")
+        for case in compilation["cases"]
+    )
 
 
 def test_compilation_replay_is_deterministic_and_outputs_are_immutable(tmp_path: Path) -> None:
@@ -130,7 +135,7 @@ def test_shared_runner_copies_cases_and_dry_run_is_contract_only_not_qualified(t
     root, compilation = _compiled(tmp_path)
     original = (root / "coarse" / "Allrun").read_bytes()
     artifact = run_g4_b2_channel_cases(
-        compilation_dir=root, output_dir=tmp_path / "runtime", backend="local", execute=False
+        compilation_dir=root, output_dir=tmp_path / "runtime", backend="docker", execute=False
     )
     payload = json.loads(artifact.read_text(encoding="utf-8"))
 
@@ -139,6 +144,21 @@ def test_shared_runner_copies_cases_and_dry_run_is_contract_only_not_qualified(t
     assert all(case["status"] == "contract_only_not_executed" for case in payload["cases"])
     assert (root / "coarse" / "Allrun").read_bytes() == original
     assert (artifact.parent / "cases" / "fine" / "openfoam_run_summary.json").is_file()
+    for case in payload["cases"]:
+        run = case["run"]
+        assert run["published_case_relpath"] == f"cases/{case['grid_id']}"
+        for key in ("stdout_relpath", "stderr_relpath", "summary_relpath"):
+            assert run[key].startswith(f"cases/{case['grid_id']}/")
+            assert not Path(run[key]).is_absolute()
+            assert ".tmp-" not in run[key]
+        # The staging argv is retained as execution provenance, while the
+        # replay argv and all public evidence locators name the published tree.
+        assert ".tmp-" in json.dumps(run["command_executed"])
+        assert run["command_executed_sha256"]
+        assert ".tmp-" not in json.dumps(run["replay_command"])
+        summary = json.loads((artifact.parent / run["summary_relpath"]).read_text(encoding="utf-8"))
+        assert summary["published_case_relpath"] == run["published_case_relpath"]
+        assert ".tmp-" not in summary["stdout_relpath"]
 
 
 def test_nonmonotone_three_grid_metric_fails_with_formula_inputs_retained(tmp_path: Path) -> None:

@@ -57,3 +57,20 @@ failed or inconclusive run may be recorded but does not count as B2 evidence.
 
 B2.0 qualifies neither arbitrary 3D/turbulent external flow, NACA, porous
 force decomposition, native-v2 sensitivity, nor an optimizer iteration.
+
+## Runtime incident: initial v2512 channel attempt
+
+The first executed Docker attempt is preserved at
+`examples/g4_b2_laminar/runs/channel_runtime_v1/g4_b2_channel_runtime_attempt.json`.
+For its coarse, medium, and fine cases, OpenFOAM v2512 completed `blockMesh`,
+then `simpleFoam` stopped at `Time = 1` with a FOAM FATAL IO error because
+`div((nuEff*dev2(T(grad(U))))` was absent from `system/fvSchemes/divSchemes`.
+The per-case solver logs are retained beneath the same artifact directory at
+`cases/<grid>/log.simpleFoam`.
+
+This v1 artifact is an execution-failure record, not channel qualification:
+it contains no usable profile, bulk-flow, pressure-gradient, or grid-series
+acceptance evidence. The v2 rerun is required after the already-reviewed
+minimal v2512 dictionary completion and the published-provenance locator
+correction; neither change revises the B2.0 physics, thresholds, scope, or
+gate order defined above.

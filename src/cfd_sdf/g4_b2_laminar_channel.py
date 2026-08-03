@@ -301,11 +301,22 @@ def run_g4_b2_channel_cases(
                 timeout_seconds=timeout_seconds,
                 docker_image=docker_image,
             )
+            published_run = _published_runtime_run_record(
+                run,
+                published_case_relpath=Path("cases") / str(case["grid_id"]),
+                staging_root=staging,
+                destination_root=destination,
+            )
+            # The shared runner necessarily records its temporary working
+            # directory.  Publish the same execution facts through stable,
+            # destination-relative locators before the atomic move so the
+            # public runtime bundle never points at the removed staging tree.
+            _write_json(runtime_case_dir / "openfoam_run_summary.json", published_run)
             attempts.append({
                 "grid_id": case["grid_id"],
                 "case_sha256": case["case_sha256"],
                 "case_contract_sha256": case["case_contract_sha256"],
-                "run": run.to_dict(),
+                "run": published_run,
                 "status": "contract_only_not_executed" if not execute else (
                     "runtime_completed_metrics_not_extracted" if run.ok else "runtime_failed"
                 ),
@@ -393,6 +404,61 @@ def _verify_compiled_case_files(case_dir: Path, case: Mapping[str, Any]) -> None
     contract = case_dir / "channel_case_contract.json"
     if not contract.is_file() or _sha256_file(contract) != case.get("case_contract_sha256"):
         raise ValueError(f"compiled B2 channel case contract hash mismatch: {case_dir.name}")
+
+
+def _published_runtime_run_record(
+    run: Any,
+    *,
+    published_case_relpath: Path,
+    staging_root: Path,
+    destination_root: Path,
+) -> dict[str, Any]:
+    """Return a public, relocation-safe execution record for one case.
+
+    ``run_openfoam_case`` operates inside an atomic staging directory.  Its
+    native serialisation is useful while running, but cannot be published
+    after that directory has been moved away.  Keep the execution fact as a
+    exact argv plus the selected backend and result fields, while exposing a
+    replay argv whose case path names the published destination.  The exact
+    argv is provenance, not a locator; all files that a reader must open are
+    destination-relative locators.
+    """
+
+    case_relpath = published_case_relpath.as_posix()
+    command = [str(argument) for argument in run.command]
+    return {
+        "backend": str(run.backend),
+        "dry_run": bool(run.dry_run),
+        "returncode": run.returncode,
+        "timed_out": bool(run.timed_out),
+        "error": run.error,
+        "solver_error_logs": list(run.solver_error_logs),
+        "ok": bool(run.ok),
+        "published_case_relpath": case_relpath,
+        "stdout_relpath": f"{case_relpath}/log.runOpenFOAM.stdout",
+        "stderr_relpath": f"{case_relpath}/log.runOpenFOAM.stderr",
+        "summary_relpath": f"{case_relpath}/openfoam_run_summary.json",
+        "command_executed": command,
+        "command_executed_sha256": _sha256_json(command),
+        "replay_command": _relocate_command_for_published_bundle(
+            command,
+            staging_root=staging_root,
+            destination_root=destination_root,
+        ),
+    }
+
+
+def _relocate_command_for_published_bundle(
+    command: Sequence[str],
+    *,
+    staging_root: Path,
+    destination_root: Path,
+) -> list[str]:
+    """Replace the temporary root in an argv with the public bundle root."""
+
+    staging_text = str(staging_root.resolve())
+    destination_text = str(destination_root.resolve())
+    return [str(argument).replace(staging_text, destination_text) for argument in command]
 
 
 def _parse_case_evidence(raw: Any, case: Mapping[str, Any], index: Mapping[str, Any]) -> tuple[dict[str, Any], list[str]]:
@@ -649,7 +715,7 @@ def _control_dict() -> str:
 
 
 def _fv_schemes() -> str:
-    return "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class dictionary;\n    object fvSchemes;\n}\n\nddtSchemes { default steadyState; }\ngradSchemes { default Gauss linear; }\ndivSchemes { default none; div(phi,U) Gauss linear; }\nlaplacianSchemes { default Gauss linear corrected; }\ninterpolationSchemes { default linear; }\nsnGradSchemes { default corrected; }\nwallDist { method meshWave; }\n"
+    return "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class dictionary;\n    object fvSchemes;\n}\n\nddtSchemes { default steadyState; }\ngradSchemes { default Gauss linear; }\ndivSchemes { default none; div(phi,U) Gauss linear; div((nuEff*dev2(T(grad(U))))) Gauss linear; }\nlaplacianSchemes { default Gauss linear corrected; }\ninterpolationSchemes { default linear; }\nsnGradSchemes { default corrected; }\nwallDist { method meshWave; }\n"
 
 
 def _fv_solution() -> str:

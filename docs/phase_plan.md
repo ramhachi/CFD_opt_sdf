@@ -338,6 +338,22 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
 3. B2 laminar 2D/2.5D: B2.0 channel then cylinder with three grids; B2.1
    NACA follows the B2.0 gates. See
    [`2026-08-04-g4-b2-laminar-scope.md`](decisions/2026-08-04-g4-b2-laminar-scope.md).
+   B2.0 **channel-only gate passed**. The immutable v2 OpenFOAM v2512 runtime
+   was re-qualified by v4 source-bound evidence: three-grid analytic
+   profile/bulk/pressure-gradient, runtime health, final field/mesh bindings,
+   and independent v2512 `postProcess` `U` component/cell-centre checks
+   passed. The next implementation is the B2.0 cylinder porous/body-fitted
+   cross-fidelity comparison on three grids. This does not qualify cylinder,
+   NACA, arbitrary external bodies, turbulent flow, adjoints, or the
+   optimizer. The superseded v2/v3 provenance artifacts remain retained and
+   must not be cited as a pass. This work is governed by
+   [`2026-08-04-g4-b2-channel-evidence-extraction.md`](decisions/2026-08-04-g4-b2-channel-evidence-extraction.md).
+   Only the two compact v4 JSON evidence records are tracked; the raw
+   OpenFOAM bundle is generated, ignored local evidence, so a repository clone
+   alone cannot rerun or independently reproduce this solver result. A future
+   external archive must be a complete raw bundle with manifest and checksums
+   published as an immutable release asset.
+   Execution completion alone is not B2.0 qualification.
 4. B3 turbulent bridge: flat plate and NACA porous/body-fitted comparison.
 5. B4 generic 3D: finite wing, bluff body, and multi-component object.
 6. B5 front wing: isolated wing, moving ground, roots/endplates, then optional

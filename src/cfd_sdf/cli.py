@@ -90,9 +90,13 @@ from .g4_b2_laminar_channel import (
     G4_B2_CHANNEL_COMPILATION_FILENAME,
     G4_B2_CHANNEL_RUN_FILENAME,
     compile_g4_b2_channel_benchmark,
-    evaluate_g4_b2_channel_qualification,
     run_g4_b2_channel_cases,
     write_g4_b2_channel_qualification,
+)
+from .g4_b2_laminar_channel_evidence import (
+    extract_g4_b2_channel_runtime_evidence,
+    evaluate_g4_b2_channel_runtime_evidence,
+    write_g4_b2_channel_runtime_evidence,
 )
 from .localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
@@ -334,25 +338,57 @@ def run_g4_b2_channel_command(
     }, sort_keys=True, separators=(",", ":")))
 
 
+@app.command("extract-g4-b2-channel-evidence")
+def extract_g4_b2_channel_evidence_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    runtime_dir: Path = typer.Argument(..., help="Executed immutable directory emitted by run-g4-b2-channel --execute."),
+    output_json: Path = typer.Argument(..., help="New source-bound evidence JSON; an existing file is refused."),
+    postprocess_backend: str = typer.Option("auto", "--postprocess-backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
+) -> None:
+    """Extract B2.0 channel evidence from runtime files; no hand-written metrics."""
+    try:
+        evidence = extract_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, runtime_dir=runtime_dir,
+            postprocess_backend=postprocess_backend, timeout_seconds=timeout_seconds,
+        )
+        artifact = write_g4_b2_channel_runtime_evidence(evidence, output_json)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": evidence["kind"], "status": evidence["status"], "complete": evidence["complete"],
+        "artifact_json": str(artifact.resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+    if not evidence["complete"]:
+        raise typer.Exit(code=1)
+
+
 @app.command("qualify-g4-b2-channel")
 def qualify_g4_b2_channel_command(
     compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
-    evidence_json: Path = typer.Argument(..., help="Complete bound three-grid runtime evidence JSON."),
-    output_json: Path = typer.Argument(..., help="Qualification artifact JSON."),
+    runtime_dir: Path = typer.Argument(..., help="Executed immutable directory emitted by run-g4-b2-channel --execute."),
+    output_json: Path = typer.Argument(..., help="New qualification artifact JSON."),
+    evidence_json: Path | None = typer.Option(None, "--evidence-json", help="Optional new evidence artifact to publish; metrics are always extracted from runtime."),
+    postprocess_backend: str = typer.Option("auto", "--postprocess-backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
 ) -> None:
-    """Evaluate B2.0 channel evidence; incomplete evidence is inconclusive."""
+    """Extract and qualify B2.0 evidence; arbitrary metric JSON is never accepted."""
     try:
-        evidence = json.loads(evidence_json.read_text(encoding="utf-8"))
-        result = evaluate_g4_b2_channel_qualification(
-            compilation_dir=compilation_dir,
-            evidence=evidence,
+        evidence = extract_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, runtime_dir=runtime_dir,
+            postprocess_backend=postprocess_backend, timeout_seconds=timeout_seconds,
+        )
+        if evidence_json is not None:
+            write_g4_b2_channel_runtime_evidence(evidence, evidence_json)
+        result = evaluate_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, evidence=evidence,
         )
         artifact = write_g4_b2_channel_qualification(result, output_json)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps({
-        "kind": result["kind"], "status": result["status"],
-        "qualified": result["qualified"], "artifact_json": str(artifact.resolve()),
+        "kind": result["kind"], "status": result["status"], "qualified": result["qualified"],
+        "evidence_status": evidence["status"], "artifact_json": str(artifact.resolve()),
     }, sort_keys=True, separators=(",", ":")))
     if not result["qualified"]:
         raise typer.Exit(code=1)
