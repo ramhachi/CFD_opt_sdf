@@ -335,7 +335,9 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
 1. B0 geometry: sphere, box, thin plate, multiple components, invalid STL.
 2. B1 numerical topology: islands and two-to-six-cell bridges; cellwise and
    filtered-random derivative checks.
-3. B2 laminar 2D/2.5D: channel, cylinder, and NACA with three grids.
+3. B2 laminar 2D/2.5D: B2.0 channel then cylinder with three grids; B2.1
+   NACA follows the B2.0 gates. See
+   [`2026-08-04-g4-b2-laminar-scope.md`](decisions/2026-08-04-g4-b2-laminar-scope.md).
 4. B3 turbulent bridge: flat plate and NACA porous/body-fitted comparison.
 5. B4 generic 3D: finite wing, bluff body, and multi-component object.
 6. B5 front wing: isolated wing, moving ground, roots/endplates, then optional
