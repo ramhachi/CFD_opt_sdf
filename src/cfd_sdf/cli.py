@@ -85,6 +85,15 @@ from .g4_b1_numerical_topology import (
     G4_B1_NUMERICAL_TOPOLOGY_FILENAME,
     run_g4_b1_numerical_topology_benchmark,
 )
+from .g4_b2_laminar_channel import (
+    DEFAULT_G4_B2_CHANNEL_SPEC_PATH,
+    G4_B2_CHANNEL_COMPILATION_FILENAME,
+    G4_B2_CHANNEL_RUN_FILENAME,
+    compile_g4_b2_channel_benchmark,
+    evaluate_g4_b2_channel_qualification,
+    run_g4_b2_channel_cases,
+    write_g4_b2_channel_qualification,
+)
 from .localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
     prepare_localized_g2_openfoam_fd_direction,
@@ -275,6 +284,77 @@ def run_g4_b1_numerical_topology_benchmark_command(
         "index_sha256": result.index_sha256,
     }, sort_keys=True, separators=(",", ":")))
     if result.status != "success":
+        raise typer.Exit(code=1)
+
+
+@app.command("compile-g4-b2-channel")
+def compile_g4_b2_channel_command(
+    output_dir: Path = typer.Argument(..., help="New immutable directory for the three channel OpenFOAM cases."),
+    spec_yaml: Path = typer.Option(DEFAULT_G4_B2_CHANNEL_SPEC_PATH, "--spec", help="B2.0 parallel-plate channel YAML contract."),
+) -> None:
+    """Compile the B2.0 h/h2/h4 channel pack; this never executes OpenFOAM."""
+    try:
+        result = compile_g4_b2_channel_benchmark(spec_path=spec_yaml, output_dir=output_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b2_channel_compilation",
+        "status": "compiled_not_runtime_qualified",
+        "compilation_json": str((output_dir / G4_B2_CHANNEL_COMPILATION_FILENAME).resolve()),
+        "spec_sha256": result.spec_sha256,
+        "compilation_sha256": result.compilation_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("run-g4-b2-channel")
+def run_g4_b2_channel_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    output_dir: Path = typer.Argument(..., help="New runtime-attempt directory; compiled cases remain untouched."),
+    execute: bool = typer.Option(False, "--execute", help="Actually invoke the selected OpenFOAM backend."),
+    backend: str = typer.Option("auto", "--backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Digest-pinned OpenFOAM image for docker runs."),
+) -> None:
+    """Run copied B2.0 cases; neither a dry run nor a solver exit qualifies B2."""
+    try:
+        artifact = run_g4_b2_channel_cases(
+            compilation_dir=compilation_dir,
+            output_dir=output_dir,
+            backend=backend,
+            execute=execute,
+            timeout_seconds=timeout_seconds,
+            docker_image=docker_image,
+        )
+        payload = json.loads(artifact.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": payload["kind"], "status": payload["status"],
+        "qualified": False, "artifact_json": str((output_dir / G4_B2_CHANNEL_RUN_FILENAME).resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("qualify-g4-b2-channel")
+def qualify_g4_b2_channel_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    evidence_json: Path = typer.Argument(..., help="Complete bound three-grid runtime evidence JSON."),
+    output_json: Path = typer.Argument(..., help="Qualification artifact JSON."),
+) -> None:
+    """Evaluate B2.0 channel evidence; incomplete evidence is inconclusive."""
+    try:
+        evidence = json.loads(evidence_json.read_text(encoding="utf-8"))
+        result = evaluate_g4_b2_channel_qualification(
+            compilation_dir=compilation_dir,
+            evidence=evidence,
+        )
+        artifact = write_g4_b2_channel_qualification(result, output_json)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": result["kind"], "status": result["status"],
+        "qualified": result["qualified"], "artifact_json": str(artifact.resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+    if not result["qualified"]:
         raise typer.Exit(code=1)
 
 
