@@ -358,6 +358,9 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    Porous execution must additionally use the source-snapshot, digest-pinned,
    case-local Brinkman deployment contract in
    [`2026-08-04-g4-b2-brinkman-extension-deployment.md`](decisions/2026-08-04-g4-b2-brinkman-extension-deployment.md).
+   The retained v2 coarse-prefix false failure caused by a phase-log name
+   mismatch, and the required fresh v3 replacement evidence, are fixed in
+   [`2026-08-04-g4-b2-cylinder-phase-log-contract.md`](decisions/2026-08-04-g4-b2-cylinder-phase-log-contract.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

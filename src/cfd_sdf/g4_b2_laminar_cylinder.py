@@ -42,6 +42,16 @@ _PHASE_TIMEOUTS_SECONDS = {
     "medium": {"phase_a": 1800, "phase_b": 600},
     "fine": {"phase_a": 5400, "phase_b": 1800},
 }
+_PHASE_RUNTIME_ARTIFACTS = {
+    "phase_a": {
+        "solver_log_filename": "log.simpleFoam.phaseA",
+        "final_time_filename": "runtime_phase_a_final_time.txt",
+    },
+    "phase_b": {
+        "solver_log_filename": "log.simpleFoam.phaseB",
+        "final_time_filename": "runtime_phase_b_final_time.txt",
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -105,6 +115,7 @@ def compile_g4_b2_cylinder_benchmark(
             "extension_source_manifest": extension_manifest,
             "force_and_probe_contract": _force_and_probe_contract(spec),
             "runtime_evidence_requirements": _runtime_evidence_requirements(),
+            "two_phase_runtime_protocol": _two_phase_runtime_protocol(),
             "cases": cases,
             "status": "compiled_not_runtime_qualified",
             "limitations": [
@@ -382,6 +393,7 @@ def _case_contract(
         "nominal_h_m": float(_mapping(spec["geometry"], "geometry")["diameter_m"]) / (8 * factor),
         "one_z_cell": True, "physics_sha256": _sha256_json(spec["physics"]),
         "geometry_sha256": _sha256_json(spec["geometry"]), "boundary_conditions_sha256": _sha256_json(spec["boundary_conditions"]),
+        "two_phase_runtime_protocol": _two_phase_runtime_protocol(),
         "mesh_contract": dict(mesh_contract), "file_sha256": dict(sorted(file_hashes.items())),
     }
     if representation == "porous_cartesian":
@@ -548,11 +560,15 @@ def _brinkman_fv_options(spec: Mapping[str, Any]) -> str:
 
 
 def _allrun() -> str:
-    return "#!/usr/bin/env bash\nset -eu\ncp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > log.simpleFoam.phaseA 2>&1\nphase_a_time=$(foamListTimes -latestTime)\nphase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN { printf \"%.12g\", start + 200 }')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > log.simpleFoam.phaseB 2>&1\n"
+    phase_a_log = _phase_artifact("phase_a")["solver_log_filename"]
+    phase_b_log = _phase_artifact("phase_b")["solver_log_filename"]
+    return f"#!/usr/bin/env bash\nset -eu\ncp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {phase_a_log} 2>&1\nphase_a_time=$(foamListTimes -latestTime)\nphase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN {{ printf \"%.12g\", start + 200 }}')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > {phase_b_log} 2>&1\n"
 
 
 def _allclean() -> str:
-    return "#!/usr/bin/env bash\nset -eu\nrm -rf constant/polyMesh [1-9]* 0/uniform lib log.blockMesh log.checkMesh log.simpleFoam log.simpleFoam.phaseA log.simpleFoam.phaseB log.extension-build log.extension-foam-environment runtime_phase_a_final_time.txt runtime_phase_b_final_time.txt\n"
+    phase_a = _phase_artifact("phase_a")
+    phase_b = _phase_artifact("phase_b")
+    return f"#!/usr/bin/env bash\nset -eu\nrm -rf constant/polyMesh [1-9]* 0/uniform lib log.blockMesh log.checkMesh {phase_a['solver_log_filename']} {phase_b['solver_log_filename']} log.extension-build log.extension-foam-environment {phase_a['final_time_filename']} {phase_b['final_time_filename']}\n"
 
 
 def _force_and_probe_contract(spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -563,6 +579,24 @@ def _force_and_probe_contract(spec: Mapping[str, Any]) -> dict[str, Any]:
 
 def _runtime_evidence_requirements() -> dict[str, Any]:
     return {"all_cases_required": [f"{rep}/{grid}" for rep in _REPRESENTATIONS for grid in _GRID_IDS], "per_case": ["case_sha256", "dictionary_file_sha256", "mesh_hash", "image_digest", "command", "final_time", "fatal_log", "residual_history", "mass_balance", "stationarity"], "body_fitted": ["force_pressure_viscous_total", "eight_cp_probes", "three_grid_gci_inputs"], "porous": ["extension_source_hash", "extension_build_hash", "area_fraction_field_hash", "total_linear_brinkman_force", "eight_cp_probes"], "status_rule": "missing_or_unbound_evidence_is_inconclusive_not_qualified"}
+
+
+def _phase_artifact(phase: str) -> Mapping[str, str]:
+    """Return the single public artifact-name contract for one internal phase."""
+
+    try:
+        return _PHASE_RUNTIME_ARTIFACTS[phase]
+    except KeyError as exc:
+        raise ValueError(f"unsupported B2 cylinder phase: {phase}") from exc
+
+
+def _two_phase_runtime_protocol() -> dict[str, dict[str, str]]:
+    """Publish only the logs the generated two-phase scripts actually emit."""
+
+    return {
+        phase: {"solver_log_relpath": str(_phase_artifact(phase)["solver_log_filename"])}
+        for phase in ("phase_a", "phase_b")
+    }
 
 
 def _extension_source_contract() -> dict[str, Any]:
@@ -756,6 +790,7 @@ def _run_cylinder_case_two_phase(
 
 
 def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: str | None) -> dict[str, Any]:
+    artifacts = _phase_artifact(phase)
     if phase == "phase_a":
         control, solution = case_dir / "system" / "controlDict.phaseA", case_dir / "system" / "fvSolution.phaseA"
         template = None
@@ -768,6 +803,7 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
         "control_dict_source_sha256": _sha256_file(control),
         "fv_solution_relpath": str(solution.relative_to(case_dir)).replace("\\", "/"),
         "fv_solution_sha256": _sha256_file(solution), "phase_b_template_relpath": template,
+        "solver_log_relpath": str(artifacts["solver_log_filename"]),
         "canonical_container_command": _canonical_phase_container_command(phase, str(image) if image else "<digest-pinned-image>", porous=(case_dir / "constant" / "fvOptions").is_file()),
     }
 
@@ -796,8 +832,9 @@ def _run_docker_phase(
     except OSError as exc:
         returncode, timed_out, error = None, False, str(exc)
         stderr.write_text(error, encoding="utf-8")
-    solver_log = case_dir / f"log.simpleFoam.{phase}"
-    final_file = case_dir / ("runtime_phase_a_final_time.txt" if phase == "phase_a" else "runtime_phase_b_final_time.txt")
+    artifacts = _phase_artifact(phase)
+    solver_log = case_dir / artifacts["solver_log_filename"]
+    final_file = case_dir / artifacts["final_time_filename"]
     required_fields = _phase_required_fields(
         case_dir, final_file, require_measurements=phase == "phase_b", porous=porous,
     )
@@ -810,7 +847,8 @@ def _phase_container_script(phase: str, *, porous: bool) -> str:
     preamble = ". /usr/lib/openfoam/openfoam2512/etc/bashrc\nset -eu\n"
     build = "" if not porous else "build_dir=$(mktemp -d /tmp/cfd-sdf-brinkman.XXXXXX)\ntrap 'rm -rf \"$build_dir\"' EXIT\ntest ! -e \"$build_dir/lib/libcfdSdfLinearBrinkman.so\"\ncp -a /extension-source/. \"$build_dir/\"\ntest ! -e \"$build_dir/lib/libcfdSdfLinearBrinkman.so\"\nexport FOAM_USER_LIBBIN=\"$build_dir/lib\"\ncd \"$build_dir\"\nwmake libso > /case/log.extension-build 2>&1\ntest -f \"$FOAM_USER_LIBBIN/libcfdSdfLinearBrinkman.so\"\ntest ! -e /case/lib/libcfdSdfLinearBrinkman.so\nmkdir -p /case/lib\ncp \"$FOAM_USER_LIBBIN/libcfdSdfLinearBrinkman.so\" /case/lib/libcfdSdfLinearBrinkman.so\ncd /case\n"
     if phase == "phase_a":
-        return preamble + build + "cp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > log.simpleFoam.phaseA 2>&1\nfoamListTimes -latestTime > runtime_phase_a_final_time.txt\ntest -s runtime_phase_a_final_time.txt\n"
+        artifacts = _phase_artifact(phase)
+        return preamble + build + f"cp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {artifacts['solver_log_filename']} 2>&1\nfoamListTimes -latestTime > {artifacts['final_time_filename']}\ntest -s {artifacts['final_time_filename']}\n"
     if phase == "phase_b" and not porous:
         return preamble + _phase_b_tail_script()
     if phase == "phase_b" and porous:
@@ -819,7 +857,9 @@ def _phase_container_script(phase: str, *, porous: bool) -> str:
 
 
 def _phase_b_tail_script() -> str:
-    return "test -s runtime_phase_a_final_time.txt\nphase_a_time=$(cat runtime_phase_a_final_time.txt)\nphase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN { printf \"%.12g\", start + 200 }')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > log.simpleFoam.phaseB 2>&1\nfoamListTimes -latestTime > runtime_phase_b_final_time.txt\ntest -s runtime_phase_b_final_time.txt\n"
+    phase_a = _phase_artifact("phase_a")
+    phase_b = _phase_artifact("phase_b")
+    return f"test -s {phase_a['final_time_filename']}\nphase_a_time=$(cat {phase_a['final_time_filename']})\nphase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN {{ printf \"%.12g\", start + 200 }}')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > {phase_b['solver_log_filename']} 2>&1\nfoamListTimes -latestTime > {phase_b['final_time_filename']}\ntest -s {phase_b['final_time_filename']}\n"
 
 
 def _canonical_phase_container_command(phase: str, image: str, *, porous: bool) -> list[str]:
@@ -875,7 +915,7 @@ def _not_executed_extension_contract(case_dir: Path, snapshot_dir: Path | None, 
 def _extension_runtime_contract(case_dir: Path, snapshot_dir: Path | None, rel: str, image: str, phase_a: Mapping[str, Any], phase_b: Mapping[str, Any] | None) -> dict[str, Any]:
     manifest = json.loads((snapshot_dir.parent / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_text(encoding="utf-8")) if snapshot_dir is not None else {}
     library = case_dir / "lib" / "libcfdSdfLinearBrinkman.so"
-    phase_b_log = case_dir / "log.simpleFoam.phaseB"
+    phase_b_log = case_dir / _phase_artifact("phase_b")["solver_log_filename"]
     return {"source_snapshot": manifest, "build": {"container_image_digest": image, "openfoam_distribution": "OpenCFD", "openfoam_version": "v2512", "canonical_container_command": phase_a["canonical_container_command"], "build_log_relpath": f"{rel}/log.extension-build", "build_log_sha256": _sha256_file(case_dir / "log.extension-build") if (case_dir / "log.extension-build").is_file() else None, "library_relative_path": "lib/libcfdSdfLinearBrinkman.so", "library_sha256": _sha256_file(library) if library.is_file() else None}, "runtime_load": {"controlDict_sha256": _sha256_file(case_dir / "system" / "controlDict.phaseB") if (case_dir / "system" / "controlDict.phaseB").is_file() else None, "fvOptions_sha256": _sha256_file(case_dir / "constant" / "fvOptions"), "beta_field_sha256": _sha256_file(case_dir / "0" / "beta"), "library_sha256": _sha256_file(library) if library.is_file() else None, "selected_option_type": "cfdSdfLinearBrinkman", "selected_option_name": "porousCylinderResistance", "solver_log_sha256": _sha256_file(phase_b_log) if phase_b_log.is_file() else None, "load_log_assertions": _extension_load_assertions(phase_b_log, case_dir / str(phase_b.get("final_time") if phase_b else "") / "brinkmanResistance")}}
 
 
@@ -927,11 +967,13 @@ def _run_porous_case_with_fresh_extension(
         error = str(exc)
         stderr.write_text(error, encoding="utf-8")
     build_log = case_dir / "log.extension-build"
-    solver_log = case_dir / "log.simpleFoam"
+    # This legacy private helper invokes the same generated two-phase Allrun;
+    # its only solver-log provenance is therefore the public Phase-B artifact.
+    solver_log = case_dir / _phase_artifact("phase_b")["solver_log_filename"]
     foam_environment = case_dir / "log.extension-foam-environment"
     assertions = _extension_load_assertions(solver_log, case_dir / "4000" / "brinkmanResistance")
     library_hash = _sha256_file(library) if library.is_file() else None
-    ok = returncode == 0 and not timed_out and error is None and library_hash is not None and all(assertions.values())
+    ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not _solver_log_has_fatal(solver_log) and library_hash is not None and all(assertions.values())
     return {
         "backend": "docker", "dry_run": False, "returncode": returncode, "timed_out": timed_out,
         "error": error, "solver_error_logs": [], "ok": ok, "published_case_relpath": rel,

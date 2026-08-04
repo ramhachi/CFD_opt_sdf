@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from typer.testing import CliRunner
@@ -51,6 +52,12 @@ def test_contract_binds_fixed_laminar_cylinder_physics_and_three_grids(compiled:
     ]
     assert [case["nominal_h_m"] for case in index["cases"][:3]] == pytest.approx([0.01 / 8, 0.01 / 16, 0.01 / 32])
     assert all(case["one_z_cell"] for case in index["cases"])
+    expected_phase_logs = {
+        "phase_a": {"solver_log_relpath": "log.simpleFoam.phaseA"},
+        "phase_b": {"solver_log_relpath": "log.simpleFoam.phaseB"},
+    }
+    assert index["two_phase_runtime_protocol"] == expected_phase_logs
+    assert all(case["two_phase_runtime_protocol"] == expected_phase_logs for case in index["cases"])
 
 
 def test_body_fitted_o_grid_uses_fixed_eight_sector_arc_topology_and_no_slip_wall(compiled: tuple[Path, dict]) -> None:
@@ -243,6 +250,100 @@ def test_executed_sequence_stops_before_later_grids_after_phase_failure(
     assert payload["requested_through_grid"] == "fine"
     assert payload["executed_through_grid"] == "coarse"
     assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [("coarse", "body_fitted")]
+
+
+def _write_phase_final_fields(case: Path, *, phase: str, time_name: str) -> None:
+    (case / ("runtime_phase_a_final_time.txt" if phase == "phase_a" else "runtime_phase_b_final_time.txt")).write_text(
+        time_name + "\n", encoding="utf-8"
+    )
+    final = case / time_name
+    final.mkdir(exist_ok=True)
+    (final / "U").write_text("U\n", encoding="utf-8")
+    (final / "p").write_text("p\n", encoding="utf-8")
+
+
+def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+
+    def complete_phase_a(*args: object, **kwargs: object) -> SimpleNamespace:
+        (case / "log.simpleFoam.phaseA").write_text("normal simpleFoam output\n", encoding="utf-8")
+        _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_phase_a)
+    result = cylinder_module._run_docker_phase(
+        case, phase="phase_a", representation="body_fitted", snapshot_dir=None,
+        image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        timeout_seconds=1, case_relpath=Path("cases/body_fitted/coarse"),
+    )
+
+    assert result["ok"] is True
+    assert result["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
+    assert result["solver_log_sha256"] == hashlib.sha256((case / "log.simpleFoam.phaseA").read_bytes()).hexdigest()
+
+
+def test_missing_phase_a_log_fails_and_never_starts_phase_b(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    calls: list[str] = []
+
+    def complete_without_log(command: list[str], *args: object, **kwargs: object) -> SimpleNamespace:
+        script = command[-1]
+        calls.append(script)
+        assert "log.simpleFoam.phaseA" in script
+        assert "log.simpleFoam.phaseB" not in script
+        _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_without_log)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
+        case_relpath=Path("cases/body_fitted/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
+    assert result["phase_a"]["solver_log_sha256"] is None
+    assert result["phase_b"]["status"] == "planned"
+    assert len(calls) == 1
+
+
+def test_porous_extension_load_assertions_read_only_phase_b_log(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    phase_b_log = case / "log.simpleFoam.phaseB"
+    phase_b_log.write_text("Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n", encoding="utf-8")
+    (case / "log.simpleFoam").write_text("decoy log without extension identity\n", encoding="utf-8")
+    resistance = case / "1455" / "brinkmanResistance"
+    resistance.parent.mkdir()
+    resistance.write_text("field\n", encoding="utf-8")
+
+    contract = cylinder_module._extension_runtime_contract(
+        case, snapshot_dir=None, rel="cases/porous_cartesian/coarse",
+        image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        phase_a={"canonical_container_command": ["phase-a"]}, phase_b={"final_time": "1455"},
+    )
+
+    runtime = contract["runtime_load"]
+    assert runtime["solver_log_sha256"] == hashlib.sha256(phase_b_log.read_bytes()).hexdigest()
+    assert all(runtime["load_log_assertions"].values())
 
 
 @pytest.mark.parametrize(
