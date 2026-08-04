@@ -191,6 +191,16 @@ def test_two_phase_dictionaries_preserve_physics_and_make_measurement_tail_exact
     assert "pressureProbes" in control_b
 
 
+def test_porous_generated_scripts_materialize_beta_from_immutable_zero_field(compiled: tuple[Path, dict]) -> None:
+    root, _ = compiled
+    allrun = (root / "porous_cartesian" / "coarse" / "Allrun").read_text(encoding="utf-8")
+    phase_a = cylinder_module._phase_container_script("phase_a", porous=True)
+
+    for script in (allrun, phase_a):
+        assert "test -f 0/beta" in script
+        assert 'cp 0/beta "$phase_a_time/beta"' in script
+
+
 def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(compiled: tuple[Path, dict], tmp_path: Path) -> None:
     root, index = compiled
     source_hash = hashlib.sha256((root / G4_B2_CYLINDER_COMPILATION_FILENAME).read_bytes()).hexdigest()
@@ -279,7 +289,7 @@ def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
     def complete_phase_a(*args: object, **kwargs: object) -> SimpleNamespace:
         (case / "log.simpleFoam.phaseA").write_text(
             "  TRAPFPE : Floating   point exception trapping enabled ( FOAM_SIGFPE ) .  \n"
-            "normal simpleFoam output\n",
+            "SIMPLE solution converged in 1255 iterations\n",
             encoding="utf-8",
         )
         _write_phase_final_fields(case, phase="phase_a", time_name="1255")
@@ -316,6 +326,71 @@ def test_phase_a_restart_archive_preserves_u_p_phi_after_source_time_is_removed(
     assert cylinder_module._verify_phase_a_restart_archive(case, archive)["complete"] is True
 
 
+def test_porous_phase_a_restart_archive_materializes_only_immutable_beta(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    origin = case / "0" / "beta"
+    materialized = case / "1255" / "beta"
+    shutil.copyfile(origin, materialized)
+    origin_sha = hashlib.sha256(origin.read_bytes()).hexdigest()
+
+    archive = cylinder_module._archive_phase_a_restart_fields(
+        case, 1255.0, porous=True, beta_origin_sha256=origin_sha,
+    )
+
+    assert archive["complete"] is True
+    assert [item["path"] for item in archive["files"]] == ["U", "p", "phi", "beta"]
+    assert archive["materialized_beta"] == {
+        "origin_relpath": "0/beta", "origin_sha256": origin_sha,
+        "materialized_relpath": "1255/beta", "materialized_sha256": origin_sha,
+    }
+    assert not (case / archive["archive_relpath"] / "brinkmanResistance").exists()
+    assert cylinder_module._verify_phase_a_restart_archive(case, archive)["complete"] is True
+
+
+def test_porous_restart_archive_fails_closed_when_materialized_beta_does_not_match_origin(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous-bad-beta"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    (case / "1255" / "beta").write_text("retuned beta is prohibited\n", encoding="utf-8")
+    archive = cylinder_module._archive_phase_a_restart_fields(
+        case, 1255.0, porous=True,
+        beta_origin_sha256=hashlib.sha256((case / "0" / "beta").read_bytes()).hexdigest(),
+    )
+
+    assert archive["complete"] is False
+    assert archive["reason"] == "phase_a_materialized_beta_does_not_match_immutable_origin"
+
+
+def test_phase_a_convergence_contract_requires_marker_and_time_at_most_4000(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("SIMPLE solution converged in 4001 iterations\n", encoding="utf-8")
+
+    valid_marker = cylinder_module._phase_a_convergence_contract(
+        solver_log, {"complete": True, "time": "1255"},
+    )
+    too_late = cylinder_module._phase_a_convergence_contract(
+        solver_log, {"complete": True, "time": "4001"},
+    )
+
+    assert valid_marker["complete"] is True
+    assert too_late["complete"] is False
+    assert too_late["checks"]["final_time_finite_and_at_most_4000"] is False
+    solver_log.write_text("ordinary solver output\n", encoding="utf-8")
+    assert cylinder_module._phase_a_convergence_contract(solver_log, {"complete": True, "time": "1255"})["complete"] is False
+
+
 def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histories(
     compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -330,15 +405,28 @@ def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histori
         nonlocal calls
         calls += 1
         if calls == 1:
-            (case / "log.simpleFoam.phaseA").write_text("phase A\n", encoding="utf-8")
+            (case / "log.simpleFoam.phaseA").write_text(
+                "SIMPLE solution converged in 1255 iterations\n"
+                "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
             _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+            (case / "log.blockMesh").write_text("blockMesh completed\n", encoding="utf-8")
+            (case / "log.checkMesh").write_text("Mesh OK.\n", encoding="utf-8")
+            poly_mesh = case / "constant" / "polyMesh"
+            poly_mesh.mkdir(parents=True, exist_ok=True)
+            (poly_mesh / "points").write_text("generated mesh\n", encoding="utf-8")
         else:
             control = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
             (case / "system" / "controlDict.phaseB").write_text(
                 control.replace("__PHASE_B_END_TIME__", "1455"), encoding="utf-8",
             )
             (case / "log.simpleFoam.phaseB").write_text(
-                "".join(f"Time = {time}\n" for time in range(1256, 1456)), encoding="utf-8",
+                "".join(f"Time = {time}\n" for time in range(1256, 1456))
+                + "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                + "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
             )
             _write_phase_final_fields(case, phase="phase_b", time_name="1455")
             for function, filename in (("pressureProbes", "p"), ("cylinderForces", "forces.dat")):
@@ -361,6 +449,15 @@ def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histori
     assert result["phase_b"]["final_fields"]["measurement_history"]["pressure_probes"]["complete"] is True
     assert result["phase_b"]["final_fields"]["measurement_history"]["force"]["complete"] is True
     assert result["phase_b"]["log_time_contract"]["complete"] is True
+    assert result["case_evidence"]["complete"] is True
+    manifest = json.loads((case / "evidence" / "case_evidence_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["raw_solver_sources"]["complete"] is True
+    assert manifest["evidence_tree_sha256"]
+    evaluation = manifest["solver_evaluation"]
+    assert evaluation["evaluated"] is False
+    assert evaluation["reason"] == "awaits_later_fine_six_case_evaluator"
+    assert evaluation["status"] == "not_evaluated_not_passed"
+    assert all(evaluation[name]["evaluated"] is False for name in ("residual", "continuity_mass_balance", "stationarity"))
 
 
 def test_phase_b_log_time_contract_rejects_missing_or_duplicate_step(tmp_path: Path) -> None:
@@ -459,6 +556,105 @@ def test_porous_extension_load_assertions_read_only_phase_b_log(
     assert all(runtime["load_log_assertions"].values())
 
 
+def test_porous_run_ok_requires_source_build_and_load_assertions(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    calls = 0
+
+    def complete_porous_phases(*args: object, **kwargs: object) -> SimpleNamespace:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            (case / "log.simpleFoam.phaseA").write_text(
+                "Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n"
+                "SIMPLE solution converged in 1255 iterations\n"
+                "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+            shutil.copyfile(case / "0" / "beta", case / "1255" / "beta")
+            (case / "log.blockMesh").write_text("blockMesh completed\n", encoding="utf-8")
+            (case / "log.checkMesh").write_text("Mesh OK.\n", encoding="utf-8")
+            poly_mesh = case / "constant" / "polyMesh"
+            poly_mesh.mkdir(parents=True, exist_ok=True)
+            (poly_mesh / "points").write_text("generated mesh\n", encoding="utf-8")
+            (case / "log.extension-build").write_text("wmake completed\n", encoding="utf-8")
+            library = case / "lib" / "libcfdSdfLinearBrinkman.so"
+            library.parent.mkdir(exist_ok=True)
+            library.write_bytes(b"fake-but-bound-library")
+        else:
+            control = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+            (case / "system" / "controlDict.phaseB").write_text(control.replace("__PHASE_B_END_TIME__", "1455"), encoding="utf-8")
+            (case / "log.simpleFoam.phaseB").write_text(
+                "Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n"
+                + "".join(f"Time = {time}\n" for time in range(1256, 1456))
+                + "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                + "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_b", time_name="1455")
+            (case / "1455" / "brinkmanResistance").write_text("resistance\n", encoding="utf-8")
+            for function, filename in (("pressureProbes", "p"), ("porousResistance", "volFieldValue.dat")):
+                history = case / "postProcessing" / function / "0" / filename
+                history.parent.mkdir(parents=True, exist_ok=True)
+                history.write_text("".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_porous_phases)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse", snapshot_dir=root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is True
+    assert result["extension"]["complete"] is True
+    assert all(result["extension"]["assertions"].values())
+    assert result["phase_a"]["restart_archive"]["materialized_beta"]["origin_relpath"] == "0/beta"
+    assert result["case_evidence"]["complete"] is True
+    manifest = json.loads((case / "evidence" / "case_evidence_manifest.json").read_text(encoding="utf-8"))
+    porous = manifest["porous_extension_evidence"]
+    snapshot = result["extension"]["source_snapshot"]
+    assert porous["source_manifest_sha256"] == snapshot["manifest_sha256"]
+    assert porous["source_tree_sha256"] == snapshot["source_tree_sha256"]
+    assert all(porous["source_snapshot_assertions"].values())
+    assert porous["build"]["library_sha256"] == porous["runtime_load"]["library_sha256"]
+
+
+def test_porous_extension_contract_fails_closed_when_a_phase_did_not_load_option(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous-no-load"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    (case / "log.extension-build").write_text("wmake completed\n", encoding="utf-8")
+    library = case / "lib" / "libcfdSdfLinearBrinkman.so"
+    library.parent.mkdir(exist_ok=True)
+    library.write_bytes(b"bound library")
+    (case / "log.simpleFoam.phaseA").write_text("no fvOption declaration\n", encoding="utf-8")
+    (case / "log.simpleFoam.phaseB").write_text("Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n", encoding="utf-8")
+    resistance = case / "1455" / "brinkmanResistance"
+    resistance.parent.mkdir()
+    resistance.write_text("resistance\n", encoding="utf-8")
+
+    contract = cylinder_module._extension_runtime_contract(
+        case, root / "extension_source", "cases/porous_cartesian/coarse",
+        "opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        {"canonical_container_command": ["phase-a"]}, {"final_time": "1455"},
+    )
+
+    assert contract["complete"] is False
+    assert contract["assertions"]["phase_a_option_loaded"] is False
+
+
 @pytest.mark.parametrize(
     ("through_grid", "expected_ids"),
     [
@@ -503,6 +699,120 @@ def test_complete_executed_prefix_is_unqualified_until_force_cp_evaluation(
     assert payload["stopped_by"] == "requested_grid"
     assert payload["next_required_condition"] == "run a new --through-grid fine prefix"
     assert payload["force_cp_evaluation"]["evaluated"] is False
+    evaluation = payload["solver_evaluation"]
+    assert evaluation["evaluated"] is False
+    assert evaluation["status"] == "not_evaluated_not_passed"
+    assert all(evaluation[name]["reason"] == "awaits_later_fine_six_case_evaluator" for name in ("residual", "continuity_mass_balance", "stationarity"))
+
+
+def test_runtime_artifact_copies_and_binds_verified_extension_source_snapshot(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, index = compiled
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "runtime", through_grid="coarse",
+        backend="docker", execute=False,
+    )
+    runtime_root = artifact.parent
+    copied_manifest = runtime_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME
+    assert copied_manifest.read_bytes() == (root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_bytes()
+    assert (runtime_root / "extension_source" / "cfdSdfLinearBrinkman.C").is_file()
+    assert hashlib.sha256(copied_manifest.read_bytes()).hexdigest() == index["extension_source_manifest_sha256"]
+
+
+@pytest.mark.parametrize(
+    ("breakage", "expected_failure"),
+    [
+        ("missing_manifest", "extension_source_manifest_missing"),
+        ("mutated_source", "extension_source_file_hash_mismatch:cfdSdfLinearBrinkman.C"),
+        ("added_object", "extension_source_snapshot_unlisted_file:Make/cfdSdfLinearBrinkman.o"),
+        ("added_arbitrary", "extension_source_snapshot_unlisted_file:unexpected.tmp"),
+    ],
+)
+def test_porous_run_fails_closed_before_phase_a_for_invalid_runtime_snapshot(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    breakage: str, expected_failure: str,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    snapshot_root = tmp_path / "runtime_snapshot"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    shutil.copytree(root / "extension_source", snapshot_root / "extension_source")
+    shutil.copy2(root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME, snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME)
+    if breakage == "missing_manifest":
+        (snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).unlink()
+    elif breakage == "mutated_source":
+        (snapshot_root / "extension_source" / "cfdSdfLinearBrinkman.C").write_text("mutated\n", encoding="utf-8")
+    elif breakage == "added_object":
+        (snapshot_root / "extension_source" / "Make" / "cfdSdfLinearBrinkman.o").write_bytes(b"object build output")
+    else:
+        (snapshot_root / "extension_source" / "unexpected.tmp").write_text("unlisted runtime debris\n", encoding="utf-8")
+
+    def must_not_run(*args: object, **kwargs: object) -> SimpleNamespace:
+        raise AssertionError("invalid extension snapshot must prevent Phase A container execution")
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", must_not_run)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse",
+        snapshot_dir=snapshot_root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["error"] == "porous_extension_snapshot_provenance_failed"
+    assert result["extension"]["complete"] is False
+    assert result["extension"]["assertions"]["immutable_source_snapshot_verified"] is False
+    assert expected_failure in result["phase_a"]["snapshot_provenance"]["missing_or_invalid"]
+
+
+@pytest.mark.parametrize(
+    ("artifact_label", "classification", "expected_failure"),
+    [
+        ("symlink", "reparse", "extension_source_snapshot_reparse_point:cfdSdfLinearBrinkman.C"),
+        ("reparse_point", "reparse", "extension_source_snapshot_reparse_point:cfdSdfLinearBrinkman.C"),
+        ("special_file", "special", "extension_source_snapshot_special_file:cfdSdfLinearBrinkman.C"),
+    ],
+)
+def test_porous_run_fails_closed_before_phase_a_for_nonregular_snapshot_entry(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    artifact_label: str, classification: str, expected_failure: str,
+) -> None:
+    """Mock filesystem classes so the regression is portable without link rights."""
+
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    snapshot_root = tmp_path / "runtime_snapshot"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    shutil.copytree(root / "extension_source", snapshot_root / "extension_source")
+    shutil.copy2(root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME, snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME)
+    target = snapshot_root / "extension_source" / "cfdSdfLinearBrinkman.C"
+    original_kind = cylinder_module._snapshot_entry_kind
+
+    def classify_nonregular(path: Path) -> str:
+        return classification if Path(path) == target else original_kind(path)
+
+    def must_not_run(*args: object, **kwargs: object) -> SimpleNamespace:
+        raise AssertionError(f"{artifact_label} source snapshot must prevent Phase A container execution")
+
+    monkeypatch.setattr(cylinder_module, "_snapshot_entry_kind", classify_nonregular)
+    monkeypatch.setattr(cylinder_module.subprocess, "run", must_not_run)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse",
+        snapshot_dir=snapshot_root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["error"] == "porous_extension_snapshot_provenance_failed"
+    provenance = result["phase_a"]["snapshot_provenance"]
+    assert provenance["assertions"]["source_files_exact_set_bound"] is False
+    assert expected_failure in provenance["missing_or_invalid"]
 
 
 def test_cli_requires_through_grid_for_cylinder_run(tmp_path: Path) -> None:

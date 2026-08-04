@@ -370,6 +370,13 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    per-step-write plus Phase-A-restart-archive evidence contract, are fixed
    in
    [`2026-08-04-g4-b2-cylinder-phase-b-final-write.md`](decisions/2026-08-04-g4-b2-cylinder-phase-b-final-write.md).
+   The retained v6 coarse-prefix artifact is also failed raw evidence: its
+   body-fitted case completed both phases, but porous Phase B fatally could
+   not read `/case/813/beta`.  A fresh coarse prefix must bind the
+   representation-specific restart fields (`U`/`p`/`phi` for body-fitted and
+   additionally immutable compiled `beta` for porous) before any medium run;
+   this is fixed in
+   [`2026-08-04-g4-b2-cylinder-porous-restart-field-binding.md`](decisions/2026-08-04-g4-b2-cylinder-porous-restart-field-binding.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

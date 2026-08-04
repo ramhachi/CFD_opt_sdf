@@ -13,9 +13,11 @@ from dataclasses import dataclass
 import hashlib
 import json
 from math import cos, isfinite, pi, sin, sqrt
+import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import tempfile
 from typing import Any
@@ -55,6 +57,7 @@ _PHASE_RUNTIME_ARTIFACTS = {
 }
 _PHASE_A_RESTART_ARCHIVE_RELATIVE = Path("evidence/phase_a_restart")
 _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE = Path("evidence/phase_a_restart_manifest.json")
+_CASE_EVIDENCE_MANIFEST_RELATIVE = Path("evidence/case_evidence_manifest.json")
 _PHASE_A_RESTART_FIELDS = ("U", "p", "phi")
 _PHASE_B_FINAL_FIELDS = ("U", "p")
 _PHASE_B_MEASUREMENT_ROWS = 200
@@ -253,6 +256,13 @@ def run_g4_b2_cylinder_cases(
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f".{destination.name}.tmp-", dir=destination.parent))
     try:
+        # A runtime artifact must remain independently auditable after the
+        # compilation bundle is moved or deleted.  Copy only the verified,
+        # source-only extension snapshot and its manifest into fresh staging;
+        # porous Phase A mounts this copy, never the mutable compilation tree.
+        runtime_extension_snapshot = _stage_extension_source_snapshot(
+            source_root, staging, index, extension_snapshot=extension_snapshot,
+        )
         attempts: list[dict[str, Any]] = []
         cases = {(str(case["representation"]), str(case["grid_id"])): case for case in index["cases"]}
         canonical_case_ids = [f"{representation}/{grid_id}" for grid_id in _GRID_IDS for representation in _REPRESENTATIONS]
@@ -272,8 +282,10 @@ def run_g4_b2_cylinder_cases(
                     _verify_porous_case_semantics(runtime_case)
                 run_record = _run_cylinder_case_two_phase(
                     runtime_case, representation=representation, grid_id=grid_id,
-                    snapshot_dir=extension_snapshot if representation == "porous_cartesian" else None,
+                    snapshot_dir=runtime_extension_snapshot if representation == "porous_cartesian" else None,
                     case_relpath=case_relpath, execute=execute, docker_image=docker_image,
+                    expected_snapshot_manifest_sha256=str(index["extension_source_manifest_sha256"]),
+                    expected_snapshot_tree_sha256=str(_mapping(index["extension_source_contract"], "extension_source_contract")["source_tree_sha256"]),
                 )
                 run_ok = bool(run_record["ok"])
                 _write_json(runtime_case / "openfoam_run_summary.json", run_record)
@@ -303,6 +315,7 @@ def run_g4_b2_cylinder_cases(
             "phase_timeouts_seconds": _PHASE_TIMEOUTS_SECONDS,
             "cases": attempts, "next_required_evidence": _runtime_evidence_requirements(),
             "force_cp_evaluation": {"evaluated": False, "reason": "runner_does_not_extract_force_cp_richardson_gci_or_cross_fidelity"},
+            "solver_evaluation": _unevaluated_solver_evaluation_state(),
             "evaluation_precondition": {"requires_single_through_grid_fine_artifact": True, "requires_all_six_canonical_case_records": True, "requires_complete_bound_force_cp_raw_evidence": True, "requires_force_cp_grid_series_extractor": True},
             "next_required_condition": "run a new --through-grid fine prefix" if requested_through_grid != "fine" else "run the force_cp_grid_series_extractor on this single six-case artifact",
         }
@@ -357,7 +370,7 @@ def _common_case_files(spec: Mapping[str, Any], *, representation: str, block_me
         "system/fvSchemes": _fv_schemes(),
         "constant/transportProperties": _transport_properties(nu), "constant/turbulenceProperties": _turbulence_properties(),
         "0/U": _velocity_field(uinf, representation=representation), "0/p": _pressure_field(representation=representation),
-        "Allrun": _allrun(), "Allclean": _allclean(),
+        "Allrun": _allrun(porous=representation == "porous_cartesian"), "Allclean": _allclean(),
     }
 
 
@@ -568,10 +581,11 @@ def _brinkman_fv_options(spec: Mapping[str, Any]) -> str:
     return "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class dictionary;\n    object fvOptions;\n}\n\n%s\n{\n    type %s;\n    active yes;\n    selectionMode all;\n    U U;\n    betaField %s;\n    betaMax [0 0 -1 0 0 0 0] %.16g;\n    resistanceField brinkmanResistance;\n}\n" % (ext["option_name"], ext["fv_option_type"], ext["area_fraction_field"], float(ext["beta_max_m_inv_s"]))
 
 
-def _allrun() -> str:
+def _allrun(*, porous: bool) -> str:
     phase_a_log = _phase_artifact("phase_a")["solver_log_filename"]
     phase_b_log = _phase_artifact("phase_b")["solver_log_filename"]
-    return f"#!/usr/bin/env bash\nset -eu\ncp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {phase_a_log} 2>&1\nphase_a_time=$(foamListTimes -latestTime)\nphase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN {{ printf \"%.12g\", start + 200 }}')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > {phase_b_log} 2>&1\n"
+    materialize_beta = "" if not porous else "test -f 0/beta\ntest -d \"$phase_a_time\"\ncp 0/beta \"$phase_a_time/beta\"\n"
+    return f"#!/usr/bin/env bash\nset -eu\ncp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {phase_a_log} 2>&1\nphase_a_time=$(foamListTimes -latestTime)\n{materialize_beta}phase_b_end=$(awk -v start=\"$phase_a_time\" 'BEGIN {{ printf \"%.12g\", start + 200 }}')\nsed \"s/__PHASE_B_END_TIME__/$phase_b_end/\" system/controlDict.phaseB.template > system/controlDict.phaseB\ncp system/controlDict.phaseB system/controlDict\ncp system/fvSolution.phaseB system/fvSolution\nsimpleFoam > {phase_b_log} 2>&1\n"
 
 
 def _allclean() -> str:
@@ -592,14 +606,16 @@ def _runtime_evidence_requirements() -> dict[str, Any]:
         "per_case": [
             "case_sha256", "dictionary_file_sha256", "mesh_hash", "image_digest", "command",
             "final_time", "fatal_log", "residual_history", "mass_balance", "stationarity",
-            "phase_a_restart_archive_u_p_phi_hashes", "phase_b_active_control_timeStep_interval_1_purge_1",
+            "phase_a_restart_archive_representation_specific_hashes", "phase_a_convergence_marker",
+            "phase_b_active_control_timeStep_interval_1_purge_1",
             "phase_b_exact_final_time_fields_u_p", "phase_b_log_200_unique_step_times",
-            "phase_b_force_and_probe_200_unique_history_rows",
+            "phase_b_force_and_probe_200_unique_history_rows", "case_evidence_manifest_tree_hash",
         ],
         "body_fitted": ["force_pressure_viscous_total", "eight_cp_probes", "three_grid_gci_inputs"],
         "porous": [
             "extension_source_hash", "extension_build_hash", "area_fraction_field_hash",
             "total_linear_brinkman_force", "eight_cp_probes", "phase_b_exact_final_time_brinkmanResistance",
+            "phase_a_materialized_beta_origin_and_hash", "extension_source_build_load_assertions",
         ],
         "status_rule": "missing_or_unbound_evidence_is_inconclusive_not_qualified",
     }
@@ -693,31 +709,209 @@ def _verify_compiled_case_files(case_dir: Path, case: Mapping[str, Any]) -> None
 
 
 def _verify_extension_source_snapshot(source_root: Path, index: Mapping[str, Any]) -> Path:
-    manifest_path = source_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME
-    try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ValueError("B2 cylinder compilation has no readable extension source snapshot") from exc
-    if _sha256_file(manifest_path) != index.get("extension_source_manifest_sha256"):
-        raise ValueError("B2 cylinder extension source manifest hash mismatch")
     contract = _mapping(index.get("extension_source_contract"), "extension_source_contract")
-    if not isinstance(manifest, Mapping) or manifest.get("source_tree_sha256") != contract.get("source_tree_sha256"):
-        raise ValueError("B2 cylinder extension source snapshot tree hash mismatch")
-    snapshot = source_root / "extension_source"
+    provenance = _extension_snapshot_provenance(
+        source_root / "extension_source",
+        expected_manifest_sha256=str(index.get("extension_source_manifest_sha256", "")),
+        expected_tree_sha256=str(contract.get("source_tree_sha256", "")),
+    )
+    if not provenance["complete"]:
+        raise ValueError("B2 cylinder extension source snapshot is invalid: " + ",".join(provenance["missing_or_invalid"]))
+    return source_root / "extension_source"
+
+
+def _stage_extension_source_snapshot(
+    source_root: Path, staging_root: Path, index: Mapping[str, Any], *, extension_snapshot: Path,
+) -> Path:
+    """Copy and re-verify the sole Phase-A extension source authority."""
+
+    target_snapshot = staging_root / "extension_source"
+    target_manifest = staging_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME
+    if target_snapshot.exists() or target_manifest.exists():
+        raise ValueError("fresh B2 cylinder runtime staging already contains extension snapshot material")
+    shutil.copytree(extension_snapshot, target_snapshot)
+    shutil.copy2(source_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME, target_manifest)
+    # This checks both the copied manifest bytes and every copied source byte
+    # against the immutable compilation contract before any Docker command is
+    # formed.
+    _verify_extension_source_snapshot(staging_root, index)
+    return target_snapshot
+
+
+def _extension_snapshot_provenance(
+    snapshot_dir: Path | None, *, expected_manifest_sha256: str | None = None,
+    expected_tree_sha256: str | None = None,
+) -> dict[str, Any]:
+    """Return a fail-closed, hash-bound extension snapshot assertion set."""
+
+    missing: list[str] = []
+    manifest: dict[str, Any] = {}
+    manifest_sha256: str | None = None
+    snapshot_root = snapshot_dir.parent if snapshot_dir is not None else None
+    manifest_path = snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME if snapshot_root is not None else None
+    if snapshot_dir is None or not snapshot_dir.is_dir():
+        missing.append("extension_source_snapshot_missing")
+    if manifest_path is None or not manifest_path.is_file():
+        missing.append("extension_source_manifest_missing")
+    else:
+        try:
+            decoded = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if not isinstance(decoded, dict):
+                raise ValueError("manifest_not_mapping")
+            manifest = decoded
+            manifest_sha256 = _sha256_file(manifest_path)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
+            missing.append("extension_source_manifest_unreadable")
+    if expected_manifest_sha256 and manifest_sha256 != expected_manifest_sha256:
+        missing.append("extension_source_manifest_sha256_mismatch")
     entries = manifest.get("source_files")
+    manifest_entries: list[dict[str, str]] = []
     if not isinstance(entries, list) or len(entries) != 4:
-        raise ValueError("B2 cylinder extension snapshot must contain exactly four source files")
-    for entry in entries:
-        item = _mapping(entry, "extension source manifest entry")
-        relative, digest = item.get("path"), item.get("sha256")
-        if not isinstance(relative, str) or not isinstance(digest, str):
-            raise ValueError("B2 cylinder extension source manifest entry is invalid")
-        source = snapshot / relative
-        if not source.is_file() or _sha256_file(source) != digest:
-            raise ValueError(f"B2 cylinder extension source snapshot changed: {relative}")
-    if any(path.is_file() and path.suffix == ".so" for path in snapshot.rglob("*")):
-        raise ValueError("B2 cylinder extension source snapshot must not contain a prebuilt library")
-    return snapshot
+        missing.append("extension_source_manifest_file_set_invalid")
+    else:
+        seen_paths: set[str] = set()
+        for raw in entries:
+            if not isinstance(raw, Mapping) or not isinstance(raw.get("path"), str) or not isinstance(raw.get("sha256"), str):
+                missing.append("extension_source_manifest_entry_invalid")
+                continue
+            relative, expected = str(raw["path"]), str(raw["sha256"])
+            if not _is_safe_snapshot_relative_path(relative) or relative in seen_paths:
+                missing.append(f"extension_source_manifest_entry_path_invalid:{relative}")
+                continue
+            seen_paths.add(relative)
+            manifest_entries.append({"path": relative, "sha256": expected})
+
+    actual_paths, filesystem_errors = _snapshot_regular_file_paths(snapshot_dir)
+    missing.extend(filesystem_errors)
+    manifest_paths = {entry["path"] for entry in manifest_entries}
+    actual_path_set = set(actual_paths)
+    for relative in sorted(actual_path_set - manifest_paths):
+        missing.append(f"extension_source_snapshot_unlisted_file:{relative}")
+    for relative in sorted(manifest_paths - actual_path_set):
+        missing.append(f"extension_source_snapshot_missing_manifest_file:{relative}")
+
+    observed_entries: list[dict[str, str]] = []
+    if snapshot_dir is not None and actual_path_set == manifest_paths and not filesystem_errors:
+        for entry in manifest_entries:
+            relative, expected = entry["path"], entry["sha256"]
+            source = snapshot_dir / relative
+            # _snapshot_regular_file_paths() just proved this is a real regular
+            # file inside the snapshot.  Hash the actual tree only after its
+            # complete file set has been checked against the manifest.
+            try:
+                if _snapshot_entry_kind(source) != "regular":
+                    missing.append(f"extension_source_snapshot_entry_changed:{relative}")
+                    continue
+                actual_sha256 = _sha256_file(source)
+            except OSError:
+                missing.append(f"extension_source_snapshot_entry_unreadable:{relative}")
+                continue
+            if actual_sha256 != expected:
+                missing.append(f"extension_source_file_hash_mismatch:{relative}")
+                continue
+            observed_entries.append({"path": relative, "sha256": actual_sha256})
+    observed_tree_sha256 = _sha256_json(observed_entries) if len(observed_entries) == len(manifest_entries) == 4 else None
+    if observed_tree_sha256 is None or manifest.get("source_tree_sha256") != observed_tree_sha256:
+        missing.append("extension_source_tree_hash_mismatch")
+    if expected_tree_sha256 and observed_tree_sha256 != expected_tree_sha256:
+        missing.append("extension_source_tree_contract_mismatch")
+    if any(relative.endswith(".so") for relative in actual_paths):
+        missing.append("extension_source_snapshot_contains_prebuilt_library")
+    if manifest.get("contains_prebuilt_library") is not False:
+        missing.append("extension_source_manifest_prebuilt_library_assertion_invalid")
+    assertions = {
+        "source_snapshot_present": snapshot_dir is not None and snapshot_dir.is_dir(),
+        "source_manifest_present_and_readable": manifest_sha256 is not None,
+        "source_manifest_sha256_bound": not expected_manifest_sha256 or manifest_sha256 == expected_manifest_sha256,
+        "source_files_hash_bound": not any(item.startswith("extension_source_file_hash_mismatch") for item in missing),
+        "source_files_exact_set_bound": not any(
+            item.startswith("extension_source_snapshot_unlisted_file")
+            or item.startswith("extension_source_snapshot_missing_manifest_file")
+            or item.startswith("extension_source_snapshot_reparse_point")
+            or item.startswith("extension_source_snapshot_special_file")
+            or item.startswith("extension_source_snapshot_entry_unreadable")
+            or item.startswith("extension_source_snapshot_entry_changed")
+            for item in missing
+        ),
+        "source_tree_sha256_bound": observed_tree_sha256 is not None and manifest.get("source_tree_sha256") == observed_tree_sha256 and (not expected_tree_sha256 or observed_tree_sha256 == expected_tree_sha256),
+        "no_prebuilt_library": "extension_source_snapshot_contains_prebuilt_library" not in missing and manifest.get("contains_prebuilt_library") is False,
+    }
+    return {
+        "complete": not missing and all(assertions.values()), "assertions": assertions,
+        "missing_or_invalid": missing, "manifest_relpath": G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME,
+        "manifest_sha256": manifest_sha256, "source_tree_sha256": observed_tree_sha256,
+        "manifest": manifest,
+    }
+
+
+def _is_safe_snapshot_relative_path(relative: str) -> bool:
+    """Accept only canonical, relative POSIX source paths from the manifest."""
+
+    return bool(relative) and "\\" not in relative and not relative.startswith("/") and all(
+        part not in {"", ".", ".."} for part in relative.split("/")
+    )
+
+
+def _snapshot_entry_kind(path: Path) -> str:
+    """Classify one lstat() entry without following links or Windows reparse points."""
+
+    details = os.lstat(path)
+    attributes = int(getattr(details, "st_file_attributes", 0) or 0)
+    if stat.S_ISLNK(details.st_mode) or attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400):
+        return "reparse"
+    if stat.S_ISDIR(details.st_mode):
+        return "directory"
+    if stat.S_ISREG(details.st_mode):
+        return "regular"
+    return "special"
+
+
+def _snapshot_regular_file_paths(snapshot_dir: Path | None) -> tuple[list[str], list[str]]:
+    """Enumerate real snapshot entries, rejecting links/reparse and special files.
+
+    ``Path.rglob`` can hide traversal details and follows platform-specific
+    directory semantics.  The source bundle is an immutable build input, so
+    inspect every entry with ``lstat`` and descend only into proven directories.
+    """
+
+    if snapshot_dir is None:
+        return [], []
+    try:
+        root_kind = _snapshot_entry_kind(snapshot_dir)
+    except OSError:
+        return [], ["extension_source_snapshot_entry_unreadable:."]
+    if root_kind == "reparse":
+        return [], ["extension_source_snapshot_reparse_point:."]
+    if root_kind != "directory":
+        return [], ["extension_source_snapshot_missing"] if root_kind == "special" else ["extension_source_snapshot_not_directory"]
+
+    files: list[str] = []
+    errors: list[str] = []
+    pending = [snapshot_dir]
+    while pending:
+        directory = pending.pop()
+        try:
+            children = sorted(Path(entry.path) for entry in os.scandir(directory))
+        except OSError:
+            relative = directory.relative_to(snapshot_dir).as_posix() if directory != snapshot_dir else "."
+            errors.append(f"extension_source_snapshot_entry_unreadable:{relative}")
+            continue
+        for child in children:
+            relative = child.relative_to(snapshot_dir).as_posix()
+            try:
+                kind = _snapshot_entry_kind(child)
+            except OSError:
+                errors.append(f"extension_source_snapshot_entry_unreadable:{relative}")
+                continue
+            if kind == "directory":
+                pending.append(child)
+            elif kind == "regular":
+                files.append(relative)
+            elif kind == "reparse":
+                errors.append(f"extension_source_snapshot_reparse_point:{relative}")
+            else:
+                errors.append(f"extension_source_snapshot_special_file:{relative}")
+    return sorted(files), errors
 
 
 def _is_digest_pinned_v2512_image(image: str | None) -> bool:
@@ -755,6 +949,8 @@ def _verify_porous_case_semantics(case_dir: Path) -> None:
 def _run_cylinder_case_two_phase(
     case_dir: Path, *, representation: str, grid_id: str, snapshot_dir: Path | None,
     case_relpath: Path, execute: bool, docker_image: str | None,
+    expected_snapshot_manifest_sha256: str | None = None,
+    expected_snapshot_tree_sha256: str | None = None,
 ) -> dict[str, Any]:
     """Run exactly A then B; B is never started after an A failure."""
 
@@ -768,6 +964,7 @@ def _run_cylinder_case_two_phase(
         "summary_relpath": f"{rel}/openfoam_run_summary.json", "representation": representation,
         "grid_id": grid_id, "phase_a": phase_a, "phase_b": phase_b,
         "protocol": "g4_b2_cylinder_two_phase_runtime_v1",
+        "solver_evaluation": _unevaluated_solver_evaluation_state(),
     }
     if not execute:
         base.update({"returncode": None, "timed_out": False, "error": None, "solver_error_logs": [], "ok": True, "command_executed": {"phase_a": phase_a["canonical_container_command"], "phase_b": phase_b["canonical_container_command"]}, "command_executed_sha256": _sha256_json([phase_a["canonical_container_command"], phase_b["canonical_container_command"]]), "replay_command": {"phase_a": phase_a["canonical_container_command"], "phase_b": phase_b["canonical_container_command"]}})
@@ -776,6 +973,27 @@ def _run_cylinder_case_two_phase(
         return base
 
     assert docker_image is not None
+    snapshot_provenance: dict[str, Any] | None = None
+    if representation == "porous_cartesian":
+        snapshot_provenance = _extension_snapshot_provenance(
+            snapshot_dir,
+            expected_manifest_sha256=expected_snapshot_manifest_sha256,
+            expected_tree_sha256=expected_snapshot_tree_sha256,
+        )
+        if not snapshot_provenance["complete"]:
+            phase_a.update({
+                "ok": False, "status": "failed",
+                "error": "porous_extension_snapshot_provenance_failed",
+                "snapshot_provenance": snapshot_provenance,
+            })
+            base["extension"] = _extension_runtime_contract(
+                case_dir, snapshot_dir, rel, docker_image, phase_a, None,
+                expected_snapshot_manifest_sha256=expected_snapshot_manifest_sha256,
+                expected_snapshot_tree_sha256=expected_snapshot_tree_sha256,
+                snapshot_provenance=snapshot_provenance,
+            )
+            base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase="phase_a"))
+            return base
     phase_a_result = _run_docker_phase(
         case_dir, phase="phase_a", representation=representation, snapshot_dir=snapshot_dir,
         image=docker_image, timeout_seconds=timeouts["phase_a"], case_relpath=case_relpath,
@@ -784,13 +1002,21 @@ def _run_cylinder_case_two_phase(
     if not phase_a_result["ok"]:
         base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase="phase_a"))
         if representation == "porous_cartesian":
-            base["extension"] = _extension_runtime_contract(case_dir, snapshot_dir, rel, docker_image, phase_a, None)
+            base["extension"] = _extension_runtime_contract(
+                case_dir, snapshot_dir, rel, docker_image, phase_a, None,
+                expected_snapshot_manifest_sha256=expected_snapshot_manifest_sha256,
+                expected_snapshot_tree_sha256=expected_snapshot_tree_sha256,
+                snapshot_provenance=snapshot_provenance,
+            )
         return base
     start = _read_phase_time(case_dir / "runtime_phase_a_final_time.txt")
     phase_a["final_time"] = start
     phase_a["control_dict_active_relpath"] = "system/controlDict"
     phase_a["control_dict_active_sha256"] = _sha256_file(case_dir / "system" / "controlDict")
-    restart_archive = _archive_phase_a_restart_fields(case_dir, start)
+    restart_archive = _archive_phase_a_restart_fields(
+        case_dir, start, porous=representation == "porous_cartesian",
+        beta_origin_sha256=phase_a.get("beta_origin_sha256"),
+    )
     phase_a["restart_archive"] = restart_archive
     if not restart_archive["complete"]:
         phase_a["ok"] = False
@@ -798,7 +1024,12 @@ def _run_cylinder_case_two_phase(
         phase_a["error"] = "phase_a_restart_archive_failed"
         base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase="phase_a"))
         if representation == "porous_cartesian":
-            base["extension"] = _extension_runtime_contract(case_dir, snapshot_dir, rel, docker_image, phase_a, None)
+            base["extension"] = _extension_runtime_contract(
+                case_dir, snapshot_dir, rel, docker_image, phase_a, None,
+                expected_snapshot_manifest_sha256=expected_snapshot_manifest_sha256,
+                expected_snapshot_tree_sha256=expected_snapshot_tree_sha256,
+                snapshot_provenance=snapshot_provenance,
+            )
         return base
     phase_b_result = _run_docker_phase(
         case_dir, phase="phase_b", representation=representation, snapshot_dir=None,
@@ -829,10 +1060,30 @@ def _run_cylinder_case_two_phase(
                 phase_b["error"] = "phase_a_restart_archive_hash_mismatch_after_phase_b"
             else:
                 phase_b["error"] = "phase_b_log_time_contract_failed"
+    extension: dict[str, Any] | None = None
+    if representation == "porous_cartesian":
+        extension = _extension_runtime_contract(
+            case_dir, snapshot_dir, rel, docker_image, phase_a, phase_b,
+            expected_snapshot_manifest_sha256=expected_snapshot_manifest_sha256,
+            expected_snapshot_tree_sha256=expected_snapshot_tree_sha256,
+            snapshot_provenance=snapshot_provenance,
+        )
+        base["extension"] = extension
+        if not extension.get("complete"):
+            phase_b["ok"] = False
+            phase_b["status"] = "failed"
+            phase_b["error"] = "porous_extension_source_build_load_assertions_failed"
+    evidence = _bind_case_evidence(
+        case_dir, representation=representation, case_relpath=case_relpath, image=docker_image,
+        phase_a=phase_a, phase_b=phase_b, extension=extension,
+    )
+    base["case_evidence"] = evidence
+    if not evidence.get("complete"):
+        phase_b["ok"] = False
+        phase_b["status"] = "failed"
+        phase_b["error"] = "case_evidence_manifest_incomplete"
     all_ok = bool(phase_a.get("ok")) and bool(phase_b.get("ok"))
     base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase=None if all_ok else "phase_b"))
-    if representation == "porous_cartesian":
-        base["extension"] = _extension_runtime_contract(case_dir, snapshot_dir, rel, docker_image, phase_a, phase_b)
     return base
 
 
@@ -844,7 +1095,7 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
     else:
         control, solution = case_dir / "system" / "controlDict.phaseB.template", case_dir / "system" / "fvSolution.phaseB"
         template = "system/controlDict.phaseB.template"
-    return {
+    manifest = {
         "phase": phase, "status": "planned", "timeout_seconds": timeout_seconds,
         "control_dict_source_relpath": str(control.relative_to(case_dir)).replace("\\", "/"),
         "control_dict_source_sha256": _sha256_file(control),
@@ -853,6 +1104,11 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
         "solver_log_relpath": str(artifacts["solver_log_filename"]),
         "canonical_container_command": _canonical_phase_container_command(phase, str(image) if image else "<digest-pinned-image>", porous=(case_dir / "constant" / "fvOptions").is_file()),
     }
+    if phase == "phase_a" and (case_dir / "constant" / "fvOptions").is_file():
+        beta = case_dir / "0" / "beta"
+        manifest["beta_origin_relpath"] = "0/beta"
+        manifest["beta_origin_sha256"] = _sha256_file(beta) if beta.is_file() else None
+    return manifest
 
 
 def _run_docker_phase(
@@ -887,8 +1143,12 @@ def _run_docker_phase(
         phase_start_time=phase_start_time,
     )
     fatal = _solver_log_has_fatal(solver_log)
-    ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not fatal and required_fields["complete"]
-    return {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
+    convergence = _phase_a_convergence_contract(solver_log, required_fields) if phase == "phase_a" else None
+    ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not fatal and required_fields["complete"] and (convergence is None or convergence["complete"])
+    result = {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
+    if convergence is not None:
+        result["convergence"] = convergence
+    return result
 
 
 def _phase_container_script(phase: str, *, porous: bool) -> str:
@@ -896,7 +1156,9 @@ def _phase_container_script(phase: str, *, porous: bool) -> str:
     build = "" if not porous else "build_dir=$(mktemp -d /tmp/cfd-sdf-brinkman.XXXXXX)\ntrap 'rm -rf \"$build_dir\"' EXIT\ntest ! -e \"$build_dir/lib/libcfdSdfLinearBrinkman.so\"\ncp -a /extension-source/. \"$build_dir/\"\ntest ! -e \"$build_dir/lib/libcfdSdfLinearBrinkman.so\"\nexport FOAM_USER_LIBBIN=\"$build_dir/lib\"\ncd \"$build_dir\"\nwmake libso > /case/log.extension-build 2>&1\ntest -f \"$FOAM_USER_LIBBIN/libcfdSdfLinearBrinkman.so\"\ntest ! -e /case/lib/libcfdSdfLinearBrinkman.so\nmkdir -p /case/lib\ncp \"$FOAM_USER_LIBBIN/libcfdSdfLinearBrinkman.so\" /case/lib/libcfdSdfLinearBrinkman.so\ncd /case\n"
     if phase == "phase_a":
         artifacts = _phase_artifact(phase)
-        return preamble + build + f"cp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {artifacts['solver_log_filename']} 2>&1\nfoamListTimes -latestTime > {artifacts['final_time_filename']}\ntest -s {artifacts['final_time_filename']}\n"
+        materialize_beta = "" if not porous else "phase_a_time=$(foamListTimes -latestTime)\ntest -f 0/beta\ntest -d \"$phase_a_time\"\ncp 0/beta \"$phase_a_time/beta\"\nprintf '%s\\n' \"$phase_a_time\" > " + artifacts["final_time_filename"] + "\n"
+        time_capture = "foamListTimes -latestTime > " + artifacts["final_time_filename"] + "\ntest -s " + artifacts["final_time_filename"] + "\n"
+        return preamble + build + f"cp system/controlDict.phaseA system/controlDict\ncp system/fvSolution.phaseA system/fvSolution\nblockMesh > log.blockMesh 2>&1\ncheckMesh -allGeometry -allTopology > log.checkMesh 2>&1\nsimpleFoam > {artifacts['solver_log_filename']} 2>&1\n" + (materialize_beta if porous else time_capture)
     if phase == "phase_b" and not porous:
         return preamble + _phase_b_tail_script()
     if phase == "phase_b" and porous:
@@ -929,6 +1191,8 @@ def _phase_required_fields(
     time_dir = case_dir / time_name
     required_names = _PHASE_A_RESTART_FIELDS if phase == "phase_a" else _PHASE_B_FINAL_FIELDS
     required = {name: (time_dir / name).is_file() for name in required_names}
+    if phase == "phase_a" and porous:
+        required["beta"] = (time_dir / "beta").is_file()
     if phase == "phase_b" and porous:
         required["brinkmanResistance"] = (time_dir / "brinkmanResistance").is_file()
     active_control: dict[str, Any] | None = None
@@ -948,6 +1212,28 @@ def _phase_required_fields(
     if require_measurements:
         result["measurement_history"] = {"pressure_probes": probes, "force": forces}
     return result
+
+
+def _phase_a_convergence_contract(solver_log: Path, final_fields: Mapping[str, Any]) -> dict[str, Any]:
+    """Require the solver's explicit SIMPLE convergence declaration, never an inferred threshold."""
+
+    text = solver_log.read_text(encoding="utf-8", errors="ignore") if solver_log.is_file() else ""
+    match = re.search(r"(?m)^\s*SIMPLE solution converged in\s+(\d+)\s+iterations\s*$", text)
+    try:
+        final_time = float(final_fields.get("time"))
+    except (TypeError, ValueError):
+        final_time = float("nan")
+    checks = {
+        "simple_solution_converged_marker": match is not None,
+        "final_time_finite_and_at_most_4000": isfinite(final_time) and 0.0 <= final_time <= 4000.0,
+        "required_phase_a_fields": bool(final_fields.get("complete")),
+    }
+    return {
+        "complete": all(checks.values()), "checks": checks,
+        "iterations": int(match.group(1)) if match is not None else None,
+        "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None,
+        "final_time": final_time if isfinite(final_time) else None,
+    }
 
 
 def _phase_b_active_control_contract(path: Path) -> dict[str, Any]:
@@ -1043,7 +1329,9 @@ def _phase_b_log_time_contract(path: Path, *, start: float, end: float) -> dict[
     return _time_rows_contract(rows, expected)
 
 
-def _archive_phase_a_restart_fields(case_dir: Path, final_time: float) -> dict[str, Any]:
+def _archive_phase_a_restart_fields(
+    case_dir: Path, final_time: float, *, porous: bool = False, beta_origin_sha256: object = None,
+) -> dict[str, Any]:
     """Copy Phase-A restart state outside time directories before B can purge it."""
 
     final_file = case_dir / _phase_artifact("phase_a")["final_time_filename"]
@@ -1058,13 +1346,30 @@ def _archive_phase_a_restart_fields(case_dir: Path, final_time: float) -> dict[s
     manifest_path = case_dir / _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE
     if archive_dir.exists() or manifest_path.exists():
         return {"complete": False, "reason": "phase_a_restart_archive_already_exists"}
-    missing = [name for name in _PHASE_A_RESTART_FIELDS if not (source_dir / name).is_file()]
+    restart_fields = _PHASE_A_RESTART_FIELDS + (("beta",) if porous else ())
+    missing = [name for name in restart_fields if not (source_dir / name).is_file()]
     if missing:
         return {"complete": False, "reason": "missing_phase_a_restart_field", "missing_fields": missing, "source_time": time_name}
+    beta_provenance: dict[str, str] | None = None
+    if porous:
+        origin = case_dir / "0" / "beta"
+        materialized = source_dir / "beta"
+        origin_hash = _sha256_file(origin) if origin.is_file() else None
+        materialized_hash = _sha256_file(materialized) if materialized.is_file() else None
+        if not isinstance(beta_origin_sha256, str) or origin_hash != beta_origin_sha256 or materialized_hash != origin_hash:
+            return {
+                "complete": False, "reason": "phase_a_materialized_beta_does_not_match_immutable_origin",
+                "origin_relpath": "0/beta", "expected_origin_sha256": beta_origin_sha256,
+                "observed_origin_sha256": origin_hash, "materialized_sha256": materialized_hash,
+            }
+        beta_provenance = {
+            "origin_relpath": "0/beta", "origin_sha256": origin_hash,
+            "materialized_relpath": f"{time_name}/beta", "materialized_sha256": materialized_hash,
+        }
     try:
         archive_dir.mkdir(parents=True, exist_ok=False)
         files: list[dict[str, str]] = []
-        for name in _PHASE_A_RESTART_FIELDS:
+        for name in restart_fields:
             source, target = source_dir / name, archive_dir / name
             source_hash = _sha256_file(source)
             shutil.copyfile(source, target)
@@ -1078,14 +1383,19 @@ def _archive_phase_a_restart_fields(case_dir: Path, final_time: float) -> dict[s
             "source_time_relpath": time_name, "archive_relpath": archive_dir.relative_to(case_dir).as_posix(),
             "files": files, "archive_tree_sha256": _sha256_json(archive_entries),
         }
+        if beta_provenance is not None:
+            manifest["materialized_beta"] = beta_provenance
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         _write_json(manifest_path, manifest)
-        return {
+        result: dict[str, Any] = {
             "complete": True, "source_time": time_name, "archive_relpath": manifest["archive_relpath"],
             "manifest_relpath": _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE.as_posix(),
             "manifest_sha256": _sha256_file(manifest_path), "archive_tree_sha256": manifest["archive_tree_sha256"],
             "files": files,
         }
+        if beta_provenance is not None:
+            result["materialized_beta"] = beta_provenance
+        return result
     except (OSError, ValueError) as exc:
         return {"complete": False, "reason": "phase_a_restart_archive_write_failed", "error": str(exc)}
 
@@ -1103,7 +1413,8 @@ def _verify_phase_a_restart_archive(case_dir: Path, expected: Mapping[str, Any])
         if not isinstance(manifest, Mapping) or manifest.get("source_time") != expected.get("source_time"):
             return {"complete": False, "reason": "phase_a_restart_manifest_content_mismatch"}
         files = manifest.get("files")
-        if not isinstance(files, list) or [item.get("path") for item in files if isinstance(item, Mapping)] != list(_PHASE_A_RESTART_FIELDS):
+        expected_fields = list(_PHASE_A_RESTART_FIELDS) + (["beta"] if "materialized_beta" in manifest else [])
+        if not isinstance(files, list) or [item.get("path") for item in files if isinstance(item, Mapping)] != expected_fields:
             return {"complete": False, "reason": "phase_a_restart_manifest_file_set_mismatch"}
         archive_dir = case_dir / str(manifest.get("archive_relpath", ""))
         actual_entries: list[dict[str, str]] = []
@@ -1118,11 +1429,200 @@ def _verify_phase_a_restart_archive(case_dir: Path, expected: Mapping[str, Any])
             actual_entries.append({"path": name, "sha256": expected_hash})
         if _sha256_json(actual_entries) != manifest.get("archive_tree_sha256") or manifest.get("archive_tree_sha256") != expected.get("archive_tree_sha256"):
             return {"complete": False, "reason": "phase_a_restart_archive_tree_hash_mismatch"}
+        if "materialized_beta" in manifest:
+            beta = manifest["materialized_beta"]
+            if not isinstance(beta, Mapping) or beta != expected.get("materialized_beta"):
+                return {"complete": False, "reason": "phase_a_materialized_beta_provenance_mismatch"}
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return {"complete": False, "reason": "phase_a_restart_archive_manifest_unreadable"}
     return {
         "complete": True, "source_time": expected["source_time"], "manifest_relpath": _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE.as_posix(),
         "manifest_sha256": expected["manifest_sha256"], "archive_tree_sha256": expected["archive_tree_sha256"],
+    }
+
+
+def _bind_case_evidence(
+    case_dir: Path, *, representation: str, case_relpath: Path, image: str,
+    phase_a: Mapping[str, Any], phase_b: Mapping[str, Any], extension: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Fail closed unless every runtime input and selected raw output is hash-bound.
+
+    This deliberately records raw solver residual/continuity logs and raw
+    force/probe histories without attaching any new numerical threshold to
+    them.  Evaluation belongs to the separate B2 extractor.
+    """
+
+    manifest_path = case_dir / _CASE_EVIDENCE_MANIFEST_RELATIVE
+    if manifest_path.exists():
+        return {"complete": False, "reason": "case_evidence_manifest_already_exists"}
+    entries: list[dict[str, Any]] = []
+    missing: list[str] = []
+
+    def bind_file(role: str, relative: str | Path) -> None:
+        path = case_dir / relative
+        relpath = Path(relative).as_posix()
+        if not path.is_file() or path.stat().st_size == 0:
+            missing.append(f"missing_or_empty:{role}:{relpath}")
+            return
+        entries.append({"role": role, "path": relpath, "sha256": _sha256_file(path)})
+
+    def bind_tree(role: str, relative: str | Path) -> None:
+        path = case_dir / relative
+        relpath = Path(relative).as_posix()
+        tree = _sha256_tree(path)
+        if tree is None:
+            missing.append(f"missing_or_empty_tree:{role}:{relpath}")
+            return
+        entries.append({"role": role, "path": relpath, "tree_sha256": tree["tree_sha256"], "files": tree["files"]})
+
+    bind_tree("generated_poly_mesh", "constant/polyMesh")
+    for role, path in (
+        ("block_mesh_log", "log.blockMesh"), ("check_mesh_log", "log.checkMesh"),
+        ("phase_a_control", "system/controlDict.phaseA"),
+        ("phase_b_control_template", "system/controlDict.phaseB.template"),
+        ("phase_b_control_active", "system/controlDict.phaseB"),
+        ("phase_a_solution", "system/fvSolution.phaseA"), ("phase_b_solution", "system/fvSolution.phaseB"),
+        ("phase_a_solver_raw_residual_continuity", _phase_artifact("phase_a")["solver_log_filename"]),
+        ("phase_b_solver_raw_residual_continuity", _phase_artifact("phase_b")["solver_log_filename"]),
+        ("phase_a_restart_manifest", _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE),
+    ):
+        bind_file(role, path)
+
+    mesh = _mesh_log_contract(case_dir / "log.blockMesh", case_dir / "log.checkMesh")
+    raw_logs = _raw_solver_sources_contract(
+        case_dir / _phase_artifact("phase_a")["solver_log_filename"],
+        case_dir / _phase_artifact("phase_b")["solver_log_filename"],
+    )
+    if not mesh["complete"]:
+        missing.append("mesh_generation_or_check_contract_failed")
+    if not raw_logs["complete"]:
+        missing.append("residual_continuity_raw_sources_missing")
+    restart = phase_a.get("restart_archive")
+    if not isinstance(restart, Mapping) or not restart.get("complete"):
+        missing.append("phase_a_restart_archive_not_complete")
+    else:
+        archive_rel = restart.get("archive_relpath")
+        if not isinstance(archive_rel, str):
+            missing.append("phase_a_restart_archive_relpath_missing")
+        else:
+            bind_tree("phase_a_restart_state", archive_rel)
+
+    final = phase_b.get("final_time")
+    try:
+        final_name = str(int(final)) if isinstance(final, float) and final.is_integer() else str(final)
+    except (TypeError, ValueError):
+        final_name = ""
+    if not final_name:
+        missing.append("terminal_phase_b_time_missing")
+    else:
+        bind_file("terminal_U", f"{final_name}/U")
+        bind_file("terminal_p", f"{final_name}/p")
+        if representation == "porous_cartesian":
+            bind_file("terminal_brinkmanResistance", f"{final_name}/brinkmanResistance")
+
+    final_fields = phase_b.get("final_fields")
+    histories = final_fields.get("measurement_history") if isinstance(final_fields, Mapping) else None
+    for role, function in (("pressure_probe_raw_history", "pressure_probes"), ("force_raw_history", "force")):
+        selected = histories.get(function, {}).get("selected") if isinstance(histories, Mapping) and isinstance(histories.get(function), Mapping) else None
+        relative = selected.get("relpath") if isinstance(selected, Mapping) else None
+        root = "postProcessing/pressureProbes" if function == "pressure_probes" else ("postProcessing/porousResistance" if representation == "porous_cartesian" else "postProcessing/cylinderForces")
+        if not isinstance(relative, str):
+            missing.append(f"selected_{role}_missing")
+        else:
+            bind_file(role, f"{root}/{relative}")
+
+    if representation == "porous_cartesian":
+        for role, path in (("porous_fv_options", "constant/fvOptions"), ("porous_immutable_beta_origin", "0/beta"), ("porous_extension_build_log", "log.extension-build"), ("porous_extension_library", "lib/libcfdSdfLinearBrinkman.so")):
+            bind_file(role, path)
+        beta = restart.get("materialized_beta") if isinstance(restart, Mapping) else None
+        if not isinstance(beta, Mapping) or not all(isinstance(beta.get(key), str) for key in ("origin_relpath", "origin_sha256", "materialized_relpath", "materialized_sha256")):
+            missing.append("materialized_beta_provenance_missing")
+        if not isinstance(extension, Mapping) or not extension.get("complete"):
+            missing.append("extension_source_build_load_assertions_not_complete")
+
+    if missing:
+        return {"complete": False, "reason": "case_evidence_requirements_missing", "missing": missing, "mesh": mesh, "raw_solver_sources": raw_logs}
+    entries.sort(key=lambda item: (str(item["role"]), str(item["path"])))
+    commands = {"phase_a": phase_a.get("canonical_container_command"), "phase_b": phase_b.get("canonical_container_command")}
+    payload = {
+        "schema_version": 1, "kind": "g4_b2_cylinder_case_evidence", "case_relpath": case_relpath.as_posix(),
+        "representation": representation, "image_digest": image, "commands": commands,
+        "commands_sha256": _sha256_json(commands), "mesh_contract": mesh,
+        "raw_solver_sources": raw_logs, "entries": entries,
+        "evidence_tree_sha256": _sha256_json(entries),
+        # Raw logs remain hash-bound above.  Their residual, continuity/mass
+        # balance, and stationarity values are intentionally not evaluated by
+        # the runner: the acceptance comparison is a later fine six-case task.
+        "solver_evaluation": _unevaluated_solver_evaluation_state(),
+    }
+    if representation == "porous_cartesian":
+        assert isinstance(extension, Mapping)  # enforced by the missing gate above
+        source = extension.get("source_snapshot")
+        build = extension.get("build")
+        runtime_load = extension.get("runtime_load")
+        payload["porous_extension_evidence"] = {
+            "assertions": extension.get("assertions"),
+            "source_manifest_relpath": source.get("manifest_relpath") if isinstance(source, Mapping) else None,
+            "source_manifest_sha256": source.get("manifest_sha256") if isinstance(source, Mapping) else None,
+            "source_tree_sha256": source.get("source_tree_sha256") if isinstance(source, Mapping) else None,
+            "source_snapshot_assertions": source.get("assertions") if isinstance(source, Mapping) else None,
+            "build": build,
+            "runtime_load": runtime_load,
+        }
+    try:
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(manifest_path, payload)
+    except OSError as exc:
+        return {"complete": False, "reason": "case_evidence_manifest_write_failed", "error": str(exc)}
+    return {
+        "complete": True, "manifest_relpath": _CASE_EVIDENCE_MANIFEST_RELATIVE.as_posix(),
+        "manifest_sha256": _sha256_file(manifest_path), "evidence_tree_sha256": payload["evidence_tree_sha256"],
+        "entry_count": len(entries),
+    }
+
+
+def _mesh_log_contract(block_mesh_log: Path, check_mesh_log: Path) -> dict[str, Any]:
+    block_text = block_mesh_log.read_text(encoding="utf-8", errors="ignore") if block_mesh_log.is_file() else ""
+    check_text = check_mesh_log.read_text(encoding="utf-8", errors="ignore") if check_mesh_log.is_file() else ""
+    checks = {
+        "block_mesh_log_present_and_nonfatal": bool(block_text) and not has_fatal_openfoam_log(block_text),
+        "check_mesh_mesh_ok": bool(re.search(r"\bMesh\s+OK\b", check_text)),
+        "check_mesh_nonfatal": bool(check_text) and not has_fatal_openfoam_log(check_text),
+    }
+    return {"complete": all(checks.values()), "checks": checks, "block_mesh_log_sha256": _sha256_file(block_mesh_log) if block_mesh_log.is_file() else None, "check_mesh_log_sha256": _sha256_file(check_mesh_log) if check_mesh_log.is_file() else None}
+
+
+def _raw_solver_sources_contract(phase_a_log: Path, phase_b_log: Path) -> dict[str, Any]:
+    logs = {"phase_a": phase_a_log, "phase_b": phase_b_log}
+    entries: list[dict[str, str]] = []
+    missing: list[str] = []
+    for phase, path in logs.items():
+        text = path.read_text(encoding="utf-8", errors="ignore") if path.is_file() else ""
+        # Presence only: no residual or continuity magnitude becomes a physics threshold here.
+        if not re.search(r"\bInitial\s+residual\s*=", text) or "time step continuity errors" not in text:
+            missing.append(phase)
+        elif path.is_file():
+            entries.append({"phase": phase, "sha256": _sha256_file(path)})
+    return {"complete": not missing, "missing_raw_sources": missing, "entries": entries, "tree_sha256": _sha256_json(entries)}
+
+
+def _unevaluated_solver_evaluation_state() -> dict[str, Any]:
+    """Declare raw CFD sources as unevaluated without suggesting a pass.
+
+    The later evaluator must consume one fresh ``--through-grid fine`` artifact
+    containing all six ordered cases.  Until then this runner only binds raw
+    sources; it does not attach residual, continuity/mass-balance, or
+    stationarity acceptance values to a single case or partial grid prefix.
+    """
+
+    reason = "awaits_later_fine_six_case_evaluator"
+    return {
+        "evaluated": False,
+        "reason": reason,
+        "status": "not_evaluated_not_passed",
+        "residual": {"evaluated": False, "reason": reason, "status": "not_evaluated_not_passed"},
+        "continuity_mass_balance": {"evaluated": False, "reason": reason, "status": "not_evaluated_not_passed"},
+        "stationarity": {"evaluated": False, "reason": reason, "status": "not_evaluated_not_passed"},
     }
 
 
@@ -1148,15 +1648,48 @@ def _two_phase_terminal(base: Mapping[str, Any], phase_a: Mapping[str, Any], pha
 
 
 def _not_executed_extension_contract(case_dir: Path, snapshot_dir: Path | None, rel: str) -> dict[str, Any]:
-    manifest = json.loads((snapshot_dir.parent / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_text(encoding="utf-8")) if snapshot_dir is not None else {}
-    return {"source_snapshot": manifest, "build": {"status": "not_executed", "canonical_container_command": _canonical_phase_container_command("phase_a", "<digest-pinned-image>", porous=True)}, "runtime_load": {"status": "not_executed", "controlDict_sha256": _sha256_file(case_dir / "system" / "controlDict.phaseA"), "fvOptions_sha256": _sha256_file(case_dir / "constant" / "fvOptions"), "beta_field_sha256": _sha256_file(case_dir / "0" / "beta"), "selected_option_type": "cfdSdfLinearBrinkman", "selected_option_name": "porousCylinderResistance"}}
+    source = _extension_snapshot_provenance(snapshot_dir)
+    return {"source_snapshot": source, "build": {"status": "not_executed", "canonical_container_command": _canonical_phase_container_command("phase_a", "<digest-pinned-image>", porous=True)}, "runtime_load": {"status": "not_executed", "controlDict_sha256": _sha256_file(case_dir / "system" / "controlDict.phaseA"), "fvOptions_sha256": _sha256_file(case_dir / "constant" / "fvOptions"), "beta_field_sha256": _sha256_file(case_dir / "0" / "beta"), "selected_option_type": "cfdSdfLinearBrinkman", "selected_option_name": "porousCylinderResistance"}}
 
 
-def _extension_runtime_contract(case_dir: Path, snapshot_dir: Path | None, rel: str, image: str, phase_a: Mapping[str, Any], phase_b: Mapping[str, Any] | None) -> dict[str, Any]:
-    manifest = json.loads((snapshot_dir.parent / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_text(encoding="utf-8")) if snapshot_dir is not None else {}
+def _extension_runtime_contract(
+    case_dir: Path, snapshot_dir: Path | None, rel: str, image: str,
+    phase_a: Mapping[str, Any], phase_b: Mapping[str, Any] | None,
+    *, expected_snapshot_manifest_sha256: str | None = None,
+    expected_snapshot_tree_sha256: str | None = None,
+    snapshot_provenance: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    # Re-check after the Phase-A container exits: the mount is read-only in
+    # Docker, but the host-side runtime artifact must also fail closed if the
+    # copied source or manifest was altered while the solver was running.
+    source = _extension_snapshot_provenance(
+        snapshot_dir,
+        expected_manifest_sha256=expected_snapshot_manifest_sha256,
+        expected_tree_sha256=expected_snapshot_tree_sha256,
+    )
     library = case_dir / "lib" / "libcfdSdfLinearBrinkman.so"
+    build_log = case_dir / "log.extension-build"
+    phase_a_log = case_dir / _phase_artifact("phase_a")["solver_log_filename"]
     phase_b_log = case_dir / _phase_artifact("phase_b")["solver_log_filename"]
-    return {"source_snapshot": manifest, "build": {"container_image_digest": image, "openfoam_distribution": "OpenCFD", "openfoam_version": "v2512", "canonical_container_command": phase_a["canonical_container_command"], "build_log_relpath": f"{rel}/log.extension-build", "build_log_sha256": _sha256_file(case_dir / "log.extension-build") if (case_dir / "log.extension-build").is_file() else None, "library_relative_path": "lib/libcfdSdfLinearBrinkman.so", "library_sha256": _sha256_file(library) if library.is_file() else None}, "runtime_load": {"controlDict_sha256": _sha256_file(case_dir / "system" / "controlDict.phaseB") if (case_dir / "system" / "controlDict.phaseB").is_file() else None, "fvOptions_sha256": _sha256_file(case_dir / "constant" / "fvOptions"), "beta_field_sha256": _sha256_file(case_dir / "0" / "beta"), "library_sha256": _sha256_file(library) if library.is_file() else None, "selected_option_type": "cfdSdfLinearBrinkman", "selected_option_name": "porousCylinderResistance", "solver_log_sha256": _sha256_file(phase_b_log) if phase_b_log.is_file() else None, "load_log_assertions": _extension_load_assertions(phase_b_log, case_dir / str(phase_b.get("final_time") if phase_b else "") / "brinkmanResistance")}}
+    phase_a_load = _extension_selection_assertions(phase_a_log)
+    final_time_name = _time_directory_name(phase_b.get("final_time") if phase_b else None)
+    phase_b_load = _extension_load_assertions(
+        phase_b_log, case_dir / final_time_name / "brinkmanResistance",
+    )
+    assertions = {
+        "immutable_source_snapshot_verified": bool(source.get("complete")),
+        "immutable_source_manifest_hash_bound": isinstance(source.get("manifest_sha256"), str),
+        "immutable_source_tree_hash_bound": isinstance(source.get("source_tree_sha256"), str),
+        "build_log_present": build_log.is_file() and build_log.stat().st_size > 0,
+        "library_present": library.is_file() and library.stat().st_size > 0,
+        "phase_a_option_loaded": all(phase_a_load.values()),
+        "phase_b_option_loaded_and_resistance_written": all(phase_b_load.values()),
+    }
+    return {
+        "complete": all(assertions.values()), "assertions": assertions, "source_snapshot": source,
+        "build": {"container_image_digest": image, "openfoam_distribution": "OpenCFD", "openfoam_version": "v2512", "canonical_container_command": phase_a["canonical_container_command"], "build_log_relpath": f"{rel}/log.extension-build", "build_log_sha256": _sha256_file(build_log) if build_log.is_file() else None, "library_relative_path": "lib/libcfdSdfLinearBrinkman.so", "library_sha256": _sha256_file(library) if library.is_file() else None},
+        "runtime_load": {"controlDict_sha256": _sha256_file(case_dir / "system" / "controlDict.phaseB") if (case_dir / "system" / "controlDict.phaseB").is_file() else None, "fvOptions_sha256": _sha256_file(case_dir / "constant" / "fvOptions"), "beta_field_sha256": _sha256_file(case_dir / "0" / "beta"), "library_sha256": _sha256_file(library) if library.is_file() else None, "selected_option_type": "cfdSdfLinearBrinkman", "selected_option_name": "porousCylinderResistance", "phase_a_solver_log_sha256": _sha256_file(phase_a_log) if phase_a_log.is_file() else None, "solver_log_sha256": _sha256_file(phase_b_log) if phase_b_log.is_file() else None, "phase_a_load_assertions": phase_a_load, "load_log_assertions": phase_b_load},
+    }
 
 
 def _run_porous_case_with_fresh_extension(
@@ -1237,8 +1770,28 @@ def _porous_container_script() -> str:
 
 
 def _extension_load_assertions(solver_log: Path, resistance_field: Path) -> dict[str, bool]:
+    return {
+        **_extension_selection_assertions(solver_log),
+        "resistance_field_written_at_final_time": resistance_field.is_file(),
+    }
+
+
+def _extension_selection_assertions(solver_log: Path) -> dict[str, bool]:
     text = solver_log.read_text(encoding="utf-8", errors="ignore") if solver_log.is_file() else ""
-    return {"selected_option_type_in_solver_log": "cfdSdfLinearBrinkman" in text, "selected_option_name_in_solver_log": "porousCylinderResistance" in text, "resistance_field_written_at_final_time": resistance_field.is_file()}
+    return {
+        "selected_option_type_in_solver_log": "cfdSdfLinearBrinkman" in text,
+        "selected_option_name_in_solver_log": "porousCylinderResistance" in text,
+    }
+
+
+def _time_directory_name(value: object) -> str:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return ""
+    if not isfinite(number):
+        return ""
+    return str(int(number)) if number.is_integer() else format(number, ".12g")
 
 
 def _published_run_record(run: Any, *, case_relpath: Path, staging_root: Path, destination_root: Path) -> dict[str, Any]:
@@ -1333,6 +1886,18 @@ def _float_triplet(value: Any, name: str) -> tuple[float, float, float]:
 
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _sha256_tree(root: Path) -> dict[str, Any] | None:
+    """Return a deterministic recursive file hash, or None for absent/empty trees."""
+
+    if not root.is_dir():
+        return None
+    files = [path for path in sorted(root.rglob("*")) if path.is_file()]
+    if not files:
+        return None
+    entries = [{"path": path.relative_to(root).as_posix(), "sha256": _sha256_file(path)} for path in files]
+    return {"files": entries, "tree_sha256": _sha256_json(entries)}
 
 
 def _sha256_json(value: Any) -> str:
