@@ -346,6 +346,9 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    cross-fidelity comparison on three grids, using the selected deterministic
    `blockMesh` O-grid and Cartesian area-fraction linear-Brinkman design in
    [`2026-08-04-g4-b2-cylinder-cross-fidelity-design.md`](decisions/2026-08-04-g4-b2-cylinder-cross-fidelity-design.md).
+   The retained v1 O-grid inside-out-hex runtime incident and its reviewed
+   orientation-only v2 correction are recorded in
+   [`2026-08-04-g4-b2-cylinder-o-grid-winding-fix.md`](decisions/2026-08-04-g4-b2-cylinder-o-grid-winding-fix.md).
    Its required serial two-phase convergence/measurement execution and raw
    evidence gate are fixed in
    [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).

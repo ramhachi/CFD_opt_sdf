@@ -75,6 +75,31 @@ def test_body_fitted_o_grid_uses_fixed_eight_sector_arc_topology_and_no_slip_wal
     assert "rhoInf 1.225;" in control
 
 
+def test_body_fitted_o_grid_contract_records_positive_blockmesh_winding(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    coarse = _case(index, "body_fitted", "coarse")
+    vertices = coarse["mesh_contract"]["vertices"]
+    blocks = coarse["mesh_contract"]["block_order"]
+    block_mesh = (root / "body_fitted" / "coarse" / "system" / "blockMeshDict").read_text(encoding="utf-8")
+
+    # The first four vertices are the +z face and the final four are z=0.
+    # This is the exact right-handed hex contract expected by blockMesh.
+    assert blocks[0]["vertices"] == [16, 17, 25, 24, 0, 1, 9, 8]
+    assert "hex (16 17 25 24 0 1 9 8)" in block_mesh
+
+    for block in blocks:
+        first, second, _, fourth, fifth, *_ = (vertices[index] for index in block["vertices"])
+        edge_a = [second[axis] - first[axis] for axis in range(3)]
+        edge_b = [fourth[axis] - first[axis] for axis in range(3)]
+        edge_c = [fifth[axis] - first[axis] for axis in range(3)]
+        cross = [
+            edge_a[1] * edge_b[2] - edge_a[2] * edge_b[1],
+            edge_a[2] * edge_b[0] - edge_a[0] * edge_b[2],
+            edge_a[0] * edge_b[1] - edge_a[1] * edge_b[0],
+        ]
+        assert sum(cross[axis] * edge_c[axis] for axis in range(3)) > 0.0
+
+
 def test_cartesian_refinement_and_area_fraction_are_deterministic_nonbinary_and_hash_bound(compiled: tuple[Path, dict]) -> None:
     root, index = compiled
     cases = [_case(index, "porous_cartesian", grid) for grid in ("coarse", "medium", "fine")]

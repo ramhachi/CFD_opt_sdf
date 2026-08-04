@@ -414,14 +414,19 @@ def _body_fitted_block_mesh_dict(diameter: float, span: float, azimuthal: int, r
         next_sector = (sector + 1) % 8
         a, b, c, d = sector, next_sector, 8 + next_sector, 8 + sector
         e, f, g, h = a + 16, b + 16, c + 16, d + 16
-        blocks.append(f"    hex ({a} {b} {c} {d} {e} {f} {g} {h}) ({azimuthal} {radial} 1) simpleGrading (1 1 1)")
+        # blockMesh requires a right-handed local coordinate system.  The
+        # planar ring ordering is counter-clockwise when viewed from +z, so
+        # place the +z face first and the z=0 face second to give every
+        # sector a positive cell volume.
+        winding = [e, f, g, h, a, b, c, d]
+        blocks.append(f"    hex ({' '.join(str(vertex) for vertex in winding)}) ({azimuthal} {radial} 1) simpleGrading (1 1 1)")
         mid_angle = (angle + 22.5) * pi / 180.0
         midpoint = (radius * cos(mid_angle), radius * sin(mid_angle))
         arcs.extend((f"    arc {a} {b} ({midpoint[0]:.16g} {midpoint[1]:.16g} 0)", f"    arc {e} {f} ({midpoint[0]:.16g} {midpoint[1]:.16g} {span:.16g})"))
         cylinder_faces.append(f"({a} {e} {f} {b})")
         patch_faces[outer_patches[sector]].append(f"({d} {c} {g} {h})")
         front_back.extend((f"({a} {b} {c} {d})", f"({e} {h} {g} {f})"))
-        block_contract.append({"sector": sector, "theta_start_deg": angle, "vertices": [a, b, c, d, e, f, g, h], "cells": [azimuthal, radial, 1], "grading": [1.0, 1.0, 1.0]})
+        block_contract.append({"sector": sector, "theta_start_deg": angle, "vertices": winding, "cells": [azimuthal, radial, 1], "grading": [1.0, 1.0, 1.0]})
     boundary = "\n".join(
         [f"    {name} {{ type {'symmetryPlane' if name in {'top', 'bottom'} else 'patch'}; faces ({' '.join(faces)}); }}" for name, faces in patch_faces.items()]
         + [f"    cylinder {{ type wall; faces ({' '.join(cylinder_faces)}); }}", f"    frontAndBack {{ type empty; faces ({' '.join(front_back)}); }}"]
