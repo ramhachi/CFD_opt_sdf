@@ -923,10 +923,13 @@ def test_porous_run_fails_closed_before_phase_a_for_nonregular_snapshot_entry(
 
 
 def test_cli_requires_through_grid_for_cylinder_run(tmp_path: Path) -> None:
+    help_result = runner.invoke(app, ["run-g4-b2-cylinder", "--help"])
+    assert help_result.exit_code == 0, help_result.output
+    assert "--through-grid" in help_result.output
+
     result = runner.invoke(app, ["run-g4-b2-cylinder", str(tmp_path / "input"), str(tmp_path / "output")])
 
     assert result.exit_code != 0
-    assert "--through-grid" in result.output
 
 
 def test_cli_compiles_source_snapshot_without_runtime_claim(tmp_path: Path) -> None:
