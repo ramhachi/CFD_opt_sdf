@@ -365,6 +365,11 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    OpenFOAM `trapFpe` startup banner as an exception, and the required fresh
    v4 replacement evidence, are fixed in
    [`2026-08-04-g4-b2-cylinder-fatal-log-classification.md`](decisions/2026-08-04-g4-b2-cylinder-fatal-log-classification.md).
+   The retained v4 coarse-prefix failure, where the solver completed Phase B
+   but did not save the final-time fields, and the required fresh v5
+   per-step-write plus Phase-A-restart-archive evidence contract, are fixed
+   in
+   [`2026-08-04-g4-b2-cylinder-phase-b-final-write.md`](decisions/2026-08-04-g4-b2-cylinder-phase-b-final-write.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

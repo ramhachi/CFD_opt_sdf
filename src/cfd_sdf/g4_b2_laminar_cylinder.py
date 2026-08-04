@@ -53,6 +53,11 @@ _PHASE_RUNTIME_ARTIFACTS = {
         "final_time_filename": "runtime_phase_b_final_time.txt",
     },
 }
+_PHASE_A_RESTART_ARCHIVE_RELATIVE = Path("evidence/phase_a_restart")
+_PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE = Path("evidence/phase_a_restart_manifest.json")
+_PHASE_A_RESTART_FIELDS = ("U", "p", "phi")
+_PHASE_B_FINAL_FIELDS = ("U", "p")
+_PHASE_B_MEASUREMENT_ROWS = 200
 
 
 @dataclass(frozen=True)
@@ -500,7 +505,10 @@ def _control_dict(spec: Mapping[str, Any], *, representation: str, phase: str) -
     if phase != "phase_b":
         raise ValueError(f"unsupported B2 cylinder phase: {phase}")
     function = _measurement_functions(spec, representation=representation, rho=rho)
-    return "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class dictionary;\n    object controlDict;\n}\n\napplication simpleFoam;\nstartFrom latestTime;\nstartTime 0;\nstopAt endTime;\nendTime __PHASE_B_END_TIME__;\ndeltaT 1;\nwriteControl timeStep;\nwriteInterval 200;\nwriteAtEnd yes;\npurgeWrite 0;\nwriteFormat ascii;\nwritePrecision 12;\nrunTimeModifiable false;\n" + library + function
+    # Phase B is intentionally a 200-step evidence tail.  The explicit
+    # timeStep/1 write contract is needed for the exact log/history evidence;
+    # do not substitute writeAtEnd, which cannot establish this sequence.
+    return "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class dictionary;\n    object controlDict;\n}\n\napplication simpleFoam;\nstartFrom latestTime;\nstartTime 0;\nstopAt endTime;\nendTime __PHASE_B_END_TIME__;\ndeltaT 1;\nwriteControl timeStep;\nwriteInterval 1;\npurgeWrite 1;\nwriteFormat ascii;\nwritePrecision 12;\nrunTimeModifiable false;\n" + library + function
 
 
 def _measurement_functions(spec: Mapping[str, Any], *, representation: str, rho: float) -> str:
@@ -579,7 +587,22 @@ def _force_and_probe_contract(spec: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _runtime_evidence_requirements() -> dict[str, Any]:
-    return {"all_cases_required": [f"{rep}/{grid}" for rep in _REPRESENTATIONS for grid in _GRID_IDS], "per_case": ["case_sha256", "dictionary_file_sha256", "mesh_hash", "image_digest", "command", "final_time", "fatal_log", "residual_history", "mass_balance", "stationarity"], "body_fitted": ["force_pressure_viscous_total", "eight_cp_probes", "three_grid_gci_inputs"], "porous": ["extension_source_hash", "extension_build_hash", "area_fraction_field_hash", "total_linear_brinkman_force", "eight_cp_probes"], "status_rule": "missing_or_unbound_evidence_is_inconclusive_not_qualified"}
+    return {
+        "all_cases_required": [f"{rep}/{grid}" for rep in _REPRESENTATIONS for grid in _GRID_IDS],
+        "per_case": [
+            "case_sha256", "dictionary_file_sha256", "mesh_hash", "image_digest", "command",
+            "final_time", "fatal_log", "residual_history", "mass_balance", "stationarity",
+            "phase_a_restart_archive_u_p_phi_hashes", "phase_b_active_control_timeStep_interval_1_purge_1",
+            "phase_b_exact_final_time_fields_u_p", "phase_b_log_200_unique_step_times",
+            "phase_b_force_and_probe_200_unique_history_rows",
+        ],
+        "body_fitted": ["force_pressure_viscous_total", "eight_cp_probes", "three_grid_gci_inputs"],
+        "porous": [
+            "extension_source_hash", "extension_build_hash", "area_fraction_field_hash",
+            "total_linear_brinkman_force", "eight_cp_probes", "phase_b_exact_final_time_brinkmanResistance",
+        ],
+        "status_rule": "missing_or_unbound_evidence_is_inconclusive_not_qualified",
+    }
 
 
 def _phase_artifact(phase: str) -> Mapping[str, str]:
@@ -767,11 +790,25 @@ def _run_cylinder_case_two_phase(
     phase_a["final_time"] = start
     phase_a["control_dict_active_relpath"] = "system/controlDict"
     phase_a["control_dict_active_sha256"] = _sha256_file(case_dir / "system" / "controlDict")
+    restart_archive = _archive_phase_a_restart_fields(case_dir, start)
+    phase_a["restart_archive"] = restart_archive
+    if not restart_archive["complete"]:
+        phase_a["ok"] = False
+        phase_a["status"] = "failed"
+        phase_a["error"] = "phase_a_restart_archive_failed"
+        base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase="phase_a"))
+        if representation == "porous_cartesian":
+            base["extension"] = _extension_runtime_contract(case_dir, snapshot_dir, rel, docker_image, phase_a, None)
+        return base
     phase_b_result = _run_docker_phase(
         case_dir, phase="phase_b", representation=representation, snapshot_dir=None,
         image=docker_image, timeout_seconds=timeouts["phase_b"], case_relpath=case_relpath,
+        phase_start_time=start,
     )
     phase_b.update(phase_b_result)
+    final_fields = phase_b_result.get("final_fields")
+    if isinstance(final_fields, Mapping) and isinstance(final_fields.get("active_control"), Mapping):
+        phase_b["active_control"] = dict(final_fields["active_control"])
     final = _read_phase_time(case_dir / "runtime_phase_b_final_time.txt") if phase_b_result["ok"] else None
     if final is not None:
         phase_b["start_time"] = start
@@ -780,9 +817,18 @@ def _run_cylinder_case_two_phase(
         phase_b["control_dict_active_sha256"] = _sha256_file(case_dir / "system" / "controlDict.phaseB") if (case_dir / "system" / "controlDict.phaseB").is_file() else None
         phase_b["expected_final_time"] = start + 200.0
         phase_b["exact_200_iterations"] = abs(final - (start + 200.0)) <= 1.0e-9
-        if not phase_b["exact_200_iterations"]:
+        phase_b["phase_a_restart_archive"] = _verify_phase_a_restart_archive(case_dir, restart_archive)
+        phase_b["log_time_contract"] = _phase_b_log_time_contract(
+            case_dir / _phase_artifact("phase_b")["solver_log_filename"], start=start, end=final,
+        )
+        if not phase_b["exact_200_iterations"] or not phase_b["phase_a_restart_archive"]["complete"] or not phase_b["log_time_contract"]["complete"]:
             phase_b["ok"] = False
-            phase_b["error"] = "phase_b_did_not_run_exactly_200_iterations"
+            if not phase_b["exact_200_iterations"]:
+                phase_b["error"] = "phase_b_did_not_run_exactly_200_iterations"
+            elif not phase_b["phase_a_restart_archive"]["complete"]:
+                phase_b["error"] = "phase_a_restart_archive_hash_mismatch_after_phase_b"
+            else:
+                phase_b["error"] = "phase_b_log_time_contract_failed"
     all_ok = bool(phase_a.get("ok")) and bool(phase_b.get("ok"))
     base.update(_two_phase_terminal(base, phase_a, phase_b, failed_phase=None if all_ok else "phase_b"))
     if representation == "porous_cartesian":
@@ -811,7 +857,7 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
 
 def _run_docker_phase(
     case_dir: Path, *, phase: str, representation: str, snapshot_dir: Path | None,
-    image: str, timeout_seconds: int, case_relpath: Path,
+    image: str, timeout_seconds: int, case_relpath: Path, phase_start_time: float | None = None,
 ) -> dict[str, Any]:
     porous = representation == "porous_cartesian"
     if (phase == "phase_a" and porous != (snapshot_dir is not None)) or (phase == "phase_b" and snapshot_dir is not None):
@@ -837,7 +883,8 @@ def _run_docker_phase(
     solver_log = case_dir / artifacts["solver_log_filename"]
     final_file = case_dir / artifacts["final_time_filename"]
     required_fields = _phase_required_fields(
-        case_dir, final_file, require_measurements=phase == "phase_b", porous=porous,
+        case_dir, final_file, phase=phase, require_measurements=phase == "phase_b", porous=porous,
+        phase_start_time=phase_start_time,
     )
     fatal = _solver_log_has_fatal(solver_log)
     ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not fatal and required_fields["complete"]
@@ -871,7 +918,8 @@ def _canonical_phase_container_command(phase: str, image: str, *, porous: bool) 
 
 
 def _phase_required_fields(
-    case_dir: Path, final_file: Path, *, require_measurements: bool, porous: bool,
+    case_dir: Path, final_file: Path, *, phase: str, require_measurements: bool, porous: bool,
+    phase_start_time: float | None,
 ) -> dict[str, Any]:
     try:
         time_name = final_file.read_text(encoding="utf-8").strip()
@@ -879,12 +927,203 @@ def _phase_required_fields(
     except (OSError, ValueError):
         return {"complete": False, "reason": "missing_or_invalid_final_time"}
     time_dir = case_dir / time_name
-    required = {"U": (time_dir / "U").is_file(), "p": (time_dir / "p").is_file()}
+    required_names = _PHASE_A_RESTART_FIELDS if phase == "phase_a" else _PHASE_B_FINAL_FIELDS
+    required = {name: (time_dir / name).is_file() for name in required_names}
+    if phase == "phase_b" and porous:
+        required["brinkmanResistance"] = (time_dir / "brinkmanResistance").is_file()
+    active_control: dict[str, Any] | None = None
+    if phase == "phase_b":
+        active_control = _phase_b_active_control_contract(case_dir / "system" / "controlDict.phaseB")
+        required["active_control_timeStep_interval_1_purge_1"] = active_control["complete"]
     if require_measurements:
-        required["pressure_probes"] = any(path.is_file() for path in (case_dir / "postProcessing" / "pressureProbes").rglob("*")) if (case_dir / "postProcessing" / "pressureProbes").is_dir() else False
         function = "porousResistance" if porous else "cylinderForces"
-        required["force_history"] = any(path.is_file() for path in (case_dir / "postProcessing" / function).rglob("*")) if (case_dir / "postProcessing" / function).is_dir() else False
-    return {"complete": all(required.values()), "time": time_name, "required_files": required}
+        expected = _expected_phase_b_times(phase_start_time) if phase_start_time is not None else None
+        probes = _history_time_contract(case_dir / "postProcessing" / "pressureProbes", expected)
+        forces = _history_time_contract(case_dir / "postProcessing" / function, expected)
+        required["pressure_probes_200_unique_rows"] = probes["complete"]
+        required["force_history_200_unique_rows"] = forces["complete"]
+    result: dict[str, Any] = {"complete": all(required.values()), "time": time_name, "required_files": required}
+    if active_control is not None:
+        result["active_control"] = active_control
+    if require_measurements:
+        result["measurement_history"] = {"pressure_probes": probes, "force": forces}
+    return result
+
+
+def _phase_b_active_control_contract(path: Path) -> dict[str, Any]:
+    """Bind the rendered Phase-B control, not merely its source template hash."""
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return {"complete": False, "reason": "missing_active_phase_b_control", "relpath": "system/controlDict.phaseB", "sha256": None}
+    checks = {
+        "write_control_timeStep": bool(re.search(r"\bwriteControl\s+timeStep\s*;", text)),
+        "write_interval_1": bool(re.search(r"\bwriteInterval\s+1\s*;", text)),
+        "purge_write_1": bool(re.search(r"\bpurgeWrite\s+1\s*;", text)),
+        "write_at_end_absent": not bool(re.search(r"\bwriteAtEnd\b", text)),
+    }
+    return {
+        "complete": all(checks.values()), "relpath": "system/controlDict.phaseB",
+        "sha256": _sha256_file(path), "checks": checks,
+    }
+
+
+def _expected_phase_b_times(start: float) -> tuple[float, ...] | None:
+    """Return the one-based 200-step tail only for an integral solver time."""
+
+    if not isfinite(start) or abs(start - round(start)) > 1.0e-9:
+        return None
+    initial = int(round(start))
+    return tuple(float(initial + offset) for offset in range(1, _PHASE_B_MEASUREMENT_ROWS + 1))
+
+
+def _numeric_time_rows(path: Path) -> list[float]:
+    """Read OpenFOAM function-object rows whose first token is a time value."""
+
+    try:
+        lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError:
+        return []
+    rows: list[float] = []
+    for line in lines:
+        match = re.match(r"^\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)\b", line)
+        if match is None:
+            continue
+        try:
+            value = float(match.group(1))
+        except ValueError:
+            continue
+        if isfinite(value):
+            rows.append(value)
+    return rows
+
+
+def _time_rows_contract(rows: Sequence[float], expected: Sequence[float] | None) -> dict[str, Any]:
+    if expected is None:
+        return {"complete": False, "reason": "missing_or_nonintegral_phase_b_start_time"}
+    counts: dict[float, int] = {}
+    for value in rows:
+        counts[value] = counts.get(value, 0) + 1
+    expected_counts = {value: counts.get(value, 0) for value in expected}
+    unexpected = sorted(value for value in counts if value not in set(expected))
+    complete = len(rows) == len(expected) and not unexpected and all(count == 1 for count in expected_counts.values())
+    return {
+        "complete": complete, "expected_row_count": len(expected), "observed_row_count": len(rows),
+        "expected_start": expected[0], "expected_end": expected[-1],
+        "missing_times": [value for value, count in expected_counts.items() if count == 0],
+        "duplicate_times": [value for value, count in counts.items() if count > 1],
+        "unexpected_times": unexpected,
+    }
+
+
+def _history_time_contract(directory: Path, expected: Sequence[float] | None) -> dict[str, Any]:
+    if not directory.is_dir():
+        return {"complete": False, "reason": "missing_history_directory", "directory": directory.as_posix()}
+    candidates: list[dict[str, Any]] = []
+    for path in sorted(item for item in directory.rglob("*") if item.is_file()):
+        contract = _time_rows_contract(_numeric_time_rows(path), expected)
+        contract["relpath"] = path.relative_to(directory).as_posix()
+        candidates.append(contract)
+    complete = next((item for item in candidates if item["complete"]), None)
+    if complete is not None:
+        return {"complete": True, "selected": complete, "candidates": candidates}
+    return {"complete": False, "reason": "no_single_history_file_has_exact_200_unique_phase_b_times", "candidates": candidates}
+
+
+def _phase_b_log_time_contract(path: Path, *, start: float, end: float) -> dict[str, Any]:
+    expected = _expected_phase_b_times(start)
+    if expected is None or not isfinite(end) or abs(end - expected[-1]) > 1.0e-9:
+        return {"complete": False, "reason": "phase_b_end_does_not_match_exact_200_step_contract"}
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return {"complete": False, "reason": "missing_phase_b_solver_log"}
+    rows = [float(match.group(1)) for match in re.finditer(r"(?m)^\s*Time\s*=\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)\s*$", text)]
+    return _time_rows_contract(rows, expected)
+
+
+def _archive_phase_a_restart_fields(case_dir: Path, final_time: float) -> dict[str, Any]:
+    """Copy Phase-A restart state outside time directories before B can purge it."""
+
+    final_file = case_dir / _phase_artifact("phase_a")["final_time_filename"]
+    try:
+        time_name = final_file.read_text(encoding="utf-8").strip()
+        if abs(float(time_name) - final_time) > 1.0e-9:
+            raise ValueError("phase_a_final_time_mismatch")
+    except (OSError, ValueError) as exc:
+        return {"complete": False, "reason": "missing_or_invalid_phase_a_restart_time", "error": str(exc)}
+    source_dir = case_dir / time_name
+    archive_dir = case_dir / _PHASE_A_RESTART_ARCHIVE_RELATIVE / time_name
+    manifest_path = case_dir / _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE
+    if archive_dir.exists() or manifest_path.exists():
+        return {"complete": False, "reason": "phase_a_restart_archive_already_exists"}
+    missing = [name for name in _PHASE_A_RESTART_FIELDS if not (source_dir / name).is_file()]
+    if missing:
+        return {"complete": False, "reason": "missing_phase_a_restart_field", "missing_fields": missing, "source_time": time_name}
+    try:
+        archive_dir.mkdir(parents=True, exist_ok=False)
+        files: list[dict[str, str]] = []
+        for name in _PHASE_A_RESTART_FIELDS:
+            source, target = source_dir / name, archive_dir / name
+            source_hash = _sha256_file(source)
+            shutil.copyfile(source, target)
+            archive_hash = _sha256_file(target)
+            if archive_hash != source_hash:
+                raise ValueError(f"phase_a_restart_archive_hash_mismatch:{name}")
+            files.append({"path": name, "source_sha256": source_hash, "archive_sha256": archive_hash})
+        archive_entries = [{"path": item["path"], "sha256": item["archive_sha256"]} for item in files]
+        manifest = {
+            "schema_version": 1, "kind": "g4_b2_phase_a_restart_archive", "source_time": time_name,
+            "source_time_relpath": time_name, "archive_relpath": archive_dir.relative_to(case_dir).as_posix(),
+            "files": files, "archive_tree_sha256": _sha256_json(archive_entries),
+        }
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(manifest_path, manifest)
+        return {
+            "complete": True, "source_time": time_name, "archive_relpath": manifest["archive_relpath"],
+            "manifest_relpath": _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE.as_posix(),
+            "manifest_sha256": _sha256_file(manifest_path), "archive_tree_sha256": manifest["archive_tree_sha256"],
+            "files": files,
+        }
+    except (OSError, ValueError) as exc:
+        return {"complete": False, "reason": "phase_a_restart_archive_write_failed", "error": str(exc)}
+
+
+def _verify_phase_a_restart_archive(case_dir: Path, expected: Mapping[str, Any]) -> dict[str, Any]:
+    """Verify that the pre-B archive still equals the hashes captured before B."""
+
+    if not expected.get("complete"):
+        return {"complete": False, "reason": "phase_a_restart_archive_was_not_complete_before_phase_b"}
+    manifest_path = case_dir / _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE
+    try:
+        if _sha256_file(manifest_path) != expected.get("manifest_sha256"):
+            return {"complete": False, "reason": "phase_a_restart_manifest_hash_changed"}
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not isinstance(manifest, Mapping) or manifest.get("source_time") != expected.get("source_time"):
+            return {"complete": False, "reason": "phase_a_restart_manifest_content_mismatch"}
+        files = manifest.get("files")
+        if not isinstance(files, list) or [item.get("path") for item in files if isinstance(item, Mapping)] != list(_PHASE_A_RESTART_FIELDS):
+            return {"complete": False, "reason": "phase_a_restart_manifest_file_set_mismatch"}
+        archive_dir = case_dir / str(manifest.get("archive_relpath", ""))
+        actual_entries: list[dict[str, str]] = []
+        for item in files:
+            assert isinstance(item, Mapping)
+            name, expected_hash = item.get("path"), item.get("archive_sha256")
+            if not isinstance(name, str) or not isinstance(expected_hash, str):
+                return {"complete": False, "reason": "phase_a_restart_manifest_file_hash_invalid"}
+            field = archive_dir / name
+            if not field.is_file() or _sha256_file(field) != expected_hash or item.get("source_sha256") != expected_hash:
+                return {"complete": False, "reason": "phase_a_restart_archive_file_hash_mismatch", "field": name}
+            actual_entries.append({"path": name, "sha256": expected_hash})
+        if _sha256_json(actual_entries) != manifest.get("archive_tree_sha256") or manifest.get("archive_tree_sha256") != expected.get("archive_tree_sha256"):
+            return {"complete": False, "reason": "phase_a_restart_archive_tree_hash_mismatch"}
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {"complete": False, "reason": "phase_a_restart_archive_manifest_unreadable"}
+    return {
+        "complete": True, "source_time": expected["source_time"], "manifest_relpath": _PHASE_A_RESTART_ARCHIVE_MANIFEST_RELATIVE.as_posix(),
+        "manifest_sha256": expected["manifest_sha256"], "archive_tree_sha256": expected["archive_tree_sha256"],
+    }
 
 
 def _read_phase_time(path: Path) -> float:

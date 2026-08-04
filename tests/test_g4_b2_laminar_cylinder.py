@@ -180,7 +180,10 @@ def test_two_phase_dictionaries_preserve_physics_and_make_measurement_tail_exact
     assert "residualControl { p 1e-8; U 1e-8; }" in solution_a
     assert "startFrom latestTime;" in control_b
     assert "endTime __PHASE_B_END_TIME__;" in control_b
-    assert "writeInterval 200;" in control_b
+    assert "writeControl timeStep;" in control_b
+    assert "writeInterval 1;" in control_b
+    assert "purgeWrite 1;" in control_b
+    assert "writeAtEnd" not in control_b
     assert "residualControl" not in solution_b
     assert "tolerance 1e-10;" in solution_a and "tolerance 1e-10;" in solution_b
     assert "rhoInf 1.225;" in control_b
@@ -260,6 +263,8 @@ def _write_phase_final_fields(case: Path, *, phase: str, time_name: str) -> None
     final.mkdir(exist_ok=True)
     (final / "U").write_text("U\n", encoding="utf-8")
     (final / "p").write_text("p\n", encoding="utf-8")
+    if phase == "phase_a":
+        (final / "phi").write_text("phi\n", encoding="utf-8")
 
 
 def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
@@ -290,6 +295,85 @@ def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
     assert result["ok"] is True
     assert result["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
     assert result["solver_log_sha256"] == hashlib.sha256((case / "log.simpleFoam.phaseA").read_bytes()).hexdigest()
+
+
+def test_phase_a_restart_archive_preserves_u_p_phi_after_source_time_is_removed(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    archive = cylinder_module._archive_phase_a_restart_fields(case, 1255.0)
+
+    assert archive["complete"] is True
+    assert archive["archive_relpath"] == "evidence/phase_a_restart/1255"
+    assert archive["manifest_relpath"] == "evidence/phase_a_restart_manifest.json"
+    assert [item["path"] for item in archive["files"]] == ["U", "p", "phi"]
+    shutil.rmtree(case / "1255")
+    assert cylinder_module._verify_phase_a_restart_archive(case, archive)["complete"] is True
+
+
+def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histories(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    calls = 0
+
+    def complete_two_phases(command: list[str], *args: object, **kwargs: object) -> SimpleNamespace:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            (case / "log.simpleFoam.phaseA").write_text("phase A\n", encoding="utf-8")
+            _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+        else:
+            control = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+            (case / "system" / "controlDict.phaseB").write_text(
+                control.replace("__PHASE_B_END_TIME__", "1455"), encoding="utf-8",
+            )
+            (case / "log.simpleFoam.phaseB").write_text(
+                "".join(f"Time = {time}\n" for time in range(1256, 1456)), encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_b", time_name="1455")
+            for function, filename in (("pressureProbes", "p"), ("cylinderForces", "forces.dat")):
+                history = case / "postProcessing" / function / "0" / filename
+                history.parent.mkdir(parents=True, exist_ok=True)
+                history.write_text("".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_two_phases)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
+        case_relpath=Path("cases/body_fitted/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is True
+    assert result["phase_a"]["restart_archive"]["complete"] is True
+    assert result["phase_b"]["phase_a_restart_archive"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["active_control"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["measurement_history"]["pressure_probes"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["measurement_history"]["force"]["complete"] is True
+    assert result["phase_b"]["log_time_contract"]["complete"] is True
+
+
+def test_phase_b_log_time_contract_rejects_missing_or_duplicate_step(tmp_path: Path) -> None:
+    log = tmp_path / "log.simpleFoam.phaseB"
+    log.write_text(
+        "".join(f"Time = {time}\n" for time in range(1256, 1455)) + "Time = 1454\n",
+        encoding="utf-8",
+    )
+
+    contract = cylinder_module._phase_b_log_time_contract(log, start=1255.0, end=1455.0)
+    assert contract["complete"] is False
+    assert 1455.0 in contract["missing_times"]
+    assert 1454.0 in contract["duplicate_times"]
 
 
 @pytest.mark.parametrize(
