@@ -343,7 +343,17 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    profile/bulk/pressure-gradient, runtime health, final field/mesh bindings,
    and independent v2512 `postProcess` `U` component/cell-centre checks
    passed. The next implementation is the B2.0 cylinder porous/body-fitted
-   cross-fidelity comparison on three grids. This does not qualify cylinder,
+   cross-fidelity comparison on three grids, using the selected deterministic
+   `blockMesh` O-grid and Cartesian area-fraction linear-Brinkman design in
+   [`2026-08-04-g4-b2-cylinder-cross-fidelity-design.md`](decisions/2026-08-04-g4-b2-cylinder-cross-fidelity-design.md).
+   Its required serial two-phase convergence/measurement execution and raw
+   evidence gate are fixed in
+   [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).
+   Porous execution must additionally use the source-snapshot, digest-pinned,
+   case-local Brinkman deployment contract in
+   [`2026-08-04-g4-b2-brinkman-extension-deployment.md`](decisions/2026-08-04-g4-b2-brinkman-extension-deployment.md).
+   That design is not implementation or cylinder qualification. This does not
+   qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the
    optimizer. The superseded v2/v3 provenance artifacts remain retained and
    must not be cited as a pass. This work is governed by

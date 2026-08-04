@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*\\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     |                                                 |
+|   \\  /    A nd           |                                                 |
+|    \\/     M anipulation  |                                                 |
+\\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// Project-owned linear Brinkman source for B2.0 Cartesian porous cylinder.
+// controlDict must load: libs ("libcfdSdfLinearBrinkman.so");
+
+porousCylinderResistance
+{
+    type                cfdSdfLinearBrinkman;
+    active              yes;
+
+    // The beta field declares the whole porous design region itself.
+    selectionMode       all;
+    U                   U;
+    betaField           beta;
+
+    // [1/s], fixed by the B2.0 decision: beta=0 fluid, beta=1 solid.
+    betaMax             [0 0 -1 0 0 0 0] 1.5e5;
+
+    // Auto-written positive resistance acceleration [m/s2]: betaMax*beta*U.
+    // Total porous streamwise resistance is rho*integrate(field_x dV).
+    resistanceField     brinkmanResistance;
+}

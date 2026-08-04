@@ -98,6 +98,13 @@ from .g4_b2_laminar_channel_evidence import (
     evaluate_g4_b2_channel_runtime_evidence,
     write_g4_b2_channel_runtime_evidence,
 )
+from .g4_b2_laminar_cylinder import (
+    DEFAULT_G4_B2_CYLINDER_SPEC_PATH,
+    G4_B2_CYLINDER_COMPILATION_FILENAME,
+    G4_B2_CYLINDER_RUN_FILENAME,
+    compile_g4_b2_cylinder_benchmark,
+    run_g4_b2_cylinder_cases,
+)
 from .localized_g2_fd_preparation import (
     LOCALIZED_G2_FD_PREPARATION_FILENAME,
     prepare_localized_g2_openfoam_fd_direction,
@@ -335,6 +342,46 @@ def run_g4_b2_channel_command(
     typer.echo(json.dumps({
         "kind": payload["kind"], "status": payload["status"],
         "qualified": False, "artifact_json": str((output_dir / G4_B2_CHANNEL_RUN_FILENAME).resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("compile-g4-b2-cylinder")
+def compile_g4_b2_cylinder_command(
+    output_dir: Path = typer.Argument(..., help="New immutable directory for the six B2.0 cylinder cases."),
+    spec_yaml: Path = typer.Option(DEFAULT_G4_B2_CYLINDER_SPEC_PATH, "--spec", help="B2.0 cylinder YAML contract."),
+) -> None:
+    """Compile body-fitted and porous h/h2/h4 cylinder cases; never runs OpenFOAM."""
+    try:
+        result = compile_g4_b2_cylinder_benchmark(spec_path=spec_yaml, output_dir=output_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b2_cylinder_compilation", "status": "compiled_not_runtime_qualified",
+        "compilation_json": str((output_dir / G4_B2_CYLINDER_COMPILATION_FILENAME).resolve()),
+        "spec_sha256": result.spec_sha256, "compilation_sha256": result.compilation_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("run-g4-b2-cylinder")
+def run_g4_b2_cylinder_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-cylinder."),
+    output_dir: Path = typer.Argument(..., help="New runtime-attempt directory; compiled cases remain unchanged."),
+    execute: bool = typer.Option(False, "--execute", help="Build the source snapshot and run all six cases."),
+    backend: str = typer.Option("docker", "--backend", help="Dry runs may select any backend; executed B2 cylinder runs require docker."),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Required digest-pinned v2512 image for --execute."),
+) -> None:
+    """Run copied B2 cylinder cases; execution remains unqualified until evidence extraction."""
+    try:
+        artifact = run_g4_b2_cylinder_cases(
+            compilation_dir=compilation_dir, output_dir=output_dir, backend=backend,
+            execute=execute, docker_image=docker_image,
+        )
+        payload = json.loads(artifact.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": payload["kind"], "status": payload["status"], "qualified": False,
+        "artifact_json": str((output_dir / G4_B2_CYLINDER_RUN_FILENAME).resolve()),
     }, sort_keys=True, separators=(",", ":")))
 
 
