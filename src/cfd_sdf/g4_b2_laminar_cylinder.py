@@ -20,6 +20,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+from time import perf_counter
 from typing import Any
 
 import yaml
@@ -41,10 +42,18 @@ _GRID_FACTORS = (1, 2, 4)
 _REPRESENTATIONS = ("body_fitted", "porous_cartesian")
 _SECTOR_ANGLES_DEG = (0, 45, 90, 135, 180, 225, 270, 315)
 _PHASE_TIMEOUTS_SECONDS = {
-    "coarse": {"phase_a": 900, "phase_b": 300},
-    "medium": {"phase_a": 1800, "phase_b": 600},
-    "fine": {"phase_a": 5400, "phase_b": 1800},
+    "body_fitted": {
+        "coarse": {"phase_a": 900, "phase_b": 300},
+        "medium": {"phase_a": 1800, "phase_b": 600},
+        "fine": {"phase_a": 5400, "phase_b": 1800},
+    },
+    "porous_cartesian": {
+        "coarse": {"phase_a": 900, "phase_b": 600},
+        "medium": {"phase_a": 1800, "phase_b": 3600},
+        "fine": {"phase_a": 5400, "phase_b": 21600},
+    },
 }
+_NEAR_TIMEOUT_FRACTION = 0.75
 _PHASE_RUNTIME_ARTIFACTS = {
     "phase_a": {
         "solver_log_filename": "log.simpleFoam.phaseA",
@@ -271,7 +280,7 @@ def run_g4_b2_cylinder_cases(
         for grid_id in selected_grids:
             for representation in _REPRESENTATIONS:
                 case = cases[(representation, grid_id)]
-                if stopped_by == "runtime_failure":
+                if stopped_by is not None:
                     continue
                 source_case = source_root / str(case["case_directory"])
                 _verify_compiled_case_files(source_case, case)
@@ -287,21 +296,37 @@ def run_g4_b2_cylinder_cases(
                     expected_snapshot_manifest_sha256=str(index["extension_source_manifest_sha256"]),
                     expected_snapshot_tree_sha256=str(_mapping(index["extension_source_contract"], "extension_source_contract")["source_tree_sha256"]),
                 )
+                near_timeout = _successful_phase_near_timeout_guard(run_record)
+                if execute and near_timeout is not None:
+                    _mark_runtime_inconclusive_near_timeout(run_record, near_timeout)
+                    stopped_by = "successful_phase_near_hard_timeout"
                 run_ok = bool(run_record["ok"])
                 _write_json(runtime_case / "openfoam_run_summary.json", run_record)
                 attempts.append({
                     "representation": case["representation"], "grid_id": case["grid_id"], "case_sha256": case["case_sha256"],
                     "case_contract_sha256": case["case_contract_sha256"], "run": run_record,
-                    "status": "contract_only_not_executed" if not execute else ("runtime_raw_evidence_complete_unqualified" if run_ok else "runtime_failed"),
+                    "effective_phase_timeouts_seconds": _phase_timeouts_seconds(representation, grid_id),
+                    "status": "contract_only_not_executed" if not execute else (
+                        "runtime_raw_evidence_complete_unqualified" if run_ok else
+                        ("runtime_inconclusive_near_timeout" if near_timeout is not None else "runtime_failed")
+                    ),
                 })
                 if execute and not run_ok:
-                    stopped_by = "runtime_failure"
+                    stopped_by = stopped_by or "runtime_failure"
         if stopped_by is None:
             stopped_by = "requested_grid"
         complete_prefix = len(attempts) == len(selected_grids) * len(_REPRESENTATIONS)
         execution_succeeded = execute and complete_prefix and all(item["status"] == "runtime_raw_evidence_complete_unqualified" for item in attempts)
-        status = "contract_only_not_executed" if not execute else ("partial_runtime_completed_unqualified" if execution_succeeded else "runtime_failed")
+        status = "contract_only_not_executed" if not execute else (
+            "partial_runtime_completed_unqualified" if execution_succeeded else
+            ("runtime_inconclusive_near_timeout" if stopped_by == "successful_phase_near_hard_timeout" else "runtime_failed")
+        )
         executed_through_grid = attempts[-1]["grid_id"] if attempts else None
+        next_required_condition = (
+            "investigate_or_raise_the_representation_specific_timeout_policy_then_rerun_a_fresh_prefix"
+            if stopped_by == "successful_phase_near_hard_timeout" else
+            ("run a new --through-grid fine prefix" if requested_through_grid != "fine" else "run the force_cp_grid_series_extractor on this single six-case artifact")
+        )
         artifact = {
             "schema_version": 1, "kind": G4_B2_CYLINDER_RUN_KIND,
             "compilation_sha256": index["compilation_sha256"], "spec_sha256": index["spec_sha256"],
@@ -313,11 +338,15 @@ def run_g4_b2_cylinder_cases(
             "ordered_executed_case_ids": [f"{item['representation']}/{item['grid_id']}" for item in attempts],
             "stopped_by": stopped_by,
             "phase_timeouts_seconds": _PHASE_TIMEOUTS_SECONDS,
+            "near_timeout_guard": {
+                "successful_phase_duration_fraction_of_hard_timeout": _NEAR_TIMEOUT_FRACTION,
+                "action": "mark_runtime_inconclusive_and_stop_before_any_later_case",
+            },
             "cases": attempts, "next_required_evidence": _runtime_evidence_requirements(),
             "force_cp_evaluation": {"evaluated": False, "reason": "runner_does_not_extract_force_cp_richardson_gci_or_cross_fidelity"},
             "solver_evaluation": _unevaluated_solver_evaluation_state(),
             "evaluation_precondition": {"requires_single_through_grid_fine_artifact": True, "requires_all_six_canonical_case_records": True, "requires_complete_bound_force_cp_raw_evidence": True, "requires_force_cp_grid_series_extractor": True},
-            "next_required_condition": "run a new --through-grid fine prefix" if requested_through_grid != "fine" else "run the force_cp_grid_series_extractor on this single six-case artifact",
+            "next_required_condition": next_required_condition,
         }
         _write_json(staging / G4_B2_CYLINDER_RUN_FILENAME, artifact)
         shutil.move(str(staging), str(destination))
@@ -950,6 +979,60 @@ def _verify_porous_case_semantics(case_dir: Path) -> None:
         raise ValueError("porous beta field must be dimensionless")
 
 
+def _phase_timeouts_seconds(representation: str, grid_id: str) -> dict[str, int]:
+    """Return a copy of the approved hard timeout budget for one case."""
+
+    try:
+        table = _PHASE_TIMEOUTS_SECONDS[representation][grid_id]
+    except KeyError as exc:
+        raise ValueError(f"unsupported B2 cylinder representation/grid timeout: {representation}/{grid_id}") from exc
+    return {phase: int(seconds) for phase, seconds in table.items()}
+
+
+def _successful_phase_near_timeout_guard(run_record: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Flag a nominal success whose wall-clock cost exhausted its safety margin.
+
+    Such a case is retained as raw evidence, but it cannot establish a healthy
+    prefix or trigger automatic execution of a later case/grid.
+    """
+
+    if not run_record.get("ok"):
+        return None
+    for phase_name in ("phase_a", "phase_b"):
+        phase = run_record.get(phase_name)
+        if not isinstance(phase, Mapping) or not phase.get("ok"):
+            continue
+        duration = phase.get("duration_seconds")
+        timeout = phase.get("timeout_seconds")
+        if not isinstance(duration, (int, float)) or isinstance(duration, bool):
+            continue
+        if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or timeout <= 0:
+            continue
+        if duration >= timeout * _NEAR_TIMEOUT_FRACTION:
+            return {
+                "phase": phase_name,
+                "duration_seconds": float(duration),
+                "hard_timeout_seconds": float(timeout),
+                "threshold_fraction": _NEAR_TIMEOUT_FRACTION,
+                "threshold_seconds": float(timeout * _NEAR_TIMEOUT_FRACTION),
+                "diagnostic": "successful_phase_duration_at_or_above_75_percent_of_hard_timeout",
+            }
+    return None
+
+
+def _mark_runtime_inconclusive_near_timeout(run_record: dict[str, Any], guard: Mapping[str, Any]) -> None:
+    """Prevent a near-timeout success from being reported as a usable prefix."""
+
+    phase_name = str(guard["phase"])
+    run_record.update({
+        "ok": False,
+        "status": "inconclusive_near_timeout",
+        "error": "successful_phase_duration_at_or_above_75_percent_of_hard_timeout",
+        "failed_phase": phase_name,
+        "near_timeout_guard": dict(guard),
+    })
+
+
 def _run_cylinder_case_two_phase(
     case_dir: Path, *, representation: str, grid_id: str, snapshot_dir: Path | None,
     case_relpath: Path, execute: bool, docker_image: str | None,
@@ -959,7 +1042,7 @@ def _run_cylinder_case_two_phase(
     """Run exactly A then B; B is never started after an A failure."""
 
     rel = case_relpath.as_posix()
-    timeouts = _PHASE_TIMEOUTS_SECONDS[grid_id]
+    timeouts = _phase_timeouts_seconds(representation, grid_id)
     phase_a = _phase_manifest(case_dir, phase="phase_a", timeout_seconds=timeouts["phase_a"], image=docker_image)
     phase_b = _phase_manifest(case_dir, phase="phase_b", timeout_seconds=timeouts["phase_b"], image=docker_image)
     base: dict[str, Any] = {
@@ -967,6 +1050,7 @@ def _run_cylinder_case_two_phase(
         "stdout_relpath": f"{rel}/log.runOpenFOAM.stdout", "stderr_relpath": f"{rel}/log.runOpenFOAM.stderr",
         "summary_relpath": f"{rel}/openfoam_run_summary.json", "representation": representation,
         "grid_id": grid_id, "phase_a": phase_a, "phase_b": phase_b,
+        "effective_phase_timeouts_seconds": timeouts,
         "protocol": "g4_b2_cylinder_two_phase_runtime_v1",
         "solver_evaluation": _unevaluated_solver_evaluation_state(),
     }
@@ -1129,6 +1213,7 @@ def _run_docker_phase(
     command.extend(["-w", "/case", image, "-lc", script])
     stdout = case_dir / f"log.runOpenFOAM.{phase}.stdout"
     stderr = case_dir / f"log.runOpenFOAM.{phase}.stderr"
+    started_at = perf_counter()
     try:
         with stdout.open("w", encoding="utf-8") as out, stderr.open("w", encoding="utf-8") as err:
             completed = subprocess.run(command, cwd=case_dir, stdout=out, stderr=err, text=True, timeout=timeout_seconds, check=False)
@@ -1139,6 +1224,7 @@ def _run_docker_phase(
     except OSError as exc:
         returncode, timed_out, error = None, False, str(exc)
         stderr.write_text(error, encoding="utf-8")
+    duration_seconds = perf_counter() - started_at
     artifacts = _phase_artifact(phase)
     solver_log = case_dir / artifacts["solver_log_filename"]
     final_file = case_dir / artifacts["final_time_filename"]
@@ -1149,7 +1235,7 @@ def _run_docker_phase(
     fatal = _solver_log_has_fatal(solver_log)
     convergence = _phase_a_convergence_contract(solver_log, required_fields) if phase == "phase_a" else None
     ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not fatal and required_fields["complete"] and (convergence is None or convergence["complete"])
-    result = {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
+    result = {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "duration_seconds": duration_seconds, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
     if convergence is not None:
         result["convergence"] = convergence
     return result

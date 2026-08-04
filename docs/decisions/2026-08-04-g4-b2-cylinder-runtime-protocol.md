@@ -49,13 +49,25 @@ Stop the sequence when any case fails its phase, timeout, solver health, or
 evidence-integrity requirement.  Do not consume later-grid runs to mask or
 average away an earlier failure.
 
-The per-case wall-clock limits are deliberately split by phase:
+The per-case wall-clock limits are deliberately split by representation and
+phase.  The body-fitted limits are unchanged.  The porous Phase-B limits are
+representation-specific because native per-step porous measurement/output
+writes have a materially higher wall-clock cost; this changes no physical or
+numerical acceptance criterion.
 
-| Grid | Phase A timeout | Phase B timeout |
-| --- | ---: | ---: |
-| coarse | 900 s | 300 s |
-| medium | 1800 s | 600 s |
-| fine | 5400 s | 1800 s |
+| Grid | Body Phase A | Body Phase B | Porous Phase A | Porous Phase B |
+| --- | ---: | ---: | ---: | ---: |
+| coarse | 900 s | 300 s | 900 s | 600 s |
+| medium | 1800 s | 600 s | 1800 s | 3600 s |
+| fine | 5400 s | 1800 s | 5400 s | 21600 s |
+
+The runner must apply a **75% hard-timeout guard** independently to every
+representation/phase limit.  If a case reaches or exceeds 75% of its assigned
+hard timeout, it must not automatically progress to a later grid, even if the
+phase otherwise completes.  It records the elapsed time and guard outcome as
+runtime evidence and requires a bounded `sol_` re-review before any
+next-grid execution or timeout change.  A hard timeout remains a failed or
+inconclusive phase and stops the prefix immediately.
 
 A timeout, fatal solver error, absent restart field or archive, incomplete
 200-iteration tail, terminal field time different from the declared Phase-B
@@ -99,16 +111,28 @@ directory stop at `1400`.  The v4 template used `writeInterval = 200`,
 field.  This failure is retained without reinterpretation.  It is not a
 completed Phase B, a successful coarse prefix, or cylinder qualification.
 
+The retained v8 coarse-prefix artifact is likewise failed raw evidence:
+[`examples/g4_b2_laminar/runs/cylinder_runtime_coarse_v8/g4_b2_cylinder_runtime_attempt.json`](../../examples/g4_b2_laminar/runs/cylinder_runtime_coarse_v8/g4_b2_cylinder_runtime_attempt.json).
+Its porous/coarse Phase A converged at `813`, and its Phase B reached
+`Time = 1010` of the required final time `1013` (197 of 200 measurement
+steps).  At approximately 298 seconds it was then stopped by the existing
+300-second hard timeout.  It must remain retained as failed evidence; it is
+not a successful coarse prefix, must not start medium, and must not be
+combined with later output.  The representation-specific Phase-B limits and
+75% guard above are the Sol-approved correction for a fresh immutable
+replacement artifact.
+
 ## Scope and status
 
 This protocol does not change the B2.0 physical conditions, discretization,
-force conventions, convergence thresholds, GCI requirement, porous-drag
-tolerance, `Cp` tolerance, or qualification boundaries.  It is a required
-runtime-evidence contract for the implementation of the selected cylinder
-comparison.
+force conventions, evidence requirements, convergence thresholds, GCI
+requirement, porous-drag tolerance, `Cp` tolerance, or qualification
+boundaries.  It is a required runtime-evidence contract for the
+implementation of the selected cylinder comparison.
 
 The bounded `sol_g4_b2_phase_b_final_time` review selected this write contract
-over retaining the v4 `writeAtEnd` reliance.  The implementation and a fresh
-v5 runtime artifact are required.
+over retaining the v4 `writeAtEnd` reliance.  The later bounded Sol timeout
+review selected the representation-specific limits and guard above after v8.
+The implementation and a fresh post-v8 runtime artifact are required.
 
-Status: implementation and fresh v5 execution required.
+Status: implementation and fresh post-v8 execution required.

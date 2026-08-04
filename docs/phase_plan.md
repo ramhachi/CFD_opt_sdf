@@ -384,6 +384,15 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    `volIntegrate(brinkmanResistance)` contract recorded in that same decision;
    its supplementary `_all` IOField is not a second history or the terminal
    extension-owned `brinkmanResistance` field.
+   The retained v8 coarse prefix is also failed raw evidence: porous Phase B
+   reached `1010/1013` (197/200 measurement steps) at approximately 298 s,
+   then hit its 300 s timeout.  The fresh replacement uses the
+   representation-specific timeout table (body limits unchanged; porous
+   Phase B: coarse/medium/fine = 600/3600/21600 s) and a 75%-of-hard-timeout
+   guard.  That guard prevents automatic next-grid progression and requires a
+   bounded Sol re-review; it changes neither physics, evidence requirements,
+   nor numerical thresholds.  See
+   [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

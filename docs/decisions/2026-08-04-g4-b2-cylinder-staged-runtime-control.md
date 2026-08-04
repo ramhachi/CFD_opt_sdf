@@ -66,6 +66,13 @@ the runner stops immediately.  Its partial artifact records
 and contains no later-grid or later-representation run.  No next grid may be
 started in that invocation.
 
+The runtime protocol's per-representation/phase **75% hard-timeout guard** is
+also a no-automatic-progression gate.  A completed case at or above that
+guard records its elapsed time and guard result, then requires a bounded
+`sol_` re-review before a later grid may be started.  This is distinct from a
+hard timeout: it preserves potentially complete raw evidence while forbidding
+an automatic escalation whose remaining budget has not been reviewed.
+
 The failed artifact remains retained incident evidence.  Re-running the
 benchmark requires a new immutable destination and the requested canonical
 prefix; it does not repair, overwrite, or silently replace the failed
@@ -88,9 +95,9 @@ requirements.
 
 ## Scope and status
 
-This is an artifact-provenance and staged-execution decision.  It adds no
-physical threshold, does not alter the declared cylinder problem, and does
-not qualify cylinder, NACA, arbitrary bodies, turbulent flow, adjoints, or
-the optimizer.
+This is an artifact-provenance and staged-execution decision.  The timeout
+guard adds no physical, evidence, or numerical acceptance threshold; it does
+not alter the declared cylinder problem, and does not qualify cylinder, NACA,
+arbitrary bodies, turbulent flow, adjoints, or the optimizer.
 
 Status: implementation required.

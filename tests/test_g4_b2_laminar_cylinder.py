@@ -230,10 +230,19 @@ def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(c
         ("fine", "body_fitted"), ("fine", "porous_cartesian"),
     ]
     assert payload["phase_timeouts_seconds"] == {
-        "coarse": {"phase_a": 900, "phase_b": 300},
-        "medium": {"phase_a": 1800, "phase_b": 600},
-        "fine": {"phase_a": 5400, "phase_b": 1800},
+        "body_fitted": {
+            "coarse": {"phase_a": 900, "phase_b": 300},
+            "medium": {"phase_a": 1800, "phase_b": 600},
+            "fine": {"phase_a": 5400, "phase_b": 1800},
+        },
+        "porous_cartesian": {
+            "coarse": {"phase_a": 900, "phase_b": 600},
+            "medium": {"phase_a": 1800, "phase_b": 3600},
+            "fine": {"phase_a": 5400, "phase_b": 21600},
+        },
     }
+    assert payload["cases"][0]["effective_phase_timeouts_seconds"] == {"phase_a": 900, "phase_b": 300}
+    assert payload["cases"][1]["effective_phase_timeouts_seconds"] == {"phase_a": 900, "phase_b": 600}
     assert all(item["run"]["phase_a"]["status"] == "planned" for item in payload["cases"])
     assert all(item["run"]["phase_b"]["status"] == "planned" for item in payload["cases"])
 
@@ -269,6 +278,43 @@ def test_executed_sequence_stops_before_later_grids_after_phase_failure(
     assert payload["requested_through_grid"] == "fine"
     assert payload["executed_through_grid"] == "coarse"
     assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [("coarse", "body_fitted")]
+
+
+def test_successful_phase_near_hard_timeout_is_inconclusive_and_stops_prefix(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    calls: list[tuple[str, str]] = []
+
+    def near_timeout(*args: object, **kwargs: object) -> dict:
+        representation = str(kwargs["representation"])
+        grid_id = str(kwargs["grid_id"])
+        calls.append((representation, grid_id))
+        return {
+            "ok": True,
+            "representation": representation,
+            "grid_id": grid_id,
+            "phase_a": {"ok": True, "timeout_seconds": 900, "duration_seconds": 1.0},
+            "phase_b": {"ok": True, "timeout_seconds": 300, "duration_seconds": 225.0},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", near_timeout)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "near-timeout", backend="docker", execute=True,
+        through_grid="fine",
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert calls == [("body_fitted", "coarse")]
+    assert payload["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["stopped_by"] == "successful_phase_near_hard_timeout"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["cases"][0]["status"] == "runtime_inconclusive_near_timeout"
+    guard = payload["cases"][0]["run"]["near_timeout_guard"]
+    assert guard["phase"] == "phase_b"
+    assert guard["threshold_seconds"] == 225.0
+    assert guard["diagnostic"] == "successful_phase_duration_at_or_above_75_percent_of_hard_timeout"
+    assert payload["next_required_condition"].startswith("investigate_or_raise_the_representation_specific_timeout_policy")
 
 
 def _write_phase_final_fields(case: Path, *, phase: str, time_name: str) -> None:
