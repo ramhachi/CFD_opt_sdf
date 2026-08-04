@@ -272,7 +272,11 @@ def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
     shutil.copytree(root / "body_fitted" / "coarse", case)
 
     def complete_phase_a(*args: object, **kwargs: object) -> SimpleNamespace:
-        (case / "log.simpleFoam.phaseA").write_text("normal simpleFoam output\n", encoding="utf-8")
+        (case / "log.simpleFoam.phaseA").write_text(
+            "  TRAPFPE : Floating   point exception trapping enabled ( FOAM_SIGFPE ) .  \n"
+            "normal simpleFoam output\n",
+            encoding="utf-8",
+        )
         _write_phase_final_fields(case, phase="phase_a", time_name="1255")
         return SimpleNamespace(returncode=0)
 
@@ -286,6 +290,31 @@ def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
     assert result["ok"] is True
     assert result["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
     assert result["solver_log_sha256"] == hashlib.sha256((case / "log.simpleFoam.phaseA").read_bytes()).hexdigest()
+
+
+@pytest.mark.parametrize(
+    ("log", "fatal"),
+    [
+        ("trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).\n", False),
+        (
+            "trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).\n"
+            "Floating point exception (8)\n",
+            True,
+        ),
+        ("Floating point exception (core dumped)\n", True),
+        ("FOAM FATAL ERROR:\n", True),
+        ("Segmentation fault (core dumped)\n", True),
+        ("FOAM_SIGFPE signal received\n", True),
+        ("MPI_ABORT was invoked\n", True),
+    ],
+)
+def test_solver_log_fatal_classifier_is_line_aware_for_trap_fpe_banner(
+    tmp_path: Path, log: str, fatal: bool,
+) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text(log, encoding="utf-8")
+
+    assert cylinder_module._solver_log_has_fatal(solver_log) is fatal
 
 
 def test_missing_phase_a_log_fails_and_never_starts_phase_b(

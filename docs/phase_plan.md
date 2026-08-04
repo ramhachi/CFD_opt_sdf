@@ -361,6 +361,10 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    The retained v2 coarse-prefix false failure caused by a phase-log name
    mismatch, and the required fresh v3 replacement evidence, are fixed in
    [`2026-08-04-g4-b2-cylinder-phase-log-contract.md`](decisions/2026-08-04-g4-b2-cylinder-phase-log-contract.md).
+   The retained v3 coarse-prefix false failure caused solely by treating the
+   OpenFOAM `trapFpe` startup banner as an exception, and the required fresh
+   v4 replacement evidence, are fixed in
+   [`2026-08-04-g4-b2-cylinder-fatal-log-classification.md`](decisions/2026-08-04-g4-b2-cylinder-fatal-log-classification.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

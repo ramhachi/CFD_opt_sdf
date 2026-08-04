@@ -23,6 +23,7 @@ from typing import Any
 import yaml
 
 from .execution import run_openfoam_case
+from .convergence_qualification import has_fatal_openfoam_log
 
 
 G4_B2_CYLINDER_SPEC_KIND = "g4_b2_laminar_cylinder_spec"
@@ -898,7 +899,7 @@ def _read_phase_time(path: Path) -> float:
 
 def _solver_log_has_fatal(path: Path) -> bool:
     text = path.read_text(encoding="utf-8", errors="ignore") if path.is_file() else ""
-    return any(marker in text.lower() for marker in ("foam fatal", "segmentation fault", "floating point exception"))
+    return has_fatal_openfoam_log(text)
 
 
 def _two_phase_terminal(base: Mapping[str, Any], phase_a: Mapping[str, Any], phase_b: Mapping[str, Any], *, failed_phase: str | None) -> dict[str, Any]:

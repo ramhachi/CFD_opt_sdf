@@ -23,8 +23,8 @@ _FPE_FAILURE_PATTERN = re.compile(
     r"\b(?:floating point exception|foam_sigfpe|sigfpe)\b", flags=re.IGNORECASE
 )
 _TRAP_FPE_STARTUP_PATTERN = re.compile(
-    r"^\s*trapFpe:\s+floating point exception trapping enabled\s+"
-    r"\(foam_sigfpe\)\.\s*$",
+    r"^\s*trapfpe\s*:\s*floating\s+point\s+exception\s+trapping\s+enabled\s+"
+    r"\(\s*foam_sigfpe\s*\)\s*\.\s*$",
     flags=re.IGNORECASE,
 )
 
@@ -169,6 +169,18 @@ def _fatal_log_patterns(value: str) -> list[str]:
             fatal.append("Floating point exception")
             break
     return fatal
+
+
+def has_fatal_openfoam_log(value: str) -> bool:
+    """Return whether a solver log contains a fatal OpenFOAM failure signature.
+
+    ``trapFpe`` prints a startup capability banner containing ``FOAM_SIGFPE``.
+    Only that complete line is benign; every other FPE/SIGFPE occurrence remains
+    fatal.  Keep this predicate shared by runtime runners and qualification so
+    a successful process cannot be interpreted differently at each boundary.
+    """
+
+    return bool(_fatal_log_patterns(value))
 
 
 def _extractor_completeness_gate(
@@ -329,5 +341,6 @@ def _json_copy(value: Any) -> Any:
 __all__ = [
     "CONVERGENCE_QUALIFICATION_SCHEMA_VERSION",
     "evaluate_openfoam_convergence_bundle",
+    "has_fatal_openfoam_log",
     "write_openfoam_convergence_qualification",
 ]
