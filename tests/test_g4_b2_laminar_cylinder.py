@@ -1,0 +1,1309 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+from typer.testing import CliRunner
+
+from cfd_sdf.cli import app
+import cfd_sdf.g4_b2_laminar_cylinder as cylinder_module
+from cfd_sdf.g4_b2_laminar_cylinder import (
+    G4_B2_CYLINDER_COMPILATION_FILENAME,
+    G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME,
+    _verify_porous_case_semantics,
+    compile_g4_b2_cylinder_benchmark,
+    run_g4_b2_cylinder_cases,
+)
+
+
+SPEC = Path("examples/g4_b2_laminar/cylinder.yaml")
+runner = CliRunner()
+
+
+@pytest.fixture(scope="module")
+def compiled(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, dict]:
+    root = tmp_path_factory.mktemp("g4_b2_cylinder") / "compiled"
+    result = compile_g4_b2_cylinder_benchmark(spec_path=SPEC, output_dir=root)
+    return result.root, json.loads(result.index_path.read_text(encoding="utf-8"))
+
+
+def _case(index: dict, representation: str, grid_id: str) -> dict:
+    return next(case for case in index["cases"] if case["representation"] == representation and case["grid_id"] == grid_id)
+
+
+def _completed_popen(callback: object) -> type:
+    """Adapt existing synchronous solver fakes to the watchdog's Popen seam."""
+
+    class CompletedPopen:
+        def __init__(self, command: list[str], *, cwd: Path, stdout: object, stderr: object, text: bool) -> None:
+            completed = callback(command, cwd=cwd, stdout=stdout, stderr=stderr, text=text)  # type: ignore[operator]
+            self.returncode = int(completed.returncode)
+
+        def poll(self) -> int:
+            return self.returncode
+
+    return CompletedPopen
+
+
+def test_contract_binds_fixed_laminar_cylinder_physics_and_three_grids(compiled: tuple[Path, dict]) -> None:
+    _, index = compiled
+
+    assert index["status"] == "compiled_not_runtime_qualified"
+    assert index["physics"] == {
+        "openfoam_version": "v2512", "solver": "simpleFoam",
+        "flow": "incompressible_steady_newtonian_laminar", "density_kg_m3": 1.225,
+        "kinematic_viscosity_m2_s": 1.5e-5, "freestream_velocity_mps": 0.03,
+    }
+    assert index["geometry"]["x_bounds_in_diameters"] == [-15.0, 25.0]
+    assert index["geometry"]["y_bounds_in_diameters"] == [-15.0, 15.0]
+    assert index["grids"]["nominal_h_over_diameter"] == [0.125, 0.0625, 0.03125]
+    assert [(case["representation"], case["grid_id"]) for case in index["cases"]] == [
+        ("body_fitted", "coarse"), ("body_fitted", "medium"), ("body_fitted", "fine"),
+        ("porous_cartesian", "coarse"), ("porous_cartesian", "medium"), ("porous_cartesian", "fine"),
+    ]
+    assert [case["nominal_h_m"] for case in index["cases"][:3]] == pytest.approx([0.01 / 8, 0.01 / 16, 0.01 / 32])
+    assert all(case["one_z_cell"] for case in index["cases"])
+    expected_phase_logs = {
+        "phase_a": {"solver_log_relpath": "log.simpleFoam.phaseA"},
+        "phase_b": {"solver_log_relpath": "log.simpleFoam.phaseB"},
+    }
+    assert index["two_phase_runtime_protocol"] == expected_phase_logs
+    assert all(case["two_phase_runtime_protocol"] == expected_phase_logs for case in index["cases"])
+
+
+def test_body_fitted_o_grid_uses_fixed_eight_sector_arc_topology_and_no_slip_wall(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    coarse = _case(index, "body_fitted", "coarse")
+    medium = _case(index, "body_fitted", "medium")
+    fine = _case(index, "body_fitted", "fine")
+
+    assert [case["mesh_contract"]["cells_per_block"] for case in (coarse, medium, fine)] == [[3, 120, 1], [6, 240, 1], [12, 480, 1]]
+    assert [case["mesh_contract"]["total_cells"] for case in (coarse, medium, fine)] == [2880, 11520, 46080]
+    assert len(coarse["mesh_contract"]["arc_controls"]) == 8
+    assert len(coarse["mesh_contract"]["block_order"]) == 8
+    block_mesh = (root / "body_fitted" / "coarse" / "system" / "blockMeshDict").read_text(encoding="utf-8")
+    velocity = (root / "body_fitted" / "coarse" / "0" / "U").read_text(encoding="utf-8")
+    control = (root / "body_fitted" / "coarse" / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+    assert block_mesh.count("    arc ") == 16
+    assert block_mesh.count("    hex ") == 8
+    assert "cylinder { type wall;" in block_mesh
+    assert "frontAndBack { type empty;" in block_mesh
+    assert "cylinder { type noSlip; }" in velocity
+    assert "patches (cylinder);" in control
+    assert "rhoInf 1.225;" in control
+
+
+def test_body_fitted_o_grid_contract_records_positive_blockmesh_winding(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    coarse = _case(index, "body_fitted", "coarse")
+    vertices = coarse["mesh_contract"]["vertices"]
+    blocks = coarse["mesh_contract"]["block_order"]
+    block_mesh = (root / "body_fitted" / "coarse" / "system" / "blockMeshDict").read_text(encoding="utf-8")
+
+    # The first four vertices are the +z face and the final four are z=0.
+    # This is the exact right-handed hex contract expected by blockMesh.
+    assert blocks[0]["vertices"] == [16, 17, 25, 24, 0, 1, 9, 8]
+    assert "hex (16 17 25 24 0 1 9 8)" in block_mesh
+
+    for block in blocks:
+        first, second, _, fourth, fifth, *_ = (vertices[index] for index in block["vertices"])
+        edge_a = [second[axis] - first[axis] for axis in range(3)]
+        edge_b = [fourth[axis] - first[axis] for axis in range(3)]
+        edge_c = [fifth[axis] - first[axis] for axis in range(3)]
+        cross = [
+            edge_a[1] * edge_b[2] - edge_a[2] * edge_b[1],
+            edge_a[2] * edge_b[0] - edge_a[0] * edge_b[2],
+            edge_a[0] * edge_b[1] - edge_a[1] * edge_b[0],
+        ]
+        assert sum(cross[axis] * edge_c[axis] for axis in range(3)) > 0.0
+
+
+def test_cartesian_refinement_and_area_fraction_are_deterministic_nonbinary_and_hash_bound(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    cases = [_case(index, "porous_cartesian", grid) for grid in ("coarse", "medium", "fine")]
+
+    assert [case["mesh_contract"]["cells"] for case in cases] == [[320, 240, 1], [640, 480, 1], [1280, 960, 1]]
+    assert [case["mesh_contract"]["total_cells"] for case in cases] == [76800, 307200, 1228800]
+    assert [case["area_fraction_contract"]["count"] for case in cases] == [76800, 307200, 1228800]
+    assert all(case["area_fraction_contract"]["algorithm"] == "fixed_16x16_midpoint_subcells" for case in cases)
+    assert all(case["area_fraction_contract"]["subcells_per_cell"] == 256 for case in cases)
+    beta_text = (root / "porous_cartesian" / "fine" / "0" / "beta").read_text(encoding="utf-8")
+    assert "object beta;" in beta_text
+    assert "1228800" in beta_text
+    # The fixed subcell rule creates fractional values at disk-cut cells;
+    # no centre-cell binary mask can satisfy this property.
+    assert "0.0390625" in beta_text
+    assert _case(index, "porous_cartesian", "fine")["file_sha256"]["0/beta"] == hashlib.sha256(beta_text.encode("utf-8")).hexdigest()
+
+
+def test_porous_extension_contract_and_allrun_are_exact_and_source_bound(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    case = _case(index, "porous_cartesian", "medium")
+    fv_options = (root / "porous_cartesian" / "medium" / "constant" / "fvOptions").read_text(encoding="utf-8")
+    control = (root / "porous_cartesian" / "medium" / "system" / "controlDict").read_text(encoding="utf-8")
+    phase_b_control = (root / "porous_cartesian" / "medium" / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+    allrun = (root / "porous_cartesian" / "medium" / "Allrun").read_text(encoding="utf-8")
+
+    assert index["extension"] == {
+        "library": "libcfdSdfLinearBrinkman.so", "fv_option_type": "cfdSdfLinearBrinkman",
+        "option_name": "porousCylinderResistance", "area_fraction_field": "beta",
+        "beta_max_m_inv_s": 150000.0, "darcy_number": 1.0e-6,
+        "darcy_number_formula": "nu/(betaMax*D^2)", "darcy_number_derived": 1.0e-6,
+        "beta_mapping": "source=-betaMax*beta*U;resistance=betaMax*beta*U",
+    }
+    for line in ("active yes;", "selectionMode all;", "U U;", "betaField beta;", "betaMax [0 0 -1 0 0 0 0] 150000;", "resistanceField brinkmanResistance;"):
+        assert line in fv_options
+    for line in (
+        "type volFieldValue;", "regionType all;", "writeFields true;", "writeToFile true;",
+        "operation volIntegrate;", "fields (brinkmanResistance);", "writeControl timeStep;", "writeInterval 1;",
+    ):
+        assert line in phase_b_control
+    assert 'libs ("./lib/libcfdSdfLinearBrinkman.so");' in control
+    assert "cp system/controlDict.phaseA system/controlDict" in allrun
+    assert "blockMesh > log.blockMesh 2>&1" in allrun
+    assert "checkMesh -allGeometry -allTopology > log.checkMesh 2>&1" in allrun
+    assert "simpleFoam > log.simpleFoam.phaseA 2>&1" in allrun
+    assert "simpleFoam > log.simpleFoam.phaseB 2>&1" in allrun
+    assert case["extension_contract"] == index["extension"]
+    assert case["extension_source_contract"] == index["extension_source_contract"]
+    assert index["extension_source_contract"]["source_tree_sha256"]
+    assert [item["path"] for item in index["extension_source_contract"]["source_files"]] == [
+        "cfdSdfLinearBrinkman.C", "cfdSdfLinearBrinkman.H", "Make/files", "Make/options",
+    ]
+    source_manifest = json.loads((root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_text(encoding="utf-8"))
+    assert source_manifest == index["extension_source_manifest"]
+    assert source_manifest["contains_prebuilt_library"] is False
+    for item in source_manifest["source_files"]:
+        snapshot = root / "extension_source" / item["path"]
+        project_source = Path("openfoam_extensions/cfdSdfLinearBrinkman") / item["path"]
+        assert snapshot.read_bytes() == project_source.read_bytes()
+        assert hashlib.sha256(snapshot.read_bytes()).hexdigest() == item["sha256"]
+    assert not list((root / "extension_source").rglob("*.so"))
+    assert "extension_source_hash" in index["runtime_evidence_requirements"]["porous"]
+    assert "extension_build_hash" in index["runtime_evidence_requirements"]["porous"]
+
+
+def test_two_phase_dictionaries_preserve_physics_and_make_measurement_tail_exact(compiled: tuple[Path, dict]) -> None:
+    root, index = compiled
+    case = root / "body_fitted" / "coarse"
+    control_a = (case / "system" / "controlDict.phaseA").read_text(encoding="utf-8")
+    control_b = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+    solution_a = (case / "system" / "fvSolution.phaseA").read_text(encoding="utf-8")
+    solution_b = (case / "system" / "fvSolution.phaseB").read_text(encoding="utf-8")
+
+    assert "startFrom startTime;" in control_a
+    assert "endTime 4000;" in control_a
+    assert "writeAtEnd yes;" in control_a
+    assert "residualControl { p 1e-8; U 1e-8; }" in solution_a
+    assert "startFrom latestTime;" in control_b
+    assert "endTime __PHASE_B_END_TIME__;" in control_b
+    assert "writeControl timeStep;" in control_b
+    assert "writeInterval 1;" in control_b
+    assert "purgeWrite 1;" in control_b
+    assert "writeAtEnd" not in control_b
+    assert "residualControl" not in solution_b
+    assert "tolerance 1e-10;" in solution_a and "tolerance 1e-10;" in solution_b
+    assert "rhoInf 1.225;" in control_b
+    assert "writeInterval 1;" in control_b
+    assert "pressureProbes" in control_b
+
+
+def test_porous_generated_scripts_materialize_beta_from_immutable_zero_field(compiled: tuple[Path, dict]) -> None:
+    root, _ = compiled
+    allrun = (root / "porous_cartesian" / "coarse" / "Allrun").read_text(encoding="utf-8")
+    phase_a = cylinder_module._phase_container_script("phase_a", porous=True)
+
+    for script in (allrun, phase_a):
+        assert "test -f 0/beta" in script
+        assert 'cp 0/beta "$phase_a_time/beta"' in script
+
+
+def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(compiled: tuple[Path, dict], tmp_path: Path) -> None:
+    root, index = compiled
+    source_hash = hashlib.sha256((root / G4_B2_CYLINDER_COMPILATION_FILENAME).read_bytes()).hexdigest()
+    with pytest.raises(FileExistsError):
+        compile_g4_b2_cylinder_benchmark(spec_path=SPEC, output_dir=root)
+
+    artifact = run_g4_b2_cylinder_cases(compilation_dir=root, output_dir=tmp_path / "runtime", through_grid="fine", backend="docker", execute=False)
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "contract_only_not_executed"
+    assert len(payload["cases"]) == 6
+    assert all(case["status"] == "contract_only_not_executed" for case in payload["cases"])
+    assert hashlib.sha256((root / G4_B2_CYLINDER_COMPILATION_FILENAME).read_bytes()).hexdigest() == source_hash
+    assert (artifact.parent / "cases" / "body_fitted" / "fine" / "openfoam_run_summary.json").is_file()
+    assert (artifact.parent / "cases" / "porous_cartesian" / "fine" / "openfoam_run_summary.json").is_file()
+    porous = next(item for item in payload["cases"] if item["representation"] == "porous_cartesian")
+    assert porous["run"]["extension"]["build"]["status"] == "not_executed"
+    assert "C:" not in json.dumps(porous["run"]["extension"]["build"]["canonical_container_command"])
+    assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [
+        ("coarse", "body_fitted"), ("coarse", "porous_cartesian"),
+        ("medium", "body_fitted"), ("medium", "porous_cartesian"),
+        ("fine", "body_fitted"), ("fine", "porous_cartesian"),
+    ]
+    assert payload["phase_timeouts_seconds"] == {
+        "body_fitted": {
+            "coarse": {"phase_a": 900, "phase_b": 300},
+            "medium": {"phase_a": 1800, "phase_b": 600},
+            "fine": {"phase_a": 5400, "phase_b": 1800},
+        },
+        "porous_cartesian": {
+            "coarse": {"phase_a": 900, "phase_b": 600},
+            "medium": {"phase_a": 14400, "phase_b": 3600},
+            "fine": {"phase_a": 5400, "phase_b": 21600},
+        },
+    }
+    assert payload["cases"][0]["effective_phase_timeouts_seconds"] == {"phase_a": 900, "phase_b": 300}
+    assert payload["cases"][1]["effective_phase_timeouts_seconds"] == {"phase_a": 900, "phase_b": 600}
+    assert all(item["run"]["phase_a"]["status"] == "planned" for item in payload["cases"])
+    assert all(item["run"]["phase_b"]["status"] == "planned" for item in payload["cases"])
+    medium_porous = next(
+        item for item in payload["cases"]
+        if item["representation"] == "porous_cartesian" and item["grid_id"] == "medium"
+    )
+    assert medium_porous["effective_phase_timeouts_seconds"] == {"phase_a": 14400, "phase_b": 3600}
+    assert medium_porous["run"]["phase_a"]["advance_watchdog"]["policy"]["enabled"] is True
+    assert medium_porous["run"]["phase_a"]["advance_watchdog"]["outcome"] == "not_executed"
+    body_medium = next(
+        item for item in payload["cases"]
+        if item["representation"] == "body_fitted" and item["grid_id"] == "medium"
+    )
+    assert body_medium["effective_phase_timeouts_seconds"] == {"phase_a": 1800, "phase_b": 600}
+    assert body_medium["run"]["phase_a"]["advance_watchdog"]["policy"]["enabled"] is False
+    assert payload["staging_lifecycle"]["cleanup"]["solver_status_is_independent"] is True
+
+
+class _ManualClock:
+    def __init__(self) -> None:
+        self.value = 0.0
+
+    def __call__(self) -> float:
+        return self.value
+
+    def advance(self, seconds: float) -> None:
+        self.value += seconds
+
+
+class _RunningProcess:
+    def __init__(self, poll_callback: object) -> None:
+        self._poll_callback = poll_callback
+        self.terminated = False
+        self.killed = False
+
+    def poll(self) -> int | None:
+        return self._poll_callback()  # type: ignore[operator]
+
+    def terminate(self) -> None:
+        self.terminated = True
+
+    def kill(self) -> None:
+        self.killed = True
+
+    def wait(self, timeout: float) -> int:
+        return -15
+
+
+def _enabled_medium_phase_a_watchdog() -> dict:
+    return cylinder_module._phase_watchdog_policy("porous_cartesian", "medium", "phase_a")
+
+
+def test_live_watchdog_accepts_strictly_increasing_complete_solver_blocks(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    clock = _ManualClock()
+    polls = 0
+
+    def poll() -> int | None:
+        nonlocal polls
+        polls += 1
+        if polls == 1:
+            solver_log.write_text("Time = 1\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+            return None
+        if polls == 2:
+            solver_log.write_text(
+                "Time = 1\nExecutionTime = 1 s  ClockTime = 1 s\n"
+                "Time = 2\nExecutionTime = 2 s  ClockTime = 2 s\n",
+                encoding="utf-8",
+            )
+            return None
+        return 0
+
+    process = _RunningProcess(poll)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=clock, sleep_fn=lambda seconds: clock.advance(seconds), process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] is None
+    assert result["watchdog"]["outcome"] == "completed"
+    assert result["watchdog"]["last_complete_time"] == 2.0
+    assert result["watchdog"]["evidence"]["strictly_increasing"] is True
+    assert process.terminated is False
+
+
+def test_live_watchdog_kills_child_after_600_seconds_without_complete_block(tmp_path: Path) -> None:
+    clock = _ManualClock()
+    process = _RunningProcess(lambda: None)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=tmp_path / "log.simpleFoam.phaseA", timeout_seconds=14400,
+        policy=_enabled_medium_phase_a_watchdog(), clock=clock,
+        sleep_fn=lambda seconds: clock.advance(seconds), process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_stalled_no_advance"
+    assert result["timed_out"] is False
+    assert result["watchdog"]["outcome"] == "runtime_stalled_no_advance"
+    assert result["watchdog"]["last_complete_time"] is None
+    assert result["watchdog"]["last_complete_solver_log_sha256"] is None
+    assert process.terminated is True
+
+
+def test_live_watchdog_rejects_nonmonotonic_complete_solver_times(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text(
+        "Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n"
+        "Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n",
+        encoding="utf-8",
+    )
+    process = _RunningProcess(lambda: None)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["outcome"] == "nonmonotonic_time"
+    assert result["watchdog"]["evidence"]["nonmonotonic_pairs"] == [{"previous": 8.0, "current": 7.0}]
+    assert process.terminated is True
+
+
+def test_live_watchdog_rejects_log_rewrite_to_nonadvancing_complete_time(tmp_path: Path) -> None:
+    """A truncate/rewrite must not turn old Time into fresh watchdog progress."""
+
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+    polls = 0
+
+    def poll() -> int | None:
+        nonlocal polls
+        polls += 1
+        if polls == 1:
+            solver_log.write_text("Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n", encoding="utf-8")
+        return None
+
+    process = _RunningProcess(poll)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["last_observed_complete_time"] == 8.0
+    assert result["watchdog"]["evidence"]["observed_nonmonotonic_pair"] == {"previous": 8.0, "current": 7.0}
+    assert process.terminated is True
+
+
+def test_live_watchdog_rechecks_terminal_log_block_after_child_exit(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+
+    def exit_after_rewrite() -> int:
+        solver_log.write_text("Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n", encoding="utf-8")
+        return 0
+
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: _RunningProcess(exit_after_rewrite),
+    )
+
+    assert result["returncode"] == 0
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["outcome"] == "nonmonotonic_time"
+    assert result["watchdog"]["last_observed_complete_time"] == 8.0
+    assert result["watchdog"]["evidence"]["observed_nonmonotonic_pair"] == {"previous": 8.0, "current": 7.0}
+
+
+def test_medium_porous_successful_phase_at_75_percent_is_inconclusive() -> None:
+    guard = cylinder_module._successful_phase_near_timeout_guard({
+        "ok": True,
+        "phase_a": {"ok": True, "timeout_seconds": 14400, "duration_seconds": 10800},
+        "phase_b": {"ok": True, "timeout_seconds": 3600, "duration_seconds": 1},
+    })
+
+    assert guard is not None
+    assert guard["phase"] == "phase_a"
+    assert guard["threshold_seconds"] == 10800.0
+
+
+def test_bounded_cleanup_retries_windows_lock_without_touching_a_published_output(tmp_path: Path) -> None:
+    staging = tmp_path / ".fresh-runtime.tmp"
+    staging.mkdir()
+    (staging / "evidence").write_text("preserve until successful removal", encoding="utf-8")
+    calls = 0
+    delays: list[float] = []
+
+    def lock_once(target: Path) -> None:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise PermissionError("file is locked")
+        import shutil
+        shutil.rmtree(target)
+
+    result = cylinder_module._bounded_remove_tree(
+        staging, remove_tree=lock_once, sleep_fn=delays.append,
+    )
+
+    assert result == {"status": "removed", "attempts": 2, "errors": ["attempt_1:PermissionError:file is locked"]}
+    assert delays == [0.1]
+    assert not staging.exists()
+
+
+def test_bounded_cleanup_preserves_locked_staging_and_reports_separate_failure(tmp_path: Path) -> None:
+    staging = tmp_path / ".locked-runtime.tmp"
+    staging.mkdir()
+    evidence = staging / "evidence"
+    evidence.write_text("do not delete after lock failure", encoding="utf-8")
+    delays: list[float] = []
+
+    def always_locked(target: Path) -> None:
+        raise PermissionError(f"locked:{target.name}")
+
+    result = cylinder_module._bounded_remove_tree(
+        staging, remove_tree=always_locked, sleep_fn=delays.append,
+    )
+
+    assert result["status"] == "failed"
+    assert result["attempts"] == 3
+    assert len(result["errors"]) == 3
+    assert delays == [0.1, 0.2]
+    assert evidence.read_text(encoding="utf-8") == "do not delete after lock failure"
+
+
+def test_porous_semantic_check_rejects_changed_beta_contract(compiled: tuple[Path, dict], tmp_path: Path) -> None:
+    root, _ = compiled
+    copied = tmp_path / "porous"
+    import shutil
+    shutil.copytree(root / "porous_cartesian" / "coarse", copied)
+    fv_options = copied / "constant" / "fvOptions"
+    fv_options.write_text(fv_options.read_text(encoding="utf-8").replace("betaField beta;", "betaField betaOther;"), encoding="utf-8")
+    with pytest.raises(ValueError, match="betaField"):
+        _verify_porous_case_semantics(copied)
+
+
+def test_executed_sequence_stops_before_later_grids_after_phase_failure(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+
+    def fail_first(*args: object, **kwargs: object) -> dict:
+        return {"ok": False, "phase_a": {"status": "failed"}, "phase_b": {"status": "planned"}}
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", fail_first)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "failed", backend="docker", execute=True,
+        through_grid="fine",
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "runtime_failed"
+    assert payload["stopped_by"] == "runtime_failure"
+    assert payload["requested_through_grid"] == "fine"
+    assert payload["executed_through_grid"] == "coarse"
+    assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [("coarse", "body_fitted")]
+
+
+def test_watchdog_stall_is_reported_at_prefix_boundary_and_stops_later_cases(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+
+    def stalled(*args: object, **kwargs: object) -> dict:
+        return {
+            "ok": False,
+            "phase_a": {
+                "status": "failed", "error": "runtime_stalled_no_advance",
+                "advance_watchdog": {
+                    "outcome": "runtime_stalled_no_advance", "last_complete_time": 12.0,
+                    "last_complete_solver_log_sha256": "a" * 64, "evidence": {"complete_times": [12.0]},
+                },
+            },
+            "phase_b": {"status": "planned"},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", stalled)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "stalled", backend="docker", execute=True,
+        through_grid="fine", docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+
+    assert payload["status"] == "runtime_failed"
+    assert payload["stopped_by"] == "runtime_stalled_no_advance"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["next_required_condition"].startswith("inspect_the_preserved_solver_log")
+
+
+def test_successful_phase_near_hard_timeout_is_inconclusive_and_stops_prefix(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    calls: list[tuple[str, str]] = []
+
+    def near_timeout(*args: object, **kwargs: object) -> dict:
+        representation = str(kwargs["representation"])
+        grid_id = str(kwargs["grid_id"])
+        calls.append((representation, grid_id))
+        return {
+            "ok": True,
+            "representation": representation,
+            "grid_id": grid_id,
+            "phase_a": {"ok": True, "timeout_seconds": 900, "duration_seconds": 1.0},
+            "phase_b": {"ok": True, "timeout_seconds": 300, "duration_seconds": 225.0},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", near_timeout)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "near-timeout", backend="docker", execute=True,
+        through_grid="fine",
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert calls == [("body_fitted", "coarse")]
+    assert payload["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["stopped_by"] == "successful_phase_near_hard_timeout"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["cases"][0]["status"] == "runtime_inconclusive_near_timeout"
+    guard = payload["cases"][0]["run"]["near_timeout_guard"]
+    assert guard["phase"] == "phase_b"
+    assert guard["threshold_seconds"] == 225.0
+    assert guard["diagnostic"] == "successful_phase_duration_at_or_above_75_percent_of_hard_timeout"
+    assert payload["next_required_condition"].startswith("investigate_or_raise_the_representation_specific_timeout_policy")
+
+
+def test_phase_a_near_timeout_record_stops_prefix_as_inconclusive(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The outer prefix writer preserves the direct Phase-A gate outcome."""
+
+    root, _ = compiled
+    calls: list[tuple[str, str]] = []
+
+    def phase_a_guarded(*args: object, **kwargs: object) -> dict:
+        representation = str(kwargs["representation"])
+        grid_id = str(kwargs["grid_id"])
+        calls.append((representation, grid_id))
+        guard = {
+            "phase": "phase_a", "duration_seconds": 10800.0,
+            "hard_timeout_seconds": 14400.0, "threshold_fraction": 0.75,
+            "threshold_seconds": 10800.0,
+            "diagnostic": "successful_phase_duration_at_or_above_75_percent_of_hard_timeout",
+        }
+        return {
+            "ok": False, "status": "inconclusive_near_timeout",
+            "error": guard["diagnostic"], "failed_phase": "phase_a",
+            "near_timeout_guard": guard,
+            "phase_a": {"ok": True, "status": "completed", "timeout_seconds": 14400, "duration_seconds": 10800.0},
+            "phase_b": {"ok": False, "status": "planned"},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", phase_a_guarded)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "phase-a-near-timeout", backend="docker", execute=True,
+        through_grid="fine", docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+
+    assert calls == [("body_fitted", "coarse")]
+    assert payload["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["stopped_by"] == "successful_phase_near_hard_timeout"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["cases"][0]["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["cases"][0]["run"]["near_timeout_guard"]["phase"] == "phase_a"
+
+
+def _write_phase_final_fields(case: Path, *, phase: str, time_name: str) -> None:
+    (case / ("runtime_phase_a_final_time.txt" if phase == "phase_a" else "runtime_phase_b_final_time.txt")).write_text(
+        time_name + "\n", encoding="utf-8"
+    )
+    final = case / time_name
+    final.mkdir(exist_ok=True)
+    (final / "U").write_text("U\n", encoding="utf-8")
+    (final / "p").write_text("p\n", encoding="utf-8")
+    if phase == "phase_a":
+        (final / "phi").write_text("phi\n", encoding="utf-8")
+
+
+def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+
+    def complete_phase_a(*args: object, **kwargs: object) -> SimpleNamespace:
+        (case / "log.simpleFoam.phaseA").write_text(
+            "  TRAPFPE : Floating   point exception trapping enabled ( FOAM_SIGFPE ) .  \n"
+            "SIMPLE solution converged in 1255 iterations\n",
+            encoding="utf-8",
+        )
+        _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_phase_a))
+    result = cylinder_module._run_docker_phase(
+        case, phase="phase_a", representation="body_fitted", snapshot_dir=None,
+        image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        timeout_seconds=1, case_relpath=Path("cases/body_fitted/coarse"),
+    )
+
+    assert result["ok"] is True
+    assert result["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
+    assert result["solver_log_sha256"] == hashlib.sha256((case / "log.simpleFoam.phaseA").read_bytes()).hexdigest()
+
+
+def test_phase_a_restart_archive_preserves_u_p_phi_after_source_time_is_removed(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    archive = cylinder_module._archive_phase_a_restart_fields(case, 1255.0)
+
+    assert archive["complete"] is True
+    assert archive["archive_relpath"] == "evidence/phase_a_restart/1255"
+    assert archive["manifest_relpath"] == "evidence/phase_a_restart_manifest.json"
+    assert [item["path"] for item in archive["files"]] == ["U", "p", "phi"]
+    shutil.rmtree(case / "1255")
+    assert cylinder_module._verify_phase_a_restart_archive(case, archive)["complete"] is True
+
+
+def test_porous_phase_a_restart_archive_materializes_only_immutable_beta(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    origin = case / "0" / "beta"
+    materialized = case / "1255" / "beta"
+    shutil.copyfile(origin, materialized)
+    origin_sha = hashlib.sha256(origin.read_bytes()).hexdigest()
+
+    archive = cylinder_module._archive_phase_a_restart_fields(
+        case, 1255.0, porous=True, beta_origin_sha256=origin_sha,
+    )
+
+    assert archive["complete"] is True
+    assert [item["path"] for item in archive["files"]] == ["U", "p", "phi", "beta"]
+    assert archive["materialized_beta"] == {
+        "origin_relpath": "0/beta", "origin_sha256": origin_sha,
+        "materialized_relpath": "1255/beta", "materialized_sha256": origin_sha,
+    }
+    assert not (case / archive["archive_relpath"] / "brinkmanResistance").exists()
+    assert cylinder_module._verify_phase_a_restart_archive(case, archive)["complete"] is True
+
+
+def test_porous_restart_archive_fails_closed_when_materialized_beta_does_not_match_origin(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous-bad-beta"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    (case / "1255" / "beta").write_text("retuned beta is prohibited\n", encoding="utf-8")
+    archive = cylinder_module._archive_phase_a_restart_fields(
+        case, 1255.0, porous=True,
+        beta_origin_sha256=hashlib.sha256((case / "0" / "beta").read_bytes()).hexdigest(),
+    )
+
+    assert archive["complete"] is False
+    assert archive["reason"] == "phase_a_materialized_beta_does_not_match_immutable_origin"
+
+
+def test_phase_a_convergence_contract_requires_marker_and_time_at_most_4000(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("SIMPLE solution converged in 4001 iterations\n", encoding="utf-8")
+
+    valid_marker = cylinder_module._phase_a_convergence_contract(
+        solver_log, {"complete": True, "time": "1255"},
+    )
+    too_late = cylinder_module._phase_a_convergence_contract(
+        solver_log, {"complete": True, "time": "4001"},
+    )
+
+    assert valid_marker["complete"] is True
+    assert too_late["complete"] is False
+    assert too_late["checks"]["final_time_finite_and_at_most_4000"] is False
+    solver_log.write_text("ordinary solver output\n", encoding="utf-8")
+    assert cylinder_module._phase_a_convergence_contract(solver_log, {"complete": True, "time": "1255"})["complete"] is False
+
+
+def test_phase_a_near_timeout_stops_before_phase_b_process_start(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The Phase-A safety margin is a gate on the Phase-B process boundary."""
+
+    root, index = compiled
+    import shutil
+
+    case = tmp_path / "porous_cartesian"
+    shutil.copytree(root / "porous_cartesian" / "medium", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    shutil.copyfile(case / "0" / "beta", case / "1255" / "beta")
+    (case / "log.simpleFoam.phaseA").write_text("phase A evidence\n", encoding="utf-8")
+    phase_calls: list[str] = []
+    popen_calls: list[object] = []
+    real_phase = cylinder_module._run_docker_phase
+
+    def unexpected_popen(*args: object, **kwargs: object) -> object:
+        popen_calls.append((args, kwargs))
+        raise AssertionError("Phase B must not reach Popen after a near-timeout Phase A")
+
+    def fake_phase(*args: object, **kwargs: object) -> dict:
+        phase = str(kwargs["phase"])
+        phase_calls.append(phase)
+        if phase == "phase_b":
+            # This guard protects the direct handoff too, before its Popen seam.
+            return real_phase(*args, **kwargs)
+        return {
+            "ok": True, "status": "completed", "returncode": 0, "timed_out": False,
+            "error": None, "duration_seconds": 10800.0,
+            "advance_watchdog": {"outcome": "not_enabled"},
+        }
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", unexpected_popen)
+    monkeypatch.setattr(cylinder_module, "_run_docker_phase", fake_phase)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="medium", snapshot_dir=root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/medium"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        expected_snapshot_manifest_sha256=str(index["extension_source_manifest_sha256"]),
+        expected_snapshot_tree_sha256=str(index["extension_source_contract"]["source_tree_sha256"]),
+    )
+
+    assert phase_calls == ["phase_a"]
+    assert popen_calls == []
+    assert result["ok"] is False
+    assert result["status"] == "inconclusive_near_timeout"
+    assert result["error"] == "successful_phase_duration_at_or_above_75_percent_of_hard_timeout"
+    assert result["failed_phase"] == "phase_a"
+    assert result["phase_b"]["status"] == "planned"
+    assert result["near_timeout_guard"]["threshold_seconds"] == 10800.0
+
+
+def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histories(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    calls = 0
+
+    def complete_two_phases(command: list[str], *args: object, **kwargs: object) -> SimpleNamespace:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            (case / "log.simpleFoam.phaseA").write_text(
+                "SIMPLE solution converged in 1255 iterations\n"
+                "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+            (case / "log.blockMesh").write_text("blockMesh completed\n", encoding="utf-8")
+            (case / "log.checkMesh").write_text("Mesh OK.\n", encoding="utf-8")
+            poly_mesh = case / "constant" / "polyMesh"
+            poly_mesh.mkdir(parents=True, exist_ok=True)
+            (poly_mesh / "points").write_text("generated mesh\n", encoding="utf-8")
+        else:
+            control = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+            (case / "system" / "controlDict.phaseB").write_text(
+                control.replace("__PHASE_B_END_TIME__", "1455"), encoding="utf-8",
+            )
+            (case / "log.simpleFoam.phaseB").write_text(
+                "".join(f"Time = {time}\n" for time in range(1256, 1456))
+                + "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                + "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_b", time_name="1455")
+            for function, filename in (("pressureProbes", "p"), ("cylinderForces", "forces.dat")):
+                history = case / "postProcessing" / function / "0" / filename
+                history.parent.mkdir(parents=True, exist_ok=True)
+                history.write_text("".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_two_phases))
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
+        case_relpath=Path("cases/body_fitted/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is True
+    assert result["phase_a"]["restart_archive"]["complete"] is True
+    assert result["phase_b"]["phase_a_restart_archive"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["active_control"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["measurement_history"]["pressure_probes"]["complete"] is True
+    assert result["phase_b"]["final_fields"]["measurement_history"]["force"]["complete"] is True
+    assert result["phase_b"]["log_time_contract"]["complete"] is True
+    assert result["case_evidence"]["complete"] is True
+    manifest = json.loads((case / "evidence" / "case_evidence_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["raw_solver_sources"]["complete"] is True
+    assert manifest["evidence_tree_sha256"]
+    evaluation = manifest["solver_evaluation"]
+    assert evaluation["evaluated"] is False
+    assert evaluation["reason"] == "awaits_later_fine_six_case_evaluator"
+    assert evaluation["status"] == "not_evaluated_not_passed"
+    assert all(evaluation[name]["evaluated"] is False for name in ("residual", "continuity_mass_balance", "stationarity"))
+
+
+def test_phase_b_log_time_contract_rejects_missing_or_duplicate_step(tmp_path: Path) -> None:
+    log = tmp_path / "log.simpleFoam.phaseB"
+    log.write_text(
+        "".join(f"Time = {time}\n" for time in range(1256, 1455)) + "Time = 1454\n",
+        encoding="utf-8",
+    )
+
+    contract = cylinder_module._phase_b_log_time_contract(log, start=1255.0, end=1455.0)
+    assert contract["complete"] is False
+    assert 1455.0 in contract["missing_times"]
+    assert 1454.0 in contract["duplicate_times"]
+
+
+def test_porous_resistance_history_requires_one_native_vol_field_value_table(tmp_path: Path) -> None:
+    history_root = tmp_path / "postProcessing" / "porousResistance"
+    native = history_root / "0" / "volFieldValue.dat"
+    native.parent.mkdir(parents=True)
+    native.write_text(
+        "# Time volIntegrate(brinkmanResistance)\n"
+        + "".join(f"{time} 0\n" for time in range(1256, 1456)),
+        encoding="utf-8",
+    )
+    # v2512 writeFields output must not be accepted as a force history.
+    generated_all = history_root / "1455" / "brinkmanResistance_all"
+    generated_all.parent.mkdir(parents=True)
+    generated_all.write_text("field output, not a volFieldValue history\n", encoding="utf-8")
+
+    contract = cylinder_module._porous_resistance_history_contract(
+        history_root, cylinder_module._expected_phase_b_times(1255.0),
+    )
+
+    assert contract["complete"] is True
+    assert contract["selected"]["relpath"] == "0/volFieldValue.dat"
+    assert contract["selected"]["native_vol_field_value_header"] is True
+    assert any(item["write_fields_all_field"] for item in contract["candidates"])
+
+
+@pytest.mark.parametrize("kind", ["wrong_header", "multiple_native"])
+def test_porous_resistance_history_rejects_wrong_or_multiple_native_tables(tmp_path: Path, kind: str) -> None:
+    history_root = tmp_path / "postProcessing" / "porousResistance"
+    first = history_root / "0" / "volFieldValue.dat"
+    first.parent.mkdir(parents=True)
+    header = "# Time wrongOperation(brinkmanResistance)\n" if kind == "wrong_header" else "# Time volIntegrate(brinkmanResistance)\n"
+    first.write_text(header + "".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+    if kind == "multiple_native":
+        second = history_root / "1" / "volFieldValue.dat"
+        second.parent.mkdir(parents=True)
+        second.write_text(
+            "# Time volIntegrate(brinkmanResistance)\n" + "".join(f"{time} 0\n" for time in range(1256, 1456)),
+            encoding="utf-8",
+        )
+
+    contract = cylinder_module._porous_resistance_history_contract(
+        history_root, cylinder_module._expected_phase_b_times(1255.0),
+    )
+
+    assert contract["complete"] is False
+    if kind == "wrong_header":
+        assert contract["reason"] == "no_native_volFieldValue_history_has_exact_200_unique_phase_b_times"
+    else:
+        assert contract["reason"] == "multiple_native_volFieldValue_histories_have_exact_200_unique_phase_b_times"
+
+
+@pytest.mark.parametrize(
+    ("log", "fatal"),
+    [
+        ("trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).\n", False),
+        (
+            "trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).\n"
+            "Floating point exception (8)\n",
+            True,
+        ),
+        ("Floating point exception (core dumped)\n", True),
+        ("FOAM FATAL ERROR:\n", True),
+        ("Segmentation fault (core dumped)\n", True),
+        ("FOAM_SIGFPE signal received\n", True),
+        ("MPI_ABORT was invoked\n", True),
+    ],
+)
+def test_solver_log_fatal_classifier_is_line_aware_for_trap_fpe_banner(
+    tmp_path: Path, log: str, fatal: bool,
+) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text(log, encoding="utf-8")
+
+    assert cylinder_module._solver_log_has_fatal(solver_log) is fatal
+
+
+def test_missing_phase_a_log_fails_and_never_starts_phase_b(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "body_fitted"
+    shutil.copytree(root / "body_fitted" / "coarse", case)
+    calls: list[str] = []
+
+    def complete_without_log(command: list[str], *args: object, **kwargs: object) -> SimpleNamespace:
+        script = command[-1]
+        calls.append(script)
+        assert "log.simpleFoam.phaseA" in script
+        assert "log.simpleFoam.phaseB" not in script
+        _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_without_log))
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
+        case_relpath=Path("cases/body_fitted/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["solver_log_relpath"] == "cases/body_fitted/coarse/log.simpleFoam.phaseA"
+    assert result["phase_a"]["solver_log_sha256"] is None
+    assert result["phase_b"]["status"] == "planned"
+    assert len(calls) == 1
+
+
+def test_porous_extension_load_assertions_read_only_phase_b_log(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    phase_b_log = case / "log.simpleFoam.phaseB"
+    phase_b_log.write_text("Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n", encoding="utf-8")
+    (case / "log.simpleFoam").write_text("decoy log without extension identity\n", encoding="utf-8")
+    resistance = case / "1455" / "brinkmanResistance"
+    resistance.parent.mkdir()
+    resistance.write_text("field\n", encoding="utf-8")
+
+    contract = cylinder_module._extension_runtime_contract(
+        case, snapshot_dir=None, rel="cases/porous_cartesian/coarse",
+        image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        phase_a={"canonical_container_command": ["phase-a"]}, phase_b={"final_time": "1455"},
+    )
+
+    runtime = contract["runtime_load"]
+    assert runtime["solver_log_sha256"] == hashlib.sha256(phase_b_log.read_bytes()).hexdigest()
+    assert all(runtime["load_log_assertions"].values())
+
+
+def test_porous_run_ok_requires_source_build_and_load_assertions(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    calls = 0
+
+    def complete_porous_phases(*args: object, **kwargs: object) -> SimpleNamespace:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            (case / "log.simpleFoam.phaseA").write_text(
+                "Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n"
+                "SIMPLE solution converged in 1255 iterations\n"
+                "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+            shutil.copyfile(case / "0" / "beta", case / "1255" / "beta")
+            (case / "log.blockMesh").write_text("blockMesh completed\n", encoding="utf-8")
+            (case / "log.checkMesh").write_text("Mesh OK.\n", encoding="utf-8")
+            poly_mesh = case / "constant" / "polyMesh"
+            poly_mesh.mkdir(parents=True, exist_ok=True)
+            (poly_mesh / "points").write_text("generated mesh\n", encoding="utf-8")
+            (case / "log.extension-build").write_text("wmake completed\n", encoding="utf-8")
+            library = case / "lib" / "libcfdSdfLinearBrinkman.so"
+            library.parent.mkdir(exist_ok=True)
+            library.write_bytes(b"fake-but-bound-library")
+        else:
+            control = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
+            (case / "system" / "controlDict.phaseB").write_text(control.replace("__PHASE_B_END_TIME__", "1455"), encoding="utf-8")
+            (case / "log.simpleFoam.phaseB").write_text(
+                "Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n"
+                + "".join(f"Time = {time}\n" for time in range(1256, 1456))
+                + "Solving for Ux, Initial residual = 1e-4, Final residual = 1e-9, No Iterations 1\n"
+                + "time step continuity errors : sum local = 0, global = 0, cumulative = 0\n",
+                encoding="utf-8",
+            )
+            _write_phase_final_fields(case, phase="phase_b", time_name="1455")
+            (case / "1455" / "brinkmanResistance").write_text("resistance\n", encoding="utf-8")
+            for function, filename in (("pressureProbes", "p"), ("porousResistance", "volFieldValue.dat")):
+                history = case / "postProcessing" / function / "0" / filename
+                history.parent.mkdir(parents=True, exist_ok=True)
+                header = "# Time volIntegrate(brinkmanResistance)\n" if function == "porousResistance" else ""
+                history.write_text(header + "".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_porous_phases))
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse", snapshot_dir=root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is True
+    assert result["extension"]["complete"] is True
+    assert all(result["extension"]["assertions"].values())
+    assert result["phase_a"]["restart_archive"]["materialized_beta"]["origin_relpath"] == "0/beta"
+    assert result["case_evidence"]["complete"] is True
+    manifest = json.loads((case / "evidence" / "case_evidence_manifest.json").read_text(encoding="utf-8"))
+    porous = manifest["porous_extension_evidence"]
+    snapshot = result["extension"]["source_snapshot"]
+    assert porous["source_manifest_sha256"] == snapshot["manifest_sha256"]
+    assert porous["source_tree_sha256"] == snapshot["source_tree_sha256"]
+    assert all(porous["source_snapshot_assertions"].values())
+    assert porous["build"]["library_sha256"] == porous["runtime_load"]["library_sha256"]
+    active = porous["active_phase_b_control"]
+    assert active["complete"] is True
+    assert active["sha256"] == hashlib.sha256((case / "system" / "controlDict.phaseB").read_bytes()).hexdigest()
+    assert all(active["checks"].values())
+
+
+def test_porous_extension_contract_fails_closed_when_a_phase_did_not_load_option(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous-no-load"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    (case / "log.extension-build").write_text("wmake completed\n", encoding="utf-8")
+    library = case / "lib" / "libcfdSdfLinearBrinkman.so"
+    library.parent.mkdir(exist_ok=True)
+    library.write_bytes(b"bound library")
+    (case / "log.simpleFoam.phaseA").write_text("no fvOption declaration\n", encoding="utf-8")
+    (case / "log.simpleFoam.phaseB").write_text("Selecting fvOption cfdSdfLinearBrinkman porousCylinderResistance\n", encoding="utf-8")
+    resistance = case / "1455" / "brinkmanResistance"
+    resistance.parent.mkdir()
+    resistance.write_text("resistance\n", encoding="utf-8")
+
+    contract = cylinder_module._extension_runtime_contract(
+        case, root / "extension_source", "cases/porous_cartesian/coarse",
+        "opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        {"canonical_container_command": ["phase-a"]}, {"final_time": "1455"},
+    )
+
+    assert contract["complete"] is False
+    assert contract["assertions"]["phase_a_option_loaded"] is False
+
+
+@pytest.mark.parametrize(
+    ("through_grid", "expected_ids"),
+    [
+        ("coarse", ["body_fitted/coarse", "porous_cartesian/coarse"]),
+        ("medium", ["body_fitted/coarse", "porous_cartesian/coarse", "body_fitted/medium", "porous_cartesian/medium"]),
+        ("fine", ["body_fitted/coarse", "porous_cartesian/coarse", "body_fitted/medium", "porous_cartesian/medium", "body_fitted/fine", "porous_cartesian/fine"]),
+    ],
+)
+def test_dry_run_writes_only_requested_canonical_prefix(
+    compiled: tuple[Path, dict], tmp_path: Path, through_grid: str, expected_ids: list[str],
+) -> None:
+    root, _ = compiled
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / through_grid, through_grid=through_grid,
+        backend="docker", execute=False,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "contract_only_not_executed"
+    assert payload["requested_through_grid"] == through_grid
+    assert payload["executed_through_grid"] == through_grid
+    assert payload["stopped_by"] == "requested_grid"
+    assert payload["ordered_executed_case_ids"] == expected_ids
+    assert payload["canonical_case_ids"][-2:] == ["body_fitted/fine", "porous_cartesian/fine"]
+
+
+def test_complete_executed_prefix_is_unqualified_until_force_cp_evaluation(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+
+    def succeed(*args: object, **kwargs: object) -> dict:
+        return {"ok": True, "phase_a": {"status": "completed"}, "phase_b": {"status": "completed"}}
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", succeed)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "coarse-success", through_grid="coarse",
+        backend="docker", execute=True, docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "partial_runtime_completed_unqualified"
+    assert payload["qualified"] is False
+    assert payload["stopped_by"] == "requested_grid"
+    assert payload["next_required_condition"] == "run a new --through-grid fine prefix"
+    assert payload["force_cp_evaluation"]["evaluated"] is False
+    evaluation = payload["solver_evaluation"]
+    assert evaluation["evaluated"] is False
+    assert evaluation["status"] == "not_evaluated_not_passed"
+    assert all(evaluation[name]["reason"] == "awaits_later_fine_six_case_evaluator" for name in ("residual", "continuity_mass_balance", "stationarity"))
+
+
+def test_runtime_artifact_copies_and_binds_verified_extension_source_snapshot(
+    compiled: tuple[Path, dict], tmp_path: Path,
+) -> None:
+    root, index = compiled
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "runtime", through_grid="coarse",
+        backend="docker", execute=False,
+    )
+    runtime_root = artifact.parent
+    copied_manifest = runtime_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME
+    assert copied_manifest.read_bytes() == (root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).read_bytes()
+    assert (runtime_root / "extension_source" / "cfdSdfLinearBrinkman.C").is_file()
+    assert hashlib.sha256(copied_manifest.read_bytes()).hexdigest() == index["extension_source_manifest_sha256"]
+
+
+@pytest.mark.parametrize(
+    ("breakage", "expected_failure"),
+    [
+        ("missing_manifest", "extension_source_manifest_missing"),
+        ("mutated_source", "extension_source_file_hash_mismatch:cfdSdfLinearBrinkman.C"),
+        ("added_object", "extension_source_snapshot_unlisted_file:Make/cfdSdfLinearBrinkman.o"),
+        ("added_arbitrary", "extension_source_snapshot_unlisted_file:unexpected.tmp"),
+    ],
+)
+def test_porous_run_fails_closed_before_phase_a_for_invalid_runtime_snapshot(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    breakage: str, expected_failure: str,
+) -> None:
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    snapshot_root = tmp_path / "runtime_snapshot"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    shutil.copytree(root / "extension_source", snapshot_root / "extension_source")
+    shutil.copy2(root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME, snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME)
+    if breakage == "missing_manifest":
+        (snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).unlink()
+    elif breakage == "mutated_source":
+        (snapshot_root / "extension_source" / "cfdSdfLinearBrinkman.C").write_text("mutated\n", encoding="utf-8")
+    elif breakage == "added_object":
+        (snapshot_root / "extension_source" / "Make" / "cfdSdfLinearBrinkman.o").write_bytes(b"object build output")
+    else:
+        (snapshot_root / "extension_source" / "unexpected.tmp").write_text("unlisted runtime debris\n", encoding="utf-8")
+
+    def must_not_run(*args: object, **kwargs: object) -> SimpleNamespace:
+        raise AssertionError("invalid extension snapshot must prevent Phase A container execution")
+
+    monkeypatch.setattr(cylinder_module.subprocess, "run", must_not_run)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse",
+        snapshot_dir=snapshot_root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["error"] == "porous_extension_snapshot_provenance_failed"
+    assert result["extension"]["complete"] is False
+    assert result["extension"]["assertions"]["immutable_source_snapshot_verified"] is False
+    assert expected_failure in result["phase_a"]["snapshot_provenance"]["missing_or_invalid"]
+
+
+@pytest.mark.parametrize(
+    ("artifact_label", "classification", "expected_failure"),
+    [
+        ("symlink", "reparse", "extension_source_snapshot_reparse_point:cfdSdfLinearBrinkman.C"),
+        ("reparse_point", "reparse", "extension_source_snapshot_reparse_point:cfdSdfLinearBrinkman.C"),
+        ("special_file", "special", "extension_source_snapshot_special_file:cfdSdfLinearBrinkman.C"),
+    ],
+)
+def test_porous_run_fails_closed_before_phase_a_for_nonregular_snapshot_entry(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    artifact_label: str, classification: str, expected_failure: str,
+) -> None:
+    """Mock filesystem classes so the regression is portable without link rights."""
+
+    root, _ = compiled
+    import shutil
+
+    case = tmp_path / "porous"
+    snapshot_root = tmp_path / "runtime_snapshot"
+    shutil.copytree(root / "porous_cartesian" / "coarse", case)
+    shutil.copytree(root / "extension_source", snapshot_root / "extension_source")
+    shutil.copy2(root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME, snapshot_root / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME)
+    target = snapshot_root / "extension_source" / "cfdSdfLinearBrinkman.C"
+    original_kind = cylinder_module._snapshot_entry_kind
+
+    def classify_nonregular(path: Path) -> str:
+        return classification if Path(path) == target else original_kind(path)
+
+    def must_not_run(*args: object, **kwargs: object) -> SimpleNamespace:
+        raise AssertionError(f"{artifact_label} source snapshot must prevent Phase A container execution")
+
+    monkeypatch.setattr(cylinder_module, "_snapshot_entry_kind", classify_nonregular)
+    monkeypatch.setattr(cylinder_module.subprocess, "run", must_not_run)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="coarse",
+        snapshot_dir=snapshot_root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+
+    assert result["ok"] is False
+    assert result["phase_a"]["error"] == "porous_extension_snapshot_provenance_failed"
+    provenance = result["phase_a"]["snapshot_provenance"]
+    assert provenance["assertions"]["source_files_exact_set_bound"] is False
+    assert expected_failure in provenance["missing_or_invalid"]
+
+
+def test_cli_requires_through_grid_for_cylinder_run(tmp_path: Path) -> None:
+    help_result = runner.invoke(app, ["run-g4-b2-cylinder", "--help"])
+    assert help_result.exit_code == 0, help_result.output
+    assert "--through-grid" in help_result.output
+
+    result = runner.invoke(app, ["run-g4-b2-cylinder", str(tmp_path / "input"), str(tmp_path / "output")])
+
+    assert result.exit_code != 0
+
+
+def test_cli_compiles_source_snapshot_without_runtime_claim(tmp_path: Path) -> None:
+    output = tmp_path / "cli"
+    result = runner.invoke(app, ["compile-g4-b2-cylinder", str(output), "--spec", str(SPEC)])
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "compiled_not_runtime_qualified"
+    assert (output / G4_B2_CYLINDER_EXTENSION_SOURCE_MANIFEST_FILENAME).is_file()

@@ -1,0 +1,39 @@
+schema_version: 1
+kind: g4_b2_laminar_cylinder_spec
+benchmark_id: circular_cylinder_cross_fidelity
+physics:
+  openfoam_version: v2512
+  solver: simpleFoam
+  flow: incompressible_steady_newtonian_laminar
+  density_kg_m3: 1.225
+  kinematic_viscosity_m2_s: 1.5e-5
+  freestream_velocity_mps: 0.03
+geometry:
+  analytic_shape: circular_cylinder
+  diameter_m: 0.01
+  span_m: 0.01
+  x_bounds_in_diameters: [-15.0, 25.0]
+  y_bounds_in_diameters: [-15.0, 15.0]
+boundary_conditions:
+  inlet: uniform_freestream_fixed_value
+  outlet: fixed_kinematic_pressure_reference
+  top_bottom: symmetry
+  cylinder_wall: stationary_no_slip
+  front_back: empty
+grids:
+  nominal_h_over_diameter: [0.125, 0.0625, 0.03125]
+  refinement_factors: [1, 2, 4]
+  body_fitted:
+    azimuthal_cells_per_sector_base: 3
+    radial_cells_per_sector_base: 120
+    grading: [1.0, 1.0, 1.0]
+  porous_cartesian:
+    area_fraction_rule: fixed_16x16_midpoint_subcells
+extension:
+  library: libcfdSdfLinearBrinkman.so
+  fv_option_type: cfdSdfLinearBrinkman
+  option_name: porousCylinderResistance
+  area_fraction_field: beta
+  beta_max_m_inv_s: 150000.0
+  darcy_number: 1.0e-6
+  beta_mapping: source=-betaMax*beta*U;resistance=betaMax*beta*U

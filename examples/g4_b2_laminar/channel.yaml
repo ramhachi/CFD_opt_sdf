@@ -1,0 +1,22 @@
+schema_version: 1
+kind: g4_b2_laminar_benchmark_spec
+benchmark_id: parallel_plate_channel
+physics:
+  openfoam_version: v2512
+  solver: simpleFoam
+  flow: incompressible_steady_newtonian_laminar
+  density_kg_m3: 1.225
+  kinematic_viscosity_m2_s: 1.5e-5
+  bulk_velocity_mps: 0.015
+geometry:
+  half_height_m: 0.01
+  length_m: 0.06
+  span_m: 0.001
+boundary_conditions:
+  inlet: analytic_plane_poiseuille_fixed_value
+  outlet: fixed_pressure_reference
+  walls: no_slip
+  front_back: empty
+grids:
+  base_cells: [60, 20, 1]
+  refinement_factors: [1, 2, 4]

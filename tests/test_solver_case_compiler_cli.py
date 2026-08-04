@@ -68,7 +68,7 @@ adjointManagers
 }
 optimisation
 {
-    designVariables { type density; }
+    designVariables { type topO; }
     updateMethod { type mma; }
 }
 """,
@@ -96,7 +96,33 @@ topologySource
         for name in patch_names
     )
     (template / "system/blockMeshDict").write_text(
-        f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
+        "\n".join(
+            (
+                "FoamFile { object blockMeshDict; }",
+                "scale 1;",
+                "vertices",
+                "(",
+                "    (-1 -0.8 -0.6)",
+                "    (2 -0.8 -0.6)",
+                "    (2 0.8 -0.6)",
+                "    (-1 0.8 -0.6)",
+                "    (-1 -0.8 0.6)",
+                "    (2 -0.8 0.6)",
+                "    (2 0.8 0.6)",
+                "    (-1 0.8 0.6)",
+                ");",
+                "blocks",
+                "(",
+                "    hex (0 1 2 3 4 5 6 7) (32 16 16) simpleGrading (1 1 1)",
+                ");",
+                "edges ();",
+                "boundary",
+                "(",
+                boundary,
+                ");",
+                "",
+            )
+        ),
         encoding="utf-8",
     )
     _write_required_initial_fields(template, patch_names)
@@ -112,6 +138,14 @@ def _write_data(tmp_path: Path, data: dict, name: str) -> Path:
     path = tmp_path / name
     path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
     return path
+
+
+def _synthetic_g2_data() -> dict:
+    """Return a standalone compiler fixture without production STL coupling."""
+
+    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data.pop("design_grid", None)
+    return data
 
 
 def test_compile_cli_success_uses_default_patches_and_writes_summary(tmp_path: Path) -> None:
@@ -143,13 +177,13 @@ def test_compile_cli_success_uses_default_patches_and_writes_summary(tmp_path: P
     velocity = (straight / "0.orig/U").read_text(encoding="utf-8")
     for patch_id in DEFAULT_FIXED_GRID_PATCH_IDS:
         assert f"    {patch_id}\n" in velocity
-    assert "nIters 9;" in (straight / "system/optimisationDict").read_text(
+    assert "nIters 4000;" in (straight / "system/optimisationDict").read_text(
         encoding="utf-8"
     )
 
 
 def test_compile_cli_repeated_custom_patch_option(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     for case in data["flow_cases"]:
         case["boundary_conditions"] = {
             "custom_inlet": "freestream",
@@ -182,7 +216,7 @@ def test_compile_cli_repeated_custom_patch_option(tmp_path: Path) -> None:
 
 
 def test_unsupported_allow_returns_zero_without_cases(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     data["responses"].append(
         {
             "id": "unsupported_moment",
@@ -215,7 +249,7 @@ def test_unsupported_allow_returns_zero_without_cases(tmp_path: Path) -> None:
 
 
 def test_unsupported_require_returns_one_after_manifest_and_marker(tmp_path: Path) -> None:
-    data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+    data = _synthetic_g2_data()
     data["grid"]["kind"] = "octree_amr"
     source = _write_data(tmp_path, data, "unsupported_require.yaml")
     output = tmp_path / "unsupported_require"

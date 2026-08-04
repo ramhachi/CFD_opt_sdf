@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 import hashlib
 import json
-from math import isfinite
+from math import isclose, isfinite
 from pathlib import Path
 import re
 import shutil
@@ -18,7 +18,13 @@ from .openfoam_case_renderer import (
     openfoam_retained_field_boundary_specs,
     render_openfoam_physics_files,
 )
+from .openfoam_blockmesh_grid import read_openfoam_blockmesh_uniform_cartesian_grid
 from .openfoam_response_renderer import render_openfoam_force_response_files
+from .localized_g2_serial_runtime_contract import (
+    LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME,
+    LOCALIZED_G2_SERIAL_RUNTIME_FILENAME,
+    emit_localized_g2_serial_runtime_contract,
+)
 from .problem_spec import ProblemSpec
 from .solver_case_manifest import (
     SolverCaseManifest,
@@ -93,6 +99,7 @@ def compile_openfoam_solver_case_bundle(
     adjoint_iterations: int = 1,
     overwrite: bool = False,
     require_compile_ready: bool = True,
+    localized_g2_serial_runtime_contract: bool = False,
 ) -> OpenFOAMCaseBundleArtifacts:
     """Compile a per-flow bundle without copying runtime result directories."""
 
@@ -102,6 +109,8 @@ def compile_openfoam_solver_case_bundle(
         or adjoint_iterations <= 0
     ):
         raise ValueError("adjoint_iterations must be a positive integer")
+    if not isinstance(localized_g2_serial_runtime_contract, bool):
+        raise ValueError("localized_g2_serial_runtime_contract must be a boolean")
     template = Path(template_case_dir).resolve()
     output = Path(output_dir).resolve()
     if template == output or _is_relative_to(template, output):
@@ -237,6 +246,9 @@ def compile_openfoam_solver_case_bundle(
                 case_execution_contract = _stage_execution_contract(
                     execution_contract, case_staging
                 )
+                case_mesh_domain_contract = _stage_mesh_domain_bounds_contract(
+                    spec, case_staging
+                )
                 case_mesh_boundary_contract = _stage_mesh_boundary_contract(
                     plan, case_staging
                 )
@@ -325,6 +337,7 @@ def compile_openfoam_solver_case_bundle(
                         "files_sha256": dict(responses.file_sha256),
                     },
                     "execution_contract": case_execution_contract,
+                    "mesh_domain_contract": case_mesh_domain_contract,
                     "mesh_boundary_contract": case_mesh_boundary_contract,
                     "field_boundary_contract": case_field_boundary_contract,
                     "status": "compiled",
@@ -332,6 +345,29 @@ def compile_openfoam_solver_case_bundle(
                 }
                 _write_json(compilation_path, compilation)
                 compilation_sha = _file_sha256(compilation_path)
+                if localized_g2_serial_runtime_contract:
+                    generated_responses = tuple(
+                        _mapping(plan.generated, "generated responses").get("responses", ())
+                    )
+                    if len(generated_responses) != 1 or not isinstance(generated_responses[0], Mapping):
+                        raise ValueError(
+                            "localized G2 serial runtime requires exactly one supported force response per flow case"
+                        )
+                    requested_fluid = _mapping(plan.requested, "flow requested").get("fluid")
+                    if not isinstance(requested_fluid, Mapping):
+                        raise ValueError("localized G2 serial runtime flow fluid metadata is invalid")
+                    density = requested_fluid.get("density_kg_m3")
+                    staged_mesh = read_openfoam_blockmesh_uniform_cartesian_grid(
+                        case_staging / "system" / "blockMeshDict"
+                    )
+                    runtime = emit_localized_g2_serial_runtime_contract(
+                        case_dir=case_staging,
+                        flow_case_id=plan.flow_case_id,
+                        response=generated_responses[0],
+                        density_kg_m3=float(density),
+                        compilation_metadata_sha256=compilation_sha,
+                        mesh=staged_mesh,
+                    )
                 case_staging.replace(case_dir)
                 committed_case_dirs.append(case_dir)
                 case_dirs[plan.flow_case_id] = case_dir
@@ -343,6 +379,18 @@ def compile_openfoam_solver_case_bundle(
                     "compilation_sha256": compilation_sha,
                     "status": "compiled",
                 }
+                if localized_g2_serial_runtime_contract:
+                    flow_metadata[plan.flow_case_id]["localized_g2_serial_runtime"] = {
+                        "path": f"{plan.case_directory_name}/{LOCALIZED_G2_SERIAL_RUNTIME_FILENAME}",
+                        "sha256": _file_sha256(case_dir / LOCALIZED_G2_SERIAL_RUNTIME_FILENAME),
+                        "response_gradient_contract": (
+                            f"{plan.case_directory_name}/{LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME}"
+                        ),
+                        "response_gradient_contract_sha256": _file_sha256(
+                            case_dir / LOCALIZED_G2_RESPONSE_GRADIENT_CONTRACT_FILENAME
+                        ),
+                        "status": runtime["status"],
+                    }
             finally:
                 if case_staging.exists():
                     shutil.rmtree(case_staging)
@@ -759,6 +807,159 @@ def _audit_mesh_boundary_contract(
             "validation": "unsupported" if unsupported else "resolved_for_staging",
         },
         tuple(unsupported),
+    )
+
+
+def _stage_mesh_domain_bounds_contract(
+    spec: ProblemSpec, case_staging: Path
+) -> dict[str, Any]:
+    """Bind a staged uniform ``blockMesh`` extent to the canonical domain.
+
+    Native OpenFOAM cases may deliberately use a coarser source mesh than the
+    canonical optimization grid.  Their physical extent must nevertheless be
+    identical: otherwise field transfer would silently crop or extrapolate a
+    different problem domain.  Keep the template block's cell counts and
+    grading untouched; only its eight Cartesian vertex coordinates are bound.
+    """
+
+    requested = spec.grid.domain_bounds_m
+    if requested is None:
+        return {
+            "path": "system/blockMeshDict",
+            "binding": "not_requested",
+        }
+
+    path = case_staging / "system/blockMeshDict"
+    original = path.read_bytes()
+    try:
+        source = read_openfoam_blockmesh_uniform_cartesian_grid(path)
+    except ValueError as exc:
+        raise ValueError(
+            "Cannot bind blockMeshDict to grid.domain_bounds_m: " + str(exc)
+        ) from exc
+
+    try:
+        text = original.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError("Cannot bind blockMeshDict to grid.domain_bounds_m: not UTF-8") from exc
+    source_upper = tuple(
+        source.lower[axis] + source.spacing[axis] * source.cell_shape[axis]
+        for axis in range(3)
+    )
+    source_lower_raw = tuple(value / source.scale for value in source.lower)
+    source_upper_raw = tuple(value / source.scale for value in source_upper)
+    target_lower_raw = tuple(value / source.scale for value in requested.lower)
+    target_upper_raw = tuple(value / source.scale for value in requested.upper)
+    bound = _bind_uniform_block_mesh_vertices(
+        text,
+        source_lower=source_lower_raw,
+        source_upper=source_upper_raw,
+        target_lower=target_lower_raw,
+        target_upper=target_upper_raw,
+    )
+    path.write_bytes(bound.encode("utf-8"))
+
+    try:
+        rendered = read_openfoam_blockmesh_uniform_cartesian_grid(path)
+    except ValueError as exc:
+        raise ValueError(
+            "Rendered blockMeshDict is invalid after domain binding: " + str(exc)
+        ) from exc
+    rendered_upper = tuple(
+        rendered.lower[axis]
+        + rendered.spacing[axis] * rendered.cell_shape[axis]
+        for axis in range(3)
+    )
+    if not _same_vector(rendered.lower, requested.lower) or not _same_vector(
+        rendered_upper, requested.upper
+    ):
+        raise ValueError(
+            "Rendered blockMeshDict bounds do not match grid.domain_bounds_m"
+        )
+    return {
+        "path": "system/blockMeshDict",
+        "binding": "bound",
+        "requested_lower_m": list(requested.lower),
+        "requested_upper_m": list(requested.upper),
+        "source_lower_m": list(source.lower),
+        "source_upper_m": list(source_upper),
+        "source_cell_shape": list(source.cell_shape),
+        "rendered_lower_m": list(rendered.lower),
+        "rendered_upper_m": list(rendered_upper),
+        "pre_bind_sha256": hashlib.sha256(original).hexdigest(),
+        "post_bind_sha256": _file_sha256(path),
+        "validation": "pass",
+    }
+
+
+def _bind_uniform_block_mesh_vertices(
+    text: str,
+    *,
+    source_lower: Sequence[float],
+    source_upper: Sequence[float],
+    target_lower: Sequence[float],
+    target_upper: Sequence[float],
+) -> str:
+    """Replace only the coordinate tokens of one uniform Cartesian block."""
+
+    vertices = _block_mesh_vertex_coordinate_tokens(text)
+    replacements: list[tuple[int, int, str]] = []
+    for coordinate_tokens in vertices:
+        for axis, token in enumerate(coordinate_tokens):
+            try:
+                value = float(token.value)
+            except ValueError as exc:
+                raise ValueError("blockMesh vertex coordinate is not numeric") from exc
+            if _same_number(value, source_lower[axis]):
+                target = target_lower[axis]
+            elif _same_number(value, source_upper[axis]):
+                target = target_upper[axis]
+            else:
+                raise ValueError(
+                    "blockMesh vertex is not a corner of its uniform Cartesian extent"
+                )
+            replacements.append((token.start, token.end, format(float(target), ".12g")))
+    return _replace_text_spans(text, replacements)
+
+
+def _block_mesh_vertex_coordinate_tokens(text: str) -> tuple[tuple[_FoamToken, ...], ...]:
+    tokens = _foam_tokens(text)
+    candidates = [
+        index
+        for index, token in enumerate(tokens)
+        if token.value == "vertices"
+        and index + 1 < len(tokens)
+        and tokens[index + 1].value == "("
+    ]
+    if len(candidates) != 1:
+        raise ValueError("blockMeshDict must contain exactly one vertices list")
+    opening = candidates[0] + 1
+    closing = _matching_token(tokens, opening, "(", ")")
+    vertices: list[tuple[_FoamToken, ...]] = []
+    cursor = opening + 1
+    while cursor < closing:
+        if tokens[cursor].value != "(":
+            raise ValueError("blockMesh vertices must contain only coordinate triples")
+        coordinate_close = _matching_token(tokens, cursor, "(", ")")
+        coordinates = tuple(tokens[cursor + 1 : coordinate_close])
+        if len(coordinates) != 3 or any(
+            token.value in {"(", ")", "{", "}", ";"} for token in coordinates
+        ):
+            raise ValueError("blockMesh vertex must contain exactly three coordinates")
+        vertices.append(coordinates)
+        cursor = coordinate_close + 1
+    if len(vertices) != 8:
+        raise ValueError("blockMesh domain binding requires exactly eight vertices")
+    return tuple(vertices)
+
+
+def _same_number(left: float, right: float) -> bool:
+    return isclose(left, right, rel_tol=0.0, abs_tol=1e-12 * max(1.0, abs(left), abs(right)))
+
+
+def _same_vector(left: Sequence[float], right: Sequence[float]) -> bool:
+    return len(left) == len(right) and all(
+        _same_number(float(a), float(b)) for a, b in zip(left, right)
     )
 
 

@@ -13,6 +13,9 @@ and one active schema version for new implementation work.
    primal/sensitivity artifact schema.
 4. [`fixed_grid_backend_decision.md`](fixed_grid_backend_decision.md) — why the
    first Stage T adapter uses OpenFOAM.
+5. [`localized_design_grid_decision.md`](localized_design_grid_decision.md) —
+   selected localized canonical design-grid path for physical topology-policy
+   evaluation.
 
 ## Supporting documents
 

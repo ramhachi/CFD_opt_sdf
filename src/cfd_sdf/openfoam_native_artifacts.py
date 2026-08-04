@@ -555,7 +555,7 @@ def _validate_compilation(compilation: Mapping[str, Any], spec: ProblemSpec, flo
 
 
 def _response_mapping(metadata: Mapping[str, Any], flow_case_id: str, response_id: str) -> Mapping[str, Any]:
-    if metadata.get("schema_version") != 1 or metadata.get("kind") != "generated_openfoam_responses":
+    if metadata.get("schema_version") not in (1, 2) or metadata.get("kind") != "generated_openfoam_responses":
         raise ValueError(f"Invalid generated response metadata for {flow_case_id!r}")
     mappings = metadata.get("response_mappings")
     if not isinstance(mappings, list):

@@ -17,6 +17,7 @@ from .solver_case_manifest import SolverFlowCasePlan
 
 _ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 _MARKER_NAME = "generated_openfoam_responses.json"
+_NAMED_ADJOINT_ITERATIONS = 4000
 
 
 @dataclass(frozen=True)
@@ -67,12 +68,15 @@ def render_openfoam_force_response_files(
     fv_options_before_bytes = fv_options_path.read_bytes()
     optimisation_before = optimisation_before_bytes.decode("utf-8")
     fv_options_before = fv_options_before_bytes.decode("utf-8")
-    manager_block = _adjoint_managers_block(responses, adjoint_iterations)
+    manager_block = _adjoint_managers_block(responses)
     optimisation_after = _replace_unique_top_level_block(
         optimisation_before, "adjointManagers", manager_block
     )
-    field_names = ("U", *(f"Uaresp_{response['response_id']}" for response in responses))
-    fv_options_after = _replace_toposource_names(fv_options_before, field_names)
+    optimisation_after = _enable_native_topo_adjoint_sources(optimisation_after)
+    static_toposource_fields = ("U",)
+    fv_options_after = _replace_toposource_names(
+        fv_options_before, static_toposource_fields
+    )
 
     pre_hashes = {
         "system/optimisationDict": hashlib.sha256(optimisation_before_bytes).hexdigest(),
@@ -89,15 +93,28 @@ def render_openfoam_force_response_files(
             "adjoint_solver_id": f"resp_{response['response_id']}",
             "adjoint_velocity_field": f"Uaresp_{response['response_id']}",
             "objective_name": response["response_id"],
+            "native_adjoint_source": {
+                "enabled": True,
+                "strategy": "v2512_design_variables_addFvOptions",
+                "dictionary_path": "optimisation.designVariables.addFvOptions",
+                "adjoint_velocity_field": f"Uaresp_{response['response_id']}",
+            },
         }
         for response in responses
     ]
     metadata = {
-        "schema_version": 1,
+        "schema_version": 2,
         "kind": "generated_openfoam_responses",
         "flow_case_id": plan.flow_case_id,
         "case_directory_name": plan.case_directory_name,
-        "adjoint_iterations": adjoint_iterations,
+        "adjoint_iterations": _NAMED_ADJOINT_ITERATIONS,
+        "requested_adjoint_iterations": adjoint_iterations,
+        "native_source_strategy": {
+            "openfoam_version": "v2512",
+            "static_toposource_fields": list(static_toposource_fields),
+            "adjoint_source_strategy": "designVariables.addFvOptions",
+            "adjoint_source_value": True,
+        },
         "response_mappings": mappings,
         "source_files": {
             name: {"pre_sha256": pre_hashes[name], "post_sha256": post_hashes[name]}
@@ -169,11 +186,9 @@ def _validated_responses(plan: SolverFlowCasePlan) -> tuple[dict[str, Any], ...]
     return tuple(responses)
 
 
-def _adjoint_managers_block(
-    responses: tuple[dict[str, Any], ...], adjoint_iterations: int
-) -> str:
+def _adjoint_managers_block(responses: tuple[dict[str, Any], ...]) -> str:
     solver_blocks = "\n".join(
-        _adjoint_solver_block(response, adjoint_iterations) for response in responses
+        _adjoint_solver_block(response) for response in responses
     )
     return (
         "adjointManagers\n"
@@ -190,7 +205,7 @@ def _adjoint_managers_block(
     )
 
 
-def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
+def _adjoint_solver_block(response: Mapping[str, Any]) -> str:
     response_id = str(response["response_id"])
     direction = "(" + " ".join(_format_number(value) for value in response["direction"]) + ")"
     return (
@@ -199,6 +214,7 @@ def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
         "                active true;\n"
         "                type incompressible;\n"
         "                solver adjointSimple;\n"
+        "                useSolverNameForFields true;\n"
         "                isConstraint false;\n"
         "                objectives\n"
         "                {\n"
@@ -222,11 +238,13 @@ def _adjoint_solver_block(response: Mapping[str, Any], iterations: int) -> str:
         "                }\n"
         "                solutionControls\n"
         "                {\n"
-        f"                    nIters {iterations};\n"
+        f"                    nIters {_NAMED_ADJOINT_ITERATIONS};\n"
         "                    residualControl\n"
         "                    {\n"
         "                        \"pa.*\" 5e-7;\n"
         "                        \"Ua.*\" 5e-7;\n"
+        "                        \"ka.*\" 5e-7;\n"
+        "                        \"wa.*\" 5e-7;\n"
         "                    }\n"
         "                }\n"
         "            }"
@@ -269,6 +287,141 @@ def _replace_toposource_names(text: str, field_names: tuple[str, ...]) -> str:
         raise ValueError(f"Expected exactly one names statement in topOSource, found {len(names_tokens)}")
     start, end = names_tokens[0]
     return text[:start] + "(" + " ".join(field_names) + ")" + text[end:]
+
+
+def _enable_native_topo_adjoint_sources(text: str) -> str:
+    """Set the v2512 topO switch that applies sources to solver-named adjoints.
+
+    The static ``topOSource`` must remain confined to the primal ``U`` field.
+    OpenFOAM v2512 applies the matching source to each solver-named adjoint only
+    when ``optimisation.designVariables.addFvOptions`` is explicitly enabled.
+    Parse the required hierarchy instead of guessing from text so a non-native
+    or ambiguous template cannot silently render a physically different case.
+    """
+
+    tokens = _tokens(text)
+    optimisation_blocks = _named_top_level_block_details(tokens, "optimisation")
+    if len(optimisation_blocks) != 1:
+        raise ValueError(
+            "Expected exactly one top-level optimisation block, "
+            f"found {len(optimisation_blocks)}"
+        )
+    _, _, optimisation_open, optimisation_close = optimisation_blocks[0]
+    design_variables = _named_direct_block_details(
+        tokens, optimisation_open, optimisation_close, "designVariables"
+    )
+    if len(design_variables) != 1:
+        raise ValueError(
+            "Expected exactly one optimisation.designVariables block, "
+            f"found {len(design_variables)}"
+        )
+    _, _, design_open, design_close = design_variables[0]
+    statement_depth = tokens[design_open].depth + 1
+    type_values = _direct_statement_values(
+        tokens, design_open, design_close, "type", statement_depth
+    )
+    if type_values != ["topO"]:
+        rendered = " ".join(type_values) if type_values else "none"
+        raise ValueError(
+            "optimisation.designVariables must declare exactly one "
+            f"type topO statement, found {rendered!r}"
+        )
+
+    add_fv_options = _direct_statement_values(
+        tokens, design_open, design_close, "addFvOptions", statement_depth
+    )
+    if len(add_fv_options) > 1:
+        raise ValueError(
+            "Expected at most one optimisation.designVariables.addFvOptions "
+            f"statement, found {len(add_fv_options)}"
+        )
+    if add_fv_options:
+        if add_fv_options != ["true"]:
+            raise ValueError(
+                "optimisation.designVariables.addFvOptions must be true for "
+                "the v2512 native source strategy"
+            )
+        return text
+
+    return _insert_statement_before_closing_brace(
+        text,
+        closing_brace=tokens[design_close],
+        statement="addFvOptions true;",
+    )
+
+
+def _named_top_level_block_details(
+    tokens: list[_Token], name: str
+) -> list[tuple[int, int, int, int]]:
+    return [
+        block
+        for block in _all_top_level_blocks(tokens)
+        if tokens[block[2] - 1].value == name
+    ]
+
+
+def _named_direct_block_details(
+    tokens: list[_Token], parent_open: int, parent_close: int, name: str
+) -> list[tuple[int, int, int, int]]:
+    child_depth = tokens[parent_open].depth + 1
+    blocks: list[tuple[int, int, int, int]] = []
+    for index in range(parent_open + 1, parent_close - 1):
+        token = tokens[index]
+        opening = tokens[index + 1]
+        if (
+            token.depth == child_depth
+            and token.value == name
+            and opening.depth == child_depth
+            and opening.value == "{"
+        ):
+            closing = _matching_token(tokens, index + 1, "{", "}")
+            blocks.append((token.start, tokens[closing].end, index + 1, closing))
+    return blocks
+
+
+def _direct_statement_values(
+    tokens: list[_Token],
+    block_open: int,
+    block_close: int,
+    name: str,
+    statement_depth: int,
+) -> list[str]:
+    values: list[str] = []
+    for index in range(block_open + 1, block_close - 1):
+        token = tokens[index]
+        if token.depth == statement_depth and token.value == name:
+            if index + 1 >= block_close or tokens[index + 1].depth != statement_depth:
+                raise ValueError(f"Malformed {name} statement")
+            values.append(tokens[index + 1].value)
+    return values
+
+
+def _insert_statement_before_closing_brace(
+    text: str, *, closing_brace: _Token, statement: str
+) -> str:
+    """Insert one statement while retaining the template's line-ending style."""
+
+    newline = "\r\n" if "\r\n" in text else "\n"
+    line_start = text.rfind("\n", 0, closing_brace.start) + 1
+    closing_indent = text[line_start : closing_brace.start]
+    if closing_indent.strip() == "":
+        indentation = closing_indent + "    "
+        return (
+            text[:line_start]
+            + indentation
+            + statement
+            + newline
+            + closing_indent
+            + text[closing_brace.start :]
+        )
+    return (
+        text[: closing_brace.start]
+        + newline
+        + "    "
+        + statement
+        + newline
+        + text[closing_brace.start :]
+    )
 
 
 def _tokens(text: str) -> list[_Token]:

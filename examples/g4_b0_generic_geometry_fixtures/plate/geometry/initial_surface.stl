@@ -1,0 +1,86 @@
+solid finite_thickness_plate
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 -0.1
+  vertex 0.8 0.6 -0.1
+  vertex 0.8 -0.6 -0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 -0.1
+  vertex -0.8 0.6 -0.1
+  vertex 0.8 0.6 -0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 0.1
+  vertex 0.8 -0.6 0.1
+  vertex 0.8 0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 0.1
+  vertex 0.8 0.6 0.1
+  vertex -0.8 0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 -0.1
+  vertex 0.8 -0.6 -0.1
+  vertex 0.8 -0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 -0.6 -0.1
+  vertex 0.8 -0.6 0.1
+  vertex -0.8 -0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex 0.8 -0.6 -0.1
+  vertex 0.8 0.6 -0.1
+  vertex 0.8 0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex 0.8 -0.6 -0.1
+  vertex 0.8 0.6 0.1
+  vertex 0.8 -0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex 0.8 0.6 -0.1
+  vertex -0.8 0.6 -0.1
+  vertex -0.8 0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex 0.8 0.6 -0.1
+  vertex -0.8 0.6 0.1
+  vertex 0.8 0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 0.6 -0.1
+  vertex -0.8 -0.6 -0.1
+  vertex -0.8 -0.6 0.1
+ endloop
+endfacet
+facet normal 0 0 0
+ outer loop
+  vertex -0.8 0.6 -0.1
+  vertex -0.8 -0.6 0.1
+  vertex -0.8 0.6 0.1
+ endloop
+endfacet
+endsolid finite_thickness_plate

@@ -8,6 +8,7 @@ import pytest
 import yaml
 
 import cfd_sdf.solver_case_compiler as compiler_module
+from cfd_sdf.openfoam_blockmesh_grid import read_openfoam_blockmesh_uniform_cartesian_grid
 from cfd_sdf.problem_spec import load_problem_spec
 from cfd_sdf.solver_case_compiler import compile_openfoam_solver_case_bundle
 
@@ -159,7 +160,7 @@ adjointManagers
 }
 optimisation
 {
-    designVariables { type density; }
+    designVariables { type topO; }
     updateMethod { type mma; }
 }
 """,
@@ -178,14 +179,7 @@ optimisation
         encoding="utf-8",
     )
     patch_names = ("inlet", "outlet", "ground")
-    boundary = "\n".join(
-        f"    {name}\n    {{\n        type patch;\n        faces ();\n    }}"
-        for name in patch_names
-    )
-    (template / "system/blockMeshDict").write_text(
-        f"FoamFile {{ object blockMeshDict; }}\nboundary\n(\n{boundary}\n);\n",
-        encoding="utf-8",
-    )
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
     _write_required_initial_fields(template, patch_names)
     (template / "Allrun").write_text("#!/bin/sh\nset -e\n", encoding="utf-8")
     (template / "Allclean").write_text("#!/bin/sh\nrm -rf 0\n", encoding="utf-8")
@@ -198,7 +192,7 @@ def _set_topo_regularisation(template: Path, *, regularise: str) -> None:
     path = template / "system/optimisationDict"
     source = path.read_text(encoding="utf-8")
     updated = source.replace(
-        "designVariables { type density; }",
+        "designVariables { type topO; }",
         "\n".join(
             (
                 "designVariables",
@@ -228,9 +222,14 @@ def _compile(tmp_path: Path, *, turbulence: str = "laminar", overwrite: bool = F
 
 
 def _g2_spec(tmp_path: Path):
+    data = yaml.safe_load(G2_EXAMPLE.read_text(encoding="utf-8"))
+    # This compiler fixture writes a standalone synthetic problem without the
+    # authoritative front-wing STL directory.  Do not inherit the production
+    # local-design-grid contract into that synthetic copy.
+    data.pop("design_grid", None)
     return _spec(
         tmp_path,
-        yaml.safe_load(G2_EXAMPLE.read_text(encoding="utf-8")),
+        data,
         "g2_problem.yaml",
     )
 
@@ -256,6 +255,23 @@ def _block_mesh_bytes(patch_names: tuple[str, ...], *, newline: str = "\n") -> b
         (
             "FoamFile { object blockMeshDict; }",
             "// fake boundary ( fake { type wall; } )",
+            "scale 1;",
+            "vertices",
+            "(",
+            "    (-1 -0.8 -0.6)",
+            "    (2 -0.8 -0.6)",
+            "    (2 0.8 -0.6)",
+            "    (-1 0.8 -0.6)",
+            "    (-1 -0.8 0.6)",
+            "    (2 -0.8 0.6)",
+            "    (2 0.8 0.6)",
+            "    (-1 0.8 0.6)",
+            ");",
+            "blocks",
+            "(",
+            "    hex (0 1 2 3 4 5 6 7) (32 16 16) simpleGrading (1 1 1)",
+            ");",
+            "edges ();",
             "boundary",
             "(",
             *entries,
@@ -286,7 +302,19 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     assert "direction (0 1 0);" in (yawed / "system/optimisationDict").read_text(
         encoding="utf-8"
     )
-    assert "nIters 7;" in (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    assert "nIters 4000;" in (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    straight_optimisation = (straight / "system/optimisationDict").read_text(encoding="utf-8")
+    yawed_optimisation = (yawed / "system/optimisationDict").read_text(encoding="utf-8")
+    assert "useSolverNameForFields true;" in straight_optimisation
+    assert "useSolverNameForFields true;" in yawed_optimisation
+    assert "names (U);" in (straight / "system/fvOptions").read_text(
+        encoding="utf-8"
+    )
+    assert "names (U);" in (yawed / "system/fvOptions").read_text(
+        encoding="utf-8"
+    )
+    assert straight_optimisation.count("addFvOptions true;") == 1
+    assert yawed_optimisation.count("addFvOptions true;") == 1
     assert (straight / "system/template_sentinel").read_text(encoding="utf-8") == "system"
     assert not (straight / "0").exists()
     assert not (straight / "postProcessing").exists()
@@ -314,6 +342,11 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     assert compilation["physics"]["metadata_sha256"] == hashlib.sha256(
         (straight / "generated_openfoam_physics.json").read_bytes()
     ).hexdigest()
+    response_metadata = json.loads(
+        (straight / "generated_openfoam_responses.json").read_text(encoding="utf-8")
+    )
+    assert response_metadata["native_source_strategy"]["static_toposource_fields"] == ["U"]
+    assert response_metadata["response_mappings"][0]["native_adjoint_source"]["enabled"] is True
     bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
     assert bundle["status"] == "compiled"
     assert bundle["manifest_sha256"] == hashlib.sha256(artifacts.manifest_json.read_bytes()).hexdigest()
@@ -391,7 +424,7 @@ def test_sst_bundle_contains_k_omega_nut_fields(tmp_path: Path) -> None:
         assert physics["generated"]["wall_distance"]["qualification"] == "not_qualified"
 
 
-def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
+def test_g2_rendered_block_mesh_binds_domain_and_preserves_crlf_boundary_content(
     tmp_path: Path,
 ) -> None:
     template = _template(tmp_path)
@@ -399,6 +432,10 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     source = _block_mesh_bytes(patch_names, newline="\r\n")
     (template / "system/blockMeshDict").write_bytes(source)
     _write_required_initial_fields(template, patch_names, newline="\r\n")
+    template_grid = read_openfoam_blockmesh_uniform_cartesian_grid(
+        template / "system/blockMeshDict"
+    )
+    assert template_grid.lower == pytest.approx((-1.0, -0.8, -0.6))
 
     artifacts = compile_openfoam_solver_case_bundle(
         _g2_spec(tmp_path),
@@ -433,10 +470,115 @@ def test_block_mesh_crlf_comments_and_geometry_are_preserved_while_types_patch(
     assert mesh["generated_patch_types"]["lower"] == "wall"
     assert mesh["staged_patch_types_after"]["lower"] == "wall"
     assert mesh["validation"] == "pass"
+    domain = compilation["mesh_domain_contract"]
+    assert domain["binding"] == "bound"
+    assert domain["source_cell_shape"] == [32, 16, 16]
+    assert domain["rendered_lower_m"] == pytest.approx([-1.0, -1.2, -0.6])
+    assert domain["rendered_upper_m"] == pytest.approx([2.0, 1.2, 0.7])
+    rendered_grid = read_openfoam_blockmesh_uniform_cartesian_grid(
+        artifacts.case_dirs["straight"] / "system/blockMeshDict"
+    )
+    assert rendered_grid.lower == pytest.approx((-1.0, -1.2, -0.6))
+    assert tuple(
+        rendered_grid.lower[axis]
+        + rendered_grid.spacing[axis] * rendered_grid.cell_shape[axis]
+        for axis in range(3)
+    ) == pytest.approx((2.0, 1.2, 0.7))
+    assert rendered_grid.cell_shape == (32, 16, 16)
     fields = compilation["field_boundary_contract"]
     assert fields["validation"] == "pass"
     assert fields["all_initial_fields"]["alpha"]["patch_types"]["lower"] == "zeroGradient"
     assert fields["all_initial_fields"]["Ua"]["patch_types"]["lower"] == "adjointWallVelocity"
+
+
+def test_g2_rendered_block_mesh_binds_physical_domain_with_non_unit_scale(
+    tmp_path: Path,
+) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    source = _block_mesh_bytes(patch_names).replace(b"scale 1;", b"scale 0.5;")
+    (template / "system/blockMeshDict").write_bytes(source)
+    _write_required_initial_fields(template, patch_names)
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "g2_scaled_bundle",
+        available_patch_ids=patch_names,
+    )
+
+    rendered_path = artifacts.case_dirs["straight"] / "system/blockMeshDict"
+    rendered = read_openfoam_blockmesh_uniform_cartesian_grid(rendered_path)
+    assert rendered.scale == pytest.approx(0.5)
+    assert rendered.lower == pytest.approx((-1.0, -1.2, -0.6))
+    assert tuple(
+        rendered.lower[axis] + rendered.spacing[axis] * rendered.cell_shape[axis]
+        for axis in range(3)
+    ) == pytest.approx((2.0, 1.2, 0.7))
+    text = rendered_path.read_text(encoding="utf-8")
+    assert "    (-2 -2.4 -1.2)" in text
+    assert "    (4 2.4 1.4)" in text
+
+
+def test_opt_in_localized_g2_serial_runtime_emits_hash_bound_contracts(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+
+    artifacts = compile_openfoam_solver_case_bundle(
+        _g2_spec(tmp_path),
+        template_case_dir=template,
+        output_dir=tmp_path / "serial_g2_bundle",
+        available_patch_ids=patch_names,
+        localized_g2_serial_runtime_contract=True,
+    )
+
+    case = artifacts.case_dirs["straight"]
+    compilation_sha = hashlib.sha256((case / "openfoam_case_compilation.json").read_bytes()).hexdigest()
+    runtime = json.loads((case / "localized_g2_serial_runtime.json").read_text(encoding="utf-8"))
+    contract = json.loads((case / "localized_g2_response_gradient_contract.json").read_text(encoding="utf-8"))
+    proof = json.loads((case / "localized_g2_cell_centre_ordering.json").read_text(encoding="utf-8"))
+    script = (case / "AllrunAdjoint").read_bytes()
+    mesh = read_openfoam_blockmesh_uniform_cartesian_grid(case / "system/blockMeshDict")
+    assert runtime["compiler"]["compilation_metadata_sha256"] == compilation_sha
+    assert runtime["block_mesh"]["sha256"] == mesh.block_mesh_sha256
+    assert runtime["block_mesh"]["cell_count"] == mesh.grid.cell_count
+    assert runtime["block_mesh"]["cell_order"] == "x-fastest"
+    assert runtime["serial_execution"]["decomposition"] == "forbidden"
+    assert proof["cell_order"] == "x-fastest"
+    assert proof["cell_count"] == mesh.grid.cell_count
+    assert len(proof["float64_le_c_order_sha256"]) == 64
+    assert b"\r" not in script
+    assert b"localized G2 alpha hash mismatch" in script
+    assert runtime["adjoint_script"]["sha256"] == hashlib.sha256(script).hexdigest()
+    assert runtime["adjoint_script"]["command"] == ["adjointOptimisationFoam", "-case", "."]
+    assert contract["schema_version"] == 2
+    assert contract["flow_case_id"] == "straight"
+    assert contract["response_id"] == "rotated_force"
+    assert contract["named_adjoint_id"] == "resp_rotated_force"
+    assert contract["block_mesh_sha256"] == mesh.block_mesh_sha256
+    factor = 0.5 * 1.225 * 30.0**2 * 1.2
+    assert contract["primal_response"]["scale"]["factor"] == pytest.approx(factor)
+    assert contract["adjoint_gradient"]["scale"] == contract["primal_response"]["scale"]
+    assert artifacts.bundle_metadata_json.is_file()
+    bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
+    assert bundle["flow_cases"]["straight"]["localized_g2_serial_runtime"]["status"] == "compiled"
+
+
+def test_opt_in_localized_g2_serial_runtime_rejects_parallel_template(tmp_path: Path) -> None:
+    template = _template(tmp_path)
+    patch_names = ("inlet", "outlet", "spanMin", "spanMax", "lower", "upper")
+    (template / "system/blockMeshDict").write_bytes(_block_mesh_bytes(patch_names))
+    _write_required_initial_fields(template, patch_names)
+    (template / "Allrun").write_text("#!/bin/sh\nrunApplication decomposePar\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="rejects parallel command"):
+        compile_openfoam_solver_case_bundle(
+            _g2_spec(tmp_path), template_case_dir=template,
+            output_dir=tmp_path / "parallel_g2_bundle", available_patch_ids=patch_names,
+            localized_g2_serial_runtime_contract=True,
+        )
 
 
 def test_compact_retained_field_entry_inserts_value_inside_its_patch(tmp_path: Path) -> None:

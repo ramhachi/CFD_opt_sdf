@@ -31,7 +31,7 @@ OLD_ADJOINT = '''adjointManagers
 '''
 OPTIMISATION_BLOCK = '''optimisation
 {
-    designVariables { type density; }
+    designVariables { type topO; }
     updateMethod { type mma; }
 }
 '''
@@ -136,10 +136,18 @@ def test_one_force_response_maps_to_solver_field_and_objective(tmp_path: Path) -
     assert "direction (1 0 0);" in optimisation
     assert "Aref 1.2;" in optimisation
     assert "UInf 30;" in optimisation
-    assert "nIters 17;" in optimisation
+    assert "nIters 4000;" in optimisation
+    assert "useSolverNameForFields true;" in optimisation
     assert '"pa.*" 5e-7;' in optimisation
     assert '"Ua.*" 5e-7;' in optimisation
-    assert "names (U Uaresp_rotated_force);" in fv_options
+    assert '"ka.*" 5e-7;' in optimisation
+    assert '"wa.*" 5e-7;' in optimisation
+    metadata = json.loads(artifacts.metadata_json.read_text(encoding="utf-8"))
+    assert metadata["adjoint_iterations"] == 4000
+    assert metadata["requested_adjoint_iterations"] == 17
+    assert "names (U);" in fv_options
+    assert "Uaresp_rotated_force" not in fv_options
+    assert optimisation.count("addFvOptions true;") == 1
     assert artifacts.response_ids == ("rotated_force",)
 
 
@@ -149,15 +157,43 @@ def test_two_force_responses_preserve_requested_order(tmp_path: Path) -> None:
 
     optimisation = artifacts.optimisation_dict.read_text(encoding="utf-8")
     assert optimisation.index("resp_drag") < optimisation.index("resp_side_force")
-    assert "names (U Uaresp_drag Uaresp_side_force);" in artifacts.fv_options.read_text(
-        encoding="utf-8"
-    )
+    assert optimisation.count("useSolverNameForFields true;") == 2
+    response_ids = ("drag", "side_force")
+    for index, response_id in enumerate(response_ids):
+        solver_start = optimisation.index(f"resp_{response_id}\n")
+        solver_end = (
+            optimisation.index(f"resp_{response_ids[index + 1]}\n", solver_start + 1)
+            if index + 1 < len(response_ids)
+            else optimisation.index("        }\n    }\n}", solver_start)
+        )
+        assert (
+            "useSolverNameForFields true;"
+            in optimisation[solver_start:solver_end]
+        )
+    fv_options = artifacts.fv_options.read_text(encoding="utf-8")
+    assert "names (U);" in fv_options
+    assert "Uaresp_drag" not in fv_options
+    assert "Uaresp_side_force" not in fv_options
+    assert optimisation.count("addFvOptions true;") == 1
     metadata = json.loads(artifacts.metadata_json.read_text(encoding="utf-8"))
+    assert metadata["schema_version"] == 2
+    assert metadata["native_source_strategy"] == {
+        "openfoam_version": "v2512",
+        "static_toposource_fields": ["U"],
+        "adjoint_source_strategy": "designVariables.addFvOptions",
+        "adjoint_source_value": True,
+    }
     assert [item["response_id"] for item in metadata["response_mappings"]] == [
         "drag",
         "side_force",
     ]
     assert metadata["response_mappings"][1]["adjoint_velocity_field"] == "Uaresp_side_force"
+    assert metadata["response_mappings"][1]["native_adjoint_source"] == {
+        "enabled": True,
+        "strategy": "v2512_design_variables_addFvOptions",
+        "dictionary_path": "optimisation.designVariables.addFvOptions",
+        "adjoint_velocity_field": "Uaresp_side_force",
+    }
 
 
 def test_non_target_blocks_and_comment_braces_are_byte_preserved(tmp_path: Path) -> None:
@@ -167,7 +203,7 @@ def test_non_target_blocks_and_comment_braces_are_byte_preserved(tmp_path: Path)
     optimisation = (case / "system/optimisationDict").read_text(encoding="utf-8")
     fv_options = (case / "system/fvOptions").read_text(encoding="utf-8")
     assert PRIMAL_BLOCK in optimisation
-    assert OPTIMISATION_BLOCK in optimisation
+    assert "updateMethod { type mma; }" in optimisation
     assert "// outside comment with braces { ignored }\n" in optimisation
     assert OTHER_SOURCE in fv_options
     assert "names (keepThis);" in fv_options
@@ -185,7 +221,7 @@ def test_non_target_crlf_template_bytes_are_preserved(tmp_path: Path) -> None:
     optimisation = optimisation_path.read_bytes()
     fv_options = fv_path.read_bytes()
     assert PRIMAL_BLOCK.replace("\n", "\r\n").encode("utf-8") in optimisation
-    assert OPTIMISATION_BLOCK.replace("\n", "\r\n").encode("utf-8") in optimisation
+    assert b"updateMethod { type mma; }" in optimisation
     assert OTHER_SOURCE.replace("\n", "\r\n").encode("utf-8") in fv_options
 
 
@@ -272,6 +308,71 @@ def test_existing_metadata_requires_explicit_overwrite(tmp_path: Path) -> None:
     )
     assert first.metadata_json == second.metadata_json
     assert second.response_ids == ("drag", "side_force")
+    optimisation = second.optimisation_dict.read_text(encoding="utf-8")
+    assert optimisation.count("addFvOptions true;") == 1
+
+
+def test_native_topo_source_switch_is_idempotent_when_template_is_preconfigured(
+    tmp_path: Path,
+) -> None:
+    optimisation = _optimisation_text().replace(
+        "designVariables { type topO; }",
+        "designVariables\n{\n    type topO;\n    addFvOptions true;\n}",
+    )
+    case = _write_case(tmp_path, optimisation=optimisation)
+
+    render_openfoam_force_response_files(_plan(), case)
+
+    rendered = (case / "system/optimisationDict").read_text(encoding="utf-8")
+    assert rendered.count("addFvOptions true;") == 1
+
+
+@pytest.mark.parametrize(
+    ("optimisation", "message"),
+    [
+        (
+            _optimisation_text().replace("type topO", "type density"),
+            "must declare exactly one type topO",
+        ),
+        (
+            _optimisation_text().replace(
+                "designVariables { type topO; }",
+                "designVariables { type topO; }\n    designVariables { type topO; }",
+            ),
+            "optimisation.designVariables block, found 2",
+        ),
+        (
+            _optimisation_text().replace(
+                "type topO;", "type topO;\n        type topO;"
+            ),
+            "must declare exactly one type topO",
+        ),
+        (
+            _optimisation_text().replace(
+                "type topO;", "type topO;\n        addFvOptions false;"
+            ),
+            "addFvOptions must be true",
+        ),
+        (
+            _optimisation_text().replace(
+                "type topO;",
+                "type topO;\n        addFvOptions true;\n        addFvOptions true;",
+            ),
+            "at most one optimisation.designVariables.addFvOptions",
+        ),
+    ],
+)
+def test_native_topo_source_contract_rejects_ambiguous_or_incompatible_templates(
+    tmp_path: Path, optimisation: str, message: str
+) -> None:
+    case = _write_case(tmp_path, optimisation=optimisation)
+    before = (case / "system/optimisationDict").read_bytes()
+
+    with pytest.raises(ValueError, match=message):
+        render_openfoam_force_response_files(_plan(), case)
+
+    assert (case / "system/optimisationDict").read_bytes() == before
+    assert not (case / "generated_openfoam_responses.json").exists()
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,7 @@ import json
 import shutil
 from pathlib import Path
 
+import numpy as np
 import typer
 from rich.console import Console
 
@@ -55,6 +56,11 @@ from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
 from .openfoam_native_artifacts import assess_native_openfoam_v2_artifact_readiness
+from .native_g2_fd_validation import (
+    execute_native_g2_openfoam_fd_direction,
+    prepare_native_g2_openfoam_fd_direction,
+    validate_native_g2_openfoam_fd_direction,
+)
 from .parametric import default_parameters, parameters_to_dict, write_parametric_front_wing_stl
 from .porous_force_validation import (
     validate_efficiency_constraint_gradient,
@@ -63,8 +69,51 @@ from .porous_force_validation import (
 from .problem_spec import (
     load_problem_spec,
     problem_spec_sha256,
-    topology_constraint_ids,
+    problem_spec_validation_summary,
     write_problem_spec_snapshot,
+)
+from .localized_reference_state_bundle import (
+    LOCALIZED_REFERENCE_STATE_FILENAME,
+    build_localized_reference_state_bundle,
+    localized_reference_state_failure_report_path,
+)
+from .localized_reference_topology import (
+    LOCALIZED_REFERENCE_TOPOLOGY_FILENAME,
+    evaluate_localized_reference_topology,
+)
+from .g4_b1_numerical_topology import (
+    G4_B1_NUMERICAL_TOPOLOGY_FILENAME,
+    run_g4_b1_numerical_topology_benchmark,
+)
+from .g4_b2_laminar_channel import (
+    DEFAULT_G4_B2_CHANNEL_SPEC_PATH,
+    G4_B2_CHANNEL_COMPILATION_FILENAME,
+    G4_B2_CHANNEL_RUN_FILENAME,
+    compile_g4_b2_channel_benchmark,
+    run_g4_b2_channel_cases,
+    write_g4_b2_channel_qualification,
+)
+from .g4_b2_laminar_channel_evidence import (
+    extract_g4_b2_channel_runtime_evidence,
+    evaluate_g4_b2_channel_runtime_evidence,
+    write_g4_b2_channel_runtime_evidence,
+)
+from .g4_b2_laminar_cylinder import (
+    DEFAULT_G4_B2_CYLINDER_SPEC_PATH,
+    G4_B2_CYLINDER_COMPILATION_FILENAME,
+    G4_B2_CYLINDER_RUN_FILENAME,
+    compile_g4_b2_cylinder_benchmark,
+    run_g4_b2_cylinder_cases,
+)
+from .localized_g2_fd_preparation import (
+    LOCALIZED_G2_FD_PREPARATION_FILENAME,
+    prepare_localized_g2_openfoam_fd_direction,
+)
+from .localized_g2_fd_runner import run_localized_g2_openfoam_fd_direction
+from .localized_g2_fd_validation import validate_localized_g2_openfoam_fd_direction
+from .localized_g2_fd_response_gradient import (
+    LOCALIZED_G2_FD_RESPONSE_GRADIENT_FILENAME,
+    extract_localized_g2_fd_response_gradient,
 )
 from .projection import project_surface_sensitivity_to_density, write_mock_surface_sensitivity_csv
 from .runner import run_practical_optimization
@@ -125,31 +174,7 @@ def validate_problem_spec(
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc), param_hint="problem_yaml") from exc
 
-    geometry_role_counts = {
-        role: sum(region.role == role for region in spec.geometry_regions)
-        for role in (
-            "fixed_solid",
-            "initial_design",
-            "design_domain",
-            "forbidden_region",
-            "root",
-        )
-    }
-    summary = {
-        "kind": "problem_spec_validation",
-        "schema_version": spec.schema_version,
-        "problem_id": spec.problem_id,
-        "problem_spec_sha256": problem_spec_sha256(spec),
-        "migrated": spec.migration.migrated,
-        "source_schema_version": spec.migration.source_schema_version,
-        "execution_ready": spec.migration.execution_ready,
-        "geometry_role_counts": geometry_role_counts,
-        "flow_case_ids": [case.id for case in spec.flow_cases],
-        "response_ids": [response.id for response in spec.responses],
-        "objective_ids": [objective.id for objective in spec.objectives],
-        "aggregate_constraint_ids": [constraint.id for constraint in spec.constraints],
-        "topology_constraint_ids": list(topology_constraint_ids(spec)),
-    }
+    summary = problem_spec_validation_summary(spec)
     typer.echo(json.dumps(summary, indent=2))
 
     if output_dir is not None:
@@ -166,6 +191,392 @@ def validate_problem_spec(
         raise typer.Exit(code=1)
 
 
+@app.command("build-localized-reference-state")
+def build_localized_reference_state(
+    problem_yaml: Path = typer.Argument(..., help="Project YAML declaring the local design grid and initial STL."),
+    geometry_snapshot: Path = typer.Argument(..., help="Verified local_geometry_masks.json manifest."),
+    output_dir: Path = typer.Argument(..., help="New immutable localized reference-state bundle directory."),
+) -> None:
+    """Build the fixed-contract local STL reference-state bundle.
+
+    Filter/projection parameters and the front-wing ten-component source
+    contract are intentionally not CLI options: their immutable values belong
+    to the Sol-approved initial-state contract, not per-run tuning.
+    """
+    try:
+        bundle = build_localized_reference_state_bundle(
+            problem_yaml,
+            geometry_snapshot_path=geometry_snapshot,
+            output_dir=output_dir,
+        )
+    except (OSError, ValueError) as exc:
+        message = str(exc)
+        report = localized_reference_state_failure_report_path(output_dir)
+        if report.is_file():
+            message += f"; diagnostic report: {report}"
+        raise typer.BadParameter(message, param_hint="output_dir") from exc
+    typer.echo(
+        json.dumps(
+            {
+                "kind": "localized_reference_state_build",
+                "bundle_path": str(bundle.path),
+                "ledger_path": str(bundle.path / LOCALIZED_REFERENCE_STATE_FILENAME),
+                "geometry_snapshot_sha256": bundle.geometry_snapshot.sha256,
+                "state_manifest_sha256": bundle.state_manifest_sha256,
+                "raw_manifest_sha256": bundle.raw_manifest_sha256,
+                "initial_design_stl_sha256": bundle.initial_design_stl_sha256,
+            },
+            sort_keys=True,
+        )
+    )
+@app.command("evaluate-localized-reference-topology")
+def evaluate_localized_reference_topology_command(
+    project_yaml: Path = typer.Argument(..., help="Project YAML bound to the immutable reference bundle."),
+    reference_bundle: Path = typer.Argument(..., help="Verified immutable localized reference-state bundle."),
+    output_dir: Path = typer.Argument(..., help="New directory for the atomic topology evaluation report."),
+) -> None:
+    """Evaluate the fixed discrete topology policy for one verified reference bundle.
+
+    The evaluator's resource guards and topology parameters are deliberately
+    not CLI options.  They are part of the immutable bundle/policy contract,
+    so a command invocation cannot silently weaken a qualification gate.
+    """
+    try:
+        report = evaluate_localized_reference_topology(
+            project_yaml,
+            reference_bundle_path=reference_bundle,
+            output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(
+            str(exc),
+            param_hint=_localized_topology_error_parameter(exc),
+        ) from exc
+
+    if report.status not in {"success", "rejected"}:
+        raise RuntimeError(f"localized topology evaluator returned unsupported status: {report.status}")
+    typer.echo(
+        json.dumps(
+            {
+                "kind": "localized_reference_topology_evaluation",
+                "reasons": list(report.reasons),
+                "report_path": str(output_dir / LOCALIZED_REFERENCE_TOPOLOGY_FILENAME),
+                "status": report.status,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
+    if report.status == "rejected":
+        raise typer.Exit(code=1)
+
+
+@app.command("run-g4-b1-numerical-topology-benchmark")
+def run_g4_b1_numerical_topology_benchmark_command(
+    output_dir: Path = typer.Argument(..., help="New immutable output directory for the STL-independent canonical B1 pack."),
+) -> None:
+    """Run the deterministic G4 B1 topology/filter/projection numerical pack.
+
+    This command only validates discrete voxel topology and the local
+    filter/projection transform derivative.  It does not run or qualify CFD.
+    """
+    try:
+        result = run_g4_b1_numerical_topology_benchmark(output_dir=output_dir)
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b1_numerical_topology_benchmark",
+        "status": result.status,
+        "index_path": str(output_dir / G4_B1_NUMERICAL_TOPOLOGY_FILENAME),
+        "index_sha256": result.index_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+    if result.status != "success":
+        raise typer.Exit(code=1)
+
+
+@app.command("compile-g4-b2-channel")
+def compile_g4_b2_channel_command(
+    output_dir: Path = typer.Argument(..., help="New immutable directory for the three channel OpenFOAM cases."),
+    spec_yaml: Path = typer.Option(DEFAULT_G4_B2_CHANNEL_SPEC_PATH, "--spec", help="B2.0 parallel-plate channel YAML contract."),
+) -> None:
+    """Compile the B2.0 h/h2/h4 channel pack; this never executes OpenFOAM."""
+    try:
+        result = compile_g4_b2_channel_benchmark(spec_path=spec_yaml, output_dir=output_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b2_channel_compilation",
+        "status": "compiled_not_runtime_qualified",
+        "compilation_json": str((output_dir / G4_B2_CHANNEL_COMPILATION_FILENAME).resolve()),
+        "spec_sha256": result.spec_sha256,
+        "compilation_sha256": result.compilation_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("run-g4-b2-channel")
+def run_g4_b2_channel_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    output_dir: Path = typer.Argument(..., help="New runtime-attempt directory; compiled cases remain untouched."),
+    execute: bool = typer.Option(False, "--execute", help="Actually invoke the selected OpenFOAM backend."),
+    backend: str = typer.Option("auto", "--backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Digest-pinned OpenFOAM image for docker runs."),
+) -> None:
+    """Run copied B2.0 cases; neither a dry run nor a solver exit qualifies B2."""
+    try:
+        artifact = run_g4_b2_channel_cases(
+            compilation_dir=compilation_dir,
+            output_dir=output_dir,
+            backend=backend,
+            execute=execute,
+            timeout_seconds=timeout_seconds,
+            docker_image=docker_image,
+        )
+        payload = json.loads(artifact.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": payload["kind"], "status": payload["status"],
+        "qualified": False, "artifact_json": str((output_dir / G4_B2_CHANNEL_RUN_FILENAME).resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("compile-g4-b2-cylinder")
+def compile_g4_b2_cylinder_command(
+    output_dir: Path = typer.Argument(..., help="New immutable directory for the six B2.0 cylinder cases."),
+    spec_yaml: Path = typer.Option(DEFAULT_G4_B2_CYLINDER_SPEC_PATH, "--spec", help="B2.0 cylinder YAML contract."),
+) -> None:
+    """Compile body-fitted and porous h/h2/h4 cylinder cases; never runs OpenFOAM."""
+    try:
+        result = compile_g4_b2_cylinder_benchmark(spec_path=spec_yaml, output_dir=output_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": "g4_b2_cylinder_compilation", "status": "compiled_not_runtime_qualified",
+        "compilation_json": str((output_dir / G4_B2_CYLINDER_COMPILATION_FILENAME).resolve()),
+        "spec_sha256": result.spec_sha256, "compilation_sha256": result.compilation_sha256,
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("run-g4-b2-cylinder")
+def run_g4_b2_cylinder_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-cylinder."),
+    output_dir: Path = typer.Argument(..., help="New runtime-attempt directory; compiled cases remain unchanged."),
+    through_grid: str = typer.Option(..., "--through-grid", help="Required canonical prefix endpoint: coarse, medium, or fine."),
+    execute: bool = typer.Option(False, "--execute", help="Build and run the required canonical prefix."),
+    backend: str = typer.Option("docker", "--backend", help="Dry runs may select any backend; executed B2 cylinder runs require docker."),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Required digest-pinned v2512 image for --execute."),
+) -> None:
+    """Run copied B2 cylinder cases; execution remains unqualified until evidence extraction."""
+    try:
+        artifact = run_g4_b2_cylinder_cases(
+            compilation_dir=compilation_dir, output_dir=output_dir, through_grid=through_grid, backend=backend,
+            execute=execute, docker_image=docker_image,
+        )
+        payload = json.loads(artifact.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": payload["kind"], "status": payload["status"], "qualified": False,
+        "artifact_json": str((output_dir / G4_B2_CYLINDER_RUN_FILENAME).resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+
+
+@app.command("extract-g4-b2-channel-evidence")
+def extract_g4_b2_channel_evidence_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    runtime_dir: Path = typer.Argument(..., help="Executed immutable directory emitted by run-g4-b2-channel --execute."),
+    output_json: Path = typer.Argument(..., help="New source-bound evidence JSON; an existing file is refused."),
+    postprocess_backend: str = typer.Option("auto", "--postprocess-backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
+) -> None:
+    """Extract B2.0 channel evidence from runtime files; no hand-written metrics."""
+    try:
+        evidence = extract_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, runtime_dir=runtime_dir,
+            postprocess_backend=postprocess_backend, timeout_seconds=timeout_seconds,
+        )
+        artifact = write_g4_b2_channel_runtime_evidence(evidence, output_json)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": evidence["kind"], "status": evidence["status"], "complete": evidence["complete"],
+        "artifact_json": str(artifact.resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+    if not evidence["complete"]:
+        raise typer.Exit(code=1)
+
+
+@app.command("qualify-g4-b2-channel")
+def qualify_g4_b2_channel_command(
+    compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-channel."),
+    runtime_dir: Path = typer.Argument(..., help="Executed immutable directory emitted by run-g4-b2-channel --execute."),
+    output_json: Path = typer.Argument(..., help="New qualification artifact JSON."),
+    evidence_json: Path | None = typer.Option(None, "--evidence-json", help="Optional new evidence artifact to publish; metrics are always extracted from runtime."),
+    postprocess_backend: str = typer.Option("auto", "--postprocess-backend", help="auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1),
+) -> None:
+    """Extract and qualify B2.0 evidence; arbitrary metric JSON is never accepted."""
+    try:
+        evidence = extract_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, runtime_dir=runtime_dir,
+            postprocess_backend=postprocess_backend, timeout_seconds=timeout_seconds,
+        )
+        if evidence_json is not None:
+            write_g4_b2_channel_runtime_evidence(evidence, evidence_json)
+        result = evaluate_g4_b2_channel_runtime_evidence(
+            compilation_dir=compilation_dir, evidence=evidence,
+        )
+        artifact = write_g4_b2_channel_qualification(result, output_json)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps({
+        "kind": result["kind"], "status": result["status"], "qualified": result["qualified"],
+        "evidence_status": evidence["status"], "artifact_json": str(artifact.resolve()),
+    }, sort_keys=True, separators=(",", ":")))
+    if not result["qualified"]:
+        raise typer.Exit(code=1)
+
+
+@app.command("prepare-localized-g2-openfoam-fd-direction")
+def prepare_localized_g2_openfoam_fd_direction_command(
+    project_yaml: Path = typer.Argument(..., help="Project YAML bound to every immutable input."),
+    reference_bundle: Path = typer.Argument(..., help="Verified published localized v2 reference-state bundle."),
+    topology_report: Path = typer.Argument(..., help="Successful immutable topology report for that exact bundle."),
+    alpha_reference_binding: Path = typer.Argument(..., help="Verified alpha-reference binding for the actual CFD grid."),
+    compiled_case: Path = typer.Argument(..., help="Read-only compiled OpenFOAM case template."),
+    direction_npy: Path = typer.Argument(..., help="Canonical x-fastest, native float64 rho_raw direction NPY."),
+    epsilon_h: float = typer.Argument(..., help="Predeclared positive h; protocol fixes the ladder to h, h/2, h/4."),
+    output_dir: Path = typer.Argument(..., help="New immutable FD-preparation output directory."),
+    mode: str = typer.Option("one_sided", "--mode", help="one_sided (default) or central; central needs both raw sides feasible."),
+) -> None:
+    """Stage localized G2 FD cases; never execute OpenFOAM or validate FD here."""
+    try:
+        h = float(epsilon_h)
+        result = prepare_localized_g2_openfoam_fd_direction(
+            project_yaml,
+            reference_bundle_path=reference_bundle,
+            topology_report_path=topology_report,
+            alpha_reference_binding_path=alpha_reference_binding,
+            compiled_case_dir=compiled_case,
+            direction=direction_npy,
+            epsilon_ladder=(h, h / 2.0, h / 4.0),
+            output_dir=output_dir,
+            mode=mode,  # validated by the immutable preparation core
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="fd_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_preparation",
+        "status": result.status,
+        "mode": result.mode,
+        "report_path": str(result.report_json),
+        "epsilon_ladder": list(result.epsilon_ladder),
+        "cases": [str(item) for item in result.cases],
+        "execution_status": "not_run",
+    }, sort_keys=True))
+
+
+@app.command("run-localized-g2-openfoam-fd-direction")
+def run_localized_g2_openfoam_fd_direction_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable output of prepare-localized-g2-openfoam-fd-direction."),
+    adjoint_name: str = typer.Argument(..., help="Declared name for the one fresh reference adjoint."),
+    output_dir: Path = typer.Argument(..., help="New run-evidence directory; an existing path is refused."),
+    baseline_repeats: int = typer.Option(2, "--baseline-repeats", min=2, help="Fresh reference primal runs; protocol requires at least 2."),
+    backend: str = typer.Option("auto", "--backend", help="Primal OpenFOAM backend: auto or local for the default runner."),
+    docker_image: str | None = typer.Option(None, "--docker-image", help="Declared Docker image for the default primal runner."),
+    timeout_seconds: int | None = typer.Option(None, "--timeout-seconds", min=1, help="Per-case timeout for the default runner."),
+    adjoint_script: str = typer.Option("AllrunAdjoint", "--adjoint-script", help="Fresh named-adjoint script in the staged reference copy."),
+    execute: bool = typer.Option(False, "--execute", help="Actually launch fresh OpenFOAM cases; required."),
+) -> None:
+    """Execute a prepared localized FD experiment; never validate its numbers."""
+    if not execute:
+        raise typer.BadParameter("runtime execution is opt-in; pass --execute", param_hint="--execute")
+    try:
+        result = run_localized_g2_openfoam_fd_direction(
+            prepared_experiment, output_dir=output_dir, adjoint_name=adjoint_name,
+            baseline_repeats=baseline_repeats, execute=True, backend=backend,
+            docker_image=docker_image, timeout_seconds=timeout_seconds, adjoint_script=adjoint_script,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="prepared_experiment") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_run", "status": result.status,
+        "execution_status": result.execution_status, "validation_status": "not_run",
+        "report_path": str(result.report_json), "baseline_repeats": result.baseline_repeats,
+        "mode": result.mode,
+    }, sort_keys=True))
+
+
+@app.command("validate-localized-g2-openfoam-fd-direction")
+def validate_localized_g2_openfoam_fd_direction_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable localized G2 FD preparation directory."),
+    run_report: Path = typer.Argument(..., help="Immutable run report produced by run-localized-g2-openfoam-fd-direction."),
+    output_dir: Path = typer.Argument(..., help="New validation directory; existing paths are refused."),
+) -> None:
+    """Apply the fixed localized G2 FD protocol; do not rerun OpenFOAM."""
+    try:
+        result = validate_localized_g2_openfoam_fd_direction(
+            prepared_experiment, run_report, output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="validation_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_validation", "status": result.status,
+        "report_path": str(result.report_json), "markdown_path": str(result.report_markdown),
+        "mode": result.mode, "selected_epsilon": result.selected_epsilon,
+    }, sort_keys=True))
+
+
+@app.command("extract-localized-g2-fd-response-gradient")
+def extract_localized_g2_fd_response_gradient_command(
+    prepared_experiment: Path = typer.Argument(..., help="Immutable localized G2 FD preparation directory."),
+    run_report: Path = typer.Argument(..., help="Completed immutable run report from run-localized-g2-openfoam-fd-direction."),
+    response_gradient_contract: Path = typer.Argument(..., help="Compiler-generated explicit response/raw-alpha-gradient contract JSON."),
+    flow_case_id: str = typer.Argument(..., help="Declared flow case ID bound by the compiler contract."),
+    response_id: str = typer.Argument(..., help="Declared named response ID bound by the compiler contract."),
+    adjoint_name: str = typer.Argument(..., help="Named adjoint identifier recorded in the completed run."),
+    output_dir: Path = typer.Argument(..., help="New immutable response/gradient artifact directory."),
+) -> None:
+    """Extract raw-alpha evidence only; do not apply the localized chain rule."""
+    try:
+        result = extract_localized_g2_fd_response_gradient(
+            prepared_experiment, run_report, response_gradient_contract,
+            flow_case_id=flow_case_id, response_id=response_id,
+            adjoint_name=adjoint_name, output_dir=output_dir,
+        )
+    except FileExistsError as exc:
+        raise typer.BadParameter(str(exc), param_hint="output_dir") from exc
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="response_gradient_inputs") from exc
+    typer.echo(json.dumps({
+        "kind": "localized_g2_openfoam_fd_response_gradient", "status": "extracted",
+        "report_path": str(result.report_json), "gradient_path": str(result.gradient_npy),
+        "flow_case_id": result.flow_case_id, "response_id": result.response_id,
+        "adjoint_name": result.adjoint_name, "cfd_cell_count": result.cfd_cell_count,
+    }, sort_keys=True))
+
+
+def _localized_topology_error_parameter(exc: OSError | ValueError) -> str:
+    """Point expected topology-evaluation errors at the actionable argument."""
+    message = str(exc).lower()
+    if "requires at least" in message or "refusing to overwrite" in message:
+        return "output_dir"
+    if "project" in message or "yaml" in message:
+        return "project_yaml"
+    return "reference_bundle"
+
+
 @app.command("compile-openfoam-problem-cases")
 def compile_openfoam_problem_cases(
     problem_yaml: Path = typer.Argument(..., help="Generic problem specification YAML."),
@@ -177,6 +588,11 @@ def compile_openfoam_problem_cases(
         help="Available template patch ID; repeat for each patch. Defaults to the fixed-grid profile.",
     ),
     adjoint_iterations: int = typer.Option(1, help="Adjoint iterations written per force response."),
+    localized_g2_serial_runtime_contract: bool = typer.Option(
+        False,
+        "--localized-g2-serial-runtime-contract",
+        help="Emit the opt-in serial-only localized G2 response/gradient and AllrunAdjoint runtime contract.",
+    ),
     overwrite: bool = typer.Option(False, help="Replace a compiler-owned bundle only."),
     require_compile_ready: bool = typer.Option(
         True,
@@ -197,6 +613,7 @@ def compile_openfoam_problem_cases(
             adjoint_iterations=adjoint_iterations,
             overwrite=overwrite,
             require_compile_ready=False,
+            localized_g2_serial_runtime_contract=localized_g2_serial_runtime_contract,
         )
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
@@ -358,6 +775,88 @@ def assess_native_openfoam_v2_artifact_readiness_command(
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps({**assessment, "artifact_json": str(target)}, indent=2))
+
+
+@app.command("prepare-native-g2-openfoam-fd-direction")
+def prepare_native_g2_openfoam_fd_direction_command(
+    project_yaml: Path = typer.Argument(..., help="Generic problem specification YAML."),
+    bundle_dir: Path = typer.Argument(..., help="Compiled OpenFOAM bundle used as the clean case template."),
+    baseline_case_dir: Path = typer.Argument(..., help="Completed decomposed baseline run for the selected response."),
+    canonical_snapshot_json: Path = typer.Argument(..., help="Verified canonical grid snapshot JSON."),
+    canonical_gradient_dir: Path = typer.Argument(..., help="Canonical topOSens transfer artifact directory."),
+    direction_npy: Path = typer.Argument(..., help="One canonical density-direction value per cell (.npy)."),
+    output_dir: Path = typer.Option(..., help="New output directory for staged plus/minus cases."),
+    flow_case_id: str = typer.Option(..., help="Declared flow-case ID."),
+    response_id: str = typer.Option(..., help="Declared force-response ID."),
+    objective_id: str = typer.Option(..., help="Declared objective containing the response exactly once."),
+    epsilon: float = typer.Option(1.0e-3, help="Centered perturbation in the source alpha design variable."),
+    final_time: str | None = typer.Option(None, help="Explicit final decomposed OpenFOAM time directory."),
+    execute: bool = typer.Option(False, help="Run the two staged OpenFOAM cases after preparation."),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    timeout_seconds: int | None = typer.Option(None, min=1, help="Optional timeout per staged case."),
+    docker_image: str | None = typer.Option(None, help="Docker image when backend=docker."),
+) -> None:
+    """Stage a fail-closed native G2 central-FD direction check.
+
+    The command accepts a canonical direction but reconstructs the baseline
+    OpenFOAM state from the completed run; it refuses any inverse state-grid
+    transfer, clipping, missing provenance, or out-of-bounds perturbation.
+    """
+
+    try:
+        direction = np.load(direction_npy, allow_pickle=False)
+        artifacts = prepare_native_g2_openfoam_fd_direction(
+            project_yaml=project_yaml,
+            bundle_dir=bundle_dir,
+            baseline_case_dir=baseline_case_dir,
+            canonical_snapshot_json=canonical_snapshot_json,
+            canonical_gradient_dir=canonical_gradient_dir,
+            flow_case_id=flow_case_id,
+            response_id=response_id,
+            objective_id=objective_id,
+            canonical_density_direction=direction,
+            epsilon=epsilon,
+            output_dir=output_dir,
+            final_time=final_time,
+        )
+        execution = None
+        if execute:
+            plus, minus = execute_native_g2_openfoam_fd_direction(
+                artifacts,
+                backend=backend,
+                timeout_seconds=timeout_seconds,
+                docker_image=docker_image,
+            )
+            execution = {
+                "plus": plus.to_dict() if hasattr(plus, "to_dict") else str(plus),
+                "minus": minus.to_dict() if hasattr(minus, "to_dict") else str(minus),
+            }
+    except (OSError, RuntimeError, ValueError, FileExistsError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    result = artifacts.to_dict()
+    result["execution"] = execution
+    typer.echo(json.dumps(result, indent=2))
+
+
+@app.command("validate-native-g2-openfoam-fd-direction")
+def validate_native_g2_openfoam_fd_direction_command(
+    prepared_dir: Path = typer.Argument(..., help="Prepared native G2 FD direction directory."),
+    relative_error_tolerance: float = typer.Option(
+        0.25, help="Allowed symmetric relative error between central FD and transferred adjoint."
+    ),
+) -> None:
+    """Parse declared-force results from staged cases and compare with the adjoint."""
+
+    try:
+        result = validate_native_g2_openfoam_fd_direction(
+            prepared_dir,
+            relative_error_tolerance=relative_error_tolerance,
+        )
+    except (OSError, ValueError, FileNotFoundError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(result.to_dict(), indent=2))
+    if not result.ok:
+        raise typer.Exit(code=1)
 
 
 @app.command("produce-openfoam-normalized-mass-imbalance")

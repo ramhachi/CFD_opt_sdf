@@ -324,28 +324,22 @@ def _cell_centres(grid: Any, start: int, stop: int) -> np.ndarray:
 
 def _derive_masks(spec: ProblemSpec, role_masks: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
     design = _role_mask(role_masks, "design_domain")
-    forbidden = _role_mask(role_masks, "forbidden_region")
+    raw_forbidden = _role_mask(role_masks, "forbidden_region")
     fixed = _role_mask(role_masks, "fixed_solid")
     root = _role_mask(role_masks, "root")
-    overlap = fixed & forbidden
-    if np.any(overlap):
-        raise ValueError(
-            "fixed_solid and forbidden_region geometry regions overlap in canonical cells; "
-            f"first_cell={int(np.flatnonzero(overlap)[0])}"
-        )
-    root_forbidden = root & forbidden
-    if np.any(root_forbidden):
-        raise ValueError(
-            "root and forbidden_region geometry regions overlap in canonical cells; "
-            f"first_cell={int(np.flatnonzero(root_forbidden)[0])}"
-        )
     root_outside_fixed = root & ~fixed
     if np.any(root_outside_fixed):
         raise ValueError(
             "root_mask must be contained within fixed_solid_mask; "
             f"first_cell={int(np.flatnonzero(root_outside_fixed)[0])}"
         )
-    active = design & ~forbidden & ~fixed
+    # A forbidden envelope may deliberately include immutable vehicle/root
+    # solids (for example, tire-clearance volumes).  Fixed solids take
+    # precedence in that overlap: they remain fixed/root cells rather than
+    # being exposed as forbidden void.  The raw envelope still excludes those
+    # cells from design degrees of freedom.
+    forbidden = raw_forbidden & ~fixed
+    active = design & ~raw_forbidden & ~fixed
     if not np.any(active):
         raise ValueError("active_design_mask is empty after forbidden/fixed exclusions")
     root_required = any(

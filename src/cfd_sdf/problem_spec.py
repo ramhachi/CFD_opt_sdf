@@ -12,6 +12,7 @@ import re
 from types import MappingProxyType
 from typing import Any
 
+import trimesh
 import yaml
 
 
@@ -39,6 +40,7 @@ DEFAULT_RESPONSE_RELATIVE_RANGE_MAX = 1.0e-3
 DEFAULT_ADJOINT_FINAL_RESIDUAL_MAX = 1.0e-6
 DOMAIN_BOUNDS_ALIGNMENT_RELATIVE_TOLERANCE = 1.0e-10
 DOMAIN_BOUNDS_ALIGNMENT_ABSOLUTE_TOLERANCE_M = 1.0e-12
+DESIGN_GRID_GEOMETRY_ABSOLUTE_TOLERANCE_M = 1.0e-7
 
 
 @dataclass(frozen=True)
@@ -77,6 +79,34 @@ class DomainBoundsSpec:
 
     lower: Vector3
     upper: Vector3
+
+
+@dataclass(frozen=True)
+class TopologyResolutionSpec:
+    """Minimum design-grid cells required by each physical topology control."""
+
+    minimum_solid_width_cells: int
+    minimum_void_width_cells: int
+    minimum_gap_cells: int
+    erosion_radius_cells: int
+
+
+@dataclass(frozen=True)
+class DesignGridSpec:
+    """A local, authoritative topology design grid independent of the CFD grid.
+
+    The bounds are required to match the declared STL ``design_domain``.  This
+    intentionally prevents a coarse CFD mesh from silently becoming the
+    source of truth for topology-length constraints.
+    """
+
+    kind: str
+    design_domain_region_id: str
+    voxel_size_m: float
+    domain_bounds_m: DomainBoundsSpec
+    expected_cell_shape: tuple[int, int, int]
+    expected_cell_count: int
+    topology_resolution: TopologyResolutionSpec
 
 
 @dataclass(frozen=True)
@@ -198,6 +228,7 @@ class ProblemSpec:
     units: UnitsSpec
     coordinate_frame: CoordinateFrameSpec
     grid: GridSpec
+    design_grid: DesignGridSpec | None
     reference_values: ReferenceValuesSpec | None
     geometry_regions: tuple[GeometryRegionSpec, ...]
     flow_cases: tuple[FlowCaseSpec, ...]
@@ -307,6 +338,37 @@ def problem_spec_to_dict(spec: ProblemSpec) -> dict[str, Any]:
             ),
             **spec.grid.options,
         },
+        **(
+            {
+                "design_grid": {
+                    "kind": spec.design_grid.kind,
+                    "design_domain_region_id": spec.design_grid.design_domain_region_id,
+                    "voxel_size_m": spec.design_grid.voxel_size_m,
+                    "domain_bounds_m": {
+                        "lower": spec.design_grid.domain_bounds_m.lower,
+                        "upper": spec.design_grid.domain_bounds_m.upper,
+                    },
+                    "expected_cell_shape": spec.design_grid.expected_cell_shape,
+                    "expected_cell_count": spec.design_grid.expected_cell_count,
+                    "topology_resolution": {
+                        "minimum_solid_width_cells": (
+                            spec.design_grid.topology_resolution.minimum_solid_width_cells
+                        ),
+                        "minimum_void_width_cells": (
+                            spec.design_grid.topology_resolution.minimum_void_width_cells
+                        ),
+                        "minimum_gap_cells": (
+                            spec.design_grid.topology_resolution.minimum_gap_cells
+                        ),
+                        "erosion_radius_cells": (
+                            spec.design_grid.topology_resolution.erosion_radius_cells
+                        ),
+                    },
+                }
+            }
+            if spec.design_grid is not None
+            else {}
+        ),
         "reference_values": references,
         "geometry_regions": [
             {
@@ -415,6 +477,36 @@ def problem_spec_sha256(spec: ProblemSpec) -> str:
     return hashlib.sha256(canonical_problem_spec_json(spec).encode("utf-8")).hexdigest()
 
 
+def problem_spec_validation_summary(spec: ProblemSpec) -> dict[str, Any]:
+    """Return the stable generic preflight/role report used by the CLI."""
+
+    geometry_role_counts = {
+        role: sum(region.role == role for region in spec.geometry_regions)
+        for role in (
+            "fixed_solid",
+            "initial_design",
+            "design_domain",
+            "forbidden_region",
+            "root",
+        )
+    }
+    return {
+        "kind": "problem_spec_validation",
+        "schema_version": spec.schema_version,
+        "problem_id": spec.problem_id,
+        "problem_spec_sha256": problem_spec_sha256(spec),
+        "migrated": spec.migration.migrated,
+        "source_schema_version": spec.migration.source_schema_version,
+        "execution_ready": spec.migration.execution_ready,
+        "geometry_role_counts": geometry_role_counts,
+        "flow_case_ids": [case.id for case in spec.flow_cases],
+        "response_ids": [response.id for response in spec.responses],
+        "objective_ids": [objective.id for objective in spec.objectives],
+        "aggregate_constraint_ids": [constraint.id for constraint in spec.constraints],
+        "topology_constraint_ids": list(topology_constraint_ids(spec)),
+    }
+
+
 def canonical_uniform_cartesian_cell_grid(spec: ProblemSpec):
     """Build the explicit canonical transfer target declared by ``spec``.
 
@@ -438,6 +530,29 @@ def canonical_uniform_cartesian_cell_grid(spec: ProblemSpec):
         origin=bounds.lower,
         spacing=(spec.grid.voxel_size_m,) * 3,
         cell_shape=counts,
+    )
+
+
+def canonical_local_design_grid(spec: ProblemSpec):
+    """Build the explicit local topology design grid declared by ``spec``.
+
+    This helper fails closed when a problem has not opted into the local design
+    grid contract.  It must not be replaced with the global CFD transfer grid.
+    """
+
+    if not isinstance(spec, ProblemSpec):
+        raise ValueError("spec must be ProblemSpec")
+    design_grid = spec.design_grid
+    if design_grid is None:
+        raise ValueError("canonical local design grid requires design_grid")
+    if design_grid.kind != "uniform_cartesian":
+        raise ValueError("canonical local design grid requires design_grid.kind=uniform_cartesian")
+    from .openfoam_grid_transfer import UniformCartesianCellGrid
+
+    return UniformCartesianCellGrid(
+        origin=design_grid.domain_bounds_m.lower,
+        spacing=(design_grid.voxel_size_m,) * 3,
+        cell_shape=design_grid.expected_cell_shape,
     )
 
 
@@ -474,6 +589,7 @@ def _load_v2(path: Path, raw: Mapping[str, Any]) -> ProblemSpec:
             "units",
             "coordinate_frame",
             "grid",
+            "design_grid",
             "reference_values",
             "geometry_regions",
             "flow_cases",
@@ -545,6 +661,12 @@ def _load_v2(path: Path, raw: Mapping[str, Any]) -> ProblemSpec:
     topology_policy = _load_topology_policy(
         _mapping(raw, "topology_policy"), geometry_regions
     )
+    design_grid = _load_design_grid(
+        raw.get("design_grid"),
+        path=path,
+        geometry_regions=geometry_regions,
+        topology_policy=topology_policy,
+    )
 
     return ProblemSpec(
         path=path,
@@ -553,6 +675,7 @@ def _load_v2(path: Path, raw: Mapping[str, Any]) -> ProblemSpec:
         units=units,
         coordinate_frame=frame,
         grid=grid,
+        design_grid=design_grid,
         reference_values=reference_values,
         geometry_regions=geometry_regions,
         flow_cases=flow_cases,
@@ -689,6 +812,190 @@ def _load_topology_policy(
         minimum_gap_m=minimum_gap_m,
         erosion_radius_m=erosion_radius_m,
     )
+
+
+def _load_design_grid(
+    value: Any,
+    *,
+    path: Path,
+    geometry_regions: tuple[GeometryRegionSpec, ...],
+    topology_policy: TopologyPolicySpec,
+) -> DesignGridSpec | None:
+    """Load a local topology-grid contract and reject unverifiable inputs.
+
+    A design grid is intentionally optional for generic and legacy-compatible
+    problems.  Once declared, however, it is authoritative: its bounds must
+    exactly match one declared STL ``design_domain``, and every physical
+    topology control must have an explicit cell-resolution requirement.
+    """
+
+    if value is None:
+        return None
+    raw = _as_mapping(value, "design_grid")
+    _reject_unknown_keys(
+        raw,
+        {
+            "kind",
+            "design_domain_region_id",
+            "voxel_size_m",
+            "domain_bounds_m",
+            "expected_cell_shape",
+            "expected_cell_count",
+            "topology_resolution",
+        },
+        "design_grid",
+    )
+    kind = _required_text(raw, "kind", "design_grid")
+    if kind != "uniform_cartesian":
+        raise ValueError("design_grid.kind must be 'uniform_cartesian'")
+    voxel_size_m = _positive_float(raw.get("voxel_size_m"), "design_grid.voxel_size_m")
+    bounds = _load_domain_bounds(
+        raw.get("domain_bounds_m"),
+        voxel_size_m,
+        context="design_grid.domain_bounds_m",
+    )
+    if bounds is None:
+        raise ValueError("design_grid.domain_bounds_m is required")
+    shape = _positive_integer_vector(
+        raw.get("expected_cell_shape"), "design_grid.expected_cell_shape"
+    )
+    actual_shape = _domain_cell_shape(bounds, voxel_size_m, context="design_grid.domain_bounds_m")
+    if shape != actual_shape:
+        raise ValueError(
+            "design_grid.expected_cell_shape must match domain_bounds_m and voxel_size_m; "
+            f"expected {actual_shape!r}, got {shape!r}"
+        )
+    expected_cell_count = _positive_integer(
+        raw.get("expected_cell_count"), "design_grid.expected_cell_count"
+    )
+    actual_cell_count = shape[0] * shape[1] * shape[2]
+    if expected_cell_count != actual_cell_count:
+        raise ValueError(
+            "design_grid.expected_cell_count must equal the product of expected_cell_shape; "
+            f"expected {actual_cell_count}, got {expected_cell_count}"
+        )
+
+    design_domain_region_id = _required_id(raw, "design_domain_region_id", "design_grid")
+    matching_regions = [
+        region for region in geometry_regions if region.id == design_domain_region_id
+    ]
+    if len(matching_regions) != 1 or matching_regions[0].role != "design_domain":
+        raise ValueError(
+            "design_grid.design_domain_region_id must reference exactly one geometry region "
+            "with role='design_domain'"
+        )
+    _validate_design_grid_stl_bounds(
+        path=path,
+        region=matching_regions[0],
+        bounds=bounds,
+    )
+
+    resolution_raw = _mapping(raw, "topology_resolution", "design_grid")
+    _reject_unknown_keys(
+        resolution_raw,
+        {
+            "minimum_solid_width_cells",
+            "minimum_void_width_cells",
+            "minimum_gap_cells",
+            "erosion_radius_cells",
+        },
+        "design_grid.topology_resolution",
+    )
+    resolution = TopologyResolutionSpec(
+        minimum_solid_width_cells=_positive_integer(
+            resolution_raw.get("minimum_solid_width_cells"),
+            "design_grid.topology_resolution.minimum_solid_width_cells",
+        ),
+        minimum_void_width_cells=_positive_integer(
+            resolution_raw.get("minimum_void_width_cells"),
+            "design_grid.topology_resolution.minimum_void_width_cells",
+        ),
+        minimum_gap_cells=_positive_integer(
+            resolution_raw.get("minimum_gap_cells"),
+            "design_grid.topology_resolution.minimum_gap_cells",
+        ),
+        erosion_radius_cells=_positive_integer(
+            resolution_raw.get("erosion_radius_cells"),
+            "design_grid.topology_resolution.erosion_radius_cells",
+        ),
+    )
+    _validate_topology_resolution(topology_policy, voxel_size_m, resolution)
+    return DesignGridSpec(
+        kind=kind,
+        design_domain_region_id=design_domain_region_id,
+        voxel_size_m=voxel_size_m,
+        domain_bounds_m=bounds,
+        expected_cell_shape=shape,
+        expected_cell_count=expected_cell_count,
+        topology_resolution=resolution,
+    )
+
+
+def _validate_design_grid_stl_bounds(
+    *, path: Path, region: GeometryRegionSpec, bounds: DomainBoundsSpec
+) -> None:
+    geometry_path = (path.parent / region.file).resolve()
+    if not geometry_path.is_file():
+        raise ValueError(
+            "design_grid.design_domain_region_id STL is missing: "
+            f"{region.id!r} ({region.file})"
+        )
+    try:
+        mesh = trimesh.load(geometry_path, force="mesh", process=False)
+        actual_lower = tuple(float(value) for value in mesh.bounds[0])
+        actual_upper = tuple(float(value) for value in mesh.bounds[1])
+    except Exception as exc:  # pragma: no cover - dependency-specific parse failure
+        raise ValueError(
+            "design_grid.design_domain_region_id STL bounds could not be read: "
+            f"{region.id!r}"
+        ) from exc
+    if len(actual_lower) != 3 or len(actual_upper) != 3:
+        raise ValueError(
+            "design_grid.design_domain_region_id STL must provide three-dimensional bounds"
+        )
+    for label, expected, actual in (
+        ("lower", bounds.lower, actual_lower),
+        ("upper", bounds.upper, actual_upper),
+    ):
+        for axis, (expected_value, actual_value) in enumerate(
+            zip(expected, actual, strict=True)
+        ):
+            if abs(expected_value - actual_value) > DESIGN_GRID_GEOMETRY_ABSOLUTE_TOLERANCE_M:
+                raise ValueError(
+                    "design_grid.domain_bounds_m must exactly match the declared "
+                    f"design_domain STL bounds; {label}[{'xyz'[axis]}] is "
+                    f"{expected_value:.17g}, STL is {actual_value:.17g}"
+                )
+
+
+def _validate_topology_resolution(
+    policy: TopologyPolicySpec,
+    voxel_size_m: float,
+    resolution: TopologyResolutionSpec,
+) -> None:
+    requirements = (
+        (
+            "minimum_solid_width_m",
+            policy.minimum_solid_width_m,
+            resolution.minimum_solid_width_cells,
+        ),
+        (
+            "minimum_void_width_m",
+            policy.minimum_void_width_m,
+            resolution.minimum_void_width_cells,
+        ),
+        ("minimum_gap_m", policy.minimum_gap_m, resolution.minimum_gap_cells),
+        ("erosion_radius_m", policy.erosion_radius_m, resolution.erosion_radius_cells),
+    )
+    for name, length_m, minimum_cells in requirements:
+        if length_m is None:
+            raise ValueError(f"topology_policy.{name} is required when design_grid is declared")
+        actual_cells = length_m / voxel_size_m
+        if actual_cells + 1.0e-12 < minimum_cells:
+            raise ValueError(
+                f"topology_policy.{name}={length_m:.17g} m resolves to {actual_cells:.17g} "
+                f"design-grid cells, below required {minimum_cells}"
+            )
 
 
 def _load_connectivity_policy(
@@ -1048,6 +1355,7 @@ def _migrate_legacy(path: Path, raw: Mapping[str, Any], source_version: Any) -> 
                 {key: value for key, value in grid_raw.items() if key not in {"voxel_size_m", "padding_m"}}
             ),
         ),
+        design_grid=None,
         reference_values=None,
         geometry_regions=geometry_regions,
         flow_cases=(
@@ -1201,27 +1509,37 @@ def _is_v2_execution_ready(
     )
 
 
-def _load_domain_bounds(value: Any, voxel_size_m: float) -> DomainBoundsSpec | None:
+def _load_domain_bounds(
+    value: Any,
+    voxel_size_m: float,
+    *,
+    context: str = "grid.domain_bounds_m",
+) -> DomainBoundsSpec | None:
     if value is None:
         return None
-    raw = _as_mapping(value, "grid.domain_bounds_m")
-    _reject_unknown_keys(raw, {"lower", "upper"}, "grid.domain_bounds_m")
+    raw = _as_mapping(value, context)
+    _reject_unknown_keys(raw, {"lower", "upper"}, context)
     bounds = DomainBoundsSpec(
-        lower=_vector3(raw.get("lower"), "grid.domain_bounds_m.lower"),
-        upper=_vector3(raw.get("upper"), "grid.domain_bounds_m.upper"),
+        lower=_vector3(raw.get("lower"), f"{context}.lower"),
+        upper=_vector3(raw.get("upper"), f"{context}.upper"),
     )
-    _domain_cell_shape(bounds, voxel_size_m)
+    _domain_cell_shape(bounds, voxel_size_m, context=context)
     return bounds
 
 
-def _domain_cell_shape(bounds: DomainBoundsSpec, voxel_size_m: float) -> tuple[int, int, int]:
+def _domain_cell_shape(
+    bounds: DomainBoundsSpec,
+    voxel_size_m: float,
+    *,
+    context: str = "grid.domain_bounds_m",
+) -> tuple[int, int, int]:
     counts: list[int] = []
     for axis, (lower, upper) in enumerate(zip(bounds.lower, bounds.upper, strict=True)):
         extent = upper - lower
         if not isfinite(extent) or extent <= 0.0:
             axis_name = "xyz"[axis]
             raise ValueError(
-                "grid.domain_bounds_m must satisfy lower < upper on every axis; "
+                f"{context} must satisfy lower < upper on every axis; "
                 f"axis {axis_name!r} has lower={lower!r}, upper={upper!r}"
             )
         raw_count = extent / voxel_size_m
@@ -1234,8 +1552,8 @@ def _domain_cell_shape(bounds: DomainBoundsSpec, voxel_size_m: float) -> tuple[i
         if rounded_count <= 0 or abs(extent - expected_extent) > tolerance:
             axis_name = "xyz"[axis]
             raise ValueError(
-                "grid.domain_bounds_m extent must be an integer multiple of "
-                f"grid.voxel_size_m on axis {axis_name!r}; extent={extent:.17g}, "
+                f"{context} extent must be an integer multiple of its voxel_size_m "
+                f"on axis {axis_name!r}; extent={extent:.17g}, "
                 f"voxel_size_m={voxel_size_m:.17g}, tolerance={tolerance:.17g}"
             )
         counts.append(int(rounded_count))
@@ -1377,6 +1695,21 @@ def _positive_float(value: Any, context: str) -> float:
     return result
 
 
+def _positive_integer(value: Any, context: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise ValueError(f"{context} must be a positive integer")
+    return value
+
+
+def _positive_integer_vector(value: Any, context: str) -> tuple[int, int, int]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)) or len(value) != 3:
+        raise ValueError(f"{context} must contain exactly three positive integers")
+    return tuple(
+        _positive_integer(item, f"{context}[{index}]")
+        for index, item in enumerate(value)
+    )  # type: ignore[return-value]
+
+
 def _nonnegative_float(value: Any, context: str) -> float:
     result = _finite_float(value, context)
     if result < 0.0:
@@ -1416,6 +1749,8 @@ __all__ = [
     "ConvergenceCriteriaSpec",
     "ConnectivityPolicySpec",
     "CoordinateFrameSpec",
+    "DESIGN_GRID_GEOMETRY_ABSOLUTE_TOLERANCE_M",
+    "DesignGridSpec",
     "DOMAIN_BOUNDS_ALIGNMENT_ABSOLUTE_TOLERANCE_M",
     "DOMAIN_BOUNDS_ALIGNMENT_RELATIVE_TOLERANCE",
     "DomainBoundsSpec",
@@ -1431,14 +1766,17 @@ __all__ = [
     "ResponseSpec",
     "RootGroupSpec",
     "TopologyPolicySpec",
+    "TopologyResolutionSpec",
     "TurbulenceSpec",
     "UnitsSpec",
     "WeightedTermSpec",
     "canonical_uniform_cartesian_cell_grid",
+    "canonical_local_design_grid",
     "canonical_problem_spec_json",
     "load_problem_spec",
     "problem_spec_sha256",
     "problem_spec_to_dict",
+    "problem_spec_validation_summary",
     "topology_constraint_ids",
     "write_problem_spec_snapshot",
 ]
