@@ -532,7 +532,11 @@ def _measurement_functions(spec: Mapping[str, Any], *, representation: str, rho:
     )
     probes = "\n    pressureProbes\n    {\n        type probes;\n        libs (\"libsampling.so\");\n        fields (p);\n        probeLocations\n        (\n" + probe_locations + "\n        );\n        writeControl timeStep;\n        writeInterval 1;\n    }\n"
     if representation == "porous_cartesian":
-        force = "\n    porousResistance\n    {\n        type volFieldValue;\n        libs (\"libfieldFunctionObjects.so\");\n        operation volIntegrate;\n        fields (brinkmanResistance);\n        writeControl timeStep;\n        writeInterval 1;\n    }\n"
+        # v2512 requires writeFields to be explicitly present for this
+        # volFieldValue object.  The native table is still the force evidence;
+        # writeFields may create a ``*_all`` field, which is deliberately not
+        # selected as an integration history below.
+        force = "\n    porousResistance\n    {\n        type volFieldValue;\n        libs (\"libfieldFunctionObjects.so\");\n        regionType all;\n        writeFields true;\n        writeToFile true;\n        operation volIntegrate;\n        fields (brinkmanResistance);\n        writeControl timeStep;\n        writeInterval 1;\n    }\n"
     else:
         force = (
         "\nfunctions\n{\n    cylinderForces\n    {\n        type forces;\n        libs (\"libforces.so\");\n        patches (cylinder);\n        rho rhoInf;\n        rhoInf %.16g;\n        CofR (0 0 0);\n        writeControl timeStep;\n        writeInterval 1;\n    }\n}\n" % rho
@@ -1197,13 +1201,17 @@ def _phase_required_fields(
         required["brinkmanResistance"] = (time_dir / "brinkmanResistance").is_file()
     active_control: dict[str, Any] | None = None
     if phase == "phase_b":
-        active_control = _phase_b_active_control_contract(case_dir / "system" / "controlDict.phaseB")
+        active_control = _phase_b_active_control_contract(
+            case_dir / "system" / "controlDict.phaseB", porous=porous,
+        )
         required["active_control_timeStep_interval_1_purge_1"] = active_control["complete"]
     if require_measurements:
-        function = "porousResistance" if porous else "cylinderForces"
         expected = _expected_phase_b_times(phase_start_time) if phase_start_time is not None else None
         probes = _history_time_contract(case_dir / "postProcessing" / "pressureProbes", expected)
-        forces = _history_time_contract(case_dir / "postProcessing" / function, expected)
+        forces = (
+            _porous_resistance_history_contract(case_dir / "postProcessing" / "porousResistance", expected)
+            if porous else _history_time_contract(case_dir / "postProcessing" / "cylinderForces", expected)
+        )
         required["pressure_probes_200_unique_rows"] = probes["complete"]
         required["force_history_200_unique_rows"] = forces["complete"]
     result: dict[str, Any] = {"complete": all(required.values()), "time": time_name, "required_files": required}
@@ -1236,7 +1244,7 @@ def _phase_a_convergence_contract(solver_log: Path, final_fields: Mapping[str, A
     }
 
 
-def _phase_b_active_control_contract(path: Path) -> dict[str, Any]:
+def _phase_b_active_control_contract(path: Path, *, porous: bool = False) -> dict[str, Any]:
     """Bind the rendered Phase-B control, not merely its source template hash."""
 
     try:
@@ -1249,6 +1257,20 @@ def _phase_b_active_control_contract(path: Path) -> dict[str, Any]:
         "purge_write_1": bool(re.search(r"\bpurgeWrite\s+1\s*;", text)),
         "write_at_end_absent": not bool(re.search(r"\bwriteAtEnd\b", text)),
     }
+    if porous:
+        function = re.search(r"\bporousResistance\s*\{(?P<body>.*?)\n\s*\}", text, flags=re.DOTALL)
+        body = function.group("body") if function is not None else ""
+        checks.update({
+            "porous_resistance_object_present_once": len(re.findall(r"\bporousResistance\s*\{", text)) == 1,
+            "porous_resistance_type_volFieldValue": bool(re.search(r"\btype\s+volFieldValue\s*;", body)),
+            "porous_resistance_region_type_all": bool(re.search(r"\bregionType\s+all\s*;", body)),
+            "porous_resistance_write_fields_true": bool(re.search(r"\bwriteFields\s+true\s*;", body)),
+            "porous_resistance_write_to_file_true": bool(re.search(r"\bwriteToFile\s+true\s*;", body)),
+            "porous_resistance_operation_vol_integrate": bool(re.search(r"\boperation\s+volIntegrate\s*;", body)),
+            "porous_resistance_fields_brinkman_resistance": bool(re.search(r"\bfields\s*\(\s*brinkmanResistance\s*\)\s*;", body)),
+            "porous_resistance_write_control_time_step": bool(re.search(r"\bwriteControl\s+timeStep\s*;", body)),
+            "porous_resistance_write_interval_1": bool(re.search(r"\bwriteInterval\s+1\s*;", body)),
+        })
     return {
         "complete": all(checks.values()), "relpath": "system/controlDict.phaseB",
         "sha256": _sha256_file(path), "checks": checks,
@@ -1315,6 +1337,39 @@ def _history_time_contract(directory: Path, expected: Sequence[float] | None) ->
     if complete is not None:
         return {"complete": True, "selected": complete, "candidates": candidates}
     return {"complete": False, "reason": "no_single_history_file_has_exact_200_unique_phase_b_times", "candidates": candidates}
+
+
+def _porous_resistance_history_contract(directory: Path, expected: Sequence[float] | None) -> dict[str, Any]:
+    """Require one native volFieldValue table, never a writeFields ``*_all`` field."""
+
+    if not directory.is_dir():
+        return {"complete": False, "reason": "missing_history_directory", "directory": directory.as_posix()}
+    candidates: list[dict[str, Any]] = []
+    native_complete: list[dict[str, Any]] = []
+    for path in sorted(item for item in directory.rglob("*") if item.is_file()):
+        relpath = path.relative_to(directory).as_posix()
+        generated_all_field = "_all" in path.name
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            text = ""
+        native_header = bool(re.search(r"\bvolIntegrate\s*\(\s*brinkmanResistance\s*\)", text))
+        contract = _time_rows_contract(_numeric_time_rows(path), expected)
+        contract.update({
+            "relpath": relpath,
+            "native_vol_field_value_header": native_header,
+            "write_fields_all_field": generated_all_field,
+        })
+        candidates.append(contract)
+        if native_header and not generated_all_field and contract["complete"]:
+            native_complete.append(contract)
+    if len(native_complete) == 1:
+        return {"complete": True, "selected": native_complete[0], "candidates": candidates}
+    reason = (
+        "no_native_volFieldValue_history_has_exact_200_unique_phase_b_times"
+        if not native_complete else "multiple_native_volFieldValue_histories_have_exact_200_unique_phase_b_times"
+    )
+    return {"complete": False, "reason": reason, "candidates": candidates}
 
 
 def _phase_b_log_time_contract(path: Path, *, start: float, end: float) -> dict[str, Any]:
@@ -1531,7 +1586,19 @@ def _bind_case_evidence(
         else:
             bind_file(role, f"{root}/{relative}")
 
+    porous_active_control: Mapping[str, Any] | None = None
     if representation == "porous_cartesian":
+        candidate = phase_b.get("active_control")
+        active_path = case_dir / "system" / "controlDict.phaseB"
+        if (
+            not isinstance(candidate, Mapping)
+            or not candidate.get("complete")
+            or candidate.get("relpath") != "system/controlDict.phaseB"
+            or candidate.get("sha256") != (_sha256_file(active_path) if active_path.is_file() else None)
+        ):
+            missing.append("porous_active_phase_b_control_contract_not_hash_bound")
+        else:
+            porous_active_control = candidate
         for role, path in (("porous_fv_options", "constant/fvOptions"), ("porous_immutable_beta_origin", "0/beta"), ("porous_extension_build_log", "log.extension-build"), ("porous_extension_library", "lib/libcfdSdfLinearBrinkman.so")):
             bind_file(role, path)
         beta = restart.get("materialized_beta") if isinstance(restart, Mapping) else None
@@ -1568,6 +1635,10 @@ def _bind_case_evidence(
             "source_snapshot_assertions": source.get("assertions") if isinstance(source, Mapping) else None,
             "build": build,
             "runtime_load": runtime_load,
+            # This semantic contract is tied to the separately hash-bound
+            # active controlDict entry above, rather than trusting the source
+            # template or a post-processing field generated by writeFields.
+            "active_phase_b_control": porous_active_control,
         }
     try:
         manifest_path.parent.mkdir(parents=True, exist_ok=True)

@@ -377,6 +377,13 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    additionally immutable compiled `beta` for porous) before any medium run;
    this is fixed in
    [`2026-08-04-g4-b2-cylinder-porous-restart-field-binding.md`](decisions/2026-08-04-g4-b2-cylinder-porous-restart-field-binding.md).
+   The retained v7 replacement is likewise failed raw evidence because its
+   porous native `volFieldValue` measurement object omitted the required
+   `writeFields` entry.  The next fresh coarse prefix must use the reviewed
+   `writeFields true`, `writeToFile true`, `regionType all`, single
+   `volIntegrate(brinkmanResistance)` contract recorded in that same decision;
+   its supplementary `_all` IOField is not a second history or the terminal
+   extension-owned `brinkmanResistance` field.
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

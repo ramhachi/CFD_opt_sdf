@@ -118,6 +118,57 @@ artifact passes all of the above raw-evidence checks.  The force, `Cp`,
 Richardson, GCI, mass, and stationarity evaluator remains forbidden until one
 fresh `--through-grid fine` artifact contains all six canonical cases.
 
+## Retained v7 measurement-object failure and corrected native output contract
+
+The ignored raw artifact
+[`cylinder_runtime_coarse_v7`](../../examples/g4_b2_laminar/runs/cylinder_runtime_coarse_v7/)
+is also failed evidence and remains intact.  It must not be repaired in place
+or combined with a replacement.  Its porous Phase-B dictionary omitted the
+native `volFieldValue` `writeFields` entry.  Therefore it does not establish
+the required porous measurement output contract, irrespective of any earlier
+Phase-A convergence, restart binding, or solver output it may contain.
+
+For the fresh replacement, the `porousResistance` function object is exactly
+the native OpenCFD v2512 `volFieldValue` configuration below.  All listed
+entries are required in addition to the Phase-B control-dictionary contract;
+the selection is the full calculation region, not a patch or a cylinder
+surface.
+
+```text
+porousResistance
+{
+    type            volFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+    writeFields     true;
+    writeToFile     true;
+    regionType      all;
+    operation       volIntegrate;
+    fields          (brinkmanResistance);
+    writeControl    timeStep;
+    writeInterval   1;
+}
+```
+
+This native object has one measurement meaning: its single per-step
+`volIntegrate(brinkmanResistance)` history is the raw total linear-Brinkman
+force vector.  With `writeFields true`, v2512 additionally writes its native
+`_all` IOField.  That supplementary field is not a second history, is not a
+new force observable, and is not the terminal `brinkmanResistance` evidence
+field.
+
+The terminal `<phase-B-final-time>/brinkmanResistance` field remains the
+separate extension-owned derived field required by the existing deployment
+and restart records.  It proves the extension's final write; the
+`volFieldValue` history reduces that same field to the total porous resistance.
+Neither artifact is a pressure force, skin force, pressure drag, skin-friction
+term, or any pressure/skin decomposition.  No evidence key, report, or label
+may describe it as one.
+
+This v7 correction is confined to the native measurement-output contract.  It
+changes no physical constant, grid, solver/discretisation choice, force or
+`Cp` convention, numerical threshold, acceptance criterion, or roadmap
+phase.  A fresh coarse prefix is still required before medium execution.
+
 ## Rationale and scope
 
 v6 shows that copying only `U`, `p`, and `phi` creates an invalid porous

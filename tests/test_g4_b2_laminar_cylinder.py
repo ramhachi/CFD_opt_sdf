@@ -130,6 +130,7 @@ def test_porous_extension_contract_and_allrun_are_exact_and_source_bound(compile
     case = _case(index, "porous_cartesian", "medium")
     fv_options = (root / "porous_cartesian" / "medium" / "constant" / "fvOptions").read_text(encoding="utf-8")
     control = (root / "porous_cartesian" / "medium" / "system" / "controlDict").read_text(encoding="utf-8")
+    phase_b_control = (root / "porous_cartesian" / "medium" / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
     allrun = (root / "porous_cartesian" / "medium" / "Allrun").read_text(encoding="utf-8")
 
     assert index["extension"] == {
@@ -141,6 +142,11 @@ def test_porous_extension_contract_and_allrun_are_exact_and_source_bound(compile
     }
     for line in ("active yes;", "selectionMode all;", "U U;", "betaField beta;", "betaMax [0 0 -1 0 0 0 0] 150000;", "resistanceField brinkmanResistance;"):
         assert line in fv_options
+    for line in (
+        "type volFieldValue;", "regionType all;", "writeFields true;", "writeToFile true;",
+        "operation volIntegrate;", "fields (brinkmanResistance);", "writeControl timeStep;", "writeInterval 1;",
+    ):
+        assert line in phase_b_control
     assert 'libs ("./lib/libcfdSdfLinearBrinkman.so");' in control
     assert "cp system/controlDict.phaseA system/controlDict" in allrun
     assert "blockMesh > log.blockMesh 2>&1" in allrun
@@ -473,6 +479,56 @@ def test_phase_b_log_time_contract_rejects_missing_or_duplicate_step(tmp_path: P
     assert 1454.0 in contract["duplicate_times"]
 
 
+def test_porous_resistance_history_requires_one_native_vol_field_value_table(tmp_path: Path) -> None:
+    history_root = tmp_path / "postProcessing" / "porousResistance"
+    native = history_root / "0" / "volFieldValue.dat"
+    native.parent.mkdir(parents=True)
+    native.write_text(
+        "# Time volIntegrate(brinkmanResistance)\n"
+        + "".join(f"{time} 0\n" for time in range(1256, 1456)),
+        encoding="utf-8",
+    )
+    # v2512 writeFields output must not be accepted as a force history.
+    generated_all = history_root / "1455" / "brinkmanResistance_all"
+    generated_all.parent.mkdir(parents=True)
+    generated_all.write_text("field output, not a volFieldValue history\n", encoding="utf-8")
+
+    contract = cylinder_module._porous_resistance_history_contract(
+        history_root, cylinder_module._expected_phase_b_times(1255.0),
+    )
+
+    assert contract["complete"] is True
+    assert contract["selected"]["relpath"] == "0/volFieldValue.dat"
+    assert contract["selected"]["native_vol_field_value_header"] is True
+    assert any(item["write_fields_all_field"] for item in contract["candidates"])
+
+
+@pytest.mark.parametrize("kind", ["wrong_header", "multiple_native"])
+def test_porous_resistance_history_rejects_wrong_or_multiple_native_tables(tmp_path: Path, kind: str) -> None:
+    history_root = tmp_path / "postProcessing" / "porousResistance"
+    first = history_root / "0" / "volFieldValue.dat"
+    first.parent.mkdir(parents=True)
+    header = "# Time wrongOperation(brinkmanResistance)\n" if kind == "wrong_header" else "# Time volIntegrate(brinkmanResistance)\n"
+    first.write_text(header + "".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+    if kind == "multiple_native":
+        second = history_root / "1" / "volFieldValue.dat"
+        second.parent.mkdir(parents=True)
+        second.write_text(
+            "# Time volIntegrate(brinkmanResistance)\n" + "".join(f"{time} 0\n" for time in range(1256, 1456)),
+            encoding="utf-8",
+        )
+
+    contract = cylinder_module._porous_resistance_history_contract(
+        history_root, cylinder_module._expected_phase_b_times(1255.0),
+    )
+
+    assert contract["complete"] is False
+    if kind == "wrong_header":
+        assert contract["reason"] == "no_native_volFieldValue_history_has_exact_200_unique_phase_b_times"
+    else:
+        assert contract["reason"] == "multiple_native_volFieldValue_histories_have_exact_200_unique_phase_b_times"
+
+
 @pytest.mark.parametrize(
     ("log", "fatal"),
     [
@@ -603,7 +659,8 @@ def test_porous_run_ok_requires_source_build_and_load_assertions(
             for function, filename in (("pressureProbes", "p"), ("porousResistance", "volFieldValue.dat")):
                 history = case / "postProcessing" / function / "0" / filename
                 history.parent.mkdir(parents=True, exist_ok=True)
-                history.write_text("".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
+                header = "# Time volIntegrate(brinkmanResistance)\n" if function == "porousResistance" else ""
+                history.write_text(header + "".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
         return SimpleNamespace(returncode=0)
 
     monkeypatch.setattr(cylinder_module.subprocess, "run", complete_porous_phases)
@@ -625,6 +682,10 @@ def test_porous_run_ok_requires_source_build_and_load_assertions(
     assert porous["source_tree_sha256"] == snapshot["source_tree_sha256"]
     assert all(porous["source_snapshot_assertions"].values())
     assert porous["build"]["library_sha256"] == porous["runtime_load"]["library_sha256"]
+    active = porous["active_phase_b_control"]
+    assert active["complete"] is True
+    assert active["sha256"] == hashlib.sha256((case / "system" / "controlDict.phaseB").read_bytes()).hexdigest()
+    assert all(active["checks"].values())
 
 
 def test_porous_extension_contract_fails_closed_when_a_phase_did_not_load_option(
