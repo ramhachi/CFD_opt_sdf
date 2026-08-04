@@ -58,7 +58,7 @@ numerical acceptance criterion.
 | Grid | Body Phase A | Body Phase B | Porous Phase A | Porous Phase B |
 | --- | ---: | ---: | ---: | ---: |
 | coarse | 900 s | 300 s | 900 s | 600 s |
-| medium | 1800 s | 600 s | 1800 s | 3600 s |
+| medium | 1800 s | 600 s | 14400 s (porous Phase-A v2 only) | 3600 s |
 | fine | 5400 s | 1800 s | 5400 s | 21600 s |
 
 The runner must apply a **75% hard-timeout guard** independently to every
@@ -74,6 +74,47 @@ A timeout, fatal solver error, absent restart field or archive, incomplete
 end time, or missing required raw file is recorded as failed/inconclusive
 runtime evidence according to the governing B2 decisions.  It is never a
 successful cylinder comparison.
+
+### Medium porous Phase-A v2 exception and watchdog
+
+The retained medium-prefix v1 artifact failed in
+`porous_cartesian/medium` Phase A.  Its 1800-second hard timeout terminated
+the case after the last complete solver record `Time = 675` at `ClockTime =
+1787 s` (a subsequent `Time = 676` banner is incomplete).  No Phase B or fine
+case was started.  This is failed raw evidence, not a convergence result and
+not a justification for changing the cylinder physics, discretization,
+residual controls, linear-solver tolerances, measurement contract, or any
+cross-fidelity acceptance threshold.
+
+For one fresh, immutable **medium porous Phase-A v2** execution only, set the
+hard timeout to **14400 s**.  The scope of this exception is exactly
+`porous_cartesian/medium` Phase A; the body-fitted limits, all Phase-B limits,
+and the fine-grid Phase-A limit remain as stated above.  In particular, the
+fine porous Phase-A timeout remains **5400 s** pending evidence from this
+fresh v2 medium run.  The v2 artifact must use the identical compiled
+physical case and controls apart from the timeout/watchdog machinery.
+
+The ordinary 75% guard becomes `10800 s` for this v2 Phase A.  A converged
+Phase A at or after `10800 s` is **inconclusive** for progression: preserve
+its raw evidence, but do not run its Phase B and do not start fine in that
+invocation.  A bounded Sol re-review is required before any later-grid or
+Phase-B execution.  This guard does not relabel the Phase-A convergence check
+or make a physical acceptance criterion less strict.
+
+While this v2 Phase A is running, the runner must parse the solver log and
+apply a **600-second monotonic-Time watchdog**.  If the process remains alive
+but no strictly greater completed `Time = <n>` record is observed for 600
+seconds, stop the phase and record the explicit terminal reason
+`runtime_stalled_no_advance`; do not start Phase B or fine.  Normal progress
+that produces strictly increasing Time records resets the watchdog.  The
+watchdog is a runtime-health/evidence safeguard, not a convergence substitute
+or an additional physical metric.
+
+On Windows, a cleanup `WinError 32` (a transient file-sharing/lock failure)
+must be retried and reported in a separate cleanup record.  It is not itself
+solver health: the solver/phase status must remain bound to the solver exit,
+timeout, log-health, and raw-evidence checks.  Conversely, a successful
+cleanup retry cannot convert a failed solver phase into a pass.
 
 ## Evidence extraction gate
 
@@ -135,4 +176,10 @@ over retaining the v4 `writeAtEnd` reliance.  The later bounded Sol timeout
 review selected the representation-specific limits and guard above after v8.
 The implementation and a fresh post-v8 runtime artifact are required.
 
-Status: implementation and fresh post-v8 execution required.
+The retained medium-prefix v1 timeout is also failed raw evidence.  Its
+replacement must be a fresh v2 destination that executes the canonical prefix
+through medium under the narrowly scoped medium-porous Phase-A exception and
+watchdog above.  It must not overwrite, append to, or combine with v1.
+
+Status: implementation and fresh post-v8/coarse execution, followed by a
+fresh medium-porous Phase-A v2 execution, required.

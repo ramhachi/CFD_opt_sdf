@@ -34,6 +34,20 @@ def _case(index: dict, representation: str, grid_id: str) -> dict:
     return next(case for case in index["cases"] if case["representation"] == representation and case["grid_id"] == grid_id)
 
 
+def _completed_popen(callback: object) -> type:
+    """Adapt existing synchronous solver fakes to the watchdog's Popen seam."""
+
+    class CompletedPopen:
+        def __init__(self, command: list[str], *, cwd: Path, stdout: object, stderr: object, text: bool) -> None:
+            completed = callback(command, cwd=cwd, stdout=stdout, stderr=stderr, text=text)  # type: ignore[operator]
+            self.returncode = int(completed.returncode)
+
+        def poll(self) -> int:
+            return self.returncode
+
+    return CompletedPopen
+
+
 def test_contract_binds_fixed_laminar_cylinder_physics_and_three_grids(compiled: tuple[Path, dict]) -> None:
     _, index = compiled
 
@@ -173,7 +187,7 @@ def test_porous_extension_contract_and_allrun_are_exact_and_source_bound(compile
 
 
 def test_two_phase_dictionaries_preserve_physics_and_make_measurement_tail_exact(compiled: tuple[Path, dict]) -> None:
-    root, _ = compiled
+    root, index = compiled
     case = root / "body_fitted" / "coarse"
     control_a = (case / "system" / "controlDict.phaseA").read_text(encoding="utf-8")
     control_b = (case / "system" / "controlDict.phaseB.template").read_text(encoding="utf-8")
@@ -237,7 +251,7 @@ def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(c
         },
         "porous_cartesian": {
             "coarse": {"phase_a": 900, "phase_b": 600},
-            "medium": {"phase_a": 1800, "phase_b": 3600},
+            "medium": {"phase_a": 14400, "phase_b": 3600},
             "fine": {"phase_a": 5400, "phase_b": 21600},
         },
     }
@@ -245,6 +259,234 @@ def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(c
     assert payload["cases"][1]["effective_phase_timeouts_seconds"] == {"phase_a": 900, "phase_b": 600}
     assert all(item["run"]["phase_a"]["status"] == "planned" for item in payload["cases"])
     assert all(item["run"]["phase_b"]["status"] == "planned" for item in payload["cases"])
+    medium_porous = next(
+        item for item in payload["cases"]
+        if item["representation"] == "porous_cartesian" and item["grid_id"] == "medium"
+    )
+    assert medium_porous["effective_phase_timeouts_seconds"] == {"phase_a": 14400, "phase_b": 3600}
+    assert medium_porous["run"]["phase_a"]["advance_watchdog"]["policy"]["enabled"] is True
+    assert medium_porous["run"]["phase_a"]["advance_watchdog"]["outcome"] == "not_executed"
+    body_medium = next(
+        item for item in payload["cases"]
+        if item["representation"] == "body_fitted" and item["grid_id"] == "medium"
+    )
+    assert body_medium["effective_phase_timeouts_seconds"] == {"phase_a": 1800, "phase_b": 600}
+    assert body_medium["run"]["phase_a"]["advance_watchdog"]["policy"]["enabled"] is False
+    assert payload["staging_lifecycle"]["cleanup"]["solver_status_is_independent"] is True
+
+
+class _ManualClock:
+    def __init__(self) -> None:
+        self.value = 0.0
+
+    def __call__(self) -> float:
+        return self.value
+
+    def advance(self, seconds: float) -> None:
+        self.value += seconds
+
+
+class _RunningProcess:
+    def __init__(self, poll_callback: object) -> None:
+        self._poll_callback = poll_callback
+        self.terminated = False
+        self.killed = False
+
+    def poll(self) -> int | None:
+        return self._poll_callback()  # type: ignore[operator]
+
+    def terminate(self) -> None:
+        self.terminated = True
+
+    def kill(self) -> None:
+        self.killed = True
+
+    def wait(self, timeout: float) -> int:
+        return -15
+
+
+def _enabled_medium_phase_a_watchdog() -> dict:
+    return cylinder_module._phase_watchdog_policy("porous_cartesian", "medium", "phase_a")
+
+
+def test_live_watchdog_accepts_strictly_increasing_complete_solver_blocks(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    clock = _ManualClock()
+    polls = 0
+
+    def poll() -> int | None:
+        nonlocal polls
+        polls += 1
+        if polls == 1:
+            solver_log.write_text("Time = 1\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+            return None
+        if polls == 2:
+            solver_log.write_text(
+                "Time = 1\nExecutionTime = 1 s  ClockTime = 1 s\n"
+                "Time = 2\nExecutionTime = 2 s  ClockTime = 2 s\n",
+                encoding="utf-8",
+            )
+            return None
+        return 0
+
+    process = _RunningProcess(poll)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=clock, sleep_fn=lambda seconds: clock.advance(seconds), process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] is None
+    assert result["watchdog"]["outcome"] == "completed"
+    assert result["watchdog"]["last_complete_time"] == 2.0
+    assert result["watchdog"]["evidence"]["strictly_increasing"] is True
+    assert process.terminated is False
+
+
+def test_live_watchdog_kills_child_after_600_seconds_without_complete_block(tmp_path: Path) -> None:
+    clock = _ManualClock()
+    process = _RunningProcess(lambda: None)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=tmp_path / "log.simpleFoam.phaseA", timeout_seconds=14400,
+        policy=_enabled_medium_phase_a_watchdog(), clock=clock,
+        sleep_fn=lambda seconds: clock.advance(seconds), process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_stalled_no_advance"
+    assert result["timed_out"] is False
+    assert result["watchdog"]["outcome"] == "runtime_stalled_no_advance"
+    assert result["watchdog"]["last_complete_time"] is None
+    assert result["watchdog"]["last_complete_solver_log_sha256"] is None
+    assert process.terminated is True
+
+
+def test_live_watchdog_rejects_nonmonotonic_complete_solver_times(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text(
+        "Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n"
+        "Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n",
+        encoding="utf-8",
+    )
+    process = _RunningProcess(lambda: None)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["outcome"] == "nonmonotonic_time"
+    assert result["watchdog"]["evidence"]["nonmonotonic_pairs"] == [{"previous": 8.0, "current": 7.0}]
+    assert process.terminated is True
+
+
+def test_live_watchdog_rejects_log_rewrite_to_nonadvancing_complete_time(tmp_path: Path) -> None:
+    """A truncate/rewrite must not turn old Time into fresh watchdog progress."""
+
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+    polls = 0
+
+    def poll() -> int | None:
+        nonlocal polls
+        polls += 1
+        if polls == 1:
+            solver_log.write_text("Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n", encoding="utf-8")
+        return None
+
+    process = _RunningProcess(poll)
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: process,
+    )
+
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["last_observed_complete_time"] == 8.0
+    assert result["watchdog"]["evidence"]["observed_nonmonotonic_pair"] == {"previous": 8.0, "current": 7.0}
+    assert process.terminated is True
+
+
+def test_live_watchdog_rechecks_terminal_log_block_after_child_exit(tmp_path: Path) -> None:
+    solver_log = tmp_path / "log.simpleFoam.phaseA"
+    solver_log.write_text("Time = 8\nExecutionTime = 1 s  ClockTime = 1 s\n", encoding="utf-8")
+
+    def exit_after_rewrite() -> int:
+        solver_log.write_text("Time = 7\nExecutionTime = 2 s  ClockTime = 2 s\n", encoding="utf-8")
+        return 0
+
+    result = cylinder_module._run_docker_child_with_watchdog(
+        ["docker", "run"], cwd=tmp_path, stdout_path=tmp_path / "stdout", stderr_path=tmp_path / "stderr",
+        solver_log=solver_log, timeout_seconds=14400, policy=_enabled_medium_phase_a_watchdog(),
+        clock=_ManualClock(), sleep_fn=lambda seconds: None,
+        process_factory=lambda *args, **kwargs: _RunningProcess(exit_after_rewrite),
+    )
+
+    assert result["returncode"] == 0
+    assert result["error"] == "runtime_nonmonotonic_time"
+    assert result["watchdog"]["outcome"] == "nonmonotonic_time"
+    assert result["watchdog"]["last_observed_complete_time"] == 8.0
+    assert result["watchdog"]["evidence"]["observed_nonmonotonic_pair"] == {"previous": 8.0, "current": 7.0}
+
+
+def test_medium_porous_successful_phase_at_75_percent_is_inconclusive() -> None:
+    guard = cylinder_module._successful_phase_near_timeout_guard({
+        "ok": True,
+        "phase_a": {"ok": True, "timeout_seconds": 14400, "duration_seconds": 10800},
+        "phase_b": {"ok": True, "timeout_seconds": 3600, "duration_seconds": 1},
+    })
+
+    assert guard is not None
+    assert guard["phase"] == "phase_a"
+    assert guard["threshold_seconds"] == 10800.0
+
+
+def test_bounded_cleanup_retries_windows_lock_without_touching_a_published_output(tmp_path: Path) -> None:
+    staging = tmp_path / ".fresh-runtime.tmp"
+    staging.mkdir()
+    (staging / "evidence").write_text("preserve until successful removal", encoding="utf-8")
+    calls = 0
+    delays: list[float] = []
+
+    def lock_once(target: Path) -> None:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise PermissionError("file is locked")
+        import shutil
+        shutil.rmtree(target)
+
+    result = cylinder_module._bounded_remove_tree(
+        staging, remove_tree=lock_once, sleep_fn=delays.append,
+    )
+
+    assert result == {"status": "removed", "attempts": 2, "errors": ["attempt_1:PermissionError:file is locked"]}
+    assert delays == [0.1]
+    assert not staging.exists()
+
+
+def test_bounded_cleanup_preserves_locked_staging_and_reports_separate_failure(tmp_path: Path) -> None:
+    staging = tmp_path / ".locked-runtime.tmp"
+    staging.mkdir()
+    evidence = staging / "evidence"
+    evidence.write_text("do not delete after lock failure", encoding="utf-8")
+    delays: list[float] = []
+
+    def always_locked(target: Path) -> None:
+        raise PermissionError(f"locked:{target.name}")
+
+    result = cylinder_module._bounded_remove_tree(
+        staging, remove_tree=always_locked, sleep_fn=delays.append,
+    )
+
+    assert result["status"] == "failed"
+    assert result["attempts"] == 3
+    assert len(result["errors"]) == 3
+    assert delays == [0.1, 0.2]
+    assert evidence.read_text(encoding="utf-8") == "do not delete after lock failure"
 
 
 def test_porous_semantic_check_rejects_changed_beta_contract(compiled: tuple[Path, dict], tmp_path: Path) -> None:
@@ -278,6 +520,37 @@ def test_executed_sequence_stops_before_later_grids_after_phase_failure(
     assert payload["requested_through_grid"] == "fine"
     assert payload["executed_through_grid"] == "coarse"
     assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [("coarse", "body_fitted")]
+
+
+def test_watchdog_stall_is_reported_at_prefix_boundary_and_stops_later_cases(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+
+    def stalled(*args: object, **kwargs: object) -> dict:
+        return {
+            "ok": False,
+            "phase_a": {
+                "status": "failed", "error": "runtime_stalled_no_advance",
+                "advance_watchdog": {
+                    "outcome": "runtime_stalled_no_advance", "last_complete_time": 12.0,
+                    "last_complete_solver_log_sha256": "a" * 64, "evidence": {"complete_times": [12.0]},
+                },
+            },
+            "phase_b": {"status": "planned"},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", stalled)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "stalled", backend="docker", execute=True,
+        through_grid="fine", docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+
+    assert payload["status"] == "runtime_failed"
+    assert payload["stopped_by"] == "runtime_stalled_no_advance"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["next_required_condition"].startswith("inspect_the_preserved_solver_log")
 
 
 def test_successful_phase_near_hard_timeout_is_inconclusive_and_stops_prefix(
@@ -317,6 +590,47 @@ def test_successful_phase_near_hard_timeout_is_inconclusive_and_stops_prefix(
     assert payload["next_required_condition"].startswith("investigate_or_raise_the_representation_specific_timeout_policy")
 
 
+def test_phase_a_near_timeout_record_stops_prefix_as_inconclusive(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The outer prefix writer preserves the direct Phase-A gate outcome."""
+
+    root, _ = compiled
+    calls: list[tuple[str, str]] = []
+
+    def phase_a_guarded(*args: object, **kwargs: object) -> dict:
+        representation = str(kwargs["representation"])
+        grid_id = str(kwargs["grid_id"])
+        calls.append((representation, grid_id))
+        guard = {
+            "phase": "phase_a", "duration_seconds": 10800.0,
+            "hard_timeout_seconds": 14400.0, "threshold_fraction": 0.75,
+            "threshold_seconds": 10800.0,
+            "diagnostic": "successful_phase_duration_at_or_above_75_percent_of_hard_timeout",
+        }
+        return {
+            "ok": False, "status": "inconclusive_near_timeout",
+            "error": guard["diagnostic"], "failed_phase": "phase_a",
+            "near_timeout_guard": guard,
+            "phase_a": {"ok": True, "status": "completed", "timeout_seconds": 14400, "duration_seconds": 10800.0},
+            "phase_b": {"ok": False, "status": "planned"},
+        }
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", phase_a_guarded)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "phase-a-near-timeout", backend="docker", execute=True,
+        through_grid="fine", docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+
+    assert calls == [("body_fitted", "coarse")]
+    assert payload["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["stopped_by"] == "successful_phase_near_hard_timeout"
+    assert payload["ordered_executed_case_ids"] == ["body_fitted/coarse"]
+    assert payload["cases"][0]["status"] == "runtime_inconclusive_near_timeout"
+    assert payload["cases"][0]["run"]["near_timeout_guard"]["phase"] == "phase_a"
+
+
 def _write_phase_final_fields(case: Path, *, phase: str, time_name: str) -> None:
     (case / ("runtime_phase_a_final_time.txt" if phase == "phase_a" else "runtime_phase_b_final_time.txt")).write_text(
         time_name + "\n", encoding="utf-8"
@@ -347,7 +661,7 @@ def test_phase_a_accepts_emitted_camel_case_log_and_hashes_it(
         _write_phase_final_fields(case, phase="phase_a", time_name="1255")
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_phase_a)
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_phase_a))
     result = cylinder_module._run_docker_phase(
         case, phase="phase_a", representation="body_fitted", snapshot_dir=None,
         image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
@@ -443,6 +757,59 @@ def test_phase_a_convergence_contract_requires_marker_and_time_at_most_4000(tmp_
     assert cylinder_module._phase_a_convergence_contract(solver_log, {"complete": True, "time": "1255"})["complete"] is False
 
 
+def test_phase_a_near_timeout_stops_before_phase_b_process_start(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The Phase-A safety margin is a gate on the Phase-B process boundary."""
+
+    root, index = compiled
+    import shutil
+
+    case = tmp_path / "porous_cartesian"
+    shutil.copytree(root / "porous_cartesian" / "medium", case)
+    _write_phase_final_fields(case, phase="phase_a", time_name="1255")
+    shutil.copyfile(case / "0" / "beta", case / "1255" / "beta")
+    (case / "log.simpleFoam.phaseA").write_text("phase A evidence\n", encoding="utf-8")
+    phase_calls: list[str] = []
+    popen_calls: list[object] = []
+    real_phase = cylinder_module._run_docker_phase
+
+    def unexpected_popen(*args: object, **kwargs: object) -> object:
+        popen_calls.append((args, kwargs))
+        raise AssertionError("Phase B must not reach Popen after a near-timeout Phase A")
+
+    def fake_phase(*args: object, **kwargs: object) -> dict:
+        phase = str(kwargs["phase"])
+        phase_calls.append(phase)
+        if phase == "phase_b":
+            # This guard protects the direct handoff too, before its Popen seam.
+            return real_phase(*args, **kwargs)
+        return {
+            "ok": True, "status": "completed", "returncode": 0, "timed_out": False,
+            "error": None, "duration_seconds": 10800.0,
+            "advance_watchdog": {"outcome": "not_enabled"},
+        }
+
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", unexpected_popen)
+    monkeypatch.setattr(cylinder_module, "_run_docker_phase", fake_phase)
+    result = cylinder_module._run_cylinder_case_two_phase(
+        case, representation="porous_cartesian", grid_id="medium", snapshot_dir=root / "extension_source",
+        case_relpath=Path("cases/porous_cartesian/medium"), execute=True,
+        docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+        expected_snapshot_manifest_sha256=str(index["extension_source_manifest_sha256"]),
+        expected_snapshot_tree_sha256=str(index["extension_source_contract"]["source_tree_sha256"]),
+    )
+
+    assert phase_calls == ["phase_a"]
+    assert popen_calls == []
+    assert result["ok"] is False
+    assert result["status"] == "inconclusive_near_timeout"
+    assert result["error"] == "successful_phase_duration_at_or_above_75_percent_of_hard_timeout"
+    assert result["failed_phase"] == "phase_a"
+    assert result["phase_b"]["status"] == "planned"
+    assert result["near_timeout_guard"]["threshold_seconds"] == 10800.0
+
+
 def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histories(
     compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -487,7 +854,7 @@ def test_two_phase_runner_requires_archived_restart_exact_writes_and_200_histori
                 history.write_text("".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_two_phases)
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_two_phases))
     result = cylinder_module._run_cylinder_case_two_phase(
         case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
         case_relpath=Path("cases/body_fitted/coarse"), execute=True,
@@ -618,7 +985,7 @@ def test_missing_phase_a_log_fails_and_never_starts_phase_b(
         _write_phase_final_fields(case, phase="phase_a", time_name="1255")
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_without_log)
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_without_log))
     result = cylinder_module._run_cylinder_case_two_phase(
         case, representation="body_fitted", grid_id="coarse", snapshot_dir=None,
         case_relpath=Path("cases/body_fitted/coarse"), execute=True,
@@ -709,7 +1076,7 @@ def test_porous_run_ok_requires_source_build_and_load_assertions(
                 history.write_text(header + "".join(f"{time} 0\n" for time in range(1256, 1456)), encoding="utf-8")
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(cylinder_module.subprocess, "run", complete_porous_phases)
+    monkeypatch.setattr(cylinder_module.subprocess, "Popen", _completed_popen(complete_porous_phases))
     result = cylinder_module._run_cylinder_case_two_phase(
         case, representation="porous_cartesian", grid_id="coarse", snapshot_dir=root / "extension_source",
         case_relpath=Path("cases/porous_cartesian/coarse"), execute=True,

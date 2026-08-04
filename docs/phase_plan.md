@@ -393,6 +393,20 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    bounded Sol re-review; it changes neither physics, evidence requirements,
    nor numerical thresholds.  See
    [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).
+   The retained medium-prefix v1 is separately failed raw evidence: its
+   `porous_cartesian/medium` Phase A exhausted the original 1800 s timeout
+   after the last complete `Time = 675` record at `ClockTime = 1787 s`; no
+   Phase B or fine case ran.  A fresh v2 canonical prefix is required.  Only
+   its medium porous Phase A receives a 14400 s hard timeout; physics,
+   dictionaries, residual/linear-solver controls, measurement contract, and
+   all other limits are unchanged.  At the corresponding 10800 s guard, even
+   a converged Phase A is inconclusive: preserve it but start neither Phase B
+   nor fine pending another bounded Sol review.  Its runner must fail closed
+   on 600 s without a strictly increasing solver `Time` record as
+   `runtime_stalled_no_advance`; a Windows cleanup `WinError 32` is retried
+   and recorded separately from solver status.  Fine porous Phase A remains
+   5400 s until this v2 evidence is reviewed.  See
+   [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).
    That design is not implementation or cylinder qualification. This does not
    qualify cylinder,
    NACA, arbitrary external bodies, turbulent flow, adjoints, or the

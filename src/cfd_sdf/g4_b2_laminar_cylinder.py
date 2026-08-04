@@ -8,7 +8,7 @@ separate, source-bound B2.0 evaluator described by the decision record.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
 import json
@@ -20,7 +20,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
-from time import perf_counter
+from time import perf_counter, sleep
 from typing import Any
 
 import yaml
@@ -49,11 +49,13 @@ _PHASE_TIMEOUTS_SECONDS = {
     },
     "porous_cartesian": {
         "coarse": {"phase_a": 900, "phase_b": 600},
-        "medium": {"phase_a": 1800, "phase_b": 3600},
+        "medium": {"phase_a": 14400, "phase_b": 3600},
         "fine": {"phase_a": 5400, "phase_b": 21600},
     },
 }
 _NEAR_TIMEOUT_FRACTION = 0.75
+_PHASE_A_ADVANCE_WATCHDOG_SECONDS = 600.0
+_PHASE_A_ADVANCE_WATCHDOG_POLL_SECONDS = 1.0
 _PHASE_RUNTIME_ARTIFACTS = {
     "phase_a": {
         "solver_log_filename": "log.simpleFoam.phaseA",
@@ -296,9 +298,14 @@ def run_g4_b2_cylinder_cases(
                     expected_snapshot_manifest_sha256=str(index["extension_source_manifest_sha256"]),
                     expected_snapshot_tree_sha256=str(_mapping(index["extension_source_contract"], "extension_source_contract")["source_tree_sha256"]),
                 )
-                near_timeout = _successful_phase_near_timeout_guard(run_record)
+                existing_guard = run_record.get("near_timeout_guard")
+                near_timeout = (
+                    dict(existing_guard) if isinstance(existing_guard, Mapping)
+                    else _successful_phase_near_timeout_guard(run_record)
+                )
                 if execute and near_timeout is not None:
-                    _mark_runtime_inconclusive_near_timeout(run_record, near_timeout)
+                    if run_record.get("status") != "inconclusive_near_timeout":
+                        _mark_runtime_inconclusive_near_timeout(run_record, near_timeout)
                     stopped_by = "successful_phase_near_hard_timeout"
                 run_ok = bool(run_record["ok"])
                 _write_json(runtime_case / "openfoam_run_summary.json", run_record)
@@ -312,7 +319,7 @@ def run_g4_b2_cylinder_cases(
                     ),
                 })
                 if execute and not run_ok:
-                    stopped_by = stopped_by or "runtime_failure"
+                    stopped_by = stopped_by or _runtime_prefix_stop_reason(run_record)
         if stopped_by is None:
             stopped_by = "requested_grid"
         complete_prefix = len(attempts) == len(selected_grids) * len(_REPRESENTATIONS)
@@ -325,7 +332,10 @@ def run_g4_b2_cylinder_cases(
         next_required_condition = (
             "investigate_or_raise_the_representation_specific_timeout_policy_then_rerun_a_fresh_prefix"
             if stopped_by == "successful_phase_near_hard_timeout" else
+            ("inspect_the_preserved_solver_log_and_watchdog_evidence_then_rerun_a_fresh_prefix"
+             if stopped_by in {"runtime_stalled_no_advance", "runtime_nonmonotonic_time"} else
             ("run a new --through-grid fine prefix" if requested_through_grid != "fine" else "run the force_cp_grid_series_extractor on this single six-case artifact")
+            )
         )
         artifact = {
             "schema_version": 1, "kind": G4_B2_CYLINDER_RUN_KIND,
@@ -347,13 +357,79 @@ def run_g4_b2_cylinder_cases(
             "solver_evaluation": _unevaluated_solver_evaluation_state(),
             "evaluation_precondition": {"requires_single_through_grid_fine_artifact": True, "requires_all_six_canonical_case_records": True, "requires_complete_bound_force_cp_raw_evidence": True, "requires_force_cp_grid_series_extractor": True},
             "next_required_condition": next_required_condition,
+            "staging_lifecycle": {
+                "cleanup": {
+                    "status": "not_required_runtime_staging_published_atomically",
+                    "solver_status_is_independent": True,
+                },
+            },
         }
         _write_json(staging / G4_B2_CYLINDER_RUN_FILENAME, artifact)
         shutil.move(str(staging), str(destination))
-    except Exception:
-        shutil.rmtree(staging, ignore_errors=True)
+    except Exception as exc:
+        cleanup = _bounded_remove_tree(staging)
+        if cleanup["status"] == "failed" and staging.exists():
+            # Do not hide a locked staging tree.  This record is deliberately
+            # separate from any solver result (which may not have been formed).
+            try:
+                _write_json(staging / "g4_b2_cylinder_cleanup_failure.json", {
+                    "schema_version": 1,
+                    "kind": "g4_b2_cylinder_runtime_cleanup_failure",
+                    "status": "cleanup_failed",
+                    "cleanup": cleanup,
+                    "solver_status": "not_coerced_by_cleanup_failure",
+                    "original_exception": f"{type(exc).__name__}: {exc}",
+                })
+            except OSError:
+                pass
         raise
     return destination / G4_B2_CYLINDER_RUN_FILENAME
+
+
+def _bounded_remove_tree(
+    target: Path, *, attempts: int = 3, sleep_fn: Callable[[float], None] = sleep,
+    remove_tree: Callable[[Path], None] = shutil.rmtree,
+) -> dict[str, Any]:
+    """Retry only deletion of the fresh private staging directory on Windows.
+
+    This never receives a published destination and never treats cleanup as a
+    solver success or failure.  A lock remains preserved in place after the
+    bounded retries, along with a caller-written failure record where possible.
+    """
+
+    if not target.exists():
+        return {"status": "already_absent", "attempts": 0, "errors": []}
+    errors: list[str] = []
+    for attempt in range(1, attempts + 1):
+        try:
+            remove_tree(target)
+        except OSError as exc:
+            errors.append(f"attempt_{attempt}:{type(exc).__name__}:{exc}")
+            if attempt < attempts:
+                sleep_fn(0.1 * (2 ** (attempt - 1)))
+            continue
+        if not target.exists():
+            return {"status": "removed", "attempts": attempt, "errors": errors}
+        errors.append(f"attempt_{attempt}:path_still_exists_after_rmtree")
+        if attempt < attempts:
+            sleep_fn(0.1 * (2 ** (attempt - 1)))
+    return {"status": "failed", "attempts": attempts, "errors": errors}
+
+
+def _runtime_prefix_stop_reason(run_record: Mapping[str, Any]) -> str:
+    """Expose a fail-closed watchdog stop at the prefix artifact boundary."""
+
+    for phase_name in ("phase_a", "phase_b"):
+        phase = run_record.get(phase_name)
+        if not isinstance(phase, Mapping):
+            continue
+        watchdog = phase.get("advance_watchdog")
+        if not isinstance(watchdog, Mapping):
+            continue
+        outcome = watchdog.get("outcome")
+        if outcome in {"runtime_stalled_no_advance", "nonmonotonic_time"}:
+            return "runtime_stalled_no_advance" if outcome == "runtime_stalled_no_advance" else "runtime_nonmonotonic_time"
+    return "runtime_failure"
 
 
 def _compile_body_fitted_case(case_dir: Path, spec: Mapping[str, Any], *, grid_id: str, factor: int) -> dict[str, Any]:
@@ -989,6 +1065,27 @@ def _phase_timeouts_seconds(representation: str, grid_id: str) -> dict[str, int]
     return {phase: int(seconds) for phase, seconds in table.items()}
 
 
+def _phase_watchdog_policy(representation: str, grid_id: str, phase: str) -> dict[str, Any]:
+    """Return the deliberately narrow live-progress policy for B2 runtime.
+
+    The longer budget is approved only for porous/medium Phase A.  Its solver
+    is the only phase whose runtime may now be long enough to conceal a hung
+    Docker child, so no timeout or watchdog behavior is widened to the other
+    five cases or to any Phase B measurement tail.
+    """
+
+    enabled = (representation, grid_id, phase) == ("porous_cartesian", "medium", "phase_a")
+    return {
+        "enabled": enabled,
+        "applies_to": "porous_cartesian/medium/phase_a" if enabled else None,
+        "complete_solver_block": "Time = N followed by ClockTime = in the same block",
+        "strictly_increasing_time_required": enabled,
+        "maximum_seconds_without_new_complete_block": _PHASE_A_ADVANCE_WATCHDOG_SECONDS if enabled else None,
+        "poll_interval_seconds": _PHASE_A_ADVANCE_WATCHDOG_POLL_SECONDS if enabled else None,
+        "action_on_no_advance": "terminate_child_preserve_logs_and_fail_closed" if enabled else "not_enabled_for_this_phase",
+    }
+
+
 def _successful_phase_near_timeout_guard(run_record: Mapping[str, Any]) -> dict[str, Any] | None:
     """Flag a nominal success whose wall-clock cost exhausted its safety margin.
 
@@ -1043,8 +1140,16 @@ def _run_cylinder_case_two_phase(
 
     rel = case_relpath.as_posix()
     timeouts = _phase_timeouts_seconds(representation, grid_id)
-    phase_a = _phase_manifest(case_dir, phase="phase_a", timeout_seconds=timeouts["phase_a"], image=docker_image)
-    phase_b = _phase_manifest(case_dir, phase="phase_b", timeout_seconds=timeouts["phase_b"], image=docker_image)
+    phase_a_watchdog = _phase_watchdog_policy(representation, grid_id, "phase_a")
+    phase_b_watchdog = _phase_watchdog_policy(representation, grid_id, "phase_b")
+    phase_a = _phase_manifest(
+        case_dir, phase="phase_a", timeout_seconds=timeouts["phase_a"], image=docker_image,
+        watchdog_policy=phase_a_watchdog,
+    )
+    phase_b = _phase_manifest(
+        case_dir, phase="phase_b", timeout_seconds=timeouts["phase_b"], image=docker_image,
+        watchdog_policy=phase_b_watchdog,
+    )
     base: dict[str, Any] = {
         "backend": "docker", "dry_run": not execute, "published_case_relpath": rel,
         "stdout_relpath": f"{rel}/log.runOpenFOAM.stdout", "stderr_relpath": f"{rel}/log.runOpenFOAM.stderr",
@@ -1085,6 +1190,7 @@ def _run_cylinder_case_two_phase(
     phase_a_result = _run_docker_phase(
         case_dir, phase="phase_a", representation=representation, snapshot_dir=snapshot_dir,
         image=docker_image, timeout_seconds=timeouts["phase_a"], case_relpath=case_relpath,
+        watchdog_policy=phase_a_watchdog,
     )
     phase_a.update(phase_a_result)
     if not phase_a_result["ok"]:
@@ -1119,10 +1225,26 @@ def _run_cylinder_case_two_phase(
                 snapshot_provenance=snapshot_provenance,
             )
         return base
+    # This must be evaluated before Phase B is even constructed/launched.  A
+    # nominally successful Phase A that consumed its safety margin is retained
+    # as evidence, but is not a healthy enough restart point for measurement.
+    phase_a_near_timeout = _successful_phase_near_timeout_guard({
+        "ok": True, "phase_a": phase_a,
+    })
+    if phase_a_near_timeout is not None:
+        _mark_runtime_inconclusive_near_timeout(base, phase_a_near_timeout)
+        if representation == "porous_cartesian":
+            base["extension"] = _extension_runtime_contract(
+                case_dir, snapshot_dir, rel, docker_image, phase_a, None,
+                expected_snapshot_manifest_sha256=expected_snapshot_manifest_sha256,
+                expected_snapshot_tree_sha256=expected_snapshot_tree_sha256,
+                snapshot_provenance=snapshot_provenance,
+            )
+        return base
     phase_b_result = _run_docker_phase(
         case_dir, phase="phase_b", representation=representation, snapshot_dir=None,
         image=docker_image, timeout_seconds=timeouts["phase_b"], case_relpath=case_relpath,
-        phase_start_time=start,
+        phase_start_time=start, watchdog_policy=phase_b_watchdog,
     )
     phase_b.update(phase_b_result)
     final_fields = phase_b_result.get("final_fields")
@@ -1175,7 +1297,10 @@ def _run_cylinder_case_two_phase(
     return base
 
 
-def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: str | None) -> dict[str, Any]:
+def _phase_manifest(
+    case_dir: Path, *, phase: str, timeout_seconds: int, image: str | None,
+    watchdog_policy: Mapping[str, Any],
+) -> dict[str, Any]:
     artifacts = _phase_artifact(phase)
     if phase == "phase_a":
         control, solution = case_dir / "system" / "controlDict.phaseA", case_dir / "system" / "fvSolution.phaseA"
@@ -1191,6 +1316,10 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
         "fv_solution_sha256": _sha256_file(solution), "phase_b_template_relpath": template,
         "solver_log_relpath": str(artifacts["solver_log_filename"]),
         "canonical_container_command": _canonical_phase_container_command(phase, str(image) if image else "<digest-pinned-image>", porous=(case_dir / "constant" / "fvOptions").is_file()),
+        "advance_watchdog": {
+            "policy": dict(watchdog_policy),
+            "outcome": "not_executed",
+        },
     }
     if phase == "phase_a" and (case_dir / "constant" / "fvOptions").is_file():
         beta = case_dir / "0" / "beta"
@@ -1202,6 +1331,10 @@ def _phase_manifest(case_dir: Path, *, phase: str, timeout_seconds: int, image: 
 def _run_docker_phase(
     case_dir: Path, *, phase: str, representation: str, snapshot_dir: Path | None,
     image: str, timeout_seconds: int, case_relpath: Path, phase_start_time: float | None = None,
+    watchdog_policy: Mapping[str, Any] | None = None,
+    clock: Callable[[], float] = perf_counter,
+    sleep_fn: Callable[[float], None] = sleep,
+    process_factory: Callable[..., Any] | None = None,
 ) -> dict[str, Any]:
     porous = representation == "porous_cartesian"
     if (phase == "phase_a" and porous != (snapshot_dir is not None)) or (phase == "phase_b" and snapshot_dir is not None):
@@ -1213,18 +1346,26 @@ def _run_docker_phase(
     command.extend(["-w", "/case", image, "-lc", script])
     stdout = case_dir / f"log.runOpenFOAM.{phase}.stdout"
     stderr = case_dir / f"log.runOpenFOAM.{phase}.stderr"
-    started_at = perf_counter()
+    policy = dict(watchdog_policy) if watchdog_policy is not None else _phase_watchdog_policy(
+        representation, "<direct-call>", phase,
+    )
+    started_at = clock()
     try:
-        with stdout.open("w", encoding="utf-8") as out, stderr.open("w", encoding="utf-8") as err:
-            completed = subprocess.run(command, cwd=case_dir, stdout=out, stderr=err, text=True, timeout=timeout_seconds, check=False)
-        returncode, timed_out, error = int(completed.returncode), False, None
-    except subprocess.TimeoutExpired as exc:
-        returncode, timed_out, error = None, True, f"phase {phase} timed out after {exc.timeout} seconds"
-        stderr.write_text(error, encoding="utf-8")
+        child = _run_docker_child_with_watchdog(
+            command, cwd=case_dir, stdout_path=stdout, stderr_path=stderr,
+            solver_log=case_dir / _phase_artifact(phase)["solver_log_filename"],
+            timeout_seconds=timeout_seconds, policy=policy, clock=clock,
+            sleep_fn=sleep_fn, process_factory=process_factory,
+        )
+        returncode = child["returncode"]
+        timed_out = bool(child["timed_out"])
+        error = child["error"]
+        watchdog = child["watchdog"]
     except OSError as exc:
         returncode, timed_out, error = None, False, str(exc)
         stderr.write_text(error, encoding="utf-8")
-    duration_seconds = perf_counter() - started_at
+        watchdog = _not_started_watchdog_outcome(policy, reason="process_start_os_error")
+    duration_seconds = clock() - started_at
     artifacts = _phase_artifact(phase)
     solver_log = case_dir / artifacts["solver_log_filename"]
     final_file = case_dir / artifacts["final_time_filename"]
@@ -1235,10 +1376,249 @@ def _run_docker_phase(
     fatal = _solver_log_has_fatal(solver_log)
     convergence = _phase_a_convergence_contract(solver_log, required_fields) if phase == "phase_a" else None
     ok = returncode == 0 and not timed_out and error is None and solver_log.is_file() and not fatal and required_fields["complete"] and (convergence is None or convergence["complete"])
-    result = {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "duration_seconds": duration_seconds, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
+    result = {"status": "completed" if ok else "failed", "returncode": returncode, "timed_out": timed_out, "error": error, "ok": ok, "duration_seconds": duration_seconds, "stdout_relpath": f"{case_relpath.as_posix()}/{stdout.name}", "stderr_relpath": f"{case_relpath.as_posix()}/{stderr.name}", "solver_log_relpath": f"{case_relpath.as_posix()}/{solver_log.name}", "solver_log_sha256": _sha256_file(solver_log) if solver_log.is_file() else None, "fatal_log_clear": not fatal, "final_fields": required_fields, "advance_watchdog": watchdog, "replay_command": _canonical_phase_container_command(phase, image, porous=porous)}
     if convergence is not None:
         result["convergence"] = convergence
     return result
+
+
+def _not_started_watchdog_outcome(policy: Mapping[str, Any], *, reason: str) -> dict[str, Any]:
+    return {
+        "policy": dict(policy), "outcome": "not_started", "reason": reason,
+        "last_complete_time": None, "last_observed_complete_time": None,
+        "last_complete_solver_log_sha256": None,
+        "evidence": {"complete_times": [], "strictly_increasing": True, "nonmonotonic_pairs": []},
+    }
+
+
+def _complete_solver_time_blocks(solver_log: Path) -> dict[str, Any]:
+    """Read only fully emitted OpenFOAM Time/ClockTime blocks.
+
+    A tailing reader must not treat a bare ``Time = N`` line as progress: the
+    child can be killed between that line and its timing footer.  This parser
+    therefore records a time only after the corresponding block contains a
+    ``ClockTime =`` value.  Values must be finite and strictly increasing.
+    """
+
+    try:
+        payload = solver_log.read_bytes()
+    except OSError:
+        return {
+            "complete_times": [], "strictly_increasing": True,
+            "nonmonotonic_pairs": [], "solver_log_sha256": None,
+        }
+    try:
+        text = payload.decode("utf-8", errors="replace")
+    except UnicodeError:
+        text = ""
+    current_time: float | None = None
+    complete_times: list[float] = []
+    for line in text.splitlines():
+        time_match = re.match(r"^\s*Time\s*=\s*([^\s]+)\s*$", line)
+        if time_match:
+            try:
+                candidate = float(time_match.group(1))
+            except ValueError:
+                current_time = None
+            else:
+                current_time = candidate if isfinite(candidate) else None
+            continue
+        if current_time is not None and re.search(r"\bClockTime\s*=", line):
+            complete_times.append(current_time)
+            current_time = None
+    nonmonotonic_pairs = [
+        {"previous": previous, "current": current}
+        for previous, current in zip(complete_times, complete_times[1:], strict=False)
+        if current <= previous
+    ]
+    return {
+        "complete_times": complete_times,
+        "strictly_increasing": not nonmonotonic_pairs,
+        "nonmonotonic_pairs": nonmonotonic_pairs,
+        "solver_log_sha256": hashlib.sha256(payload).hexdigest(),
+    }
+
+
+def _stop_watchdog_child(process: Any) -> dict[str, Any]:
+    """Request a bounded, best-effort child stop without touching case files."""
+
+    stopped_with = "terminate"
+    try:
+        process.terminate()
+    except (AttributeError, OSError):
+        stopped_with = "terminate_unavailable"
+    try:
+        process.wait(timeout=10)
+    except (AttributeError, OSError, subprocess.TimeoutExpired):
+        stopped_with = "kill_after_terminate" if stopped_with == "terminate" else "kill"
+        try:
+            process.kill()
+        except (AttributeError, OSError):
+            stopped_with += "_unavailable"
+        try:
+            process.wait(timeout=10)
+        except (AttributeError, OSError, subprocess.TimeoutExpired):
+            stopped_with += "_wait_unconfirmed"
+    return {"stop_requested": True, "method": stopped_with}
+
+
+def _run_docker_child_with_watchdog(
+    command: Sequence[str], *, cwd: Path, stdout_path: Path, stderr_path: Path,
+    solver_log: Path, timeout_seconds: int, policy: Mapping[str, Any],
+    clock: Callable[[], float], sleep_fn: Callable[[float], None],
+    process_factory: Callable[..., Any] | None,
+) -> dict[str, Any]:
+    """Run Docker while fail-closing only the approved porous/medium Phase A.
+
+    The injectable seams deliberately make the timeout logic deterministic in
+    tests.  They also keep log ownership with the solver: this runner only
+    observes and hashes it, and never truncates, repairs, or removes evidence.
+    """
+
+    factory = subprocess.Popen if process_factory is None else process_factory
+    enabled = bool(policy.get("enabled"))
+    interval = float(policy.get("poll_interval_seconds") or _PHASE_A_ADVANCE_WATCHDOG_POLL_SECONDS)
+    advance_limit = float(policy.get("maximum_seconds_without_new_complete_block") or 0.0)
+    started_at = clock()
+    last_advance_at = started_at
+    seen_count = 0
+    latest = _complete_solver_time_blocks(solver_log)
+    last_observed_complete_times = tuple(latest["complete_times"])
+    last_observed_complete_time = (
+        last_observed_complete_times[-1] if last_observed_complete_times else None
+    )
+    with stdout_path.open("w", encoding="utf-8") as stdout, stderr_path.open("w", encoding="utf-8") as stderr:
+        process = factory(command, cwd=cwd, stdout=stdout, stderr=stderr, text=True)
+        while True:
+            now = clock()
+            latest = _complete_solver_time_blocks(solver_log)
+            complete_times = list(latest["complete_times"])
+            if enabled and not latest["strictly_increasing"]:
+                stopped = _stop_watchdog_child(process)
+                return {
+                    "returncode": None, "timed_out": False, "error": "runtime_nonmonotonic_time",
+                    "watchdog": {
+                        "policy": dict(policy), "outcome": "nonmonotonic_time", "stopped": stopped,
+                        "last_complete_time": last_observed_complete_time,
+                        "last_observed_complete_time": last_observed_complete_time,
+                        "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": latest,
+                    },
+                }
+            current_complete_times = tuple(complete_times)
+            if enabled and current_complete_times != last_observed_complete_times:
+                current_complete_time = current_complete_times[-1] if current_complete_times else None
+                # File truncation/rewrite can reduce the visible block count.
+                # Never reset the deadline merely because a different log view
+                # contains an old completed Time block.
+                if (
+                    current_complete_time is not None
+                    and last_observed_complete_time is not None
+                    and current_complete_time <= last_observed_complete_time
+                ):
+                    evidence = dict(latest)
+                    evidence["observed_nonmonotonic_pair"] = {
+                        "previous": last_observed_complete_time,
+                        "current": current_complete_time,
+                    }
+                    stopped = _stop_watchdog_child(process)
+                    return {
+                        "returncode": None, "timed_out": False, "error": "runtime_nonmonotonic_time",
+                        "watchdog": {
+                            "policy": dict(policy), "outcome": "nonmonotonic_time", "stopped": stopped,
+                            "last_complete_time": last_observed_complete_time,
+                            "last_observed_complete_time": last_observed_complete_time,
+                            "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": evidence,
+                        },
+                    }
+                last_observed_complete_times = current_complete_times
+                if current_complete_time is not None and (
+                    last_observed_complete_time is None
+                    or current_complete_time > last_observed_complete_time
+                ):
+                    last_observed_complete_time = current_complete_time
+                    last_advance_at = now
+            elif not enabled and len(complete_times) > seen_count:
+                seen_count = len(complete_times)
+                last_advance_at = now
+            returncode = process.poll()
+            if returncode is not None:
+                # A child may flush its final solver block as it exits.  Read
+                # once more after poll() so a terminal rewrite/nonmonotonic
+                # block cannot be reported as a healthy completed run.
+                latest = _complete_solver_time_blocks(solver_log)
+                complete_times = list(latest["complete_times"])
+                final_complete_times = tuple(complete_times)
+                final_complete_time = final_complete_times[-1] if final_complete_times else None
+                final_nonmonotonic = enabled and (
+                    not latest["strictly_increasing"]
+                    or (
+                        final_complete_times != last_observed_complete_times
+                        and final_complete_time is not None
+                        and last_observed_complete_time is not None
+                        and final_complete_time <= last_observed_complete_time
+                    )
+                )
+                if final_nonmonotonic:
+                    evidence = dict(latest)
+                    if (
+                        latest["strictly_increasing"]
+                        and final_complete_time is not None
+                        and last_observed_complete_time is not None
+                    ):
+                        evidence["observed_nonmonotonic_pair"] = {
+                            "previous": last_observed_complete_time,
+                            "current": final_complete_time,
+                        }
+                    return {
+                        "returncode": int(returncode), "timed_out": False,
+                        "error": "runtime_nonmonotonic_time",
+                        "watchdog": {
+                            "policy": dict(policy), "outcome": "nonmonotonic_time",
+                            "stopped": {"stop_requested": False, "method": "already_exited"},
+                            "last_complete_time": last_observed_complete_time,
+                            "last_observed_complete_time": last_observed_complete_time,
+                            "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": evidence,
+                        },
+                    }
+                if enabled and final_complete_time is not None and (
+                    last_observed_complete_time is None
+                    or final_complete_time > last_observed_complete_time
+                ):
+                    last_observed_complete_time = final_complete_time
+                return {
+                    "returncode": int(returncode), "timed_out": False, "error": None,
+                    "watchdog": {
+                        "policy": dict(policy), "outcome": "completed" if enabled else "not_enabled",
+                        "last_complete_time": last_observed_complete_time,
+                        "last_observed_complete_time": last_observed_complete_time,
+                        "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": latest,
+                    },
+                }
+            elapsed = now - started_at
+            if elapsed >= timeout_seconds:
+                stopped = _stop_watchdog_child(process)
+                return {
+                    "returncode": None, "timed_out": True,
+                    "error": f"phase runtime timed out after {timeout_seconds} seconds",
+                    "watchdog": {
+                        "policy": dict(policy), "outcome": "hard_timeout", "stopped": stopped,
+                        "last_complete_time": last_observed_complete_time,
+                        "last_observed_complete_time": last_observed_complete_time,
+                        "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": latest,
+                    },
+                }
+            if enabled and now - last_advance_at >= advance_limit:
+                stopped = _stop_watchdog_child(process)
+                return {
+                    "returncode": None, "timed_out": False, "error": "runtime_stalled_no_advance",
+                    "watchdog": {
+                        "policy": dict(policy), "outcome": "runtime_stalled_no_advance", "stopped": stopped,
+                        "last_complete_time": last_observed_complete_time,
+                        "last_observed_complete_time": last_observed_complete_time,
+                        "last_complete_solver_log_sha256": latest["solver_log_sha256"], "evidence": latest,
+                    },
+                }
+            sleep_fn(interval)
 
 
 def _phase_container_script(phase: str, *, porous: bool) -> str:
