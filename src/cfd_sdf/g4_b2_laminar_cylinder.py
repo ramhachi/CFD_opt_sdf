@@ -213,9 +213,10 @@ def load_g4_b2_cylinder_spec(path: str | Path) -> dict[str, Any]:
 
 def run_g4_b2_cylinder_cases(
     *, compilation_dir: str | Path, output_dir: str | Path, backend: str = "auto",
-    execute: bool = False, timeout_seconds: int | None = None, docker_image: str | None = None,
+    through_grid: str, execute: bool = False, timeout_seconds: int | None = None,
+    docker_image: str | None = None,
 ) -> Path:
-    """Copy all six compiled cases and invoke the shared serial runner.
+    """Run a fresh canonical prefix through one explicitly selected grid.
 
     The original compilation remains untouched.  This does not claim that an
     extension is installed or that any force/probe data has been extracted.
@@ -223,6 +224,7 @@ def run_g4_b2_cylinder_cases(
 
     source_root = Path(compilation_dir)
     index = _read_compilation(source_root / G4_B2_CYLINDER_COMPILATION_FILENAME)
+    requested_through_grid = _validate_through_grid(through_grid)
     extension_snapshot = _verify_extension_source_snapshot(source_root, index)
     if execute and (backend != "docker" or not _is_digest_pinned_v2512_image(docker_image)):
         raise ValueError("executed B2 cylinder pack requires --backend docker and a digest-pinned v2512 --docker-image")
@@ -236,11 +238,13 @@ def run_g4_b2_cylinder_cases(
     try:
         attempts: list[dict[str, Any]] = []
         cases = {(str(case["representation"]), str(case["grid_id"])): case for case in index["cases"]}
-        stopped_after: str | None = None
-        for grid_id in _GRID_IDS:
+        canonical_case_ids = [f"{representation}/{grid_id}" for grid_id in _GRID_IDS for representation in _REPRESENTATIONS]
+        selected_grids = _GRID_IDS[: _GRID_IDS.index(requested_through_grid) + 1]
+        stopped_by: str | None = None
+        for grid_id in selected_grids:
             for representation in _REPRESENTATIONS:
                 case = cases[(representation, grid_id)]
-                if stopped_after is not None:
+                if stopped_by == "runtime_failure":
                     continue
                 source_case = source_root / str(case["case_directory"])
                 _verify_compiled_case_files(source_case, case)
@@ -259,20 +263,31 @@ def run_g4_b2_cylinder_cases(
                 attempts.append({
                     "representation": case["representation"], "grid_id": case["grid_id"], "case_sha256": case["case_sha256"],
                     "case_contract_sha256": case["case_contract_sha256"], "run": run_record,
-                    "status": "contract_only_not_executed" if not execute else ("runtime_completed_metrics_not_extracted" if run_ok else "runtime_failed"),
+                    "status": "contract_only_not_executed" if not execute else ("runtime_raw_evidence_complete_unqualified" if run_ok else "runtime_failed"),
                 })
                 if execute and not run_ok:
-                    stopped_after = f"{representation}/{grid_id}"
-        status = "contract_only_not_executed" if not execute else ("runtime_completed_metrics_not_extracted" if all(item["status"] == "runtime_completed_metrics_not_extracted" for item in attempts) else "runtime_failed")
+                    stopped_by = "runtime_failure"
+        if stopped_by is None:
+            stopped_by = "requested_grid"
+        complete_prefix = len(attempts) == len(selected_grids) * len(_REPRESENTATIONS)
+        execution_succeeded = execute and complete_prefix and all(item["status"] == "runtime_raw_evidence_complete_unqualified" for item in attempts)
+        status = "contract_only_not_executed" if not execute else ("partial_runtime_completed_unqualified" if execution_succeeded else "runtime_failed")
+        executed_through_grid = attempts[-1]["grid_id"] if attempts else None
         artifact = {
             "schema_version": 1, "kind": G4_B2_CYLINDER_RUN_KIND,
             "compilation_sha256": index["compilation_sha256"], "spec_sha256": index["spec_sha256"],
+            "extension_source_manifest_sha256": index["extension_source_manifest_sha256"],
+            "docker_image_digest": docker_image if execute else None,
             "execute_requested": execute, "backend_requested": backend, "status": status, "qualified": False,
-            "runtime_order": [f"{grid}/{representation}" for grid in _GRID_IDS for representation in _REPRESENTATIONS],
-            "stopped_after": stopped_after,
+            "requested_through_grid": requested_through_grid, "executed_through_grid": executed_through_grid,
+            "canonical_case_ids": canonical_case_ids,
+            "ordered_executed_case_ids": [f"{item['representation']}/{item['grid_id']}" for item in attempts],
+            "stopped_by": stopped_by,
             "phase_timeouts_seconds": _PHASE_TIMEOUTS_SECONDS,
             "cases": attempts, "next_required_evidence": _runtime_evidence_requirements(),
-            "limitation": "runner_does_not_extract_or_qualify_cylinder_forces_or_cp",
+            "force_cp_evaluation": {"evaluated": False, "reason": "runner_does_not_extract_force_cp_richardson_gci_or_cross_fidelity"},
+            "evaluation_precondition": {"requires_single_through_grid_fine_artifact": True, "requires_all_six_canonical_case_records": True, "requires_complete_bound_force_cp_raw_evidence": True, "requires_force_cp_grid_series_extractor": True},
+            "next_required_condition": "run a new --through-grid fine prefix" if requested_through_grid != "fine" else "run the force_cp_grid_series_extractor on this single six-case artifact",
         }
         _write_json(staging / G4_B2_CYLINDER_RUN_FILENAME, artifact)
         shutil.move(str(staging), str(destination))
@@ -961,6 +976,12 @@ def _read_compilation(path: Path) -> dict[str, Any]:
     if [(case.get("representation"), case.get("grid_id")) for case in raw.get("cases", []) if isinstance(case, Mapping)] != expected_order:
         raise ValueError("B2 cylinder compilation does not contain canonical six cases")
     return raw
+
+
+def _validate_through_grid(value: str) -> str:
+    if value not in _GRID_IDS:
+        raise ValueError("B2 cylinder through_grid must be exactly one of coarse, medium, fine")
+    return value
 
 
 def _mapping(value: Any, name: str) -> Mapping[str, Any]:

@@ -162,7 +162,7 @@ def test_compilation_is_immutable_and_dry_runner_keeps_source_bundle_unchanged(c
     with pytest.raises(FileExistsError):
         compile_g4_b2_cylinder_benchmark(spec_path=SPEC, output_dir=root)
 
-    artifact = run_g4_b2_cylinder_cases(compilation_dir=root, output_dir=tmp_path / "runtime", backend="docker", execute=False)
+    artifact = run_g4_b2_cylinder_cases(compilation_dir=root, output_dir=tmp_path / "runtime", through_grid="fine", backend="docker", execute=False)
     payload = json.loads(artifact.read_text(encoding="utf-8"))
     assert payload["status"] == "contract_only_not_executed"
     assert len(payload["cases"]) == 6
@@ -209,12 +209,68 @@ def test_executed_sequence_stops_before_later_grids_after_phase_failure(
     monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", fail_first)
     artifact = run_g4_b2_cylinder_cases(
         compilation_dir=root, output_dir=tmp_path / "failed", backend="docker", execute=True,
+        through_grid="fine",
         docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
     )
     payload = json.loads(artifact.read_text(encoding="utf-8"))
     assert payload["status"] == "runtime_failed"
-    assert payload["stopped_after"] == "body_fitted/coarse"
+    assert payload["stopped_by"] == "runtime_failure"
+    assert payload["requested_through_grid"] == "fine"
+    assert payload["executed_through_grid"] == "coarse"
     assert [(item["grid_id"], item["representation"]) for item in payload["cases"]] == [("coarse", "body_fitted")]
+
+
+@pytest.mark.parametrize(
+    ("through_grid", "expected_ids"),
+    [
+        ("coarse", ["body_fitted/coarse", "porous_cartesian/coarse"]),
+        ("medium", ["body_fitted/coarse", "porous_cartesian/coarse", "body_fitted/medium", "porous_cartesian/medium"]),
+        ("fine", ["body_fitted/coarse", "porous_cartesian/coarse", "body_fitted/medium", "porous_cartesian/medium", "body_fitted/fine", "porous_cartesian/fine"]),
+    ],
+)
+def test_dry_run_writes_only_requested_canonical_prefix(
+    compiled: tuple[Path, dict], tmp_path: Path, through_grid: str, expected_ids: list[str],
+) -> None:
+    root, _ = compiled
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / through_grid, through_grid=through_grid,
+        backend="docker", execute=False,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "contract_only_not_executed"
+    assert payload["requested_through_grid"] == through_grid
+    assert payload["executed_through_grid"] == through_grid
+    assert payload["stopped_by"] == "requested_grid"
+    assert payload["ordered_executed_case_ids"] == expected_ids
+    assert payload["canonical_case_ids"][-2:] == ["body_fitted/fine", "porous_cartesian/fine"]
+
+
+def test_complete_executed_prefix_is_unqualified_until_force_cp_evaluation(
+    compiled: tuple[Path, dict], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = compiled
+
+    def succeed(*args: object, **kwargs: object) -> dict:
+        return {"ok": True, "phase_a": {"status": "completed"}, "phase_b": {"status": "completed"}}
+
+    monkeypatch.setattr(cylinder_module, "_run_cylinder_case_two_phase", succeed)
+    artifact = run_g4_b2_cylinder_cases(
+        compilation_dir=root, output_dir=tmp_path / "coarse-success", through_grid="coarse",
+        backend="docker", execute=True, docker_image="opencfd/openfoam-default:2512@sha256:" + "a" * 64,
+    )
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "partial_runtime_completed_unqualified"
+    assert payload["qualified"] is False
+    assert payload["stopped_by"] == "requested_grid"
+    assert payload["next_required_condition"] == "run a new --through-grid fine prefix"
+    assert payload["force_cp_evaluation"]["evaluated"] is False
+
+
+def test_cli_requires_through_grid_for_cylinder_run(tmp_path: Path) -> None:
+    result = runner.invoke(app, ["run-g4-b2-cylinder", str(tmp_path / "input"), str(tmp_path / "output")])
+
+    assert result.exit_code != 0
+    assert "--through-grid" in result.output
 
 
 def test_cli_compiles_source_snapshot_without_runtime_claim(tmp_path: Path) -> None:

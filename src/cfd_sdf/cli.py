@@ -366,14 +366,15 @@ def compile_g4_b2_cylinder_command(
 def run_g4_b2_cylinder_command(
     compilation_dir: Path = typer.Argument(..., help="Immutable directory emitted by compile-g4-b2-cylinder."),
     output_dir: Path = typer.Argument(..., help="New runtime-attempt directory; compiled cases remain unchanged."),
-    execute: bool = typer.Option(False, "--execute", help="Build the source snapshot and run all six cases."),
+    through_grid: str = typer.Option(..., "--through-grid", help="Required canonical prefix endpoint: coarse, medium, or fine."),
+    execute: bool = typer.Option(False, "--execute", help="Build and run the required canonical prefix."),
     backend: str = typer.Option("docker", "--backend", help="Dry runs may select any backend; executed B2 cylinder runs require docker."),
     docker_image: str | None = typer.Option(None, "--docker-image", help="Required digest-pinned v2512 image for --execute."),
 ) -> None:
     """Run copied B2 cylinder cases; execution remains unqualified until evidence extraction."""
     try:
         artifact = run_g4_b2_cylinder_cases(
-            compilation_dir=compilation_dir, output_dir=output_dir, backend=backend,
+            compilation_dir=compilation_dir, output_dir=output_dir, through_grid=through_grid, backend=backend,
             execute=execute, docker_image=docker_image,
         )
         payload = json.loads(artifact.read_text(encoding="utf-8"))

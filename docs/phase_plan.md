@@ -349,6 +349,9 @@ Advance using YAML/STL replacement rather than benchmark-specific core code:
    Its required serial two-phase convergence/measurement execution and raw
    evidence gate are fixed in
    [`2026-08-04-g4-b2-cylinder-runtime-protocol.md`](decisions/2026-08-04-g4-b2-cylinder-runtime-protocol.md).
+   Its required `--through-grid` prefix execution, partial-artifact, and
+   fail-closed six-case evaluation control are fixed in
+   [`2026-08-04-g4-b2-cylinder-staged-runtime-control.md`](decisions/2026-08-04-g4-b2-cylinder-staged-runtime-control.md).
    Porous execution must additionally use the source-snapshot, digest-pinned,
    case-local Brinkman deployment contract in
    [`2026-08-04-g4-b2-brinkman-extension-deployment.md`](decisions/2026-08-04-g4-b2-brinkman-extension-deployment.md).
