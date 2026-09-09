@@ -1,0 +1,76 @@
+{
+  "observed_date": "2026-09-07",
+  "scope": "periodic 2D low-Mach Taylor-Green only; no walls, forces, SDF or adjoint",
+  "device": "Apple M4, 32 GiB unified memory",
+  "software": {
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "mlx": "0.32.2"
+  },
+  "grid_study": {
+    "reynolds_number": 3.2,
+    "viscous_dimensionless_time": 0.009765625,
+    "cases": [
+      {
+        "config": {
+          "nx": 16,
+          "ny": 16,
+          "steps": 25,
+          "viscosity": 0.1,
+          "velocity": 0.02
+        },
+        "status": "pass",
+        "relative_analytic_error": 0.02007818055972674,
+        "mass_relative_error": 1.9984014443252818e-15
+      },
+      {
+        "config": {
+          "nx": 32,
+          "ny": 32,
+          "steps": 100,
+          "viscosity": 0.1,
+          "velocity": 0.01
+        },
+        "status": "pass",
+        "relative_analytic_error": 0.004997073029277361,
+        "mass_relative_error": 7.105427357601002e-15
+      },
+      {
+        "config": {
+          "nx": 64,
+          "ny": 64,
+          "steps": 400,
+          "viscosity": 0.1,
+          "velocity": 0.005
+        },
+        "status": "pass",
+        "relative_analytic_error": 0.0012450207576582791,
+        "mass_relative_error": 2.7755575615628914e-14
+      }
+    ],
+    "observed_orders": [
+      2.0064733339026697,
+      2.004913506481126
+    ]
+  },
+  "metal_comparison": {
+    "config": {
+      "nx": 32,
+      "ny": 32,
+      "steps": 100,
+      "viscosity": 0.1,
+      "velocity": 0.01
+    },
+    "config_sha256": "4abbdad0648b7bf2a44b9327dc64a442bca83e021ea13c97bf4c1e8c4460c565",
+    "checks": {
+      "velocity_relative_l2": 1.5646031004332957e-05,
+      "velocity_relative_tolerance": 0.005,
+      "mass_relative_error": 1.0187068255618215e-06,
+      "mass_relative_tolerance": 0.0001,
+      "analytic_relative_l2": 0.004990096489415711,
+      "analytic_relative_tolerance": 0.05
+    },
+    "status": "pass"
+  },
+  "timing_caveat": "Small-grid timings are not a speedup claim; concurrent host workloads were present."
+}

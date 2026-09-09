@@ -1,13 +1,57 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-07-12
+Date: 2026-09-09
 Status: authoritative
 Scope: generic rigid-object external aerodynamics with topology change
+Architecture decision: adopted on 2026-09-09
 
 This is the only implementation roadmap for the project. Historical
 body-fitted, parametric, and front-wing-specific work is capability evidence,
 not a second development plan. The front wing remains the final complex
 benchmark; it does not define the product architecture.
+
+## September 2026 cross-platform implementation
+
+The accepted [32 GB development design](development_plan_2026_09.md) and
+[critical architecture review](architecture_review_2026_09.md) specify the
+Mac/Windows extension. This page remains the authoritative progress record.
+The existing G1–G4 gates below remain mandatory; the P0–P5 milestones in the
+design are work packages, not substitutes for those gates.
+
+The project adopts this architecture as its production direction: one shared
+ProblemSpec and evidence contract, density/Brinkman topology exploration, SDF
+sharp-interface refinement, and independent body-fitted verification. Backend
+promotion remains conditional on the numerical and physical gates below. In
+particular, adopting the architecture does not promote the current periodic
+LBM probe to a target-aerodynamics solver.
+
+The `main` snapshot immediately before this decision is preserved as
+`artifact/pre-cross-platform-architecture-2026-09-09` at commit `fdc1053`.
+
+The first implementation adds bounded `research` commands for runtime
+inspection, STL/declared-feature preflight, and a periodic D2Q9 Taylor–Green
+reference with an optional Apple Silicon Metal backend. These are P0/P1
+foundations. CPU execution is portable; Metal acceleration requires Apple
+Silicon. Windows CUDA acceleration is still pending. A working RTX 4070 Ti
+must be qualified against its separate VRAM budget, not 32 GB host RAM.
+
+The geometry preflight checks only its explicitly listed subset. Periodic
+LBM has no wall treatment, force integration, SDF coupling, adjoint, or 3D
+support. Neither its passing benchmark nor a successful OpenFOAM process
+qualifies target aerodynamics or a complete optimization pipeline.
+
+Next execution order:
+
+1. Establish reproducible runtime and numerical evidence on Mac and Windows.
+2. Validate wall treatment, force integration and spatial convergence on
+   bounded laminar cases before coupling an SDF interface.
+3. Add CUDA only behind the same reference tests and report memory/precision
+   separately for each device.
+4. Validate stationary residuals and directional derivatives before adjoints
+   and constrained shape optimization; retain the existing density/Brinkman
+   route for topology work and independent body-fitted verification.
+
+See [cross-platform commands and evidence](cross_platform_research.md).
 
 ## 1. Product objective
 
@@ -79,8 +123,8 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
-| G2 case compiler | Requalification required after canonical-domain binding | Generic two-flow OpenFOAM cases, manifests, response dictionaries, execution assets, patch mapping, and convergence evaluator exist. OpenFOAM v2512 Docker runs for the prior G2 specification passed the declared primal, response, adjoint, and normalized-mass convergence qualification. Adding the explicit canonical domain changed the ProblemSpec hash, so new domain-bound cases must be compiled, executed, and qualified before that result is claimed for the current specification. Porous/body-fitted force and gradient comparisons remain unqualified. |
-| G3 geometry/resolution gates | Missing — implementation required | Robust STL preflight, physical feature-resolution rejection, and density-to-SDF fidelity metrics are absent. |
+| G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
+| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
 | Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
@@ -146,9 +190,9 @@ explicitly until implemented.
 Remaining implementation:
 
 1. Supply and qualify semantic bindings for native v2 primal and sensitivity
-   artifacts from real runs. First recompile, rerun, and requalify both G2
-   flows because `grid.domain_bounds_m` changed the ProblemSpec hash. The
-   current G2 run is correctly refused: its
+   artifacts from real runs. Both G2 flows were recompiled, rerun and numerically
+   qualified under the current hash on 2026-09-07. Native export still requires
+   evidence for the following semantic issues: its
    `porousDirectionalForce` output is a coefficient rather than proven `N`,
    its final `topOSens` to `rho` chain has not passed finite-difference
    validation, its reconstructed mesh fields have not been transferred to a
@@ -176,7 +220,8 @@ G2 qualification gate:
 
 ## 7. G3 — geometry and physical-resolution gates
 
-Status: missing — implementation required.
+Status: partial — bounded STL and declared-resolution preflight implemented.
+The full gate below remains required; the new command reports omitted checks.
 
 Implement:
 
@@ -250,8 +295,8 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Recompile, rerun, and numerically requalify G2 under the explicit canonical
-   domain; bind response units, `rho` gradient convention, mesh-grid mapping,
+1. Following the 2026-09-07 current-spec numerical requalification, bind
+   response units, `rho` gradient convention, mesh-grid mapping,
    and topology-policy values; then write native v2 primal and sensitivity run
    artifacts. **Implementation required.**
 2. Qualify simple porous versus body-fitted cases. **Implementation required.**

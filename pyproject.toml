@@ -23,6 +23,9 @@ dependencies = [
 dev = [
   "pytest>=8.0",
 ]
+metal = [
+  "mlx>=0.32.2,<0.33; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
 
 [project.scripts]
 cfd-sdf = "cfd_sdf.cli:app"

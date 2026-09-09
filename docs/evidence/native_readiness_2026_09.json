@@ -1,0 +1,15 @@
+{
+  "execution_ready": true,
+  "kind": "native_openfoam_v2_artifact_readiness",
+  "problem_id": "g2_openfoam_multipoint",
+  "problem_spec_sha256": "1559848ce02a78081fa90f222c85156d99fed24749dd9753e94ab409fa6bab6c",
+  "ready": false,
+  "reasons": [
+    "missing_native_artifact_binding",
+    "response_value_unit_provenance_not_bound",
+    "rho_gradient_convention_not_bound",
+    "mesh_grid_mapping_not_bound",
+    "topology_constraint_values_not_available"
+  ],
+  "schema_version": 1
+}

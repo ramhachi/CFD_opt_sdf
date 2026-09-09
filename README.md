@@ -5,11 +5,25 @@ arbitrary topology, using fixed-grid density/Brinkman search, SDF refinement,
 and body-fitted verification. The front wing is the first complex integration
 benchmark, not a hard-coded definition of the final problem class.
 
+This density/Brinkman → SDF → independent body-fitted verification architecture
+is the adopted project direction as of 2026-09-09. Each solver backend still
+has to pass the numerical and physical gates in `docs/phase_plan.md` before it
+is qualified for target aerodynamics.
+
 Current status: G1 is complete. The G2 generic OpenFOAM case compiler,
 requested/generated manifest, execution-asset staging, patch mapping, and
-convergence evaluator are implemented. G2 runtime qualification is pending:
-generated topology/primal/adjoint fields still need complete mesh-boundary
-compatibility before target-physics evidence can begin.
+convergence evaluator are implemented. The current two-flow G2 specification
+passed numerical convergence gates on ARM64 OpenFOAM v2512. Native artifact
+semantics and target-physics qualification remain pending; see the roadmap
+for the exact evidence scope.
+
+## macOS / Windows research foundation
+
+The portable CPU reference, runtime diagnostics and geometry preflight are
+available through `cfd-sdf research`. Apple Silicon can also run the bounded
+periodic LBM benchmark on Metal. CUDA and full LBM aerodynamic optimization
+are not implemented yet. See [setup and evidence](docs/cross_platform_research.md)
+and the [implementation roadmap](docs/phase_plan.md).
 
 ## Generic v2 Contract Quick Check
 

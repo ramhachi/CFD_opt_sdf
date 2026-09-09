@@ -78,8 +78,10 @@ from .solver_case_compiler import (
 from .solver_case_manifest import build_openfoam_solver_case_manifest
 from .topology import run_topology_exploration
 from .validation import validate_outputs
+from .research_cli import app as research_app
 
 app = typer.Typer(help="Generic topology and SDF tools for CFD optimization problems.")
+app.add_typer(research_app, name="research")
 console = Console()
 
 _OPENFOAM_FLOW_CASE_EVIDENCE_KIND = "openfoam_flow_case_convergence_evidence"
