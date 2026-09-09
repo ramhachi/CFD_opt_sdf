@@ -1,8 +1,9 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-07
+Date: 2026-09-09
 Status: authoritative
 Scope: generic rigid-object external aerodynamics with topology change
+Architecture decision: adopted on 2026-09-09
 
 This is the only implementation roadmap for the project. Historical
 body-fitted, parametric, and front-wing-specific work is capability evidence,
@@ -16,6 +17,16 @@ The accepted [32 GB development design](development_plan_2026_09.md) and
 Mac/Windows extension. This page remains the authoritative progress record.
 The existing G1–G4 gates below remain mandatory; the P0–P5 milestones in the
 design are work packages, not substitutes for those gates.
+
+The project adopts this architecture as its production direction: one shared
+ProblemSpec and evidence contract, density/Brinkman topology exploration, SDF
+sharp-interface refinement, and independent body-fitted verification. Backend
+promotion remains conditional on the numerical and physical gates below. In
+particular, adopting the architecture does not promote the current periodic
+LBM probe to a target-aerodynamics solver.
+
+The `main` snapshot immediately before this decision is preserved as
+`artifact/pre-cross-platform-architecture-2026-09-09` at commit `fdc1053`.
 
 The first implementation adds bounded `research` commands for runtime
 inspection, STL/declared-feature preflight, and a periodic D2Q9 Taylor–Green

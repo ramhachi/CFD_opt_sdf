@@ -5,6 +5,11 @@ arbitrary topology, using fixed-grid density/Brinkman search, SDF refinement,
 and body-fitted verification. The front wing is the first complex integration
 benchmark, not a hard-coded definition of the final problem class.
 
+This density/Brinkman → SDF → independent body-fitted verification architecture
+is the adopted project direction as of 2026-09-09. Each solver backend still
+has to pass the numerical and physical gates in `docs/phase_plan.md` before it
+is qualified for target aerodynamics.
+
 Current status: G1 is complete. The G2 generic OpenFOAM case compiler,
 requested/generated manifest, execution-asset staging, patch mapping, and
 convergence evaluator are implemented. The current two-flow G2 specification
