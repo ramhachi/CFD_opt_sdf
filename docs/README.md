@@ -19,6 +19,13 @@ and one active schema version for new implementation work.
 - [`git_branching_strategy.md`](git_branching_strategy.md) — Git and pull
   request workflow.
 
+- [`cross_platform_research.md`](cross_platform_research.md) — setup, bounded
+  research commands, measured evidence and remaining platform work.
+- [`development_plan_2026_09.md`](development_plan_2026_09.md) — accepted design
+  and acceptance criteria; progress is maintained in `phase_plan.md`.
+- [`architecture_review_2026_09.md`](architecture_review_2026_09.md) — critical
+  review motivating the cross-platform design.
+
 ## Compatibility policy
 
 The code retains read-only migration and readers for historical v1 artifacts,
