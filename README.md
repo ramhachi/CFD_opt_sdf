@@ -199,6 +199,20 @@ Recorded canonical cellwise checks with the converged-adjoint baseline:
 | downforce | 0.0365289651 | 0.0373771318 | 2.27% | Pass |
 | efficiency constraint | 0.1794246634 | 0.1680593080 | 6.33% | Pass |
 
+Build the current Stage T cell-density to surface/SDF handoff:
+
+```powershell
+.\.venv\Scripts\cfd-sdf.exe build-density-sdf-handoff `
+  work\architecture_effectiveness_20260910\t5_update_local\topology_state.json `
+  --output-dir work\minimal_tv_closed_loop\p1_t5_handoff
+```
+
+The first implementation records the density field, threshold, interpolation,
+grid, masks, components, root availability, volume mismatch, SDF convention,
+and artifact hashes. Its output is `geometry_handoff_capability_only` and
+`ready_for_stage_s=false` until the quantitative fidelity gates in the
+[FSAE readiness execution plan](docs/fsae_readiness_execution_plan.md) pass.
+
 Or run setup and the full demo from a single PowerShell command:
 
 ```powershell

@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "kind": "minimal_tv_closed_loop_foundation_evidence",
+  "recorded_at_utc": "2026-09-10T18:16:38Z",
+  "branch": "feat/minimal-tv-closed-loop",
+  "implementation_commit": "9de38c603cc3b15f3c0799aacc73555061d0d48c",
+  "plan": "docs/fsae_readiness_execution_plan.md",
+  "evidence_class": "capability",
+  "overall_status": "diagnostic_only",
+  "closed_loop_status": "not_demonstrated",
+  "decision": {
+    "p0_semantic_binding": "not_implemented; existing openfoam_native_artifacts.py binding remains canonical",
+    "p1_density_to_sdf": "conversion capability implemented; qualification incomplete",
+    "p2_body_fitted_revalidation": "not_started",
+    "ready_for_stage_s": false,
+    "ready_for_stage_v": false,
+    "target_physics_qualified": false
+  },
+  "implemented_scope": [
+    "cell-data rho, rho_filtered, or rho_projected selection",
+    "explicit cell-to-point interpolation and iso-value recording",
+    "watertight positive-volume STL validation",
+    "negative-inside signed-distance output",
+    "self-contained source copies and SHA-256 provenance",
+    "revoxelized density and geometry binding artifacts",
+    "mask and diagnostic component/root checks",
+    "immutable candidate output directories",
+    "separate conversion success from Stage S readiness"
+  ],
+  "tests": {
+    "command": ".venv/bin/pytest -q",
+    "result": "pass",
+    "passed": 512,
+    "skipped": 2,
+    "warnings": 2691,
+    "elapsed_seconds": 143.2,
+    "warning_scope": "NumPy 2.5 deprecation warnings emitted through vtkmodules.util.numpy_support"
+  },
+  "actual_fixture_checks": {
+    "t1_contract": {
+      "input_topology_state": "work/architecture_effectiveness_20260910/t1_contract/topology_state.json",
+      "topology_state_sha256": "128fef5a867039cdb21fa0afe8dd87ad1df89bd98e162f4365d128eb1675ef1d",
+      "density_vti_sha256": "5dac6c478b491e7d0188e5f32d375ee48cb181ed281ca4829fb36bf882e3f057",
+      "command_exit_code": 2,
+      "status": "rejected_before_output",
+      "reason": "iso_value must lie strictly inside the interpolated density range; iso_value=0.5, range=[0, 0.5]"
+    },
+    "t5_update_local": {
+      "input_topology_state": "work/architecture_effectiveness_20260910/t5_update_local/topology_state.json",
+      "local_output": "work/minimal_tv_closed_loop/p1_t5_handoff_v3",
+      "status": "diagnostic_only",
+      "conversion_ok": true,
+      "ready_for_stage_s": false,
+      "qualification": "geometry_handoff_capability_only",
+      "qualification_reasons": [
+        "quantitative_fidelity_limits_not_configured",
+        "surface_distance_not_evaluated",
+        "minimum_feature_survival_not_evaluated",
+        "self_intersection_not_evaluated",
+        "required_lineage_not_available",
+        "source_root_connectivity_not_available",
+        "revoxelized_component_validation_failed",
+        "revoxelized_root_connectivity_not_available",
+        "surface_extent_below_one_source_cell"
+      ],
+      "source": {
+        "topology_state_sha256": "ba39b2d5f160dae606c18bc8f5c0cc9abf5e59dd9e32d8afe6bd451f79721108",
+        "density_vti_sha256": "5cfab36aa4d9c5fb304a4c5bbd6a4920e34081d6bfec2c6284deb1555112a787",
+        "grid_sha256": "1d3c60e9f32a9b2105dcbec70c4642dab4aae386ea561ec673fb058ac451010d",
+        "cell_shape": [
+          32,
+          16,
+          16
+        ],
+        "cell_count": 8192,
+        "rho_variant": "rho",
+        "iso_value": 0.5
+      },
+      "surface": {
+        "watertight": true,
+        "positive_volume": true,
+        "vertex_count": 46,
+        "face_count": 88,
+        "surface_mesh_volume_m3": 2.130401721585088e-09,
+        "minimum_axis_extent_m": 8.940696716308594e-08
+      },
+      "fidelity": {
+        "threshold_cell_volume_m3": 0.041484375000000004,
+        "surface_mesh_volume_m3": 2.130401721585088e-09,
+        "relative_volume_difference": 0.9999999486456835,
+        "revoxelized_cell_volume_m3": 0.0,
+        "revoxelized_relative_difference": 1.0
+      },
+      "sdf": {
+        "sign_convention": "negative_inside_positive_outside",
+        "negative_sample_count": 10,
+        "positive_sample_count": 9527,
+        "minimum_m": -3.917617010750244e-08,
+        "maximum_m": 1.8015726087539694
+      },
+      "lineage_gaps": [
+        "problem_id",
+        "problem_spec_sha256",
+        "candidate_id"
+      ],
+      "artifact_sha256": {
+        "surface_stl": "0cf4daa2746b8edbc5d184fd61a3bac44a6538021066e1442f2e4784e85038f9",
+        "signed_distance_vti": "a75f03afdc4317608e6ba5d5a099232f6a53f4e49aab79b16b3c4bf9c61052e1",
+        "revoxelized_density_vti": "d8feee1492595e29b9cb5680e7999d344be291892abb37b493f162dff6b59ad5",
+        "geometry_binding_json": "bbde81da06c41afd19692412193d7a6ab82b4750aed8ec79126381c12d4f24aa",
+        "fidelity_report_json": "de85d61379205234903875bebad3f879111c6f46f6c4d008be5ce9f91c39014a"
+      },
+      "source_material_checks": {
+        "component_count": 1,
+        "component_validation": true,
+        "root_connectivity": "not_available"
+      },
+      "revoxelized_geometry_checks": {
+        "component_count": 0,
+        "component_validation": false,
+        "root_connectivity": "not_available"
+      }
+    }
+  },
+  "conclusion": "The density-to-SDF operation is reproducible on the current T5 artifact, but that candidate collapses to an almost zero-thickness surface and fails Stage S qualification. T1 is rejected because its default iso-value is not inside the interpolated density range. No Stage T-to-S-to-V aerodynamic effectiveness claim is supported yet.",
+  "next_required_work": [
+    "P0: extend the existing native binding with canonical problem/candidate lineage and repeatable multi-direction gradient evidence",
+    "P1: predeclare and implement volume, surface-distance, self-intersection, minimum-feature, root, and boundary-clipping acceptance gates",
+    "P1: produce a feasible canonical density seed that passes those gates",
+    "P2: re-evaluate the same baseline and small-step candidate using independent body-fitted CFD on three grids"
+  ]
+}
