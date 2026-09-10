@@ -126,10 +126,16 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
 | G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
-| Stage T canonical backend | Capability complete | Fixed-grid Brinkman primal, canonical volume sensitivities, reference connectivity derivatives, and linearized constrained steps exist. |
+| Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
 | Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
-| Stage S | Handoff prototype only | Density-to-STL/SDF conversion exists; quantitative fidelity and a qualified sharp-interface solver do not. |
+| Stage S | Legacy handoff prototype only | Legacy point-data density-to-STL/SDF conversion exists. A Stage T cell-data `rho` to iso-surface/SDF bridge, quantitative fidelity gates, and a qualified sharp-interface solver do not. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
+
+The 2026-09-10 effectiveness spike proves only local numerical control inside
+the fixed-grid Brinkman model. It does not prove constrained optimization or
+the Stage T -> Stage S -> Stage V architecture end to end. The canonical start
+is infeasible for the recorded efficiency and active-cell mean-`rho` limits,
+and the current T5 output cannot be passed as the same candidate to Stage S/V.
 
 ## 5. G1 — generic problem and artifact contract
 
@@ -295,18 +301,22 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Following the 2026-09-07 current-spec numerical requalification, bind
-   response units, `rho` gradient convention, mesh-grid mapping,
-   and topology-policy values; then write native v2 primal and sensitivity run
-   artifacts. **Implementation required.**
-2. Qualify simple porous versus body-fitted cases. **Implementation required.**
-3. Implement all G3 fail-closed geometry/resolution gates. **Implementation
-   required.**
-4. Execute G4 B0–B2 before production optimizer work. **Implementation
-   required.**
-5. Implement production Stage T derivatives and nonlinear optimizer.
+1. Bind response units, reference quantities, `rho` gradient convention,
+   mesh-grid mapping, and topology-policy values for one shared Stage T/V
+   canonical problem. **Implementation required.**
+2. Add a fail-closed T5 cell-density -> iso-surface/SDF artifact bridge and
+   measure volume, surface, component/root, hard-mask, and feature-survival
+   fidelity. **Implementation required.**
+3. Re-evaluate the same initial and small-step candidates with three-grid
+   body-fitted OpenFOAM, including pressure, skin-friction, total-force, and
+   cross-fidelity comparison. **Implementation required.**
+4. Establish a feasible seed or an explicit feasibility-restoration phase;
+   add nonlinear candidate acceptance, rollback, and move-radius reduction.
    **Implementation required.**
-6. Advance through B3–B5, then Stage S and Stage V.
+5. Complete G3 and execute G4 B0–B2 before production optimizer work.
+   **Implementation required.**
+6. Implement production Stage T derivatives and a sparse/scalable constrained
+   backend, then advance through B3–B5, Stage S refinement, and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
 

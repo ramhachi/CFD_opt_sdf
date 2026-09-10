@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "kind": "architecture_effectiveness_spike",
+  "observed_date": "2026-09-10",
+  "source_commit": "9c55edd76534ba138026bbc9bc4c49e2e21a0886",
+  "decision": {
+    "keep_adopted_architecture": true,
+    "local_unconstrained_fixed_grid_effect": "pass",
+    "constrained_optimization": "not_ready",
+    "stage_t_to_stage_s_handoff": "missing",
+    "stage_s_refinement": "not_implemented",
+    "stage_v_independent_candidate_verification": "not_connected",
+    "end_to_end_effectiveness": "unproven",
+    "production_promotion": false
+  },
+  "scope": {
+    "evidence_class": "numerical",
+    "model": "steady incompressible laminar fixed-grid Brinkman fixture",
+    "excludes": [
+      "target Reynolds-number qualification",
+      "turbulent external aerodynamics",
+      "mesh independence",
+      "density-to-SDF fidelity",
+      "sharp-interface refinement",
+      "body-fitted candidate verification",
+      "manufacturing feasibility",
+      "Windows CUDA performance",
+      "production optimization"
+    ]
+  },
+  "environment": {
+    "host": "Apple M4",
+    "host_memory_gib": 32,
+    "execution": "Docker",
+    "docker_image": "opencfd/openfoam-default:2512",
+    "solver": "adjointOptimisationFoam"
+  },
+  "case": {
+    "cell_shape": [32, 16, 16],
+    "cell_count": 8192,
+    "active_design_cells": 2909,
+    "velocity": [1.0, 0.0, 0.0],
+    "kinematic_viscosity_m2_per_s": 0.01,
+    "beta_max": 2500.0,
+    "reference_area": 0.64,
+    "reference_velocity": 1.0,
+    "objective": "J=-C_DF",
+    "diagnostic_constraint": "g=3*C_D-C_DF<=0"
+  },
+  "baseline": {
+    "drag_coefficient": 3.41235450858,
+    "downforce_coefficient": 0.635881040274,
+    "objective": -0.635881040274,
+    "efficiency_constraint": 9.601182485466,
+    "primal_iterations": 154,
+    "drag_adjoint_iterations": 660,
+    "downforce_adjoint_iterations": 1078,
+    "completed": true,
+    "solver_reported_clock_seconds": 28,
+    "solver_reported_execution_seconds": 27.52,
+    "timing_excludes": [
+      "Docker startup",
+      "case preparation",
+      "custom library staging",
+      "field reconstruction",
+      "VTK conversion"
+    ]
+  },
+  "direction_checks": [
+    {
+      "response": "efficiency_constraint",
+      "epsilon": 0.0001,
+      "finite_difference_derivative": 4266.189887424998,
+      "adjoint_directional_derivative": 4363.487386367704,
+      "finite_difference_to_adjoint_ratio": 0.977701895221084,
+      "relative_error": 0.022298104778916077,
+      "sign_match": true,
+      "status": "pass"
+    },
+    {
+      "response": "downforce",
+      "epsilon": 0.0001,
+      "finite_difference_derivative": 339.08618617999986,
+      "adjoint_directional_derivative": 354.49497576711315,
+      "finite_difference_to_adjoint_ratio": 0.9565331227790485,
+      "relative_error": 0.043466877220951515,
+      "sign_match": true,
+      "status": "pass"
+    },
+    {
+      "response": "efficiency_constraint",
+      "epsilon": 0.01,
+      "finite_difference_derivative": 1228.1607296649,
+      "adjoint_directional_derivative": 4363.487411115129,
+      "finite_difference_to_adjoint_ratio": 0.28146310827811744,
+      "relative_error": 0.7185368917218826,
+      "sign_match": true,
+      "status": "fail"
+    }
+  ],
+  "small_objective_only_update": {
+    "move_limit": 0.0001,
+    "linearized_gate": "accept",
+    "predicted_objective_change": -0.018945241628945404,
+    "realized_objective_change": -0.018091346582999934,
+    "realized_to_predicted_ratio": 0.9549282578354213,
+    "relative_prediction_error": 0.04507174216457869,
+    "re_evaluated": {
+      "drag_coefficient": 3.44273715729,
+      "downforce_coefficient": 0.653972386857,
+      "objective": -0.653972386857,
+      "efficiency_constraint": 9.674239085013,
+      "drag_change_percent": 0.8903719890065886,
+      "downforce_change_percent": 2.845083504173118,
+      "efficiency_constraint_change_percent": 0.7609125194484312,
+      "primal_converged": true
+    },
+    "interpretation": "Local objective control passed; the disabled efficiency constraint worsened. This is not a feasible optimized candidate."
+  },
+  "large_objective_only_update": {
+    "move_limit": 0.03,
+    "predicted_objective_change": -5.683572488683621,
+    "realized_objective_change": -1.600499547506,
+    "realized_to_predicted_ratio": 0.2815,
+    "re_evaluated_drag_coefficient": 6.37742245882,
+    "re_evaluated_downforce_coefficient": 2.23638058778,
+    "re_evaluated_efficiency_constraint": 16.89588678868,
+    "interpretation": "The sign remained favorable for the objective, but local magnitude prediction and the diagnostic efficiency constraint were unacceptable."
+  },
+  "constrained_attempt": {
+    "status": "linearized_reject",
+    "baseline_efficiency_constraint": 9.601182485466,
+    "efficiency_constraint_limit": 0.0,
+    "baseline_active_cell_mean_rho": 0.019250601581299414,
+    "active_cell_mean_rho_min": 0.05,
+    "candidate_predicted_efficiency_constraint": 357.3392496404509,
+    "candidate_active_cell_mean_rho": 0.04373947218365779,
+    "connectivity_constraints": "not_evaluated",
+    "volume_metric_interpretation": "Mean density surrogate over active cells; not extracted-STL or body-fitted physical volume fraction.",
+    "interpretation": "The canonical start is infeasible for the tested efficiency and active-cell mean-rho limits, and the current linearized adapter did not recover feasibility inside the move bounds. Connectivity was not tested."
+  },
+  "efficiency_non_worsening_diagnostic": {
+    "move_limit": 0.0001,
+    "efficiency_constraint_limit": 9.601182485466,
+    "volume_constraint_enabled": false,
+    "projection_iterations": 40,
+    "status": "linearized_reject",
+    "interpretation": "This separate diagnostic tested non-worsening from the infeasible baseline; it was not a g<=0 feasibility-restoration attempt."
+  },
+  "missing_link": {
+    "from": "T5 cell-centered rho topology_state",
+    "to": "derived iso-surface/SDF geometry bound to a body-fitted verification case",
+    "required_metrics": [
+      "volume error",
+      "surface or Hausdorff error",
+      "component and root preservation",
+      "hard-mask violations",
+      "minimum feature survival",
+      "common response normalization"
+    ]
+  },
+  "artifact_sha256": {
+    "t1_topology_state_json": "128fef5a867039cdb21fa0afe8dd87ad1df89bd98e162f4365d128eb1675ef1d",
+    "t1_density_vti": "5dac6c478b491e7d0188e5f32d375ee48cb181ed281ca4829fb36bf882e3f057",
+    "t1_sensitivity_vti": "d8edfa7540649946b8c2f9ee4d4be10554a583c537642882d696675fa7144c11",
+    "small_update_summary_json": "2ac9c7eac80c13adccf160315b5dc39e589dffff915dbe102103cd3f1b77cf46",
+    "small_update_re_evaluation_json": "9b86214b0b298454972198094f7c4dc0b682d49721ee41968acbe3eed850adb4",
+    "small_efficiency_direction_check_json": "e221888134d7989cb10011bbc10d51158d35c19aa1eea8328d86e8dca0d7c4de",
+    "small_downforce_direction_check_json": "2b28de52716a45ade62a8e2cd8aefae646d8bcca50ad377ee7d25919b6c22c23",
+    "large_efficiency_direction_check_json": "9802eb67c89012afda54934117e71848b6896d9a3c9c28cb705768cc1bc23ce5",
+    "constrained_attempt_summary_json": "cbe9fe86887982ade06f5cacd731232703ae73ba6c56ab48ab904ba1cae2dbb4",
+    "efficiency_non_worsening_summary_json": "1dcc9e7b94a088c290879d59314e659cbc7693f311bc039afc9e10058a825905",
+    "custom_objective_library": "458c9a8734aee8b6f7e85e70223e0067b0efc86c3b0db8b4f4dc38201d3ce918",
+    "full_primal_adjoint_solver_log": "3c8c5349fded0e63f843788388a4716a691ec71a456058386919068964a13321",
+    "baseline_optimisation_dict": "8de350388f0290c4afb544e23d1364ce4fe734c6fef10c53d820fb0862623e17",
+    "baseline_control_dict": "301a69c9ea4a055d4d109f120563c3b7a97c1bc4924dbd353cc7ee7c79757a66"
+  },
+  "artifact_locations": {
+    "runtime_root": "work/architecture_effectiveness_20260910",
+    "full_primal_adjoint_solver_log": "work/architecture_effectiveness_20260910/stage_t_base/log.adjointOptimisationFoam",
+    "t1_contract": "work/architecture_effectiveness_20260910/t1_contract",
+    "small_update": "work/architecture_effectiveness_20260910/t5_update_local",
+    "small_update_re_evaluation": "work/architecture_effectiveness_20260910/t5_update_local_reval",
+    "small_efficiency_direction_check": "work/architecture_effectiveness_20260910/t3_efficiency_direction_eps1e4/validation/fixed_grid_sensitivity_direction_check.json",
+    "small_downforce_direction_check": "work/architecture_effectiveness_20260910/t3_downforce_direction_eps1e4/validation/fixed_grid_sensitivity_direction_check.json",
+    "large_efficiency_direction_check": "work/architecture_effectiveness_20260910/t3_efficiency_direction/validation/fixed_grid_sensitivity_direction_check.json",
+    "constrained_attempt": "work/architecture_effectiveness_20260910/t5_update_efficiency_volume_constraints/fixed_grid_constrained_step_summary.json",
+    "efficiency_non_worsening_diagnostic": "work/architecture_effectiveness_20260910/t5_projected_trust_step_eps1e4/fixed_grid_constrained_step_summary.json",
+    "custom_objective_library": "openfoam_extensions/porousDirectionalForce/lib/libcfdSdfPorousObjectives.so",
+    "note": "The work directory is intentionally Git-ignored; hashes preserve the observed local evidence identity."
+  }
+}
