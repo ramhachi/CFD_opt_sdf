@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "kind": "minimal_tv_closed_loop_foundation_evidence",
-  "recorded_at_utc": "2026-09-10T18:05:56Z",
+  "recorded_at_utc": "2026-09-10T18:16:38Z",
   "branch": "feat/minimal-tv-closed-loop",
-  "implementation_commit": "d2cba1fe6bab0ffbede3d6da0b2fbf2a2b51c73f",
+  "implementation_commit": "9de38c603cc3b15f3c0799aacc73555061d0d48c",
   "plan": "docs/fsae_readiness_execution_plan.md",
   "evidence_class": "capability",
   "overall_status": "diagnostic_only",
@@ -30,10 +30,10 @@
   "tests": {
     "command": ".venv/bin/pytest -q",
     "result": "pass",
-    "passed": 511,
+    "passed": 512,
     "skipped": 2,
-    "warnings": 2649,
-    "elapsed_seconds": 144.87,
+    "warnings": 2691,
+    "elapsed_seconds": 143.2,
     "warning_scope": "NumPy 2.5 deprecation warnings emitted through vtkmodules.util.numpy_support"
   },
   "actual_fixture_checks": {
@@ -47,7 +47,7 @@
     },
     "t5_update_local": {
       "input_topology_state": "work/architecture_effectiveness_20260910/t5_update_local/topology_state.json",
-      "local_output": "work/minimal_tv_closed_loop/p1_t5_handoff_v2",
+      "local_output": "work/minimal_tv_closed_loop/p1_t5_handoff_v3",
       "status": "diagnostic_only",
       "conversion_ok": true,
       "ready_for_stage_s": false,
@@ -57,7 +57,10 @@
         "surface_distance_not_evaluated",
         "minimum_feature_survival_not_evaluated",
         "self_intersection_not_evaluated",
-        "root_connectivity_not_available",
+        "required_lineage_not_available",
+        "source_root_connectivity_not_available",
+        "revoxelized_component_validation_failed",
+        "revoxelized_root_connectivity_not_available",
         "surface_extent_below_one_source_cell"
       ],
       "source": {
@@ -105,7 +108,17 @@
         "signed_distance_vti": "a75f03afdc4317608e6ba5d5a099232f6a53f4e49aab79b16b3c4bf9c61052e1",
         "revoxelized_density_vti": "d8feee1492595e29b9cb5680e7999d344be291892abb37b493f162dff6b59ad5",
         "geometry_binding_json": "bbde81da06c41afd19692412193d7a6ab82b4750aed8ec79126381c12d4f24aa",
-        "fidelity_report_json": "f7e679137fa5b7524f1c1afbd6612f70b246de30bde6221efedb4ad94b5678c2"
+        "fidelity_report_json": "de85d61379205234903875bebad3f879111c6f46f6c4d008be5ce9f91c39014a"
+      },
+      "source_material_checks": {
+        "component_count": 1,
+        "component_validation": true,
+        "root_connectivity": "not_available"
+      },
+      "revoxelized_geometry_checks": {
+        "component_count": 0,
+        "component_validation": false,
+        "root_connectivity": "not_available"
       }
     }
   },
