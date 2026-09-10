@@ -50,6 +50,7 @@ from .fixed_grid_sensitivity import (
     validate_fixed_grid_sensitivity_direction,
 )
 from .gradient_check import run_finite_difference_gradient_check
+from .handoff import build_density_to_sdf_handoff
 from .openfoam import generate_openfoam_case
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
@@ -407,6 +408,50 @@ def build_sdf(project_yaml: Path) -> None:
     bundle.save(out)
     console.print(f"Saved SDF cache: {out}")
     console.print(f"Grid shape: {bundle.grid.shape}, spacing={bundle.grid.spacing:g} m")
+
+
+@app.command("build-density-sdf-handoff")
+def build_density_sdf_handoff(
+    topology_state_json: Path = typer.Argument(
+        ..., help="Stage T fixed-grid topology_state.json."
+    ),
+    output_dir: Path = typer.Option(
+        ..., help="Output directory for the Stage T to Stage S handoff artifacts."
+    ),
+    rho_variant: str | None = typer.Option(
+        None,
+        help="Density field to extract: rho, rho_filtered, or rho_projected.",
+    ),
+    iso_value: float | None = typer.Option(
+        None,
+        min=0.0,
+        max=1.0,
+        help="Explicit open-interval density iso-value. Defaults to the topology state or 0.5.",
+    ),
+    expected_topology_state_sha256: str | None = typer.Option(
+        None, help="Optional expected SHA-256 for topology_state.json."
+    ),
+    expected_density_vti_sha256: str | None = typer.Option(
+        None, help="Optional expected SHA-256 for density.vti."
+    ),
+) -> None:
+    """Build a provenance-bound cell-density to surface/SDF handoff."""
+
+    try:
+        artifacts = build_density_to_sdf_handoff(
+            topology_state_json,
+            output_dir=output_dir,
+            rho_variant=rho_variant,
+            iso_value=iso_value,
+            expected_topology_state_sha256=expected_topology_state_sha256,
+            expected_density_vti_sha256=expected_density_vti_sha256,
+        )
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    console.print(json.dumps(artifacts.to_dict(), indent=2))
+    if not artifacts.ok:
+        raise typer.Exit(code=1)
 
 
 @app.command("check-constraints")

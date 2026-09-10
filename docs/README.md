@@ -28,6 +28,9 @@ and one active schema version for new implementation work.
 - [`architecture_effectiveness_2026_09.md`](architecture_effectiveness_2026_09.md)
   — measured Stage T update/re-evaluation evidence and the remaining
   Stage T-to-S-to-V breakpoints.
+- [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
+  — implementation packages, evidence gates, replacement policy, and the
+  entry conditions for the later FSAE full-vehicle problem.
 
 ## Compatibility policy
 

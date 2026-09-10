@@ -128,7 +128,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
 | Stage T production optimizer | Missing — implementation required | Fail-closed native v2 writer/readiness diagnostics exist, but the real G2 run is awaiting semantic response-unit, `rho`-gradient, mesh-grid, and topology-value bindings. Generic-response gradients, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and GCMMA-equivalent iteration remain. |
-| Stage S | Legacy handoff prototype only | Legacy point-data density-to-STL/SDF conversion exists. A Stage T cell-data `rho` to iso-surface/SDF bridge, quantitative fidelity gates, and a qualified sharp-interface solver do not. |
+| Stage S | Cell-density handoff capability added; not qualified | Stage T cell-data `rho` can now be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. The 2026-09-10 T5 candidate remains `diagnostic_only`: its threshold/surface volume mismatch is approximately 100% and root connectivity is unavailable. Quantitative acceptance gates and a qualified sharp-interface solver remain missing. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
@@ -304,9 +304,12 @@ cross-fidelity comparison with Stage T/Stage S.
 1. Bind response units, reference quantities, `rho` gradient convention,
    mesh-grid mapping, and topology-policy values for one shared Stage T/V
    canonical problem. **Implementation required.**
-2. Add a fail-closed T5 cell-density -> iso-surface/SDF artifact bridge and
-   measure volume, surface, component/root, hard-mask, and feature-survival
-   fidelity. **Implementation required.**
+2. Qualify the new fail-closed T5 cell-density -> iso-surface/SDF artifact
+   bridge. Its capability layer records hashes, interpolation, threshold,
+   grid, masks, components, root availability and volume mismatch. Add the
+   remaining surface-distance, self-intersection, minimum-feature and
+   feature-survival gates, then produce one `ready_for_stage_s=true`
+   canonical artifact. **Qualification implementation required.**
 3. Re-evaluate the same initial and small-step candidates with three-grid
    body-fitted OpenFOAM, including pressure, skin-friction, total-force, and
    cross-fidelity comparison. **Implementation required.**
