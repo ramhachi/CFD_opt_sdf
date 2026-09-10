@@ -25,6 +25,9 @@ and one active schema version for new implementation work.
   and acceptance criteria; progress is maintained in `phase_plan.md`.
 - [`architecture_review_2026_09.md`](architecture_review_2026_09.md) — critical
   review motivating the cross-platform design.
+- [`architecture_effectiveness_2026_09.md`](architecture_effectiveness_2026_09.md)
+  — measured Stage T update/re-evaluation evidence and the remaining
+  Stage T-to-S-to-V breakpoints.
 
 ## Compatibility policy
 
