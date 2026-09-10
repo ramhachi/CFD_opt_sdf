@@ -55,7 +55,7 @@ FSAE空力の成立とは扱わない。
 | 小さな目的単独step | 限定条件で確認 | `move_limit=1e-4`で同一fidelity再評価の実変化/予測変化が約0.955、再評価誤差4.51%だった。制約付き反復の証明ではない。 |
 | 大きなstep | 不成立 | `move_limit=0.03`では比が約0.2815に低下し、dragと効率制約が悪化した。局所線形予測を大stepへ外挿できない。 |
 | 制約付き最適化 | 未成立 | 記録された基準は`g_eff=3CD-CDF=9.601...`、active-cell mean `rho=0.01925`で、使用した効率・density下限を満たさない。connectivityも未評価である。 |
-| Stage T -> Stage S | 未接続 | T5のcell-data `rho`を同一候補としてiso-surface/SDFへ渡すbridgeとfidelity gateがない。legacy point-data経路は代替証拠であって同一候補の証明ではない。 |
+| Stage T -> Stage S | 変換能力のみ接続、資格未成立 | T5のcell-data `rho`からiso-surface/SDFと自己完結した診断bundleを生成できる。現T5は変換後の体積を保持せず、required lineageと定量fidelity gateもないため、同一候補をStage Sへ投入できる証拠にはならない。 |
 | Stage S -> Stage V | 未実証 | sharp-interface refinement後のbody-fitted再評価と三格子のcross-fidelity判定がない。 |
 | Mac/Windows高速化 | 未実証 | Macの小規模Docker実行だけがあり、Windows RTX 4070 Ti、CUDA、対象規模、peak memory、改善候補までの総時間は未測定である。 |
 | FSAE全車 | 未着手 | 最終問題設定は閉ループとfront-wing級ベンチマークの資格化後に定義する。 |
@@ -218,16 +218,19 @@ point-data density経路は参照実装・履歴証拠として使ってよい�
 handoff_manifest.json
   source_topology_state.json
   source_density.vti
-  extracted_surface.stl
+  iso_surface.stl
   signed_distance.vti
   revoxelized_density.vti
   geometry_binding.json
   fidelity_report.json
 ```
 
-manifestには、source/derivedのhash、iso値、grid transform、座標系、SDF符号、抽出対象、
-元candidate ID、surface ID、失敗理由を含める。入力の一部が欠ける場合は未確定値で続行せず、
-`handoff_status=failed`とする。
+manifestには、source/derivedのhash、iso値、grid transform、SDF符号、抽出対象、失敗理由を
+含め、hashで固定した`geometry_binding.json`へ座標系、problem identity、candidate lineageを
+記録する。現行T1/T5のようなlegacy入力は、欠落項目を`missing_lineage`に記録した
+`status=diagnostic_only`のbundle生成だけを許可し、必ず`ready_for_stage_s=false`とする。
+資格実行では`problem_id`、`problem_spec_sha256`、`candidate_id`を必須とし、欠落、hash不一致、
+または変換前に確定する入力不正はartifactを発行せずfail-closedで拒否する。
 
 ### fidelity gate
 

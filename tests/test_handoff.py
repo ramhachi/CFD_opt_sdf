@@ -91,9 +91,18 @@ def test_cell_density_handoff_writes_hashed_stl_sdf_and_reports_provenance(
     assert report["ok"] is True
     assert report["ready_for_stage_s"] is False
     assert report["checks"]["cell_data_contract"] is True
-    assert report["checks"]["mask_validation"] is True
-    assert report["checks"]["component_validation"] is True
-    assert report["component_checks"]["root_connectivity"]["status"] == "pass"
+    assert report["checks"]["source_mask_validation"] is True
+    assert report["checks"]["source_component_validation"] is True
+    assert report["checks"]["revoxelized_mask_validation"] is True
+    assert report["checks"]["revoxelized_component_validation"] is True
+    assert (
+        report["source_material_checks"]["components"]["root_connectivity"]["status"]
+        == "pass"
+    )
+    assert (
+        report["revoxelized_geometry_checks"]["components"]["root_connectivity"]["status"]
+        == "pass"
+    )
     assert report["surface"]["watertight"] is True
     assert report["sdf"]["sign_convention"] == SDF_SIGN_CONVENTION
     assert report["volume"]["revoxelized_cell_volume_m3"] > 0.0
@@ -113,6 +122,41 @@ def test_handoff_records_explicit_rho_variant_and_iso_value(tmp_path: Path) -> N
     assert artifacts.manifest["rho"]["selection_source"] == "function_argument"
     assert artifacts.manifest["rho"]["iso_value"] == 0.25
     assert artifacts.manifest["rho"]["iso_value_source"] == "function_argument"
+
+
+def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) -> None:
+    state_path = _write_state(
+        tmp_path / "candidate",
+        cell_shape=(6, 6, 6),
+        solid_boxes=(((2, 3), (2, 3), (2, 3)),),
+        root_cell=(2, 2, 2),
+    )
+    density_path = state_path.parent / "density.vti"
+    density_grid = pv.read(density_path)
+    for name in ("rho", "rho_filtered", "rho_projected"):
+        values = np.asarray(density_grid.cell_data[name], dtype=np.float32).copy()
+        values[values > 0.0] = np.float32(0.5000006)
+        density_grid.cell_data[name] = values
+    density_grid.save(density_path)
+
+    artifacts = build_density_to_sdf_handoff(
+        state_path,
+        output_dir=tmp_path / "handoff",
+    )
+    report = artifacts.fidelity_report
+
+    assert report["checks"]["source_component_validation"] is True
+    assert report["checks"]["revoxelized_component_validation"] is False
+    assert report["volume"]["revoxelized_cell_volume_m3"] == 0.0
+    assert (
+        report["source_material_checks"]["components"]["root_connectivity"]["status"]
+        == "pass"
+    )
+    assert (
+        report["revoxelized_geometry_checks"]["components"]["root_connectivity"]["status"]
+        == "fail"
+    )
+    assert "revoxelized_component_validation_failed" in report["qualification_reasons"]
 
 
 def test_handoff_requires_cell_data_and_rejects_invalid_mask(tmp_path: Path) -> None:

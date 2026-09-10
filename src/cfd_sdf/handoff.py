@@ -253,6 +253,18 @@ def build_density_to_sdf_handoff(
         mesh = _read_and_validate_surface(staged_surface)
         sdf_values = _build_sdf_values(mesh, source_grid)
         revoxelized_density = _build_revoxelized_density(mesh, source_grid)
+        revoxelized_material = np.asarray(revoxelized_density, dtype=bool)
+        revoxelized_mask_checks = _mask_checks(
+            masks,
+            revoxelized_material,
+            revoxelized_density,
+            threshold,
+        )
+        revoxelized_component_checks = _component_checks(
+            revoxelized_material,
+            masks.get("root_mask"),
+            source_grid.cell_shape,
+        )
         _write_sdf_vti(
             staged_sdf,
             source_grid,
@@ -288,7 +300,10 @@ def build_density_to_sdf_handoff(
         qualification_reasons = _handoff_qualification_reasons(
             mesh=mesh,
             source_grid=source_grid,
-            component_checks=component_checks,
+            source_component_checks=component_checks,
+            revoxelized_mask_checks=revoxelized_mask_checks,
+            revoxelized_component_checks=revoxelized_component_checks,
+            missing_lineage=geometry_binding["missing_lineage"],
         )
         report = _build_fidelity_report(
             topology_state_path=state_path,
@@ -301,8 +316,10 @@ def build_density_to_sdf_handoff(
             material=material,
             threshold=threshold,
             selected_variant=selected_variant,
-            mask_checks=mask_checks,
-            component_checks=component_checks,
+            source_mask_checks=mask_checks,
+            source_component_checks=component_checks,
+            revoxelized_mask_checks=revoxelized_mask_checks,
+            revoxelized_component_checks=revoxelized_component_checks,
             mesh=mesh,
             sdf_values=sdf_values,
             revoxelized_density=revoxelized_density,
@@ -328,8 +345,10 @@ def build_density_to_sdf_handoff(
             variant_source=variant_source,
             threshold=threshold,
             threshold_source=threshold_source,
-            mask_checks=mask_checks,
-            component_checks=component_checks,
+            source_mask_checks=mask_checks,
+            source_component_checks=component_checks,
+            revoxelized_mask_checks=revoxelized_mask_checks,
+            revoxelized_component_checks=revoxelized_component_checks,
             mesh=mesh,
             sdf_values=sdf_values,
             qualification_reasons=qualification_reasons,
@@ -870,7 +889,10 @@ def _handoff_qualification_reasons(
     *,
     mesh: trimesh.Trimesh,
     source_grid: CartesianCellGrid,
-    component_checks: Mapping[str, Mapping[str, object]],
+    source_component_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_mask_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_component_checks: Mapping[str, Mapping[str, object]],
+    missing_lineage: object,
 ) -> list[str]:
     reasons = [
         "quantitative_fidelity_limits_not_configured",
@@ -878,8 +900,18 @@ def _handoff_qualification_reasons(
         "minimum_feature_survival_not_evaluated",
         "self_intersection_not_evaluated",
     ]
-    if not bool(component_checks["root_connectivity"].get("available")):
-        reasons.append("root_connectivity_not_available")
+    if missing_lineage:
+        reasons.append("required_lineage_not_available")
+    if not bool(source_component_checks["root_connectivity"].get("available")):
+        reasons.append("source_root_connectivity_not_available")
+    if not _checks_ok(revoxelized_mask_checks):
+        reasons.append("revoxelized_mask_validation_failed")
+    if not _checks_ok(revoxelized_component_checks):
+        reasons.append("revoxelized_component_validation_failed")
+    if not bool(
+        revoxelized_component_checks["root_connectivity"].get("available")
+    ):
+        reasons.append("revoxelized_root_connectivity_not_available")
     extent = np.ptp(np.asarray(mesh.bounds, dtype=np.float64), axis=0)
     if np.any(extent < np.asarray(source_grid.spacing, dtype=np.float64)):
         reasons.append("surface_extent_below_one_source_cell")
@@ -898,8 +930,10 @@ def _build_fidelity_report(
     material: np.ndarray,
     threshold: float,
     selected_variant: str,
-    mask_checks: Mapping[str, Mapping[str, object]],
-    component_checks: Mapping[str, Mapping[str, object]],
+    source_mask_checks: Mapping[str, Mapping[str, object]],
+    source_component_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_mask_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_component_checks: Mapping[str, Mapping[str, object]],
     mesh: trimesh.Trimesh,
     sdf_values: np.ndarray,
     revoxelized_density: np.ndarray,
@@ -935,8 +969,8 @@ def _build_fidelity_report(
             "iso_value": threshold,
             "surface_density_policy": (
                 "rho_with_fixed_solid_overlay"
-                if "fixed_solid_mask" in mask_checks
-                and bool(mask_checks["fixed_solid_mask"].get("available"))
+                if "fixed_solid_mask" in source_mask_checks
+                and bool(source_mask_checks["fixed_solid_mask"].get("available"))
                 else "rho"
             ),
             "min": float(np.min(density)),
@@ -976,15 +1010,27 @@ def _build_fidelity_report(
             "finite": bool(np.isfinite(sdf_values).all()),
         },
         "qualification": "geometry_handoff_capability_only",
-        "mask_checks": dict(mask_checks),
-        "component_checks": dict(component_checks),
+        "source_material_checks": {
+            "masks": dict(source_mask_checks),
+            "components": dict(source_component_checks),
+        },
+        "revoxelized_geometry_checks": {
+            "masks": dict(revoxelized_mask_checks),
+            "components": dict(revoxelized_component_checks),
+        },
         "checks": {
             "input_hashes": True,
             "cell_data_contract": True,
             "surface_geometry": True,
             "sdf_sign": True,
-            "mask_validation": all(bool(item.get("ok")) for item in mask_checks.values()),
-            "component_validation": all(bool(item.get("ok")) for item in component_checks.values()),
+            "source_mask_validation": _checks_ok(source_mask_checks),
+            "source_component_validation": _checks_ok(source_component_checks),
+            "revoxelized_mask_validation": _checks_ok(
+                revoxelized_mask_checks
+            ),
+            "revoxelized_component_validation": _checks_ok(
+                revoxelized_component_checks
+            ),
         },
     }
     return report
@@ -1007,8 +1053,10 @@ def _build_manifest(
     variant_source: str,
     threshold: float,
     threshold_source: str,
-    mask_checks: Mapping[str, Mapping[str, object]],
-    component_checks: Mapping[str, Mapping[str, object]],
+    source_mask_checks: Mapping[str, Mapping[str, object]],
+    source_component_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_mask_checks: Mapping[str, Mapping[str, object]],
+    revoxelized_component_checks: Mapping[str, Mapping[str, object]],
     mesh: trimesh.Trimesh,
     sdf_values: np.ndarray,
     qualification_reasons: list[str],
@@ -1081,8 +1129,8 @@ def _build_manifest(
             "iso_value_source": threshold_source,
             "surface_density_policy": (
                 "rho_with_fixed_solid_overlay"
-                if "fixed_solid_mask" in mask_checks
-                and bool(mask_checks["fixed_solid_mask"].get("available"))
+                if "fixed_solid_mask" in source_mask_checks
+                and bool(source_mask_checks["fixed_solid_mask"].get("available"))
                 else "rho"
             ),
         },
@@ -1102,10 +1150,20 @@ def _build_manifest(
             "vertex_count": int(len(mesh.vertices)),
             "face_count": int(len(mesh.faces)),
         },
-        "masks": dict(mask_checks),
-        "components": dict(component_checks),
+        "source_material_checks": {
+            "masks": dict(source_mask_checks),
+            "components": dict(source_component_checks),
+        },
+        "revoxelized_geometry_checks": {
+            "masks": dict(revoxelized_mask_checks),
+            "components": dict(revoxelized_component_checks),
+        },
         "artifacts": output_paths,
     }
+
+
+def _checks_ok(checks: Mapping[str, Mapping[str, object]]) -> bool:
+    return all(bool(item.get("ok")) for item in checks.values())
 
 
 def _validate_declared_density_hash(state: Mapping[str, Any], actual: str) -> None:
