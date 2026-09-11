@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "kind": "p0_canonical_transfer_second_slice_evidence",
+  "recorded_date": "2026-09-11",
+  "branch": "feat/p0-canonical-transfer",
+  "implementation_commit": "f315528",
+  "decision": "Canonical state transfer and candidate-bound direction evidence are implemented as fail-closed capabilities. P0 qualification remains No-Go until the solver compiler consumes the state artifact, native canonical gradient return is bound to the same run, and fresh numerical evidence passes.",
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "evidence_classes": [
+    "contract",
+    "capability",
+    "software_verification"
+  ],
+  "implemented": [
+    "verified canonical Stage T rho to uniform Cartesian OpenFOAM source state using source = P @ target",
+    "separate target and source grid identities with exact expected hashes and full-domain coverage",
+    "atomic NPZ and provenance output with candidate, density, grid, mapping, array, and file hashes",
+    "explicit x-fastest to OpenFOAM global-cell-label permutation for state scatter and gradient gather",
+    "non-identity cell-order mapping verification and invalid-permutation rejection",
+    "verified candidate binding propagation into direction summary, validation report, plus/minus topology states, and plus/minus primal metadata",
+    "baseline topology and density hash binding in every gradient row",
+    "plus/minus topology lineage, density hash, distinctness, and case-metadata validation",
+    "direction summary and validation report binding consistency checks",
+    "CLI for canonical state transfer and candidate-bound fixed-grid direction suites"
+  ],
+  "capability_limits": {
+    "state_artifact_status": "capability_only",
+    "state_artifact_qualified": false,
+    "state_inverse": "refused_not_defined",
+    "rho_to_alpha_or_brinkman_conversion": "not_performed",
+    "openfoam_execution_in_this_slice": false,
+    "canonical_g2_720000_cell_runtime_measured": false,
+    "historical_8192_cell_results_requalified": false
+  },
+  "not_implemented": [
+    "solver case compiler consumption of source_rho_global_label with declared rho-to-alpha or Brinkman semantics",
+    "generation of the real OpenFOAM x-fastest to global-label mapping artifact",
+    "candidate and run bound canonical gradient transfer in the native artifact writer",
+    "native response-unit and topology-policy value binding for the G2 runtime",
+    "fresh single-objective sensitivity and filtered-random directions across four epsilon values",
+    "measured response noise floor and explicit clipping counts",
+    "production connectivity derivatives, nonlinear acceptance and rollback, checkpoint resume, and a GCMMA-equivalent iteration"
+  ],
+  "required_fresh_numerical_matrix": {
+    "directions": [
+      "sensitivity",
+      "filtered-random with fixed seed"
+    ],
+    "epsilons": [
+      0.00003,
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "row_count": 8,
+    "plus_minus_solver_cases": 16,
+    "ratio_bounds": [
+      0.8,
+      1.2
+    ],
+    "maximum_relative_error": 0.1
+  },
+  "verification": {
+    "focused_tests": {
+      "passed": 41,
+      "warnings": 1072
+    },
+    "full_tests": {
+      "passed": 534,
+      "skipped": 2,
+      "warnings": 3149,
+      "elapsed_seconds": 153.91
+    },
+    "ruff": "pass",
+    "git_diff_check": "pass",
+    "cli_help": "pass for transfer-stage-t-candidate-to-openfoam and run-fixed-grid-sensitivity-direction-suite candidate binding options",
+    "independent_read_only_audits": 3
+  },
+  "supersedes_for_current_position": "docs/evidence/p0_semantic_binding_2026_09.json"
+}

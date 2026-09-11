@@ -125,3 +125,6 @@ P0を完了させるには、次を同じcandidate lineageのまま接続する�
 
 この8行が揃うまで、2026-09-10の8192-cell結果はdevelopment evidenceのままであり、
 canonical P0 evidenceには使わない。
+
+機械可読な実装・検証記録は
+`docs/evidence/p0_canonical_transfer_2026_09.json`に置く。
