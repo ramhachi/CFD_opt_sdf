@@ -170,3 +170,70 @@ target aerodynamicsの証拠ではない。拘束付き最適化の証拠でも�
 実行時間・メモリの証拠でもない。いかなるsolver backendの昇格根拠にもならない。
 
 機械可読な記録は`docs/evidence/p0_openfoam_closed_loop_2026_09.json`に置く。
+
+## サロゲートのランキングが転写しなかった — 2026-09-12
+
+この構成はStage T（固定格子Brinkman多孔質サロゲート）で最適化し、Stage V
+（body-fitted RANS）で検証する。成立条件はサロゲートが候補の**順位**を検証と
+同じ向きに並べることであり、絶対値の一致は要求しない。この前提を候補2つ
+（`candidate_a_seed_reshape`、`candidate_b_zero_floor`）で検査したところ、結果は
+**負**だった。
+
+両候補をbody-fitted meshで3段階の解像度（1 m/s、Stage Tケース自身の粘性、
+`Aref` 0.64、層流）で解いた。B/A比は次のとおり。
+
+| B/A比 | Stage T | coarse (5.5k) | medium (30k) | fine (180k) |
+| --- | --- | --- | --- | --- |
+| drag | 2.582 | 0.849 | 0.901 | 0.905 |
+| downforce | 3.882 | 3.167 | 0.896 | 0.918 |
+| L/D | 1.503 | 3.728 | 0.995 | 1.015 |
+
+dragの順位は全格子で逆転している。downforceの順位は最も粗い格子でのみ一致し、
+より細かい2格子では逆転する。dragは両候補とも単調に収束する
+（A: 0.857→0.934→0.958、B: 0.728→0.841→0.867）が、downforceは単調ではない
+（A: 0.0132→0.0358→0.0449、B: 0.0417→0.0321→0.0413）。coarse格子でのみ
+Stage Tと一致するdownforceの順位は、この中で最も収束していない数値の上に
+成り立っている。
+
+### 乱流モデルの交絡は棄却された
+
+candidate Aについて層流と`kOmegaSST`のdrag系数を比較すると、coarseで0.016%、
+mediumで0.006%しか差がない。Re~300ではeddy viscosityの寄与が無視できるほど
+小さく、以前の`kOmegaSST`比較は無効な検定ではなかった。これが今回の負の結果
+を信頼できるものにしている。
+
+### 「サロゲートは使い物にならない」とは結論しない
+
+このデータはその主張を支持しない。順位が転写しなかった原因として、区別され
+ていない2つの欠陥がある。
+
+1. **設計が二値化されていない。** candidate Aの`rho`最大値は0.62、Bは0.55で、
+   0.9を超えるcellは両者ともゼロ。Stage Tは半透過なblobを最適化し、Stage Sは
+   その0.5等値面から立体を抽出し、Stage Vはその立体を解いた——別の物理的対象
+   である。原因は`docs/stage_t_optimizer_diagnosis_2026_09.md`に記録した
+   `function linear`射影の欠陥である。
+2. **Stage Tの格子が最適化対象を解像していない可能性がある。** Stage Tの8192
+   cellはbody-fitted coarse格子（5534 cell）と同程度であり、両フィデリティが
+   一致するのはまさにその解像度である。より細かい格子では一致が消える。
+
+この2つは別々の主張であり、今回のデータはそれらを分離しない。
+
+### 確立された正の結果
+
+Stage S -> Stage Vのパイプライン自体は実在する非退化形状で機能する。
+`build-density-sdf-handoff`の再実行はbyte-identicalなSTLハッシュを再現し、
+candidate Bの2つの連結成分は3解像度すべてでsnappyHexMeshに欠落なくmeshされ、
+`Cd`は単調収束し、6実行すべてで力の後処理が成功した。
+
+この検定のため、`src/cfd_sdf/openfoam.py`にbody-fitted層流経路を追加した。
+`kOmegaSST`以外の未対応乱流モデルはfail-closedのまま拒否する。
+
+### 証拠の範囲
+
+fixture一つ、候補2つ、Re~300、機械一台。cross-fidelityとpipeline-capability
+の証拠であり、target physicsでもbenchmarkでもなく、いかなるsolver backendの
+昇格根拠にもならない。**二値化され十分に解像された設計に対してサロゲートが
+正しく順位付けるかは未検証であり**、`docs/phase_plan.md`第11節の実行順序1番
+としてroadmapに残す。
+
+機械可読な記録は`docs/evidence/cross_fidelity_ranking_2026_09.json`に置く。

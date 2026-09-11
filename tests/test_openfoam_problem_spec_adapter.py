@@ -202,6 +202,43 @@ def test_unsupported_turbulence_model_is_refused(tmp_path: Path) -> None:
         problem_spec_to_project_config(spec)
 
 
+def test_laminar_turbulence_model_generates_case_without_turbulence_fields(tmp_path: Path) -> None:
+    data = _spec_dict()
+    data["flow_cases"][0]["turbulence"]["model"] = "laminar"
+    _box(tmp_path / "geometry" / "chassis.stl", (-0.5, 0.0, 0.0), (0.4, 0.3, 0.2))
+    _box(tmp_path / "geometry" / "wing_initial.stl", (0.25, 0.0, -0.2), (0.5, 0.6, 0.05))
+    _box(tmp_path / "geometry" / "design_domain.stl", (0.25, 0.0, -0.2), (0.7, 0.7, 0.15))
+    _box(tmp_path / "geometry" / "keepout.stl", (1.0, 0.0, 0.0), (0.2, 0.2, 0.2))
+    _box(tmp_path / "geometry" / "mount.stl", (0.25, 0.0, -0.4), (0.1, 0.1, 0.1))
+    project_yaml = tmp_path / "project.yaml"
+    project_yaml.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    spec = load_problem_spec(project_yaml)
+
+    config = problem_spec_to_project_config(spec)
+    assert config.turbulence_model == "laminar"
+
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+    generate_openfoam_case(config, bundle, case_dir)
+
+    turbulence_properties = (case_dir / "constant" / "turbulenceProperties").read_text(encoding="utf-8")
+    assert "simulationType laminar;" in turbulence_properties
+    assert "RASModel" not in turbulence_properties
+
+    for name in ("k", "omega", "nut"):
+        assert not (case_dir / "0" / name).exists()
+    assert (case_dir / "0" / "U").exists()
+    assert (case_dir / "0" / "p").exists()
+
+    fv_schemes = (case_dir / "system" / "fvSchemes").read_text(encoding="utf-8")
+    assert "div(phi,k)" not in fv_schemes
+    fv_solution = (case_dir / "system" / "fvSolution").read_text(encoding="utf-8")
+    assert "k 0.7" not in fv_solution
+
+    metadata = json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
+    assert metadata["operating_point"]["turbulence_model"] == "laminar"
+
+
 def test_generated_case_records_problem_provenance_and_mesh_refinement(tmp_path: Path) -> None:
     spec = load_problem_spec(_write_spec(tmp_path))
     candidate = tmp_path / "candidate.stl"

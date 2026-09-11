@@ -52,16 +52,22 @@ def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir:
         "system/surfaceFeatureExtractDict": _surface_feature_extract_dict(copied),
         "system/snappyHexMeshDict": _snappy_hex_mesh_dict(config, bundle, copied),
         "system/controlDict": _control_dict(config, force_patches, reference),
-        "system/fvSchemes": _fv_schemes(),
-        "system/fvSolution": _fv_solution(),
+        "system/fvSchemes": _fv_schemes(config.turbulence_model),
+        "system/fvSolution": _fv_solution(config.turbulence_model),
         "system/decomposeParDict": _decompose_par_dict(),
         "constant/transportProperties": _transport_properties(config),
-        "constant/turbulenceProperties": _turbulence_properties(),
+        "constant/turbulenceProperties": _turbulence_properties(config.turbulence_model),
         "0/U": _field_u(config),
         "0/p": _scalar_field("p", "0"),
-        "0/k": _scalar_field("k", "1e-4"),
-        "0/omega": _scalar_field("omega", "10"),
-        "0/nut": _scalar_field("nut", "0"),
+        **(
+            {
+                "0/k": _scalar_field("k", "1e-4"),
+                "0/omega": _scalar_field("omega", "10"),
+                "0/nut": _scalar_field("nut", "0"),
+            }
+            if config.turbulence_model == "kOmegaSST"
+            else {}
+        ),
         "Allrun": _allrun(),
         "Allclean": _allclean(),
         "Allrun.ps1": _allrun_ps1(),
@@ -120,6 +126,7 @@ def problem_spec_to_project_config(
 
     flow_case = _select_flow_case(spec, flow_case_id)
     operating_point = _operating_point_from_flow_case(spec, flow_case)
+    turbulence_model = _resolve_turbulence_model(flow_case)
     grid = _ProjectGridSpec(
         voxel_size_m=voxel_size_m if voxel_size_m is not None else spec.grid.voxel_size_m,
         padding_m=spec.grid.padding_m,
@@ -136,6 +143,7 @@ def problem_spec_to_project_config(
         operating_point=operating_point,
         problem_spec=spec,
         flow_case_id=flow_case.id,
+        turbulence_model=turbulence_model,
     )
 
 
@@ -162,16 +170,31 @@ def _operating_point_from_flow_case(spec: ProblemSpec, flow_case: FlowCaseSpec) 
             "resolve to the global +x axis (this case template's inlet/outlet patches are fixed along "
             f"x); flow case {flow_case.id!r} resolves to global vector ({vx!r}, {vy!r}, {vz!r})"
         )
-    if flow_case.turbulence is not None and flow_case.turbulence.model.lower().replace("_", "") != "komegasst":
-        raise ValueError(
-            "Body-fitted OpenFOAM case generation only supports turbulence.model kOmegaSST "
-            f"(constant/turbulenceProperties is hardcoded to it); flow case {flow_case.id!r} "
-            f"declares {flow_case.turbulence.model!r}"
-        )
     return OperatingPointSpec(
         velocity_mps=vx,
         density=flow_case.fluid.density_kg_m3,
         viscosity=flow_case.fluid.dynamic_viscosity_pa_s,
+    )
+
+
+def _resolve_turbulence_model(flow_case: FlowCaseSpec) -> str:
+    """Map a declared flow_case.turbulence.model onto a case template this generator supports.
+
+    Fails closed: only kOmegaSST (the default when turbulence is unspecified, matching this
+    template's historical behavior) and laminar are supported. Anything else is refused rather
+    than silently coerced.
+    """
+
+    if flow_case.turbulence is None:
+        return "kOmegaSST"
+    normalized = flow_case.turbulence.model.lower().replace("_", "")
+    if normalized == "komegasst":
+        return "kOmegaSST"
+    if normalized == "laminar":
+        return "laminar"
+    raise ValueError(
+        "Body-fitted OpenFOAM case generation only supports turbulence.model kOmegaSST or "
+        f"laminar; flow case {flow_case.id!r} declares {flow_case.turbulence.model!r}"
     )
 
 
@@ -239,6 +262,7 @@ def _metadata(
             "velocity_mps": config.operating_point.velocity_mps,
             "density": config.operating_point.density,
             "viscosity": config.operating_point.viscosity,
+            "turbulence_model": config.turbulence_model,
         },
         "force_reference": dict(reference),
         "mesh_refinement": _mesh_refinement_metadata(bundle),
@@ -586,9 +610,11 @@ nu              [0 2 -1 0 0 0 0] {nu:.8g};
 """
 
 
-def _turbulence_properties() -> str:
-    return _foam_header("dictionary", "turbulenceProperties") + """
-simulationType RAS;
+def _turbulence_properties(model: str) -> str:
+    if model == "laminar":
+        body = "simulationType laminar;\n"
+    else:
+        body = """simulationType RAS;
 
 RAS
 {
@@ -597,6 +623,7 @@ RAS
     printCoeffs     on;
 }
 """
+    return _foam_header("dictionary", "turbulenceProperties") + "\n" + body
 
 
 def _field_u(config: ProjectConfig) -> str:
@@ -659,46 +686,50 @@ def _wall_scalar_boundary_type(name: str) -> str:
     return "zeroGradient"
 
 
-def _fv_schemes() -> str:
-    return _foam_header("dictionary", "fvSchemes") + """
-ddtSchemes { default steadyState; }
-gradSchemes { default Gauss linear; }
+def _fv_schemes(model: str) -> str:
+    turbulence_divs = (
+        "" if model == "laminar" else
+        "    div(phi,k) bounded Gauss upwind;\n    div(phi,omega) bounded Gauss upwind;\n"
+    )
+    return _foam_header("dictionary", "fvSchemes") + f"""
+ddtSchemes {{ default steadyState; }}
+gradSchemes {{ default Gauss linear; }}
 divSchemes
-{
+{{
     default none;
     div(phi,U) bounded Gauss upwind;
-    div(phi,k) bounded Gauss upwind;
-    div(phi,omega) bounded Gauss upwind;
-    div((nuEff*dev2(T(grad(U))))) Gauss linear;
-}
-laplacianSchemes { default Gauss linear corrected; }
-interpolationSchemes { default linear; }
-snGradSchemes { default corrected; }
-wallDist { method meshWave; }
+{turbulence_divs}    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+}}
+laplacianSchemes {{ default Gauss linear corrected; }}
+interpolationSchemes {{ default linear; }}
+snGradSchemes {{ default corrected; }}
+wallDist {{ method meshWave; }}
 """
 
 
-def _fv_solution() -> str:
-    return _foam_header("dictionary", "fvSolution") + """
+def _fv_solution(model: str) -> str:
+    velocity_pattern = "U" if model == "laminar" else "(U|k|omega)"
+    equation_relaxation = "U 0.7;" if model == "laminar" else "U 0.7; k 0.7; omega 0.7;"
+    return _foam_header("dictionary", "fvSolution") + f"""
 solvers
-{
-    p { solver GAMG; tolerance 1e-7; relTol 0.01; smoother GaussSeidel; }
-    "(U|k|omega)" { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-8; relTol 0.1; }
-}
+{{
+    p {{ solver GAMG; tolerance 1e-7; relTol 0.01; smoother GaussSeidel; }}
+    "{velocity_pattern}" {{ solver smoothSolver; smoother symGaussSeidel; tolerance 1e-8; relTol 0.1; }}
+}}
 
 SIMPLE
-{
+{{
     nNonOrthogonalCorrectors 0;
     consistent yes;
     pRefCell 0;
     pRefValue 0;
-}
+}}
 
 relaxationFactors
-{
-    fields { p 0.3; }
-    equations { U 0.7; k 0.7; omega 0.7; }
-}
+{{
+    fields {{ p 0.3; }}
+    equations {{ {equation_relaxation} }}
+}}
 """
 
 

@@ -217,6 +217,49 @@ The known limit is structural: a multiplicative OC update cannot lift a cell off
 exact zero, so achievable volume caps near 3.2% on this seed without an epsilon
 floor.
 
+### The surrogate's ranking did not transfer — 2026-09-12
+
+The architecture only works if the cheap Stage T surrogate **ranks** candidates
+the way body-fitted verification does. Absolute agreement is not required: a
+Brinkman volumetric-force integral and a surface integral of pressure and shear
+are different quantities. The ordering is what must hold.
+
+Both candidates were meshed body-fitted at three resolutions and run at matched
+conditions (1 m/s, the Stage T case's own viscosity, `Aref` 0.64, laminar):
+
+| ratio B/A | Stage T | coarse (5.5k) | medium (30k) | fine (180k) |
+| --- | --- | --- | --- | --- |
+| drag | 2.582 | 0.849 | 0.901 | 0.905 |
+| downforce | 3.882 | 3.167 | 0.896 | 0.918 |
+| L/D | 1.503 | 3.728 | 0.995 | 1.015 |
+
+The drag ranking is **inverted at every grid**. The downforce ranking agrees
+only on the coarsest mesh and flips at both finer ones. A turbulence-model
+confound was ruled out: laminar and `kOmegaSST` runs agree to within 0.02% on
+drag at Re around 300, so the earlier `kOmegaSST` comparison was valid.
+
+**This must not be over-read as "the Brinkman surrogate is unusable".** Two
+concrete defects make the comparison a test of something other than the
+surrogate's fidelity, and both are fixable:
+
+- **The designs are not binary.** Candidate A peaks at `rho` 0.62 and candidate
+  B at 0.55, with **zero cells above 0.9** in either. Stage T optimized a
+  semi-permeable blob; Stage S extracted a solid body at the 0.5 contour and
+  Stage V solved that. These are physically different objects. The cause is the
+  `function linear` projection defect above.
+- **The Stage T grid may be too coarse to resolve what it optimizes.** Its 8192
+  cells are comparable to the 5534-cell coarse body-fitted mesh, and that is
+  precisely the resolution at which the two fidelities agree; agreement
+  disappears as the body-fitted mesh is refined.
+
+These are distinct claims and the present data does not separate them.
+
+**Consequence for the roadmap: a discreteness gate becomes a precondition for
+the Stage S handoff.** A grey density field must not be passed downstream, and
+no cross-fidelity ranking claim is meaningful until the design is near-binary
+and the surrogate grid is shown to be adequate. Whether the surrogate ranks
+correctly for a binarized, adequately resolved design is **untested**.
+
 ## 5. G1 — generic problem and artifact contract
 
 Status: complete.
@@ -386,43 +429,47 @@ The canonical `P @ rho` state is now consumed by a real solver case and the
 differences. That item is complete; the sequence below reflects what the
 2026-09-12 measurements changed.
 
-1. **Make Stage T produce a design.** This is the only true blocker: nothing
-   downstream can be demonstrated without it. Either repair the native
-   formulation — the volume-constraint mechanism first, since it, not the
-   downforce declaration, is the measured bottleneck — or drive the update from
-   Python using the verified adjoint gradient with an explicit volume projection.
-   Success is a bimodal density field with a substantial number of cells above
-   0.5, a realized volume fraction near target, and a 0.5 iso-surface that is a
-   real closed design surface rather than the six domain-boundary patches.
+1. **Binarize the design, then re-test the ranking.** Stage T now produces a
+   design, but a grey one — peak `rho` 0.55-0.62 with no cell above 0.9 — and
+   that is why the cross-fidelity ranking failed. Restore the `tanh` projection
+   with sharpness continuation so the field drives toward 0/1, add a
+   discreteness measure, and **gate the Stage S handoff on it** so a grey field
+   cannot be passed downstream. Then repeat the three-grid body-fitted ranking
+   comparison. Until that is done, no claim about the surrogate's fidelity —
+   positive or negative — is supportable. **Implementation required.**
+2. **Establish that the Stage T grid resolves what it optimizes.** Its 8192
+   cells match the coarse body-fitted mesh at which the two fidelities happen to
+   agree, and agreement vanishes under refinement. Run Stage T on a refined
+   fixed grid and show its forces converge before trusting any of its rankings.
    **Implementation required.**
-2. Fix the repository template's objective/constraint declaration so the solved
+3. Fix the repository template's objective/constraint declaration so the solved
    problem matches the declared one, and add a check that refuses a Stage T run
    whose OpenFOAM objectives and constraints do not correspond to the
    ProblemSpec's declared objectives and constraints. The `--response-id` guard
    on the canonical gradient transfer is the first instance of this class of
    check; the optimization problem itself needs the same treatment.
    **Implementation required.**
-3. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
+4. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
    add the remaining surface-distance, self-intersection, minimum-feature and
    feature-survival gates, then produce one `ready_for_stage_s=true` canonical
    artifact. **Qualification implementation required.**
-4. Re-evaluate the baseline and the optimized candidate with three-grid
+5. Re-evaluate the baseline and the optimized candidate with three-grid
    body-fitted OpenFOAM through `prepare-openfoam-from-problem-spec`, including
    pressure, skin-friction, total-force and cross-fidelity comparison. The
    force units and directions are now reconciled between the two fidelities;
    what remains is the study itself and its acceptance criterion.
    **Implementation required.**
-5. Resolve or bound the approximately 10% directional-derivative bias on generic
+6. Resolve or bound the approximately 10% directional-derivative bias on generic
    directions. Regularisation has been causally exonerated; the named untested
    candidate is `P`'s fractional-overlap redistribution under non-integer
    refinement ratios. Until it is understood, gradient-gate rows on
    non-gradient-aligned directions must not be read as pass/fail.
-6. Establish a feasible seed or an explicit feasibility-restoration phase;
+7. Establish a feasible seed or an explicit feasibility-restoration phase;
    add nonlinear candidate acceptance, rollback, and move-radius reduction.
    **Implementation required.**
-7. Complete G3 and execute G4 B0–B2 before production optimizer work.
+8. Complete G3 and execute G4 B0–B2 before production optimizer work.
    **Implementation required.**
-8. Implement production Stage T derivatives and a sparse/scalable constrained
+9. Implement production Stage T derivatives and a sparse/scalable constrained
    backend, then advance through B3–B5, Stage S refinement, and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
