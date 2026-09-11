@@ -657,6 +657,16 @@ candidate bindingはtopology state自身のproblem/candidate lineageを必須と
 各direction-suite行へ同一candidate binding hashを要求する。legacy artifactへ後付けのIDを
 宣言するだけでは資格化しない。
 
+P0の第二スライスでは、検証済みcanonical candidateの選択rho配列からuniform Cartesian
+OpenFOAM source gridへ`rho_source = P @ rho_target`で写す片道artifactを追加した。target/sourceの
+origin、spacing、shape、cell order、grid hashを別々に固定し、両grid domainの完全被覆を必須とする。
+artifactは`status=capability_only`、`qualified=false`であり、rho-to-alpha/Brinkmanのsolver field
+変換はcase compilerの未実装責務として残す。さらに、OpenFOAM global label順とsource gridの
+x-fastest順は同一と仮定せず、明示的なpermutation artifactをstate投入と`P.T` gradient returnの
+両方で使う。direction suiteは検証済みcandidate bindingを
+plus/minus topology stateへ伝播し、集約gateは両state内のbinding一致とfile hashを検証する。
+詳細は`p0_canonical_transfer_2026_09.md`を参照する。
+
 これはP0/P1の完了ではない。2026-09-10の8192セルT1候補は、補間後densityの最大値が
 iso値0.5と等しいため、閉じた等値面を持たない入力として変換前に拒否された。T5候補を
 実際に変換すると、STL/SDFの

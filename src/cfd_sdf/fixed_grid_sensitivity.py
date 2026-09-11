@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import gzip
+import hashlib
 import json
 import math
 import re
@@ -22,6 +23,7 @@ from .fixed_grid_contract import (
     _read_cell_vti,
     _write_cell_vti,
 )
+from .fixed_grid_gradient_gate import load_verified_gradient_problem_binding
 from .fixed_grid_primal import (
     FixedGridPrimalCaseArtifacts,
     load_fixed_grid_density_state,
@@ -85,6 +87,7 @@ class FixedGridSensitivityDirectionCheck:
     relative_error_tolerance: float
     sign_match: bool
     perturbed_cell_count: int
+    problem_binding: dict[str, object] | None = None
 
     @property
     def ok(self) -> bool:
@@ -249,6 +252,8 @@ def run_fixed_grid_sensitivity_direction_suite(
     smoothing_radius_cells: float = 1.0,
     adjoint_iterations: int = 1,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
+    candidate_binding_json: Path | None = None,
+    problem_yaml: Path | None = None,
 ) -> FixedGridSensitivityDirectionSuite:
     if objective not in SENSITIVITY_OBJECTIVES:
         raise ValueError(
@@ -264,10 +269,13 @@ def run_fixed_grid_sensitivity_direction_suite(
         raise ValueError("relative_error_tolerance must be non-negative")
     if smoothing_radius_cells < 0.0:
         raise ValueError("smoothing_radius_cells must be non-negative")
+    if (candidate_binding_json is None) != (problem_yaml is None):
+        raise ValueError(
+            "candidate_binding_json and problem_yaml must be provided together"
+        )
 
     baseline_case_dir = baseline_case_dir.resolve()
     run_dir = run_dir.resolve()
-    _prepare_direction_run_directory(run_dir, overwrite=overwrite)
 
     baseline_metadata = _read_json(baseline_case_dir / "fixed_grid_primal_case_metadata.json")
     topology_state_json = _resolve_topology_state(
@@ -276,6 +284,16 @@ def run_fixed_grid_sensitivity_direction_suite(
         None,
     )
     density_state = load_fixed_grid_density_state(topology_state_json)
+    problem_binding = (
+        load_verified_gradient_problem_binding(
+            candidate_binding_json,
+            problem_yaml,
+            expected_topology_state=topology_state_json,
+        )
+        if candidate_binding_json is not None and problem_yaml is not None
+        else None
+    )
+    _prepare_direction_run_directory(run_dir, overwrite=overwrite)
     baseline_grid, baseline_density = _read_density_input(baseline_case_dir)
     _assert_same_grid(
         baseline_grid,
@@ -353,6 +371,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         plus_density=plus_density,
         minus_density=minus_density,
         active=active,
+        problem_binding=problem_binding,
     )
     direction_summary_json.write_text(
         json.dumps(direction_summary, indent=2),
@@ -367,6 +386,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         baseline_case_dir=baseline_case_dir,
         direction_summary_json=direction_summary_json,
         label="plus",
+        problem_binding=problem_binding,
     )
     minus_topology = _write_perturbed_contract(
         density_state,
@@ -375,6 +395,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         baseline_case_dir=baseline_case_dir,
         direction_summary_json=direction_summary_json,
         label="minus",
+        problem_binding=problem_binding,
     )
 
     template = _resolve_direction_template_case(
@@ -392,6 +413,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         overwrite=True,
         adjoint_iterations=adjoint_iterations,
         docker_image=docker_image,
+        problem_binding=problem_binding,
     )
     minus_case = run_fixed_grid_primal_case(
         minus_topology,
@@ -404,6 +426,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         overwrite=True,
         adjoint_iterations=adjoint_iterations,
         docker_image=docker_image,
+        problem_binding=problem_binding,
     )
 
     validation: FixedGridSensitivityDirectionCheck | None = None
@@ -419,6 +442,7 @@ def run_fixed_grid_sensitivity_direction_suite(
                 objective=objective,
                 epsilon=epsilon,
                 relative_error_tolerance=relative_error_tolerance,
+                problem_binding=problem_binding,
             )
         except Exception as exc:
             validation_error = str(exc)
@@ -441,6 +465,7 @@ def run_fixed_grid_sensitivity_direction_suite(
         execute=execute,
         backend=backend,
         docker_image=docker_image,
+        problem_binding=problem_binding,
     )
     summary_json = run_dir / "fixed_grid_sensitivity_direction_suite_summary.json"
     summary_markdown = run_dir / "fixed_grid_sensitivity_direction_suite_summary.md"
@@ -475,6 +500,7 @@ def validate_fixed_grid_sensitivity_direction(
     epsilon: float = 1.0e-3,
     relative_error_tolerance: float = 0.25,
     perturbation_tolerance: float = 1.0e-12,
+    problem_binding: dict[str, object] | None = None,
 ) -> FixedGridSensitivityDirectionCheck:
     if objective not in SENSITIVITY_OBJECTIVES:
         raise ValueError(
@@ -591,6 +617,7 @@ def validate_fixed_grid_sensitivity_direction(
         relative_error_tolerance=float(relative_error_tolerance),
         sign_match=sign_match,
         perturbed_cell_count=perturbed_cell_count,
+        problem_binding=problem_binding,
     )
     report_json.write_text(json.dumps(result.to_dict(), indent=2), encoding="utf-8")
     report_markdown.write_text(_direction_check_markdown(result), encoding="utf-8")
@@ -1071,6 +1098,7 @@ def _write_perturbed_contract(
     baseline_case_dir: Path,
     direction_summary_json: Path,
     label: str,
+    problem_binding: dict[str, object] | None,
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     beta_max = _infer_beta_max(density_state.arrays)
@@ -1124,6 +1152,20 @@ def _write_perturbed_contract(
         "mesh_policy": "fixed",
         "remeshing_per_iteration": False,
     }
+    if problem_binding is not None:
+        for key in (
+            "problem_id",
+            "problem_spec_sha256",
+            "candidate_id",
+            "parent_candidate_id",
+            "iteration",
+        ):
+            if state.get(key) != problem_binding.get(key):
+                raise ValueError(
+                    f"baseline topology state {key} does not match candidate binding"
+                )
+        state["baseline_candidate_binding"] = problem_binding
+    state["density_sha256"] = _file_sha256(density_vti)
     path = output_dir / "topology_state.json"
     path.write_text(json.dumps(state, indent=2), encoding="utf-8")
     summary = {
@@ -1133,10 +1175,12 @@ def _write_perturbed_contract(
         "label": label,
         "topology_state_json": str(path),
         "density_vti": str(density_vti),
+        "density_sha256": _file_sha256(density_vti),
         "baseline_case_dir": str(baseline_case_dir),
         "direction_summary_json": str(direction_summary_json),
         "beta_max": beta_max,
         "density_statistics": _simple_array_stats(rho),
+        "baseline_candidate_binding": problem_binding,
     }
     (output_dir / "fixed_grid_direction_contract_summary.json").write_text(
         json.dumps(summary, indent=2),
@@ -1187,6 +1231,7 @@ def _direction_summary(
     plus_density: np.ndarray,
     minus_density: np.ndarray,
     active: np.ndarray,
+    problem_binding: dict[str, object] | None,
 ) -> dict[str, object]:
     active_mask = np.asarray(active, dtype=bool)
     perturbed = np.abs(actual_direction) > 1.0e-12
@@ -1215,7 +1260,26 @@ def _direction_summary(
         },
         "active_cell_count": int(np.count_nonzero(active_mask)),
         "perturbed_cell_count": int(np.count_nonzero(perturbed & active_mask)),
+        "problem_binding": problem_binding,
     }
+
+
+def _perturbed_contract_record(topology_state_json: Path) -> dict[str, object]:
+    state = _read_json(topology_state_json)
+    density = Path(str(state["density_vti"]))
+    if not density.is_absolute():
+        density = topology_state_json.parent / density
+    density = density.resolve()
+    return {
+        "topology_state_json": str(topology_state_json.resolve()),
+        "topology_state_sha256": _file_sha256(topology_state_json),
+        "density_vti": str(density),
+        "density_sha256": _file_sha256(density),
+    }
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _direction_suite_summary(
@@ -1237,6 +1301,7 @@ def _direction_suite_summary(
     execute: bool,
     backend: str,
     docker_image: str,
+    problem_binding: dict[str, object] | None,
 ) -> dict[str, object]:
     if not execute:
         status = "prepared"
@@ -1272,6 +1337,11 @@ def _direction_suite_summary(
         "minus_case": minus_case.to_dict(),
         "validation": validation.to_dict() if validation is not None else None,
         "validation_error": validation_error,
+        "problem_binding": problem_binding,
+        "perturbed_contracts": {
+            "plus": _perturbed_contract_record(plus_topology_state_json),
+            "minus": _perturbed_contract_record(minus_topology_state_json),
+        },
     }
 
 

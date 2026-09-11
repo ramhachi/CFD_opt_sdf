@@ -29,6 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+from pathlib import Path
 import re
 from typing import Sequence
 
@@ -41,6 +42,7 @@ _GRID_SCHEMA_VERSION = 1
 _HASH_RE = re.compile(r"^[0-9a-f]{64}$")
 _COVERAGE_RTOL = 1.0e-12
 _COVERAGE_ATOL = 1.0e-12
+OPENFOAM_GLOBAL_CELL_LABEL_ORDER = "openfoam-global-cell-label-ascending"
 
 
 @dataclass(frozen=True)
@@ -124,6 +126,63 @@ class UniformCartesianCellGrid:
         if not (0 <= x < nx and 0 <= y < ny and 0 <= z < nz):
             raise ValueError(f"cell index {(x, y, z)!r} is outside cell_shape {self.cell_shape!r}")
         return int(x + nx * (y + ny * z))
+
+
+@dataclass(frozen=True)
+class OpenFoamCellOrderMapping:
+    """Permutation from source x-fastest indices to OpenFOAM global labels."""
+
+    path: Path
+    global_cell_labels_by_xfastest: np.ndarray
+    file_sha256: str
+    array_sha256: str
+
+    def to_dict(self) -> dict[str, object]:
+        values = self.global_cell_labels_by_xfastest
+        return {
+            "path": str(self.path),
+            "sha256": self.file_sha256,
+            "array_sha256": self.array_sha256,
+            "mapping": "global_label = values[x_fastest_index]",
+            "source_order": CANONICAL_CELL_ORDER,
+            "field_order": OPENFOAM_GLOBAL_CELL_LABEL_ORDER,
+            "cell_count": int(values.size),
+            "identity": bool(np.array_equal(values, np.arange(values.size))),
+        }
+
+
+def load_openfoam_cell_order_mapping(
+    path: str | Path,
+    *,
+    cell_count: int,
+) -> OpenFoamCellOrderMapping:
+    """Load an exact NPY permutation without assuming blockMesh numbering."""
+
+    mapping_path = Path(path).resolve()
+    try:
+        raw_bytes = mapping_path.read_bytes()
+        values = np.load(mapping_path, allow_pickle=False)
+    except (OSError, ValueError) as exc:
+        raise ValueError(
+            f"source global-label mapping cannot be read: {mapping_path}"
+        ) from exc
+    if values.shape != (cell_count,) or values.dtype.kind not in "iu":
+        raise ValueError(
+            "source_global_cell_labels_by_xfastest must be a one-dimensional "
+            f"integer vector with shape ({cell_count},)"
+        )
+    mapping = np.asarray(values, dtype=np.int64)
+    if not np.array_equal(np.sort(mapping), np.arange(cell_count, dtype=np.int64)):
+        raise ValueError(
+            "source_global_cell_labels_by_xfastest must be a permutation of global labels"
+        )
+    mapping.setflags(write=False)
+    return OpenFoamCellOrderMapping(
+        path=mapping_path,
+        global_cell_labels_by_xfastest=mapping,
+        file_sha256=hashlib.sha256(raw_bytes).hexdigest(),
+        array_sha256=_array_sha256(mapping),
+    )
 
 
 @dataclass(frozen=True)
@@ -370,8 +429,20 @@ def _mask_sha256(mask: np.ndarray) -> str:
     return hashlib.sha256(np.ascontiguousarray(mask, dtype=np.uint8).tobytes()).hexdigest()
 
 
+def _array_sha256(values: np.ndarray) -> str:
+    array = np.ascontiguousarray(np.asarray(values))
+    header = json.dumps(
+        {"dtype": array.dtype.str, "shape": list(array.shape)},
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(header + b"\n" + array.tobytes()).hexdigest()
+
+
 __all__ = [
     "CANONICAL_CELL_ORDER",
     "ExactCartesianOverlapTransfer",
+    "OPENFOAM_GLOBAL_CELL_LABEL_ORDER",
+    "OpenFoamCellOrderMapping",
     "UniformCartesianCellGrid",
+    "load_openfoam_cell_order_mapping",
 ]

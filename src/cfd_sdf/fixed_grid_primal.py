@@ -138,6 +138,7 @@ def prepare_fixed_grid_primal_case(
     solid_threshold: float = 0.5,
     adjoint_iterations: int = 1,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
+    problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
     if density_variant not in PRIMAL_DENSITY_VARIANTS:
         raise ValueError(
@@ -231,6 +232,7 @@ def prepare_fixed_grid_primal_case(
         adjoint_iterations=adjoint_iterations,
         docker_image=docker_image,
         library_path=library_path,
+        problem_binding=problem_binding,
     )
     case_metadata_json = resolved_case / "fixed_grid_primal_case_metadata.json"
     case_metadata_json.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
@@ -269,6 +271,7 @@ def run_fixed_grid_primal_case(
     solid_threshold: float = 0.5,
     adjoint_iterations: int = 1,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
+    problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
     artifacts = prepare_fixed_grid_primal_case(
         topology_state_json,
@@ -282,6 +285,7 @@ def run_fixed_grid_primal_case(
         solid_threshold=solid_threshold,
         adjoint_iterations=adjoint_iterations,
         docker_image=docker_image,
+        problem_binding=problem_binding,
     )
     run_result = run_openfoam_case(
         artifacts.case_dir,
@@ -989,6 +993,7 @@ def _case_metadata(
     adjoint_iterations: int,
     docker_image: str,
     library_path: str | None,
+    problem_binding: dict[str, object] | None,
 ) -> dict[str, object]:
     arrays = density_state.arrays
     return {
@@ -1002,6 +1007,7 @@ def _case_metadata(
         "topology_state_json": str(density_state.topology_state_json),
         "density_vti": str(density_state.density_vti),
         "density_variant": density_variant,
+        "problem_binding": problem_binding,
         "grid": density_state.grid.to_dict(),
         "density_input": {
             "array": "rho_input",

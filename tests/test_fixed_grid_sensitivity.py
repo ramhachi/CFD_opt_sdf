@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -133,6 +134,7 @@ def test_validate_fixed_grid_sensitivity_direction_compares_plus_minus_cases(
 
 def test_run_fixed_grid_sensitivity_direction_suite_dry_run_writes_plus_minus_cases(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     topology_state = _write_fixed_grid_state(tmp_path / "contract")
     template = _write_template_case(tmp_path / "template")
@@ -153,6 +155,25 @@ def test_run_fixed_grid_sensitivity_direction_suite_dry_run_writes_plus_minus_ca
     )
     _write_primal_summary(baseline.case_dir, drag=0.0, downforce=0.0)
     sensitivity = build_fixed_grid_sensitivity_from_primal_case(baseline.case_dir)
+    problem_binding = {
+        "problem_id": "synthetic-fixed-grid",
+        "problem_spec_sha256": "a" * 64,
+        "execution_ready": True,
+        "candidate_id": "candidate_0000",
+        "parent_candidate_id": None,
+        "iteration": 0,
+        "candidate_binding_sha256": "b" * 64,
+        "canonical_grid_sha256": "c" * 64,
+        "geometry_manifest_sha256": "d" * 64,
+        "baseline_topology_state_sha256": "e" * 64,
+        "baseline_density_sha256": "f" * 64,
+        "rho_variant": "rho",
+        "binding_validation": "verified_stage_t_candidate_binding",
+    }
+    monkeypatch.setattr(
+        "cfd_sdf.fixed_grid_sensitivity.load_verified_gradient_problem_binding",
+        lambda candidate_binding_json, problem_yaml, *, expected_topology_state: problem_binding,
+    )
 
     suite = run_fixed_grid_sensitivity_direction_suite(
         baseline.case_dir,
@@ -164,6 +185,8 @@ def test_run_fixed_grid_sensitivity_direction_suite_dry_run_writes_plus_minus_ca
         epsilon=0.01,
         template_case_dir=template,
         execute=False,
+        candidate_binding_json=tmp_path / "candidate-binding.json",
+        problem_yaml=tmp_path / "problem.yaml",
     )
 
     assert suite.summary["status"] == "prepared"
@@ -181,6 +204,34 @@ def test_run_fixed_grid_sensitivity_direction_suite_dry_run_writes_plus_minus_ca
     plus_allrun = (suite.plus_case.case_dir / "Allrun").read_text(encoding="utf-8")
     assert "snappyHexMesh" not in plus_allrun
     assert "setFields" not in plus_allrun
+    assert suite.summary["problem_binding"] == problem_binding
+    direction_summary = json.loads(suite.direction_summary_json.read_text(encoding="utf-8"))
+    assert direction_summary["problem_binding"] == problem_binding
+    for state_path in (suite.plus_topology_state_json, suite.minus_topology_state_json):
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["baseline_candidate_binding"] == problem_binding
+        density_path = state_path.parent / state["density_vti"]
+        assert state["density_sha256"] == hashlib.sha256(density_path.read_bytes()).hexdigest()
+    for case in (suite.plus_case, suite.minus_case):
+        metadata = json.loads(case.case_metadata_json.read_text(encoding="utf-8"))
+        assert metadata["problem_binding"] == problem_binding
+    assert set(suite.summary["perturbed_contracts"]) == {"plus", "minus"}
+
+
+def test_direction_suite_requires_candidate_binding_and_problem_as_pair(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(
+        ValueError,
+        match="candidate_binding_json and problem_yaml must be provided together",
+    ):
+        run_fixed_grid_sensitivity_direction_suite(
+            tmp_path / "unused-baseline",
+            run_dir=tmp_path / "unused-run",
+            candidate_binding_json=tmp_path / "candidate-binding.json",
+        )
+
+    assert not (tmp_path / "unused-run").exists()
 
 
 def test_read_openfoam_vol_scalar_field_rejects_wrong_value_count(tmp_path: Path) -> None:
@@ -236,6 +287,12 @@ def _write_fixed_grid_state(directory: Path) -> Path:
         "design_variable": "rho",
         "grid": grid.to_dict(),
         "density_vti": "density.vti",
+        "density_array": "rho",
+        "problem_id": "synthetic-fixed-grid",
+        "problem_spec_sha256": "a" * 64,
+        "candidate_id": "candidate_0000",
+        "parent_candidate_id": None,
+        "iteration": 0,
         "source_solver": {
             "case_dir": str(directory / "template_placeholder"),
             "initial_vtk": str(vtk_dir / "internal.vtu"),

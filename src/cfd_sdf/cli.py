@@ -33,6 +33,7 @@ from .fixed_grid_contract import (
 )
 from .fixed_grid_gradient_gate import (
     aggregate_fixed_grid_gradient_gate,
+    load_verified_gradient_problem_binding,
     write_fixed_grid_gradient_gate,
 )
 from .fixed_grid_connectivity import (
@@ -56,6 +57,9 @@ from .fixed_grid_sensitivity import (
 from .gradient_check import run_finite_difference_gradient_check
 from .handoff import build_density_to_sdf_handoff
 from .openfoam import generate_openfoam_case
+from .openfoam_canonical_state_transfer import (
+    transfer_and_write_openfoam_source_state,
+)
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
@@ -524,6 +528,35 @@ def validate_stage_t_candidate_binding_command(
             indent=2,
         )
     )
+
+
+@app.command("transfer-stage-t-candidate-to-openfoam")
+def transfer_stage_t_candidate_to_openfoam(
+    binding_json: Path = typer.Argument(..., help="Verified stage_t_candidate_binding.json."),
+    problem_yaml: Path = typer.Argument(..., help="Native execution-ready ProblemSpec YAML."),
+    block_mesh_dict: Path = typer.Argument(..., help="Uniform Cartesian OpenFOAM blockMeshDict."),
+    source_global_cell_labels_by_xfastest: Path = typer.Argument(
+        ...,
+        help="NPY permutation from each x-fastest index to its OpenFOAM global label.",
+    ),
+    output_directory: Path = typer.Argument(..., help="New source-state artifact directory."),
+) -> None:
+    """Write source-cell rho using the qualified state map source = P @ target."""
+
+    try:
+        artifacts = transfer_and_write_openfoam_source_state(
+            candidate_binding_json=binding_json,
+            problem=problem_yaml,
+            block_mesh_dict=block_mesh_dict,
+            source_global_cell_labels_by_xfastest=(
+                source_global_cell_labels_by_xfastest
+            ),
+            output_directory=output_directory,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.fields_npz}")
+    console.print(f"Wrote {artifacts.provenance_json}")
 
 
 @app.command("check-constraints")
@@ -1270,6 +1303,14 @@ def run_fixed_grid_sensitivity_direction_suite_command(
         "opencfd/openfoam-default:2512",
         help="OpenFOAM Docker image.",
     ),
+    candidate_binding_json: Path | None = typer.Option(
+        None,
+        help="Verified Stage T candidate binding for the baseline topology state.",
+    ),
+    problem_yaml: Path | None = typer.Option(
+        None,
+        help="Native execution-ready ProblemSpec paired with --candidate-binding-json.",
+    ),
 ) -> None:
     """Generate plus/minus T2 cases and optionally validate a T3 sensitivity direction."""
     artifacts = run_fixed_grid_sensitivity_direction_suite(
@@ -1290,6 +1331,8 @@ def run_fixed_grid_sensitivity_direction_suite_command(
         smoothing_radius_cells=smoothing_radius_cells,
         adjoint_iterations=adjoint_iterations,
         docker_image=docker_image,
+        candidate_binding_json=candidate_binding_json,
+        problem_yaml=problem_yaml,
     )
     console.print(json.dumps(artifacts.to_dict(), indent=2))
     console.print(f"Wrote {artifacts.summary_json}")
@@ -1329,7 +1372,7 @@ def aggregate_fixed_grid_gradient_gate_command(
                 param_hint="problem_yaml",
             )
         try:
-            verified = verify_stage_t_candidate_binding(
+            binding = load_verified_gradient_problem_binding(
                 problem_binding_json,
                 problem_yaml,
             )
@@ -1338,20 +1381,6 @@ def aggregate_fixed_grid_gradient_gate_command(
                 str(exc),
                 param_hint="problem_binding_json",
             ) from exc
-        problem = dict(verified.binding["problem"])
-        candidate = dict(verified.binding["candidate"])
-        binding = {
-            "problem_id": problem["problem_id"],
-            "problem_spec_sha256": problem["problem_spec_sha256"],
-            "execution_ready": problem["execution_ready"],
-            "candidate_id": candidate["candidate_id"],
-            "parent_candidate_id": candidate["parent_candidate_id"],
-            "iteration": candidate["iteration"],
-            "candidate_binding_sha256": hashlib.sha256(
-                problem_binding_json.read_bytes()
-            ).hexdigest(),
-            "binding_validation": "verified_stage_t_candidate_binding",
-        }
     elif problem_yaml is not None:
         raise typer.BadParameter(
             "--problem-binding-json is required with --problem-yaml.",
