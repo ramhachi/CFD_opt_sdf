@@ -102,23 +102,30 @@ def _verified_snapshot(tmp_path: Path):
 def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) -> None:
     snapshot = _verified_snapshot(tmp_path)
     block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping = np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64)
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, mapping, allow_pickle=False)
     artifacts = reconstruct_and_write_canonical_gradient_transfer(
         case_dir=_write_case(tmp_path),
         adjoint_solver_id="resp_force",
         block_mesh_dict=block_mesh,
         verified_snapshot=snapshot,
+        source_global_cell_labels_by_xfastest=mapping_path,
         output_directory=tmp_path / "canonical_result",
     )
 
     with np.load(artifacts.fields_npz, allow_pickle=False) as payload:
         gradient = payload["top_o_sensitivity_gradient"]
         assert payload["canonical_cell_indices"].tolist() == list(range(12))
-    assert gradient == pytest.approx([0.5, 0.5, 1.0, 1.0, 1.5, 1.5, 2.0, 2.0, 2.5, 2.5, 3.0, 3.0])
+    assert gradient == pytest.approx(
+        [1.0, 1.0, 0.5, 0.5, 2.0, 2.0, 1.5, 1.5, 3.0, 3.0, 2.5, 2.5]
+    )
 
     source = read_openfoam_blockmesh_uniform_cartesian_grid(block_mesh).grid
     transfer = ExactCartesianOverlapTransfer.build(source_grid=source, target_grid=snapshot.snapshot.grid)
     direction = np.linspace(-0.7, 0.9, snapshot.snapshot.grid.cell_count)
-    assert np.dot(np.arange(1.0, 7.0), transfer.transfer_state_to_source(direction)) == pytest.approx(
+    source_gradient_xfastest = np.arange(1.0, 7.0)[mapping]
+    assert np.dot(source_gradient_xfastest, transfer.transfer_state_to_source(direction)) == pytest.approx(
         np.dot(gradient, direction)
     )
 
@@ -126,6 +133,10 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
     assert provenance["target"]["grid_sha256"] == snapshot.snapshot.grid_sha256
     assert provenance["transfer"]["gradient_map"] == "target_gradient = P.T @ source_gradient"
     assert provenance["transfer"]["coverage"] == "full source and target grid domains"
+    assert provenance["source"]["cell_order_mapping"]["identity"] is False
+    assert provenance["source"]["cell_order_mapping"]["mapping"] == (
+        "global_label = values[x_fastest_index]"
+    )
     assert set(provenance["state_field_transfer"]) == {"alpha_tilda", "beta", "raw_alpha"}
     assert all(item["status"] == "refused_not_provided" for item in provenance["state_field_transfer"].values())
     assert len(provenance["source"]["field_value_sha256"]["raw_alpha"]["source_file_sha256"]) == 1
@@ -144,6 +155,7 @@ def test_rejects_snapshot_mask_tamper_after_verification(tmp_path: Path) -> None
             adjoint_solver_id="resp_force",
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
             verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
         )
 
@@ -164,5 +176,27 @@ def test_rejects_incomplete_coverage_and_source_cell_count_mismatch(
             adjoint_solver_id="resp_force",
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict", x_upper=x_upper, nx=nx),
             verified_snapshot=_verified_snapshot(tmp_path),
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
         )
+
+
+def test_rejects_invalid_source_cell_order_mapping(tmp_path: Path) -> None:
+    mapping = tmp_path / "bad_mapping.npy"
+    np.save(mapping, np.asarray([0, 0, 2, 3, 4, 5], dtype=np.int64), allow_pickle=False)
+
+    with pytest.raises(ValueError, match="must be a permutation"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path),
+            adjoint_solver_id="resp_force",
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=_verified_snapshot(tmp_path),
+            source_global_cell_labels_by_xfastest=mapping,
+            output_directory=tmp_path / "canonical_result",
+        )
+
+
+def _identity_mapping(tmp_path: Path, count: int) -> Path:
+    path = tmp_path / f"identity_mapping_{count}.npy"
+    np.save(path, np.arange(count, dtype=np.int64), allow_pickle=False)
+    return path

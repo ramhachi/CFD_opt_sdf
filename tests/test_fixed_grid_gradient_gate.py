@@ -18,12 +18,17 @@ def _artifact_set(tmp_path: Path, name: str) -> dict[str, Path]:
         "sensitivity_vti",
         "direction_vti",
         "baseline_primal_summary_json",
+        "baseline_case_metadata_json",
+        "baseline_topology_state_json",
+        "baseline_density_vti",
         "plus_primal_summary_json",
         "plus_case_metadata_json",
         "plus_input_density_vti",
         "minus_primal_summary_json",
         "minus_case_metadata_json",
         "minus_input_density_vti",
+        "plus_topology_state_json",
+        "minus_topology_state_json",
     ):
         path = tmp_path / f"{name}_{role}.artifact"
         path.write_text(f"{name}:{role}\n", encoding="utf-8")
@@ -42,6 +47,7 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
             "requested_direction_active": {"l2": 2.0},
             "actual_direction_active": {"l2": 1.0},
         },
+        "problem_binding": _binding(),
     }
     direction_path = artifacts["direction_summary_json"]
     direction_path.write_text(json.dumps(direction_summary), encoding="utf-8")
@@ -54,8 +60,50 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
         "relative_error": 0.0,
         "sign_match": True,
         "report_json": str(artifacts["validation_report_json"]),
+        "problem_binding": _binding(),
     }
     artifacts["validation_report_json"].write_text(json.dumps(validation), encoding="utf-8")
+    artifacts["baseline_topology_state_json"].write_text("{}", encoding="utf-8")
+    artifacts["baseline_density_vti"].write_bytes(b"baseline-density\n")
+    artifacts["baseline_case_metadata_json"].write_text(
+        json.dumps(
+            {
+                "topology_state_json": str(artifacts["baseline_topology_state_json"]),
+                "density_vti": str(artifacts["baseline_density_vti"]),
+            }
+        ),
+        encoding="utf-8",
+    )
+    perturbed_contracts = {}
+    for label in ("plus", "minus"):
+        metadata_path = artifacts[f"{label}_case_metadata_json"]
+        metadata_path.write_text(
+            json.dumps({"problem_binding": _binding()}),
+            encoding="utf-8",
+        )
+        density_path = artifacts[f"{label}_input_density_vti"]
+        topology_path = artifacts[f"{label}_topology_state_json"]
+        topology_path.write_text(
+            json.dumps(
+                {
+                    "problem_id": _binding()["problem_id"],
+                    "problem_spec_sha256": _binding()["problem_spec_sha256"],
+                    "candidate_id": _binding()["candidate_id"],
+                    "parent_candidate_id": _binding()["parent_candidate_id"],
+                    "iteration": _binding()["iteration"],
+                    "density_vti": str(density_path),
+                    "density_sha256": hashlib.sha256(density_path.read_bytes()).hexdigest(),
+                    "baseline_candidate_binding": _binding(),
+                }
+            ),
+            encoding="utf-8",
+        )
+        perturbed_contracts[label] = {
+            "topology_state_json": str(topology_path),
+            "topology_state_sha256": hashlib.sha256(topology_path.read_bytes()).hexdigest(),
+            "density_vti": str(density_path),
+            "density_sha256": hashlib.sha256(density_path.read_bytes()).hexdigest(),
+        }
     summary = {
         "kind": "fixed_grid_sensitivity_direction_suite_summary",
         "status": "pass",
@@ -64,6 +112,8 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
         "direction_summary_json": str(direction_path),
         "sensitivity_vti": str(artifacts["sensitivity_vti"]),
         "direction_vti": str(artifacts["direction_vti"]),
+        "plus_topology_state_json": str(artifacts["plus_topology_state_json"]),
+        "minus_topology_state_json": str(artifacts["minus_topology_state_json"]),
         "validation": validation,
         "baseline_case_dir": str(tmp_path / "no_case_dir"),
         "baseline_case": {
@@ -72,7 +122,7 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
                 "convergence": {"primal_converged": True},
             },
             "primal_summary_json": str(artifacts["baseline_primal_summary_json"]),
-            "case_metadata_json": str(artifacts["baseline_primal_summary_json"]),
+            "case_metadata_json": str(artifacts["baseline_case_metadata_json"]),
         },
         "plus_case": {
             "summary": {"status": "converged", "convergence": {"primal_converged": True}},
@@ -90,6 +140,7 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
         "noise_floor": 0.1,
         "grid": {"cell_order": "vtk-x-fastest", "cell_shape": [2, 2, 1]},
         "problem_binding": _binding(),
+        "perturbed_contracts": perturbed_contracts,
     }
     summary.update(overrides)
     if seed is not None:
@@ -106,6 +157,11 @@ def _binding() -> dict[str, object]:
         "parent_candidate_id": None,
         "iteration": 0,
         "candidate_binding_sha256": "b" * 64,
+        "canonical_grid_sha256": "c" * 64,
+        "geometry_manifest_sha256": "d" * 64,
+        "baseline_topology_state_sha256": hashlib.sha256(b"{}").hexdigest(),
+        "baseline_density_sha256": hashlib.sha256(b"baseline-density\n").hexdigest(),
+        "rho_variant": "rho",
         "binding_validation": "verified_stage_t_candidate_binding",
     }
 
@@ -205,6 +261,73 @@ def test_gradient_gate_requires_binding_on_every_row(tmp_path: Path) -> None:
     assert report["status"] == "diagnostic_only"
     assert report["problem_binding_status"] == "incomplete"
     assert "row_problem_binding_missing" in report["evidence_gaps"]
+
+
+def test_gradient_gate_rejects_perturbed_topology_binding_mismatch(
+    tmp_path: Path,
+) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="mismatch")
+    plus_state = Path(suite["plus_topology_state_json"])
+    mismatched = _binding()
+    mismatched["candidate_id"] = "different_candidate"
+    plus_state.write_text(
+        json.dumps({"baseline_candidate_binding": mismatched}),
+        encoding="utf-8",
+    )
+
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert report["rows"][0]["perturbed_topology_binding_status"] == "invalid"
+    assert "plus_topology_candidate_binding_mismatch" in report["rows"][0]["failures"]
+
+
+def test_gradient_gate_rejects_direction_and_primal_metadata_binding_tamper(
+    tmp_path: Path,
+) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="row-tamper")
+    direction_path = Path(suite["direction_summary_json"])
+    direction = json.loads(direction_path.read_text(encoding="utf-8"))
+    direction["problem_binding"]["candidate_id"] = "different_candidate"
+    direction_path.write_text(json.dumps(direction), encoding="utf-8")
+    plus_metadata = Path(suite["plus_case"]["case_metadata_json"])
+    metadata = json.loads(plus_metadata.read_text(encoding="utf-8"))
+    metadata["problem_binding"]["iteration"] = 1
+    plus_metadata.write_text(json.dumps(metadata), encoding="utf-8")
+
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    failures = report["rows"][0]["failures"]
+    assert report["status"] == "fail"
+    assert "direction_summary_problem_binding_mismatch" in failures
+    assert "plus_case_metadata_problem_binding_mismatch" in failures
+
+
+def test_gradient_gate_rejects_reused_plus_minus_topology_state(
+    tmp_path: Path,
+) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="reused-state")
+    suite["minus_topology_state_json"] = suite["plus_topology_state_json"]
+
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert "plus_minus_topology_state_not_distinct" in report["rows"][0]["failures"]
 
 
 def test_gradient_gate_records_noise_floor_and_rejects_numeric_failure(tmp_path: Path) -> None:

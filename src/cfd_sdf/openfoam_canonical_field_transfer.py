@@ -5,6 +5,8 @@ OpenFOAM field reconstruction, a uniform ``blockMeshDict`` source grid, a
 verified canonical-grid snapshot, and the exact Cartesian overlap operator.
 Only ``topOSens`` is exported to the canonical grid.  It is a derivative
 coefficient, so the safe operation is the Euclidean dual ``P.T @ g_source``.
+An explicit artifact mapping x-fastest source indices to OpenFOAM global cell
+labels is mandatory; global-label order is never assumed to be Cartesian.
 
 ``alphaTilda``, ``beta``, and raw ``alpha`` are state fields.  The available
 operator maps target states to source averages (``source = P @ target``), and
@@ -37,7 +39,10 @@ from .openfoam_field_reconstruction import (
     ReconstructedOpenFoamFields,
     reconstruct_final_decomposed_openfoam_fields,
 )
-from .openfoam_grid_transfer import ExactCartesianOverlapTransfer
+from .openfoam_grid_transfer import (
+    ExactCartesianOverlapTransfer,
+    load_openfoam_cell_order_mapping,
+)
 
 
 _ARTIFACT_KIND = "openfoam_canonical_gradient_transfer"
@@ -64,6 +69,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
     adjoint_solver_id: str,
     block_mesh_dict: str | Path,
     verified_snapshot: VerifiedCanonicalGridSnapshot,
+    source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
     final_time: str | None = None,
 ) -> CanonicalGradientTransferArtifacts:
@@ -78,7 +84,9 @@ def reconstruct_and_write_canonical_gradient_transfer(
 
     ``output_directory`` must not already exist.  A sibling temporary
     directory is fully written and validated before one directory rename makes
-    the NPZ and provenance visible together.
+    the NPZ and provenance visible together.  The mapping NPY stores
+    ``global_label = values[x_fastest_index]`` and must be a complete
+    permutation of zero-based global labels.
     """
 
     reconstructed = reconstruct_final_decomposed_openfoam_fields(
@@ -91,6 +99,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
         reconstructed=reconstructed,
         source_mesh=source_mesh,
         verified_snapshot=verified_snapshot,
+        source_global_cell_labels_by_xfastest=source_global_cell_labels_by_xfastest,
         output_directory=output_directory,
     )
 
@@ -100,6 +109,7 @@ def write_canonical_gradient_transfer(
     reconstructed: ReconstructedOpenFoamFields,
     source_mesh: OpenFoamBlockMeshGrid,
     verified_snapshot: VerifiedCanonicalGridSnapshot,
+    source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
 ) -> CanonicalGradientTransferArtifacts:
     """Write a canonical adjoint gradient from already reconstructed inputs.
@@ -113,6 +123,11 @@ def write_canonical_gradient_transfer(
     _validate_reconstructed_fields(reconstructed)
     _validate_source_mesh(source_mesh, reconstructed)
     _validate_verified_snapshot(verified_snapshot)
+    source_order_mapping = load_openfoam_cell_order_mapping(
+        source_global_cell_labels_by_xfastest,
+        cell_count=source_mesh.grid.cell_count,
+    )
+    source_order = source_order_mapping.global_cell_labels_by_xfastest
 
     source_grid = source_mesh.grid
     target_grid = verified_snapshot.snapshot.grid
@@ -124,7 +139,8 @@ def write_canonical_gradient_transfer(
         expected_source_grid_sha256=source_mesh.grid_sha256,
         expected_target_grid_sha256=verified_snapshot.snapshot.grid_sha256,
     )
-    canonical_gradient = transfer.transfer_gradient_to_target(reconstructed.top_o_sensitivity)
+    source_gradient_xfastest = np.asarray(reconstructed.top_o_sensitivity)[source_order]
+    canonical_gradient = transfer.transfer_gradient_to_target(source_gradient_xfastest)
     target_indices = np.arange(target_grid.cell_count, dtype=np.int64)
     payload = {
         "top_o_sensitivity_gradient": canonical_gradient,
@@ -135,6 +151,8 @@ def write_canonical_gradient_transfer(
         source_mesh=source_mesh,
         verified_snapshot=verified_snapshot,
         transfer=transfer,
+        source_order_reference=source_order_mapping.to_dict(),
+        source_gradient_xfastest=source_gradient_xfastest,
         canonical_gradient=canonical_gradient,
     )
     return _write_atomically(output_directory, payload, provenance)
@@ -226,6 +244,8 @@ def _provenance(
     source_mesh: OpenFoamBlockMeshGrid,
     verified_snapshot: VerifiedCanonicalGridSnapshot,
     transfer: ExactCartesianOverlapTransfer,
+    source_order_reference: dict[str, Any],
+    source_gradient_xfastest: np.ndarray,
     canonical_gradient: np.ndarray,
 ) -> dict[str, Any]:
     snapshot = verified_snapshot.snapshot
@@ -244,8 +264,12 @@ def _provenance(
             "block_mesh": source_mesh.to_dict(),
             "global_label_count": int(reconstructed.global_cell_labels.size),
             "global_label_ordering": GLOBAL_CELL_LABEL_ORDER,
+            "cell_order_mapping": source_order_reference,
             "field_reconstruction": reconstructed.provenance,
             "field_value_sha256": source_fields,
+            "top_o_sensitivity_xfastest_sha256": _array_sha256(
+                source_gradient_xfastest
+            ),
         },
         "target": {
             "snapshot_path": str(snapshot.path.resolve()),

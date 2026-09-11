@@ -9,6 +9,8 @@ from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from .stage_t_candidate_binding import verify_stage_t_candidate_binding
+
 DEFAULT_REQUIRED_DIRECTIONS = ("sensitivity", "filtered-random")
 DEFAULT_REQUIRED_EPSILONS = (3.0e-5, 1.0e-4, 3.0e-4, 1.0e-3)
 DEFAULT_RATIO_MIN = 0.8
@@ -17,6 +19,46 @@ DEFAULT_RELATIVE_ERROR_TOLERANCE = 0.10
 
 Json = dict[str, Any]
 Input = str | Path | Mapping[str, Any]
+
+
+def load_verified_gradient_problem_binding(
+    candidate_binding_json: str | Path,
+    problem: str | Path,
+    *,
+    expected_topology_state: str | Path | None = None,
+) -> Json:
+    """Verify a Stage T candidate sidecar and return its gradient-gate identity."""
+
+    binding_path = Path(candidate_binding_json).resolve()
+    verified = verify_stage_t_candidate_binding(binding_path, problem)
+    if (
+        expected_topology_state is not None
+        and verified.topology_state_path != Path(expected_topology_state).resolve()
+    ):
+        raise ValueError(
+            "Stage T candidate binding does not reference the suite baseline topology state"
+        )
+    problem_binding = dict(verified.binding["problem"])
+    candidate = dict(verified.binding["candidate"])
+    canonical_grid = dict(verified.binding["canonical_grid"])
+    geometry_masks = dict(verified.binding["geometry_masks"])
+    topology_state = dict(verified.binding["topology_state"])
+    density = dict(verified.binding["density"])
+    return {
+        "problem_id": problem_binding["problem_id"],
+        "problem_spec_sha256": problem_binding["problem_spec_sha256"],
+        "execution_ready": problem_binding["execution_ready"],
+        "candidate_id": candidate["candidate_id"],
+        "parent_candidate_id": candidate["parent_candidate_id"],
+        "iteration": candidate["iteration"],
+        "candidate_binding_sha256": _sha256(binding_path),
+        "canonical_grid_sha256": canonical_grid["grid_sha256"],
+        "geometry_manifest_sha256": geometry_masks["manifest_sha256"],
+        "baseline_topology_state_sha256": topology_state["sha256"],
+        "baseline_density_sha256": density["sha256"],
+        "rho_variant": density["array"],
+        "binding_validation": "verified_stage_t_candidate_binding",
+    }
 
 
 def aggregate_fixed_grid_gradient_gate(
@@ -190,6 +232,19 @@ def _row(
         if item["status"] != "present":
             failures.append(f"artifact_{item['status']}:{item['role']}")
 
+    topology_binding = _perturbed_topology_binding(suite, source_path=source_path)
+    failures.extend(topology_binding["failures"])
+    gaps.extend(topology_binding["evidence_gaps"])
+
+    row_binding_integrity = _row_binding_integrity(
+        suite,
+        direction=direction,
+        validation=validation,
+        source_path=source_path,
+    )
+    failures.extend(row_binding_integrity["failures"])
+    gaps.extend(row_binding_integrity["evidence_gaps"])
+
     return {
         "index": index,
         "source_summary": str(source_path) if source_path else None,
@@ -206,6 +261,10 @@ def _row(
         "clipping": clipping,
         "noise_floor": noise,
         "artifacts": artifacts,
+        "perturbed_topology_binding": topology_binding["value"],
+        "perturbed_topology_binding_status": topology_binding["status"],
+        "row_binding_integrity": row_binding_integrity["value"],
+        "row_binding_integrity_status": row_binding_integrity["status"],
         "failures": _unique(failures),
         "evidence_gaps": _unique(gaps),
     }
@@ -364,6 +423,8 @@ def _artifacts(suite: Mapping[str, Any], *, source_path: Path | None) -> list[Js
         ("direction_summary_json", suite.get("direction_summary_json")),
         ("sensitivity_vti", suite.get("sensitivity_vti")),
         ("direction_vti", suite.get("direction_vti")),
+        ("plus_topology_state_json", suite.get("plus_topology_state_json")),
+        ("minus_topology_state_json", suite.get("minus_topology_state_json")),
     ]
     validation = suite.get("validation")
     if isinstance(validation, Mapping):
@@ -380,6 +441,12 @@ def _artifacts(suite: Mapping[str, Any], *, source_path: Path | None) -> list[Js
             base = _resolve(suite.get("baseline_case_dir"), source_path)
             if base:
                 refs.append(("baseline_primal_summary_json", base / "fixed_grid_primal_summary.json"))
+                refs.append(
+                    (
+                        "baseline_case_metadata_json",
+                        base / "fixed_grid_primal_case_metadata.json",
+                    )
+                )
     result: list[Json] = []
     seen: set[tuple[str, str | None]] = set()
     for role, value in refs:
@@ -395,11 +462,207 @@ def _artifacts(suite: Mapping[str, Any], *, source_path: Path | None) -> list[Js
         else:
             status, digest = "present", _sha256(path)
         result.append({"role": role, "path": str(path) if path else None, "sha256": digest, "status": status})
-    required = {"sensitivity_vti", "direction_vti", "plus_primal_summary_json", "minus_primal_summary_json"}
+    required = {
+        "sensitivity_vti",
+        "direction_vti",
+        "baseline_case_metadata_json",
+        "plus_topology_state_json",
+        "minus_topology_state_json",
+        "plus_primal_summary_json",
+        "plus_case_metadata_json",
+        "minus_primal_summary_json",
+        "minus_case_metadata_json",
+    }
     present_roles = {item["role"] for item in result}
     for role in sorted(required - present_roles):
         result.append({"role": role, "path": None, "sha256": None, "status": "unbound"})
     return result
+
+
+def _perturbed_topology_binding(
+    suite: Mapping[str, Any], *, source_path: Path | None
+) -> Json:
+    expected = _problem_binding(suite)
+    if expected is None:
+        return {
+            "status": "unbound",
+            "value": None,
+            "failures": [],
+            "evidence_gaps": ["perturbed_topology_candidate_binding_unbound"],
+        }
+    values: dict[str, Json] = {}
+    failures: list[str] = []
+    paths: dict[str, Path] = {}
+    contract_records = suite.get("perturbed_contracts")
+    if not isinstance(contract_records, Mapping):
+        failures.append("perturbed_contract_records_missing")
+    for label in ("plus", "minus"):
+        path = _resolve(suite.get(f"{label}_topology_state_json"), source_path)
+        if path is None or not path.is_file():
+            failures.append(f"{label}_topology_state_missing")
+            continue
+        paths[label] = path
+        try:
+            state = _read_json(path)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            failures.append(f"{label}_topology_state_invalid:{type(exc).__name__}")
+            continue
+        bound = state.get("baseline_candidate_binding")
+        if not isinstance(bound, Mapping):
+            failures.append(f"{label}_topology_candidate_binding_missing")
+            continue
+        value = dict(bound)
+        values[label] = value
+        if value != expected:
+            failures.append(f"{label}_topology_candidate_binding_mismatch")
+        for key in (
+            "problem_id",
+            "problem_spec_sha256",
+            "candidate_id",
+            "parent_candidate_id",
+            "iteration",
+        ):
+            if state.get(key) != expected.get(key):
+                failures.append(f"{label}_topology_{key}_mismatch")
+        density_path = _resolve(state.get("density_vti"), path)
+        if density_path is None or not density_path.is_file():
+            failures.append(f"{label}_topology_density_missing")
+            continue
+        density_sha256 = _sha256(density_path)
+        if state.get("density_sha256") != density_sha256:
+            failures.append(f"{label}_topology_density_sha256_mismatch")
+        record = (
+            contract_records.get(label)
+            if isinstance(contract_records, Mapping)
+            else None
+        )
+        if not isinstance(record, Mapping):
+            failures.append(f"{label}_perturbed_contract_record_missing")
+            continue
+        if record.get("topology_state_sha256") != _sha256(path):
+            failures.append(f"{label}_topology_state_sha256_mismatch")
+        if _resolve(record.get("topology_state_json"), source_path) != path:
+            failures.append(f"{label}_topology_state_path_mismatch")
+        if _resolve(record.get("density_vti"), source_path) != density_path:
+            failures.append(f"{label}_density_path_mismatch")
+        if record.get("density_sha256") != density_sha256:
+            failures.append(f"{label}_density_sha256_mismatch")
+    if len(paths) == 2 and paths["plus"] == paths["minus"]:
+        failures.append("plus_minus_topology_state_not_distinct")
+    if len(paths) == 2:
+        plus_state = _read_json(paths["plus"])
+        minus_state = _read_json(paths["minus"])
+        plus_density = _resolve(plus_state.get("density_vti"), paths["plus"])
+        minus_density = _resolve(minus_state.get("density_vti"), paths["minus"])
+        if plus_density == minus_density:
+            failures.append("plus_minus_density_not_distinct")
+        elif (
+            plus_density is not None
+            and minus_density is not None
+            and plus_density.is_file()
+            and minus_density.is_file()
+            and _sha256(plus_density) == _sha256(minus_density)
+        ):
+            failures.append("plus_minus_density_content_not_distinct")
+    return {
+        "status": "bound" if not failures and len(values) == 2 else "invalid",
+        "value": values or None,
+        "failures": failures,
+        "evidence_gaps": [],
+    }
+
+
+def _row_binding_integrity(
+    suite: Mapping[str, Any],
+    *,
+    direction: Mapping[str, Any],
+    validation: Mapping[str, Any],
+    source_path: Path | None,
+) -> Json:
+    expected = _problem_binding(suite)
+    if expected is None:
+        return {
+            "status": "unbound",
+            "value": None,
+            "failures": [],
+            "evidence_gaps": ["row_artifact_binding_unbound"],
+        }
+    failures: list[str] = []
+    values: dict[str, Json] = {}
+    for label, item in (("direction_summary", direction), ("validation", validation)):
+        bound = _problem_binding(item)
+        if bound is None:
+            failures.append(f"{label}_problem_binding_missing")
+            continue
+        values[label] = dict(bound)
+        if bound != expected:
+            failures.append(f"{label}_problem_binding_mismatch")
+    for label in ("plus", "minus"):
+        case = suite.get(f"{label}_case")
+        metadata_path = (
+            _resolve(case.get("case_metadata_json"), source_path)
+            if isinstance(case, Mapping)
+            else None
+        )
+        if metadata_path is None or not metadata_path.is_file():
+            failures.append(f"{label}_case_metadata_missing")
+            continue
+        try:
+            metadata = _read_json(metadata_path)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            failures.append(f"{label}_case_metadata_invalid:{type(exc).__name__}")
+            continue
+        bound = _problem_binding(metadata)
+        if bound is None:
+            failures.append(f"{label}_case_metadata_problem_binding_missing")
+            continue
+        values[f"{label}_case_metadata"] = dict(bound)
+        if bound != expected:
+            failures.append(f"{label}_case_metadata_problem_binding_mismatch")
+    baseline_case = suite.get("baseline_case")
+    baseline_metadata_path = (
+        _resolve(baseline_case.get("case_metadata_json"), source_path)
+        if isinstance(baseline_case, Mapping)
+        else None
+    )
+    if baseline_metadata_path is None:
+        baseline_dir = _resolve(suite.get("baseline_case_dir"), source_path)
+        baseline_metadata_path = (
+            baseline_dir / "fixed_grid_primal_case_metadata.json"
+            if baseline_dir is not None
+            else None
+        )
+    if baseline_metadata_path is None or not baseline_metadata_path.is_file():
+        failures.append("baseline_case_metadata_missing")
+    else:
+        try:
+            baseline_metadata = _read_json(baseline_metadata_path)
+            topology_path = _resolve(
+                baseline_metadata.get("topology_state_json"), baseline_metadata_path
+            )
+            density_path = _resolve(
+                baseline_metadata.get("density_vti"), baseline_metadata_path
+            )
+            if topology_path is None or not topology_path.is_file():
+                failures.append("baseline_topology_state_missing")
+            elif _sha256(topology_path) != expected["baseline_topology_state_sha256"]:
+                failures.append("baseline_topology_state_sha256_mismatch")
+            if density_path is None or not density_path.is_file():
+                failures.append("baseline_density_missing")
+            elif _sha256(density_path) != expected["baseline_density_sha256"]:
+                failures.append("baseline_density_sha256_mismatch")
+            values["baseline_candidate_artifacts"] = {
+                "topology_state_json": str(topology_path) if topology_path else None,
+                "density_vti": str(density_path) if density_path else None,
+            }
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            failures.append(f"baseline_case_metadata_invalid:{type(exc).__name__}")
+    return {
+        "status": "bound" if not failures and len(values) == 5 else "invalid",
+        "value": values or None,
+        "failures": failures,
+        "evidence_gaps": [],
+    }
 
 
 def _coverage(rows: Sequence[Mapping[str, Any]], directions: Sequence[Json], epsilons: Sequence[float]) -> Json:
@@ -472,6 +735,11 @@ def _binding(rows: Sequence[Mapping[str, Any]], provided: Mapping[str, Any] | No
         "parent_candidate_id",
         "iteration",
         "candidate_binding_sha256",
+        "canonical_grid_sha256",
+        "geometry_manifest_sha256",
+        "baseline_topology_state_sha256",
+        "baseline_density_sha256",
+        "rho_variant",
         "binding_validation",
     )
     missing = [key for key in required if key not in value]
@@ -487,6 +755,29 @@ def _binding(rows: Sequence[Mapping[str, Any]], provided: Mapping[str, Any] | No
         char not in "0123456789abcdefABCDEF" for char in candidate_digest
     ):
         return {"status": "invalid", "value": value, "failures": ["candidate_binding_sha256_invalid"], "evidence_gaps": []}
+    for key in (
+        "canonical_grid_sha256",
+        "geometry_manifest_sha256",
+        "baseline_topology_state_sha256",
+        "baseline_density_sha256",
+    ):
+        bound_digest = str(value[key])
+        if len(bound_digest) != 64 or any(
+            char not in "0123456789abcdefABCDEF" for char in bound_digest
+        ):
+            return {
+                "status": "invalid",
+                "value": value,
+                "failures": [f"{key}_invalid"],
+                "evidence_gaps": [],
+            }
+    if value["rho_variant"] not in {"rho", "rho_filtered", "rho_projected"}:
+        return {
+            "status": "invalid",
+            "value": value,
+            "failures": ["rho_variant_invalid"],
+            "evidence_gaps": [],
+        }
     if value["binding_validation"] != "verified_stage_t_candidate_binding":
         return {"status": "unverified", "value": value, "failures": [], "evidence_gaps": ["candidate_binding_not_verified"]}
     if any(dict(other) != value for other in values[1:]):

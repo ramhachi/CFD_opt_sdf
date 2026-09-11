@@ -13,6 +13,7 @@ import yaml
 from cfd_sdf.canonical_geometry_masks import build_canonical_geometry_mask_snapshot
 from cfd_sdf.canonical_grid_snapshot import load_and_verify_canonical_grid_snapshot
 from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _write_cell_vti
+from cfd_sdf.fixed_grid_gradient_gate import load_verified_gradient_problem_binding
 from cfd_sdf.problem_spec import (
     load_problem_spec,
     problem_spec_sha256,
@@ -44,6 +45,31 @@ def test_candidate_binding_round_trip_binds_problem_grid_masks_and_lineage(
         "root_mask",
     }
     assert verified.density_arrays["root_mask"].flags.writeable is False
+
+
+def test_gradient_identity_uses_verified_candidate_artifact_hashes(
+    tmp_path: Path,
+) -> None:
+    fixture = _fixture(tmp_path)
+
+    identity = load_verified_gradient_problem_binding(
+        fixture["binding"],
+        fixture["project"],
+        expected_topology_state=fixture["topology"],
+    )
+
+    assert identity["candidate_id"] == "candidate_0000"
+    assert identity["canonical_grid_sha256"] == fixture["grid_sha256"]
+    assert identity["baseline_topology_state_sha256"] == _sha256(fixture["topology"])
+    assert identity["baseline_density_sha256"] == _sha256(fixture["density"])
+    assert identity["rho_variant"] == "rho"
+
+    with pytest.raises(ValueError, match="does not reference the suite baseline"):
+        load_verified_gradient_problem_binding(
+            fixture["binding"],
+            fixture["project"],
+            expected_topology_state=tmp_path / "different-topology.json",
+        )
 
 
 def test_candidate_binding_rejects_density_hash_tamper(tmp_path: Path) -> None:

@@ -127,7 +127,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
-| Stage T production optimizer | P0 contract plumbing added; numerical qualification remains missing | Stage T candidate lineage can now be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. A gradient gate rejects mixed objectives and incomplete direction-by-epsilon coverage. The real G2 run still awaits canonical state/gradient transfer, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
+| Stage T production optimizer | P0 candidate and state-transfer capability added; numerical qualification remains missing | Stage T candidate lineage can be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. Canonical rho can be conservatively transferred to a uniform Cartesian OpenFOAM source grid with `source = P @ target`; the artifact remains `qualified=false`. Direction suites carry the verified candidate identity into plus/minus topology states, and the gradient gate rejects mixed objectives, binding mismatches, and incomplete direction-by-epsilon coverage. The real G2 run still awaits solver-field consumption of the state artifact, candidate-bound `P.T` gradient return, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
 | Stage S | Cell-density handoff capability added; not qualified | Stage T cell-data `rho` can now be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. The 2026-09-10 T5 candidate remains `diagnostic_only`: its threshold/surface volume mismatch is approximately 100% and root connectivity is unavailable. Quantitative acceptance gates and a qualified sharp-interface solver remain missing. |
 | Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
 
@@ -301,7 +301,9 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Bind response units, reference quantities, `rho` gradient convention,
+1. Consume the canonical `P @ rho` state artifact in the solver case compiler,
+   bind the returned `P.T @ topOSens` gradient to the same candidate/run identity,
+   and bind response units, reference quantities, `rho` gradient convention,
    mesh-grid mapping, and topology-policy values for one shared Stage T/V
    canonical problem. **Implementation required.**
 2. Qualify the new fail-closed T5 cell-density -> iso-surface/SDF artifact

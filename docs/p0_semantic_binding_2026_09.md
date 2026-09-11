@@ -76,15 +76,17 @@ case bundle、convergence evidence provenance、convergence qualificationまで�
 全履歴集約reportは`work/p0_semantic_binding/historical_gradient_validation.json`にあり、
 Git外のため要約にはそのSHA-256を記録する。
 
-## 次の実装判断
+## 第二スライスと次の実装判断
 
-P0の次スライスは、正準target rhoから`P @ rho`でOpenFOAM source stateを生成し、
-実`topOSens`を`P.T`で正準gradientへ戻す既存exact-overlap transferをnative writerへ接続する。
-sourceの`alpha`、`alphaTilda`、`beta`をtarget stateへ逆変換してはならない。
+第二スライスでは、正準target rhoから`P @ rho`でOpenFOAM source state artifactを生成する
+capabilityと、direction-suiteへ検証済みcandidate bindingを伝播する経路を実装した。
+stateとgradientの両方向で、OpenFOAM global cell label順をx-fastest順と同一視しないための
+明示permutationを必須にした。詳細は`p0_canonical_transfer_2026_09.md`を参照する。
 
-同時にdirection-suite writerへ検証済みcandidate bindingを入力し、各行へ同じcandidate IDと
-binding hashを保存する。現行のlegacy suiteはこの情報を持たないため、集約器でP0 passには
-ならない。
+次は、このsource stateをsolver case compilerへ入力し、実`topOSens`を同じpermutationと`P.T`で
+正準gradientへ戻してnative writerへ接続する。sourceの`alpha`、`alphaTilda`、`beta`をtarget
+stateへ逆変換してはならない。現行のlegacy suiteはcandidate bindingを持たないため、集約器で
+P0 passにはならない。
 
 その接続後に、同じProblemSpec、candidate、目的、baseline sensitivityを固定して、
 不足している2方向×4 epsilonのplus/minus primalをfresh processで実行する。clippingを許す
