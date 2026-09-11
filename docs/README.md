@@ -32,6 +32,9 @@ and one active schema version for new implementation work.
   — the first end-to-end canonical state/gradient loop on real OpenFOAM, its
   finite-difference verification, and the measurement showing that Stage T had
   never produced a design.
+- [`stage_t_optimizer_diagnosis_2026_09.md`](stage_t_optimizer_diagnosis_2026_09.md)
+  — why the native ISQP path could not move the design, read against the
+  OpenFOAM sources, and the decision to own the optimization in Python.
 - [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.

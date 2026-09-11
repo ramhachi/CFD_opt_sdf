@@ -166,9 +166,56 @@ handoff attempt. Three separate defects were measured, not inferred.
    That is the six flat boundary patches of the 32x16x16 domain. A 0.5
    iso-surface of a field that never reaches 0.5 has nothing to trace.
 
-Until Stage T yields a genuinely bimodal density field with a substantial
-number of cells above 0.5, no Stage S or Stage V result about optimized
-geometry can be produced, and none should be claimed.
+### Root cause, and the optimizer decision — 2026-09-12
+
+The native ISQP path was diagnosed against the OpenFOAM v2512 sources. Three
+independent faults, detailed in `stage_t_optimizer_diagnosis_2026_09.md`:
+
+- `topOVolume`'s `percentage` is a **fluid-fraction cap over the whole mesh**,
+  `J = (1 - <beta>_V - percentage)/percentage`. With the template's 0.462 and
+  the 5283 forced-fluid buffer cells out of 8192, the minimum attainable `J` is
+  `+0.396 > 0`: the constraint is **unsatisfiable by construction**. The
+  observed frozen value 1.1497 matches the formula exactly.
+- The multiplier pinned at the ISQP penalty `c` is the genuine elastic-variable
+  signature of that infeasibility, not a red herring. The volume sensitivity is
+  ~4000x smaller than the drag sensitivity, so it is invisible in the QP.
+- `function linear` makes the projection the identity, so no 0.5 crossing can
+  form at all. The tutorials use `tanh; b 20`.
+
+With those repaired, the native path does produce real watertight design
+components (one run reached downforce 1.029 against a 0.636 baseline), but it
+still oscillates: an Armijo line search hits its iteration cap every cycle,
+showing the ISQP direction is not a descent direction for the projected
+problem. This is not a gradient error.
+
+**Decision: optimization moves to Python permanently.** Optimality-criteria
+updates on the same verified adjoint gradient advanced monotonically from the
+first attempt (see below). The OpenFOAM template is retained as a primal and
+adjoint evaluator only; its `vol` constraint solver and its `downforce`-as-
+constraint solver should be removed, keeping `drag` and `downforce` as
+independent adjoint solvers.
+
+Also recorded: the 5120-face / 6-component STL signature arises because the
+iso-surface writer always emits the domain boundary patches. **Stage S must
+strip zero-extent components**, or a real design component stays buried among
+them.
+
+### Stage T produced its first design — 2026-09-12
+
+Driving the update from Python with the verified canonical gradient and an
+optimality-criteria step (volume by bisection, move limit, reject-on-worse),
+`downforce_coefficient` rose monotonically from the 0.775975568032 baseline to
+0.821317856508 over 12 iterations, every step accepted on its first attempt,
+with the iteration-0 sign check agreeing to three digits. The resulting 0.5
+iso-surface is 968 faces, 488 vertices, **watertight, 2 connected components**,
+volume 0.0249 — not the degenerate signature — and `build_density_to_sdf_handoff`
+accepts it with all mask and connectivity checks passing. An empty design
+(`rho = 0`) returns `drag = downforce = 0.0` exactly, confirming the objective
+carries no geometry-independent offset.
+
+The known limit is structural: a multiplicative OC update cannot lift a cell off
+exact zero, so achievable volume caps near 3.2% on this seed without an epsilon
+floor.
 
 ## 5. G1 — generic problem and artifact contract
 
