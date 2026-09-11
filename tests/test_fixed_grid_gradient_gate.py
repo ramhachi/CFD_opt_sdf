@@ -89,6 +89,7 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
         "clipping": {"clipped_count": 2, "clipped_fraction": 0.25},
         "noise_floor": 0.1,
         "grid": {"cell_order": "vtk-x-fastest", "cell_shape": [2, 2, 1]},
+        "problem_binding": _binding(),
     }
     summary.update(overrides)
     if seed is not None:
@@ -101,6 +102,11 @@ def _binding() -> dict[str, object]:
         "problem_id": "synthetic-fixed-grid",
         "problem_spec_sha256": "a" * 64,
         "execution_ready": True,
+        "candidate_id": "candidate_0000",
+        "parent_candidate_id": None,
+        "iteration": 0,
+        "candidate_binding_sha256": "b" * 64,
+        "binding_validation": "verified_stage_t_candidate_binding",
     }
 
 
@@ -184,6 +190,21 @@ def test_gradient_gate_is_diagnostic_only_without_problem_binding(tmp_path: Path
     assert report["problem_binding_status"] == "missing"
     assert "problem_binding_missing" in report["evidence_gaps"]
     assert report["ok"] is False
+
+
+def test_gradient_gate_requires_binding_on_every_row(tmp_path: Path) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="missing-row-binding")
+    del suite["problem_binding"]
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "diagnostic_only"
+    assert report["problem_binding_status"] == "incomplete"
+    assert "row_problem_binding_missing" in report["evidence_gaps"]
 
 
 def test_gradient_gate_records_noise_floor_and_rejects_numeric_failure(tmp_path: Path) -> None:

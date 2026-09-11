@@ -1307,7 +1307,11 @@ def aggregate_fixed_grid_gradient_gate_command(
     output_json: Path = typer.Option(..., help="Output gradient_validation.json."),
     problem_binding_json: Path | None = typer.Option(
         None,
-        help="Optional Stage T candidate binding or direct problem-binding JSON.",
+        help="Optional verified Stage T candidate binding JSON.",
+    ),
+    problem_yaml: Path | None = typer.Option(
+        None,
+        help="ProblemSpec used to verify --problem-binding-json.",
     ),
     noise_floor: float | None = typer.Option(
         None,
@@ -1319,25 +1323,40 @@ def aggregate_fixed_grid_gradient_gate_command(
 
     binding = None
     if problem_binding_json is not None:
-        try:
-            raw = json.loads(problem_binding_json.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        if problem_yaml is None:
             raise typer.BadParameter(
-                f"Unable to read problem binding JSON: {problem_binding_json}",
+                "--problem-yaml is required with --problem-binding-json.",
+                param_hint="problem_yaml",
+            )
+        try:
+            verified = verify_stage_t_candidate_binding(
+                problem_binding_json,
+                problem_yaml,
+            )
+        except (OSError, ValueError) as exc:
+            raise typer.BadParameter(
+                str(exc),
                 param_hint="problem_binding_json",
             ) from exc
-        if not isinstance(raw, dict):
-            raise typer.BadParameter(
-                "Problem binding JSON must contain an object.",
-                param_hint="problem_binding_json",
-            )
-        value = raw.get("problem") if raw.get("kind") == "stage_t_candidate_binding" else raw
-        if not isinstance(value, dict):
-            raise typer.BadParameter(
-                "Stage T candidate binding is missing its problem object.",
-                param_hint="problem_binding_json",
-            )
-        binding = value
+        problem = dict(verified.binding["problem"])
+        candidate = dict(verified.binding["candidate"])
+        binding = {
+            "problem_id": problem["problem_id"],
+            "problem_spec_sha256": problem["problem_spec_sha256"],
+            "execution_ready": problem["execution_ready"],
+            "candidate_id": candidate["candidate_id"],
+            "parent_candidate_id": candidate["parent_candidate_id"],
+            "iteration": candidate["iteration"],
+            "candidate_binding_sha256": hashlib.sha256(
+                problem_binding_json.read_bytes()
+            ).hexdigest(),
+            "binding_validation": "verified_stage_t_candidate_binding",
+        }
+    elif problem_yaml is not None:
+        raise typer.BadParameter(
+            "--problem-binding-json is required with --problem-yaml.",
+            param_hint="problem_binding_json",
+        )
 
     report = aggregate_fixed_grid_gradient_gate(
         suite_summary,

@@ -323,6 +323,11 @@ def _verify_binding_payload(
         raise ValueError(
             "density VTI grid does not match canonical grid; resampling is refused"
         )
+    selected_rho = np.asarray(arrays[rho_variant], dtype=np.float64)
+    if not np.isfinite(selected_rho).all():
+        raise ValueError(f"density.vti:{rho_variant} contains non-finite values")
+    if np.any(selected_rho < 0.0) or np.any(selected_rho > 1.0):
+        raise ValueError(f"density.vti:{rho_variant} must satisfy 0 <= rho <= 1")
     _validate_masks_and_relationships(arrays, verified_grid, spec)
 
     declared_density_paths = [
@@ -446,13 +451,13 @@ def _validate_state_lineage(
     expected = {"problem_id": spec.problem_id, "problem_spec_sha256": problem_spec_sha256(spec),
                 "candidate_id": candidate_id, "parent_candidate_id": parent_id,
                 "iteration": iteration}
-    for container in (state, state.get("problem")):
-        if container is None:
-            continue
-        if not isinstance(container, Mapping):
-            raise ValueError("topology_state.problem must be an object")
-        if any(key in container and container[key] != value for key, value in expected.items()):
-            raise ValueError("topology state lineage does not match candidate binding")
+    missing = sorted(key for key in expected if key not in state)
+    if missing:
+        raise ValueError(
+            "topology state is missing candidate lineage: " + ", ".join(missing)
+        )
+    if any(state[key] != value for key, value in expected.items()):
+        raise ValueError("topology state lineage does not match candidate binding")
 
 
 def _artifact_reference(value: str | Path, root: Path, context: str) -> dict[str, str]:

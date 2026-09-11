@@ -448,12 +448,33 @@ def _coverage(rows: Sequence[Mapping[str, Any]], directions: Sequence[Json], eps
 
 
 def _binding(rows: Sequence[Mapping[str, Any]], provided: Mapping[str, Any] | None) -> Json:
-    values = [provided] if isinstance(provided, Mapping) else []
-    values.extend(row["problem_binding"] for row in rows if isinstance(row.get("problem_binding"), Mapping))
-    if not values:
+    if not isinstance(provided, Mapping):
         return {"status": "missing", "value": None, "failures": [], "evidence_gaps": ["problem_binding_missing"]}
+    row_values = [
+        row["problem_binding"]
+        for row in rows
+        if isinstance(row.get("problem_binding"), Mapping)
+    ]
+    if len(row_values) != len(rows):
+        return {
+            "status": "incomplete",
+            "value": dict(provided),
+            "failures": [],
+            "evidence_gaps": ["row_problem_binding_missing"],
+        }
+    values = [provided, *row_values]
     value = dict(values[0])
-    missing = [key for key in ("problem_id", "problem_spec_sha256", "execution_ready") if key not in value]
+    required = (
+        "problem_id",
+        "problem_spec_sha256",
+        "execution_ready",
+        "candidate_id",
+        "parent_candidate_id",
+        "iteration",
+        "candidate_binding_sha256",
+        "binding_validation",
+    )
+    missing = [key for key in required if key not in value]
     if missing:
         return {"status": "incomplete", "value": value, "failures": [], "evidence_gaps": [f"problem_binding_missing:{key}" for key in missing]}
     digest = str(value["problem_spec_sha256"])
@@ -461,6 +482,13 @@ def _binding(rows: Sequence[Mapping[str, Any]], provided: Mapping[str, Any] | No
         return {"status": "invalid", "value": value, "failures": ["problem_spec_sha256_invalid"], "evidence_gaps": []}
     if value["execution_ready"] is not True:
         return {"status": "not_execution_ready", "value": value, "failures": [], "evidence_gaps": ["problem_binding_not_execution_ready"]}
+    candidate_digest = str(value["candidate_binding_sha256"])
+    if len(candidate_digest) != 64 or any(
+        char not in "0123456789abcdefABCDEF" for char in candidate_digest
+    ):
+        return {"status": "invalid", "value": value, "failures": ["candidate_binding_sha256_invalid"], "evidence_gaps": []}
+    if value["binding_validation"] != "verified_stage_t_candidate_binding":
+        return {"status": "unverified", "value": value, "failures": [], "evidence_gaps": ["candidate_binding_not_verified"]}
     if any(dict(other) != value for other in values[1:]):
         return {"status": "mismatch", "value": value, "failures": ["problem_binding_mismatch"], "evidence_gaps": []}
     return {"status": "bound", "value": value, "failures": [], "evidence_gaps": []}

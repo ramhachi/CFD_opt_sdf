@@ -13,7 +13,11 @@ import yaml
 from cfd_sdf.canonical_geometry_masks import build_canonical_geometry_mask_snapshot
 from cfd_sdf.canonical_grid_snapshot import load_and_verify_canonical_grid_snapshot
 from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _write_cell_vti
-from cfd_sdf.problem_spec import load_problem_spec, write_problem_spec_snapshot
+from cfd_sdf.problem_spec import (
+    load_problem_spec,
+    problem_spec_sha256,
+    write_problem_spec_snapshot,
+)
 from cfd_sdf.stage_t_candidate_binding import (
     verify_stage_t_candidate_binding,
     write_stage_t_candidate_binding,
@@ -85,6 +89,33 @@ def test_candidate_binding_rejects_mask_tamper_and_invalid_lineage(tmp_path: Pat
     raw["candidate"]["parent_candidate_id"] = None
     fixture["binding"].write_text(json.dumps(raw), encoding="utf-8")
     with pytest.raises(ValueError, match="require parent_candidate_id"):
+        verify_stage_t_candidate_binding(fixture["binding"], fixture["project"])
+
+
+def test_candidate_binding_rejects_out_of_range_rho_and_missing_state_lineage(
+    tmp_path: Path,
+) -> None:
+    fixture = _fixture(tmp_path)
+    density = pv.read(fixture["density"])
+    rho = np.asarray(density.cell_data["rho"], dtype=np.float32).copy()
+    rho[0] = 2.0
+    density.cell_data["rho"] = rho
+    density.save(fixture["density"])
+    raw = json.loads(fixture["binding"].read_text(encoding="utf-8"))
+    raw["density"]["sha256"] = _sha256(fixture["density"])
+    fixture["binding"].write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(ValueError, match="0 <= rho <= 1"):
+        verify_stage_t_candidate_binding(fixture["binding"], fixture["project"])
+
+    fixture = _fixture(tmp_path / "lineage")
+    raw = json.loads(fixture["binding"].read_text(encoding="utf-8"))
+    topology = fixture["topology"]
+    state = json.loads(topology.read_text(encoding="utf-8"))
+    del state["candidate_id"]
+    topology.write_text(json.dumps(state), encoding="utf-8")
+    raw["topology_state"]["sha256"] = _sha256(topology)
+    fixture["binding"].write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(ValueError, match="missing candidate lineage"):
         verify_stage_t_candidate_binding(fixture["binding"], fixture["project"])
 
 
@@ -244,6 +275,11 @@ def _fixture(tmp_path: Path) -> dict[str, Path | str]:
         "grid": grid.to_dict(),
         "density_vti": density.name,
         "density_array": "rho",
+        "problem_id": spec.problem_id,
+        "problem_spec_sha256": problem_spec_sha256(spec),
+        "candidate_id": "candidate_0000",
+        "parent_candidate_id": None,
+        "iteration": 0,
     }
     topology_state = tmp_path / "topology_state.json"
     topology_state.write_text(json.dumps(state), encoding="utf-8")
@@ -261,6 +297,7 @@ def _fixture(tmp_path: Path) -> dict[str, Path | str]:
         "project": project,
         "binding": binding,
         "density": density,
+        "topology": topology_state,
         "grid_sha256": verified_grid.snapshot.grid_sha256,
     }
 
