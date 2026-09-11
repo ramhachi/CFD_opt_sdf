@@ -44,6 +44,7 @@ class SolverCaseManifest:
     flow_cases: tuple[SolverFlowCasePlan, ...]
     compile_ready: bool
     unsupported: tuple[str, ...]
+    execution_ready: bool
     schema_version: int = SOLVER_CASE_MANIFEST_SCHEMA_VERSION
     kind: str = "openfoam_solver_case_manifest"
 
@@ -54,6 +55,7 @@ class SolverCaseManifest:
             "problem_id": self.problem_id,
             "problem_spec_sha256": self.problem_spec_sha256,
             "solver_profile": self.solver_profile,
+            "execution_ready": self.execution_ready,
             "compile_ready": self.compile_ready,
             "unsupported": list(self.unsupported),
             "flow_cases": [
@@ -104,6 +106,7 @@ def build_openfoam_solver_case_manifest(
         flow_cases=plans,
         compile_ready=compile_ready,
         unsupported=tuple(global_unsupported),
+        execution_ready=spec.migration.execution_ready,
     )
 
 

@@ -951,7 +951,7 @@ def _validate_topo_sensitivity_case_source(case_dir: Path, *, adjoint_solver_id:
         if re.search(pattern, text) is None:
             raise ValueError(f"OpenFOAM optimisationDict is missing {description}")
 
-    if not (case_dir / "0" / "alpha").is_file():
+    if not any((case_dir / "0" / filename).is_file() for filename in ("alpha", "alpha.gz")):
         raise ValueError("OpenFOAM topO source alpha field is missing")
     field_object = f"topOSens{adjoint_solver_id}"
     for _, processor_dir in _processor_dirs(case_dir):

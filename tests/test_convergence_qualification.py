@@ -57,6 +57,7 @@ def test_multipoint_numeric_evidence_passes_per_flow_and_aggregate() -> None:
 
     assert result["status"] == "pass"
     assert result["qualified"] is True
+    assert result["execution_ready"] is True
     assert {key: value["status"] for key, value in result["flow_cases"].items()} == {
         "straight": "pass",
         "yawed": "pass",
@@ -261,6 +262,7 @@ def test_cli_requires_matching_provenance_for_extractor_shaped_evidence(
         "kind": "openfoam_convergence_evidence_provenance",
         "problem_id": "wrong_problem",
         "problem_spec_sha256": "a" * 64,
+        "execution_ready": True,
         "bundle_metadata_sha256": "b" * 64,
         "evidence_sha256": hashlib.sha256(evidence_path.read_bytes()).hexdigest(),
         "flow_case_ids": ["straight", "yawed"],

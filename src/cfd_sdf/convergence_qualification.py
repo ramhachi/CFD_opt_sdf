@@ -57,6 +57,7 @@ def evaluate_openfoam_convergence_bundle(
         "problem_id": manifest.problem_id,
         "problem_spec_sha256": manifest.problem_spec_sha256,
         "solver_profile": manifest.solver_profile,
+        "execution_ready": manifest.execution_ready,
         "manifest_compile_ready": manifest.compile_ready,
         "manifest_unsupported": [
             *manifest.unsupported,

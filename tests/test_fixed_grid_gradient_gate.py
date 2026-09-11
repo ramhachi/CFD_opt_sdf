@@ -1,0 +1,242 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+
+from cfd_sdf.fixed_grid_gradient_gate import (
+    aggregate_fixed_grid_gradient_gate,
+    write_fixed_grid_gradient_gate,
+)
+
+
+def _artifact_set(tmp_path: Path, name: str) -> dict[str, Path]:
+    paths: dict[str, Path] = {}
+    for role in (
+        "direction_summary_json",
+        "validation_report_json",
+        "sensitivity_vti",
+        "direction_vti",
+        "baseline_primal_summary_json",
+        "plus_primal_summary_json",
+        "plus_case_metadata_json",
+        "plus_input_density_vti",
+        "minus_primal_summary_json",
+        "minus_case_metadata_json",
+        "minus_input_density_vti",
+    ):
+        path = tmp_path / f"{name}_{role}.artifact"
+        path.write_text(f"{name}:{role}\n", encoding="utf-8")
+        paths[role] = path
+    return paths
+
+
+def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | None = None, **overrides):
+    artifacts = _artifact_set(tmp_path, name)
+    direction_summary = {
+        "kind": "fixed_grid_sensitivity_direction_summary",
+        "direction_mode": mode,
+        "epsilon": epsilon,
+        "direction_info": ({"perturbation_seed": seed} if seed is not None else {}),
+        "statistics": {
+            "requested_direction_active": {"l2": 2.0},
+            "actual_direction_active": {"l2": 1.0},
+        },
+    }
+    direction_path = artifacts["direction_summary_json"]
+    direction_path.write_text(json.dumps(direction_summary), encoding="utf-8")
+    validation = {
+        "status": "pass",
+        "objective": "downforce",
+        "finite_difference_derivative": 2.0,
+        "adjoint_directional_derivative": 2.0,
+        "finite_difference_to_adjoint_ratio": 1.0,
+        "relative_error": 0.0,
+        "sign_match": True,
+        "report_json": str(artifacts["validation_report_json"]),
+    }
+    artifacts["validation_report_json"].write_text(json.dumps(validation), encoding="utf-8")
+    summary = {
+        "kind": "fixed_grid_sensitivity_direction_suite_summary",
+        "status": "pass",
+        "direction_mode": mode,
+        "epsilon": epsilon,
+        "direction_summary_json": str(direction_path),
+        "sensitivity_vti": str(artifacts["sensitivity_vti"]),
+        "direction_vti": str(artifacts["direction_vti"]),
+        "validation": validation,
+        "baseline_case_dir": str(tmp_path / "no_case_dir"),
+        "baseline_case": {
+            "summary": {
+                "status": "converged",
+                "convergence": {"primal_converged": True},
+            },
+            "primal_summary_json": str(artifacts["baseline_primal_summary_json"]),
+            "case_metadata_json": str(artifacts["baseline_primal_summary_json"]),
+        },
+        "plus_case": {
+            "summary": {"status": "converged", "convergence": {"primal_converged": True}},
+            "primal_summary_json": str(artifacts["plus_primal_summary_json"]),
+            "case_metadata_json": str(artifacts["plus_case_metadata_json"]),
+            "input_density_vti": str(artifacts["plus_input_density_vti"]),
+        },
+        "minus_case": {
+            "summary": {"status": "converged", "convergence": {"primal_converged": True}},
+            "primal_summary_json": str(artifacts["minus_primal_summary_json"]),
+            "case_metadata_json": str(artifacts["minus_case_metadata_json"]),
+            "input_density_vti": str(artifacts["minus_input_density_vti"]),
+        },
+        "clipping": {"clipped_count": 2, "clipped_fraction": 0.25},
+        "noise_floor": 0.1,
+        "grid": {"cell_order": "vtk-x-fastest", "cell_shape": [2, 2, 1]},
+    }
+    summary.update(overrides)
+    if seed is not None:
+        summary["perturbation_seed"] = seed
+    return summary
+
+
+def _binding() -> dict[str, object]:
+    return {
+        "problem_id": "synthetic-fixed-grid",
+        "problem_spec_sha256": "a" * 64,
+        "execution_ready": True,
+    }
+
+
+def test_gradient_gate_accepts_complete_unique_matrix_and_writes_hashes(tmp_path: Path) -> None:
+    suites = [
+        _suite(tmp_path, mode="sensitivity", epsilon=epsilon, name=f"s{epsilon}")
+        for epsilon in (1.0e-4, 3.0e-4)
+    ]
+    suites.extend(
+        _suite(
+            tmp_path,
+            mode="filtered-random",
+            seed=7,
+            epsilon=epsilon,
+            name=f"r{epsilon}",
+        )
+        for epsilon in (1.0e-4, 3.0e-4)
+    )
+
+    report = aggregate_fixed_grid_gradient_gate(
+        suites,
+        required_directions=("sensitivity", "filtered-random:seed=7"),
+        required_epsilons=(1.0e-4, 3.0e-4),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "pass"
+    assert report["ok"] is True
+    assert report["coverage"]["complete"] is True
+    assert report["coverage"]["required_pair_count"] == 4
+    present = [item for item in report["artifact_hashes"] if item["status"] == "present"]
+    assert present
+    assert all(len(item["sha256"]) == 64 for item in present)
+    assert report["rows"][0]["clipping"]["bound"] is True
+    assert report["rows"][0]["noise_floor"]["passed"] is True
+
+    output = write_fixed_grid_gradient_gate(report, tmp_path / "gradient_validation.json")
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    assert saved["status"] == "pass"
+    assert saved["artifact_hashes"] == report["artifact_hashes"]
+
+
+def test_gradient_gate_fails_closed_for_duplicate_and_missing_pairs(tmp_path: Path) -> None:
+    first = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="first")
+    duplicate = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="duplicate")
+    report = aggregate_fixed_grid_gradient_gate(
+        [first, duplicate],
+        required_directions=("sensitivity", "filtered-random"),
+        required_epsilons=(1.0e-4, 3.0e-4),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert "duplicate_direction_epsilon_rows" in report["coverage"]["failures"]
+    assert "missing_required_direction_epsilon_pairs" in report["coverage"]["failures"]
+    assert report["ok"] is False
+
+
+def test_gradient_gate_is_diagnostic_only_without_problem_binding(tmp_path: Path) -> None:
+    suites = [
+        _suite(tmp_path, mode="sensitivity", epsilon=epsilon, name=f"s{epsilon}")
+        for epsilon in (1.0e-4, 3.0e-4)
+    ]
+    suites.extend(
+        _suite(
+            tmp_path,
+            mode="filtered-random",
+            seed=7,
+            epsilon=epsilon,
+            name=f"r{epsilon}",
+        )
+        for epsilon in (1.0e-4, 3.0e-4)
+    )
+    report = aggregate_fixed_grid_gradient_gate(
+        suites,
+        required_directions=("sensitivity", "filtered-random:seed=7"),
+        required_epsilons=(1.0e-4, 3.0e-4),
+    )
+
+    assert report["status"] == "diagnostic_only"
+    assert report["problem_binding_status"] == "missing"
+    assert "problem_binding_missing" in report["evidence_gaps"]
+    assert report["ok"] is False
+
+
+def test_gradient_gate_records_noise_floor_and_rejects_numeric_failure(tmp_path: Path) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="bad")
+    suite["validation"]["sign_match"] = False
+    suite["validation"]["finite_difference_to_adjoint_ratio"] = 1.5
+    suite["validation"]["relative_error"] = 0.5
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert "ratio_out_of_bounds" in report["rows"][0]["failures"]
+    assert "relative_error_out_of_bounds" in report["rows"][0]["failures"]
+    assert "sign_match_missing_or_false" in report["rows"][0]["failures"]
+    assert report["rows"][0]["noise_floor"]["threshold"] == 0.1
+
+
+def test_gradient_gate_hash_is_sha256_of_artifact_bytes(tmp_path: Path) -> None:
+    suite = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="hash")
+    report = aggregate_fixed_grid_gradient_gate(
+        [suite],
+        required_directions=("sensitivity",),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+    target = Path(suite["sensitivity_vti"])
+    expected = hashlib.sha256(target.read_bytes()).hexdigest()
+    found = next(item for item in report["rows"][0]["artifacts"] if item["role"] == "sensitivity_vti")
+    assert found["sha256"] == expected
+
+
+def test_gradient_gate_rejects_mixed_objectives(tmp_path: Path) -> None:
+    downforce = _suite(tmp_path, mode="sensitivity", epsilon=1.0e-4, name="downforce")
+    efficiency = _suite(
+        tmp_path,
+        mode="filtered-random",
+        epsilon=1.0e-4,
+        name="efficiency",
+        seed=7,
+        objective="efficiency_constraint",
+    )
+    report = aggregate_fixed_grid_gradient_gate(
+        [downforce, efficiency],
+        required_directions=("sensitivity", "filtered-random:seed=7"),
+        required_epsilons=(1.0e-4,),
+        problem_binding=_binding(),
+    )
+
+    assert report["status"] == "fail"
+    assert report["objective"] is None
+    assert report["observed_objectives"] == ["downforce", "efficiency_constraint"]
+    assert "mixed_objectives" in report["failures"]

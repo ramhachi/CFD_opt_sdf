@@ -168,6 +168,28 @@ def test_raw_topology_sens_only_is_refused_even_with_other_semantic_bindings(tmp
         )
 
 
+def test_gzip_initial_alpha_is_accepted_for_native_readiness(tmp_path: Path) -> None:
+    project = _write_project(tmp_path)
+    bundle_dir = _write_bound_synthetic_bundle(tmp_path / "bundle", project)
+    alpha = bundle_dir / "flow_straight" / "0" / "alpha"
+    with gzip.open(alpha.with_name("alpha.gz"), "wb") as compressed:
+        compressed.write(alpha.read_bytes())
+    alpha.unlink()
+
+    readiness = assess_native_openfoam_v2_artifact_readiness(
+        project_yaml=project,
+        bundle_dir=bundle_dir,
+    )
+
+    assert readiness["ready"] is True
+    artifacts = write_native_openfoam_v2_artifacts(
+        project_yaml=project,
+        bundle_dir=bundle_dir,
+        output_dir=tmp_path / "native-v2",
+    )
+    assert artifacts.output_dir.is_dir()
+
+
 def test_identity_filter_projection_binding_is_refused(tmp_path: Path) -> None:
     project = _write_project(tmp_path)
     bundle_dir = _write_bound_synthetic_bundle(tmp_path / "bundle", project)

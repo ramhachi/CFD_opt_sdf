@@ -73,6 +73,7 @@ def test_valid_two_flow_force_manifest_is_compile_ready(tmp_path: Path) -> None:
     manifest = build_openfoam_solver_case_manifest(spec, available_patch_ids=PATCHES)
 
     assert manifest.compile_ready is True
+    assert manifest.execution_ready is True
     assert manifest.unsupported == ()
     assert manifest.problem_spec_sha256 == problem_spec_sha256(spec)
     assert [plan.case_directory_name for plan in manifest.flow_cases] == [
@@ -128,6 +129,7 @@ def test_manifest_write_is_deterministic_and_copy_safe(tmp_path: Path) -> None:
     assert hashlib.sha256(first.read_bytes()).hexdigest() == hashlib.sha256(second.read_bytes()).hexdigest()
     payload = json.loads(first.read_text(encoding="utf-8"))
     assert payload == manifest.to_dict()
+    assert payload["execution_ready"] is True
     copied = manifest.to_dict()
     copied["flow_cases"][0]["generated"]["speed_mps"] = -1
     assert manifest.flow_cases[0].generated["speed_mps"] == pytest.approx(30.0)
@@ -143,6 +145,7 @@ def test_incomplete_problem_and_octree_are_global_unsupported(tmp_path: Path) ->
     incomplete_manifest = build_openfoam_solver_case_manifest(
         _load(tmp_path, incomplete, "incomplete.yaml"), available_patch_ids=PATCHES
     )
+    assert incomplete_manifest.execution_ready is False
     assert "problem_spec_not_execution_ready" in incomplete_manifest.unsupported
     assert incomplete_manifest.compile_ready is False
 
