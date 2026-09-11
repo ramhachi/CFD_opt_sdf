@@ -653,6 +653,9 @@ topology/densityをProblemSpec snapshot、canonical grid、STL由来mask、candi
 置き換えない。さらに既存の単発FD結果を、同一目的の2方向×4 epsilonとして集約するgateを
 追加した。旧T3を入力した実判定は、目的混在、coverage不足、`1e-2`での数値失敗、lineage・
 clipping・noise floor不足により`fail`であり、P0完了には昇格していない。
+candidate bindingはtopology state自身のproblem/candidate lineageを必須とし、gradient gateは
+各direction-suite行へ同一candidate binding hashを要求する。legacy artifactへ後付けのIDを
+宣言するだけでは資格化しない。
 
 これはP0/P1の完了ではない。2026-09-10の8192セルT1候補は、補間後densityの最大値が
 iso値0.5と等しいため、閉じた等値面を持たない入力として変換前に拒否された。T5候補を

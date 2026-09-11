@@ -130,20 +130,25 @@
     "source_scope": "existing 2026-09-10 solver artifacts; no new OpenFOAM execution",
     "status": "fail"
   },
-  "implementation_commit": "a28ef9a70e2c06db3415b54ddd4ecf1b7d675f20",
+  "implementation_commit": "e6d40ccf429d9753b1c432ffd8caa993683f21e3",
   "implemented": [
     "fail-closed Stage T candidate sidecar bound to native ProblemSpec, canonical grid, geometry masks, lineage, and exact artifact hashes",
     "fixed-grid gradient aggregation across a declared direction-by-epsilon matrix",
     "objective-consistency, sign, ratio, relative-error, convergence, clipping, noise-floor, and artifact-hash checks",
     "execution_ready propagation through solver manifest, compilation, bundle, evidence provenance, and convergence qualification",
     "native source validation support for OpenFOAM gzip alpha fields",
-    "CLI commands to create and validate candidate bindings and aggregate the P0 gradient gate"
+    "CLI commands to create and validate candidate bindings and aggregate the P0 gradient gate",
+    "finite and bounded selected rho validation",
+    "mandatory topology-state problem and candidate lineage matching",
+    "ProblemSpec-verified candidate binding at the gradient CLI boundary",
+    "per-direction-row candidate ID and candidate-binding hash consistency requirement"
   ],
   "kind": "p0_semantic_binding_first_slice_evidence",
   "not_implemented": [
     "canonical target rho to OpenFOAM source state transfer wired into the native writer",
     "OpenFOAM source topOSens dual transfer into a canonical target gradient artifact",
     "native binding of real response semantics and topology values for the G2 runtime",
+    "direction-suite writer propagation of verified candidate IDs and candidate-binding hashes",
     "fresh single-objective two-direction by four-epsilon OpenFOAM validation matrix",
     "measured response noise floor and explicit clipping counts",
     "P1 quantitative handoff qualification and any Stage V execution"
@@ -155,15 +160,15 @@
   "verification": {
     "cli_help": "pass for bind-stage-t-candidate, validate-stage-t-candidate-binding, and aggregate-fixed-grid-gradient-gate",
     "focused_tests": {
-      "elapsed_seconds": 4.66,
-      "passed": 95,
-      "warnings": 258
+      "elapsed_seconds": 4.5,
+      "passed": 97,
+      "warnings": 373
     },
     "full_tests": {
-      "elapsed_seconds": 152.47,
-      "passed": 523,
+      "elapsed_seconds": 149.52,
+      "passed": 525,
       "skipped": 2,
-      "warnings": 2949
+      "warnings": 3064
     },
     "git_diff_check": "pass",
     "ruff": "pass"

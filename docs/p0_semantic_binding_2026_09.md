@@ -1,7 +1,7 @@
 # P0意味論・勾配ゲート 第一スライス
 
 実施日: 2026-09-11  
-実装commit: `a28ef9a70e2c06db3415b54ddd4ecf1b7d675f20`  
+実装commit: `e6d40ccf429d9753b1c432ffd8caa993683f21e3`
 判定: **第一スライスは実装完了。P0全体はNo-Goのまま。**
 
 ## 今回閉じた問題
@@ -35,6 +35,7 @@ targetへ移す操作と、source stateからtarget stateを一意に復元す�
 - cell-dataの`rho` variant、有限性、`0 <= rho <= 1`
 - `active_design_mask`、`forbidden_mask`、`fixed_solid_mask`、`root_mask`の完全一致
 - candidate ID、iteration、parent candidateの整合
+- topology state自身にあるproblem/candidate lineageとの完全一致
 - identity grid transform
 
 bindingのcontract検証が通っても、surface fidelityとStage S物理は検査していない。
@@ -44,6 +45,8 @@ bindingのcontract検証が通っても、surface fidelityとStage S物理は検
 `sensitivity`とseed固定`filtered-random`の2方向、`3e-5, 1e-4, 3e-4, 1e-3`の4 epsilonを
 要求する。各行で符号一致、`0.8 <= FD/adjoint <= 1.2`、相対誤差10%以下、primal収束、
 clipping情報、noise floorを検査する。異なる目的関数の行は一つの行列へ合算しない。
+各direction-suite行には、検証済みcandidate bindingと同じcandidate ID・binding hashを要求する。
+CLIは任意のID/hash宣言を受理せず、ProblemSpecに対してcandidate binding全体を再検証する。
 
 OpenFOAM生成物の配線では、ProblemSpec由来の`execution_ready`をcase manifest、flow compilation、
 case bundle、convergence evidence provenance、convergence qualificationまで保持するようにした。
@@ -79,8 +82,11 @@ P0の次スライスは、正準target rhoから`P @ rho`でOpenFOAM source stat
 実`topOSens`を`P.T`で正準gradientへ戻す既存exact-overlap transferをnative writerへ接続する。
 sourceの`alpha`、`alphaTilda`、`beta`をtarget stateへ逆変換してはならない。
 
+同時にdirection-suite writerへ検証済みcandidate bindingを入力し、各行へ同じcandidate IDと
+binding hashを保存する。現行のlegacy suiteはこの情報を持たないため、集約器でP0 passには
+ならない。
+
 その接続後に、同じProblemSpec、candidate、目的、baseline sensitivityを固定して、
 不足している2方向×4 epsilonのplus/minus primalをfresh processで実行する。clippingを許す
 境界方向とinterior directionを混ぜず、noise floorを基準反復から先に測る。全8行とnative
 response/unit/rho-chain/topology bindingが通るまで、P1候補のStage S資格化やStage V実行へ進めない。
-
