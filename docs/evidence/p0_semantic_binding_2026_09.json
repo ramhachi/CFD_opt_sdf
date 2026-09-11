@@ -1,0 +1,171 @@
+{
+  "branch": "feat/p0-semantic-binding",
+  "decision": "The first P0 contract slice is usable, but P0 remains No-Go until canonical transfer and fresh numerical evidence pass.",
+  "evidence_classes": [
+    "contract",
+    "capability",
+    "historical_numerical_diagnostic"
+  ],
+  "grid_identity_audit": {
+    "canonical_problem_grid": {
+      "cell_count": 720000,
+      "cell_shape": [
+        150,
+        80,
+        60
+      ],
+      "grid_sha256": "0fb8a37301025a54fff69fe1c11707da500179cd648059c8d28d33584f930145",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "spacing_m": [
+        0.02,
+        0.02,
+        0.02
+      ]
+    },
+    "decision": "Do not relabel the historical anisotropic 8192-cell state as the canonical ProblemSpec state.",
+    "execution_ready": true,
+    "historical_openfoam_source_grid": {
+      "block_mesh_dict_sha256": "cd0e0021399e84545879662f999d533157b81ed903e93eada76f50bf93702a4f",
+      "cell_count": 8192,
+      "cell_shape": [
+        32,
+        16,
+        16
+      ],
+      "grid_sha256": "1d3c60e9f32a9b2105dcbec70c4642dab4aae386ea561ec673fb058ac451010d",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "spacing_m": [
+        0.09375,
+        0.1,
+        0.075
+      ]
+    },
+    "problem_id": "g2_openfoam_multipoint",
+    "problem_spec_sha256": "1559848ce02a78081fa90f222c85156d99fed24749dd9753e94ab409fa6bab6c",
+    "same_grid": false
+  },
+  "historical_gradient_gate": {
+    "evidence_gaps": [
+      "row[0]: clipping_evidence_unbound",
+      "row[0]: noise_floor_unbound",
+      "row[1]: clipping_evidence_unbound",
+      "row[1]: noise_floor_unbound",
+      "row[2]: clipping_evidence_unbound",
+      "row[2]: noise_floor_unbound",
+      "problem_binding_missing"
+    ],
+    "failures": [
+      "mixed_objectives",
+      "row[1]: validation_status_not_pass",
+      "row[1]: ratio_out_of_bounds",
+      "row[1]: relative_error_out_of_bounds",
+      "coverage: duplicate_direction_epsilon_rows",
+      "coverage: duplicate_required_pair:sensitivity@0.0001",
+      "coverage: missing_required_direction_epsilon_pairs",
+      "coverage: unexpected_direction_epsilon_rows"
+    ],
+    "objective": null,
+    "observed_objectives": [
+      "downforce",
+      "efficiency_constraint"
+    ],
+    "observed_required_pair_count": 0,
+    "observed_row_count": 3,
+    "problem_binding_status": "missing",
+    "report_path_gitignored": "work/p0_semantic_binding/historical_gradient_validation.json",
+    "report_sha256": "8d04e511b421752271e0b7e6f0a63676ef7beb7436cd470a2529948f9954fc4d",
+    "required_pair_count": 8,
+    "rows": [
+      {
+        "actual_to_requested_l2_ratio": 0.5000018960882423,
+        "adjoint_directional_derivative": 354.49497576711315,
+        "clipping_bound": false,
+        "direction_id": "sensitivity",
+        "epsilon": 0.0001,
+        "finite_difference_derivative": 339.08618617999986,
+        "finite_difference_to_adjoint_ratio": 0.9565331227790485,
+        "noise_floor_bound": false,
+        "objective": "downforce",
+        "relative_error": 0.043466877220951515,
+        "row_status": "incomplete",
+        "sign_match": true
+      },
+      {
+        "actual_to_requested_l2_ratio": 0.5000010652036662,
+        "adjoint_directional_derivative": 4363.487411115129,
+        "clipping_bound": false,
+        "direction_id": "sensitivity",
+        "epsilon": 0.01,
+        "finite_difference_derivative": 1228.1607296649,
+        "finite_difference_to_adjoint_ratio": 0.28146310827811744,
+        "noise_floor_bound": false,
+        "objective": "efficiency_constraint",
+        "relative_error": 0.7185368917218826,
+        "row_status": "fail",
+        "sign_match": true
+      },
+      {
+        "actual_to_requested_l2_ratio": 0.5000010652036662,
+        "adjoint_directional_derivative": 4363.487386367704,
+        "clipping_bound": false,
+        "direction_id": "sensitivity",
+        "epsilon": 0.0001,
+        "finite_difference_derivative": 4266.189887424998,
+        "finite_difference_to_adjoint_ratio": 0.977701895221084,
+        "noise_floor_bound": false,
+        "objective": "efficiency_constraint",
+        "relative_error": 0.022298104778916077,
+        "row_status": "incomplete",
+        "sign_match": true
+      }
+    ],
+    "source_scope": "existing 2026-09-10 solver artifacts; no new OpenFOAM execution",
+    "status": "fail"
+  },
+  "implementation_commit": "a28ef9a70e2c06db3415b54ddd4ecf1b7d675f20",
+  "implemented": [
+    "fail-closed Stage T candidate sidecar bound to native ProblemSpec, canonical grid, geometry masks, lineage, and exact artifact hashes",
+    "fixed-grid gradient aggregation across a declared direction-by-epsilon matrix",
+    "objective-consistency, sign, ratio, relative-error, convergence, clipping, noise-floor, and artifact-hash checks",
+    "execution_ready propagation through solver manifest, compilation, bundle, evidence provenance, and convergence qualification",
+    "native source validation support for OpenFOAM gzip alpha fields",
+    "CLI commands to create and validate candidate bindings and aggregate the P0 gradient gate"
+  ],
+  "kind": "p0_semantic_binding_first_slice_evidence",
+  "not_implemented": [
+    "canonical target rho to OpenFOAM source state transfer wired into the native writer",
+    "OpenFOAM source topOSens dual transfer into a canonical target gradient artifact",
+    "native binding of real response semantics and topology values for the G2 runtime",
+    "fresh single-objective two-direction by four-epsilon OpenFOAM validation matrix",
+    "measured response noise floor and explicit clipping counts",
+    "P1 quantitative handoff qualification and any Stage V execution"
+  ],
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "recorded_date": "2026-09-11",
+  "schema_version": 1,
+  "verification": {
+    "cli_help": "pass for bind-stage-t-candidate, validate-stage-t-candidate-binding, and aggregate-fixed-grid-gradient-gate",
+    "focused_tests": {
+      "elapsed_seconds": 4.66,
+      "passed": 95,
+      "warnings": 258
+    },
+    "full_tests": {
+      "elapsed_seconds": 152.47,
+      "passed": 523,
+      "skipped": 2,
+      "warnings": 2949
+    },
+    "git_diff_check": "pass",
+    "ruff": "pass"
+  }
+}

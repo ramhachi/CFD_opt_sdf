@@ -2,7 +2,7 @@
 
 作成日: 2026-09-11  
 状態: 実装計画  
-対象ブランチ: `feat/minimal-tv-closed-loop`
+対象ブランチ: `feat/p0-semantic-binding`
 
 ## この文書の位置づけ
 
@@ -631,7 +631,7 @@ P2の候補がVで悪化する場合は、P3へ進んでstepを増やさず、�
    反転原因かを分類する。P2が通った後にP3のtrust-region閉ループへ進み、P4でG3/G4を
    完全化してからproduction Stage Tへ昇格する。
 
-### 2026-09-11の最初の実装状態
+### 2026-09-11の実装状態
 
 このブランチでは、P1の基盤として次を実装した。
 
@@ -646,6 +646,13 @@ P0は既存の`openfoam_native_artifacts.py`にあるnative v2 binding/readiness
 進める。検討中に作成した別のsemantic validatorは、既存実装と責務が重複し、実solver
 artifactへ結合されていなかったため採用しなかった。Stage Vの実artifact形式ができた時点で、
 既存native bindingへT/V共通情報を追加し、二つの意味体系を作らない。
+
+P0の第一スライスでは、solver artifactの意味論とは別の候補系譜として、Stage Tの
+topology/densityをProblemSpec snapshot、canonical grid、STL由来mask、candidate ID、exact hashへ
+結ぶ`stage_t_candidate_binding.json`を追加した。これはnative response/unit/rho-gradient bindingを
+置き換えない。さらに既存の単発FD結果を、同一目的の2方向×4 epsilonとして集約するgateを
+追加した。旧T3を入力した実判定は、目的混在、coverage不足、`1e-2`での数値失敗、lineage・
+clipping・noise floor不足により`fail`であり、P0完了には昇格していない。
 
 これはP0/P1の完了ではない。2026-09-10の8192セルT1候補は、補間後densityの最大値が
 iso値0.5と等しいため、閉じた等値面を持たない入力として変換前に拒否された。T5候補を
