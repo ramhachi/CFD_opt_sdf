@@ -64,7 +64,7 @@ def _suite(tmp_path: Path, *, mode: str, epsilon: float, name: str, seed: int | 
     }
     artifacts["validation_report_json"].write_text(json.dumps(validation), encoding="utf-8")
     artifacts["baseline_topology_state_json"].write_text("{}", encoding="utf-8")
-    artifacts["baseline_density_vti"].write_text("baseline-density\n", encoding="utf-8")
+    artifacts["baseline_density_vti"].write_bytes(b"baseline-density\n")
     artifacts["baseline_case_metadata_json"].write_text(
         json.dumps(
             {
