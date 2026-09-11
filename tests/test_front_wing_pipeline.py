@@ -107,6 +107,86 @@ def test_openfoam_case_generation(tmp_path: Path) -> None:
     ]["force_patches"]
 
 
+def test_openfoam_case_uses_declared_reference_values_not_hardcoded_one(tmp_path: Path) -> None:
+    project_yaml = _write_project(tmp_path, voxel_size_m=0.06)
+    config = load_project(project_yaml)
+    bundle = build_fields(config)
+    case_dir = config.resolved_output_dir / "openfoam_front_wing"
+
+    generate_openfoam_case(config, bundle, case_dir)
+
+    control_dict = (case_dir / "system" / "controlDict").read_text(encoding="utf-8")
+    assert "Aref            0.35;" in control_dict
+    assert "lRef            1.6;" in control_dict
+    assert "Aref            1;" not in control_dict
+    assert "lRef            1;" not in control_dict
+    # drag response direction is (1,0,0); downforce response direction is (0,0,-1),
+    # so liftDir (the +lift axis) must be the negation: (0,0,1).
+    assert "dragDir         (1 0 0);" in control_dict
+    assert "liftDir         (0 0 1);" in control_dict
+
+    metadata = json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
+    reference = metadata["force_reference"]
+    assert reference["area_m2"] == 0.35
+    assert reference["length_m"] == 1.6
+    assert reference["drag_dir"] == [1.0, 0.0, 0.0]
+    assert reference["lift_dir"] == [0.0, 0.0, 1.0]
+    assert reference["factor_N_per_coefficient"] == pytest.approx(
+        0.5 * config.operating_point.density * 0.35 * config.operating_point.velocity_mps**2
+    )
+
+
+def test_openfoam_case_generation_refuses_missing_reference_values(tmp_path: Path) -> None:
+    project_yaml = _write_project(tmp_path, voxel_size_m=0.06, include_reference_values=False)
+    config = load_project(project_yaml)
+    bundle = build_fields(config)
+    case_dir = config.resolved_output_dir / "openfoam_front_wing"
+
+    with pytest.raises(ValueError, match="reference_values"):
+        generate_openfoam_case(config, bundle, case_dir)
+
+
+def test_postprocess_forces_script_emits_newtons_matching_dynamic_pressure_area(tmp_path: Path) -> None:
+    project_yaml = _write_project(tmp_path, voxel_size_m=0.06)
+    config = load_project(project_yaml)
+    bundle = build_fields(config)
+    case_dir = config.resolved_output_dir / "openfoam_front_wing"
+    generate_openfoam_case(config, bundle, case_dir)
+
+    force_dir = case_dir / "postProcessing" / "forceCoeffs" / "0"
+    force_dir.mkdir(parents=True)
+    (force_dir / "forceCoeffs.dat").write_text(
+        "# Time Cm Cd Cl Cl(f) Cl(r)\n"
+        "0 0.0 0.12 -0.36 -0.20 -0.16\n"
+        "1 0.0 0.10 -0.40 -0.22 -0.18\n",
+        encoding="utf-8",
+    )
+
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "postprocess_forces.py"],
+        cwd=case_dir,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    summary = json.loads((case_dir / "cfd_summary.json").read_text(encoding="utf-8"))
+    density = config.operating_point.density
+    velocity = config.operating_point.velocity_mps
+    area = 0.35
+    factor = 0.5 * density * area * velocity**2
+
+    assert summary["drag_coefficient"] == pytest.approx(0.10)
+    assert summary["downforce_coefficient"] == pytest.approx(0.40)
+    assert summary["drag_N"] == pytest.approx(0.10 * factor)
+    assert summary["downforce_N"] == pytest.approx(0.40 * factor)
+    assert summary["reference"]["reference_area_m2"] == area
+    assert summary["reference"]["factor_N_per_coefficient"] == pytest.approx(factor)
+
+
 def test_openfoam_force_coeff_postprocess(tmp_path: Path) -> None:
     force_dir = tmp_path / "case" / "postProcessing" / "forceCoeffs" / "0"
     force_dir.mkdir(parents=True)
@@ -1721,6 +1801,7 @@ def _write_project(
     forbidden_file: str = "geometry/forbidden_tire_clearance.stl",
     voxel_size_m: float = 0.10,
     enforce_front_ratio: bool = False,
+    include_reference_values: bool = True,
 ) -> Path:
     write_front_wing_demo_geometry(tmp_path / "geometry")
     roots = [
@@ -1775,6 +1856,8 @@ def _write_project(
         },
         "output_dir": "runs/front_wing_demo",
     }
+    if include_reference_values:
+        data["reference_values"] = {"area_m2": 0.35, "length_m": 1.6}
     project_yaml = tmp_path / "project.yaml"
     project_yaml.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
     return project_yaml

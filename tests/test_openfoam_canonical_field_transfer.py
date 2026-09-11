@@ -112,6 +112,7 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
         verified_snapshot=snapshot,
         source_global_cell_labels_by_xfastest=mapping_path,
         output_directory=tmp_path / "canonical_result",
+        response_id="rotated_force",
     )
 
     with np.load(artifacts.fields_npz, allow_pickle=False) as payload:
@@ -157,6 +158,7 @@ def test_rejects_snapshot_mask_tamper_after_verification(tmp_path: Path) -> None
             verified_snapshot=snapshot,
             source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
         )
 
 
@@ -178,6 +180,7 @@ def test_rejects_incomplete_coverage_and_source_cell_count_mismatch(
             verified_snapshot=_verified_snapshot(tmp_path),
             source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
         )
 
 
@@ -193,6 +196,7 @@ def test_rejects_invalid_source_cell_order_mapping(tmp_path: Path) -> None:
             verified_snapshot=_verified_snapshot(tmp_path),
             source_global_cell_labels_by_xfastest=mapping,
             output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
         )
 
 

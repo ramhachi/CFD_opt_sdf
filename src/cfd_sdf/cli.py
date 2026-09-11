@@ -15,6 +15,7 @@ from .adjoint_calibration import (
     run_paired_adjoint_direction_check,
 )
 from .adjoint_topology import run_adjoint_topology_optimization
+from .canonical_grid_snapshot import load_and_verify_canonical_grid_snapshot
 from .config import load_project
 from .constraints import check_constraints
 from .convergence_qualification import (
@@ -23,9 +24,12 @@ from .convergence_qualification import (
 )
 from .cfd import write_cfd_summary
 from .density_optimizer import DensityOptimizerControls, run_density_optimization
-from .execution import run_openfoam_case
+from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
 from .export_vtk import export_vti, export_zero_surface
 from .fixed_grid_backend import probe_openfoam_fixed_grid_backend
+from .fixed_grid_canonical_state_injection import (
+    inject_canonical_state_into_fixed_grid_contract,
+)
 from .fixed_grid_contract import (
     build_fixed_grid_contract_from_density_design_state,
     build_openfoam_fixed_grid_contract,
@@ -56,10 +60,14 @@ from .fixed_grid_sensitivity import (
 )
 from .gradient_check import run_finite_difference_gradient_check
 from .handoff import build_density_to_sdf_handoff
-from .openfoam import generate_openfoam_case
+from .openfoam import generate_openfoam_case, problem_spec_to_project_config
+from .openfoam_canonical_field_transfer import (
+    reconstruct_and_write_canonical_gradient_transfer,
+)
 from .openfoam_canonical_state_transfer import (
     transfer_and_write_openfoam_source_state,
 )
+from .openfoam_cell_order_derivation import derive_and_write_openfoam_cell_order_mapping
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
@@ -559,6 +567,116 @@ def transfer_stage_t_candidate_to_openfoam(
     console.print(f"Wrote {artifacts.provenance_json}")
 
 
+@app.command("derive-openfoam-cell-order")
+def derive_openfoam_cell_order(
+    case_dir: Path = typer.Argument(..., help="Reconstructed (serial) OpenFOAM case directory."),
+    block_mesh_dict: Path = typer.Argument(..., help="Uniform Cartesian OpenFOAM blockMeshDict."),
+    output_directory: Path = typer.Argument(..., help="New cell-order mapping artifact directory."),
+    time_name: str = typer.Option("0", help="writeCellCentres time directory to write or read."),
+    execute: bool = typer.Option(
+        True,
+        help="Run postProcess writeCellCentres. Disable to reuse an existing Cx/Cy/Cz time directory.",
+    ),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    docker_image: str = typer.Option(DEFAULT_OPENFOAM_DOCKER_IMAGE, help="Docker image when backend=docker."),
+    timeout_seconds: int | None = typer.Option(None, help="Optional writeCellCentres timeout."),
+    tolerance_cells: float = typer.Option(
+        1.0e-6,
+        help="Fractional-of-spacing tolerance for matching measured cell centres.",
+    ),
+) -> None:
+    """Measure OpenFOAM cell centres and derive the x-fastest global-label mapping."""
+
+    try:
+        artifacts = derive_and_write_openfoam_cell_order_mapping(
+            case_dir,
+            block_mesh_dict=block_mesh_dict,
+            output_directory=output_directory,
+            time_name=time_name,
+            execute=execute,
+            backend=backend,
+            docker_image=docker_image,
+            timeout_seconds=timeout_seconds,
+            tolerance_cells=tolerance_cells,
+        )
+    except (OSError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.mapping_npy}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
+@app.command("inject-canonical-state-into-fixed-grid-contract")
+def inject_canonical_state_into_fixed_grid_contract_command(
+    openfoam_source_state_npz: Path = typer.Argument(
+        ..., help="openfoam_source_state.npz from transfer-stage-t-candidate-to-openfoam."
+    ),
+    source_state_provenance_json: Path = typer.Argument(
+        ..., help="provenance.json sidecar of openfoam_source_state.npz."
+    ),
+    topology_state_json: Path = typer.Argument(..., help="Existing verified T1 topology_state.json."),
+    output_directory: Path = typer.Argument(..., help="New T1 contract directory."),
+) -> None:
+    """Overwrite a T1 contract's rho on active_design_mask cells only."""
+
+    try:
+        artifacts = inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=openfoam_source_state_npz,
+            source_state_provenance_json=source_state_provenance_json,
+            topology_state_json=topology_state_json,
+            output_directory=output_directory,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.topology_state_json}")
+    console.print(f"Wrote {artifacts.density_vti}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
+@app.command("transfer-openfoam-gradient-to-canonical")
+def transfer_openfoam_gradient_to_canonical(
+    case_dir: Path = typer.Argument(..., help="Decomposed OpenFOAM case directory."),
+    adjoint_solver_id: str = typer.Argument(..., help="Adjoint solver id, e.g. downforce."),
+    block_mesh_dict: Path = typer.Argument(..., help="Uniform Cartesian OpenFOAM blockMeshDict."),
+    canonical_grid_snapshot: Path = typer.Argument(..., help="Verified canonical grid snapshot JSON."),
+    problem_yaml: Path = typer.Argument(..., help="Native ProblemSpec YAML bound to the canonical grid snapshot."),
+    source_global_cell_labels_by_xfastest: Path = typer.Argument(
+        ...,
+        help="NPY permutation from each x-fastest index to its OpenFOAM global label.",
+    ),
+    output_directory: Path = typer.Argument(..., help="New canonical gradient artifact directory."),
+    response_id: str = typer.Option(
+        ...,
+        help="ProblemSpec response this adjoint solver differentiates. Solver ids are "
+        "not spec ids, so the correspondence must be declared, not inferred.",
+    ),
+    final_time: str | None = typer.Option(None, help="Optional explicit OpenFOAM time directory."),
+) -> None:
+    """Write topOSens on the canonical grid using the qualified dual P.T @ g_source."""
+
+    try:
+        spec = load_problem_spec(problem_yaml)
+        if response_id not in {response.id for response in spec.responses}:
+            raise ValueError(
+                f"response_id {response_id!r} is not declared by {problem_yaml}; "
+                "the canonical gradient cannot be bound to an undeclared response"
+            )
+        verified_snapshot = load_and_verify_canonical_grid_snapshot(canonical_grid_snapshot, spec)
+        artifacts = reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case_dir,
+            adjoint_solver_id=adjoint_solver_id,
+            block_mesh_dict=block_mesh_dict,
+            verified_snapshot=verified_snapshot,
+            source_global_cell_labels_by_xfastest=source_global_cell_labels_by_xfastest,
+            output_directory=output_directory,
+            final_time=final_time,
+            response_id=response_id,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(f"Wrote {artifacts.fields_npz}")
+    console.print(f"Wrote {artifacts.provenance_json}")
+
+
 @app.command("check-constraints")
 def check(project_yaml: Path) -> None:
     """Check rule, forbidden-region, root-connectivity, and thickness constraints."""
@@ -622,6 +740,56 @@ def prepare_openfoam(
     summary_path.write_text(json.dumps(summary.to_dict(), indent=2), encoding="utf-8")
     console.print(json.dumps(summary.to_dict(), indent=2))
     console.print(f"Wrote {summary_path}")
+
+
+@app.command("prepare-openfoam-from-problem-spec")
+def prepare_openfoam_from_problem_spec(
+    problem_yaml: Path = typer.Argument(..., help="Native v2 ProblemSpec YAML (schema_version: 2)."),
+    case_dir: Path = typer.Option(..., help="Output OpenFOAM case directory."),
+    candidate_stl: Path | None = typer.Option(
+        None,
+        help="Candidate STL overriding the spec's initial_design geometry, e.g. a Stage T iso-surface.",
+    ),
+    flow_case_id: str | None = typer.Option(
+        None,
+        help="Explicit flow_cases[].id to honor. Required when the spec declares more than one.",
+    ),
+    voxel_size_m: float | None = typer.Option(
+        None,
+        help="Override grid.voxel_size_m for this mesh (background blockMesh resolution; "
+        "snappyHexMesh surface refinement is relative to it, so this alone yields distinct grids).",
+    ),
+    backend: str = typer.Option("auto", help="OpenFOAM backend: auto, local, wsl, or docker."),
+    execute: bool = typer.Option(False, help="Actually execute OpenFOAM. Default only writes the run plan."),
+    timeout_seconds: int | None = typer.Option(None, help="Optional timeout for actual execution."),
+) -> None:
+    """Prepare, and optionally run, a body-fitted OpenFOAM case directly from a native v2 ProblemSpec.
+
+    Unlike ``prepare-openfoam`` (which reads a legacy front-wing ``ProjectConfig``), this drives Stage
+    V straight from the same ``ProblemSpec`` Stage T optimized against, so the generated case records
+    the identical ``problem_spec_sha256``.
+    """
+    try:
+        spec = load_problem_spec(problem_yaml)
+        config = problem_spec_to_project_config(
+            spec,
+            candidate_stl=candidate_stl,
+            flow_case_id=flow_case_id,
+            voxel_size_m=voxel_size_m,
+        )
+        bundle = build_fields(config)
+        summary = generate_openfoam_case(config, bundle, case_dir)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    summary_path = case_dir / "openfoam_case_summary.json"
+    summary_path.write_text(json.dumps(summary.to_dict(), indent=2), encoding="utf-8")
+    console.print(json.dumps(summary.to_dict(), indent=2))
+    console.print(f"Wrote {summary_path}")
+
+    result = run_openfoam_case(case_dir, backend=backend, dry_run=not execute, timeout_seconds=timeout_seconds)
+    console.print(json.dumps(result.to_dict(), indent=2))
+    if execute and not result.ok:
+        raise typer.Exit(code=result.returncode or 1)
 
 
 @app.command("postprocess-openfoam")

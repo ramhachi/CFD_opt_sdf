@@ -127,15 +127,48 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
+| Stage T canonical closed loop | Gradient chain verified; optimization still missing | On 2026-09-12 the full loop ran on real OpenFOAM: canonical 46080-cell `rho` -> `P @ rho` -> injection into the 2909 active source cells -> converged primal/adjoints -> `P.T @ topOSens` -> canonical gradient. Finite differences on the canonical grid agreed with the analytic directional derivative to 1.03%-0.56% (ratio 0.990 -> 0.994) along the gradient direction over 16 converged runs. The cell-order permutation is now measured, not assumed. Two limits are recorded: `top_o_sensitivity_gradient` is `d(+downforce)/drho`, the negative of `dJ/drho`; and a generic localized direction retains an unexplained ratio of approximately 0.90 that neither a two-decade residual tightening nor disabling regularisation removes. See `p0_openfoam_closed_loop_2026_09.md`. |
 | Stage T production optimizer | P0 candidate and state-transfer capability added; numerical qualification remains missing | Stage T candidate lineage can be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. Canonical rho can be conservatively transferred to a uniform Cartesian OpenFOAM source grid with `source = P @ target`; the artifact remains `qualified=false`. Direction suites carry the verified candidate identity into plus/minus topology states, and the gradient gate rejects mixed objectives, binding mismatches, and incomplete direction-by-epsilon coverage. The real G2 run still awaits solver-field consumption of the state artifact, candidate-bound `P.T` gradient return, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
-| Stage S | Cell-density handoff capability added; not qualified | Stage T cell-data `rho` can now be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. The 2026-09-10 T5 candidate remains `diagnostic_only`: its threshold/surface volume mismatch is approximately 100% and root connectivity is unavailable. Quantitative acceptance gates and a qualified sharp-interface solver remain missing. |
-| Stage V | Prototype | Body-fitted OpenFOAM execution exists; target-profile grid convergence and cross-fidelity acceptance remain. |
+| Stage S | Cell-density handoff capability added; never yet given a real design | Stage T cell-data `rho` can be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. Its repeated `diagnostic_only` verdicts were **not** a handoff defect: every input it was ever given was degenerate, because Stage T never produced material (see below). Quantitative acceptance gates, a re-run on a real design, and a qualified sharp-interface solver all remain missing. No SDF evolution exists at all — no Hamilton-Jacobi update, reinitialization, or normal velocity from a shape gradient. |
+| Stage V | Prototype, now drivable from the native v2 spec | Body-fitted snappyHexMesh execution exists and, as of 2026-09-12, can be driven directly from a native v2 `ProblemSpec` with an explicit candidate STL, recording `problem_spec_sha256` and the meshed STL hash, at a selectable mesh resolution. `forceCoeffs` now derives `Aref`/`lRef`/`dragDir`/`liftDir` from declared reference values and response directions and reports Newtons alongside coefficients, matching the Stage T `0.5*rho*A*U^2` convention. Target-profile grid convergence and cross-fidelity acceptance remain. |
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
 the fixed-grid Brinkman model. It does not prove constrained optimization or
 the Stage T -> Stage S -> Stage V architecture end to end. The canonical start
 is infeasible for the recorded efficiency and active-cell mean-`rho` limits,
 and the current T5 output cannot be passed as the same candidate to Stage S/V.
+
+### Stage T has never produced a design — 2026-09-12
+
+This invalidates every prior Stage T optimization result and every Stage S
+handoff attempt. Three separate defects were measured, not inferred.
+
+1. **The declared problem was degenerate.** The repository template
+   `examples/fixed_grid_backend_spike/openfoam/porous_force_3d_fd_base/system/optimisationDict`
+   declares `downforce` with `isConstraint true; target 0;` and `drag` as the
+   only weighted objective. The problem actually solved was "minimize drag
+   subject to downforce == 0 and volume fraction == 0.462". Any material
+   creates vertical force and violates the equality, so the optimizer stays at
+   zero material. This is the repository's own template, not a stray work
+   artifact.
+2. **The volume constraint does not engage.** Reformulating `downforce` as a
+   `weight -1` maximization objective did not help. Across a 40-cycle run and a
+   20-cycle run the design converged to the same fixed point: beta histogram
+   `[8080, 2, 110, 0, 0, 0]` over bins `[0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0]`, mean
+   0.0070, **zero cells above 0.5**, realized volume fraction approximately
+   0.007 against the 0.462 target. The `vol` objective value is frozen near
+   1.1493 in both runs and its Lagrange multiplier is pinned at approximately
+   1.99999999, which equals the ISQP penalty parameter `c = 2`.
+3. **The iso-surfaces handed to Stage S were not design surfaces.** Every
+   `topOIsoSurface*.stl` from every cycle of every run is identical: 5120 faces,
+   2822 vertices, not watertight, 6 connected components sized
+   `[1024, 1024, 1024, 1024, 512, 512]`, bounds exactly equal to the domain box.
+   That is the six flat boundary patches of the 32x16x16 domain. A 0.5
+   iso-surface of a field that never reaches 0.5 has nothing to trace.
+
+Until Stage T yields a genuinely bimodal density field with a substantial
+number of cells above 0.5, no Stage S or Stage V result about optimized
+geometry can be produced, and none should be claimed.
 
 ## 5. G1 — generic problem and artifact contract
 
@@ -301,26 +334,48 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-1. Consume the canonical `P @ rho` state artifact in the solver case compiler,
-   bind the returned `P.T @ topOSens` gradient to the same candidate/run identity,
-   and bind response units, reference quantities, `rho` gradient convention,
-   mesh-grid mapping, and topology-policy values for one shared Stage T/V
-   canonical problem. **Implementation required.**
-2. Qualify the new fail-closed T5 cell-density -> iso-surface/SDF artifact
-   bridge. Its capability layer records hashes, interpolation, threshold,
-   grid, masks, components, root availability and volume mismatch. Add the
-   remaining surface-distance, self-intersection, minimum-feature and
-   feature-survival gates, then produce one `ready_for_stage_s=true`
-   canonical artifact. **Qualification implementation required.**
-3. Re-evaluate the same initial and small-step candidates with three-grid
-   body-fitted OpenFOAM, including pressure, skin-friction, total-force, and
-   cross-fidelity comparison. **Implementation required.**
-4. Establish a feasible seed or an explicit feasibility-restoration phase;
+The canonical `P @ rho` state is now consumed by a real solver case and the
+`P.T @ topOSens` gradient returns to the canonical grid, verified by finite
+differences. That item is complete; the sequence below reflects what the
+2026-09-12 measurements changed.
+
+1. **Make Stage T produce a design.** This is the only true blocker: nothing
+   downstream can be demonstrated without it. Either repair the native
+   formulation — the volume-constraint mechanism first, since it, not the
+   downforce declaration, is the measured bottleneck — or drive the update from
+   Python using the verified adjoint gradient with an explicit volume projection.
+   Success is a bimodal density field with a substantial number of cells above
+   0.5, a realized volume fraction near target, and a 0.5 iso-surface that is a
+   real closed design surface rather than the six domain-boundary patches.
+   **Implementation required.**
+2. Fix the repository template's objective/constraint declaration so the solved
+   problem matches the declared one, and add a check that refuses a Stage T run
+   whose OpenFOAM objectives and constraints do not correspond to the
+   ProblemSpec's declared objectives and constraints. The `--response-id` guard
+   on the canonical gradient transfer is the first instance of this class of
+   check; the optimization problem itself needs the same treatment.
+   **Implementation required.**
+3. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
+   add the remaining surface-distance, self-intersection, minimum-feature and
+   feature-survival gates, then produce one `ready_for_stage_s=true` canonical
+   artifact. **Qualification implementation required.**
+4. Re-evaluate the baseline and the optimized candidate with three-grid
+   body-fitted OpenFOAM through `prepare-openfoam-from-problem-spec`, including
+   pressure, skin-friction, total-force and cross-fidelity comparison. The
+   force units and directions are now reconciled between the two fidelities;
+   what remains is the study itself and its acceptance criterion.
+   **Implementation required.**
+5. Resolve or bound the approximately 10% directional-derivative bias on generic
+   directions. Regularisation has been causally exonerated; the named untested
+   candidate is `P`'s fractional-overlap redistribution under non-integer
+   refinement ratios. Until it is understood, gradient-gate rows on
+   non-gradient-aligned directions must not be read as pass/fail.
+6. Establish a feasible seed or an explicit feasibility-restoration phase;
    add nonlinear candidate acceptance, rollback, and move-radius reduction.
    **Implementation required.**
-5. Complete G3 and execute G4 B0–B2 before production optimizer work.
+7. Complete G3 and execute G4 B0–B2 before production optimizer work.
    **Implementation required.**
-6. Implement production Stage T derivatives and a sparse/scalable constrained
+8. Implement production Stage T derivatives and a sparse/scalable constrained
    backend, then advance through B3–B5, Stage S refinement, and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.

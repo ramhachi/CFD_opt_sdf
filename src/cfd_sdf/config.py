@@ -89,6 +89,7 @@ class ProjectConfig:
     operating_point: OperatingPointSpec = field(default_factory=OperatingPointSpec)
     output_dir: Path = Path("runs/front_wing_demo")
     problem_spec: ProblemSpec | None = None
+    flow_case_id: str | None = None
 
     @property
     def base_dir(self) -> Path:

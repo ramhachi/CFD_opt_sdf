@@ -935,6 +935,31 @@ def test_legacy_migration_is_not_execution_ready_and_invents_no_refs_or_bc(tmp_p
     assert spec.migration.execution_ready is False
 
 
+def test_legacy_migration_optionally_bridges_declared_reference_values(tmp_path: Path) -> None:
+    """A legacy v1 project may optionally declare reference_values so the body-fitted
+    OpenFOAM path (which only ever reads config.problem_spec, never a native v2 spec)
+    can compute real forceCoeffs instead of defaulting Aref/lRef to 1."""
+
+    legacy = {
+        "grid": {"voxel_size_m": 0.04, "padding_m": 0.12},
+        "objective": {
+            "type": "maximize_downforce_with_efficiency_constraint",
+            "efficiency_min": 3.0,
+        },
+        "operating_point": {"velocity_mps": 11.0, "density": 1.229, "viscosity": 1.73e-5},
+        "reference_values": {"area_m2": 0.35, "length_m": 1.6},
+    }
+
+    spec = load_problem_spec(_write_yaml(tmp_path, legacy, "legacy.yaml"))
+
+    assert spec.reference_values is not None
+    assert spec.reference_values.area_m2 == 0.35
+    assert spec.reference_values.length_m == 1.6
+    # Declaring reference_values does not by itself make legacy migration execution-ready;
+    # boundary conditions and turbulence are still unspecified.
+    assert spec.migration.execution_ready is False
+
+
 def test_legacy_geometry_and_stl_roots_migrate_to_canonical_regions(tmp_path: Path) -> None:
     legacy = {
         "geometry": {

@@ -1048,7 +1048,7 @@ def _migrate_legacy(path: Path, raw: Mapping[str, Any], source_version: Any) -> 
                 {key: value for key, value in grid_raw.items() if key not in {"voxel_size_m", "padding_m"}}
             ),
         ),
-        reference_values=None,
+        reference_values=_load_reference_values(raw.get("reference_values")),
         geometry_regions=geometry_regions,
         flow_cases=(
             FlowCaseSpec(
@@ -1083,7 +1083,8 @@ def _migrate_legacy(path: Path, raw: Mapping[str, Any], source_version: Any) -> 
             execution_ready=False,
             notes=(
                 "Legacy objective and operating point were migrated to canonical weighted responses.",
-                "Reference values and boundary conditions remain unspecified and must be supplied before execution.",
+                "Boundary conditions remain unspecified and must be supplied before execution; "
+                "reference_values may be supplied in the legacy project YAML but is optional.",
                 *geometry_notes,
             ),
         ),

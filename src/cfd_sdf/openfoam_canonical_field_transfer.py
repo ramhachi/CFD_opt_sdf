@@ -50,7 +50,10 @@ _ARTIFACT_SCHEMA_VERSION = 1
 _STATE_FIELDS = ("alpha_tilda", "beta", "raw_alpha")
 _GRADIENT_CONVENTION = (
     "euclidean_discrete_derivative_coefficients: "
-    "dJ = g.dot(dstate); canonical_gradient = P.T @ openfoam_gradient"
+    "dObjective = g.dot(dstate); canonical_gradient = P.T @ openfoam_gradient. "
+    "Objective is the OpenFOAM objective named by adjoint_solver_id, with that "
+    "solver's own sign. It is not assumed to equal any downstream objective: a "
+    "consumer minimizing a differently-signed J must apply the relation itself."
 )
 
 
@@ -71,6 +74,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
     verified_snapshot: VerifiedCanonicalGridSnapshot,
     source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
+    response_id: str,
     final_time: str | None = None,
 ) -> CanonicalGradientTransferArtifacts:
     """Reconstruct and atomically persist a canonical ``topOSens`` gradient.
@@ -101,6 +105,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
         verified_snapshot=verified_snapshot,
         source_global_cell_labels_by_xfastest=source_global_cell_labels_by_xfastest,
         output_directory=output_directory,
+        response_id=response_id,
     )
 
 
@@ -111,6 +116,7 @@ def write_canonical_gradient_transfer(
     verified_snapshot: VerifiedCanonicalGridSnapshot,
     source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
+    response_id: str,
 ) -> CanonicalGradientTransferArtifacts:
     """Write a canonical adjoint gradient from already reconstructed inputs.
 
@@ -154,6 +160,7 @@ def write_canonical_gradient_transfer(
         source_order_reference=source_order_mapping.to_dict(),
         source_gradient_xfastest=source_gradient_xfastest,
         canonical_gradient=canonical_gradient,
+        response_id=response_id,
     )
     return _write_atomically(output_directory, payload, provenance)
 
@@ -247,6 +254,7 @@ def _provenance(
     source_order_reference: dict[str, Any],
     source_gradient_xfastest: np.ndarray,
     canonical_gradient: np.ndarray,
+    response_id: str,
 ) -> dict[str, Any]:
     snapshot = verified_snapshot.snapshot
     source_fields = {
@@ -270,6 +278,11 @@ def _provenance(
             "top_o_sensitivity_xfastest_sha256": _array_sha256(
                 source_gradient_xfastest
             ),
+        },
+        "differentiated_response": {
+            "problem_spec_response_id": response_id,
+            "openfoam_adjoint_solver_id": reconstructed.provenance.get("adjoint_solver_id"),
+            "binding": "declared by the caller and checked against the ProblemSpec",
         },
         "target": {
             "snapshot_path": str(snapshot.path.resolve()),

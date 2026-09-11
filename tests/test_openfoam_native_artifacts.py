@@ -3,12 +3,14 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
 import pytest
 from typer.testing import CliRunner
 
+from cfd_sdf import openfoam_native_artifacts
 from cfd_sdf.cli import app
 from cfd_sdf.fixed_grid_artifacts import (
     read_fixed_grid_primal_summary,
@@ -233,6 +235,48 @@ def test_unbound_or_custom_force_conversion_is_refused(
 
     assert readiness["ready"] is False
     assert readiness["reasons"] == ["response_value_unit_provenance_not_bound"]
+
+
+def test_force_conversion_newton_value_matches_dynamic_pressure_area(tmp_path: Path) -> None:
+    """Cross-fidelity contract: N = coefficient * 0.5 * rho * U^2 * A."""
+
+    project = _write_project(tmp_path)
+    spec = load_problem_spec(project)
+    response = next(item for item in spec.responses if item.id == "force_x")
+    binding = {
+        "units": "N",
+        "source_quantity": "porous_directional_force_coefficient",
+        "conversion_kind": "dynamic_pressure_area",
+    }
+
+    conversion = openfoam_native_artifacts._force_conversion(spec, response, binding)
+
+    density = spec.flow_cases[0].fluid.density_kg_m3
+    speed = 10.0
+    area = spec.reference_values.area_m2
+    expected_factor = 0.5 * density * area * speed * speed
+    assert conversion["factor_N_per_coefficient"] == pytest.approx(expected_factor)
+    assert conversion["reference_area_m2"] == area
+    assert conversion["freestream_speed_mps"] == pytest.approx(speed)
+
+    coefficient = 0.8
+    newtons = coefficient * conversion["factor_N_per_coefficient"]
+    assert newtons == pytest.approx(coefficient * 0.5 * density * area * speed * speed)
+
+
+def test_force_conversion_refuses_missing_reference_area(tmp_path: Path) -> None:
+    project = _write_project(tmp_path)
+    spec = load_problem_spec(project)
+    spec = replace(spec, reference_values=replace(spec.reference_values, area_m2=None))
+    response = next(item for item in spec.responses if item.id == "force_x")
+    binding = {
+        "units": "N",
+        "source_quantity": "porous_directional_force_coefficient",
+        "conversion_kind": "dynamic_pressure_area",
+    }
+
+    with pytest.raises(ValueError, match="reference_values.area_m2"):
+        openfoam_native_artifacts._force_conversion(spec, response, binding)
 
 
 def _write_bound_synthetic_bundle(root: Path, project: Path) -> Path:

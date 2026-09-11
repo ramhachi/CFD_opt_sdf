@@ -1,14 +1,27 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 from dataclasses import asdict, dataclass
+from math import isfinite, sqrt
 from pathlib import Path
+from typing import Mapping
 
 import numpy as np
 
-from .config import MeshRef, ProjectConfig, RootSpec
+from .config import GridSpec as _ProjectGridSpec
+from .config import MeshRef, OperatingPointSpec, ProjectConfig, RootSpec
+from .problem_spec import FlowCaseSpec, ProblemSpec, ResponseSpec, problem_spec_sha256
 from .sdf import FieldBundle
+
+_GEOMETRY_ROLES_FOR_ADAPTER = (
+    "fixed_solid",
+    "initial_design",
+    "design_domain",
+    "forbidden_region",
+    "root",
+)
 
 
 @dataclass(frozen=True)
@@ -31,13 +44,14 @@ def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir:
 
     copied = _copy_stls(config, case_dir / "constant" / "triSurface")
     force_patches = [f"design_{_patch_name(ref.id)}" for ref in config.design_geometry]
-    metadata = _metadata(config, bundle, copied, force_patches)
+    reference = _force_reference(config)
+    metadata = _metadata(config, bundle, copied, force_patches, reference)
 
     files: dict[str, str] = {
         "system/blockMeshDict": _block_mesh_dict(bundle),
         "system/surfaceFeatureExtractDict": _surface_feature_extract_dict(copied),
         "system/snappyHexMeshDict": _snappy_hex_mesh_dict(config, bundle, copied),
-        "system/controlDict": _control_dict(config, force_patches),
+        "system/controlDict": _control_dict(config, force_patches, reference),
         "system/fvSchemes": _fv_schemes(),
         "system/fvSolution": _fv_solution(),
         "system/decomposeParDict": _decompose_par_dict(),
@@ -51,7 +65,7 @@ def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir:
         "Allrun": _allrun(),
         "Allclean": _allclean(),
         "Allrun.ps1": _allrun_ps1(),
-        "postprocess_forces.py": _postprocess_forces_py(),
+        "postprocess_forces.py": _postprocess_forces_py(reference),
         "case_metadata.json": json.dumps(metadata, indent=2),
     }
 
@@ -70,15 +84,117 @@ def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir:
     )
 
 
+def problem_spec_to_project_config(
+    spec: ProblemSpec,
+    *,
+    candidate_stl: Path | None = None,
+    flow_case_id: str | None = None,
+    voxel_size_m: float | None = None,
+) -> ProjectConfig:
+    """Adapt a native v2 ``ProblemSpec`` into the ``ProjectConfig`` shape ``generate_openfoam_case`` expects.
+
+    This is a body-fitted (Stage V) verification adapter: it maps geometry roles 1:1
+    (``fixed_solid -> fixed_solids``, ``design_domain -> design_domains``,
+    ``forbidden_region -> forbidden_regions``, ``initial_design -> design_geometry``, ``root -> roots``)
+    and derives the operating point from exactly one selected ``flow_cases[]`` entry.
+
+    Fails closed rather than guessing: refuses an ambiguous flow-case selection (more than one
+    flow_cases[] entry without an explicit ``flow_case_id``), missing design geometry (no
+    ``initial_design`` region and no ``candidate_stl`` override), and any freestream velocity that
+    does not resolve to the global +x axis this case template's inlet/outlet patches assume.
+    """
+
+    by_role: dict[str, list] = {role: [] for role in _GEOMETRY_ROLES_FOR_ADAPTER}
+    for region in spec.geometry_regions:
+        by_role[region.role].append(region)
+
+    if candidate_stl is not None:
+        design_geometry = [MeshRef(id="candidate", file=candidate_stl.resolve())]
+    elif by_role["initial_design"]:
+        design_geometry = [MeshRef(id=region.id, file=region.file) for region in by_role["initial_design"]]
+    else:
+        raise ValueError(
+            "ProblemSpec declares no initial_design geometry region and no candidate_stl override "
+            "was given; body-fitted case generation needs an explicit design surface to mesh"
+        )
+
+    flow_case = _select_flow_case(spec, flow_case_id)
+    operating_point = _operating_point_from_flow_case(spec, flow_case)
+    grid = _ProjectGridSpec(
+        voxel_size_m=voxel_size_m if voxel_size_m is not None else spec.grid.voxel_size_m,
+        padding_m=spec.grid.padding_m,
+    )
+
+    return ProjectConfig(
+        path=spec.path,
+        fixed_solids=[MeshRef(id=r.id, file=r.file) for r in by_role["fixed_solid"]],
+        design_geometry=design_geometry,
+        design_domains=[MeshRef(id=r.id, file=r.file) for r in by_role["design_domain"]],
+        forbidden_regions=[MeshRef(id=r.id, file=r.file) for r in by_role["forbidden_region"]],
+        roots=[RootSpec(id=r.id, type="stl", file=r.file) for r in by_role["root"]],
+        grid=grid,
+        operating_point=operating_point,
+        problem_spec=spec,
+        flow_case_id=flow_case.id,
+    )
+
+
+def _select_flow_case(spec: ProblemSpec, flow_case_id: str | None) -> FlowCaseSpec:
+    if flow_case_id is None:
+        if len(spec.flow_cases) != 1:
+            raise ValueError(
+                "ProblemSpec declares more than one flow_cases[] entry; pass an explicit "
+                "flow_case_id to select which one this body-fitted case honors"
+            )
+        return spec.flow_cases[0]
+    for flow_case in spec.flow_cases:
+        if flow_case.id == flow_case_id:
+            return flow_case
+    raise ValueError(f"ProblemSpec has no flow_cases[].id == {flow_case_id!r}")
+
+
+def _operating_point_from_flow_case(spec: ProblemSpec, flow_case: FlowCaseSpec) -> OperatingPointSpec:
+    vx, vy, vz = _to_global_vector(spec, flow_case.freestream_velocity_mps)
+    tolerance = 1.0e-6 * max(abs(vx), 1.0)
+    if vx <= 0.0 or abs(vy) > tolerance or abs(vz) > tolerance:
+        raise ValueError(
+            "Body-fitted OpenFOAM case generation requires flow_cases[].freestream_velocity_mps to "
+            "resolve to the global +x axis (this case template's inlet/outlet patches are fixed along "
+            f"x); flow case {flow_case.id!r} resolves to global vector ({vx!r}, {vy!r}, {vz!r})"
+        )
+    if flow_case.turbulence is not None and flow_case.turbulence.model.lower().replace("_", "") != "komegasst":
+        raise ValueError(
+            "Body-fitted OpenFOAM case generation only supports turbulence.model kOmegaSST "
+            f"(constant/turbulenceProperties is hardcoded to it); flow case {flow_case.id!r} "
+            f"declares {flow_case.turbulence.model!r}"
+        )
+    return OperatingPointSpec(
+        velocity_mps=vx,
+        density=flow_case.fluid.density_kg_m3,
+        viscosity=flow_case.fluid.dynamic_viscosity_pa_s,
+    )
+
+
 def _copy_stls(config: ProjectConfig, tri_surface_dir: Path) -> list[dict[str, str]]:
     copied: list[dict[str, str]] = []
+
+    def record(role: str, item_id: str, src: Path, name: str) -> None:
+        shutil.copyfile(src, tri_surface_dir / name)
+        copied.append(
+            {
+                "role": role,
+                "id": item_id,
+                "file": name,
+                "patch": _patch_name(item_id),
+                "source_path": str(src),
+                "sha256": hashlib.sha256(src.read_bytes()).hexdigest(),
+            }
+        )
 
     def copy_refs(role: str, refs: list[MeshRef]) -> None:
         for ref in refs:
             src = config.resolve(ref.file)
-            name = f"{role}_{_patch_name(ref.id)}.stl"
-            shutil.copyfile(src, tri_surface_dir / name)
-            copied.append({"role": role, "id": ref.id, "file": name, "patch": _patch_name(ref.id)})
+            record(role, ref.id, src, f"{role}_{_patch_name(ref.id)}.stl")
 
     copy_refs("fixed", config.fixed_solids)
     copy_refs("design", config.design_geometry)
@@ -87,9 +203,7 @@ def _copy_stls(config: ProjectConfig, tri_surface_dir: Path) -> list[dict[str, s
     for root in config.roots:
         if root.type == "stl" and root.file is not None:
             src = config.resolve(root.file)
-            name = f"root_{_patch_name(root.id)}.stl"
-            shutil.copyfile(src, tri_surface_dir / name)
-            copied.append({"role": "root", "id": root.id, "file": name, "patch": _patch_name(root.id)})
+            record("root", root.id, src, f"root_{_patch_name(root.id)}.stl")
     return copied
 
 
@@ -98,8 +212,9 @@ def _metadata(
     bundle: FieldBundle,
     copied: list[dict[str, str]],
     force_patches: list[str],
+    reference: Mapping[str, object],
 ) -> dict[str, object]:
-    return {
+    metadata: dict[str, object] = {
         "source_project": str(config.path),
         "grid": {
             "origin": bundle.grid.origin.tolist(),
@@ -125,7 +240,102 @@ def _metadata(
             "density": config.operating_point.density,
             "viscosity": config.operating_point.viscosity,
         },
+        "force_reference": dict(reference),
+        "mesh_refinement": _mesh_refinement_metadata(bundle),
     }
+    if config.problem_spec is not None:
+        metadata["problem_id"] = config.problem_spec.problem_id
+        metadata["problem_spec_sha256"] = problem_spec_sha256(config.problem_spec)
+        if config.flow_case_id is not None:
+            metadata["flow_case_id"] = config.flow_case_id
+    return metadata
+
+
+def _block_mesh_cell_counts(bundle: FieldBundle) -> tuple[int, int, int]:
+    bounds = bundle.grid.bounds
+    lengths = bounds[1] - bounds[0]
+    cells = np.maximum(np.ceil(lengths / (4.0 * bundle.grid.spacing)).astype(int), 1)
+    return int(cells[0]), int(cells[1]), int(cells[2])
+
+
+def _mesh_refinement_metadata(bundle: FieldBundle) -> dict[str, object]:
+    nx, ny, nz = _block_mesh_cell_counts(bundle)
+    return {
+        "voxel_size_m": bundle.grid.spacing,
+        "background_block_mesh_cells": {"nx": nx, "ny": ny, "nz": nz, "total": nx * ny * nz},
+    }
+
+
+def _force_reference(config: ProjectConfig) -> dict[str, object]:
+    """Derive body-fitted forceCoeffs reference quantities from the declared ProblemSpec.
+
+    Fails closed: refuses to fall back to Aref=1/lRef=1 when reference_values or the
+    drag/downforce response directions are not declared.
+    """
+
+    spec = config.problem_spec
+    if spec is None or spec.reference_values is None:
+        raise ValueError(
+            "OpenFOAM case generation requires a project 'reference_values' block "
+            "(area_m2, length_m); refusing to default forceCoeffs Aref/lRef to 1"
+        )
+    area = spec.reference_values.area_m2
+    length = spec.reference_values.length_m
+    if area is None or length is None:
+        raise ValueError(
+            "reference_values.area_m2 and reference_values.length_m are both required "
+            "for body-fitted forceCoeffs; refusing to default to 1"
+        )
+
+    drag_dir = _to_global_direction(spec, _force_response(spec, "drag", config.flow_case_id).direction)
+    downforce_dir = _to_global_direction(spec, _force_response(spec, "downforce", config.flow_case_id).direction)
+    lift_dir = tuple(0.0 if component == 0.0 else -component for component in downforce_dir)
+
+    density = config.operating_point.density
+    speed = config.operating_point.velocity_mps
+    factor = 0.5 * density * area * speed * speed
+    if not all(isfinite(value) and value > 0.0 for value in (density, area, speed, factor)):
+        raise ValueError("Force reference quantities must be finite and positive")
+
+    return {
+        "area_m2": area,
+        "length_m": length,
+        "moment_center_m": spec.reference_values.moment_center_m,
+        "drag_dir": drag_dir,
+        "lift_dir": lift_dir,
+        "density_kg_m3": density,
+        "freestream_speed_mps": speed,
+        "factor_N_per_coefficient": factor,
+    }
+
+
+def _force_response(spec: ProblemSpec, response_id: str, flow_case_id: str | None = None) -> ResponseSpec:
+    for response in spec.responses:
+        if (
+            response.id == response_id
+            and response.kind == "force"
+            and response.direction is not None
+            and (flow_case_id is None or response.flow_case_id == flow_case_id)
+        ):
+            return response
+    scope = f" for flow_case_id {flow_case_id!r}" if flow_case_id is not None else ""
+    raise ValueError(f"ProblemSpec must declare a force response {response_id!r} with a direction{scope}")
+
+
+def _to_global_vector(spec: ProblemSpec, vector: tuple[float, float, float]) -> tuple[float, float, float]:
+    """Resolve a vector declared in the problem's coordinate frame to global axes."""
+
+    basis = spec.coordinate_frame.basis
+    x, y, z = vector
+    return tuple(x * basis.x[axis] + y * basis.y[axis] + z * basis.z[axis] for axis in range(3))
+
+
+def _to_global_direction(spec: ProblemSpec, direction: tuple[float, float, float]) -> tuple[float, float, float]:
+    """Resolve a response direction (declared in the problem's coordinate frame) to global axes."""
+
+    global_vec = _to_global_vector(spec, direction)
+    norm = sqrt(sum(component * component for component in global_vec))
+    return tuple(component / norm for component in global_vec)
 
 
 def _root_metadata(root: RootSpec) -> dict[str, object]:
@@ -143,8 +353,7 @@ def _block_mesh_dict(bundle: FieldBundle) -> str:
     bounds = bundle.grid.bounds
     lo = bounds[0]
     hi = bounds[1]
-    lengths = hi - lo
-    cells = np.maximum(np.ceil(lengths / (4.0 * bundle.grid.spacing)).astype(int), 1)
+    cells = _block_mesh_cell_counts(bundle)
     vertices = [
         (lo[0], lo[1], lo[2]),
         (hi[0], lo[1], lo[2]),
@@ -322,10 +531,16 @@ mergeTolerance 1e-6;
 """
 
 
-def _control_dict(config: ProjectConfig, force_patches: list[str]) -> str:
+def _control_dict(config: ProjectConfig, force_patches: list[str], reference: Mapping[str, object]) -> str:
     patch_text = " ".join(force_patches) if force_patches else "frontWing"
     velocity = config.operating_point.velocity_mps
     density = config.operating_point.density
+    area = reference["area_m2"]
+    length = reference["length_m"]
+    drag_dir_text = " ".join(f"{component:.10g}" for component in reference["drag_dir"])
+    lift_dir_text = " ".join(f"{component:.10g}" for component in reference["lift_dir"])
+    moment_center = reference["moment_center_m"] or (0.0, 0.0, 0.0)
+    cofr_text = " ".join(f"{component:.10g}" for component in moment_center)
     return _foam_header("dictionary", "controlDict") + f"""
 application     simpleFoam;
 startFrom       startTime;
@@ -350,11 +565,11 @@ functions
         rho             rhoInf;
         rhoInf          {density:g};
         magUInf         {velocity:g};
-        lRef            1;
-        Aref            1;
-        CofR            (0 0 0);
-        dragDir         (1 0 0);
-        liftDir         (0 0 1);
+        lRef            {length:g};
+        Aref            {area:g};
+        CofR            ({cofr_text});
+        dragDir         ({drag_dir_text});
+        liftDir         ({lift_dir_text});
         pitchAxis       (0 1 0);
         writeControl    timeStep;
         writeInterval   1;
@@ -525,12 +740,22 @@ wsl bash -lc "cd \"$(wslpath -a \"$PWD\")\" && chmod +x Allrun Allclean && ./All
 """
 
 
-def _postprocess_forces_py() -> str:
-    return r'''from __future__ import annotations
-
-import json
-from pathlib import Path
-
+def _postprocess_forces_py(reference: Mapping[str, object]) -> str:
+    reference_literal = json.dumps(
+        {
+            "density_kg_m3": reference["density_kg_m3"],
+            "reference_area_m2": reference["area_m2"],
+            "reference_length_m": reference["length_m"],
+            "freestream_speed_mps": reference["freestream_speed_mps"],
+            "factor_N_per_coefficient": reference["factor_N_per_coefficient"],
+        }
+    )
+    return (
+        "from __future__ import annotations\n\n"
+        "import json\n"
+        "from pathlib import Path\n\n"
+        f"REFERENCE = json.loads({reference_literal!r})\n"
+        + r'''
 files = sorted(Path("postProcessing").glob("forceCoeffs*/**/forceCoeffs.dat"))
 files.extend(sorted(Path("postProcessing").glob("forceCoeffs*/**/coefficient.dat")))
 if not files:
@@ -551,11 +776,17 @@ if not last:
     raise SystemExit("forceCoeffs.dat did not contain data rows.")
 
 values = {name: float(value) for name, value in zip(header, last)}
+factor = REFERENCE["factor_N_per_coefficient"]
+drag_coefficient = values.get("Cd")
+downforce_coefficient = -values["Cl"] if "Cl" in values else None
 summary = {
     "source": str(files[-1]),
     "latest": values,
-    "drag_coefficient": values.get("Cd"),
-    "downforce_coefficient": -values["Cl"] if "Cl" in values else None,
+    "drag_coefficient": drag_coefficient,
+    "downforce_coefficient": downforce_coefficient,
+    "drag_N": drag_coefficient * factor if drag_coefficient is not None else None,
+    "downforce_N": downforce_coefficient * factor if downforce_coefficient is not None else None,
+    "reference": REFERENCE,
 }
 if summary["drag_coefficient"] is not None and summary["downforce_coefficient"] is not None and abs(summary["drag_coefficient"]) > 1e-12:
     summary["efficiency"] = summary["downforce_coefficient"] / summary["drag_coefficient"]
@@ -564,6 +795,7 @@ else:
 Path("cfd_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 print(json.dumps(summary, indent=2))
 '''
+    )
 
 
 def _patch_name(value: str) -> str:

@@ -1,0 +1,333 @@
+{
+  "artifact_locations": {
+    "canonical_gradient_npz": "work/p0_closed_loop/canonical_gradient/canonical_gradient.npz",
+    "canonical_gradient_provenance_json": "work/p0_closed_loop/canonical_gradient/provenance.json",
+    "canonical_grid_snapshot_json": "work/p0_closed_loop/canonical_grid_snapshot.json",
+    "canonical_state_injection_json": "work/p0_closed_loop/injected_contract/canonical_state_injection.json",
+    "cell_order_labels_npy": "work/p0_closed_loop/cell_order/source_global_cell_labels_by_xfastest.npy",
+    "cell_order_provenance_json": "work/p0_closed_loop/cell_order/provenance.json",
+    "design_domain_stl": "work/p0_closed_loop/geometry/design_domain.stl",
+    "fd_suite_result_json": "work/p0_closed_loop/fd_suite/fd_suite_result.json",
+    "fixed_grid_contract_validation_json": "work/p0_closed_loop/injected_contract/fixed_grid_contract_validation.json",
+    "injected_contract_density_vti": "work/p0_closed_loop/injected_contract/density.vti",
+    "injected_contract_topology_state_json": "work/p0_closed_loop/injected_contract/topology_state.json",
+    "mesh_probe_writecellcentres_stdout": "work/p0_closed_loop/mesh_probe/log.writeCellCentres.stdout",
+    "no_regularisation_result_json": "work/p0_closed_loop/fd_suite/no_regularisation/no_regularisation_result.json",
+    "note": "work/ is intentionally Git-ignored (.gitignore); hashes preserve the observed local evidence identity.",
+    "primal_base_solver_log": "work/p0_closed_loop/primal_base/log.adjointOptimisationFoam",
+    "primal_base_summary_json": "work/p0_closed_loop/primal_base/fixed_grid_primal_summary.json",
+    "problem_spec_snapshot_json": "work/p0_closed_loop/problem_spec_snapshot.json",
+    "project_yaml": "work/p0_closed_loop/project.yaml",
+    "regularisation_attenuation_check_json": "work/p0_closed_loop/fd_suite/regularisation_attenuation_check.json",
+    "runtime_root": "work/p0_closed_loop",
+    "source_state_npz": "work/p0_closed_loop/source_state/openfoam_source_state.npz",
+    "source_state_provenance_json": "work/p0_closed_loop/source_state/provenance.json",
+    "stage_t_candidate_binding_json": "work/p0_closed_loop/stage_t_candidate_binding.json",
+    "tight_residual_result_json": "work/p0_closed_loop/fd_suite/tight_residual/tight_residual_result.json"
+  },
+  "artifact_sha256": {
+    "canonical_gradient_npz": "83676775ff54474dcf82c21a7e7166b10e509afe83e8025617ecae7c04f7b23f",
+    "canonical_gradient_provenance_json": "8647550c22595056af020dd01c413d7f72563f5dd33e5f4810fad2abb36a3d9d",
+    "canonical_grid_snapshot_json": "dafb36aea1ffdd0782d90f4c3ba2f09e1ca6cf0d5275f7c68b09c03189376a92",
+    "canonical_state_injection_json": "9ae6e246f37ac1701dc9f4b291f060f2a540281966cecb8f4572e9766fe81ae8",
+    "cell_order_labels_npy": "bafe786d30e6daa96194badfc0e797b656791f4ab8b20afe826e1267336c04ca",
+    "cell_order_provenance_json": "0a550dab330772f3abdf43c89a84f44838c44d7c338d9ba035830d13b1ee056a",
+    "design_domain_stl": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "fd_suite_result_json": "6a2a2b760e49ac045252ab423f10176c2da53bcde4669ff1ef04fbcd28adb39c",
+    "fixed_grid_contract_validation_json": "cc6f4c7d739b9e819bd3846c3a4018a904849fa72f66cf6f4f09b53ef3256c7a",
+    "injected_contract_density_vti": "8f53d4c707063a7e216d626b0ac287257cdc144087d297af08633562157b41e3",
+    "injected_contract_topology_state_json": "128fef5a867039cdb21fa0afe8dd87ad1df89bd98e162f4365d128eb1675ef1d",
+    "mesh_probe_writecellcentres_stdout": "4593c92808c28d0ba0e9fc474e73fb26087b78b9b20dd4fc47d06f3ec013df33",
+    "no_regularisation_result_json": "215a2b489539d643f5fa31255768cd782b461f68fae88d8738ecedc4ae697127",
+    "primal_base_solver_log": "6cc04558ff966a333155842fc9dc90b7ac04eb99645738c5fdc0cdc54bd69640",
+    "primal_base_summary_json": "ba23c2ba4f959a4472cb30e46d52711a96c8a56d8e6e0e61c5dec35ab46aead4",
+    "problem_spec_snapshot_json": "484f1a56106783fd17f752fbeaeafc213c86d1972b0ba857afb3e120bf8a755c",
+    "project_yaml": "554eb6f57f3adea0f5bba4773b9aa8bdc1d416b939034c3ce3223b075e354c51",
+    "regularisation_attenuation_check_json": "aa25d2e116424bdfbec0244b6e37a8c2f657597fd9e267a97add8495f69387de",
+    "source_state_npz": "77cf0fc1a850be02861e0fa2ce4ef253142fc482155c11ca8f63e9e5ac5894af",
+    "source_state_provenance_json": "7e954d2c8ff445325d8158048d17ac7299752ccdad5e7f9dd71bb67dea06ef58",
+    "stage_t_candidate_binding_json": "c0780eaa6f539bde46cb5b1afd71882140f0315c0606822c666f49e20c101b3b",
+    "tight_residual_result_json": "3a713f01878135674ea81f7ecf6ebea5cc6c5e156bd804514af66888c6442a56"
+  },
+  "branch": "feat/p0-openfoam-closed-loop",
+  "case": {
+    "active_design_mask_true_count": 2909,
+    "candidate_id": "p0_closed_loop_candidate_0000",
+    "canonical_grid": {
+      "cell_count": 46080,
+      "cell_shape": [
+        60,
+        32,
+        24
+      ],
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "declared_objectives": [
+      "minimize_drag"
+    ],
+    "declared_responses": [
+      "drag"
+    ],
+    "openfoam_source_grid": {
+      "cell_count": 8192,
+      "cell_shape": [
+        32,
+        16,
+        16
+      ],
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "spacing_m": [
+        0.09375,
+        0.1,
+        0.075
+      ]
+    },
+    "primal_base": {
+      "downforce_adjoint_converged": true,
+      "downforce_adjoint_iterations": 1143,
+      "downforce_coefficient": 0.775975568032,
+      "drag_adjoint_converged": true,
+      "drag_adjoint_iterations": 713,
+      "drag_coefficient": 3.65646530652,
+      "openfoam_objective_definition": "minimize -C_DF",
+      "primal_iterations": 161,
+      "project_objective_J": -0.775975568032,
+      "status": "converged"
+    },
+    "problem_id": "p0_closed_loop_fixture",
+    "problem_spec_sha256": "f8dfb8f5795eb44dc916bf42c13c4e83440c87970e627cf48ddc0b7b89d55e4c"
+  },
+  "decision": "The canonical Stage T closed loop (P transfer -> contract injection -> real OpenFOAM adjointOptimisationFoam primal+adjoint -> P.T gradient gather) ran end to end for the first time on real OpenFOAM v2512 and is internally self-consistent along the gradient-aligned (sensitivity) direction, up to a sign convention that any consumer must correct for. A generic direction shows a reproducible ~10-14% low bias whose mechanism is not yet confirmed. The ProblemSpec used for this run does not declare the objective (downforce) that the verified gradient differentiates, so this gradient is not yet semantically bound to a Stage T production optimizer step. P0 qualification remains No-Go.",
+  "environment": {
+    "docker_image": "opencfd/openfoam-default:2512",
+    "execution": "Docker",
+    "host": "Apple M4",
+    "host_memory_gib": 32,
+    "openfoam_version": "2512",
+    "solver": "adjointOptimisationFoam"
+  },
+  "evidence_classes": [
+    "contract",
+    "capability",
+    "numerical"
+  ],
+  "fd_verification": {
+    "fd_suite_result_json_note": "16 converged solver runs (8 rows x plus/minus) span BOTH the sensitivity and filtered-random directions across the same 4 epsilons. The verified ratio/relative-error range below is measured on the 4 sensitivity-direction rows (8 of the 16 runs) only; the other 8 runs are the filtered-random direction and show the separate, unresolved bias recorded below.",
+    "fd_suite_result_json_total_converged_runs": 16,
+    "fd_suite_result_json_total_rows": 8,
+    "filtered_random_direction": {
+      "converged_runs": 8,
+      "epsilons": [
+        3e-05,
+        0.0001,
+        0.0003,
+        0.001
+      ],
+      "gate_row_pass_by_epsilon": {
+        "0.0001": true,
+        "0.0003": false,
+        "0.001": false,
+        "3e-05": false
+      },
+      "interpretation": "A generic filtered-random, spatially localized direction shows a reproducible ratio of approximately 0.90 that does not approach 1 as epsilon shrinks. This is not explained by noise or by the regularisation filter (see follow-up experiments below).",
+      "sign_corrected_ratio_by_epsilon": {
+        "0.0001": 0.9151258360121705,
+        "0.0003": 0.8403749320488096,
+        "0.001": 0.8959071808336762,
+        "3e-05": 1.3226407552306279
+      },
+      "status": "open_question_not_resolved"
+    },
+    "gate_thresholds": {
+      "ratio_max": 1.2,
+      "ratio_min": 0.8,
+      "relative_error_tolerance": 0.1
+    },
+    "no_regularisation_followup": {
+      "conclusion": "Disabling the regularisation filter moved the ratio from 0.905 to 0.861, further from 1.0 rather than toward it. This causally exonerates the regularisation chain rule as the cause of the bias. An earlier claim in regularisation_attenuation_check.json that the canonical chain was missing the filter's chain-rule term is retracted on this evidence.",
+      "direction_tested": "filtered-random",
+      "eps": 0.001,
+      "purpose": "Decisive causal test of whether the regularisation (alpha -> alphaTilda) filter's missing chain-rule term explains the filtered-random bias, by disabling the filter entirely (regularise false) at eps=0.001 with the tightened residual controls.",
+      "sign_corrected_ratio_with_regularisation": 0.905,
+      "sign_corrected_ratio_without_regularisation": 0.8610400716343817
+    },
+    "open_question": {
+      "statement": "The residual ~10-14% low bias on the filtered-random direction remains unexplained by a directly confirmed mechanism. Noise floor is ruled out by the tight-residual follow-up; the regularisation filter is ruled out by the no-regularisation follow-up. The one named, untested candidate is P's fractional-overlap redistribution across the non-integer refinement ratios between the canonical and OpenFOAM grids (0.09375/0.05=1.875x, 0.075/0.05=1.5x). This is recorded as an open question naming that candidate; it has NOT been independently tested and must not be reported as a confirmed mechanism.",
+      "status": "not_resolved"
+    },
+    "scope_statement": "This suite validates the composition of P, the canonical-state injection, the OpenFOAM primal solver, topOSens, and P.T on ONE converged state of ONE 8192-cell laminar fixture case. It is not evidence about target aerodynamics, constrained optimization, other design states, other mesh resolutions, or turbulence modeling.",
+    "seed": 20260911,
+    "sensitivity_direction": {
+      "all_rows_gate_pass": true,
+      "converged_runs": 8,
+      "epsilons": [
+        3e-05,
+        0.0001,
+        0.0003,
+        0.001
+      ],
+      "interpretation": "As epsilon shrank from 3e-5 to 1e-3, the sign-corrected FD/analytic ratio rose from 0.9897 to 0.9944 and the sign-corrected relative error fell from 1.03% to 0.56%. This validates the composition of P, the injection, the solver, topOSens, and P.T on this one converged state, along this one gradient-aligned direction.",
+      "sign_corrected_ratio_by_epsilon": {
+        "0.0001": 0.9925789460077455,
+        "0.0003": 0.994261913041525,
+        "0.001": 0.994383515357273,
+        "3e-05": 0.9896679068303099
+      },
+      "sign_corrected_relative_error_by_epsilon": {
+        "0.0001": 0.007421053992254464,
+        "0.0003": 0.005738086958474956,
+        "0.001": 0.005616484642727015,
+        "3e-05": 0.01033209316969012
+      }
+    },
+    "sign_convention": {
+      "finding": "top_o_sensitivity_gradient in canonical_gradient.npz is the derivative of OpenFOAM's raw +downforce_coefficient objective function object, NOT of this project's J = -downforce_coefficient. All 8 raw FD/analytic ratios (both directions, all 4 epsilons) clustered near -1 (mean -0.9931). A consumer treating the array directly as dJ/drho would step the wrong way; it must be negated first: dJ/drho = -top_o_sensitivity_gradient.",
+      "raw_ratio_mean_across_all_8_rows": -0.9931176231702672
+    },
+    "support_cell_count": 624,
+    "tight_residual_followup": {
+      "conclusion": "Tightening the primal residual by two decades removed row-to-row scatter but did not remove the bias: ratios remained in the 0.78-0.91 range and the suite gate still failed overall. This rules out solver residual noise floor as the cause of the filtered-random bias.",
+      "converged_runs": 8,
+      "direction_tested": "filtered-random",
+      "gate_pass_overall": false,
+      "purpose": "Test whether the filtered-random direction's ~10% bias was a solver-residual noise-floor artifact.",
+      "residual_tolerance_after": 5e-09,
+      "residual_tolerance_before": 5e-07,
+      "sign_corrected_ratio_by_epsilon": {
+        "0.0001": 0.89754180369739,
+        "0.0003": 0.9059746433903462,
+        "0.001": 0.9052367288254537,
+        "3e-05": 0.7784020541313525
+      }
+    }
+  },
+  "implementation_commit": "bdf6533",
+  "kind": "p0_openfoam_closed_loop_evidence",
+  "known_gaps": {
+    "objective_semantic_binding_gap": {
+      "guard_now_in_place": "transfer-openfoam-gradient-to-canonical (src/cfd_sdf/cli.py) now requires a --response-id argument that must match a response.id declared in the ProblemSpec, and raises ValueError otherwise. The gradient artifact recorded in this file predates that guard: its provenance.json has no response_id field.",
+      "statement": "work/p0_closed_loop/project.yaml declares only a 'drag' response and a 'minimize_drag' objective. The verified gradient (top_o_sensitivity_gradient) is of the OpenFOAM 'downforce' objective, which this ProblemSpec does not declare. The gradient recorded in this evidence file is therefore NOT semantically bound to this fixture's declared objective.",
+      "status": "unresolved"
+    },
+    "stale_density_arrays_gap": {
+      "statement": "The canonical-state injection (step 3) overwrites the 'rho' array only on the active_design_mask cells. 'rho_filtered', 'rho_projected', and 'alpha' in the produced contract still describe the state prior to injection. The primal solver in this run builds its case from 'rho' directly (src/cfd_sdf/fixed_grid_primal.py:590), so this specific run is correct, but any future consumer reading rho_filtered, rho_projected, or alpha from this contract would silently read a stale state.",
+      "status": "unresolved"
+    }
+  },
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "pipeline_steps": {
+    "1_cell_order": {
+      "artifact_refs": [
+        "cell_order_provenance_json",
+        "cell_order_labels_npy",
+        "mesh_probe_writecellcentres_stdout"
+      ],
+      "cell_count": 8192,
+      "claim": "Measured (not assumed) x-fastest -> OpenFOAM-global-cell-label permutation, derived by running postProcess -func writeCellCentres on the source mesh and inverting the measured cell centres.",
+      "evidence_class": "contract",
+      "result": "identity permutation for this single-block mesh (measured, not assumed)"
+    },
+    "2_source_state": {
+      "artifact_refs": [
+        "source_state_provenance_json"
+      ],
+      "claim": "rho_source = P @ rho_canonical, exact overlap transfer, full source and target domain coverage.",
+      "evidence_class": "contract",
+      "matrix_nnz": 107800,
+      "matrix_shape": [
+        8192,
+        46080
+      ],
+      "qualified": false,
+      "state_map": "source = P @ target"
+    },
+    "3_injected_contract": {
+      "artifact_refs": [
+        "canonical_state_injection_json",
+        "fixed_grid_contract_validation_json"
+      ],
+      "claim": "T1 contract with rho overwritten on exactly the active_design_mask cells; validate-fixed-grid-contract passed.",
+      "evidence_class": "contract",
+      "known_gap": "The injection overwrites rho only. rho_filtered, rho_projected and alpha in the produced contract still describe the previous (pre-injection) state. The solver case is built from rho directly (src/cfd_sdf/fixed_grid_primal.py:590), so this specific run is correct, but any future consumer reading rho_filtered, rho_projected, or alpha from this contract would silently read a stale state.",
+      "overwritten_cell_count": 2909,
+      "rho_variant_written": "rho",
+      "validation_status": "pass"
+    },
+    "4_primal_base": {
+      "artifact_refs": [
+        "primal_base_summary_json",
+        "primal_base_solver_log"
+      ],
+      "claim": "Converged OpenFOAM primal, drag-adjoint, and downforce-adjoint runs on real OpenFOAM v2512 in Docker.",
+      "downforce_adjoint_iterations": 1143,
+      "downforce_coefficient": 0.775975568032,
+      "drag_adjoint_iterations": 713,
+      "drag_coefficient": 3.65646530652,
+      "evidence_class": "capability",
+      "primal_iterations": 161
+    },
+    "5_canonical_gradient": {
+      "artifact_refs": [
+        "canonical_gradient_npz",
+        "canonical_gradient_provenance_json"
+      ],
+      "cell_count": 46080,
+      "claim": "g_canonical = P.T @ topOSens_downforce, gathered back onto the full canonical grid.",
+      "evidence_class": "contract",
+      "guard_note": "CLI command transfer-openfoam-gradient-to-canonical now requires a --response-id that must be declared in the ProblemSpec's responses (src/cfd_sdf/cli.py, response_id Option, checked against {response.id for response in spec.responses}). This recorded artifact's provenance.json contains no response_id field, i.e. it predates the guard and was not produced under it.",
+      "nonzero_count": 18957,
+      "predates_response_id_guard": true
+    },
+    "6_fd_suite": {
+      "artifact_refs": [
+        "fd_suite_result_json",
+        "tight_residual_result_json",
+        "no_regularisation_result_json",
+        "regularisation_attenuation_check_json"
+      ],
+      "claim": "Finite-difference verification of the canonical gradient chain at the converged primal_base state.",
+      "evidence_class": "numerical"
+    }
+  },
+  "recorded_date": "2026-09-12",
+  "schema_version": 1,
+  "scope": {
+    "evidence_class_definitions_source": "docs/phase_plan.md section 3",
+    "excludes": [
+      "target-aerodynamics evidence",
+      "constrained-optimization evidence",
+      "any other grid or Reynolds number",
+      "performance measurement",
+      "qualification of any solver backend",
+      "turbulence modeling",
+      "mesh independence",
+      "body-fitted or Stage S/Stage V evidence"
+    ],
+    "model": "steady incompressible laminar fixed-grid Brinkman fixture, one converged primal/adjoint state"
+  },
+  "scope_limits": [
+    "One 8192-cell laminar fixture.",
+    "One converged primal/adjoint state.",
+    "One objective (OpenFOAM downforce, not the fixture's declared drag objective).",
+    "One machine (Apple M4, 32 GiB, Docker).",
+    "Not target-aerodynamics evidence.",
+    "Not constrained-optimization evidence.",
+    "Not evidence about any other grid or Reynolds number.",
+    "Not a performance measurement.",
+    "Does not qualify any solver backend."
+  ]
+}

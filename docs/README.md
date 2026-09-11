@@ -28,6 +28,10 @@ and one active schema version for new implementation work.
 - [`architecture_effectiveness_2026_09.md`](architecture_effectiveness_2026_09.md)
   — measured Stage T update/re-evaluation evidence and the remaining
   Stage T-to-S-to-V breakpoints.
+- [`p0_openfoam_closed_loop_2026_09.md`](p0_openfoam_closed_loop_2026_09.md)
+  — the first end-to-end canonical state/gradient loop on real OpenFOAM, its
+  finite-difference verification, and the measurement showing that Stage T had
+  never produced a design.
 - [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.
