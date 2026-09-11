@@ -298,6 +298,7 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     ).read_text(encoding="utf-8")
     compilation = json.loads((straight / "openfoam_case_compilation.json").read_text(encoding="utf-8"))
     assert compilation["status"] == "compiled"
+    assert compilation["execution_ready"] is True
     assert compilation["execution_qualification"] == "not_run"
     assert compilation["execution_contract"]["qualification"] == "compiled_not_runtime_qualified"
     library = compilation["execution_contract"]["libraries"][0]
@@ -316,6 +317,7 @@ def test_laminar_two_flow_bundle_compiles_exact_owned_files(tmp_path: Path) -> N
     ).hexdigest()
     bundle = json.loads(artifacts.bundle_metadata_json.read_text(encoding="utf-8"))
     assert bundle["status"] == "compiled"
+    assert bundle["execution_ready"] is True
     assert bundle["manifest_sha256"] == hashlib.sha256(artifacts.manifest_json.read_bytes()).hexdigest()
 
 

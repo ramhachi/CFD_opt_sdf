@@ -388,4 +388,5 @@ def _manifest(response_id: str) -> SolverCaseManifest:
         flow_cases=(plan,),
         compile_ready=True,
         unsupported=(),
+        execution_ready=True,
     )

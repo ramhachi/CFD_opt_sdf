@@ -303,6 +303,7 @@ def compile_openfoam_solver_case_bundle(
                     "kind": "openfoam_case_compilation",
                     "problem_id": spec.problem_id,
                     "problem_spec_sha256": manifest.problem_spec_sha256,
+                    "execution_ready": manifest.execution_ready,
                     "flow_case_id": plan.flow_case_id,
                     "case_dir": plan.case_directory_name,
                     "paths": {
@@ -1752,6 +1753,7 @@ def _bundle_metadata(
         "kind": "openfoam_case_bundle",
         "problem_id": spec.problem_id,
         "problem_spec_sha256": problem_spec_hash_from_manifest_file_value(spec),
+        "execution_ready": spec.migration.execution_ready,
         "manifest_path": _MANIFEST_NAME,
         "manifest_sha256": manifest_sha,
         "template": {

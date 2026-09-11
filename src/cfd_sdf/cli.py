@@ -31,6 +31,10 @@ from .fixed_grid_contract import (
     build_openfoam_fixed_grid_contract,
     validate_fixed_grid_contract as validate_fixed_grid_contract_artifacts,
 )
+from .fixed_grid_gradient_gate import (
+    aggregate_fixed_grid_gradient_gate,
+    write_fixed_grid_gradient_gate,
+)
 from .fixed_grid_connectivity import (
     build_fixed_grid_connectivity_derivatives,
     build_fixed_grid_connectivity_state,
@@ -77,6 +81,10 @@ from .solver_case_compiler import (
     compile_openfoam_solver_case_bundle,
 )
 from .solver_case_manifest import build_openfoam_solver_case_manifest
+from .stage_t_candidate_binding import (
+    verify_stage_t_candidate_binding,
+    write_stage_t_candidate_binding,
+)
 from .topology import run_topology_exploration
 from .validation import validate_outputs
 from .research_cli import app as research_app
@@ -260,6 +268,7 @@ def qualify_openfoam_convergence(
             evidence_by_flow_case=evidence,
             expected_problem_id=spec.problem_id,
             expected_problem_spec_sha256=problem_spec_sha256(spec),
+            expected_execution_ready=spec.migration.execution_ready,
         )
         result = evaluate_openfoam_convergence_bundle(manifest, evidence)
         artifact = write_openfoam_convergence_qualification(result, output_json)
@@ -452,6 +461,69 @@ def build_density_sdf_handoff(
     console.print(json.dumps(artifacts.to_dict(), indent=2))
     if not artifacts.ok:
         raise typer.Exit(code=1)
+
+
+@app.command("bind-stage-t-candidate")
+def bind_stage_t_candidate(
+    problem_yaml: Path = typer.Argument(..., help="Native v2 ProblemSpec YAML."),
+    topology_state_json: Path = typer.Argument(..., help="Stage T topology_state.json."),
+    density_vti: Path = typer.Argument(..., help="Canonical-grid fixed_grid_density VTI."),
+    output_json: Path = typer.Argument(..., help="New stage_t_candidate_binding.json."),
+    problem_snapshot: Path = typer.Option(..., help="ProblemSpec snapshot JSON."),
+    canonical_grid_snapshot: Path = typer.Option(..., help="Verified canonical grid snapshot JSON."),
+    canonical_geometry_manifest: Path = typer.Option(..., help="Verified canonical geometry mask manifest."),
+    candidate_id: str = typer.Option(..., help="Stable candidate identifier."),
+    parent_candidate_id: str | None = typer.Option(None, help="Required for iterations after zero."),
+    iteration: int = typer.Option(0, min=0, help="Candidate iteration number."),
+    rho_variant: str = typer.Option("rho", help="rho, rho_filtered, or rho_projected."),
+) -> None:
+    """Bind one Stage T density candidate to canonical problem and grid artifacts."""
+
+    try:
+        artifacts = write_stage_t_candidate_binding(
+            output_json,
+            problem=problem_yaml,
+            problem_snapshot=problem_snapshot,
+            canonical_grid_snapshot=canonical_grid_snapshot,
+            canonical_geometry_manifest=canonical_geometry_manifest,
+            topology_state=topology_state_json,
+            density_vti=density_vti,
+            candidate_id=candidate_id,
+            parent_candidate_id=parent_candidate_id,
+            iteration=iteration,
+            rho_variant=rho_variant,
+        )
+    except (OSError, ValueError, FileExistsError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(json.dumps(artifacts.binding, indent=2))
+    console.print(f"Wrote {artifacts.path}")
+
+
+@app.command("validate-stage-t-candidate-binding")
+def validate_stage_t_candidate_binding_command(
+    binding_json: Path = typer.Argument(..., help="stage_t_candidate_binding.json."),
+    problem_yaml: Path = typer.Argument(..., help="Native v2 ProblemSpec YAML."),
+) -> None:
+    """Fail unless a Stage T candidate has exact canonical lineage."""
+
+    try:
+        verified = verify_stage_t_candidate_binding(binding_json, problem_yaml)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    console.print(
+        json.dumps(
+            {
+                "kind": "stage_t_candidate_binding_validation",
+                "status": "pass",
+                "evidence_class": "contract",
+                "candidate_id": verified.candidate_id,
+                "problem_id": verified.problem_spec.problem_id,
+                "grid_sha256": verified.canonical_grid.snapshot.grid_sha256,
+                "ready_for_stage_s": False,
+            },
+            indent=2,
+        )
+    )
 
 
 @app.command("check-constraints")
@@ -1226,6 +1298,78 @@ def run_fixed_grid_sensitivity_direction_suite_command(
         raise typer.Exit(code=1)
 
 
+@app.command("aggregate-fixed-grid-gradient-gate")
+def aggregate_fixed_grid_gradient_gate_command(
+    suite_summary: list[Path] = typer.Argument(
+        ...,
+        help="One or more fixed_grid_sensitivity_direction_suite_summary.json files.",
+    ),
+    output_json: Path = typer.Option(..., help="Output gradient_validation.json."),
+    problem_binding_json: Path | None = typer.Option(
+        None,
+        help="Optional verified Stage T candidate binding JSON.",
+    ),
+    problem_yaml: Path | None = typer.Option(
+        None,
+        help="ProblemSpec used to verify --problem-binding-json.",
+    ),
+    noise_floor: float | None = typer.Option(
+        None,
+        min=0.0,
+        help="Optional absolute response-derivative noise floor.",
+    ),
+) -> None:
+    """Aggregate the fixed P0 direction-by-epsilon gradient gate."""
+
+    binding = None
+    if problem_binding_json is not None:
+        if problem_yaml is None:
+            raise typer.BadParameter(
+                "--problem-yaml is required with --problem-binding-json.",
+                param_hint="problem_yaml",
+            )
+        try:
+            verified = verify_stage_t_candidate_binding(
+                problem_binding_json,
+                problem_yaml,
+            )
+        except (OSError, ValueError) as exc:
+            raise typer.BadParameter(
+                str(exc),
+                param_hint="problem_binding_json",
+            ) from exc
+        problem = dict(verified.binding["problem"])
+        candidate = dict(verified.binding["candidate"])
+        binding = {
+            "problem_id": problem["problem_id"],
+            "problem_spec_sha256": problem["problem_spec_sha256"],
+            "execution_ready": problem["execution_ready"],
+            "candidate_id": candidate["candidate_id"],
+            "parent_candidate_id": candidate["parent_candidate_id"],
+            "iteration": candidate["iteration"],
+            "candidate_binding_sha256": hashlib.sha256(
+                problem_binding_json.read_bytes()
+            ).hexdigest(),
+            "binding_validation": "verified_stage_t_candidate_binding",
+        }
+    elif problem_yaml is not None:
+        raise typer.BadParameter(
+            "--problem-binding-json is required with --problem-yaml.",
+            param_hint="problem_binding_json",
+        )
+
+    report = aggregate_fixed_grid_gradient_gate(
+        suite_summary,
+        problem_binding=binding,
+        noise_floor=noise_floor,
+    )
+    written = write_fixed_grid_gradient_gate(report, output_json)
+    console.print(json.dumps(report, indent=2))
+    console.print(f"Wrote {written}")
+    if not report["ok"]:
+        raise typer.Exit(code=1)
+
+
 @app.command("validate-porous-force-gradient")
 def validate_porous_force_gradient_command(
     baseline_case_dir: Path,
@@ -1894,6 +2038,7 @@ def _write_openfoam_convergence_evidence_bundle(
         "kind": _OPENFOAM_EVIDENCE_PROVENANCE_KIND,
         "problem_id": bundle["problem_id"],
         "problem_spec_sha256": bundle["problem_spec_sha256"],
+        "execution_ready": bundle["execution_ready"],
         "bundle_metadata_sha256": hashlib.sha256(
             metadata_path.read_bytes()
         ).hexdigest(),
@@ -1962,6 +2107,7 @@ def _validate_openfoam_evidence_provenance(
     evidence_by_flow_case: dict,
     expected_problem_id: str,
     expected_problem_spec_sha256: str,
+    expected_execution_ready: bool,
 ) -> None:
     provenance_path = _openfoam_evidence_provenance_path(evidence_json)
     requires_provenance = any(
@@ -1991,6 +2137,10 @@ def _validate_openfoam_evidence_provenance(
     if provenance.get("problem_spec_sha256") != expected_problem_spec_sha256:
         raise ValueError(
             "Evidence provenance problem_spec_sha256 does not match the problem specification"
+        )
+    if provenance.get("execution_ready") is not expected_execution_ready:
+        raise ValueError(
+            "Evidence provenance execution_ready does not match the problem specification"
         )
     if not _is_sha256(provenance.get("bundle_metadata_sha256")):
         raise ValueError("Evidence provenance has an invalid bundle_metadata_sha256")

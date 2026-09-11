@@ -56,6 +56,7 @@ def test_extract_cli_writes_deterministic_incomplete_bundle_and_returns_zero(
         "kind": "openfoam_convergence_evidence_provenance",
         "problem_id": "g2_cli_test",
         "problem_spec_sha256": "a" * 64,
+        "execution_ready": True,
         "bundle_metadata_sha256": hashlib.sha256(
             (bundle / "openfoam_case_bundle.json").read_bytes()
         ).hexdigest(),
@@ -77,6 +78,7 @@ def test_extract_cli_rejects_case_directory_traversal_without_writing_output(
                 "kind": "openfoam_case_bundle",
                 "problem_id": "g2_cli_test",
                 "problem_spec_sha256": "a" * 64,
+                "execution_ready": True,
                 "compile_ready": True,
                 "status": "compiled",
                 "flow_cases": {
@@ -165,6 +167,7 @@ def _write_bundle(root: Path) -> Path:
                 "kind": "openfoam_case_bundle",
                 "problem_id": "g2_cli_test",
                 "problem_spec_sha256": "a" * 64,
+                "execution_ready": True,
                 "compile_ready": True,
                 "status": "compiled",
                 "manifest_path": "openfoam_solver_case_manifest.json",
