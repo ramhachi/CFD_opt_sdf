@@ -105,6 +105,69 @@ mediumで0.006%しか違わない。Re~300では渦粘性が無視できる。�
 
 `docs/evidence/cross_fidelity_ranking_2026_09.json`、`work/stage_sv_laminar/result.json`
 
+### 追記（2026-09-12）— 二値化候補による順位検定（肯定的所見、証明ではない）
+
+P2の修正（罰則付き補間・射影の一本化・随伴の資格化）を経て、初めて中実な設計で
+上記の検定をやり直した。参照側もqualified Stage V（`checkMesh`・明示的
+`residualControl`・force stationarityをハードゲート化）へ更新した。
+
+#### 何を検定したか
+
+RAMPで二値化した3候補をV0/V1/V2で通した。`opt_q100_step2_try0_r12`は**3格子すべて
+で失格**した。`checkMesh`の「Cells with small determinant (<0.001)」（24/98/303セル、
+V0/V1/V2）は事前登録プロファイルが免除しない項目であり、係数は他2候補の5〜8倍で
+採用不能。したがって**有効なペアは1組だけ**残った。
+
+#### 結果
+
+| grid | step0 Cd | step2 Cd | step0 downforce | step2 downforce |
+| --- | ---: | ---: | ---: | ---: |
+| V0 | 1.2505 | 1.2610 | 0.5179 | 0.5361 |
+| V1 | 1.3480 | 1.3607 | 0.5902 | 0.6129 |
+| V2 | 1.3634 | 1.3786 | 0.6680 | 0.6899 |
+
+Stage Tは両応答ともstep2の方が大きいと予測する（drag 2.231→2.706、downforce
+1.078→1.594）。qualified Stage Vは**3格子すべてで同じ向き**に一致した。
+
+これは灰色候補での所見と**符号が逆**である。灰色候補ではdragの順位が全格子で
+反転していた（B/A比0.849/0.901/0.905、Stage Tは2.582）。この反転はqualified化
+後も変わらないため（`work/stage_sv_qualified_laminar/result_summary.json`）、
+先行の否定的所見は「間違った対象を比べていた」ことによる**本物の観測**だったと
+確認できる。
+
+#### この結果が持つ限界（弱めてはならない）
+
+- **ペアは1組のみ。** 3候補目が失格したため、意図していた2組の符号のうち1つしか
+  存在しない。
+- **margin（差）は離散化誤差を超えない。** step2−step0のdownforce差は0.018〜0.023、
+  一方で各候補自身の格子間drift（V0→V1、V1→V2）は約0.077。向きは3格子一貫だが、
+  大きさは未確定である。
+- **downforceは格子収束していない**（Gate 3不合格、閾値5e-3に対し約0.077）。収束を
+  確かめるはずのV3（約128万セル）は灰色候補のqualified再実行
+  （`work/stage_sv_qualified_laminar/result_summary.json`）で500反復に達しても
+  収束せず、`residualControl`（U 1e-6、p 1e-5）に対しp残差が約1.9e-4〜6.2e-4
+  （19〜62倍）、U各成分は16〜148倍で頭打ちになり、正しく却下されている。
+  Cdは収束する（V1→V2で約1.1〜1.3%、上限2%以内）。
+- **等値面抽出は体積を失う**（抽出/設計体積比0.881、0.884、0.919、1〜2セル厚の
+  物体）。これは真の抽出誤差であり、今回はもう灰色ではないのでgreynessの症状
+  ではない。
+- ラン内定常性ノイズは約1e-6と小さく、律速要因ではない。律速は離散化である。
+
+#### 結論
+
+一物体、一流動条件（Re〜300、層流）、一有効ペア、一台のマシンによる
+cross-fidelity証拠であり、target physicsでもbenchmarkでもなく、いかなる
+solver backendも資格化しない。**このアーキテクチャの中心的前提は反証されて
+おらず、肯定的所見を得たが、実証されたわけではない。** 決着には次の3点が要る。
+
+1. mesh失格候補の救済（2組目の符号を得る）
+2. 離散化誤差を上回るmarginを持つペアの取得
+3. downforce応答の格子収束
+
+根拠: `docs/evidence/binarized_ranking_2026_09.json`、
+`work/stage_sv_qualified_ramp_binarized/result.json`、
+`work/stage_sv_qualified_laminar/result_summary.json`
+
 ---
 
 ## P2 — 設計が二値化しない（最重大・修正着手中）

@@ -1,0 +1,282 @@
+{
+  "artifact_locations": {
+    "candidate_step0_manifest_json": "work/ramp_interp/export/opt_q100_step0_try0/candidate_manifest.json",
+    "candidate_step2_manifest_json": "work/ramp_interp/export/opt_q100_step2_try0/candidate_manifest.json",
+    "candidate_step2_r12_manifest_json": "work/ramp_interp/export/opt_q100_step2_try0_r12/candidate_manifest.json",
+    "disqualified_candidate_checkmesh_log_v0": "work/stage_sv_qualified_ramp_binarized/opt_q100_step2_try0_r12/V0/log.checkMesh",
+    "disqualified_candidate_checkmesh_log_v1": "work/stage_sv_qualified_ramp_binarized/opt_q100_step2_try0_r12/V1/log.checkMesh",
+    "disqualified_candidate_checkmesh_log_v2": "work/stage_sv_qualified_ramp_binarized/opt_q100_step2_try0_r12/V2/log.checkMesh",
+    "evidence_class_definitions": "docs/phase_plan.md",
+    "loop_script": "scripts/stage_t_binarized_loop.py",
+    "loop_script_status_note": "scripts/stage_t_binarized_loop.py is untracked in git at the time of this recording (see `git status`); its content is hash-bound below but it has not been committed.",
+    "note": "work/ is intentionally Git-ignored (.gitignore); hashes preserve the observed local evidence identity.",
+    "problem_register": "docs/problem_register_2026_09.md",
+    "ramp_interp_optimize_history_json": "work/ramp_interp/optimize_history.json",
+    "ramp_interp_report_json": "work/ramp_interp/report.json",
+    "stage_t_first_design_evidence": "docs/evidence/stage_t_first_design_2026_09.json",
+    "stage_v_qualified_laminar_grey_candidate_result_json": "work/stage_sv_qualified_laminar/result.json",
+    "stage_v_qualified_laminar_grey_candidate_result_summary_json": "work/stage_sv_qualified_laminar/result_summary.json",
+    "stage_v_qualified_ramp_binarized_result_json": "work/stage_sv_qualified_ramp_binarized/result.json",
+    "superseded_negative_cross_fidelity_ranking_evidence": "docs/evidence/cross_fidelity_ranking_2026_09.json",
+    "v3_nonconvergence_candidate_a_stage_v_qualification_json": "work/stage_sv_qualified_laminar/candidate_a_seed_reshape/V3/stage_v_qualification.json",
+    "v3_nonconvergence_candidate_b_stage_v_qualification_json": "work/stage_sv_qualified_laminar/candidate_b_zero_floor/V3/stage_v_qualification.json"
+  },
+  "artifact_sha256": {
+    "candidate_step0_manifest_json": "78c72e36f08c07df6e99393c7c86b69b5fce19287961adc1b64e45cbe318db76",
+    "candidate_step2_manifest_json": "82c90807ff9c3ab0c75625d01e241a07f5091fc7bc3391ead8591f9a68fadac2",
+    "candidate_step2_r12_manifest_json": "ae9176528862dc3b76d9494c200cf8ce7020ff5446821a005ff867d0adcdba6d",
+    "disqualified_candidate_checkmesh_log_v0": "ac0ee05f8bd818c28ca0fc3c62020c21c1e115c3dfe00e4673eaada9aed55eb7",
+    "disqualified_candidate_checkmesh_log_v1": "cfcbed815f9f8ee39bc7a6fadf215160063fcde393f410c6a693c34989d1287e",
+    "disqualified_candidate_checkmesh_log_v2": "cf1905c80b4507cba2d5a016c2a0fef3b12a5d3789c142de53d8a283036199bc",
+    "evidence_class_definitions": "421f2ff0a18d184fc392df2583f66a58f3a0a34c310a7869fbb1495411f74ff5",
+    "loop_script": "d03d6c4d8fbb9f51eeb0d1f1f80a67b9dd38f7e10904141c903e4de71bdb29eb",
+    "problem_register": "494bdfedf6f7a3858e514ff6133765c7d2e73e88235201063f841e9f1c7cc87d",
+    "ramp_interp_optimize_history_json": "aad6e2069995ea5c5d555254c1e319ec2902eed292ce25f1cccef62e72f8cd92",
+    "ramp_interp_report_json": "8788a517485afb63b952e4f0072ab52f5e7aabc7a478847bd31d5d5fd358f97e",
+    "stage_t_first_design_evidence": "e4a20b60ef1d4557b2e93d89d7a1c2f0972761bb8ef083d16b829ce1673d293d",
+    "stage_v_qualified_laminar_grey_candidate_result_json": "4fd82b01aadbdbcad505afa2fa7f118bdf16a55d70b3039c76f9d33e13c78137",
+    "stage_v_qualified_laminar_grey_candidate_result_summary_json": "317bcd0be1dcf673132800a1e63cd1f6a608b3adca7c640db12dc3477fd61bfe",
+    "stage_v_qualified_ramp_binarized_result_json": "2a8331dbd1ec0fda12fb4c26eca0bb3a5c1acd5c6358b7723c286444945460b3",
+    "superseded_negative_cross_fidelity_ranking_evidence": "d2560bbcf5df6b1b75ce2b749f8992a8c9c1cbf89c56b6091cfe0cb00273374d",
+    "v3_nonconvergence_candidate_a_stage_v_qualification_json": "45c7603d65bcbfd82feb1f14a4aced08ab81316e0b891df3dc7cc97e2e40314b",
+    "v3_nonconvergence_candidate_b_stage_v_qualification_json": "30c5102048f308e7fe2e3e0f26883dcc9cf86ee126cd51e092817a441af7fb6d"
+  },
+  "branch": "feat/p0-openfoam-closed-loop",
+  "case": {
+    "based_on": "work/ramp_interp/ RAMP-interpolation formulation on the same 60x32x24 canonical grid used by the earlier grey-candidate test; body-fitted qualification profile identical to work/stage_sv_qualified_laminar",
+    "candidates": {
+      "opt_q100_step0_try0": {
+        "iso_surface_components": 1,
+        "iso_surface_watertight": true,
+        "role": "valid pair member"
+      },
+      "opt_q100_step2_try0": {
+        "iso_surface_components": 1,
+        "iso_surface_watertight": true,
+        "role": "valid pair member"
+      },
+      "opt_q100_step2_try0_r12": {
+        "iso_surface_components": 1,
+        "iso_surface_watertight": true,
+        "role": "disqualified at all three grids on checkMesh"
+      }
+    },
+    "grids_cells": {
+      "opt_q100_step0_try0": {
+        "V0": 5859,
+        "V1": 31226,
+        "V2": 175966
+      },
+      "opt_q100_step2_try0": {
+        "V0": 5864,
+        "V1": 31252,
+        "V2": 175697
+      },
+      "opt_q100_step2_try0_r12": {
+        "V0": 7239,
+        "V1": 36702,
+        "V2": 173526
+      }
+    },
+    "matched_conditions": {
+      "Aref_m2": 0.64,
+      "alpha_max_1_s": 250.0,
+      "freestream_velocity_mps": 1.0,
+      "kinematic_viscosity_m2_s": 0.01,
+      "ramp_penalty_q": 100.0,
+      "reynolds_number_domain_length_basis": 300.0,
+      "turbulence_model": "laminar"
+    },
+    "problem_id": "p0_closed_loop_fixture"
+  },
+  "decision": "Three binarized (RAMP-penalized, single-Python-owned-projection) Stage T candidates were run through the same qualified Stage V pipeline (checkMesh, explicit residualControl, force stationarity as hard gates) used for the earlier grey-candidate study, at V0/V1/V2. One candidate (opt_q100_step2_try0_r12) was disqualified at all three grids on 'Cells with small determinant (<0.001)' (24-303 cells), a checkMesh failure the pre-registered profile does not waive; its coefficients are 5-8x the other two candidates' and are not usable. That leaves one valid pair: opt_q100_step0_try0 vs opt_q100_step2_try0. Stage T predicts step2 larger in both drag (2.231 -> 2.706) and downforce (1.078 -> 1.594); qualified Stage V agrees in direction at every one of the three grids for both responses. This is the opposite sign from the earlier grey-candidate finding (drag ranking inverted at every grid, 0.849/0.901/0.905 against Stage T's 2.582), and that inversion survives qualification unchanged, so the earlier negative result was a real observation about the wrong objects (non-binary designs whose 0.5 iso-surface did not match the object the Brinkman integral scored), not an artifact of an unqualified reference. This result is a positive signal, not proof: only one usable pair exists, the downforce margin (0.018-0.023) does not clear grid-to-grid drift (about 0.077), downforce itself is not grid-converged (the settling grid, V3 at ~1.28M cells, does not converge for this fixture), and iso-surface extraction loses 8-12% of design volume. The architecture's central assumption is not refuted and now has a positive signal, but is not yet demonstrated. P0 qualification remains No-Go.",
+  "disqualification": {
+    "candidate": "opt_q100_step2_try0_r12",
+    "cells_by_grid": {
+      "V0": 24,
+      "V1": 98,
+      "V2": 303
+    },
+    "coefficient_inflation": "Cd 6.63-8.68 and downforce 7.72-10.65 across V0-V2, roughly 5-8x the other two candidates' Cd (1.25-1.38) and clearly inflated on downforce too; not treated as trustworthy Stage V evidence.",
+    "consequence": "Only one candidate pair (opt_q100_step0_try0 vs opt_q100_step2_try0) remains usable. One of the two intended pair signs (a third, larger-volume-fraction candidate) does not exist as valid evidence.",
+    "reason": "Cells with small determinant (< 0.001), a checkMesh failure the pre-registered qualification profile does not waive (only 'Concave cells' is on the allowed-failure list).",
+    "source": "work/stage_sv_qualified_ramp_binarized/result.json disqualification_note; work/stage_sv_qualified_ramp_binarized/opt_q100_step2_try0_r12/{V0,V1,V2}/log.checkMesh"
+  },
+  "evidence_classes": [
+    "capability",
+    "numerical"
+  ],
+  "extraction_volume_check": {
+    "design_volume_m3": {
+      "opt_q100_step0_try0": 0.05525,
+      "opt_q100_step2_try0": 0.05525,
+      "opt_q100_step2_try0_r12": 0.12925
+    },
+    "interpretation": "step0/step2 are thin, roughly one-cell-thick bodies (design volume 0.05525 m^3 on a 0.05 m voxel grid) at ratio 0.88; the thicker, roughly two-cell-thick r12 body is closer at 0.92. This is a real extraction-defect signature (worse for thinner bodies), not a symptom of greyness -- these candidates are already binarized.",
+    "ratios": {
+      "opt_q100_step0_try0": 0.8805551790928984,
+      "opt_q100_step2_try0": 0.8835061807937604,
+      "opt_q100_step2_try0_r12": 0.9187105350841877
+    },
+    "statement": "Iso-surface extraction loses volume relative to the thresholded design field for every candidate, including the disqualified one."
+  },
+  "grid_convergence": {
+    "Cd": {
+      "cap": 0.02,
+      "statement": "Converges for both candidates: V1->V2 relative change is 1.13% (step0) and 1.30% (step2), under the pre-registered 2% relative cap.",
+      "step0_v1_to_v2_relative_change": 0.011283237151267719,
+      "step2_v1_to_v2_relative_change": 0.012980339180190635
+    },
+    "downforce": {
+      "cap_absolute": 0.005,
+      "grid_to_grid_drift_by_candidate": {
+        "step0": {
+          "V0_to_V1": 0.0722342298636364,
+          "V1_to_V2": 0.0777920873472223
+        },
+        "step2": {
+          "V0_to_V1": 0.0767985957878787,
+          "V1_to_V2": 0.0769573758737374
+        }
+      },
+      "statement": "Does not converge: V0->V1 and V1->V2 changes are 0.072-0.078 for both candidates, against a 5e-3 absolute cap (Gate 3 fails at every transition).",
+      "statement_on_margin": "The ranking margin (0.018-0.023) is smaller than each candidate's own grid-to-grid drift (about 0.072-0.078). Direction is consistent across all three grids; magnitude is not resolved against discretization uncertainty.",
+      "step2_minus_step0_margin_by_grid": {
+        "V0": 0.0181956635909092,
+        "V1": 0.0227600295151515,
+        "V2": 0.0219253180416666
+      }
+    },
+    "stationarity_noise": "Within-run stationarity noise (Cd_std, downforce_std across the qualification window) is of order 1e-6 to 1e-8 in all six qualified binarized runs -- negligible next to the 0.077 grid-to-grid drift. Discretization, not run-to-run noise, is the limiting factor.",
+    "v3_attempt": {
+      "U_component_over_threshold_multiple_range": {
+        "max": 147.92495,
+        "min": 16.491242
+      },
+      "candidate_a_v3_final_residuals": {
+        "Ux": 1.6491242e-05,
+        "Uy": 0.00011314376,
+        "Uz": 8.6140238e-05,
+        "p": 0.00019257104
+      },
+      "candidate_b_v3_final_residuals": {
+        "Ux": 2.5514996e-05,
+        "Uy": 0.00014792495,
+        "Uz": 0.00012033812,
+        "p": 0.00061586833
+      },
+      "cells": {
+        "candidate_a": 1275409,
+        "candidate_b": 1285035
+      },
+      "p_residual_over_threshold_multiple": {
+        "candidate_a": 19.257104,
+        "candidate_b": 61.586833
+      },
+      "residual_control_thresholds": {
+        "U": 1e-06,
+        "p": 1e-05
+      },
+      "statement": "V3 was not re-run for the binarized candidates. It is skipped on the basis of the qualified grey-candidate re-run (work/stage_sv_qualified_laminar/result_summary.json), where V3 at ~1.28M cells (candidate_a: 1,275,409 cells; candidate_b: 1,285,035 cells) hit the 500-iteration cap without meeting residualControl (U 1e-6, p 1e-5) for either candidate.",
+      "statement_on_multiples": "The p residual is 19-62x over its threshold at the 500-iteration cap; the U components range from about 16x (Ux, candidate A) to about 148x (Uy, candidate B) over their own threshold. Refused correctly as non-converged, not accepted at face value."
+    }
+  },
+  "implementation_commit": "ea7e2ba",
+  "kind": "binarized_cross_fidelity_ranking_evidence",
+  "must_not_conclude": {
+    "statement": "This is a positive signal, not proof. The architecture's central assumption -- that the Stage T Brinkman surrogate preserves the body-fitted ranking -- is not refuted and now has a positive signal, but is not yet demonstrated.",
+    "what_would_settle_it": [
+      "Rescue the mesh-disqualified candidate (opt_q100_step2_try0_r12) so a second independent pair sign exists.",
+      "Obtain candidate pairs whose ranking margin exceeds discretization uncertainty (currently the margin is smaller than the grid-to-grid drift).",
+      "Grid-converge the downforce response (V3 and beyond, or a formulation/mesh change that removes the current non-convergence at ~1.28M cells)."
+    ]
+  },
+  "overall_status": "incomplete",
+  "p0_gate_status": "no_go",
+  "ranking_verdict": {
+    "agreement": "Qualified Stage V agrees with Stage T's direction (step2 > step0) at every one of the three grids, in both drag and downforce. This is the opposite sign from the earlier grey-candidate finding, where the analogous drag ranking (B/A) was inverted at every grid (0.849/0.901/0.905 against Stage T's 2.582) -- an inversion that survives qualification unchanged (see grey_candidate_reference below), so it was a real observation about the wrong objects, not an artifact of an unqualified reference.",
+    "caveat": "This is a positive signal from one usable pair, not proof that the surrogate ranks correctly in general.",
+    "grey_candidate_reference": {
+      "drag_ratio_b_over_a": {
+        "coarse": 0.8494583504432047,
+        "fine": 0.9046939982810824,
+        "medium": 0.9008305392457117
+      },
+      "source": "docs/evidence/cross_fidelity_ranking_2026_09.json ranking_verdict.ratio_b_over_a_by_grid.drag",
+      "stage_t_ratio": 2.582449089297975
+    },
+    "pair": [
+      "opt_q100_step0_try0",
+      "opt_q100_step2_try0"
+    ],
+    "qualified_stage_v_table": {
+      "V0": {
+        "step0_Cd": 1.2504550995454546,
+        "step0_downforce": 0.5179299611363636,
+        "step2_Cd": 1.2610357618181818,
+        "step2_downforce": 0.5361256247272728
+      },
+      "V1": {
+        "step0_Cd": 1.347981111875,
+        "step0_downforce": 0.590164191,
+        "step2_Cd": 1.3606746821212121,
+        "step2_downforce": 0.6129242205151515
+      },
+      "V2": {
+        "step0_Cd": 1.3633642743055556,
+        "step0_downforce": 0.6679562783472223,
+        "step2_Cd": 1.3785689749999999,
+        "step2_downforce": 0.6898815963888889
+      }
+    },
+    "stage_t_direction": "step2 > step0 in both drag (2.231 -> 2.706) and downforce (1.078 -> 1.594)"
+  },
+  "recorded_date": "2026-09-12",
+  "references": {
+    "evidence_class_definitions": "docs/phase_plan.md section 3",
+    "problem_register": "docs/problem_register_2026_09.md section P1",
+    "qualification_profile_source": "work/stage_sv_qualified_ramp_binarized/result.json qualification_profile",
+    "stage_t_first_design_evidence": "docs/evidence/stage_t_first_design_2026_09.json",
+    "superseded_evidence": "docs/evidence/cross_fidelity_ranking_2026_09.json"
+  },
+  "schema_version": 1,
+  "scope": {
+    "excludes": [
+      "target-physics evidence",
+      "benchmark evidence",
+      "qualification of any solver backend",
+      "evidence about other fixtures, seeds, objectives, or Reynolds numbers",
+      "a second independent pair sign (the third candidate was disqualified on mesh quality)",
+      "grid-converged downforce evidence at any candidate or grid"
+    ],
+    "model": "one fixture, one flow condition (Re~300, laminar), one valid candidate pair, one machine (Apple M4, 32 GiB, Docker)"
+  },
+  "scope_limits": [
+    "One usable candidate pair, not two: the third candidate (opt_q100_step2_try0_r12) was disqualified on checkMesh at all three grids and its coefficients are not evidence.",
+    "The ranking margin (downforce 0.018-0.023) does not clear discretization uncertainty (grid-to-grid drift about 0.077 for the same candidates). Direction agrees across all three grids; magnitude is unresolved.",
+    "Downforce is not grid-converged (Gate 3 fails, ~0.077 change against a 5e-3 absolute cap), and the grid that would settle it (V3, ~1.28M cells) does not converge for this fixture -- residuals stall 16-148x over their thresholds at the 500-iteration cap and are correctly refused, not the binarized candidates' own V3 (not run) but the qualified grey-candidate re-run at the same fixture and profile.",
+    "Cd does converge (V1->V2 about 1.1-1.3%, under the 2% cap), so the two responses are not equally resolved.",
+    "Iso-surface extraction loses volume (ratios 0.88, 0.88, 0.92 for one- to two-cell-thick bodies) -- a real extraction defect, not a greyness symptom, since all three candidates are genuinely binarized.",
+    "Within-run stationarity noise (~1e-6) is not the limiting factor; discretization is.",
+    "One fixture, one flow condition (Re~300 laminar), one valid candidate pair, one machine.",
+    "Not target-physics evidence, not benchmark evidence, qualifies no solver backend."
+  ],
+  "stage_t_predicted_forces": {
+    "opt_q100_step0_try0": {
+      "downforce_coefficient": 1.07824703825,
+      "drag_coefficient": 2.23135024445
+    },
+    "opt_q100_step2_try0": {
+      "downforce_coefficient": 1.59440716556,
+      "drag_coefficient": 2.70587361675
+    },
+    "opt_q100_step2_try0_r12": {
+      "downforce_coefficient": 2.81448731474,
+      "drag_coefficient": 3.25227856505
+    }
+  },
+  "supersedes": {
+    "reason": "That test compared two non-binary grey Stage T candidates (peak rho 0.62 and 0.55, zero cells above 0.9) whose 0.5 iso-surface did not correspond to the object the Brinkman force integral scored (P2/P14). Its negative ranking result was a real observation about the wrong objects, not a test of the surrogate's fidelity as intended. This file repeats the same class of test on genuinely binarized candidates (RAMP-penalized interpolation, alphaMax lowered to the Brinkman saturation knee documented in problem_register P11, single Python ownership of projection, converged adjoints bound to a declared response, same-grid evaluation) against a qualified Stage V reference (checkMesh, explicit residualControl, force stationarity as hard gates).",
+    "target": "docs/evidence/cross_fidelity_ranking_2026_09.json"
+  }
+}
