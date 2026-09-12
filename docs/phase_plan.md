@@ -260,6 +260,62 @@ no cross-fidelity ranking claim is meaningful until the design is near-binary
 and the surrogate grid is shown to be adequate. Whether the surrogate ranks
 correctly for a binarized, adequately resolved design is **untested**.
 
+### The haze was the optimum, and why — 2026-09-12
+
+An external audit (`problem_resolution_plan_2026_09.md`) prompted a measurement
+that changes the diagnosis from "the optimizer is broken" to "the objective's
+optimum is a haze, and the optimizer found it".
+
+Holding the material budget `integral(rho dV)` fixed and spreading it from a
+compact body outward, the linear interpolation this project has always used
+scores the haze **4.3x better** than the solid, monotonically better the thinner
+it gets. Under RAMP penalization the ordering inverts and the compact body wins
+by roughly a hundredfold.
+
+The mechanism is worse than an unpenalized interpolation. **The Brinkman force
+saturates near `alpha = 25`, which is 1% of the `alphaMax = 2500` in use**, so
+99% of the density range is already fully blocking and a material budget buys
+the most blocking at the lowest density it can be smeared to. Penalization alone
+cannot overcome that: matching the economics at `alphaMax = 2500` would need
+`q` around 3000. Lowering `alphaMax` to the saturation knee **and** applying
+RAMP with `q = 8 -> 30 -> 100`, re-baselining at each `q`, does.
+
+With that, plus single ownership of projection (OpenFOAM regularisation off) and
+gradients from converged adjoints bound to a declared response:
+
+| | before | after |
+| --- | ---: | ---: |
+| solver-side `beta` max | 0.436 | **1.0** |
+| cells above 0.9 | 0 | **1034** |
+| `mean(4b(1-b))` | — | **0.005** (gate 0.01) |
+| downforce carried by `[0.9, 1]` | 0% (band empty) | **103%** |
+| downforce carried by `beta < 0.1` | 77% | **-4%** |
+| injected field vs solver field | up to 0.11 apart | **1.9e-9** |
+| predicted vs actual step ratio | 0.21 | **0.80-0.97** |
+| 0.5 iso-surface | 5120 faces, 6 components, domain box | **2810 faces, watertight, 1 component** |
+
+The chain rule is verified rather than assumed: finite differences against the
+analytic directional derivative give **0.965** with the interpolation derivative
+included and 0.117 without it.
+
+**Stage S now receives the same object Stage T computed forces on** — the
+precondition the earlier ranking test lacked.
+
+### Stage V is now a qualified reference — 2026-09-12
+
+`checkMesh -allGeometry -allTopology`, explicit `residualControl`, and force
+stationarity over a final window are hard gates. On the grey candidates, V0/V1/V2
+pass every gate (`residual_control_met`, stationary forces), and **V3 at ~1.28M
+cells is correctly refused** (`iteration_cap`, `solver_qualified: false`) rather
+than silently used.
+
+On that qualified reference the grey-candidate ranking result is unchanged: drag
+B/A is 0.849 / 0.901 / 0.905 against Stage T's 2.582. The negative finding
+survives qualification — **for grey candidates**, which we now know were the
+wrong test. Downforce also remains un-converged (candidate A: 0.0358, 0.0449,
+0.0407 across V1/V2/V3), and the grid that would settle it is the one that will
+not converge.
+
 ## 5. G1 — generic problem and artifact contract
 
 Status: complete.
@@ -429,47 +485,53 @@ The canonical `P @ rho` state is now consumed by a real solver case and the
 differences. That item is complete; the sequence below reflects what the
 2026-09-12 measurements changed.
 
-1. **Binarize the design, then re-test the ranking.** Stage T now produces a
-   design, but a grey one — peak `rho` 0.55-0.62 with no cell above 0.9 — and
-   that is why the cross-fidelity ranking failed. Restore the `tanh` projection
-   with sharpness continuation so the field drives toward 0/1, add a
-   discreteness measure, and **gate the Stage S handoff on it** so a grey field
-   cannot be passed downstream. Then repeat the three-grid body-fitted ranking
-   comparison. Until that is done, no claim about the surrogate's fidelity —
-   positive or negative — is supportable. **Implementation required.**
-2. **Establish that the Stage T grid resolves what it optimizes.** Its 8192
-   cells match the coarse body-fitted mesh at which the two fidelities happen to
-   agree, and agreement vanishes under refinement. Run Stage T on a refined
-   fixed grid and show its forces converge before trusting any of its rankings.
+1. **Re-test the ranking on the binarized candidates.** Binarization itself is
+   done: penalized interpolation with `alphaMax` at the saturation knee produces
+   solid designs, the Stage S handoff is gated on discreteness, and Stage V is a
+   qualified reference. Three watertight single-component candidates spanning
+   1.078 to 2.814 in Stage T downforce are exported and give two independent pair
+   signs. **This is the decisive experiment and it is the only thing that can
+   settle whether the architecture works.** Until it returns, no claim about the
+   surrogate's fidelity — positive or negative — is supportable.
+2. **Establish that the Stage T grid resolves what it optimizes.** The same-grid
+   T1 evaluation (46,080 cells for design, solver and handoff alike) removes the
+   46k-to-8k transfer as a factor, and is now the default. What remains is to
+   show Stage T's forces converge under further refinement.
    **Implementation required.**
-3. Fix the repository template's objective/constraint declaration so the solved
+3. **Finish the formulation.** Two items are known-open from the binarization
+   work: the volume constraint is an equality, so surplus budget is dumped at
+   `beta` around 0.003 instead of being released (an inequality fixes it), and
+   above `q = 100` the design develops cell-scale roughness that breaks
+   watertightness, which a density filter before projection should remove.
+   **Implementation required.**
+4. Fix the repository template's objective/constraint declaration so the solved
    problem matches the declared one, and add a check that refuses a Stage T run
    whose OpenFOAM objectives and constraints do not correspond to the
    ProblemSpec's declared objectives and constraints. The `--response-id` guard
    on the canonical gradient transfer is the first instance of this class of
    check; the optimization problem itself needs the same treatment.
    **Implementation required.**
-4. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
+5. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
    add the remaining surface-distance, self-intersection, minimum-feature and
    feature-survival gates, then produce one `ready_for_stage_s=true` canonical
    artifact. **Qualification implementation required.**
-5. Re-evaluate the baseline and the optimized candidate with three-grid
+6. Re-evaluate the baseline and the optimized candidate with three-grid
    body-fitted OpenFOAM through `prepare-openfoam-from-problem-spec`, including
    pressure, skin-friction, total-force and cross-fidelity comparison. The
    force units and directions are now reconciled between the two fidelities;
    what remains is the study itself and its acceptance criterion.
    **Implementation required.**
-6. Resolve or bound the approximately 10% directional-derivative bias on generic
+7. Resolve or bound the approximately 10% directional-derivative bias on generic
    directions. Regularisation has been causally exonerated; the named untested
    candidate is `P`'s fractional-overlap redistribution under non-integer
    refinement ratios. Until it is understood, gradient-gate rows on
    non-gradient-aligned directions must not be read as pass/fail.
-7. Establish a feasible seed or an explicit feasibility-restoration phase;
+8. Establish a feasible seed or an explicit feasibility-restoration phase;
    add nonlinear candidate acceptance, rollback, and move-radius reduction.
    **Implementation required.**
-8. Complete G3 and execute G4 B0–B2 before production optimizer work.
+9. Complete G3 and execute G4 B0–B2 before production optimizer work.
    **Implementation required.**
-9. Implement production Stage T derivatives and a sparse/scalable constrained
+10. Implement production Stage T derivatives and a sparse/scalable constrained
    backend, then advance through B3–B5, Stage S refinement, and Stage V.
 
 No new parametric candidate generator belongs to this execution sequence.
