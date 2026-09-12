@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 import pyvista as pv
+import trimesh
 from typer.testing import CliRunner
 
 from cfd_sdf.cli import app
@@ -16,7 +17,9 @@ from cfd_sdf.handoff import (
     HANDOFF_KIND,
     SDF_KIND,
     SDF_SIGN_CONVENTION,
+    SURFACE_CLEAN_TOLERANCE_FRACTION,
     _discreteness_report,
+    _surface_quality_metrics,
     build_density_to_sdf_handoff,
 )
 
@@ -127,11 +130,20 @@ def test_handoff_records_explicit_rho_variant_and_iso_value(tmp_path: Path) -> N
 
 
 def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) -> None:
+    # A 2x2x2 solid box (the smallest fully-enclosed block) interpolates to a single
+    # near-threshold point under cell-to-point averaging; its raw marching-cubes surface is a
+    # pure numerical artifact (triangle areas down to ~1e-12) that the surface-cleaning step in
+    # build_density_to_sdf_handoff now correctly discards outright (see
+    # test_surface_cleaning_rejects_a_fully_degenerate_iso_surface). A 4x4x4 box still shrinks
+    # sharply under interpolation (only its innermost 2x2x2 sub-lattice of points reaches the
+    # solid threshold), demonstrating the same source-vs-revoxelized geometry loss, but the
+    # shrunk surface is a genuine (if small) cube rather than a degenerate point, so it survives
+    # cleaning and this test still exercises the intended assertions.
     state_path = _write_state(
         tmp_path / "candidate",
         cell_shape=(6, 6, 6),
-        solid_boxes=(((2, 3), (2, 3), (2, 3)),),
-        root_cell=(2, 2, 2),
+        solid_boxes=(((1, 4), (1, 4), (1, 4)),),
+        root_cell=(1, 1, 1),
     )
     density_path = state_path.parent / "density.vti"
     density_grid = pv.read(density_path)
@@ -149,7 +161,7 @@ def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) ->
 
     assert report["checks"]["source_component_validation"] is True
     assert report["checks"]["revoxelized_component_validation"] is False
-    assert report["volume"]["revoxelized_cell_volume_m3"] == 0.0
+    assert report["volume"]["revoxelized_cell_volume_m3"] < report["volume"]["cell_threshold_volume_m3"]
     assert (
         report["source_material_checks"]["components"]["root_connectivity"]["status"]
         == "pass"
@@ -159,6 +171,84 @@ def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) ->
         == "fail"
     )
     assert "revoxelized_component_validation_failed" in report["qualification_reasons"]
+
+
+def test_surface_cleaning_rejects_a_fully_degenerate_iso_surface(tmp_path: Path) -> None:
+    # A 2x2x2 solid box is the smallest fully-enclosed block: under cell-to-point averaging only
+    # its single interior corner clears the 0.5 threshold, so the raw marching-cubes surface is a
+    # near-zero-size numerical artifact (triangle areas ~1e-12) rather than a real feature.
+    # Cleaning must reject this outright instead of silently handing Stage S a fake sliver body.
+    state_path = _write_state(
+        tmp_path / "candidate",
+        cell_shape=(6, 6, 6),
+        solid_boxes=(((2, 3), (2, 3), (2, 3)),),
+        root_cell=(2, 2, 2),
+    )
+    density_path = state_path.parent / "density.vti"
+    density_grid = pv.read(density_path)
+    for name in ("rho", "rho_filtered", "rho_projected"):
+        values = np.asarray(density_grid.cell_data[name], dtype=np.float32).copy()
+        values[values > 0.0] = np.float32(0.5000006)
+        density_grid.cell_data[name] = values
+    density_grid.save(density_path)
+
+    with pytest.raises(ValueError, match="Surface cleaning removed the entire iso-surface"):
+        build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+
+
+def test_handoff_reports_surface_quality_before_and_after_cleaning(tmp_path: Path) -> None:
+    # Same near-threshold perturbation as the geometry-loss test above, on a box big enough
+    # (4x4x4) that the shrunk surface is a real cube rather than a degenerate point: this is the
+    # sliver-producing scenario the cleaning step in build_density_to_sdf_handoff targets.
+    state_path = _write_state(
+        tmp_path / "candidate",
+        cell_shape=(6, 6, 6),
+        solid_boxes=(((1, 4), (1, 4), (1, 4)),),
+        root_cell=(1, 1, 1),
+    )
+    density_path = state_path.parent / "density.vti"
+    density_grid = pv.read(density_path)
+    for name in ("rho", "rho_filtered", "rho_projected"):
+        values = np.asarray(density_grid.cell_data[name], dtype=np.float32).copy()
+        values[values > 0.0] = np.float32(0.5000006)
+        density_grid.cell_data[name] = values
+    density_grid.save(density_path)
+
+    artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+    quality = artifacts.fidelity_report["surface_quality"]
+
+    assert quality["clean_tolerance_m"] == pytest.approx(SURFACE_CLEAN_TOLERANCE_FRACTION * 1.0)
+    assert quality["before_cleaning"]["count_aspect_ratio_above_100"] > 0
+    assert quality["after_cleaning"]["count_aspect_ratio_above_100"] == 0
+    assert quality["after_cleaning"]["max_aspect_ratio"] < quality["before_cleaning"]["max_aspect_ratio"]
+    assert quality["faces_removed_by_cleaning"] > 0
+    # The written STL is the cleaned one: no leftover slivers make it into the artifact.
+    mesh = trimesh.load_mesh(artifacts.surface_stl, process=False)
+    assert len(mesh.faces) == quality["after_cleaning"]["face_count"]
+
+
+def test_surface_quality_metrics_detects_a_sliver_triangle() -> None:
+    # A near-degenerate triangle (a hair's-width from collinear) must register a large aspect
+    # ratio; an equilateral triangle must register close to 1. Isolated unit test of the metric
+    # used to size the cleaning tolerance and to report before/after fidelity.
+    sliver = pv.PolyData(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.5, 1e-6, 0.0]]),
+        faces=np.array([3, 0, 1, 2]),
+    )
+    equilateral = pv.PolyData(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.5, 3.0**0.5 / 2.0, 0.0]]),
+        faces=np.array([3, 0, 1, 2]),
+    )
+
+    sliver_metrics = _surface_quality_metrics(sliver)
+    equilateral_metrics = _surface_quality_metrics(equilateral)
+
+    assert sliver_metrics["max_aspect_ratio"] > 1000.0
+    assert sliver_metrics["count_aspect_ratio_above_100"] == 1
+    # longest-edge / (2 * inradius) is sqrt(3) =~ 1.732 for an equilateral triangle, its minimum
+    # over all triangle shapes; a sliver's ratio is unbounded above.
+    assert equilateral_metrics["max_aspect_ratio"] == pytest.approx(3.0**0.5, abs=1e-6)
+    assert equilateral_metrics["count_aspect_ratio_above_50"] == 0
 
 
 def test_discreteness_measure_arithmetic() -> None:

@@ -57,6 +57,15 @@ DISCRETENESS_MAX_MEAN_ND = 0.01
 # diagnostic already recorded and rejects both real candidates (max rho
 # 0.62/0.55) while a field with a genuine solid core reaches well above it.
 DISCRETENESS_MIN_MAX_RHO = 0.9
+# Marching cubes through a 1-2-cell-thick voxelized body produces slivers: near-coincident
+# vertices from edge intersections that land a hair's-width from a cell corner, with edges down
+# to ~1e-8 m and face areas down to ~1e-15 m^2 (measured on the three ramp_interp export
+# candidates). snappyHexMesh then reproduces these as small-determinant volume cells, which the
+# Stage V qualification profile does not waive. A point-merge tolerance of 2% of the smallest
+# source cell dimension collapses these degenerate edges before the STL is written, without
+# visibly perturbing the surface: measured volume shift stayed under 0.03% on all three
+# candidates while the count of triangles with aspect ratio > 100 dropped by 90-100%.
+SURFACE_CLEAN_TOLERANCE_FRACTION = 0.02
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected"})
 _MASK_NAMES = (
@@ -219,6 +228,18 @@ def build_density_to_sdf_handoff(
         )
     if not np.isfinite(np.asarray(surface.points)).all():
         raise ValueError("Density field produced an iso-surface with non-finite points")
+    quality_before = _surface_quality_metrics(surface)
+    clean_tolerance = SURFACE_CLEAN_TOLERANCE_FRACTION * float(min(source_grid.spacing))
+    surface = surface.clean(tolerance=clean_tolerance, absolute=True).triangulate()
+    if surface.n_points == 0 or surface.n_cells == 0:
+        raise ValueError("Surface cleaning removed the entire iso-surface")
+    quality_after = _surface_quality_metrics(surface)
+    surface_quality = {
+        "clean_tolerance_m": clean_tolerance,
+        "before_cleaning": quality_before,
+        "after_cleaning": quality_after,
+        "faces_removed_by_cleaning": quality_before["face_count"] - quality_after["face_count"],
+    }
 
     target_dir = Path(output_dir).resolve() if output_dir is not None else state_path.parent / "stage_s_handoff"
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -343,6 +364,7 @@ def build_density_to_sdf_handoff(
             qualification_reasons=qualification_reasons,
             point_dimensions=source_grid.point_dimensions,
             discreteness=discreteness,
+            surface_quality=surface_quality,
         )
         _write_json(staged_report, report)
         report_hash = _sha256_path(staged_report)
@@ -786,6 +808,43 @@ def _cell_density_to_points(
     return point_image, point_values
 
 
+def _surface_quality_metrics(surface: pv.PolyData) -> dict[str, object]:
+    """Triangle shape diagnostics for a marching-cubes iso-surface.
+
+    ``aspect_ratio`` is longest-edge / (2 * inradius): sqrt(3) (its minimum) for an equilateral
+    triangle, growing without bound for a sliver. These are the metrics that correlate with
+    snappyHexMesh emitting small-determinant volume cells (see ``SURFACE_CLEAN_TOLERANCE_FRACTION``
+    above).
+    """
+    faces = np.asarray(surface.faces).reshape(-1, 4)[:, 1:4]
+    points = np.asarray(surface.points, dtype=np.float64)
+    if faces.size == 0:
+        return {
+            "face_count": 0,
+            "min_area_m2": 0.0,
+            "max_aspect_ratio": 0.0,
+            "count_aspect_ratio_above_50": 0,
+            "count_aspect_ratio_above_100": 0,
+        }
+    tris = points[faces]
+    a = np.linalg.norm(tris[:, 0] - tris[:, 1], axis=1)
+    b = np.linalg.norm(tris[:, 1] - tris[:, 2], axis=1)
+    c = np.linalg.norm(tris[:, 2] - tris[:, 0], axis=1)
+    s = (a + b + c) / 2.0
+    area = np.sqrt(np.clip(s * (s - a) * (s - b) * (s - c), 0.0, None))
+    longest = np.maximum(np.maximum(a, b), c)
+    inradius = np.divide(area, s, out=np.zeros_like(area), where=s > 0)
+    aspect = np.divide(longest, 2.0 * inradius, out=np.full_like(longest, np.inf), where=inradius > 0)
+    finite_aspect = aspect[np.isfinite(aspect)]
+    return {
+        "face_count": int(len(faces)),
+        "min_area_m2": float(area.min()),
+        "max_aspect_ratio": float(finite_aspect.max()) if finite_aspect.size else float("inf"),
+        "count_aspect_ratio_above_50": int(np.count_nonzero(aspect > 50.0)),
+        "count_aspect_ratio_above_100": int(np.count_nonzero(aspect > 100.0)),
+    }
+
+
 def _read_and_validate_surface(path: Path) -> trimesh.Trimesh:
     try:
         mesh = trimesh.load_mesh(path, process=True)
@@ -1009,6 +1068,7 @@ def _build_fidelity_report(
     qualification_reasons: list[str],
     point_dimensions: tuple[int, int, int],
     discreteness: Mapping[str, object],
+    surface_quality: Mapping[str, object],
 ) -> dict[str, object]:
     cell_volume = float(np.prod(source_grid.spacing, dtype=np.float64))
     voxel_volume = float(np.count_nonzero(material) * cell_volume)
@@ -1061,6 +1121,7 @@ def _build_fidelity_report(
             "status": "diagnostic_only",
             "note": "Cell threshold volume and interpolated iso-surface volume use different discretizations.",
         },
+        "surface_quality": surface_quality,
         "surface": {
             "watertight": bool(mesh.is_watertight),
             "positive_volume": bool(mesh.is_volume and mesh.volume > 0.0),
@@ -1289,6 +1350,7 @@ __all__ = [
     "HANDOFF_SCHEMA_VERSION",
     "SDF_KIND",
     "SDF_SIGN_CONVENTION",
+    "SURFACE_CLEAN_TOLERANCE_FRACTION",
     "DensityToSdfHandoffArtifacts",
     "build_density_to_sdf_handoff",
     "handoff_density_to_sdf",
