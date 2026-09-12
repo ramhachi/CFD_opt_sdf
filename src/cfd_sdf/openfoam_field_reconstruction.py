@@ -217,8 +217,12 @@ def _reconstruct_nonuniform_field(
     source_files: list[dict[str, object]] = []
     for index, processor in processors:
         path = _single_file(processor / time_name / field_name)
-        values, current_dimensions = _read_nonuniform_scalar_field(path, field_name)
         labels = labels_by_processor[index]
+        # A processor whose cells are all fluid legitimately writes
+        # ``internalField uniform 0`` (e.g. beta/alphaTilda when the
+        # regularisation radius is ~0); expand it to that processor's cell count
+        # rather than refusing the whole run.
+        values, current_dimensions = _read_scalar_field_allow_uniform(path, field_name, labels.size)
         if values.size != labels.size:
             raise ValueError(
                 f"{field_name} on processor{index} has {values.size} values but {labels.size} cell addresses"

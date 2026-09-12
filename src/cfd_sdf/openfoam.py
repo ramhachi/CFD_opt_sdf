@@ -710,6 +710,7 @@ wallDist {{ method meshWave; }}
 def _fv_solution(model: str) -> str:
     velocity_pattern = "U" if model == "laminar" else "(U|k|omega)"
     equation_relaxation = "U 0.7;" if model == "laminar" else "U 0.7; k 0.7; omega 0.7;"
+    turbulence_residual = "" if model == "laminar" else '        "(k|omega)" 1e-5;\n'
     return _foam_header("dictionary", "fvSolution") + f"""
 solvers
 {{
@@ -723,6 +724,15 @@ SIMPLE
     consistent yes;
     pRefCell 0;
     pRefValue 0;
+
+    // Stage V qualification (docs/problem_resolution_plan_2026_09.md C7 point 2): explicit
+    // residualControl so a run that merely completes the 500-step endTime is never treated as
+    // converged. Thresholds are pre-registered in cfd.STAGE_V_QUALIFICATION_PROFILE_V1.
+    residualControl
+    {{
+        p 1e-5;
+        U 1e-6;
+{turbulence_residual}    }}
 }}
 
 relaxationFactors

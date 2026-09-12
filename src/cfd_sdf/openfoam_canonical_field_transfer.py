@@ -45,6 +45,7 @@ from .openfoam_grid_transfer import (
     ExactCartesianOverlapTransfer,
     load_openfoam_cell_order_mapping,
 )
+from .cfd import _solver_fatal_patterns
 from .problem_spec import ProblemSpec, problem_spec_sha256
 
 
@@ -288,8 +289,14 @@ def _require_adjoint_converged(
         raise ValueError(
             f"Adjoint convergence log not found for gradient export: {path}"
         )
+    # cfd._solver_fatal_patterns skips the trapFpe startup banner ("Floating
+    # point exception trapping enabled"), which every OpenFOAM run prints; a
+    # plain substring scan for "floating point exception" refused every log.
     lowered = text.lower()
-    fatal = [pattern for pattern in _ADJOINT_LOG_FATAL_PATTERNS if pattern in lowered]
+    fatal = sorted(
+        {p for p in _ADJOINT_LOG_FATAL_PATTERNS if "floating" not in p and p in lowered}
+        | set(_solver_fatal_patterns(text))
+    )
     if fatal:
         raise ValueError(
             f"{log_file_name} reports fatal errors; refusing gradient export: {fatal}"
