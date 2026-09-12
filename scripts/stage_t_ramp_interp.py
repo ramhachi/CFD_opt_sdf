@@ -143,12 +143,16 @@ class Ctx:
 
 
 def write_candidate(
-    ctx: Ctx, cid: str, rho: np.ndarray, q: float, *, parent: str | None, iteration: int, note: str
+    ctx: Ctx, cid: str, rho: np.ndarray, q: float, *, parent: str | None, iteration: int, note: str,
+    rho_tilde: np.ndarray | None = None, extra_meta: dict | None = None, ramp_arg: np.ndarray | None = None,
 ) -> Path:
     """Write the design state, its verified candidate binding, and the same-grid
-    solver contract whose ``rho`` array is the physical field f_q(rho)."""
+    solver contract whose ``rho`` array is the physical field f_q(.), applied to
+    ``ramp_arg`` if given (e.g. a projected field), else to ``rho_tilde`` (the
+    filtered design H rho), else to rho itself. ``rho_filtered`` stores rho_tilde."""
 
-    beta = ramp(rho, q)
+    filtered = rho if rho_tilde is None else rho_tilde
+    beta = ramp(filtered if ramp_arg is None else ramp_arg, q)
     cdir = FIXTURE / "candidates" / cid
     cdir.mkdir(parents=True)
     a = ctx.state0.arrays
@@ -156,7 +160,7 @@ def write_candidate(
              ("allowed_mask", "forbidden_mask", "fixed_solid_mask", "root_mask", "active_design_mask")}
     arrays = {
         "rho": rho.astype(np.float32),
-        "rho_filtered": rho.astype(np.float32),
+        "rho_filtered": filtered.astype(np.float32),
         "rho_projected": beta.astype(np.float32),
         "alpha": (ctx.beta_max * beta).astype(np.float32),
         **masks,
@@ -179,10 +183,11 @@ def write_candidate(
             "owner": "python", "openfoam_regularisation": "Helmholtz radius 1e-4 cells + function linear == identity (asserted per run)",
         },
         note=note,
+        **(extra_meta or {}),
     )
-    state["array_metadata"]["rho"]["source"] = "design variable (RAMP argument)"
-    state["array_metadata"]["rho_filtered"]["source"] = "identity filter (H = I in this test)"
-    state["array_metadata"]["rho_projected"]["source"] = f"RAMP q={q:g} of rho; the field injected into the solver"
+    state["array_metadata"]["rho"]["source"] = "design variable (filter argument)" if rho_tilde is not None else "design variable (RAMP argument)"
+    state["array_metadata"]["rho_filtered"]["source"] = "rho_tilde = H rho (cone density filter, see state.filter)" if rho_tilde is not None else "identity filter (H = I in this test)"
+    state["array_metadata"]["rho_projected"]["source"] = f"RAMP q={q:g} of rho_filtered; the field injected into the solver"
     state["source_solver"].pop("initial_vtk", None)
     state["source_solver"].pop("final_vtk", None)
     state_json = cdir / "topology_state.json"
@@ -349,6 +354,18 @@ def discreteness(field: np.ndarray, active: np.ndarray) -> dict:
     }
 
 
+def _components(mesh: "trimesh.Trimesh") -> int:
+    """Face-connected components via scipy (trimesh.split may want networkx)."""
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    n = len(mesh.faces)
+    adj = np.asarray(mesh.face_adjacency)
+    if adj.size == 0:
+        return n
+    a = coo_matrix((np.ones(len(adj)), (adj[:, 0], adj[:, 1])), shape=(n, n))
+    return int(connected_components(a, directed=False)[0])
+
+
 def iso_metrics(ctx: Ctx, field: np.ndarray, iso: float = 0.5) -> dict:
     """0.5 iso-surface of a cell field after cell->point averaging (as the handoff does)."""
     img = pv.ImageData(dimensions=np.array(ctx.shape) + 1, spacing=ctx.grid.spacing, origin=ctx.grid.origin)
@@ -361,7 +378,7 @@ def iso_metrics(ctx: Ctx, field: np.ndarray, iso: float = 0.5) -> dict:
     return {
         "faces": int(len(mesh.faces)), "vertices": int(len(mesh.vertices)),
         "watertight": bool(mesh.is_watertight),
-        "components": int(len(mesh.split(only_watertight=False))),
+        "components": _components(mesh),
         "volume_m3": float(abs(mesh.volume)) if mesh.is_watertight else None,
         "bounds_m": np.asarray(mesh.bounds).tolist(),
     }
@@ -611,7 +628,7 @@ def phase_export(ctx: Ctx, cids: list[str]) -> None:
                 "flow_conditions_source": "work/p0_closed_loop/project.yaml:flow_cases[0] (declared); solver ran laminar, nu=0.01, U=1 as the template does",
             },
             "discreteness_active_cells": {"design_rho": discreteness(rho, ctx.active), "physical_beta": discreteness(beta, ctx.active)},
-            "iso_surface_metrics": {"iso_value": 0.5, **iso, "handoff_surface": fr.get("surface")},
+            "iso_surface_metrics": {"iso_value": 0.5, **iso, "handoff_surface": fr.get("surface"), "handoff_surface_quality": fr.get("surface_quality")},
             "volume_check": {
                 "design_solid_volume_sum_beta_m3": v_beta, "design_threshold_volume_beta_gt_0.5_m3": v_thr,
                 "iso_surface_volume_m3": iso.get("volume_m3"),
