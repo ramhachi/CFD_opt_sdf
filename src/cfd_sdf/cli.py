@@ -670,6 +670,7 @@ def transfer_openfoam_gradient_to_canonical(
             output_directory=output_directory,
             final_time=final_time,
             response_id=response_id,
+            problem_spec=spec,
         )
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
@@ -985,7 +986,10 @@ def prepare_fixed_grid_primal(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="Docker image recorded in source-solver metadata.",
@@ -1033,7 +1037,10 @@ def run_fixed_grid_primal(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="OpenFOAM Docker image.",
@@ -1084,7 +1091,10 @@ def run_fixed_grid_primal_suite(
     perturbation_amplitude: float = typer.Option(0.05, help="Filtered perturbation amplitude."),
     smoothing_radius_cells: float = typer.Option(1.0, help="Gaussian smoothing radius in cells."),
     solid_threshold: float = typer.Option(0.5, help="Threshold used by threshold-solid."),
-    adjoint_iterations: int = typer.Option(1, help="Adjoint iterations kept minimal for primal-only T2 checks."),
+    adjoint_iterations: int | None = typer.Option(
+        None,
+        help="Override the adjoint solvers nIters cap (as1 and downforce). Omit to keep the templates qualified default; any override marks the case audit_only.",
+    ),
     docker_image: str = typer.Option(
         "opencfd/openfoam-default:2512",
         help="OpenFOAM Docker image.",

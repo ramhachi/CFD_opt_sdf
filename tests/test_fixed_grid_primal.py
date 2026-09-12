@@ -50,7 +50,10 @@ def test_prepare_fixed_grid_primal_case_writes_density_alpha_and_no_remesh(
         encoding="utf-8"
     )
     assert "fixedZeroFromMask" in optimisation
-    assert "nIters 1;" in optimisation
+    # adjoint_iterations defaults to None: the template's own qualified
+    # nIters (its "2000/4000 equivalent") is kept, not blindly set to 1.
+    assert "nIters 4000;" in optimisation
+    assert "nIters 1;" not in optimisation
     control = (artifacts.case_dir / "system" / "controlDict").read_text(
         encoding="utf-8"
     )
@@ -65,6 +68,39 @@ def test_prepare_fixed_grid_primal_case_writes_density_alpha_and_no_remesh(
         # report staging as unavailable rather than assuming a local .so.
         assert 'libs ("libcfdSdfPorousObjectives.so");' in control
         assert "./lib/libcfdSdfPorousObjectives.so" not in control
+
+
+def test_adjoint_iterations_override_patches_only_named_adjoint_blocks(
+    tmp_path: Path,
+) -> None:
+    """C0: adjoint_iterations is a structured, solver-id-scoped patch.
+
+    It must land in exactly the two named ``adjointSolvers`` blocks (``as1``
+    and ``downforce``), and must not touch the primal ``nIters`` or any
+    unrelated dict value (``betaMax``) that happens to share no value with
+    the override.
+    """
+
+    topology_state = _write_fixed_grid_state(tmp_path / "contract")
+    template = _write_multiline_template_case(tmp_path / "template")
+
+    artifacts = prepare_fixed_grid_primal_case(
+        topology_state,
+        case_dir=tmp_path / "case",
+        template_case_dir=template,
+        density_variant="threshold-solid",
+        adjoint_iterations=7,
+    )
+
+    optimisation = (artifacts.case_dir / "system" / "optimisationDict").read_text(
+        encoding="utf-8"
+    )
+    assert optimisation.count("nIters 7;") == 2
+    assert "nIters 1000;" in optimisation  # primal untouched
+    assert "nIters 4000;" not in optimisation
+    assert "betaMax    2500;" in optimisation  # unrelated value untouched
+    metadata = json.loads(artifacts.case_metadata_json.read_text(encoding="utf-8"))
+    assert metadata["source_solver"]["audit_only"] is True
 
 
 def test_filtered_perturbation_is_deterministic_and_masked(tmp_path: Path) -> None:
@@ -226,6 +262,63 @@ def _write_fixed_grid_state(directory: Path) -> Path:
     path = directory / "topology_state.json"
     path.write_text(json.dumps(state, indent=2), encoding="utf-8")
     return path
+
+
+def _write_multiline_template_case(case_dir: Path) -> Path:
+    """A template shaped like the real production case, not squashed to one line.
+
+    ``_patch_named_block_niters`` locates ``as1``/``downforce`` by brace
+    matching from a line that starts with the solver id, so the test template
+    must actually look like the real one instead of the single-line
+    shorthand ``_write_template_case`` uses for unrelated (primal-only) tests.
+    """
+
+    template = _write_template_case(case_dir)
+    (case_dir / "system" / "optimisationDict").write_text(
+        "primalSolvers\n"
+        "{\n"
+        "    op1\n"
+        "    {\n"
+        "        solutionControls\n"
+        "        {\n"
+        "            nIters 1000;\n"
+        "        }\n"
+        "    }\n"
+        "}\n"
+        "adjointManagers\n"
+        "{\n"
+        "    adjManager1\n"
+        "    {\n"
+        "        adjointSolvers\n"
+        "        {\n"
+        "            as1\n"
+        "            {\n"
+        "                solutionControls\n"
+        "                {\n"
+        "                    nIters 4000;\n"
+        "                }\n"
+        "            }\n"
+        "            downforce\n"
+        "            {\n"
+        "                solutionControls\n"
+        "                {\n"
+        "                    nIters 4000;\n"
+        "                }\n"
+        "            }\n"
+        "        }\n"
+        "    }\n"
+        "}\n"
+        "optimisation\n"
+        "{\n"
+        "    designVariables\n"
+        "    {\n"
+        "        fixedZeroPorousZones ( oldZone );\n"
+        "        betaMax    2500;\n"
+        "    }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    return template
 
 
 def _write_template_case(case_dir: Path) -> Path:

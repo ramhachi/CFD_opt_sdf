@@ -13,6 +13,7 @@ from cfd_sdf.problem_spec import load_problem_spec
 
 runner = CliRunner()
 PROBLEM_YAML = Path("examples/g2_openfoam_compile/project.yaml")
+SOLVER_ID = "resp_rotated_force"
 
 
 def _field(name: str, values: list[float]) -> str:
@@ -41,17 +42,20 @@ def _uniform_alpha(value: float) -> str:
     )
 
 
-def _write_case(tmp_path: Path) -> Path:
+def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID) -> Path:
     case = tmp_path / "case"
     root = case / "processor0"
     (root / "constant/polyMesh").mkdir(parents=True)
     (root / "constant/polyMesh/cellProcAddressing").write_text(_labels(list(range(6))), encoding="utf-8")
     (root / "1").mkdir()
-    (root / "1/topOSensdownforce").write_text(_field("topOSensdownforce", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
+    (root / f"1/topOSens{solver_id}").write_text(_field(f"topOSens{solver_id}", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
     (root / "1/alphaTilda").write_text(_field("alphaTilda", [0.1] * 6), encoding="utf-8")
     (root / "1/beta").write_text(_field("beta", [0.9] * 6), encoding="utf-8")
     (root / "0").mkdir()
     (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
+    (case / "log.adjointOptimisationFoam").write_text(
+        f"{solver_id} solution converged in 713 iterations\n", encoding="utf-8"
+    )
     return case
 
 
@@ -102,7 +106,7 @@ def test_transfer_openfoam_gradient_to_canonical_writes_expected_artifacts(tmp_p
         [
             "transfer-openfoam-gradient-to-canonical",
             str(case_dir),
-            "downforce",
+            SOLVER_ID,
             str(block_mesh),
             str(snapshot_path),
             str(PROBLEM_YAML),
@@ -141,7 +145,7 @@ def test_transfer_openfoam_gradient_to_canonical_refuses_undeclared_response(tmp
         [
             "transfer-openfoam-gradient-to-canonical",
             str(case_dir),
-            "downforce",
+            SOLVER_ID,
             str(block_mesh),
             str(snapshot_path),
             str(PROBLEM_YAML),
@@ -154,3 +158,41 @@ def test_transfer_openfoam_gradient_to_canonical_refuses_undeclared_response(tmp
 
     assert result.exit_code != 0
     assert not (tmp_path / "canonical_result").exists()
+
+
+def test_transfer_openfoam_gradient_to_canonical_refuses_mismatched_solver_binding(tmp_path: Path) -> None:
+    """CLI-level regression for the audit's headline defect: response_id="drag"
+    (here "rotated_force") must not accept a gradient reconstructed from a
+    different response's adjoint solver ("resp_yaw_side_force")."""
+
+    spec = load_problem_spec(PROBLEM_YAML)
+    grid = UniformCartesianCellGrid(
+        origin=(-0.2, -0.1, -0.04), spacing=(0.02, 0.02, 0.02), cell_shape=(2, 3, 2)
+    )
+    masks = {mask_id: np.ones(grid.cell_count, dtype=np.uint8) for mask_id in CANONICAL_MASK_IDS}
+    snapshot_path = write_canonical_grid_snapshot(spec, grid=grid, masks=masks, path=tmp_path / "snapshot.json")
+    mismatched_solver_id = "resp_yaw_side_force"
+    case_dir = _write_case(tmp_path, solver_id=mismatched_solver_id)
+    block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64), allow_pickle=False)
+    output_directory = tmp_path / "canonical_result"
+
+    result = runner.invoke(
+        app,
+        [
+            "transfer-openfoam-gradient-to-canonical",
+            str(case_dir),
+            mismatched_solver_id,
+            str(block_mesh),
+            str(snapshot_path),
+            str(PROBLEM_YAML),
+            str(mapping_path),
+            str(output_directory),
+            "--response-id",
+            "rotated_force",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert not output_directory.exists()

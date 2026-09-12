@@ -107,6 +107,7 @@ def reconstruct_final_decomposed_openfoam_fields(
     provenance: dict[str, object] = {
         "kind": "openfoam_decomposed_field_reconstruction",
         "ordering": GLOBAL_CELL_LABEL_ORDER,
+        "adjoint_solver_id": adjoint_solver_id,
         "final_time": selected_time,
         "processor_count": len(processors),
         "cell_count": int(labels.size),

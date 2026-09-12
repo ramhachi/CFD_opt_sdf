@@ -18,6 +18,8 @@ from cfd_sdf.openfoam_canonical_field_transfer import (
 from cfd_sdf.openfoam_grid_transfer import ExactCartesianOverlapTransfer, UniformCartesianCellGrid
 from cfd_sdf.problem_spec import load_problem_spec
 
+SOLVER_ID = "resp_rotated_force"
+
 
 def _field(name: str, values: list[float]) -> str:
     return (
@@ -45,17 +47,23 @@ def _uniform_alpha(value: float) -> str:
     )
 
 
-def _write_case(tmp_path: Path) -> Path:
+def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID, converged: bool = True) -> Path:
     case = tmp_path / "case"
     root = case / "processor0"
     (root / "constant/polyMesh").mkdir(parents=True)
     (root / "constant/polyMesh/cellProcAddressing").write_text(_labels(list(range(6))), encoding="utf-8")
     (root / "1").mkdir()
-    (root / "1/topOSensresp_force").write_text(_field("topOSensresp_force", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
+    (root / f"1/topOSens{solver_id}").write_text(_field(f"topOSens{solver_id}", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
     (root / "1/alphaTilda").write_text(_field("alphaTilda", [0.1] * 6), encoding="utf-8")
     (root / "1/beta").write_text(_field("beta", [0.9] * 6), encoding="utf-8")
     (root / "0").mkdir()
     (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
+    log_text = (
+        f"{solver_id} solution converged in 713 iterations\n"
+        if converged
+        else "op1 solution converged in 161 iterations\n"
+    )
+    (case / "log.adjointOptimisationFoam").write_text(log_text, encoding="utf-8")
     return case
 
 
@@ -87,8 +95,12 @@ edges
     return path
 
 
+def _spec():
+    return load_problem_spec(Path("examples/g2_openfoam_compile/project.yaml"))
+
+
 def _verified_snapshot(tmp_path: Path):
-    spec = load_problem_spec(Path("examples/g2_openfoam_compile/project.yaml"))
+    spec = _spec()
     grid = UniformCartesianCellGrid(
         origin=(-0.2, -0.1, -0.04),
         spacing=(0.02, 0.02, 0.02),
@@ -100,6 +112,7 @@ def _verified_snapshot(tmp_path: Path):
 
 
 def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) -> None:
+    spec = _spec()
     snapshot = _verified_snapshot(tmp_path)
     block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
     mapping = np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64)
@@ -107,12 +120,13 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
     np.save(mapping_path, mapping, allow_pickle=False)
     artifacts = reconstruct_and_write_canonical_gradient_transfer(
         case_dir=_write_case(tmp_path),
-        adjoint_solver_id="resp_force",
+        adjoint_solver_id=SOLVER_ID,
         block_mesh_dict=block_mesh,
         verified_snapshot=snapshot,
         source_global_cell_labels_by_xfastest=mapping_path,
         output_directory=tmp_path / "canonical_result",
         response_id="rotated_force",
+        problem_spec=spec,
     )
 
     with np.load(artifacts.fields_npz, allow_pickle=False) as payload:
@@ -141,9 +155,82 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
     assert set(provenance["state_field_transfer"]) == {"alpha_tilda", "beta", "raw_alpha"}
     assert all(item["status"] == "refused_not_provided" for item in provenance["state_field_transfer"].values())
     assert len(provenance["source"]["field_value_sha256"]["raw_alpha"]["source_file_sha256"]) == 1
+    assert provenance["differentiated_response"]["problem_spec_response_id"] == "rotated_force"
+    assert provenance["differentiated_response"]["openfoam_adjoint_solver_id"] == SOLVER_ID
+    assert provenance["differentiated_response"]["adjoint_convergence"]["converged"] is True
+    assert provenance["differentiated_response"]["adjoint_convergence"]["iterations"] == 713
+
+
+def test_rejects_response_bound_to_mismatched_adjoint_solver_id(tmp_path: Path) -> None:
+    """A response must not accept a gradient differentiated by another response's solver.
+
+    This is the C1 regression case named by the audit: the P0 closed loop
+    declared response_id="drag" but transferred topOSensdownforce under it.
+    Reproduced generically here using the two force responses already
+    declared by examples/g2_openfoam_compile/project.yaml: a gradient
+    reconstructed for "yaw_side_force"'s own solver must not bind to
+    "rotated_force".
+    """
+
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    mismatched_solver_id = "resp_yaw_side_force"
+
+    with pytest.raises(ValueError, match="is bound to OpenFOAM adjoint solver"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path, solver_id=mismatched_solver_id),
+            adjoint_solver_id=mismatched_solver_id,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_unconverged_adjoint(tmp_path: Path) -> None:
+    """C0: a finite, present topOSens from an unconverged adjoint is refused."""
+
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+
+    with pytest.raises(ValueError, match="did not report convergence"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path, converged=False),
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_missing_adjoint_log(tmp_path: Path) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    case_dir = _write_case(tmp_path)
+    (case_dir / "log.adjointOptimisationFoam").unlink()
+
+    with pytest.raises(ValueError, match="Adjoint convergence log not found"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case_dir,
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
 
 
 def test_rejects_snapshot_mask_tamper_after_verification(tmp_path: Path) -> None:
+    spec = _spec()
     snapshot = _verified_snapshot(tmp_path)
     artifact = snapshot.snapshot.path.parent / snapshot.snapshot.masks["root_mask"].relative_path
     values = np.load(artifact, allow_pickle=False)
@@ -153,12 +240,13 @@ def test_rejects_snapshot_mask_tamper_after_verification(tmp_path: Path) -> None
     with pytest.raises(ValueError, match="mask hash mismatch during transfer: root_mask"):
         reconstruct_and_write_canonical_gradient_transfer(
             case_dir=_write_case(tmp_path),
-            adjoint_solver_id="resp_force",
+            adjoint_solver_id=SOLVER_ID,
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
             verified_snapshot=snapshot,
             source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
             response_id="rotated_force",
+            problem_spec=spec,
         )
 
 
@@ -172,31 +260,35 @@ def test_rejects_incomplete_coverage_and_source_cell_count_mismatch(
     nx: int,
     message: str,
 ) -> None:
+    spec = _spec()
     with pytest.raises(ValueError, match=message):
         reconstruct_and_write_canonical_gradient_transfer(
             case_dir=_write_case(tmp_path),
-            adjoint_solver_id="resp_force",
+            adjoint_solver_id=SOLVER_ID,
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict", x_upper=x_upper, nx=nx),
             verified_snapshot=_verified_snapshot(tmp_path),
             source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
             output_directory=tmp_path / "canonical_result",
             response_id="rotated_force",
+            problem_spec=spec,
         )
 
 
 def test_rejects_invalid_source_cell_order_mapping(tmp_path: Path) -> None:
+    spec = _spec()
     mapping = tmp_path / "bad_mapping.npy"
     np.save(mapping, np.asarray([0, 0, 2, 3, 4, 5], dtype=np.int64), allow_pickle=False)
 
     with pytest.raises(ValueError, match="must be a permutation"):
         reconstruct_and_write_canonical_gradient_transfer(
             case_dir=_write_case(tmp_path),
-            adjoint_solver_id="resp_force",
+            adjoint_solver_id=SOLVER_ID,
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
             verified_snapshot=_verified_snapshot(tmp_path),
             source_global_cell_labels_by_xfastest=mapping,
             output_directory=tmp_path / "canonical_result",
             response_id="rotated_force",
+            problem_spec=spec,
         )
 
 

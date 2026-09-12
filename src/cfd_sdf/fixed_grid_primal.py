@@ -136,7 +136,7 @@ def prepare_fixed_grid_primal_case(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
@@ -151,8 +151,15 @@ def prepare_fixed_grid_primal_case(
         raise ValueError("smoothing_radius_cells must be non-negative")
     if not (0.0 <= solid_threshold <= 1.0):
         raise ValueError("solid_threshold must be within [0, 1]")
-    if adjoint_iterations < 0:
-        raise ValueError("adjoint_iterations must be non-negative")
+    if adjoint_iterations is not None and (
+        isinstance(adjoint_iterations, bool)
+        or not isinstance(adjoint_iterations, int)
+        or adjoint_iterations <= 0
+    ):
+        raise ValueError(
+            "adjoint_iterations must be a positive integer, or None to keep the "
+            "template's own adjoint solutionControls.nIters (its qualified default)"
+        )
 
     density_state = load_fixed_grid_density_state(topology_state_json)
     template = _resolve_template_case(density_state, template_case_dir)
@@ -269,7 +276,7 @@ def run_fixed_grid_primal_case(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     problem_binding: dict[str, object] | None = None,
 ) -> FixedGridPrimalCaseArtifacts:
@@ -326,7 +333,7 @@ def run_fixed_grid_primal_suite(
     perturbation_amplitude: float = 0.05,
     smoothing_radius_cells: float = 1.0,
     solid_threshold: float = 0.5,
-    adjoint_iterations: int = 1,
+    adjoint_iterations: int | None = None,
     docker_image: str = DEFAULT_OPENFOAM_DOCKER_IMAGE,
     reproducibility_tolerance: float = 1.0e-10,
 ) -> FixedGridPrimalSuiteArtifacts:
@@ -921,12 +928,25 @@ rm -rf 0 [1-9]* processor* VTK postProcessing optimisation log.* openfoam_run_su
     )
 
 
+_ADJOINT_SOLVER_IDS = ("as1", "downforce")
+
+
 def _patch_optimisation_dict(
     path: Path,
     *,
     fixed_zero_zone_name: str,
-    adjoint_iterations: int,
+    adjoint_iterations: int | None,
 ) -> None:
+    """Patch the fixed-zero cell zone and, optionally, adjoint nIters caps.
+
+    ``adjoint_iterations`` is applied only inside the named
+    ``adjointSolvers.<id>.solutionControls`` block for each id in
+    :data:`_ADJOINT_SOLVER_IDS`, located by brace matching rather than a blind
+    value substitution.  ``None`` leaves the template's own adjoint
+    ``nIters`` untouched (its qualified default); the primal solver's
+    ``nIters`` is never touched by this function.
+    """
+
     text = path.read_text(encoding="utf-8", errors="replace")
     text = re.sub(
         r"fixedZeroPorousZones\s*\([^;]*?\)\s*;",
@@ -934,12 +954,53 @@ def _patch_optimisation_dict(
         text,
         flags=re.DOTALL,
     )
-    text = re.sub(
-        r"\bnIters\s+4000\s*;",
-        f"nIters {adjoint_iterations};",
+    if adjoint_iterations is not None:
+        for solver_id in _ADJOINT_SOLVER_IDS:
+            text = _patch_named_block_niters(text, solver_id, adjoint_iterations)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def _patch_named_block_niters(text: str, solver_id: str, niters: int) -> str:
+    """Replace the single ``nIters`` entry inside the named dict block only.
+
+    Templates that do not declare this solver at all (e.g. a primal-only
+    diagnostic template with no ``downforce`` adjoint) are left untouched:
+    absence of the block is not itself ambiguous.  Once the block is found,
+    it must contain exactly one ``nIters`` entry, or this refuses rather than
+    guessing which one to patch.
+    """
+
+    header = re.search(
+        rf"(?m)^(?P<indent>[ \t]*){re.escape(solver_id)}[ \t]*\n(?P=indent)\{{",
         text,
     )
-    path.write_text(text, encoding="utf-8", newline="\n")
+    if header is None:
+        return text
+    open_brace = text.index("{", header.end() - 1)
+    close_brace = _matching_brace_index(text, open_brace)
+    block = text[open_brace : close_brace + 1]
+    matches = list(re.finditer(r"\bnIters\s+\d+\s*;", block))
+    if len(matches) != 1:
+        raise ValueError(
+            f"optimisationDict {solver_id!r} solutionControls must declare exactly "
+            f"one nIters entry; found {len(matches)}"
+        )
+    match = matches[0]
+    patched_block = block[: match.start()] + f"nIters {niters};" + block[match.end() :]
+    return text[:open_brace] + patched_block + text[close_brace + 1 :]
+
+
+def _matching_brace_index(text: str, open_index: int) -> int:
+    depth = 0
+    for index in range(open_index, len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+    raise ValueError("optimisationDict has unbalanced braces")
 
 
 def _patch_control_dict_libraries(path: Path, *, library_path: str | None) -> None:
@@ -1045,6 +1106,13 @@ def _case_metadata(
             "mesh_policy": "fixed",
             "remeshing_per_iteration": False,
             "adjoint_iterations": adjoint_iterations,
+            "audit_only": adjoint_iterations is not None,
+            "audit_only_reason": (
+                None
+                if adjoint_iterations is None
+                else "adjoint_iterations overrides the template's qualified nIters; "
+                "gradients from this case are diagnostic only and must not be exported"
+            ),
             "custom_objective_library": library_path,
         },
         "run_policy": {

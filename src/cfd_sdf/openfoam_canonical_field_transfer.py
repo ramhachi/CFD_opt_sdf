@@ -17,9 +17,11 @@ refuses to manufacture canonical state fields from them.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import gzip
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Any
 from uuid import uuid4
@@ -43,6 +45,7 @@ from .openfoam_grid_transfer import (
     ExactCartesianOverlapTransfer,
     load_openfoam_cell_order_mapping,
 )
+from .problem_spec import ProblemSpec, problem_spec_sha256
 
 
 _ARTIFACT_KIND = "openfoam_canonical_gradient_transfer"
@@ -75,7 +78,9 @@ def reconstruct_and_write_canonical_gradient_transfer(
     source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
     response_id: str,
+    problem_spec: ProblemSpec,
     final_time: str | None = None,
+    adjoint_log_file: str = "log.adjointOptimisationFoam",
 ) -> CanonicalGradientTransferArtifacts:
     """Reconstruct and atomically persist a canonical ``topOSens`` gradient.
 
@@ -86,6 +91,16 @@ def reconstruct_and_write_canonical_gradient_transfer(
     operation proves full *grid-domain* coverage and does not silently crop to
     a design mask.
 
+    ``problem_spec`` must be the exact spec bound to ``verified_snapshot`` and
+    must declare ``response_id`` with ``options.openfoam_adjoint_solver_id``
+    equal to ``adjoint_solver_id`` (or, if undeclared, the response id must
+    equal the ``resp_<response_id>`` convention used by the generic OpenFOAM
+    response renderer).  This is a *gradient export* boundary: before any
+    field is reconstructed, ``adjoint_log_file`` inside ``case_dir`` must show
+    that the requested ``adjoint_solver_id`` actually converged.  A finite,
+    correctly shaped ``topOSens`` from an unconverged or mislabeled adjoint is
+    refused, not merely recorded.
+
     ``output_directory`` must not already exist.  A sibling temporary
     directory is fully written and validated before one directory rename makes
     the NPZ and provenance visible together.  The mapping NPY stores
@@ -93,6 +108,9 @@ def reconstruct_and_write_canonical_gradient_transfer(
     permutation of zero-based global labels.
     """
 
+    adjoint_convergence = _require_adjoint_converged(
+        Path(case_dir), adjoint_solver_id, log_file_name=adjoint_log_file
+    )
     reconstructed = reconstruct_final_decomposed_openfoam_fields(
         case_dir,
         adjoint_solver_id=adjoint_solver_id,
@@ -106,6 +124,8 @@ def reconstruct_and_write_canonical_gradient_transfer(
         source_global_cell_labels_by_xfastest=source_global_cell_labels_by_xfastest,
         output_directory=output_directory,
         response_id=response_id,
+        problem_spec=problem_spec,
+        adjoint_convergence=adjoint_convergence,
     )
 
 
@@ -117,18 +137,29 @@ def write_canonical_gradient_transfer(
     source_global_cell_labels_by_xfastest: str | Path,
     output_directory: str | Path,
     response_id: str,
+    problem_spec: ProblemSpec,
+    adjoint_convergence: dict[str, Any] | None = None,
 ) -> CanonicalGradientTransferArtifacts:
     """Write a canonical adjoint gradient from already reconstructed inputs.
 
     This lower-level entry point exists for qualified callers that have already
     read the two source contracts.  It performs the same validation as the
     high-level reconstruction entry point and never exports canonical state
-    fields.
+    fields.  Callers that bypass :func:`reconstruct_and_write_canonical_gradient_transfer`
+    (and its ``case_dir``-based adjoint convergence gate) must already have
+    qualified ``reconstructed`` themselves; ``adjoint_convergence`` is recorded
+    as-is for provenance and is not itself re-verified here.
     """
 
     _validate_reconstructed_fields(reconstructed)
     _validate_source_mesh(source_mesh, reconstructed)
     _validate_verified_snapshot(verified_snapshot)
+    _validate_response_binding(
+        problem_spec=problem_spec,
+        verified_snapshot=verified_snapshot,
+        response_id=response_id,
+        reconstructed=reconstructed,
+    )
     source_order_mapping = load_openfoam_cell_order_mapping(
         source_global_cell_labels_by_xfastest,
         cell_count=source_mesh.grid.cell_count,
@@ -161,8 +192,124 @@ def write_canonical_gradient_transfer(
         source_gradient_xfastest=source_gradient_xfastest,
         canonical_gradient=canonical_gradient,
         response_id=response_id,
+        adjoint_convergence=adjoint_convergence,
     )
     return _write_atomically(output_directory, payload, provenance)
+
+
+def _declared_adjoint_solver_id(response) -> str:
+    """Return the response's declared OpenFOAM adjoint solver id.
+
+    An explicit ``options.openfoam_adjoint_solver_id`` always wins (needed for
+    hand-authored cases such as the P0 fixed-grid template, whose solver ids
+    are ``as1``/``downforce`` and do not follow any formula).  Absent that,
+    fall back to the generic response renderer's own convention
+    (``openfoam_response_renderer.py``: ``adjoint_solver_id = f"resp_{response_id}"``).
+    """
+
+    declared = response.options.get("openfoam_adjoint_solver_id")
+    if declared is not None:
+        if not isinstance(declared, str) or not declared:
+            raise ValueError(
+                f"response {response.id!r} options.openfoam_adjoint_solver_id must be a non-empty string"
+            )
+        return declared
+    return f"resp_{response.id}"
+
+
+def _validate_response_binding(
+    *,
+    problem_spec: ProblemSpec,
+    verified_snapshot: VerifiedCanonicalGridSnapshot,
+    response_id: str,
+    reconstructed: ReconstructedOpenFoamFields,
+) -> None:
+    if not isinstance(problem_spec, ProblemSpec):
+        raise ValueError("problem_spec must be ProblemSpec")
+    if problem_spec_sha256(problem_spec) != verified_snapshot.snapshot.problem_spec_sha256:
+        raise ValueError(
+            "problem_spec does not match the ProblemSpec bound to verified_snapshot; "
+            "response binding cannot be checked against an unrelated spec"
+        )
+    responses_by_id = {response.id: response for response in problem_spec.responses}
+    response = responses_by_id.get(response_id)
+    if response is None:
+        raise ValueError(
+            f"response_id {response_id!r} is not declared by problem_spec; "
+            "the canonical gradient cannot be bound to an undeclared response"
+        )
+    solver_ids_by_response = {
+        candidate.id: _declared_adjoint_solver_id(candidate) for candidate in problem_spec.responses
+    }
+    if len(set(solver_ids_by_response.values())) != len(solver_ids_by_response):
+        raise ValueError(
+            "problem_spec responses resolve to ambiguous OpenFOAM adjoint solver ids: "
+            f"{solver_ids_by_response!r}"
+        )
+    declared_solver_id = solver_ids_by_response[response_id]
+    actual_solver_id = reconstructed.provenance.get("adjoint_solver_id")
+    if actual_solver_id != declared_solver_id:
+        raise ValueError(
+            f"response_id {response_id!r} is bound to OpenFOAM adjoint solver "
+            f"{declared_solver_id!r}, but the reconstructed sensitivity came from "
+            f"adjoint_solver_id {actual_solver_id!r}; refusing to bind a gradient "
+            "differentiated by one solver to a response declared for another"
+        )
+
+
+_ADJOINT_LOG_FATAL_PATTERNS = (
+    "foam fatal",
+    "mpirun has detected an attempt to run as root",
+    "segmentation fault",
+    "floating point exception",
+)
+
+
+def _require_adjoint_converged(
+    case_dir: Path, adjoint_solver_id: str, *, log_file_name: str
+) -> dict[str, Any]:
+    """Refuse gradient export unless the named adjoint solver reports convergence.
+
+    This is the fail-closed check the P0 closed loop skipped: it consulted
+    only ``primal_converged`` and array finiteness before consuming
+    ``topOSens``.  A one-iteration adjoint (``nIters 1``) is finite and
+    present but never converged, and must not silently qualify as a design
+    gradient.
+    """
+
+    path = case_dir / log_file_name
+    gz_path = case_dir / f"{log_file_name}.gz"
+    if path.is_file():
+        text = path.read_text(encoding="utf-8", errors="replace")
+    elif gz_path.is_file():
+        with gzip.open(gz_path, "rt", encoding="utf-8", errors="replace") as handle:
+            text = handle.read()
+    else:
+        raise ValueError(
+            f"Adjoint convergence log not found for gradient export: {path}"
+        )
+    lowered = text.lower()
+    fatal = [pattern for pattern in _ADJOINT_LOG_FATAL_PATTERNS if pattern in lowered]
+    if fatal:
+        raise ValueError(
+            f"{log_file_name} reports fatal errors; refusing gradient export: {fatal}"
+        )
+    match = re.search(
+        rf"\b{re.escape(adjoint_solver_id)}\s+solution\s+converged\s+in\s+(\d+)\s+iterations\b",
+        text,
+    )
+    if match is None:
+        raise ValueError(
+            f"Adjoint solver {adjoint_solver_id!r} did not report convergence in "
+            f"{log_file_name}; gradient export requires a converged adjoint, not "
+            "merely a finite topOSens"
+        )
+    return {
+        "adjoint_solver_id": adjoint_solver_id,
+        "converged": True,
+        "iterations": int(match.group(1)),
+        "log_file": log_file_name,
+    }
 
 
 def _validate_reconstructed_fields(reconstructed: ReconstructedOpenFoamFields) -> None:
@@ -255,6 +402,7 @@ def _provenance(
     source_gradient_xfastest: np.ndarray,
     canonical_gradient: np.ndarray,
     response_id: str,
+    adjoint_convergence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     snapshot = verified_snapshot.snapshot
     source_fields = {
@@ -282,7 +430,8 @@ def _provenance(
         "differentiated_response": {
             "problem_spec_response_id": response_id,
             "openfoam_adjoint_solver_id": reconstructed.provenance.get("adjoint_solver_id"),
-            "binding": "declared by the caller and checked against the ProblemSpec",
+            "binding": "verified: response_id resolves to this exact adjoint_solver_id in problem_spec",
+            "adjoint_convergence": adjoint_convergence,
         },
         "target": {
             "snapshot_path": str(snapshot.path.resolve()),

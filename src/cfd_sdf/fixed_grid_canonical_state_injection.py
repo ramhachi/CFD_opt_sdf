@@ -56,9 +56,11 @@ def inject_canonical_state_into_fixed_grid_contract(
         raise ValueError(f"Unsupported source-state provenance kind: {provenance_path}")
 
     with np.load(npz_path, allow_pickle=False) as payload:
-        if "source_rho_xfastest" not in payload.files:
-            raise ValueError(f"{npz_path} is missing source_rho_xfastest")
-        source_rho_xfastest = np.array(payload["source_rho_xfastest"], dtype=np.float64)
+        raw_arrays = {name: np.array(payload[name]) for name in payload.files}
+    _validate_candidate_provenance(source_provenance, npz_path, raw_arrays)
+    if "source_rho_xfastest" not in raw_arrays:
+        raise ValueError(f"{npz_path} is missing source_rho_xfastest")
+    source_rho_xfastest = raw_arrays["source_rho_xfastest"].astype(np.float64)
 
     density_state = load_fixed_grid_density_state(Path(topology_state_json))
     contract_grid = density_state.grid
@@ -114,6 +116,58 @@ def inject_canonical_state_into_fixed_grid_contract(
         },
     }
     return _write_atomically(output_directory, density_state, new_rho, provenance)
+
+
+def _validate_candidate_provenance(
+    source_provenance: dict[str, Any],
+    npz_path: Path,
+    raw_arrays: dict[str, np.ndarray],
+) -> None:
+    """Refuse an NPZ/provenance pair unless they were written together.
+
+    ``transfer_and_write_openfoam_source_state`` binds a candidate's exported
+    arrays to this exact ``provenance.json`` via ``artifact_file.sha256`` (the
+    NPZ file's own hash) and per-array ``exported_arrays.<name>.sha256``
+    hashes.  Re-deriving and comparing both here closes the hole where a
+    stale ``provenance.json`` (e.g. the initial candidate's) is reused for a
+    different candidate's NPZ: any byte difference in the file, or any
+    dtype/shape/order/value difference in an exported array, changes its
+    hash and is refused.
+    """
+
+    artifact_file = source_provenance.get("artifact_file")
+    if not isinstance(artifact_file, dict) or not isinstance(artifact_file.get("sha256"), str):
+        raise ValueError("source-state provenance is missing its own artifact_file hash")
+    actual_npz_sha256 = _sha256_file(npz_path)
+    if actual_npz_sha256 != artifact_file["sha256"]:
+        raise ValueError(
+            f"{npz_path} does not match the provenance that describes it (file hash "
+            "mismatch); provenance.json must be this exact candidate's own sidecar, "
+            "not a reused or swapped one"
+        )
+    exported = source_provenance.get("exported_arrays")
+    if not isinstance(exported, dict) or not exported:
+        raise ValueError("source-state provenance is missing exported_arrays hashes")
+    for name, record in exported.items():
+        if not isinstance(record, dict) or not isinstance(record.get("sha256"), str):
+            raise ValueError(f"source-state provenance is missing exported_arrays.{name}.sha256")
+        if name not in raw_arrays:
+            raise ValueError(f"{npz_path} is missing array {name!r} recorded in its provenance")
+        actual = _array_sha256(raw_arrays[name])
+        if actual != record["sha256"]:
+            raise ValueError(
+                f"{npz_path} array {name!r} does not match its provenance hash "
+                f"(dtype/shape/order/value changed); the NPZ and provenance must "
+                "come from the same candidate transfer"
+            )
+
+
+def _array_sha256(values: np.ndarray) -> str:
+    array = np.ascontiguousarray(values)
+    header = json.dumps(
+        {"dtype": array.dtype.str, "shape": list(array.shape)}, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(header + b"\n" + array.tobytes()).hexdigest()
 
 
 def _validate_source_grid_identity(

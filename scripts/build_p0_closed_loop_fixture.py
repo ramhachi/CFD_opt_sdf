@@ -153,14 +153,27 @@ def write_project_yaml(path: Path, lower: np.ndarray, upper: np.ndarray) -> None
                 "kind": "force",
                 "flow_case_id": "straight",
                 "direction": [1.0, 0.0, 0.0],
-            }
+                "options": {"openfoam_adjoint_solver_id": "as1"},
+            },
+            {
+                "id": "downforce",
+                "kind": "force",
+                "flow_case_id": "straight",
+                "direction": [0.0, 0.0, -1.0],
+                "options": {"openfoam_adjoint_solver_id": "downforce"},
+            },
         ],
         "objectives": [
             {
                 "id": "minimize_drag",
                 "sense": "minimize",
                 "terms": [{"coefficient": 1.0, "flow_case_id": "straight", "response_id": "drag"}],
-            }
+            },
+            {
+                "id": "maximize_downforce",
+                "sense": "maximize",
+                "terms": [{"coefficient": 1.0, "flow_case_id": "straight", "response_id": "downforce"}],
+            },
         ],
         "constraints": [],
         "topology_policy": {
