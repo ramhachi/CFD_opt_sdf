@@ -570,7 +570,18 @@ application     simpleFoam;
 startFrom       startTime;
 startTime       0;
 stopAt          endTime;
-endTime         500;
+// Raised from 500 (docs/problem_resolution_plan_2026_09.md C7): at the finest qualification
+// grid (V3, ~1.3M cells) 500 iterations was not enough headroom even after fixing the
+// relaxation-induced stall below -- see _fv_solution's comment and
+// work/stage_v_grid_convergence_fix/relax_probe_more_damping/log.simpleFoam. With the corrected
+// relaxation the fine-grid p residual decays monotonically (no longer stalled or diverging) but
+// its tail decelerates: over iterations 500-620 of that probe it fell by less than half, from
+// order 1.9e-4 to 8.5e-5 against the 1e-5 gate. Extrapolating that decelerating rate, several
+// thousand iterations are plausibly needed, not several hundred; 3000 is a reasoned buffer, not
+// a proven sufficient value -- see the Stage V grid-convergence report for the measured outcome.
+// This is a project setting, not physics; V0-V2 already converge in 90-300 iterations and are
+// unaffected by the higher cap.
+endTime         3000;
 deltaT          1;
 writeControl    timeStep;
 writeInterval   100;
@@ -709,7 +720,21 @@ wallDist {{ method meshWave; }}
 
 def _fv_solution(model: str) -> str:
     velocity_pattern = "U" if model == "laminar" else "(U|k|omega)"
-    equation_relaxation = "U 0.7;" if model == "laminar" else "U 0.7; k 0.7; omega 0.7;"
+    # At the finest qualification grid (V3, ~1.3M cells, 8.7k concave cells near the body) the
+    # p-U coupling under the old p=0.3/U=0.7 relaxation was only marginally stable: restarting
+    # the stalled V3 run (work/stage_sv_qualified_laminar/candidate_a_seed_reshape/V3) with
+    # those factors unchanged reproduced a flat p residual (~1.9e-4, not decaying, not growing).
+    # Two directions were tried and measured (work/stage_v_grid_convergence_fix/):
+    #   - Less damping (dropping the p relaxation entirely, or raising U to 0.9) made it worse:
+    #     p decayed briefly then grew without bound (relax_probe_u07, relax_probe -- an
+    #     oscillatory/marginally-unstable mode, not redundant over-relaxation as first assumed).
+    #   - More damping (p 0.2, U 0.5) made it strictly convergent: restarting the same stalled
+    #     case with these factors decayed p geometrically and monotonically from 1.6e-2 to
+    #     6.6e-4 over the next 28 iterations with no reversal (relax_probe_more_damping), unlike
+    #     every less-damped variant tried. This mesh needs more conservative relaxation, not
+    #     less; the iteration cap (controlDict) was raised alongside this because more damping
+    #     converges in more iterations, not fewer.
+    equation_relaxation = "U 0.5;" if model == "laminar" else "U 0.5; k 0.5; omega 0.5;"
     turbulence_residual = "" if model == "laminar" else '        "(k|omega)" 1e-5;\n'
     return _foam_header("dictionary", "fvSolution") + f"""
 solvers
@@ -726,7 +751,7 @@ SIMPLE
     pRefValue 0;
 
     // Stage V qualification (docs/problem_resolution_plan_2026_09.md C7 point 2): explicit
-    // residualControl so a run that merely completes the 500-step endTime is never treated as
+    // residualControl so a run that merely completes the endTime is never treated as
     // converged. Thresholds are pre-registered in cfd.STAGE_V_QUALIFICATION_PROFILE_V1.
     residualControl
     {{
@@ -737,7 +762,7 @@ SIMPLE
 
 relaxationFactors
 {{
-    fields {{ p 0.3; }}
+    fields {{ p 0.2; }}
     equations {{ {equation_relaxation} }}
 }}
 """

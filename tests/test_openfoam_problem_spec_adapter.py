@@ -239,6 +239,44 @@ def test_laminar_turbulence_model_generates_case_without_turbulence_fields(tmp_p
     assert metadata["operating_point"]["turbulence_model"] == "laminar"
 
 
+def test_fv_solution_uses_convergence_verified_relaxation_and_iteration_cap(tmp_path: Path) -> None:
+    """Regression test for the V3 grid-convergence stall.
+
+    The old p=0.3/U=0.7 relaxation left the finest qualification grid (V3, ~1.3M cells, 8.7k
+    concave cells near the body) only marginally stable: restarting the stalled V3 run
+    (work/stage_sv_qualified_laminar/candidate_a_seed_reshape/V3) with those factors unchanged
+    reproduced a flat p residual (~1.9e-4 against the 1e-5 gate, neither decaying nor growing).
+    Reducing damping further (dropping the p relaxation, or raising U to 0.9) made it worse: p
+    decayed briefly then grew without bound. Only increasing damping (p 0.2, U 0.5) produced
+    strictly monotonic, unbounded decay when tested the same way (see
+    work/stage_v_grid_convergence_fix/relax_probe_more_damping/log.simpleFoam) -- so the fix is
+    more conservative relaxation, plus more iteration headroom (500 -> 1500) since heavier
+    damping converges in more iterations, not fewer.
+    """
+    data = _spec_dict()
+    _box(tmp_path / "geometry" / "chassis.stl", (-0.5, 0.0, 0.0), (0.4, 0.3, 0.2))
+    _box(tmp_path / "geometry" / "wing_initial.stl", (0.25, 0.0, -0.2), (0.5, 0.6, 0.05))
+    _box(tmp_path / "geometry" / "design_domain.stl", (0.25, 0.0, -0.2), (0.7, 0.7, 0.15))
+    _box(tmp_path / "geometry" / "keepout.stl", (1.0, 0.0, 0.0), (0.2, 0.2, 0.2))
+    _box(tmp_path / "geometry" / "mount.stl", (0.25, 0.0, -0.4), (0.1, 0.1, 0.1))
+    project_yaml = tmp_path / "project.yaml"
+    project_yaml.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    spec = load_problem_spec(project_yaml)
+    config = problem_spec_to_project_config(spec)
+
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+    generate_openfoam_case(config, bundle, case_dir)
+
+    fv_solution = (case_dir / "system" / "fvSolution").read_text(encoding="utf-8")
+    assert "consistent yes;" in fv_solution
+    assert "p 0.2;" in fv_solution
+    assert "U 0.5;" in fv_solution
+
+    control_dict = (case_dir / "system" / "controlDict").read_text(encoding="utf-8")
+    assert "endTime         3000;" in control_dict
+
+
 def test_generated_case_records_problem_provenance_and_mesh_refinement(tmp_path: Path) -> None:
     spec = load_problem_spec(_write_spec(tmp_path))
     candidate = tmp_path / "candidate.stl"
