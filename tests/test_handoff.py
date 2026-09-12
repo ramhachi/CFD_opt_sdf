@@ -12,9 +12,11 @@ from typer.testing import CliRunner
 from cfd_sdf.cli import app
 from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _write_cell_vti
 from cfd_sdf.handoff import (
+    DISCRETENESS_MAX_MEAN_ND,
     HANDOFF_KIND,
     SDF_KIND,
     SDF_SIGN_CONVENTION,
+    _discreteness_report,
     build_density_to_sdf_handoff,
 )
 
@@ -157,6 +159,105 @@ def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) ->
         == "fail"
     )
     assert "revoxelized_component_validation_failed" in report["qualification_reasons"]
+
+
+def test_discreteness_measure_arithmetic() -> None:
+    # Hand-computed: mean(4*rho*(1-rho)) over the active cells only. Of the
+    # active cells, rho=0 and rho=1 each contribute 0; rho=0.5 contributes
+    # 4*0.5*0.5=1.0. The fourth cell (rho=0.9) is masked inactive and must
+    # not affect the mean. Mean over the 3 active cells = 1.0/3.
+    density = np.array([0.0, 1.0, 0.5, 0.9], dtype=np.float64)
+    masks = {"active_design_mask": np.array([1, 1, 1, 0], dtype=np.uint8)}
+
+    result = _discreteness_report(density, masks)
+
+    assert result["scope"] == "active_design_mask"
+    assert result["cell_count"] == 3
+    assert result["mean_nd"] == pytest.approx(1.0 / 3.0)
+    assert result["max_rho"] == pytest.approx(1.0)
+    assert result["count_rho_above_0_9"] == 1
+    assert result["count_rho_below_0_1"] == 1
+    assert result["count_rho_grey_band"] == 1
+    assert result["status"] == "fail"
+
+
+def test_handoff_passes_discreteness_gate_for_near_binary_field(tmp_path: Path) -> None:
+    # The shared fixture writes a purely 0/1 density field, so mean_nd is
+    # exactly zero and must clear the gate.
+    state_path = _write_state(tmp_path / "candidate", cell_shape=(6, 6, 6))
+
+    artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+
+    report = artifacts.fidelity_report
+    assert report["discreteness"]["mean_nd"] == 0.0
+    assert report["discreteness"]["status"] == "pass"
+    assert report["discreteness"]["max_mean_nd_allowed"] == DISCRETENESS_MAX_MEAN_ND
+    assert "density_field_not_sufficiently_discrete" not in report["qualification_reasons"]
+    manifest = json.loads(artifacts.manifest_json.read_text(encoding="utf-8"))
+    assert "density_field_not_sufficiently_discrete" not in manifest["qualification_reasons"]
+
+
+def test_handoff_flags_grey_density_field_as_not_discrete(tmp_path: Path) -> None:
+    state_path = _write_state(tmp_path / "candidate", cell_shape=(6, 6, 6))
+    density_path = state_path.parent / "density.vti"
+    density_grid = pv.read(density_path)
+    for name in ("rho", "rho_filtered", "rho_projected"):
+        values = np.asarray(density_grid.cell_data[name], dtype=np.float32).copy()
+        # The fixture's solid box sits at rho=1; smear it to a mid-grey value
+        # well short of binary, like the two measured real candidates.
+        values[values > 0.0] = np.float32(0.6)
+        density_grid.cell_data[name] = values
+    density_grid.save(density_path)
+
+    artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+
+    report = artifacts.fidelity_report
+    assert report["discreteness"]["mean_nd"] > DISCRETENESS_MAX_MEAN_ND
+    assert report["discreteness"]["mean_status"] == "fail"
+    assert report["discreteness"]["max_status"] == "fail"
+    assert report["discreteness"]["status"] == "fail"
+    assert report["discreteness"]["count_rho_above_0_9"] == 0
+    assert "density_field_not_sufficiently_discrete" in report["qualification_reasons"]
+    assert report["ready_for_stage_s"] is False
+    manifest = json.loads(artifacts.manifest_json.read_text(encoding="utf-8"))
+    assert "density_field_not_sufficiently_discrete" in manifest["qualification_reasons"]
+    assert manifest["discreteness"]["status"] == "fail"
+
+
+def test_handoff_flags_small_grey_body_that_fools_the_mean_threshold(
+    tmp_path: Path,
+) -> None:
+    # A small, fully-grey body diluted by a large void can drive mean_nd
+    # below DISCRETENESS_MAX_MEAN_ND on its own -- averaging against void
+    # cells hides that the object itself never commits to solid. This is the
+    # loophole DISCRETENESS_MIN_MAX_RHO exists to close: the object's 8 cells
+    # sit at rho=0.6 among 1000 active cells, so mean_nd = 8*4*0.6*0.4/1000
+    # = 0.00768, comfortably under the mean threshold, yet every one of those
+    # cells is far from solid.
+    state_path = _write_state(
+        tmp_path / "candidate",
+        cell_shape=(10, 10, 10),
+        solid_boxes=(((1, 2), (1, 2), (1, 2)),),
+        root_cell=(1, 1, 1),
+    )
+    density_path = state_path.parent / "density.vti"
+    density_grid = pv.read(density_path)
+    for name in ("rho", "rho_filtered", "rho_projected"):
+        values = np.asarray(density_grid.cell_data[name], dtype=np.float32).copy()
+        values[values > 0.0] = np.float32(0.6)
+        density_grid.cell_data[name] = values
+    density_grid.save(density_path)
+
+    artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+
+    report = artifacts.fidelity_report
+    assert report["discreteness"]["mean_nd"] <= DISCRETENESS_MAX_MEAN_ND
+    assert report["discreteness"]["mean_status"] == "pass"
+    assert report["discreteness"]["max_rho"] == pytest.approx(0.6)
+    assert report["discreteness"]["max_status"] == "fail"
+    assert report["discreteness"]["status"] == "fail"
+    assert "density_field_not_sufficiently_discrete" in report["qualification_reasons"]
+    assert report["ready_for_stage_s"] is False
 
 
 def test_handoff_requires_cell_data_and_rejects_invalid_mask(tmp_path: Path) -> None:
