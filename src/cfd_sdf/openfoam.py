@@ -15,6 +15,11 @@ from .config import MeshRef, OperatingPointSpec, ProjectConfig, RootSpec
 from .problem_spec import FlowCaseSpec, ProblemSpec, ResponseSpec, problem_spec_sha256
 from .sdf import FieldBundle
 
+from collections.abc import Sequence as _Sequence
+
+_GeometryRolePair = tuple[tuple[float, float, float], tuple[float, float, float]]
+__all__ = ["OpenFoamCaseSummary", "generate_openfoam_case", "problem_spec_to_project_config"]
+
 _GEOMETRY_ROLES_FOR_ADAPTER = (
     "fixed_solid",
     "initial_design",
@@ -37,7 +42,12 @@ class OpenFoamCaseSummary:
         return data
 
 
-def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir: Path) -> OpenFoamCaseSummary:
+def generate_openfoam_case(
+    config: ProjectConfig,
+    bundle: FieldBundle,
+    case_dir: Path,
+    extra_refinement_regions: Sequence[tuple[tuple[float, float, float], tuple[float, float, float], int]] | None = None,
+) -> OpenFoamCaseSummary:
     case_dir.mkdir(parents=True, exist_ok=True)
     for relative in ("0", "constant", "constant/triSurface", "system", "postProcessing"):
         (case_dir / relative).mkdir(parents=True, exist_ok=True)
@@ -46,11 +56,19 @@ def generate_openfoam_case(config: ProjectConfig, bundle: FieldBundle, case_dir:
     force_patches = [f"design_{_patch_name(ref.id)}" for ref in config.design_geometry]
     reference = _force_reference(config)
     metadata = _metadata(config, bundle, copied, force_patches, reference)
+    if extra_refinement_regions:
+        metadata["extra_refinement_regions"] = [
+            {
+                "box_m": {"min": list(region[0]), "max": list(region[1])},
+                "refinement_level": int(region[2]),
+            }
+            for region in extra_refinement_regions
+        ]
 
     files: dict[str, str] = {
         "system/blockMeshDict": _block_mesh_dict(bundle),
         "system/surfaceFeatureExtractDict": _surface_feature_extract_dict(copied),
-        "system/snappyHexMeshDict": _snappy_hex_mesh_dict(config, bundle, copied),
+        "system/snappyHexMeshDict": _snappy_hex_mesh_dict(config, bundle, copied, extra_refinement_regions),
         "system/controlDict": _control_dict(config, force_patches, reference),
         "system/fvSchemes": _fv_schemes(config.turbulence_model),
         "system/fvSolution": _fv_solution(config.turbulence_model),
@@ -448,6 +466,7 @@ def _snappy_hex_mesh_dict(
     config: ProjectConfig,
     bundle: FieldBundle,
     copied: list[dict[str, str]],
+    extra_refinement_regions: Sequence[tuple[_GeometryRolePair, _GeometryRolePair, int]] | None = None,
 ) -> str:
     bounds = bundle.grid.bounds
     lo = bounds[0]
@@ -463,6 +482,28 @@ def _snappy_hex_mesh_dict(
     geometry_entries = []
     refinement_surfaces = []
     refinement_regions = []
+    extra_boxes = []
+    for index, (box_lo, box_hi, level) in enumerate(extra_refinement_regions or ()):
+        name = f"extra_refinement_{index}"
+        extra_boxes.append(
+            f"""
+    {name}
+    {{
+        type searchableBox;
+        min ({box_lo[0]:g} {box_lo[1]:g} {box_lo[2]:g});
+        max ({box_hi[0]:g} {box_hi[1]:g} {box_hi[2]:g});
+    }}
+"""
+        )
+        refinement_regions.append(
+            f"""
+        {name}
+        {{
+            mode inside;
+            levels ((1E15 {int(level)}));
+        }}
+"""
+        )
     for item in copied:
         name = Path(item["file"]).stem
         geometry_entries.append(
@@ -501,7 +542,7 @@ addLayers       false;
 
 geometry
 {{
-{''.join(geometry_entries)}
+{''.join(geometry_entries)}{''.join(extra_boxes)}
 }};
 
 castellatedMeshControls

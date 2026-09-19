@@ -311,6 +311,38 @@ def test_generated_case_records_problem_provenance_and_mesh_refinement(tmp_path:
     assert reference["length_m"] == pytest.approx(0.8)
 
 
+def test_extra_refinement_regions_render_searchable_boxes(tmp_path: Path) -> None:
+    spec = load_problem_spec(_write_spec(tmp_path))
+    candidate = tmp_path / "candidate.stl"
+    _box(candidate, (0.25, 0.0, -0.2), (0.3, 0.3, 0.05))
+    config = problem_spec_to_project_config(spec, candidate_stl=candidate, voxel_size_m=0.1)
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+
+    generate_openfoam_case(config, bundle, tmp_path / "case_plain")
+    plain = (tmp_path / "case_plain" / "system" / "snappyHexMeshDict").read_text(encoding="utf-8")
+    assert "searchableBox" not in plain
+
+    summary = generate_openfoam_case(
+        config,
+        bundle,
+        case_dir,
+        extra_refinement_regions=[((0.0, -0.3, -0.2), (0.6, 0.3, 0.3), 2)],
+    )
+    snappy = (case_dir / "system" / "snappyHexMeshDict").read_text(encoding="utf-8")
+    assert "type searchableBox;" in snappy
+    assert "min (0 -0.3 -0.2);" in snappy
+    assert "max (0.6 0.3 0.3);" in snappy
+    assert "mode inside;" in snappy
+    assert "levels ((1E15 2));" in snappy
+    import json as _json
+    meta = _json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
+    assert meta["extra_refinement_regions"] == [
+        {"box_m": {"min": [0.0, -0.3, -0.2], "max": [0.6, 0.3, 0.3]}, "refinement_level": 2}
+    ]
+    assert summary.force_patches == ["design_candidate"]
+
+
 def test_voxel_size_override_changes_background_cell_count(tmp_path: Path) -> None:
     spec = load_problem_spec(_write_spec(tmp_path))
 
