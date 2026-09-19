@@ -3,15 +3,36 @@
 Use this page as the documentation entry point. There is one active roadmap
 and one active schema version for new implementation work.
 
+## Fresh OpenCode Read Order
+
+Start here in a new terminal, after reading the repository root
+[`AGENTS.md`](../AGENTS.md):
+
+1. [`opencode_handoff_2026_09.md`](opencode_handoff_2026_09.md) - detailed
+   repository-local working memory, current evidence boundaries, next slice,
+   commands, and reporting template.
+2. [`phase_plan.md`](phase_plan.md) - the sole roadmap, status, and execution
+   order.
+3. [`problem_register_2026_09.md`](problem_register_2026_09.md) - the issue
+   ledger, including P1-P17 and the measured contradictions.
+4. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) -
+   detailed implementation and test slices, subordinate to the latest roadmap.
+5. [`problem_contract_v2.md`](problem_contract_v2.md) and
+   [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) - active
+   schemas and artifact semantics.
+6. [`git_branching_strategy.md`](git_branching_strategy.md) - branch workflow.
+
 ## Authoritative documents
 
 1. [`phase_plan.md`](phase_plan.md) — the only roadmap, status, and execution
    order.
-2. [`problem_contract_v2.md`](problem_contract_v2.md) — user-facing generic
+2. [`problem_register_2026_09.md`](problem_register_2026_09.md) — the
+   authoritative issue ledger, not a second roadmap.
+3. [`problem_contract_v2.md`](problem_contract_v2.md) — user-facing generic
    problem schema.
-3. [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) — Stage T
+4. [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) — Stage T
    primal/sensitivity artifact schema.
-4. [`fixed_grid_backend_decision.md`](fixed_grid_backend_decision.md) — why the
+5. [`fixed_grid_backend_decision.md`](fixed_grid_backend_decision.md) — why the
    first Stage T adapter uses OpenFOAM.
 
 ## Supporting documents
@@ -32,10 +53,9 @@ and one active schema version for new implementation work.
   — the first end-to-end canonical state/gradient loop on real OpenFOAM, its
   finite-difference verification, and the measurement showing that Stage T had
   never produced a design.
-- [`problem_register_2026_09.md`](problem_register_2026_09.md)
-  — every open and closed problem found on 2026-09-12, organized by problem
-  rather than by work slice, with the measurements behind each one. Start here
-  to see what is actually broken and what is already established.
+- [`opencode_handoff_2026_09.md`](opencode_handoff_2026_09.md)
+  — the fresh-session OpenCode handoff. It summarizes current architecture and
+  evidence without replacing the roadmap or issue ledger.
 - [`stage_t_optimizer_diagnosis_2026_09.md`](stage_t_optimizer_diagnosis_2026_09.md)
   — why the native ISQP path could not move the design, read against the
   OpenFOAM sources, and the decision to own the optimization in Python.
@@ -44,6 +64,13 @@ and one active schema version for new implementation work.
   entry conditions for the later FSAE full-vehicle problem.
 
 ## Compatibility policy
+
+The handoff is working memory only. `phase_plan.md` remains the sole roadmap,
+status, and execution-order authority, and `problem_register_2026_09.md`
+remains the issue ledger.
+The handoff's commit table and validation snapshot are historical context;
+fresh sessions must trust live `git status`/`git log` and current artifacts over
+those values.
 
 The code retains read-only migration and readers for historical v1 artifacts,
 but v1 has no separate active specification or roadmap. New features, solver
