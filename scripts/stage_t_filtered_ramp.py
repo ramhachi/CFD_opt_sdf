@@ -440,7 +440,16 @@ def mesh_sweep(stl: Path, out_dir: Path, tag: str) -> dict:
     for name, vox in STAGE_V_LEVELS.items():
         case_dir = out_dir / tag / name
         if not (case_dir / "log.checkMesh").exists():
+            # WP1 (P17): fixed-domain clearance preflight BEFORE any mesh command.
+            from cfd_sdf.stage_v_domain_preflight import (
+                evaluate_stage_v_domain_preflight,
+                write_stage_v_domain_preflight_report,
+            )
             cfg = problem_spec_to_project_config(spec, candidate_stl=stl, voxel_size_m=vox)
+            preflight = evaluate_stage_v_domain_preflight(spec, stl, vox, flow_case_id=cfg.flow_case_id)
+            write_stage_v_domain_preflight_report(case_dir, preflight)
+            if not preflight.qualified:
+                raise SystemExit(f"stage_v mesh_sweep: domain/clearance preflight failed for {tag}/{name}: {preflight.reasons}; no mesh command launched")
             generate_openfoam_case(cfg, build_fields(cfg), case_dir)
             (case_dir / "Allrun").write_text(MESH_ONLY_ALLRUN)
             run_openfoam_case(case_dir, backend="docker", dry_run=False, timeout_seconds=3600)
@@ -570,9 +579,18 @@ def phase_stagev_level(ctx, cid: str, level: str, voxel: float) -> None:
     case_dir = plan["case_dir"]
     if not plan["done"]:
         if not (case_dir / "log.checkMesh").exists():
+            # WP1 (P17): fixed-domain clearance preflight BEFORE any mesh command.
+            from cfd_sdf.stage_v_domain_preflight import (
+                evaluate_stage_v_domain_preflight,
+                write_stage_v_domain_preflight_report,
+            )
             spec = load_problem_spec(SV_SPEC)
-            cfg = problem_spec_to_project_config(spec, candidate_stl=plan["stl"], voxel_size_m=voxel)
-            generate_openfoam_case(cfg, build_fields(cfg), case_dir)
+            pre_cfg = problem_spec_to_project_config(spec, candidate_stl=plan["stl"], voxel_size_m=voxel)
+            preflight = evaluate_stage_v_domain_preflight(spec, plan["stl"], voxel, flow_case_id=pre_cfg.flow_case_id)
+            write_stage_v_domain_preflight_report(case_dir, preflight)
+            if not preflight.qualified:
+                raise SystemExit(f"stagev_level: domain/clearance preflight failed for {cid}/{level}: {preflight.reasons}; no mesh command launched")
+            generate_openfoam_case(pre_cfg, build_fields(pre_cfg), case_dir)
             (case_dir / "Allrun").write_text(MESH_ONLY_ALLRUN)
             run_openfoam_case(case_dir, backend="docker", dry_run=False, timeout_seconds=3600)
         if not (case_dir / "log.checkMesh").exists():

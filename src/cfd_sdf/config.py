@@ -31,6 +31,9 @@ class GridSpec:
     padding_m: float = 0.15
     band_width_m: float = 0.20
     max_points: int = 8_000_000
+    # Fixed far-field box (P17 / WP1): when declared, Stage V field generation
+    # and blockMesh use exactly this box instead of the candidate union bounds.
+    domain_bounds_m: tuple[tuple[float, float, float], tuple[float, float, float]] | None = None
 
 
 @dataclass(frozen=True)

@@ -43,7 +43,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
 | P16 | Stage Vが解像できる最小差 | — | **現候補で約0.030まで改善、登録gate 0.005は未達** |
-| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **原因確認、fail-closed gate未実装** |
+| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -710,6 +710,30 @@ profileを通過した。この一因子比較から、先の失敗原因はunif
 fail-closedにする。CFD外周は候補union boundsから暗黙生成せず、ProblemSpecが宣言する固定
 far-field domainへ束縛する。P15の正しいV3についてはmesh passとsolver/force qualificationを
 別々に記録する。
+
+### 対処の実装（2026-09-20, WP1）
+
+- Stage Vのouter boxを`grid.domain_bounds_m`（`(-1,-0.8,-0.6)`〜`(2,0.8,0.6)`）へ固定束縛
+  する経路を`problem_spec_to_project_config` → `build_fields` → `blockMeshDict` /
+  `case_metadata.json`まで通した。宣言domainがあるとき`padding_m`は0のみ許容し、extentが
+  voxelの整数倍でない場合は`build_fields`がfail-closedする。
+- `src/cfd_sdf/stage_v_domain_preflight.py`に、meshコマンド前に有限domain・voxel整合・
+  候補in-box判定・6面の物理clearance（パッチ名 `inlet/outlet/sideMin/sideMax/bottom/top`）
+  を検査するpreflightを実装した。marginは宣言されたバージョン付きprofile
+  `stage_v_clearance_v1`の固定値 **0.25 m** であり、セル数由来でも結果由来でもない。
+- `scripts/stage_t_filtered_ramp.py`の`mesh_sweep`と`phase_stagev_level`が
+  `stage_v_domain_preflight.json`を`blockMesh`/`surfaceFeatureExtract`/`snappyHexMesh`/
+  `simpleFoam`の前に書き、不合格時はSystemExitで打ち切る（solver launch artifact不発行）。
+- 記録済み2候補をpreflightのみで判定した（実行なし）:
+  `opt_q100_b0_step0_try0_block`（最小clearance 0.37396 m, `top`）= pass、
+  `opt_q100_b0_step5_try1_block_keep_round`（最小clearance 0.19999997 m, `sideMin`）=
+  fail（`clearance_below_declared_margin`）。  artifactは
+  `work/filtered_ramp/wmin_0.2/stage_v_mesh/<candidate>/<level>/stage_v_domain_preflight.json`、
+  証拠は`evidence/stage_v_domain_clearance_2026_09.json`。
+- 検証: `compileall` + 展開済みテストの包括性向上後 **601 passed, 2 skipped**（新規
+  `tests/test_stage_v_domain_preflight.py`、両記録候補のskip付きfixtureを含む）。
+  これは契約・capability証拠であり、mesh品質・solver収束・target physicsの主張には
+  用いてはならない。
 
 ---
 

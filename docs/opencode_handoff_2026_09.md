@@ -315,7 +315,7 @@ observations. The detailed measurements remain in
 | P14 | Closed for the measured RAMP path. Python owns projection, OpenFOAM regularisation is disabled/identity as recorded, and the injected/solver field difference was `1.9e-9`. Do not generalize this closure to unbound historical artifacts. |
 | P15 | The original "thin geometry alone explains non-convergent downforce" causal claim was refuted for the correct thick candidate: geometry and mesh quality passed, yet downforce remained non-converged. The remaining numerical question is tracked by P16 and the latest local-refinement/transient plan. |
 | P16 | Unresolved. Correct-candidate downforce V2 -> V3 drift is `0.029925135222144128` versus the registered absolute bound `0.005`; the recorded ranking-pair difference `0.0219` is smaller than the current resolved drift. |
-| P17 | Cause confirmed, implementation missing. The wrong candidate touched the top/outer boundary and generated all 220 V3 under-determined cells there. The next slice must bind a fixed far-field domain and fail before meshing on physical clearance. |
+| P17 | Closed as gate implementation (2026-09-20). WP1 binds the Stage V far-field box to `grid.domain_bounds_m` and runs a declared `stage_v_clearance_v1` (0.25 m) pre-mesh clearance preflight; the recorded wrong candidate is rejected with a no-launch artifact, and the correct candidate passes. Real re-meshing under the fixed domain has not been re-run yet. Evidence: `evidence/stage_v_domain_clearance_2026_09.json`, `tests/test_stage_v_domain_preflight.py` (601 passed). |
 
 ### Contradictions that must remain visible
 
@@ -346,7 +346,29 @@ reference-quality question.
 
 ### Immediate next slice: fixed domain plus pre-mesh clearance
 
-Implement WP1 first. The bounded Stage V profile should use the existing v2
+**Status 2026-09-20: WP1 is implemented and validated** (commits after
+`8be881d` on `feat/p0-openfoam-closed-loop`). The fixed-domain binding
+(`grid.domain_bounds_m` -> `problem_spec_to_project_config` -> `build_fields` ->
+blockMesh/case_metadata) and the fail-closed pre-mesh clearance preflight
+(`stage_v_clearance_v1`, declared 0.25 m margin) exist in
+`src/cfd_sdf/stage_v_domain_preflight.py`, are wired into
+`scripts/stage_t_filtered_ramp.py` (`mesh_sweep`, `phase_stagev_level`), and
+cover the original 8 required behaviors including both recorded candidate IDs
+(`tests/test_stage_v_domain_preflight.py`). The recorded wrong candidate
+`opt_q100_b0_step5_try1_block_keep_round` is rejected before meshing with a
+no-launch artifact
+(`work/filtered_ramp/wmin_0.2/stage_v_mesh/<cid>/<level>/stage_v_domain_preflight.json`);
+the correct candidate passes (minimum clearance 0.37396 m at `top`).
+Evidence: `evidence/stage_v_domain_clearance_2026_09.json`. What remains from
+WP1 is only re-running actual Stage V meshing/solving under the fixed domain
+(WP2), which now belongs to the WP3 grid study below.
+
+Original specification of the slice (kept for context; do not weaken its
+fail-closed requirements):
+
+After WP1 (implemented 2026-09-20), the next slices in order are WP2 (re-run
+actual meshing/solving for the correct candidate under the fixed domain) and
+WP3 (grid study). The bounded Stage V profile uses the existing v2
 `grid.domain_bounds_m` as the explicit fixed outer box for this case, rather
 than inventing bounds from the candidate's union bounds. If future profiles need
 different canonical and CFD boxes, add a versioned explicit contract field; do
@@ -556,7 +578,11 @@ The following claims are forbidden until separately qualified:
 4. Confirm the issue ID and evidence class for the requested slice before editing.
 5. Confirm whether the task is contract, capability, numerical, target-physics, or benchmark work.
 6. Inspect the relevant JSON, raw logs, hashes, and current implementation before changing code.
-7. For the immediate slice, implement fixed ProblemSpec domain binding and physical clearance preflight before any meshing.
+7. For the immediate slice (WP1, implemented 2026-09-20): the Stage V path now
+   binds `grid.domain_bounds_m` and runs the `stage_v_clearance_v1` pre-mesh
+   preflight; new solver work starts at WP's next slice — re-qualify the correct
+   candidate under the fixed domain, then the predeclared local-refinement grid
+   study (WP3).
 8. Add or update the smallest relevant tests, including fail-closed and no-launch behavior.
 9. Run the smallest relevant test, then `.venv/bin/python -m compileall src tests`, `.venv/bin/python -m pytest -q`, and `git diff --check` when the task requires full validation.
 10. Check that only intended files changed and that no evidence JSON or authoritative decision was overwritten.

@@ -127,9 +127,15 @@ def problem_spec_to_project_config(
     flow_case = _select_flow_case(spec, flow_case_id)
     operating_point = _operating_point_from_flow_case(spec, flow_case)
     turbulence_model = _resolve_turbulence_model(flow_case)
+    declared_domain = spec.grid.domain_bounds_m
     grid = _ProjectGridSpec(
         voxel_size_m=voxel_size_m if voxel_size_m is not None else spec.grid.voxel_size_m,
         padding_m=spec.grid.padding_m,
+        domain_bounds_m=(
+            (tuple(declared_domain.lower), tuple(declared_domain.upper))
+            if declared_domain is not None
+            else None
+        ),
     )
 
     return ProjectConfig(

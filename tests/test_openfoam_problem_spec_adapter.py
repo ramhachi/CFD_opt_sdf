@@ -282,7 +282,7 @@ def test_generated_case_records_problem_provenance_and_mesh_refinement(tmp_path:
     candidate = tmp_path / "candidate.stl"
     _box(candidate, (0.25, 0.0, -0.2), (0.3, 0.3, 0.05))
 
-    config = problem_spec_to_project_config(spec, candidate_stl=candidate, voxel_size_m=0.15)
+    config = problem_spec_to_project_config(spec, candidate_stl=candidate, voxel_size_m=0.1)
     bundle = build_fields(config)
     case_dir = tmp_path / "case"
     summary = generate_openfoam_case(config, bundle, case_dir)
@@ -292,7 +292,9 @@ def test_generated_case_records_problem_provenance_and_mesh_refinement(tmp_path:
     assert metadata["problem_id"] == "adapter_fixture"
     assert metadata["problem_spec_sha256"] == problem_spec_sha256(spec)
     assert metadata["flow_case_id"] == "straight"
-    assert metadata["mesh_refinement"]["voxel_size_m"] == pytest.approx(0.15)
+    # 0.1 (not 0.15) because a declared grid.domain_bounds_m (WP1/P17) requires the
+    # Stage V voxel to divide the fixed extents on every axis; 0.15 does not divide 1.6.
+    assert metadata["mesh_refinement"]["voxel_size_m"] == pytest.approx(0.1)
     background = metadata["mesh_refinement"]["background_block_mesh_cells"]
     assert background["total"] == background["nx"] * background["ny"] * background["nz"]
 

@@ -124,7 +124,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
 | G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
-| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness, candidate-to-far-field clearance, fixed far-field-domain binding, complete mask/connectivity and density-to-SDF fidelity qualification remain. A 2026-09-19 V3 diagnosis localized all 220 under-determined cells of one rejected candidate to its wall/outer-boundary contact, so clearance is now a measured hard-gate requirement. |
+| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight; fixed far-field domain + clearance preflight implemented | `research preflight` checks STL metadata and declared feature/grid ratios. The 2026-09-19 V3 diagnosis localized all 220 under-determined cells of one rejected candidate to its wall/outer-boundary contact, so clearance is a measured hard-gate requirement. On 2026-09-20 WP1 implemented it: the Stage V far-field box is bound to the ProblemSpec's `grid.domain_bounds_m`, and a declared-margin pre-mesh clearance preflight (profile `stage_v_clearance_v1`, 0.25 m) refuses candidates before `blockMesh`/`snappyHexMesh` — the recorded wrong candidate is rejected with a no-launch artifact (`evidence/stage_v_domain_clearance_2026_09.json`). Self-intersection, actual shape thickness, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
 | Stage T canonical closed loop | Gradient chain verified; optimization still missing | On 2026-09-12 the full loop ran on real OpenFOAM: canonical 46080-cell `rho` -> `P @ rho` -> injection into the 2909 active source cells -> converged primal/adjoints -> `P.T @ topOSens` -> canonical gradient. Finite differences on the canonical grid agreed with the analytic directional derivative to 1.03%-0.56% (ratio 0.990 -> 0.994) along the gradient direction over 16 converged runs. The cell-order permutation is now measured, not assumed. Two limits are recorded: `top_o_sensitivity_gradient` is `d(+downforce)/drho`, the negative of `dJ/drho`; and a generic localized direction retains an unexplained ratio of approximately 0.90 that neither a two-decade residual tightening nor disabling regularisation removes. See `p0_openfoam_closed_loop_2026_09.md`. |
@@ -344,8 +344,11 @@ unchanged.
 
 The next qualification slice is deliberately one factor at a time:
 
-1. bind the outer CFD domain to the ProblemSpec and fail before meshing when candidate clearance
-   is below a declared physical margin;
+1. ~~bind the outer CFD domain to the ProblemSpec and fail before meshing when candidate clearance
+   is below a declared physical margin~~ — **implemented 2026-09-20 (WP1)**: fixed
+   `grid.domain_bounds_m` binding plus the `stage_v_clearance_v1` pre-mesh preflight
+   (0.25 m declared margin); the recorded wrong candidate is refused before any mesh
+   command (`evidence/stage_v_domain_clearance_2026_09.json`);
 2. freeze the qualified `step0` geometry, operating point, numerics, and force normalization;
 3. replace another global halving with a predeclared local-refinement family around the body and
    wake, then require three qualified levels and the same Cd/downforce bounds;
