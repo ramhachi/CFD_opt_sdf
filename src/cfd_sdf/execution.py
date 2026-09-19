@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import time
+import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -92,6 +93,13 @@ def run_openfoam_case(
             stderr_log.write_text(error, encoding="utf-8")
             if not stdout_log.exists():
                 stdout_log.write_text("", encoding="utf-8")
+        except KeyboardInterrupt:
+            if selected_backend == "docker":
+                _force_remove_docker_container(command)
+            raise
+        finally:
+            if selected_backend == "docker" and (timed_out or error is not None):
+                _force_remove_docker_container(command)
 
     result = OpenFoamRunResult(
         case_dir=resolved,
@@ -143,6 +151,8 @@ def _command_for_backend(backend: str, case_dir: Path, docker_image: str) -> lis
             "docker",
             "run",
             "--rm",
+            "--name",
+            docker_image.split("@")[0].rsplit("/", 1)[-1].split(":")[0] + "_" + uuid.uuid4().hex,
             "--entrypoint",
             "bash",
             "--mount",
@@ -154,6 +164,22 @@ def _command_for_backend(backend: str, case_dir: Path, docker_image: str) -> lis
             "chmod +x Allrun Allclean && ./Allrun",
         ]
     raise ValueError(f"Unsupported OpenFOAM backend: {backend}")
+
+
+def _force_remove_docker_container(command: list[str]) -> None:
+    # ponytail: best-effort cleanup; docker rm -f handles stop+remove, second call
+    # is a no-op if the first succeeded.
+    try:
+        name = command[command.index("--name") + 1]
+        subprocess.run(
+            ["docker", "rm", "-f", name],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired, ValueError):
+        pass
 
 
 def _wsl_has_openfoam() -> bool:

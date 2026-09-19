@@ -124,13 +124,13 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G0 scope/evidence model | Complete | Generic rigid-object scope and evidence classes are established. |
 | G1 ProblemSpec/artifact contract | Complete | v2 parsing, canonical hash, multipoint responses, topology policy, v1 read-only migration, and semantic readers exist. |
 | G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
-| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness/clearance, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
+| G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight | `research preflight` checks STL metadata and declared feature/grid ratios. Self-intersection, actual shape thickness, candidate-to-far-field clearance, fixed far-field-domain binding, complete mask/connectivity and density-to-SDF fidelity qualification remain. A 2026-09-19 V3 diagnosis localized all 220 under-determined cells of one rejected candidate to its wall/outer-boundary contact, so clearance is now a measured hard-gate requirement. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
 | Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
 | Stage T canonical closed loop | Gradient chain verified; optimization still missing | On 2026-09-12 the full loop ran on real OpenFOAM: canonical 46080-cell `rho` -> `P @ rho` -> injection into the 2909 active source cells -> converged primal/adjoints -> `P.T @ topOSens` -> canonical gradient. Finite differences on the canonical grid agreed with the analytic directional derivative to 1.03%-0.56% (ratio 0.990 -> 0.994) along the gradient direction over 16 converged runs. The cell-order permutation is now measured, not assumed. Two limits are recorded: `top_o_sensitivity_gradient` is `d(+downforce)/drho`, the negative of `dJ/drho`; and a generic localized direction retains an unexplained ratio of approximately 0.90 that neither a two-decade residual tightening nor disabling regularisation removes. See `p0_openfoam_closed_loop_2026_09.md`. |
 | Stage T production optimizer | P0 candidate and state-transfer capability added; numerical qualification remains missing | Stage T candidate lineage can be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. Canonical rho can be conservatively transferred to a uniform Cartesian OpenFOAM source grid with `source = P @ target`; the artifact remains `qualified=false`. Direction suites carry the verified candidate identity into plus/minus topology states, and the gradient gate rejects mixed objectives, binding mismatches, and incomplete direction-by-epsilon coverage. The real G2 run still awaits solver-field consumption of the state artifact, candidate-bound `P.T` gradient return, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
 | Stage S | Cell-density handoff capability added; never yet given a real design | Stage T cell-data `rho` can be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. Its repeated `diagnostic_only` verdicts were **not** a handoff defect: every input it was ever given was degenerate, because Stage T never produced material (see below). Quantitative acceptance gates, a re-run on a real design, and a qualified sharp-interface solver all remain missing. No SDF evolution exists at all — no Hamilton-Jacobi update, reinitialization, or normal velocity from a shape gradient. |
-| Stage V | Prototype, now drivable from the native v2 spec | Body-fitted snappyHexMesh execution exists and, as of 2026-09-12, can be driven directly from a native v2 `ProblemSpec` with an explicit candidate STL, recording `problem_spec_sha256` and the meshed STL hash, at a selectable mesh resolution. `forceCoeffs` now derives `Aref`/`lRef`/`dragDir`/`liftDir` from declared reference values and response directions and reports Newtons alongside coefficients, matching the Stage T `0.5*rho*A*U^2` convention. Target-profile grid convergence and cross-fidelity acceptance remain. |
+| Stage V | Prototype with fail-closed single-level execution | Body-fitted snappyHexMesh execution can be driven directly from a native v2 `ProblemSpec` with an explicit candidate STL at a selectable resolution. The single-level path now writes a mesh preflight and refuses `simpleFoam` when the registered mesh profile fails; Docker timeout/Ctrl-C also removes the exact named container so a stopped wrapper cannot leave a solver mutating evidence. `forceCoeffs` derives `Aref`/`lRef`/`dragDir`/`liftDir` from declared reference values and reports Newtons alongside coefficients. Candidate-to-far-field clearance, target-profile grid convergence and cross-fidelity acceptance remain. |
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
 the fixed-grid Brinkman model. It does not prove constrained optimization or
@@ -315,6 +315,44 @@ survives qualification — **for grey candidates**, which we now know were the
 wrong test. Downforce also remains un-converged (candidate A: 0.0358, 0.0449,
 0.0407 across V1/V2/V3), and the grid that would settle it is the one that will
 not converge.
+
+### Thick-candidate V3 closes execution, not grid convergence — 2026-09-20
+
+The P15 thickness experiment was requalified on its actual comparison candidate,
+`opt_q100_b0_step0_try0_block`. Its V3 mesh has 1,260,201 cells, no
+small-determinant failure, and passes the registered mesh profile. The conservatively
+relaxed `simpleFoam` run met residual control at iteration 2237; the final residuals
+were `Ux=1.50e-7`, `Uy=9.98e-7`, `Uz=3.01e-7`, and `p=6.09e-7`, and both Cd and
+downforce passed the final-window stationarity gate. This establishes that a qualified
+V3 body-fitted reference is executable on the 32 GiB Mac for this reduced case. The
+candidate binding, V0–V3 gates, raw artifact hashes, and runtime are recorded in
+`evidence/stage_v_v3_requalification_2026_09.json`.
+
+The force sequence is Cd `2.68528, 3.01397, 3.14010, 3.13009` and downforce
+`0.61446, 0.68146, 0.82310, 0.85302` on V0–V3. The finest Cd transition changes by
+0.319% and passes the 2% bound. The finest downforce transition changes by 0.02993,
+which is still about six times the registered absolute bound of 0.005. The architecture
+therefore executes and rejects claims correctly; it has not yet produced a grid-independent
+downforce reference for ranking.
+
+An earlier V3 attempt targeted the wrong 1,600-cell `keep_round` candidate. That candidate
+failed the determinant gate at every level. All 220 V3 under-determined cells touched the
+candidate wall and 208 also touched the outer top patch; the candidate `zmax` equaled the
+far-field top. This exposed a separate G3 contract gap: candidate-to-far-field clearance and
+fixed outer-domain binding must be checked before Stage V generation. Quality thresholds are
+unchanged.
+
+The next qualification slice is deliberately one factor at a time:
+
+1. bind the outer CFD domain to the ProblemSpec and fail before meshing when candidate clearance
+   is below a declared physical margin;
+2. freeze the qualified `step0` geometry, operating point, numerics, and force normalization;
+3. replace another global halving with a predeclared local-refinement family around the body and
+   wake, then require three qualified levels and the same Cd/downforce bounds;
+4. if downforce still misses the 0.005 bound or steady residuals stop decaying, compare steady
+   RANS with a time-resolved run on the same mesh before changing the design formulation;
+5. resume cross-fidelity ranking only after the body-fitted downforce reference passes. No FSAE
+   full-vehicle or high-Re claim inherits qualification from this laminar reduced case.
 
 ## 5. G1 — generic problem and artifact contract
 

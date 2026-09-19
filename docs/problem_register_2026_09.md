@@ -38,11 +38,12 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
 | P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
 | P11 | Brinkman浸透層が格子で解像されていない | — | **P2の症状として閉じた**（測定済） |
-| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | 修正中 |
+| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。他候補・target physicsは未資格 |
 | P13 | 最適化ループの随伴が未収束のまま勾配に使われた | 最重大 | **解消**（fail-closedゲート、581 passed） |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
-| P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **未解決**（三証拠で確定、対処を検証中） |
-| P16 | Stage Vが解像できる最小差 = 0.078 | — | **確定**（判定基準として採用） |
+| P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
+| P16 | Stage Vが解像できる最小差 | — | **現候補で約0.030まで改善、登録gate 0.005は未達** |
+| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **原因確認、fail-closed gate未実装** |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -591,11 +592,14 @@ marching cubesのスリバー洗浄（重度スリバーの90–100%除去、体
 
 #### 決定的な反証
 
-最良候補（`b=0` block、960セル、median 4.0セル厚）は次を満たす。
+ここで比較対象に採用した候補は `opt_q100_b0_step0_try0_block` である。960セルとは
+physical `beta` の `n_gt_0.9=960` を指し、`local_thickness_cells_median=4.0` である。
+`half_thickness_cells_median=1.0`、1次元推定slab厚は2.0セルなので、異なる厚さ指標を
+混同しない。この候補は次を満たす。
 
 | 指標 | 候補 | 対照（8セル立方体） |
 | --- | ---: | ---: |
-| `checkMesh` | 全3格子合格、small-determinantゼロ | 同じ |
+| `checkMesh` | 登録profileで全3格子合格、small-determinantゼロ | 同じ |
 | 濡れ面積ドリフト | 2.25% | 2.0% |
 | 体積ドリフト | 1.57% | 1.46% |
 | Cdの差分比 | 0.384（収束） | — |
@@ -604,6 +608,11 @@ marching cubesのスリバー洗浄（重度スリバーの90–100%除去、体
 **幾何は格子間で安定しているのに、ダウンフォースは収束しない。**
 したがって「薄い物体→格子ごとに別物体→非収束」という因果は、この候補について
 **成立しない**。P15の当初の説明は限定的である。
+
+なおraw `checkMesh`はV0/V1/V2の各格子で`Failed 1 mesh checks.`を報告している。
+内容は登録済み`STAGE_V_QUALIFICATION_PROFILE_V1`が数値上限内で許容する
+`Concave cells`のみで、small-determinant failureは0である。本節の「合格」はraw出力が
+無警告という意味ではなく、登録profileによるqualification passを意味する。
 
 #### 非定常仮説も棄却
 
@@ -620,9 +629,37 @@ marching cubesのスリバー洗浄（重度スリバーの90–100%除去、体
 
 #### 現時点の判断
 
-ダウンフォースの非収束は**通常の意味での解像度不足**であり、問題設定の不良ではない。
-次の一手は body-fitted 格子の細分化（V3。solver緩和の修正後は未検証）であって、
-動作点や設計空間の変更ではない。
+ダウンフォースの非収束を**通常の意味での解像度不足**とする説明を作業仮説とし、
+body-fitted V3のmesh、solver、force-stationarityを別々に判定した。結果は次節のとおりで、
+実行qualificationは閉じたがgrid convergenceは閉じていない。
+
+#### 正しい候補のV3結果（2026-09-20）
+
+`opt_q100_b0_step0_try0_block`をvoxel `0.0125 m`で再実行した。V3は1,260,201セル、
+minimum determinant 0.0271、small-determinant failure 0で、登録mesh profileを通過した。
+`simpleFoam`は2237反復で`residualControl`を満たし、最終残差は
+`Ux=1.50e-7, Uy=9.98e-7, Uz=3.01e-7, p=6.09e-7`だった。最終25%窓の力も
+stationarity gateを通過した。したがってV3はmesh、solver、forceの全ゲートでqualifiedである。
+
+| level | cells | Cd | downforce | Stage V qualification |
+| --- | ---: | ---: | ---: | --- |
+| V0 | 6,387 | 2.68528 | 0.61446 | pass |
+| V1 | 31,710 | 3.01397 | 0.68146 | pass |
+| V2 | 184,518 | 3.14010 | 0.82310 | pass |
+| V3 | 1,260,201 | 3.13009 | 0.85302 | pass |
+
+候補、V0–V3のraw/profile判定、残差、力定常性、実行時間、ignored `work/` artifactsの
+SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した。
+
+最細2格子ではCdの相対差が0.319%で登録上限2%を通過した。一方、downforceの絶対差は
+`|0.85302-0.82310|=0.02993`で、登録上限0.005の約6倍である。V1→V2の差0.14164からは
+大きく縮小したが、**downforceのstrict grid convergenceは未成立**である。
+
+この結果は、当初の「薄い形状が格子ごとに別物になることが主因」という説明を反証し、
+細分化でdownforce差が縮むという解像度仮説を方向としては支持する。ただしV3でも合格幅に
+達していないため、通常の解像度不足だけを確定原因とはしない。次は全領域一様V4を自動的に
+追加するのではなく、wake/壁面の局所refinement、格子収束外挿、定常/非定常モデル差を
+一因子ずつ比較する。
 
 なお副次的に判明した設計指針: **鋭いtanh射影はフィルタの長さスケールを打ち消す。**
 厚い物体が欲しければ射影を鋭くしない方がよい。erode による強制は、この規模の設計では
@@ -633,21 +670,46 @@ marching cubesのスリバー洗浄（重度スリバーの90–100%除去、体
 薄い特徴が復活する。より根本的には、**密度フィルタは`rho_tilde`の勾配を縛るのであって、
 超レベル集合`{beta > 0.5}`の厚みを縛らない。** これを閉じるのがrobust定式化である。
 
-## P16 — Stage Vが解像できる最小差（判定基準・確定）
+## P16 — Stage Vが解像できる最小差（判定基準）
 
 今後のすべての順位主張はこの基準で判定する。
 
 | | ダウンフォース |
 | --- | --- |
-| 現在解像できる最小差 | **0.078**（観測された格子間ドリフト） |
+| 過去の観測ドリフト | 0.078 |
+| 現候補のqualified V2→V3ドリフト | **0.02993** |
+| 登録grid-convergence上限 | **0.005** |
 | 検定に使ったペアの実差 | 0.0219 |
-| 比 | **ノイズフロアの約1/3.5** |
+| 実差 / 現ドリフト | **0.73** |
 
-したがって「全3格子で方向が一致した」は本物の観測だが、**差そのものは測定限界の下**である。
-幾何を保てる物体（対照の1.4%ドリフト）なら閾値は約**0.04**まで下がる見込みだが、これは
-外挿であり測定ではない。
+したがって「全3格子で方向が一致した」は本物の観測だが、**差そのものは現在の最細格子間
+ドリフトより小さい**。V3追加で0.078から0.02993へ改善したものの、0.0219差の順位を独立に
+判別できる状態にはまだ達していない。
 
 抗力は収束する（V1→V2で1.1–1.3%、閾値2%以内）ため、この制約はダウンフォース固有である。
+
+## P17 — 候補面とStage V外周境界のclearanceが未検査（最重大）
+
+最初のV3再実行は誤って別候補
+`opt_q100_b0_step5_try1_block_keep_round`（physical `beta>0.9`が1,600セル）を対象にした。
+この候補はV0/V1/V2でもsmall-determinant failureを持つため、P15の960セル候補のV3検定には
+使えない。V3でも220セルが`minDeterminant=0.001`を下回り、mesh gateで棄却した。
+
+220/220セルが`design_candidate` patchに接し、208/220セルは`top` patchにも接していた。
+候補STLの`zmax=0.4 m`はblockMeshのtop `z=0.4 m`と一致し、`sideMin`との隙間も
+V3の1セル幅`0.0125 m`程度しかない。現在のStage V格子は全geometryのunion boundsから
+作られるため、許容領域端まで伸びた候補がCFD外周を動かし、候補面と外周が接触し得る。
+
+一方、P15の正しい候補`opt_q100_b0_step0_try0_block`は外周から離れている。同じV3で
+1,260,201セル、minimum determinant 0.0271、small-determinant failure 0となり、登録mesh
+profileを通過した。この一因子比較から、先の失敗原因はuniform refinement一般ではなく、
+候補固有の外周clearance違反である。
+
+必要な修正はquality閾値の緩和ではない。Stage V case生成前に、候補面とfar-field各patchの
+最小clearance、および候補が宣言されたdesign domain内にあることを物理長で検査し、違反時は
+fail-closedにする。CFD外周は候補union boundsから暗黙生成せず、ProblemSpecが宣言する固定
+far-field domainへ束縛する。P15の正しいV3についてはmesh passとsolver/force qualificationを
+別々に記録する。
 
 ---
 

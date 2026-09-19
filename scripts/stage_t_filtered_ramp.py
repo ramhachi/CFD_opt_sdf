@@ -23,6 +23,7 @@ snapshots so every candidate binding carries the declared length scale.
 
 Phases: selftest | fd <w_min> <q> | optimize <w_min> <q csv> <steps csv> <v_final>
         | geom <w_min> <candidate csv> (mesh-only Stage V at V0/V1/V2 + metrics)
+        | stagev_level <w_min> <candidate> <level> <voxel> [eta]
         | control (8-cell cube through the same mesh sweep) | export <w_min> <cids>
 """
 
@@ -32,6 +33,7 @@ import json
 import re
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -529,6 +531,84 @@ def phase_stagev(ctx, cids: list[str]) -> None:
     path.write_text(json.dumps({"status": base.STATUS, "minimum_solid_width_m": ctx.width_m, "rows": prev}, indent=2))
 
 
+def plan_stagev_level(cid: str, level: str, voxel: float) -> dict:
+    """Resolve one single-level Stage V job without creating or running anything."""
+    stl = base.OUT / "export" / cid / "iso_surface.stl"
+    case_dir = base.OUT / "stage_v_mesh" / cid / level
+    return {"stl": stl, "stl_exists": stl.exists(), "case_dir": case_dir, "level": level,
+            "voxel_size_m": voxel, "done": (case_dir / "stage_v_qualification.json").exists()}
+
+
+def _write_stagev_level_preflight(case_dir: Path, cid: str, level: str, voxel: float,
+                                  check_mesh: dict, solver_log_preexisting: bool,
+                                  profile_id: str, solver_launch_attempted: bool = False) -> Path:
+    """Deterministic preflight artifact written BEFORE any simpleFoam launch, so a later reader
+    can tell from the directory alone whether the mesh gate passed, whether a solver log already
+    existed, and whether this invocation was allowed to launch the solver."""
+    doc = {"schema_version": 1, "candidate": cid, "level": level, "voxel_size_m": voxel,
+           "qualification_profile_id": profile_id,
+           "check_mesh": {k: check_mesh[k] for k in ("status", "qualified", "reasons", "total_cells",
+                                                     "failed_check_lines", "concave_cell_fraction")},
+           "solver_qualified_to_start": check_mesh["qualified"],
+           "solver_log_preexisting": solver_log_preexisting,
+           "solver_launch_attempted_by_this_invocation": solver_launch_attempted}
+    path = case_dir / "stage_v_level_preflight.json"
+    path.write_text(json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8")
+    return path
+
+
+def phase_stagev_level(ctx, cid: str, level: str, voxel: float) -> None:
+    """Prepare/run/qualify ONE Stage V level (e.g. V3 at voxel_size_m=0.0125) for one
+    exported candidate without looping over or touching the other levels. A level whose
+    stage_v_qualification.json already exists is reported, never overwritten. The mesh is
+    gated by evaluate_check_mesh (STAGE_V_QUALIFICATION_PROFILE_V1) BEFORE simpleFoam: a
+    failing mesh terminates nonzero and never launches or relaunches the solver."""
+    from cfd_sdf.cfd import STAGE_V_QUALIFICATION_PROFILE_V1, qualify_stage_v_case, write_stage_v_qualification
+    plan = plan_stagev_level(cid, level, voxel)
+    if not plan["stl_exists"]:
+        raise SystemExit(f"stagev_level: missing exported STL: {plan['stl']}")
+    case_dir = plan["case_dir"]
+    if not plan["done"]:
+        if not (case_dir / "log.checkMesh").exists():
+            spec = load_problem_spec(SV_SPEC)
+            cfg = problem_spec_to_project_config(spec, candidate_stl=plan["stl"], voxel_size_m=voxel)
+            generate_openfoam_case(cfg, build_fields(cfg), case_dir)
+            (case_dir / "Allrun").write_text(MESH_ONLY_ALLRUN)
+            run_openfoam_case(case_dir, backend="docker", dry_run=False, timeout_seconds=3600)
+        if not (case_dir / "log.checkMesh").exists():
+            missing_log = {"status": "fail", "qualified": False,
+                           "reasons": ["log_checkMesh_missing"], "total_cells": None,
+                           "failed_check_lines": [], "concave_cell_fraction": None}
+            _write_stagev_level_preflight(case_dir, cid, level, voxel, missing_log,
+                                          (case_dir / "log.simpleFoam").exists(),
+                                          str(STAGE_V_QUALIFICATION_PROFILE_V1["profile_id"]))
+            raise SystemExit(f"stagev_level: mesh execution produced no log.checkMesh for {cid}/{level}")
+        # Fail-closed mesh gate: reuse log.checkMesh when present, judge it against the
+        # pre-registered profile, and never let simpleFoam see a failing mesh.
+        check_mesh = evaluate_check_mesh((case_dir / "log.checkMesh").read_text(errors="ignore"),
+                                         STAGE_V_QUALIFICATION_PROFILE_V1)
+        solver_log_preexisting = (case_dir / "log.simpleFoam").exists()
+        _write_stagev_level_preflight(case_dir, cid, level, voxel, check_mesh,
+                                      solver_log_preexisting, str(STAGE_V_QUALIFICATION_PROFILE_V1["profile_id"]))
+        if not check_mesh["qualified"]:
+            raise SystemExit(f"stagev_level: checkMesh gate failed for {cid}/{level}; solver launch blocked: "
+                             f"{check_mesh['reasons']}")
+        if not solver_log_preexisting:
+            (case_dir / "Allrun").write_text(SOLVE_ONLY_ALLRUN)
+            _write_stagev_level_preflight(case_dir, cid, level, voxel, check_mesh, False,
+                                          str(STAGE_V_QUALIFICATION_PROFILE_V1["profile_id"]),
+                                          solver_launch_attempted=True)
+            run_openfoam_case(case_dir, backend="docker", dry_run=False, timeout_seconds=7200)
+        write_stage_v_qualification(case_dir)
+    qual = qualify_stage_v_case(case_dir)
+    print(json.dumps({"candidate": cid, "level": plan["level"], "voxel_size_m": plan["voxel_size_m"],
+                      "case_dir": str(case_dir), "qualified": qual.qualified, "reasons": qual.reasons,
+                      "iterations": qual.solver.get("iteration_count"),
+                      "check_mesh_total_cells": qual.check_mesh.get("total_cells")}), flush=True)
+    if not qual.qualified:
+        raise SystemExit(f"stagev_level: qualification failed for {cid}/{level}: {qual.reasons}")
+
+
 def phase_control() -> None:
     """Eight-cell (0.4 m) cube at the plate's location through the same mesh sweep."""
     out = SWEEP_ROOT / "control_cube"
@@ -552,7 +632,8 @@ def selftest() -> None:
     assert abs(lhs - rhs) < 1e-9 * max(abs(lhs), 1.0), (lhs, rhs)
     ones = ctx.active.astype(float)
     assert np.allclose(F.H(ones)[ctx.active], 1.0)  # normalisation: constants preserved on active cells
-    assert not np.allclose(F.H(x)[ctx.active], F.HT(x)[ctx.active])  # H is not symmetric near the boundary
+    if isinstance(F, ConeFilter):
+        assert not np.allclose(F.H(x)[ctx.active], F.HT(x)[ctx.active])  # cone H is not symmetric near the boundary
     delta = np.zeros_like(x); delta[np.flatnonzero(ctx.active)[5000]] = 1.0
     assert int((F.H(delta) > 0).sum()) > 1 and int((F.H(delta) > 0).sum()) <= (2 * int(np.ceil(F.radius_cells)) + 1) ** 3
     # chain rule on a synthetic linear objective J = <c, f(H rho)>: dJ/drho = H.T (f' c)
@@ -569,6 +650,21 @@ def selftest() -> None:
     assert np.allclose(np.dot(Bf.H(x), y), np.dot(x, Bf.HT(y))) and np.allclose(Bf.H(Bf.H(x)), Bf.H(x))  # symmetric projection
     assert np.allclose(Bf.H(ones)[ctx.active], 1.0) and Bf.block.tolist() == [5, 4, 4], Bf.block
     print("block filter ok", Bf.meta["block_cells"], Bf.nblocks.tolist())
+    # single-level Stage V planning: level selection + voxel passthrough + done guard key
+    p = plan_stagev_level("cid_x", "V3", 0.0125)
+    assert p["case_dir"] == base.OUT / "stage_v_mesh" / "cid_x" / "V3" and p["voxel_size_m"] == 0.0125
+    assert not p["done"] and p["stl"] == base.OUT / "export" / "cid_x" / "iso_surface.stl"
+    # preflight artifact: deterministic JSON, blocked mesh records solver_qualified_to_start=false
+    with tempfile.TemporaryDirectory() as td:
+        pf = _write_stagev_level_preflight(Path(td), "cid_x", "V3", 0.0125,
+                                           {"status": "fail", "qualified": False, "reasons": ["x"], "total_cells": 10,
+                                            "failed_check_lines": ["y"], "concave_cell_fraction": 0.5},
+                                           solver_log_preexisting=False, profile_id="stage_v_v1")
+        doc = json.loads(pf.read_text())
+    assert doc["candidate"] == "cid_x" and doc["level"] == "V3" and doc["voxel_size_m"] == 0.0125
+    assert doc["check_mesh"]["qualified"] is False and doc["solver_qualified_to_start"] is False
+    assert doc["solver_log_preexisting"] is False
+    assert doc["solver_launch_attempted_by_this_invocation"] is False
     print("selftest ok: adjoint identity", lhs, rhs, "| radius cells", F.radius_cells, "| spec sha", ctx.state0.state["problem_spec_sha256"][:12],
           "| min width declared", ctx.spec.topology_policy.minimum_solid_width_m)
 
@@ -593,6 +689,9 @@ if __name__ == "__main__":
         phase_geom(setup(float(sys.argv[2]), float(sys.argv[4]) if len(sys.argv) > 4 else 0.5), sys.argv[3].split(","))
     elif phase == "stagev":  # stagev <w_min> <cids csv> [eta] (after geom)
         phase_stagev(setup(float(sys.argv[2]), float(sys.argv[4]) if len(sys.argv) > 4 else 0.5), sys.argv[3].split(","))
+    elif phase == "stagev_level":  # stagev_level <w_min> <cid> <level> <voxel> [eta] — one level only
+        phase_stagev_level(setup(float(sys.argv[2]), float(sys.argv[6]) if len(sys.argv) > 6 else 0.5),
+                           sys.argv[3], sys.argv[4], float(sys.argv[5]))
     elif phase == "derive":  # derive <w_min> <seed_cid> <q> <front|rear|lower|upper> [eta]
         phase_derive(setup(float(sys.argv[2]), float(sys.argv[6]) if len(sys.argv) > 6 else 0.5), sys.argv[3], float(sys.argv[4]), sys.argv[5])
     elif phase == "control":
