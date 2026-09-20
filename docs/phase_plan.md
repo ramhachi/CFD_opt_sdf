@@ -564,8 +564,17 @@ differences. That item is complete; the sequence below reflects what the
    qualified reference. Three watertight single-component candidates spanning
    1.078 to 2.814 in Stage T downforce are exported and give two independent pair
    signs. **This is the decisive experiment and it is the only thing that can
-   settle whether the architecture works.** Until it returns, no claim about the
-   surrogate's fidelity — positive or negative — is supportable.
+   settle whether the architecture works.** — **run 2026-09-20 (WP6, fixed-shape
+   program)**: 10 pre-registered analytic binary shapes, same-grid T1, anchor
+   STL Stage V (V1+V2 all qualified), Gate-4 verdicts at the pre-declared
+   uncertainty (downforce abs 0.0147, Cd rel 0.034). Verdicts: **downforce --
+   no_go** (one resolvable sign inversion at V2: the thickness pair
+   plate_a20_nd/plate_a20_t05, surrogate +0.232 vs reference -0.034; the surrogate
+   over-rewards thickness that the body-fitted ladder cannot resolve), **drag --
+   unresolved-but-sign-consistent** (37/37 resolvable pairs agree; rho 0.976,
+   tau 0.911). See `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`.
+   Per stop rules the optimizer must NOT be tuned to reverse this; the surrogate
+   reformulation study for the thickness axis is the registered next step.
 2. **Establish that the Stage T grid resolves what it optimizes.** The same-grid
    T1 evaluation (46,080 cells for design, solver and handoff alike) removes the
    46k-to-8k transfer as a factor, and is now the default. What remains is to

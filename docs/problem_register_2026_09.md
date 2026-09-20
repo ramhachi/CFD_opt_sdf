@@ -27,7 +27,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 
 | # | 問題 | 重大度 | 状態 |
 | --- | --- | --- | --- |
-| P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | 未解決。統一的説明あり。参照未資格（P12）の上の所見 |
+| P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **決定実験実行済み（2026-09-20, WP6）**。10個の事前登録解析二値形状で same-grid T1×anchor STL Stage V (V1/V2全qualified)、Gate-4判定（宣言帯DF 0.0147, Cd 0.034）: **downforce = no_go**（厚さ軸の解像可能な1組反転、代理+0.232 vs 参照-0.034）、**drag = unresolvedだが符号全一致**（37/37組、rho 0.976）。アーキテクチャの分布的強いうえ、因子・応答特異的反証。詳細は`evidence/fixed_shape_cross_fidelity_ranking_2026_09.json` |
 | P2 | 設計が二値化しない | 最重大 | **機構を実測で特定、罰則付き補間で解消の見込み**（検証中） |
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離（5件） | 高 | 2件ガード済 / 3件未修正 |
@@ -170,6 +170,38 @@ solver backendも資格化しない。**このアーキテクチャの中心的�
 根拠: `docs/evidence/binarized_ranking_2026_09.json`、
 `work/stage_sv_qualified_ramp_binarized/result.json`、
 `work/stage_sv_qualified_laminar/result_summary.json`
+
+### 追記（2026-09-20）— 決定実験（WP6, fixed-shape program）
+
+P1の最終判定実験が完了した。10個の事前登録された解析二値形状（迎角系列、厚さ系列、
+スパン、zオフセット、鈍頭箱）を、(a) same-grid T1固定格子Brinkman代理
+（binary、q=0恒等、alphaMax 2500、転送なしと射影なし）と (b) anchor STL直接的な
+qualified Stage V（V1+V2全20実行qualified、固定domain）で評価した。宣言済み
+不確かさ帯（downforce abs 0.0147、Cd rel 0.034 — P16の実測値をそのまま継続使用）で
+Gate 4を適用した。
+
+| 応答 | 判定 | 実測 |
+| --- | --- | --- |
+| downforce | **no_go** | V2で解像可能な1組の反転: `plate_a20_nd` vs `plate_a20_t05`（代理 +0.2316、参照 +0.0343 → 符号逆）。代理は参照が飽和する厚さ軸の差を約7倍に誇張する |
+| drag | **unresolved（符号全一致）** | 37/37の解像可能ペアで代理・参照の符号が一致（rho 0.9758, tau 0.9111）。順位の入れ替わりは全てノイズ帯以下のクラスタ内 |
+
+主な測定事実:
+
+- 反転は実形状・same-grid・転送なし・抽出なしの最も管理された条件で起きた。
+  抽出感度E-blockではiso 0.50がanchorと0.0013で一致し、0.45/0.55で±0.03なので、
+  幾何経路の交絡はこの実験にない。
+- 厚さクラスタの参照差は0.014–0.034で宣言帯と同オーダー（V1/V2で方向は一貫、
+  V2でのみ解像）— **参照自体がこの軸の差の解像限界に近い。**
+- P11（alphaMax・saturation・靄）はこれらの形状では無視できる（alphaMax 250 vs
+  2500の力差≤8%、solid帯leak ≤2%、beta<0.1の力寄与 ~1e-6）。
+- **P1の結論**: 代理モデルの順位保存は、downforce応答の**厚さ因子で反証された**。
+  P15で観測された2セル厚問題と整合する、格子と解像度に内在する構造的限界である
+  ことが、初めてクリーンな条件下で確認された。optimizerを調整してこの結果を逆転させ
+  てはならない（WP6の停止規則）。治療対象は最適化器ではなく、downforce軸に対する
+  Stage T代理の定式化（または置換）である。
+
+根拠: `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`、
+`work/fixed_shape_ranking_2026_09/`
 
 ---
 
