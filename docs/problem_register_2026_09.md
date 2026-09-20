@@ -33,7 +33,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P4 | 「宣言された問題」と「解かれている問題」の乖離（5件） | 高 | 2件ガード済 / 3件未修正 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
 | P6 | 一般方向で約10%の勾配バイアス | 中 | 機構未解明 |
-| P7 | 注入が`rho`のみ更新し他配列が陳腐化 | 中 | 未修正 |
+| P7 | 注入が`rho`のみ更新し他配列が陳腐化 | 中 | **解消（2026-09-20）**。C3 identity契約が検証できるときは4配列を同世代で一斉更新、検証できない場合は`owns no filter/projection profile`でfail-closed |
 | P8 | move limitにフロアがなくno-opを受理 | 低 | 修正着手中 |
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
 | P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
@@ -365,12 +365,23 @@ pass/failで読んではならない。
 
 ---
 
-## P7 — 注入が`rho`のみ更新（中・未修正）
+## P7 — 注入が`rho`のみ更新（中・解消 2026-09-20）
 
 `inject-canonical-state-into-fixed-grid-contract`は`rho`だけを上書きし、
 `rho_filtered`、`rho_projected`、`alpha`は前状態のまま残る。solver caseは`rho`から
 生成される（`src/cfd_sdf/fixed_grid_primal.py:590`）ため現在の結果は正しいが、
 他の配列を読む将来の消費者は**古い状態を黙って読む**。
+
+### 対処（2026-09-20, WP4）
+
+- 注入器はC3 identity契約（`rho_projected = rho_filtered = rho`、
+  `alpha = beta_max * rho`）を事前状態から検証できるときだけ、4配列を同世代で一斉
+  更新する。`beta_max`は記録済み`alpha/rho`比からデコードする。
+- identity契約が成立しない（実際のフィルタ/射影がある）場合は、injectionを拒否して
+  古い配列を持ち越さない（fail-closed）。更新はそのprofileの所有者経由で行う。
+- provenanceに`derived_generation`ブロック（契約、検証値、4配列の新しいハッシュ）を
+  記録する。mutationテスト: フィルタ非identity・射影非identity・alphaが単一係数でない
+  場合の3件を新規追加（`tests/test_fixed_grid_canonical_state_injection.py`、606 passed）。
 
 ## P8 — move limitにフロアがない（低・修正着手中）
 
