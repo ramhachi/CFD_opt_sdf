@@ -68,6 +68,23 @@ Inspect status and diff before any later implementation work.
 
 ## Exact Current Architecture
 
+**2026-09-20 addendum 3 (WP6-2 reachable-set program, downforce containment).**
+A second pre-registered 8-candidate ranking inside the declared
+minimum-solid-width design policy (thickness >= 0.15 m) ranked downforce
+EXACTLY like qualified anchor-STL Stage V at both V1 and V2 (tau 1.000,
+verdict "pass"); the combined reachable 17-shape pool gives 121 downforce /
+110 drag pairs with ZERO resolvable sign inversions at both levels
+(`evidence/reachable_set_cross_fidelity_ranking_2026_09.json`). The P1 no_go
+is therefore CONTAINED to the sub-policy thickness axis (a 1-cell plate). The
+downforce ranking claim for the product architecture now has the same status
+as drag (ordering transfers inside the policy space; absolute magnitudes are
+not calibrated: Stage T |DF| = 0.45-0.75 x Stage V). Composite analytic shapes
+now exist (`ShapeDefinition.parts` union), registered in
+`reachable_set_definitions()`. The standing caveat: any design below the
+min-width policy must be dropped by topology constraints before hypothesis
+testing ends; P16's declared band (downforce 0.0129-0.0147, Cd ~0.03) remains
+explicit and unresolved.
+
 **2026-09-20 addendum 2 (WP4 completion + WP5/WP6 decisive experiment).** Gate 0
 is complete for the wired paths: C1 semantic binding now records the response's
 global direction, referencing objectives/constraints, canonical objective sign,
