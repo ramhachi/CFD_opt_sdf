@@ -68,6 +68,25 @@ Inspect status and diff before any later implementation work.
 
 ## Exact Current Architecture
 
+**2026-09-20 addendum 2 (WP4 completion + WP5/WP6 decisive experiment).** Gate 0
+is complete for the wired paths: C1 semantic binding now records the response's
+global direction, referencing objectives/constraints, canonical objective sign,
+and value units into gradient-export provenance and refuses non-force,
+direction-less, no-consumer, and mixed-sense responses
+(`evidence/` commit "Complete Gate 0 response semantics"; P7 closed earlier).
+The decisive WP6 experiment then ran (`evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`,
+pre-registered in `evidence/fixed_shape_ranking_manifest_2026_09.json`): 10
+analytic binary shapes evaluated same-grid on T1 (alphaMax 2500, q=0, no
+transfer/filter/optimizer) against anchor-STL qualified Stage V at V1+V2 with
+the fixed domain. At the pre-declared uncertainty (downforce abs 0.0147, Cd rel
+0.034 — carried verbatim per the P16 band): **downforce = no_go** (one
+resolvable inversion on the thickness axis, surrogate +0.232 vs reference
+-0.034) and **drag = unresolved with 37/37 agreeing signs**. Per stop rules,
+the optimizer must not be tuned to reverse this; the registered continuation is
+a Stage T surrogate reformulation study for the thickness axis (T2 refinement
+as one registered factor), not more reduced-case digging. New modules:
+`src/cfd_sdf/analytic_candidate_shapes.py` and `src/cfd_sdf/cross_fidelity_ranking.py`.
+
 **2026-09-20 addendum (post-WP1 slices).** WP1 (fixed-domain binding plus the
 `stage_v_clearance_v1` pre-mesh clearance preflight) is implemented, tested
 (`tests/test_stage_v_domain_preflight.py`), and evidenced in
