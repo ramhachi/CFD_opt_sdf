@@ -139,3 +139,34 @@ def test_export_rejects_tampered_shapes(tmp_path: Path) -> None:
     )
     with pytest.raises(ValueError, match="reproduce the bound SHA-256"):
         export_shape(tampered, tmp_path)
+
+
+def test_reachable_set_definitions_have_min_thickness() -> None:
+    """WP6-2: every pre-registered reachable-set shape has min thickness >= 0.15 m
+    (3 cells at the T1 voxel) across the parts-composition."""
+    from cfd_sdf.analytic_candidate_shapes import reachable_set_definitions
+
+    for shape_id, d in reachable_set_definitions().items():
+        if d.parts:
+            for part in d.parts:
+                assert part.thickness_m >= 0.05, (shape_id, part)
+                # the *span* of a part can be a strip: the min width axis is the
+                # smallest of (thickness, span-perpendicular depth) of each part;
+                # vertical strips (gurney/endplates) carry a >= 0.05 m leg on all axes
+                assert part.chord_m >= 0.05 and part.thickness_m >= 0.05 and part.span_m >= 0.05, (shape_id, part)
+        else:
+            assert d.thickness_m >= 0.15, (shape_id, d.thickness_m)
+        shape = build_shape(d)
+        assert int(shape.occupancy.sum()) > 0, shape_id
+
+
+def test_composite_shape_unions_parts_and_stays_watertight(tmp_path: Path) -> None:
+    from cfd_sdf.analytic_candidate_shapes import reachable_set_definitions
+
+    d = reachable_set_definitions()["wing_gurney_a20"]
+    shape = build_shape(d)
+    solo = build_shape(d.parts[0])
+    assert int(shape.occupancy.sum()) > int(solo.occupancy.sum())
+    manifest = export_shape(shape, tmp_path)
+    assert manifest["anchor_stl_watertight"]
+    assert manifest["revoxelization_iou"] >= 0.8

@@ -41,7 +41,13 @@ CANONICAL_ORIGIN = (-1.0, -0.8, -0.6)
 
 @dataclass(frozen=True)
 class ShapeDefinition:
-    """One pre-registered analytic shape (immutable parameters)."""
+    """One pre-registered analytic shape (immutable parameters).
+
+    ``parts`` allows a composite shape: when non-empty it must be a tuple of
+    single-box definitions, and the shape is the union of those boxes (one
+    shared occupancy mask, one concatenated anchor STL). A composite part is
+    ignored as an outer definition; only its box parameters are used.
+    """
 
     shape_id: str
     chord_m: float
@@ -49,6 +55,7 @@ class ShapeDefinition:
     thickness_m: float
     angle_y_deg: float  # positive = nose down (see module docstring)
     center_m: tuple[float, float, float]
+    parts: tuple["ShapeDefinition", ...] = ()
 
 
 @dataclass(frozen=True)
@@ -91,6 +98,67 @@ def shape_definitions() -> dict[str, ShapeDefinition]:
     return {d.shape_id: d for d in definitions}
 
 
+def reachable_set_definitions() -> dict[str, ShapeDefinition]:
+    """Second pre-registered set (WP6-2): every shape has min solid thickness
+    >= 0.15 m (3 cells at the T1 voxel), i.e. inside the project's registered
+    minimum_solid_width policy space, and varies FSAE-relevant axes instead:
+    camber-like bend, gurney edge, chord scale, two-element tandem, end plates,
+    x-position, and same-thickness controls. Registered before any run.
+    """
+
+    base_center = (0.4, 0.05, 0.0)
+
+    def part(chord, span, thickness, angle, center):
+        return ShapeDefinition(
+            f"part_{chord:g}_{span:g}_{thickness:g}_{angle:g}"
+            f"_{center[0]:g}_{center[1]:g}_{center[2]:g}",
+            chord, span, thickness, angle, center,
+        )
+
+    definitions = [
+        ShapeDefinition(
+            "wing_camber_bent", 0.0, 0.0, 0.0, 0.0, base_center,
+            parts=(
+                part(0.3, 0.8, 0.15, 30.0, (0.550, 0.05, 0.0785)),
+                part(0.3, 0.8, 0.15, -10.0, (0.250, 0.05, -0.0785)),
+            ),
+        ),
+        ShapeDefinition(
+            "wing_gurney_a20", 0.0, 0.0, 0.0, 0.0, base_center,
+            parts=(
+                part(0.6, 0.8, 0.15, 20.0, base_center),
+                part(0.05, 0.8, 0.12, 0.0, (0.3725, 0.05, 0.05)),
+            ),
+        ),
+        ShapeDefinition("wing_chord03_a20", 0.3, 0.8, 0.15, 20.0, (0.4, 0.05, 0.0)),
+        ShapeDefinition(
+            "wing_two_element", 0.0, 0.0, 0.0, 0.0, base_center,
+            parts=(
+                part(0.3, 0.8, 0.15, 25.0, (0.250, 0.05, 0.0)),
+                part(0.15, 0.8, 0.10, 35.0, (0.672, 0.05, -0.055)),
+            ),
+        ),
+        ShapeDefinition(
+            "wing_endplate_a20", 0.0, 0.0, 0.0, 0.0, base_center,
+            parts=(
+                part(0.6, 0.8, 0.15, 20.0, base_center),
+                part(0.6, 0.05, 0.25, 20.0, (0.4, -0.425, 0.0)),
+                part(0.6, 0.05, 0.25, 20.0, (0.4, 0.425, 0.0)),
+            ),
+        ),
+        ShapeDefinition(
+            "wing_tandem_xoff", 0.0, 0.0, 0.0, 0.0, base_center,
+            parts=(
+                part(0.3, 0.8, 0.15, 20.0, (0.25, 0.05, 0.0)),
+                part(0.3, 0.8, 0.15, 40.0, (0.75, 0.05, 0.0)),
+            ),
+        ),
+        ShapeDefinition("wing_flat_ctrl_c30", 0.3, 0.8, 0.25, 0.0, base_center),
+        ShapeDefinition("wing_thick_a20", 0.6, 0.8, 0.25, 20.0, base_center),
+    ]
+    return {d.shape_id: d for d in definitions}
+
+
 def _rotation_about_y(angle_deg: float) -> np.ndarray:
     rad = math.radians(angle_deg)
     s, c = math.sin(rad), math.cos(rad)
@@ -125,13 +193,17 @@ def build_shape(
     """
 
     d = definition
-    rotation = _rotation_about_y(d.angle_y_deg)
-    # world_row = body_row @ R.T  =>  body_row = world_row @ R (R is orthogonal)
-    center = np.asarray(d.center_m, dtype=float)
-    half = np.array([d.chord_m, d.span_m, d.thickness_m]) / 2.0
-    body = (_canonical_centers() - center) @ rotation
-    inside = np.all(np.abs(body) <= half[None, :] + 1e-12, axis=1)
-    occupancy = inside.astype(bool)
+    copies = d.parts if d.parts else (d,)
+    occupancy = np.zeros(math.prod(CANONICAL_SHAPE), dtype=bool)
+    for part in copies:
+        rotation = _rotation_about_y(part.angle_y_deg)
+        center = np.asarray(part.center_m, dtype=float)
+        half = np.array([part.chord_m, part.span_m, part.thickness_m]) / 2.0
+        body = (_canonical_centers() - center) @ rotation
+        inside = np.all(np.abs(body) <= half[None, :] + 1e-12, axis=1)
+        occupancy = occupancy | inside
+
+    occupancy = occupancy.astype(bool)
     if active_mask is not None:
         if active_mask.shape != (math.prod(CANONICAL_SHAPE),):
             raise ValueError(
@@ -148,18 +220,27 @@ def build_shape(
     )
 
 
+def _part_boxes(d: ShapeDefinition) -> list[ShapeDefinition]:
+    return list(d.parts) if d.parts else [d]
+
+
 def _anchor_stl_bytes(d: ShapeDefinition) -> bytes:
     mesh = anchor_mesh(d)
     return trimesh.exchange.stl.export_stl(mesh)
 
 
 def anchor_mesh(d: ShapeDefinition) -> trimesh.Trimesh:
-    rotation = _rotation_about_y(d.angle_y_deg)
-    mesh = trimesh.creation.box(extents=[d.chord_m, d.span_m, d.thickness_m])
-    transform = np.eye(4)
-    transform[:3, :3] = rotation
-    transform[:3, 3] = np.asarray(d.center_m, dtype=float)
-    mesh.apply_transform(transform)
+    mesh: trimesh.Trimesh | None = None
+    for part in _part_boxes(d):
+        single = trimesh.creation.box(extents=[part.chord_m, part.span_m, part.thickness_m])
+        transform = np.eye(4)
+        transform[:3, :3] = _rotation_about_y(part.angle_y_deg)
+        transform[:3, 3] = np.asarray(part.center_m, dtype=float)
+        single.apply_transform(transform)
+        if not single.is_watertight:
+            raise ValueError(f"analytic anchor mesh part of {d.shape_id!r} is not watertight")
+        mesh = single if mesh is None else (mesh + single)
+    assert mesh is not None
     if not mesh.is_watertight:
         raise ValueError(f"analytic anchor mesh for {d.shape_id!r} is not watertight")
     return mesh
