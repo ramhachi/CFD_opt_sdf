@@ -62,6 +62,10 @@ Start here in a new terminal, after reading the repository root
 - [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.
+- [`glm_downforce_assessment_2026_09.md`](glm_downforce_assessment_2026_09.md)
+  — the GLM-session downforce-focused investigation and plan (WP4–WP6 results,
+  literature refinement, and the recommended WP7/B-ladder route), subordinate
+  to the roadmap and the evidence records.
 - [`downforce_architecture_research_2026_09.md`](downforce_architecture_research_2026_09.md)
   — advisory research note (external literature and proposals only) on why the
   Stage T downforce ranking failed on the thickness axis and which architecture
