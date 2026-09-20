@@ -575,6 +575,17 @@ differences. That item is complete; the sequence below reflects what the
    tau 0.911). See `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`.
    Per stop rules the optimizer must NOT be tuned to reverse this; the surrogate
    reformulation study for the thickness axis is the registered next step.
+   **Contained 2026-09-20 (WP6-2, reachable-set program, second pre-registered
+   8-candidate ranking)**: the no_go is confined to the sub-minimum-width
+   thickness axis (a 1-cell-thick plate at the T1 voxel), which the declared
+   `minimum_solid_width` design policy excludes. Inside the reachable design
+   space downforce ranks EXACTLY like qualified Stage V at both levels
+   (tau 1.000, 25/25 pairs), and the combined 17-shape pool gives 121
+   downforce pairs and 110 drag pairs with ZERO resolvable sign inversions
+   (`evidence/reachable_set_cross_fidelity_ranking_2026_09.json`). Downforce
+   optimization under the min-width policy is structurally supported;
+   absolute magnitude calibration remains an open item (Stage T |DF| is
+   0.45-0.75 of Stage V, ranking-only claim restored).
 2. **Establish that the Stage T grid resolves what it optimizes.** The same-grid
    T1 evaluation (46,080 cells for design, solver and handoff alike) removes the
    46k-to-8k transfer as a factor, and is now the default. What remains is to
