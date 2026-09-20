@@ -356,8 +356,16 @@ domain. Two measured results change the standing picture:
    declared endTime continuation 3000→6000; the endTime cap itself correctly refused
    the first attempt) and moved forces by only ~0.003 — downforce still misses the
    bound (V2→V3: 0.0147). Conclusion: near-wake local refinement is not the dominant
-   factor behind the drift. The pre-declared next action is a steady vs time-resolved
-   comparison on the same plain-V2 mesh before any design-formulation change.
+   factor behind the drift.
+3. **The steady reference is a valid time-mean of the laminar physics.** The WP3
+   pre-declared fallback — pimpleFoam, 15 s = 5 flow times on the same plain V2 mesh —
+   reproduced the steady point (Δdownforce -8.6e-5, ΔCd -0.09%, final-window std ~8e-8,
+   no shedding) and rules out unsteady contamination
+   (`evidence/stage_v_transient_check_2026_09.json`). The residual V2→V3 drift is a
+   refinement-family discretization effect; no further factor remains inside the
+   pre-declared WP3 program. The honest continuations are a newly registered
+   discretization factor, or WP4 contract work followed by the 8-candidate ranking
+   experiment with the measured uncertainty band stated explicitly.
 
 An earlier V3 attempt targeted the wrong 1,600-cell `keep_round` candidate. That candidate
 failed the determinant gate at every level. All 220 V3 under-determined cells touched the

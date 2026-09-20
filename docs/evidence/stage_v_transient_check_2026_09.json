@@ -1,0 +1,40 @@
+{
+  "artifact_id": "stage_v_transient_check_2026_09",
+  "created": "2026-09-20",
+  "evidence_class": "numerical",
+  "branch": "feat/p0-openfoam-closed-loop",
+  "issues": ["P16", "P15"],
+  "purpose": "WP3 pre-declared fallback comparison: steady RANS versus a time-resolved run on the SAME plain fixed-domain V2 mesh, before any change to the design formulation.",
+  "manifest_declared_before_run": "work/stage_v_fixed_transient_2026_09_manifest.json",
+  "mesh": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2 (187942 cells; mesh profile passed in the plain fixed-domain family)",
+  "transient_settings": {
+    "solver": "pimpleFoam laminar, ddtSchemes backward, deltaT 0.005 s (Co<~0.25 on 0.025 m body cells)",
+    "PIMPLE": {"momentumPredictor": "yes", "nOuterCorrectors": 2, "nCorrectors": 2, "nNonOrthogonalCorrectors": 0},
+    "physical_time_s": 15.0,
+    "flow_times_recorded": 5.0,
+    "iterations": 3000,
+    "wall_clock_s": 2745.69,
+    "ttyu_end": "reached physical endTime 15 s"
+  },
+  "result": {
+    "final_time_s": 15.0,
+    "window_final_5s": {"Cd_mean": 1.6785614424775226, "Cd_std": 8.112012867324683e-08, "downforce_mean": 0.5091807114805195, "downforce_std": 8.393959742396577e-08},
+    "window_last_flow_time_3s": {"Cd_mean": 1.6785614498668886, "downforce_mean": 0.5091807151530782},
+    "steady_reference": {"Cd": 1.6800880803804348, "downforce": 0.5092669766413043},
+    "delta": {"delta_downforce_mean": -8.626516078480417e-05, "delta_Cd_rel": -0.0009086653972132812}
+  },
+  "measured_conclusion": [
+    "The time-mean of the resolved run reproduces the steady solution: downforce differs by 8.6e-5 (0.0017 of the 0.005 bound) and Cd by 0.09%.",
+    "The force std over the final window is ~8e-8: no vortex-shedding content at this operating point on this mesh family, consistent with the earlier historical V0 transient check.",
+    "The steady ladder point is therefore NOT contaminated by unsteady content; the remaining V2->V3 downforce drift (0.0129-0.0147) is a refinement-family discretization effect, and per the pre-declared stop rules it stays above the registered bound with no further pre-declared factor left to isolate."
+  ],
+  "claims_supported": [
+    "The steady fixed-domain reference at the reduced operating point is a valid time-mean of the laminar physics on the plain V2 mesh (numerical)."
+  ],
+  "claims_not_supported": [
+    "No grid-independent-downforce claim; the 0.005 bound remains unmet.",
+    "No high-Re or turbulent-shedding extrapolation (Re ~ 75 on the body length, laminar that the reduced case declares).",
+    "No claim about whether another mesh family could converge."
+  ],
+  "next": "Per the WP3 stop rules: the fixed-domain ladder retains a measured downforce uncertainty band. The only two honest continuations are (a) a further pre-declared discretization factor (e.g. surface refinement depth family or pressure-solver tolerance family) registered BEFORE results, or (b) proceed to the Gate-0/WP4 contract work (WP5-WP6 isolation and 8-candidate ranking) with the measured uncertainty band treated explicitly."
+}

@@ -706,6 +706,14 @@ SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した
 - **wake近傍のlevel-3局所refinementは力を約0.003しか動かさず、V2→V3遷移のDF変動
   （0.013–0.017）を説明しない。** driftはwake解像度ではなくglobal refinement familyに
   付随する誤差であることが一因子比較で判明した。
+- **定常/非定常比較（同一plain V2メッシュ、pimpleFoam 15 s = 5流過回数）**: 時間平均は
+  定常点と一致（Δdownforce = -8.6e-5、ΔCd相対 = -0.09%、最終窓std ≈ 8e-8、シェッディング
+  なし）。定常梯子点は非定常成分に汚染されていない
+  （`evidence/stage_v_transient_check_2026_09.json`）。
+- したがってP16の残余driftは「離散化familyの効果」であり、一因子比較としてさらに分離できる
+  要素は事前宣言済み枠内で尽きた。残る誠実な進路は (a) 事前登録した別の離散化因子（表面
+  refinement深さ、圧力ソルバtolerance等）、または (b) 測定不確かさ帯を明示した上で
+  Gate 0/WP4契約修復 → 8候補順位検定へ進むこと、のいずれかである。
 - 事前宣言済みの次一手: 同一plain V2メッシュでの定常/非定常比較。それでもboundを
   外した場合、設計定式化の変更はしない。
 
