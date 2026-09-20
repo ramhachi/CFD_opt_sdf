@@ -47,7 +47,17 @@ def inject_canonical_state_into_fixed_grid_contract(
     topology_state_json: str | Path,
     output_directory: str | Path,
 ) -> CanonicalStateInjectionArtifacts:
-    """Write a new T1 contract whose ``rho`` is overwritten on active cells only."""
+    """Write a new T1 contract whose ``rho`` is overwritten on active cells only.
+
+    Fail-closed on generation (P7/C2): the injection owns a validated transfer of
+    ``rho`` only — it does not own any filter or projection profile, so it can
+    refresh the derived siblings (``rho_filtered``, ``rho_projected``, ``alpha``)
+    at the same generation ONLY when the source contract provably satisfies the
+    C3 identity contract (``rho_filtered == rho_projected == rho`` and
+    ``alpha == beta_max * rho`` with one constant ``beta_max`` decoded from the
+    recorded array). Any other derived state is refused rather than silently
+    carried over in its previous generation.
+    """
 
     npz_path = Path(openfoam_source_state_npz).resolve()
     provenance_path = Path(source_state_provenance_json).resolve()
@@ -81,7 +91,13 @@ def inject_canonical_state_into_fixed_grid_contract(
     original_rho = np.asarray(density_state.arrays["rho"])
     new_rho = original_rho.astype(np.float64, copy=True)
     new_rho[active] = source_rho_xfastest[active]
+
+    beta_max = _validate_identity_derived_generation(density_state, original_rho)
     new_rho = new_rho.astype(original_rho.dtype, copy=False)
+    new_rho_projected = new_rho.copy()
+    new_rho_filtered = new_rho.copy()
+    alpha_dtype = np.asarray(density_state.arrays["alpha"]).dtype
+    new_alpha = (beta_max * new_rho.astype(np.float64)).astype(alpha_dtype, copy=False)
 
     alpha_metadata = dict(
         (density_state.state.get("array_metadata") or {}).get("alpha") or {}
@@ -110,12 +126,26 @@ def inject_canonical_state_into_fixed_grid_contract(
         "overwritten_cell_count": int(np.count_nonzero(active)),
         "rho_variant_written": "rho",
         "rho_to_alpha_convention": alpha_metadata,
+        "derived_generation": {
+            "contract": "C3 identity projection (rho_projected = rho_filtered = rho; alpha = beta_max * rho)",
+            "validation": {
+                "pre_state_rho_projected_equals_rho": True,
+                "pre_state_rho_filtered_equals_rho": True,
+                "alpha_equals_beta_max_times_rho": True,
+                "beta_max": beta_max,
+                "beta_max_source": "decoded from the recorded alpha/rho ratio on cells with rho > 0.5",
+            },
+            "arrays_refreshed_same_generation": ["rho", "rho_filtered", "rho_projected", "alpha"],
+            "new_alpha_sha256": _array_sha256(new_alpha),
+            "new_rho_filtered_sha256": _array_sha256(new_rho_filtered),
+            "new_rho_projected_sha256": _array_sha256(new_rho_projected),
+        },
         "source_files": {
             "openfoam_source_state_npz": {"path": str(npz_path), "sha256": _sha256_file(npz_path)},
             "source_state_provenance_json": {"path": str(provenance_path), "sha256": _sha256_file(provenance_path)},
         },
     }
-    return _write_atomically(output_directory, density_state, new_rho, provenance)
+    return _write_atomically(output_directory, density_state, new_rho, new_rho_filtered, new_rho_projected, new_alpha, provenance)
 
 
 def _validate_candidate_provenance(
@@ -206,6 +236,60 @@ def _validate_rho(values: np.ndarray, count: int) -> np.ndarray:
     return values
 
 
+def _validate_identity_derived_generation(
+    density_state: FixedGridDensityState,
+    original_rho: np.ndarray,
+) -> float:
+    """Fail closed unless the contract's derived siblings satisfy the C3 identity contract.
+
+    The injector cannot own a filter/projector; it may only refresh
+    ``rho_filtered``/``rho_projected``/``alpha`` at the new ``rho`` generation when
+    the contract it is derived from actually encodes the identity contract. This
+    both decodes ``beta_max`` from the recorded ``alpha`` and refuses any
+    non-identity filter/projection/Brinkman state instead of carrying it forward
+    (reading a formerly stale array would be exactly the P7 defect).
+    """
+
+    def array(name: str) -> np.ndarray:
+        try:
+            return np.asarray(density_state.arrays[name], dtype=np.float64)
+        except KeyError as exc:
+            raise ValueError(
+                f"density.vti is missing array {name!r}; the injection requires all "
+                "four design arrays of the C3 identity contract"
+            ) from exc
+
+    projected = array("rho_projected")
+    filtered = array("rho_filtered")
+    alpha = array("alpha")
+    if not np.allclose(projected, original_rho, rtol=0.0, atol=1.0e-9):
+        raise ValueError(
+            "injection owns no projection profile: the contract's rho_projected is "
+            "not the C3 identity (rho_projected != rho). Refusing to leave a stale "
+            "projected array in place; re-inject through the profile that owns it"
+        )
+    if not np.allclose(filtered, original_rho, rtol=0.0, atol=1.0e-9):
+        raise ValueError(
+            "injection owns no filter profile: the contract's rho_filtered is not "
+            "the C3 identity (rho_filtered != rho). Refusing to leave a stale "
+            "filtered array in place; re-inject through the profile that owns it"
+        )
+    selectable = original_rho > 1.0e-6
+    if not selectable.any():
+        raise ValueError(
+            "alpha convention cannot be decoded without a cell carrying finite "
+            "density; refusing to reinfer the Brinkman coefficient"
+        )
+    ratios = alpha[selectable] / original_rho[selectable]
+    beta_max = float(np.median(ratios))
+    if not np.allclose(ratios, beta_max, rtol=1.0e-6, atol=0.0):
+        raise ValueError(
+            "alpha is not a singleBetaMax multiple of rho (alpha != beta_max * rho); "
+            "refusing to recompute the derived alpha generation"
+        )
+    return beta_max
+
+
 def _mask_sha256(mask: np.ndarray) -> str:
     return hashlib.sha256(np.ascontiguousarray(mask, dtype=np.uint8).tobytes()).hexdigest()
 
@@ -228,6 +312,9 @@ def _write_atomically(
     output_directory: str | Path,
     density_state: FixedGridDensityState,
     new_rho: np.ndarray,
+    new_rho_filtered: np.ndarray,
+    new_rho_projected: np.ndarray,
+    new_alpha: np.ndarray,
     provenance: dict[str, Any],
 ) -> CanonicalStateInjectionArtifacts:
     output = Path(output_directory).resolve()
@@ -241,6 +328,9 @@ def _write_atomically(
         density_relative = density_state.density_vti.relative_to(source_dir)
         new_arrays = dict(density_state.arrays)
         new_arrays["rho"] = new_rho
+        new_arrays["rho_filtered"] = new_rho_filtered
+        new_arrays["rho_projected"] = new_rho_projected
+        new_arrays["alpha"] = new_alpha
         density_target = temporary / density_relative
         _write_cell_vti(density_state.grid, new_arrays, density_target, kind="fixed_grid_density")
         provenance["written_density_vti_sha256"] = _sha256_file(density_target)

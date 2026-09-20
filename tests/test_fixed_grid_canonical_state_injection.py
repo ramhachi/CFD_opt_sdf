@@ -279,3 +279,90 @@ def test_injection_rejects_array_shape_tamper(tmp_path: Path) -> None:
             output_directory=tmp_path / "new_contract",
         )
     assert not (tmp_path / "new_contract").exists()
+
+
+def test_injection_refreshes_derived_arrays_same_generation(tmp_path: Path) -> None:
+    """P7: rho, rho_filtered, rho_projected and alpha must advance together."""
+    topology_state = _write_contract(tmp_path / "contract")
+    npz_path, provenance_path = _write_source_state(tmp_path / "source_state", rho_xfastest=[0.9, 0.9])
+
+    artifacts = inject_canonical_state_into_fixed_grid_contract(
+        openfoam_source_state_npz=npz_path,
+        source_state_provenance_json=provenance_path,
+        topology_state_json=topology_state,
+        output_directory=tmp_path / "new_contract",
+    )
+    data = pv.read(artifacts.density_vti).cell_data
+    rho = np.asarray(data["rho"], dtype=np.float32)
+    assert np.allclose(data["rho_filtered"], rho)
+    assert np.allclose(data["rho_projected"], rho)
+    assert np.allclose(data["alpha"], 2500.0 * rho)
+
+    provenance = json.loads(artifacts.provenance_json.read_text(encoding="utf-8"))
+    derived = provenance["derived_generation"]["validation"]
+    assert derived["beta_max"] == pytest.approx(2500.0)
+    assert provenance["derived_generation"]["arrays_refreshed_same_generation"] == [
+        "rho", "rho_filtered", "rho_projected", "alpha"
+    ]
+
+
+def _write_filtered_contract(directory: Path) -> Path:
+    """Contract with a real (non-identity) Python filter/projection state."""
+    state_path = _write_contract(directory)
+    image = pv.read(directory / "density.vti")
+    image.cell_data["rho_filtered"] = np.asarray(image.cell_data["rho"], dtype=np.float32) * 0.5
+    image.save(directory / "density.vti")
+    return state_path
+
+
+def test_injection_refuses_non_identity_filter_state(tmp_path: Path) -> None:
+    """The injector owns no filter: a genuinely filtered contract is refused."""
+    topology_state = _write_filtered_contract(tmp_path / "contract")
+    npz_path, provenance_path = _write_source_state(tmp_path / "source_state", rho_xfastest=[0.9, 0.9])
+
+    with pytest.raises(ValueError, match="owns no filter profile"):
+        inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=npz_path,
+            source_state_provenance_json=provenance_path,
+            topology_state_json=topology_state,
+            output_directory=tmp_path / "new_contract",
+        )
+    assert not (tmp_path / "new_contract").exists()
+
+
+def test_injection_refuses_non_identity_projection_state(tmp_path: Path) -> None:
+    topology_state = _write_filtered_contract(tmp_path / "contract")
+    npz_path, provenance_path = _write_source_state(tmp_path / "source_state", rho_xfastest=[0.9, 0.9])
+
+    # put the non-identity deviation on rho_projected instead of rho_filtered
+    image = pv.read(tmp_path / "contract" / "density.vti")
+    image.cell_data["rho_filtered"] = np.asarray(image.cell_data["rho"], dtype=np.float32)
+    image.cell_data["rho_projected"] = np.asarray(image.cell_data["rho"], dtype=np.float32) * 0.5
+    image.save(tmp_path / "contract" / "density.vti")
+
+    with pytest.raises(ValueError, match="owns no projection profile"):
+        inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=npz_path,
+            source_state_provenance_json=provenance_path,
+            topology_state_json=topology_state,
+            output_directory=tmp_path / "new_contract",
+        )
+
+
+def test_injection_refuses_alpha_not_beta_max_times_rho(tmp_path: Path) -> None:
+    topology_state = _write_contract(tmp_path / "contract")
+    image = pv.read(tmp_path / "contract" / "density.vti")
+    alpha = np.asarray(image.cell_data["alpha"], dtype=np.float32)
+    alpha[0] = alpha[0] * (2000.0 / 2500.0)  # inconsistent Brinkman coefficient per cell
+    image.cell_data["alpha"] = alpha
+    image.save(tmp_path / "contract" / "density.vti")
+    npz_path, provenance_path = _write_source_state(tmp_path / "source_state", rho_xfastest=[0.9, 0.9])
+
+    with pytest.raises(ValueError, match="beta_max"):
+        inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=npz_path,
+            source_state_provenance_json=provenance_path,
+            topology_state_json=topology_state,
+            output_directory=tmp_path / "new_contract",
+        )
+    assert not (tmp_path / "new_contract").exists()
