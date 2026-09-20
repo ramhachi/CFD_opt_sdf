@@ -335,6 +335,30 @@ which is still about six times the registered absolute bound of 0.005. The archi
 therefore executes and rejects claims correctly; it has not yet produced a grid-independent
 downforce reference for ranking.
 
+### Fixed-domain grid study and wake-refinement family — 2026-09-20
+
+With WP1 in place, the correct candidate was re-evaluated under the declared fixed
+domain. Two measured results change the standing picture:
+
+1. **The union-box reference carried an unmeasured ground coupling.** The old cases
+   took their outer box from the geometry union bounds, whose bottom sat ~0.19 m below
+   the body. Under the declared fixed domain (bottom at z=-0.6 m) the same candidate
+   gives Cd ~1.63–1.74 instead of ~3.14 and downforce ~0.51–0.52 instead of ~0.82.
+   Union-box force values, ratios, and P16 drifts measured through old V3 are therefore
+   not transferable and are superseded for reference purposes
+   (`evidence/stage_v_fixed_domain_grid_study_2026_09.json`).
+2. **The pre-declared wake-refinement family did not settle the bounds and isolated the
+   factor.** The plain fixed-domain family qualified V1/V2/V3 (33k/188k/1.35M cells;
+   V0 refused by the mesh profile at 9.57% concave > 8%, no solver launch). Finest
+   downforce drift improved to 0.01291 (2.3x better than union box) but remained above
+   the 0.005 bound, and Cd still changes ~3% per transition. A pre-declared level-3
+   near-wake refinement box produced three *further* qualified levels (V3 via a
+   declared endTime continuation 3000→6000; the endTime cap itself correctly refused
+   the first attempt) and moved forces by only ~0.003 — downforce still misses the
+   bound (V2→V3: 0.0147). Conclusion: near-wake local refinement is not the dominant
+   factor behind the drift. The pre-declared next action is a steady vs time-resolved
+   comparison on the same plain-V2 mesh before any design-formulation change.
+
 An earlier V3 attempt targeted the wrong 1,600-cell `keep_round` candidate. That candidate
 failed the determinant gate at every level. All 220 V3 under-determined cells touched the
 candidate wall and 208 also touched the outer top patch; the candidate `zmax` equaled the

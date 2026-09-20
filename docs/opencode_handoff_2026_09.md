@@ -68,6 +68,20 @@ Inspect status and diff before any later implementation work.
 
 ## Exact Current Architecture
 
+**2026-09-20 addendum (post-WP1 slices).** WP1 (fixed-domain binding plus the
+`stage_v_clearance_v1` pre-mesh clearance preflight) is implemented, tested
+(`tests/test_stage_v_domain_preflight.py`), and evidenced in
+`evidence/stage_v_domain_clearance_2026_09.json`. A follow-up fixed-domain grid study
+plus a pre-declared near-wake refinement family ran on the correct
+candidate (`evidence/stage_v_fixed_domain_grid_study_2026_09.json`): V1/V2/V3 are
+profile-qualified under the fixed domain, the finest downforce drift improved to
+0.01291 / 0.01470 (plain / wake) but the 0.005 bound remains unmet, and the
+factor-isolation result refutes wake resolution as the drift driver. All historical
+union-box force values, ratios, and P16 drifts are not transferable. Next pre-declared
+slice: steady vs time-resolved comparison on the plain fixed-domain V2 mesh
+(WP3 fallback). remaining details live in that evidence file and the updated
+`phase_plan.md`/`problem_register_2026_09.md`.
+
 The adopted production direction is:
 
 ```text
@@ -314,7 +328,7 @@ observations. The detailed measurements remain in
 | P13 | Closed for the guarded current path. Fail-closed adjoint gates were added and the historical P13 record reports 581 passing tests. The current validation snapshot is recorded below. Any new optimizer evidence must still show the requested adjoints converged before consuming gradients. |
 | P14 | Closed for the measured RAMP path. Python owns projection, OpenFOAM regularisation is disabled/identity as recorded, and the injected/solver field difference was `1.9e-9`. Do not generalize this closure to unbound historical artifacts. |
 | P15 | The original "thin geometry alone explains non-convergent downforce" causal claim was refuted for the correct thick candidate: geometry and mesh quality passed, yet downforce remained non-converged. The remaining numerical question is tracked by P16 and the latest local-refinement/transient plan. |
-| P16 | Unresolved. Correct-candidate downforce V2 -> V3 drift is `0.029925135222144128` versus the registered absolute bound `0.005`; the recorded ranking-pair difference `0.0219` is smaller than the current resolved drift. |
+| P16 | Updated 2026-09-20 under the fixed domain: finest downforce drift improved 0.02993 (union box) -> 0.01291 (plain fixed-domain family), 0.01470 with the pre-declared wake-refinement family, still above the 0.005 bound. A factor-isolation experiment showed near-wake level-3 refinement moves forces by only ~0.003, so wake resolution is not the drift driver; the pre-declared next action is a steady vs time-resolved comparison on the same plain-V2 mesh. All union-box force values/ratios/drifts are not transferable to the fixed-domain reference. |
 | P17 | Closed as gate implementation (2026-09-20). WP1 binds the Stage V far-field box to `grid.domain_bounds_m` and runs a declared `stage_v_clearance_v1` (0.25 m) pre-mesh clearance preflight; the recorded wrong candidate is rejected with a no-launch artifact, and the correct candidate passes. Real re-meshing under the fixed domain has not been re-run yet. Evidence: `evidence/stage_v_domain_clearance_2026_09.json`, `tests/test_stage_v_domain_preflight.py` (601 passed). |
 
 ### Contradictions that must remain visible

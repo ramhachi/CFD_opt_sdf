@@ -42,7 +42,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P13 | 最適化ループの随伴が未収束のまま勾配に使われた | 最重大 | **解消**（fail-closedゲート、581 passed） |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
-| P16 | Stage Vが解像できる最小差 | — | **現候補で約0.030まで改善、登録gate 0.005は未達** |
+| P16 | Stage Vが解像できる最小差 | — | **固定domain参照へ更新（2026-09-20）**。最細downforce drift 0.02993→0.01291、wake refinement併用でも0.0147。登録gate 0.005未達。旧union-boxの値・比率は参照移転不可 |
 | P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
@@ -687,6 +687,27 @@ SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した
 判別できる状態にはまだ達していない。
 
 抗力は収束する（V1→V2で1.1–1.3%、閾値2%以内）ため、この制約はダウンフォース固有である。
+
+### 固定domain参照への更新と一因子分離（2026-09-20）
+
+旧V0–V3参照のunion-boxは候補と底面が約0.19 mしか離れておらず、地面干渉が未測定のまま
+混入していた。宣言固定domain（bottom z=-0.6 m）下の同一候補はCd≈1.63–1.74、downforce
+≈0.51–0.52となり、union-boxの絶対値・比率・Drift（0.02993を含む）は参照として移転できない。
+
+固定domain下での一因子結果（`evidence/stage_v_fixed_domain_grid_study_2026_09.json`）:
+
+| family | V1 | V2 | V3 | 最細DF drift | 登録bound |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| plain | Cd 1.7395 / DF 0.5139 | Cd 1.6801 / DF 0.5093 | Cd 1.6297 / DF 0.5222 | 0.01291 | 0.005 |
+| wake(level 3 box) | Cd 1.7348 / DF 0.5086 | Cd 1.6771 / DF 0.5048 | Cd 1.6282 / DF 0.5195 | 0.01470 | 0.005 |
+
+- 6実行はすべてmesh profile・`residualControl`・force stationarityゲートでqualified
+  （wake V3はendTime 3000で正しく棄却された後、endTime 6000への宣言付き継続で収束、計4259反復）。
+- **wake近傍のlevel-3局所refinementは力を約0.003しか動かさず、V2→V3遷移のDF変動
+  （0.013–0.017）を説明しない。** driftはwake解像度ではなくglobal refinement familyに
+  付随する誤差であることが一因子比較で判明した。
+- 事前宣言済みの次一手: 同一plain V2メッシュでの定常/非定常比較。それでもboundを
+  外した場合、設計定式化の変更はしない。
 
 ## P17 — 候補面とStage V外周境界のclearanceが未検査（最重大）
 

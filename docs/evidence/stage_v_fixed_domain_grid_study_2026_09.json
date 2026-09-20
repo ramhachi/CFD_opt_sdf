@@ -1,0 +1,84 @@
+{
+  "artifact_id": "stage_v_fixed_domain_grid_study_2026_09",
+  "created": "2026-09-20",
+  "evidence_class": "numerical",
+  "branch": "feat/p0-openfoam-closed-loop",
+  "issues": ["P16", "P3", "P17"],
+  "purpose": "WP2/WP3: re-establish the Stage V reference for the correct P15 candidate (opt_q100_b0_step0_try0_block) under the new fixed problem-spec domain, one factor at a time: (a) plain fixed-domain grid family, (b) predeclared local wake-refinement family.",
+  "fixed_conditions": {
+    "domain_lower_m": [-1.0, -0.8, -0.6],
+    "domain_upper_m": [2.0, 0.8, 0.6],
+    "flow_case": "matched_re_laminar: U=(1,0,0) m/s, rho=1.0, nu=1e-2 m^2/s, laminar",
+    "reference_values": {"area_m2": 0.64, "length_m": 0.8},
+    "profiles": ["stage_v_clearance_v1 (0.25 m)", "stage_v_qualification_v1 (unrelaxed)"],
+    "candidate_stl_sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e",
+    "run_roots": [
+      "work/stage_v_fixed_domain_2026_09",
+      "work/stage_v_fixed_wake_2026_09"
+    ]
+  },
+  "union_vs_fixed_domain_note": "Every historical Stage V case took its outer box from the geometry union bounds plus padding. For this candidate the union bottom was z=-0.3875 m, only ~0.19 m below the body: the old reference contained an unmeasured ground/interference coupling. Under the declared fixed domain (bottom at z=-0.6) the same candidate's Cd drops from ~3.13 to ~1.63-1.74 and downforce from ~0.82 to ~0.51-0.52. Historical union-box force values therefore must not be compared with fixed-domain values, and P16 drifts measured through V3 on the union box (0.02993) are not transferable.",
+  "plain_fixed_domain_family": {
+    "V0": {"status": "refused_by_mesh_profile_no_launch", "cells": 7182, "concave_cells": 687, "concave_cell_fraction": 0.0957, "bound": 0.08},
+    "V1": {"voxel_size_m": 0.05, "cells": 33376, "iterations": 292, "Cd": 1.7395051369863013, "downforce": 0.5138805915205479, "qualified": true},
+    "V2": {"voxel_size_m": 0.025, "cells": 187942, "iterations": 737, "Cd": 1.6800880803804348, "downforce": 0.5092669766413043, "qualified": true},
+    "V3": {"voxel_size_m": 0.0125, "cells": 1348281, "iterations": 2216, "Cd": 1.629680689963899, "downforce": 0.5221744316823105, "qualified": true}
+  },
+  "plain_family_transitions": {
+    "V1_V2": {"Cd_rel": 0.034157448197483765, "downforce_abs": 0.0046136148792436105},
+    "V2_V3": {"Cd_rel": 0.030002826045359324, "downforce_abs": 0.01290745504100621},
+    "bounds": {"Cd_rel_max": 0.02, "downforce_abs_max": 0.005},
+    "verdict": "bounds_not_met; finest downforce drift improved from 0.02993 (union box) to 0.01291 (fixed domain), 2.3x, but still ~2.6x the registered absolute bound"
+  },
+  "wake_refinement_family": {
+    "manifest_declared_before_runs": "work/stage_v_fixed_wake_2026_09_manifest.json",
+    "wake_box": {"min_m": [0.42, -0.3, -0.22], "max_m": [0.82, 0.3, 0.22], "level": 3},
+    "aborted_precursor": "An earlier level-2 wake declaration produced a byte-identical V1 mesh because the plain family's design_domain region already refines its inside at (1E15 2); it was discarded before any refined solver run.",
+    "V1": {"voxel_size_m": 0.05, "cells": 38563, "iterations": 470, "Cd": 1.7348379077118643, "downforce": 0.5086106971864407, "qualified": true},
+    "V2": {"voxel_size_m": 0.025, "cells": 235017, "iterations": 1359, "Cd": 1.6771311539705882, "downforce": 0.5047610562117647, "qualified": true},
+    "V3_cont": {
+      "voxel_size_m": 0.0125,
+      "cells": 1698891,
+      "first_attempt": "3000-iteration endTime cap hit (solver_not_converged, force_not_stationary; correctly refused -- the cap-based refusal path worked as designed; residuals at cap: Ux init 2.49e-6, p 8.70e-6)",
+      "continuation": {
+        "restart_lineage": "restarted the run from its own written time 3000 fields with endTime raised 3000->6000, all numerics unchanged; the case dir is opt_q100_b0_step0_try0_block/V3_cont",
+        "iterations_total": 4259,
+        "termination": "residual_control_met at 4259 total iterations",
+        "Cd": 1.628225253111111,
+        "downforce": 0.5194579998253969,
+        "qualified": true
+      }
+    }
+  },
+  "wake_family_transitions": {
+    "V1_V2": {"Cd_rel": 0.033259, "downforce_abs": 0.003850},
+    "V2_V3": {"Cd_rel": 0.029167, "downforce_abs": 0.014697},
+    "bounds": {"Cd_rel_max": 0.02, "downforce_abs_max": 0.005},
+    "verdict": "three qualified levels exist but the registered bounds are still not met"
+  },
+  "factor_isolation_result": {
+    "observation": "Adding near-wake level-3 refinement at every level moved forces only marginally (V1 DF 0.5139->0.5086, V2 0.5093->0.5048, plain-V2->continuation-V3 vs plain-V3 0.5222->0.5195), while the V2->V3 global refinement transition moves downforce by 0.0129-0.0170 regardless of wake refinement.",
+    "conclusion_declared": "Near-wake local refinement is NOT the dominant factor behind the residual downforce drift; the drift behaves like a global discretization family effect, not a wake-resolution effect.",
+    "predeclared_next_action": "steady vs time-resolved comparison on the same (plain V2) mesh before any change to the design formulation, per docs/phase_plan.md WP3."
+  },
+  "grid_independent_downforce_reference": "not established",
+  "validation": {
+    "all_levels_used_explicit_residualControl": true,
+    "force_final_window_stationarity_gated": true,
+    "no_registered_threshold_relaxed": true,
+    "V0_refused_with_no_solver_launch": true,
+    "iteration_cap": "plain family endTime 3000 iterations (V3 converged at 2216); wake V3 needed a declared endTime continuation to 6000"
+  },
+  "claims_supported": [
+    "The declared fixed-domain reference is executable and profile-qualified at V1/V2/V3 for the correct candidate (numerical).",
+    "The finest downforce drift under the fixed domain is 0.01291 (plain) / 0.01470 (wake family), better than the union-box 0.02993 but still above the 0.005 bound.",
+    "Near-wake local refinement does not explain the remaining drift."
+  ],
+  "claims_not_supported": [
+    "No grid-independent downforce reference claim.",
+    "No cross-fidelity ranking claim remains qualified under the new box (all prior ratios were measured on the union box).",
+    "No FSAE/target-Re extrapolation.",
+    "P16 remains open; the downforce bound of 0.005 is still unmet."
+  ],
+  "next": "WP3 fallback comparison: steady vs time-resolved on the same plain V2 mesh; then, per stop rules, either accept the measured uncertainty band for the planned 8-candidate ranking experiment or escalate the discretization question."
+}
