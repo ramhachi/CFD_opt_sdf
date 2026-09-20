@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -47,7 +48,15 @@ def _uniform_alpha(value: float) -> str:
     )
 
 
-def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID, converged: bool = True) -> Path:
+def _write_case(
+    tmp_path: Path,
+    *,
+    solver_id: str = SOLVER_ID,
+    converged: bool = True,
+    primal_converged: bool = True,
+    audit_only: bool = False,
+    adjoint_residual_qualified: bool = True,
+) -> Path:
     case = tmp_path / "case"
     root = case / "processor0"
     (root / "constant/polyMesh").mkdir(parents=True)
@@ -59,11 +68,95 @@ def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID, converged: bool =
     (root / "0").mkdir()
     (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
     log_text = (
-        f"{solver_id} solution converged in 713 iterations\n"
-        if converged
-        else "op1 solution converged in 161 iterations\n"
+        "DILUPBiCGStab:  Solving for Ux, Initial residual = 1e-7, "
+        "Final residual = 1e-8, No Iterations 1\n"
     )
+    if primal_converged:
+        log_text += "op1 solution converged in 161 iterations\n"
+    if converged:
+        adjoint_residual = "1e-8" if adjoint_residual_qualified else "1e-3"
+        log_text += (
+            f"Adjoint solver {solver_id}\n"
+            "DILUPBiCGStab:  Solving for Uax, Initial residual = 1e-7, "
+            f"Final residual = {adjoint_residual}, No Iterations 1\n"
+            f"{solver_id} solution converged in 713 iterations\n"
+        )
+    log_text += "\nEnd\n\nFinalising parallel run\n"
     (case / "log.adjointOptimisationFoam").write_text(log_text, encoding="utf-8")
+    optimisation = case / "system" / "optimisationDict"
+    optimisation.parent.mkdir()
+    optimisation.write_text("qualified controls\n", encoding="utf-8")
+    (case / "fixed_grid_primal_case_metadata.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_case",
+                "case_dir": str(case.resolve()),
+                "source_solver": {
+                    "audit_only": audit_only,
+                    "adjoint_iterations": 1 if audit_only else None,
+                },
+                "qualification_inputs": {
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    metadata_path = case / "fixed_grid_primal_case_metadata.json"
+    log_path = case / "log.adjointOptimisationFoam"
+    solver_pass = converged and adjoint_residual_qualified
+    (case / "fixed_grid_primal_summary.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_summary",
+                "case_dir": str(case.resolve()),
+                "status": "converged" if primal_converged and converged else "completed",
+                "openfoam_run": {
+                    "ok": True,
+                    "returncode": 0,
+                    "dry_run": False,
+                    "timed_out": False,
+                },
+                "qualification_inputs": {
+                    "case_metadata": {
+                        "path": str(metadata_path.resolve()),
+                        "sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+                    },
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    },
+                    "solver_log": {
+                        "path": str(log_path.resolve()),
+                        "sha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
+                    },
+                },
+                "fixed_grid_convergence_qualification": {
+                    "qualified": primal_converged and solver_pass,
+                    "run_ok": True,
+                    "solver_completed": True,
+                    "solvers": {
+                        "op1": {"qualified": primal_converged},
+                        solver_id: {
+                            "qualified": solver_pass,
+                            "checks": [
+                                {
+                                    "field_pattern": "Ua.*",
+                                    "threshold": 5e-7,
+                                    "observed_max": 1e-8 if adjoint_residual_qualified else 1e-3,
+                                    "status": "pass" if adjoint_residual_qualified else "fail",
+                                }
+                            ],
+                        },
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     return case
 
 
@@ -159,6 +252,13 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
     assert provenance["differentiated_response"]["openfoam_adjoint_solver_id"] == SOLVER_ID
     assert provenance["differentiated_response"]["adjoint_convergence"]["converged"] is True
     assert provenance["differentiated_response"]["adjoint_convergence"]["iterations"] == 713
+    qualification = provenance["differentiated_response"]["case_qualification"]
+    assert qualification["qualified"] is True
+    assert qualification["primal"]["converged"] is True
+    assert qualification["primal"]["iterations"] == 161
+    assert qualification["case_metadata"]["audit_only"] is False
+    assert qualification["final_field"]["time"] == "1"
+    assert qualification["final_field"]["openfoam_field_name"] == f"topOSens{SOLVER_ID}"
     # Gate 0 (WP4/C1) semantic binding: direction, sign, and units are recorded.
     semantic = provenance["differentiated_response"]
     assert semantic["response_kind"] == "force"
@@ -296,6 +396,160 @@ def test_rejects_unconverged_adjoint(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="did not report convergence"):
         reconstruct_and_write_canonical_gradient_transfer(
             case_dir=_write_case(tmp_path, converged=False),
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_converged_adjoint_over_unconverged_primal(tmp_path: Path) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+
+    with pytest.raises(ValueError, match="Primal solver 'op1' did not report convergence"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path, primal_converged=False),
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_audit_only_case_even_when_primal_and_adjoint_converged(
+    tmp_path: Path,
+) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+
+    with pytest.raises(ValueError, match="audit_only"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path, audit_only=True),
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_metadata_without_explicit_adjoint_iteration_policy(
+    tmp_path: Path,
+) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    case = _write_case(tmp_path)
+    metadata_path = case / "fixed_grid_primal_case_metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    del metadata["source_solver"]["adjoint_iterations"]
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="missing source_solver.adjoint_iterations"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case,
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_case_when_optimisation_controls_changed_after_preparation(
+    tmp_path: Path,
+) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    case = _write_case(tmp_path)
+    (case / "system" / "optimisationDict").write_text(
+        "nIters 1; // mutated after metadata was written\n", encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="optimisationDict hash does not match"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case,
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_metadata_mutated_from_audit_only_to_qualified(tmp_path: Path) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    case = _write_case(tmp_path, audit_only=True)
+    metadata_path = case / "fixed_grid_primal_case_metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["source_solver"]["audit_only"] = False
+    metadata["source_solver"]["adjoint_iterations"] = None
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="case_metadata hash does not match"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case,
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_convergence_marker_when_final_adjoint_residual_fails(
+    tmp_path: Path,
+) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+
+    with pytest.raises(ValueError, match="runtime convergence qualification did not pass"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=_write_case(tmp_path, adjoint_residual_qualified=False),
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=_identity_mapping(tmp_path, 6),
+            output_directory=tmp_path / "canonical_result",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+    assert not (tmp_path / "canonical_result").exists()
+
+
+def test_rejects_old_success_log_when_a_new_run_starts_after_summary(
+    tmp_path: Path,
+) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    case = _write_case(tmp_path)
+    with (case / "log.adjointOptimisationFoam").open("a", encoding="utf-8") as handle:
+        handle.write("\nTime = 2\nStarting a new run that never completed\n")
+
+    with pytest.raises(ValueError, match="solver_log hash does not match"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case,
             adjoint_solver_id=SOLVER_ID,
             block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
             verified_snapshot=snapshot,

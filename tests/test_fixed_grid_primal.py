@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -36,6 +37,9 @@ def test_prepare_fixed_grid_primal_case_writes_density_alpha_and_no_remesh(
     assert metadata["density_variant"] == "threshold-solid"
     assert metadata["run_policy"]["uses_remeshing"] is False
     assert metadata["mask_counts"]["fixed_zero"] == 2
+    optimisation_binding = metadata["qualification_inputs"]["optimisation_dict"]
+    assert Path(optimisation_binding["path"]) == artifacts.case_dir / "system" / "optimisationDict"
+    assert re.fullmatch(r"[0-9a-f]{64}", optimisation_binding["sha256"])
 
     alpha = _read_internal_scalar_field(artifacts.case_dir / "0.orig" / "alpha")
     assert alpha.shape == (12,)
@@ -173,6 +177,66 @@ def test_summarize_fixed_grid_primal_case_parses_log_histories(tmp_path: Path) -
     assert summary["history"]["mass_balance_rows"] == 1
     assert summary["history"]["force_rows"] == 1
     assert (case_dir / "fixed_grid_force_history.csv").exists()
+
+
+def test_runtime_summary_binds_metadata_controls_log_and_final_residuals(
+    tmp_path: Path,
+) -> None:
+    case_dir = tmp_path / "case"
+    objective_dir = case_dir / "optimisation" / "objective" / "0"
+    objective_dir.mkdir(parents=True)
+    _write_objective(objective_dir / "dragas1", 0.4)
+    _write_objective(objective_dir / "downforcedownforce", 0.9)
+    metadata_path = case_dir / "fixed_grid_primal_case_metadata.json"
+    metadata_path.write_text(
+        json.dumps({"kind": "fixed_grid_primal_case", "case_dir": str(case_dir.resolve())}),
+        encoding="utf-8",
+    )
+    optimisation = case_dir / "system" / "optimisationDict"
+    optimisation.parent.mkdir()
+    optimisation.write_text(
+        "primalSolvers\n{\n  op1\n  {\n    solutionControls\n    {\n"
+        "      residualControl\n      {\n        \"p.*\" 5e-7;\n        \"U.*\" 5e-7;\n      }\n"
+        "    }\n  }\n}\n"
+        "adjointManagers\n{\n  manager\n  {\n    adjointSolvers\n    {\n"
+        "      as1\n      {\n        solutionControls\n        {\n          residualControl\n"
+        "          {\n            \"pa.*\" 5e-7;\n            \"Ua.*\" 5e-7;\n          }\n        }\n      }\n"
+        "      downforce\n      {\n        solutionControls\n        {\n          residualControl\n"
+        "          {\n            \"pa.*\" 5e-7;\n            \"Ua.*\" 5e-7;\n          }\n        }\n      }\n"
+        "    }\n  }\n}\n",
+        encoding="utf-8",
+    )
+    log_path = case_dir / "log.adjointOptimisationFoam"
+    log_path.write_text(
+        "DILUPBiCGStab:  Solving for Ux, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "DICPCG:  Solving for p, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "op1 solution converged in 12 iterations\n"
+        "Adjoint solver as1\n"
+        "DILUPBiCGStab:  Solving for Uax, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "DICPCG:  Solving for pa, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "as1 solution converged in 20 iterations\n"
+        "Adjoint solver downforce\n"
+        "DILUPBiCGStab:  Solving for Uax, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "DICPCG:  Solving for pa, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "downforce solution converged in 30 iterations\n"
+        "\nEnd\n\nFinalising parallel run\n",
+        encoding="utf-8",
+    )
+
+    summary = summarize_fixed_grid_primal_case(
+        case_dir,
+        run_result={"ok": True, "returncode": 0, "dry_run": False, "timed_out": False},
+    )
+
+    qualification = summary["fixed_grid_convergence_qualification"]
+    assert qualification["qualified"] is True
+    assert qualification["solvers"]["op1"]["qualified"] is True
+    assert qualification["solvers"]["downforce"]["qualified"] is True
+    assert qualification["solvers"]["downforce"]["checks"][0]["threshold"] == 5e-7
+    inputs = summary["qualification_inputs"]
+    assert inputs["case_metadata"]["sha256"] == hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+    assert inputs["optimisation_dict"]["sha256"] == hashlib.sha256(optimisation.read_bytes()).hexdigest()
+    assert inputs["solver_log"]["sha256"] == hashlib.sha256(log_path.read_bytes()).hexdigest()
 
 
 def test_run_fixed_grid_primal_suite_dry_run_writes_all_variants(

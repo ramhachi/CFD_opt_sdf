@@ -100,7 +100,12 @@ def reconstruct_and_write_canonical_gradient_transfer(
     field is reconstructed, ``adjoint_log_file`` inside ``case_dir`` must show
     that the requested ``adjoint_solver_id`` actually converged.  A finite,
     correctly shaped ``topOSens`` from an unconverged or mislabeled adjoint is
-    refused, not merely recorded.
+    refused, not merely recorded.  The current qualified runtime path is the
+    fixed-grid Stage T case writer: its case metadata and hash-bound
+    ``system/optimisationDict`` must also prove that no diagnostic adjoint
+    iteration override was used.  Generic compiled cases remain governed by
+    their separate convergence-qualification artifact and are not accepted by
+    this Stage T export boundary yet.
 
     ``output_directory`` must not already exist.  A sibling temporary
     directory is fully written and validated before one directory rename makes
@@ -109,16 +114,19 @@ def reconstruct_and_write_canonical_gradient_transfer(
     permutation of zero-based global labels.
     """
 
-    adjoint_convergence = _require_adjoint_converged(
-        Path(case_dir), adjoint_solver_id, log_file_name=adjoint_log_file
-    )
     reconstructed = reconstruct_final_decomposed_openfoam_fields(
         case_dir,
         adjoint_solver_id=adjoint_solver_id,
         final_time=final_time,
     )
+    case_qualification = _require_gradient_export_qualified(
+        Path(case_dir),
+        adjoint_solver_id,
+        reconstructed=reconstructed,
+        log_file_name=adjoint_log_file,
+    )
     source_mesh = read_openfoam_blockmesh_uniform_cartesian_grid(block_mesh_dict)
-    return write_canonical_gradient_transfer(
+    return _write_canonical_gradient_transfer(
         reconstructed=reconstructed,
         source_mesh=source_mesh,
         verified_snapshot=verified_snapshot,
@@ -126,11 +134,12 @@ def reconstruct_and_write_canonical_gradient_transfer(
         output_directory=output_directory,
         response_id=response_id,
         problem_spec=problem_spec,
-        adjoint_convergence=adjoint_convergence,
+        adjoint_convergence=case_qualification["requested_adjoint"],
+        case_qualification=case_qualification,
     )
 
 
-def write_canonical_gradient_transfer(
+def _write_canonical_gradient_transfer(
     *,
     reconstructed: ReconstructedOpenFoamFields,
     source_mesh: OpenFoamBlockMeshGrid,
@@ -139,19 +148,22 @@ def write_canonical_gradient_transfer(
     output_directory: str | Path,
     response_id: str,
     problem_spec: ProblemSpec,
-    adjoint_convergence: dict[str, Any] | None = None,
+    adjoint_convergence: dict[str, Any],
+    case_qualification: dict[str, Any],
 ) -> CanonicalGradientTransferArtifacts:
     """Write a canonical adjoint gradient from already reconstructed inputs.
 
-    This lower-level entry point exists for qualified callers that have already
-    read the two source contracts.  It performs the same validation as the
-    high-level reconstruction entry point and never exports canonical state
-    fields.  Callers that bypass :func:`reconstruct_and_write_canonical_gradient_transfer`
-    (and its ``case_dir``-based adjoint convergence gate) must already have
-    qualified ``reconstructed`` themselves; ``adjoint_convergence`` is recorded
-    as-is for provenance and is not itself re-verified here.
+    This private writer exists only to keep the numerical transfer separate
+    from filesystem reconstruction.  The public entry point above owns the
+    fail-closed solver qualification.  Keeping this function private prevents
+    callers from exporting a finite field while bypassing the primal/adjoint
+    convergence and audit-only checks.
     """
 
+    if case_qualification.get("qualified") is not True:
+        raise ValueError("case_qualification must explicitly qualify gradient export")
+    if case_qualification.get("requested_adjoint") != adjoint_convergence:
+        raise ValueError("adjoint convergence does not match the qualified case")
     _validate_reconstructed_fields(reconstructed)
     _validate_source_mesh(source_mesh, reconstructed)
     _validate_verified_snapshot(verified_snapshot)
@@ -194,6 +206,7 @@ def write_canonical_gradient_transfer(
         canonical_gradient=canonical_gradient,
         response_id=response_id,
         adjoint_convergence=adjoint_convergence,
+        case_qualification=case_qualification,
         response_binding=response_binding,
     )
     return _write_atomically(output_directory, payload, provenance)
@@ -308,7 +321,7 @@ def _validate_response_binding(
     verified_snapshot: VerifiedCanonicalGridSnapshot,
     response_id: str,
     reconstructed: ReconstructedOpenFoamFields,
-) -> None:
+) -> dict[str, Any]:
     if not isinstance(problem_spec, ProblemSpec):
         raise ValueError("problem_spec must be ProblemSpec")
     if problem_spec_sha256(problem_spec) != verified_snapshot.snapshot.problem_spec_sha256:
@@ -343,6 +356,227 @@ def _validate_response_binding(
     return _response_semantic_binding(problem_spec, response_id)
 
 
+def _require_gradient_export_qualified(
+    case_dir: Path,
+    adjoint_solver_id: str,
+    *,
+    reconstructed: ReconstructedOpenFoamFields,
+    log_file_name: str,
+) -> dict[str, Any]:
+    """Require a converged primal and a non-audit case before exporting a gradient."""
+
+    requested_adjoint = _require_adjoint_converged(
+        case_dir, adjoint_solver_id, log_file_name=log_file_name
+    )
+    text = _read_openfoam_log(case_dir, log_file_name)
+    primal_matches = list(
+        re.finditer(r"\bop1\s+solution\s+converged\s+in\s+(\d+)\s+iterations\b", text)
+    )
+    if not primal_matches:
+        raise ValueError(
+            f"Primal solver 'op1' did not report convergence in {log_file_name}; "
+            "a converged adjoint over an unqualified primal is not exportable"
+        )
+
+    primal = primal_matches[-1]
+    adjoint_marker_offset = requested_adjoint.get("marker_offset")
+    if not isinstance(adjoint_marker_offset, int) or primal.start() >= adjoint_marker_offset:
+        raise ValueError(
+            "The latest primal convergence marker does not precede the requested "
+            "adjoint convergence marker; refusing an ambiguous multi-run log"
+        )
+
+    selected_final_time = reconstructed.provenance.get("final_time")
+    fields = reconstructed.provenance.get("fields")
+    sensitivity = fields.get("top_o_sensitivity") if isinstance(fields, dict) else None
+    sensitivity_time = sensitivity.get("time") if isinstance(sensitivity, dict) else None
+    if (
+        not isinstance(selected_final_time, str)
+        or sensitivity_time != selected_final_time
+    ):
+        raise ValueError(
+            "Reconstructed topOSens is not bound to the selected final OpenFOAM time"
+        )
+
+    metadata_path = case_dir / "fixed_grid_primal_case_metadata.json"
+    metadata = _read_json_object(metadata_path, "fixed-grid primal case metadata")
+    if metadata.get("kind") != "fixed_grid_primal_case":
+        raise ValueError("fixed-grid primal case metadata has an unsupported kind")
+    declared_case = metadata.get("case_dir")
+    if not isinstance(declared_case, str) or Path(declared_case).resolve() != case_dir.resolve():
+        raise ValueError("fixed-grid primal case metadata does not bind the exported case directory")
+    source_solver = metadata.get("source_solver")
+    if not isinstance(source_solver, dict):
+        raise ValueError("fixed-grid primal case metadata is missing source_solver")
+    if source_solver.get("audit_only") is not False:
+        raise ValueError(
+            "fixed-grid primal case is audit_only or lacks an explicit non-audit qualification; "
+            "diagnostic adjoints must not be exported"
+        )
+    if "adjoint_iterations" not in source_solver:
+        raise ValueError(
+            "fixed-grid primal case metadata is missing source_solver.adjoint_iterations"
+        )
+    if source_solver["adjoint_iterations"] is not None:
+        raise ValueError(
+            "fixed-grid primal case overrides adjoint_iterations; gradients from an "
+            "iteration-capped diagnostic case must not be exported"
+        )
+    qualification_inputs = metadata.get("qualification_inputs")
+    if not isinstance(qualification_inputs, dict):
+        raise ValueError("fixed-grid primal case metadata is missing qualification_inputs")
+    optimisation_binding = qualification_inputs.get("optimisation_dict")
+    if not isinstance(optimisation_binding, dict):
+        raise ValueError("fixed-grid primal case metadata is missing optimisationDict binding")
+    optimisation_path = case_dir / "system" / "optimisationDict"
+    declared_optimisation_path = optimisation_binding.get("path")
+    declared_optimisation_hash = optimisation_binding.get("sha256")
+    if (
+        not isinstance(declared_optimisation_path, str)
+        or Path(declared_optimisation_path).resolve() != optimisation_path.resolve()
+    ):
+        raise ValueError("fixed-grid primal case metadata does not bind the case optimisationDict")
+    try:
+        actual_optimisation_hash = hashlib.sha256(optimisation_path.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise ValueError(f"Unable to read bound optimisationDict: {optimisation_path}") from exc
+    if (
+        not isinstance(declared_optimisation_hash, str)
+        or declared_optimisation_hash != actual_optimisation_hash
+    ):
+        raise ValueError(
+            "fixed-grid primal case optimisationDict hash does not match metadata; "
+            "solver qualification inputs changed after case preparation"
+        )
+    summary_binding = _verify_fixed_grid_runtime_summary(
+        case_dir,
+        adjoint_solver_id=adjoint_solver_id,
+        metadata_path=metadata_path,
+        optimisation_path=optimisation_path,
+        log_file_name=log_file_name,
+    )
+    return {
+        "qualified": True,
+        "primal": {
+            "solver_id": "op1",
+            "converged": True,
+            "iterations": int(primal.group(1)),
+        },
+        "convergence_contract": (
+            "OpenFOAM solution-converged markers certify the residualControl "
+            "criteria in the hash-bound system/optimisationDict"
+        ),
+        "requested_adjoint": requested_adjoint,
+        "final_field": {
+            "time": selected_final_time,
+            "openfoam_field_name": sensitivity.get("openfoam_field_name"),
+            "source_files": sensitivity.get("source_files"),
+        },
+        "case_metadata": {
+            "path": str(metadata_path.resolve()),
+            "sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+            "audit_only": False,
+            "adjoint_iterations_override": None,
+            "optimisation_dict": {
+                "path": str(optimisation_path.resolve()),
+                "sha256": actual_optimisation_hash,
+            },
+        },
+        "runtime_summary": summary_binding,
+    }
+
+
+def _read_json_object(path: Path, label: str) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Unable to read {label}: {path}") from exc
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a JSON object: {path}")
+    return value
+
+
+def _verify_fixed_grid_runtime_summary(
+    case_dir: Path,
+    *,
+    adjoint_solver_id: str,
+    metadata_path: Path,
+    optimisation_path: Path,
+    log_file_name: str,
+) -> dict[str, Any]:
+    summary_path = case_dir / "fixed_grid_primal_summary.json"
+    summary = _read_json_object(summary_path, "fixed-grid primal runtime summary")
+    if summary.get("kind") != "fixed_grid_primal_summary":
+        raise ValueError("fixed-grid primal runtime summary has an unsupported kind")
+    declared_case = summary.get("case_dir")
+    if not isinstance(declared_case, str) or Path(declared_case).resolve() != case_dir.resolve():
+        raise ValueError("fixed-grid primal runtime summary does not bind the exported case")
+    if summary.get("status") != "converged":
+        raise ValueError("fixed-grid primal runtime summary is not converged")
+
+    run = summary.get("openfoam_run")
+    if not isinstance(run, dict) or not (
+        run.get("ok") is True
+        and run.get("returncode") == 0
+        and run.get("dry_run") is False
+        and run.get("timed_out") is False
+    ):
+        raise ValueError("fixed-grid primal runtime summary does not record a successful solver run")
+
+    inputs = summary.get("qualification_inputs")
+    if not isinstance(inputs, dict):
+        raise ValueError("fixed-grid primal runtime summary is missing qualification_inputs")
+    log_path = case_dir / log_file_name
+    if not log_path.is_file():
+        gz_path = case_dir / f"{log_file_name}.gz"
+        log_path = gz_path if gz_path.is_file() else log_path
+    for key, path in (
+        ("case_metadata", metadata_path),
+        ("optimisation_dict", optimisation_path),
+        ("solver_log", log_path),
+    ):
+        binding = inputs.get(key)
+        if not isinstance(binding, dict):
+            raise ValueError(f"fixed-grid primal runtime summary is missing {key} binding")
+        declared_path = binding.get("path")
+        declared_hash = binding.get("sha256")
+        if not isinstance(declared_path, str) or Path(declared_path).resolve() != path.resolve():
+            raise ValueError(f"fixed-grid primal runtime summary does not bind {key} path")
+        try:
+            actual_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"Unable to read runtime summary input {key}: {path}") from exc
+        if not isinstance(declared_hash, str) or declared_hash != actual_hash:
+            raise ValueError(
+                f"fixed-grid primal runtime summary {key} hash does not match the case"
+            )
+
+    qualification = summary.get("fixed_grid_convergence_qualification")
+    if not isinstance(qualification, dict) or qualification.get("qualified") is not True:
+        raise ValueError("fixed-grid primal runtime convergence qualification did not pass")
+    if qualification.get("run_ok") is not True or qualification.get("solver_completed") is not True:
+        raise ValueError("fixed-grid primal runtime did not complete successfully")
+    solvers = qualification.get("solvers")
+    requested = solvers.get(adjoint_solver_id) if isinstance(solvers, dict) else None
+    primal = solvers.get("op1") if isinstance(solvers, dict) else None
+    if not isinstance(primal, dict) or primal.get("qualified") is not True:
+        raise ValueError("fixed-grid primal residual qualification did not pass")
+    if not isinstance(requested, dict) or requested.get("qualified") is not True:
+        raise ValueError(
+            f"fixed-grid adjoint residual qualification did not pass for {adjoint_solver_id!r}"
+        )
+    return {
+        "path": str(summary_path.resolve()),
+        "sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest(),
+        "status": "converged",
+        "run_ok": True,
+        "solver_completed": True,
+        "primal_residual_qualification": primal,
+        "requested_adjoint_residual_qualification": requested,
+        "input_hashes_verified": True,
+    }
+
+
 _ADJOINT_LOG_FATAL_PATTERNS = (
     "foam fatal",
     "mpirun has detected an attempt to run as root",
@@ -363,17 +597,8 @@ def _require_adjoint_converged(
     gradient.
     """
 
-    path = case_dir / log_file_name
-    gz_path = case_dir / f"{log_file_name}.gz"
-    if path.is_file():
-        text = path.read_text(encoding="utf-8", errors="replace")
-    elif gz_path.is_file():
-        with gzip.open(gz_path, "rt", encoding="utf-8", errors="replace") as handle:
-            text = handle.read()
-    else:
-        raise ValueError(
-            f"Adjoint convergence log not found for gradient export: {path}"
-        )
+    text = _read_openfoam_log(case_dir, log_file_name)
+
     # cfd._solver_fatal_patterns skips the trapFpe startup banner ("Floating
     # point exception trapping enabled"), which every OpenFOAM run prints; a
     # plain substring scan for "floating point exception" refused every log.
@@ -386,22 +611,35 @@ def _require_adjoint_converged(
         raise ValueError(
             f"{log_file_name} reports fatal errors; refusing gradient export: {fatal}"
         )
-    match = re.search(
+    matches = list(re.finditer(
         rf"\b{re.escape(adjoint_solver_id)}\s+solution\s+converged\s+in\s+(\d+)\s+iterations\b",
         text,
-    )
-    if match is None:
+    ))
+    if not matches:
         raise ValueError(
             f"Adjoint solver {adjoint_solver_id!r} did not report convergence in "
             f"{log_file_name}; gradient export requires a converged adjoint, not "
             "merely a finite topOSens"
         )
+    match = matches[-1]
     return {
         "adjoint_solver_id": adjoint_solver_id,
         "converged": True,
         "iterations": int(match.group(1)),
         "log_file": log_file_name,
+        "marker_offset": match.start(),
     }
+
+
+def _read_openfoam_log(case_dir: Path, log_file_name: str) -> str:
+    path = case_dir / log_file_name
+    gz_path = case_dir / f"{log_file_name}.gz"
+    if path.is_file():
+        return path.read_text(encoding="utf-8", errors="replace")
+    elif gz_path.is_file():
+        with gzip.open(gz_path, "rt", encoding="utf-8", errors="replace") as handle:
+            return handle.read()
+    raise ValueError(f"Adjoint convergence log not found for gradient export: {path}")
 
 
 def _validate_reconstructed_fields(reconstructed: ReconstructedOpenFoamFields) -> None:
@@ -495,6 +733,7 @@ def _provenance(
     canonical_gradient: np.ndarray,
     response_id: str,
     adjoint_convergence: dict[str, Any] | None = None,
+    case_qualification: dict[str, Any] | None = None,
     response_binding: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     snapshot = verified_snapshot.snapshot
@@ -525,6 +764,7 @@ def _provenance(
             "openfoam_adjoint_solver_id": reconstructed.provenance.get("adjoint_solver_id"),
             "binding": "verified: response_id resolves to this exact adjoint_solver_id in problem_spec",
             "adjoint_convergence": adjoint_convergence,
+            "case_qualification": case_qualification,
             **(response_binding or {}),
         },
         "target": {
@@ -628,5 +868,4 @@ def _write_atomically(
 __all__ = [
     "CanonicalGradientTransferArtifacts",
     "reconstruct_and_write_canonical_gradient_transfer",
-    "write_canonical_gradient_transfer",
 ]

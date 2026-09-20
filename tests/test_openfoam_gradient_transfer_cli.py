@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -54,7 +56,76 @@ def _write_case(tmp_path: Path, *, solver_id: str = SOLVER_ID) -> Path:
     (root / "0").mkdir()
     (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
     (case / "log.adjointOptimisationFoam").write_text(
-        f"{solver_id} solution converged in 713 iterations\n", encoding="utf-8"
+        "DILUPBiCGStab:  Solving for Ux, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        "op1 solution converged in 161 iterations\n"
+        f"Adjoint solver {solver_id}\n"
+        "DILUPBiCGStab:  Solving for Uax, Initial residual = 1e-7, Final residual = 1e-8, No Iterations 1\n"
+        f"{solver_id} solution converged in 713 iterations\n"
+        "\nEnd\n\nFinalising parallel run\n",
+        encoding="utf-8",
+    )
+    optimisation = case / "system" / "optimisationDict"
+    optimisation.parent.mkdir()
+    optimisation.write_text("qualified controls\n", encoding="utf-8")
+    (case / "fixed_grid_primal_case_metadata.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_case",
+                "case_dir": str(case.resolve()),
+                "source_solver": {
+                    "audit_only": False,
+                    "adjoint_iterations": None,
+                },
+                "qualification_inputs": {
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    metadata_path = case / "fixed_grid_primal_case_metadata.json"
+    log_path = case / "log.adjointOptimisationFoam"
+    (case / "fixed_grid_primal_summary.json").write_text(
+        json.dumps(
+            {
+                "kind": "fixed_grid_primal_summary",
+                "case_dir": str(case.resolve()),
+                "status": "converged",
+                "openfoam_run": {
+                    "ok": True,
+                    "returncode": 0,
+                    "dry_run": False,
+                    "timed_out": False,
+                },
+                "qualification_inputs": {
+                    "case_metadata": {
+                        "path": str(metadata_path.resolve()),
+                        "sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+                    },
+                    "optimisation_dict": {
+                        "path": str(optimisation.resolve()),
+                        "sha256": hashlib.sha256(optimisation.read_bytes()).hexdigest(),
+                    },
+                    "solver_log": {
+                        "path": str(log_path.resolve()),
+                        "sha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
+                    },
+                },
+                "fixed_grid_convergence_qualification": {
+                    "qualified": True,
+                    "run_ok": True,
+                    "solver_completed": True,
+                    "solvers": {
+                        "op1": {"qualified": True},
+                        solver_id: {"qualified": True},
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
     )
     return case
 

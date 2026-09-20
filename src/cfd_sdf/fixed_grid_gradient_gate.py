@@ -321,7 +321,7 @@ def _convergence(suite: Mapping[str, Any], *, source_path: Path | None) -> Json:
         convergence = summary.get("convergence")
         convergence = convergence if isinstance(convergence, Mapping) else {}
         primal = convergence.get("primal_converged")
-        passed = primal is True or summary.get("status") == "converged"
+        passed = primal is True
         cases[label] = {
             "status": summary.get("status"),
             "primal_converged": primal if isinstance(primal, bool) else None,
