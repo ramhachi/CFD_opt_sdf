@@ -100,10 +100,35 @@ def _write_source_state(
         "source_global_cell_labels_by_xfastest": global_labels,
     }
     np.savez_compressed(npz_path, **payload)
+    binding_path = directory / "candidate_binding.json"
+    binding_path.write_text(
+        json.dumps(
+            {
+                "kind": "stage_t_candidate_binding",
+                "candidate_id": candidate_id,
+                "problem_id": "demo",
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
     provenance = {
         "kind": "openfoam_canonical_state_transfer",
-        "candidate_binding": {"candidate_id": candidate_id, "problem_id": "demo"},
-        "target": {"grid_sha256": "a" * 64},
+        "candidate_binding": {
+            "path": str(binding_path.resolve()),
+            "sha256": hashlib.sha256(binding_path.read_bytes()).hexdigest(),
+            "problem_id": "demo",
+            "problem_spec_sha256": "b" * 64,
+            "execution_ready": True,
+            "candidate_id": candidate_id,
+            "parent_candidate_id": None,
+            "iteration": 0,
+        },
+        "target": {
+            "grid_sha256": "a" * 64,
+            "rho_variant": "rho_projected",
+            "rho_value_sha256": "c" * 64,
+        },
         "source": {
             "block_mesh": {"grid_sha256": grid_sha256},
             "cell_count": len(rho_xfastest),
@@ -145,6 +170,23 @@ def test_injection_overwrites_only_active_cells(tmp_path: Path) -> None:
     assert provenance["active_design_mask"]["true_count"] == 1
     assert provenance["candidate_binding"]["candidate_id"] == "candidate_0000"
     assert provenance["rho_to_alpha_convention"]["source"] == "2500 * OpenFOAM beta"
+    assert provenance["candidate_transfer"]["rho_variant"] == "rho_projected"
+    assert provenance["written_topology_state_sha256"] == hashlib.sha256(
+        artifacts.topology_state_json.read_bytes()
+    ).hexdigest()
+    state = json.loads(artifacts.topology_state_json.read_text(encoding="utf-8"))
+    assert state["problem_id"] == "demo"
+    assert state["problem_spec_sha256"] == "b" * 64
+    assert state["candidate_id"] == "candidate_0000"
+    assert state["parent_candidate_id"] is None
+    assert state["iteration"] == 0
+    assert state["canonical_candidate_binding"]["sha256"] == provenance[
+        "candidate_binding"
+    ]["sha256"]
+    assert state["canonical_candidate_binding"]["rho_variant"] == "rho_projected"
+    assert state["density_vti_sha256"] == hashlib.sha256(
+        artifacts.density_vti.read_bytes()
+    ).hexdigest()
 
 
 def test_injection_rejects_grid_identity_mismatch(tmp_path: Path) -> None:
@@ -254,6 +296,25 @@ def test_injection_rejects_provenance_swapped_from_another_candidate(tmp_path: P
     assert not (tmp_path / "new_contract").exists()
 
 
+def test_injection_rejects_candidate_binding_changed_after_transfer(tmp_path: Path) -> None:
+    topology_state = _write_contract(tmp_path / "contract")
+    npz_path, provenance_path = _write_source_state(
+        tmp_path / "source_state", rho_xfastest=[0.9, 0.9]
+    )
+    provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    binding_path = Path(provenance["candidate_binding"]["path"])
+    binding_path.write_text("{}", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="candidate binding file hash mismatch"):
+        inject_canonical_state_into_fixed_grid_contract(
+            openfoam_source_state_npz=npz_path,
+            source_state_provenance_json=provenance_path,
+            topology_state_json=topology_state,
+            output_directory=tmp_path / "new_contract",
+        )
+    assert not (tmp_path / "new_contract").exists()
+
+
 def test_injection_rejects_array_shape_tamper(tmp_path: Path) -> None:
     """C2 mutation test: a shape/dtype/order change in an exported array is refused,
     even though the NPZ file itself was rewritten (so a naive file-hash-only
@@ -304,6 +365,7 @@ def test_injection_refreshes_derived_arrays_same_generation(tmp_path: Path) -> N
     assert provenance["derived_generation"]["arrays_refreshed_same_generation"] == [
         "rho", "rho_filtered", "rho_projected", "alpha"
     ]
+    assert provenance["derived_generation"]["new_rho_sha256"] == _array_sha256(rho)
 
 
 def _write_filtered_contract(directory: Path) -> Path:

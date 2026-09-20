@@ -67,7 +67,9 @@ def inject_canonical_state_into_fixed_grid_contract(
 
     with np.load(npz_path, allow_pickle=False) as payload:
         raw_arrays = {name: np.array(payload[name]) for name in payload.files}
-    _validate_candidate_provenance(source_provenance, npz_path, raw_arrays)
+    candidate_binding = _validate_candidate_provenance(
+        source_provenance, npz_path, raw_arrays
+    )
     if "source_rho_xfastest" not in raw_arrays:
         raise ValueError(f"{npz_path} is missing source_rho_xfastest")
     source_rho_xfastest = raw_arrays["source_rho_xfastest"].astype(np.float64)
@@ -111,7 +113,7 @@ def inject_canonical_state_into_fixed_grid_contract(
     provenance = {
         "schema_version": _ARTIFACT_SCHEMA_VERSION,
         "kind": _ARTIFACT_KIND,
-        "candidate_binding": source_provenance.get("candidate_binding"),
+        "candidate_binding": candidate_binding,
         "grids": {
             "npz_target_canonical_grid_sha256": (source_provenance.get("target") or {}).get("grid_sha256"),
             "npz_source_openfoam_grid_sha256": (
@@ -125,6 +127,18 @@ def inject_canonical_state_into_fixed_grid_contract(
         },
         "overwritten_cell_count": int(np.count_nonzero(active)),
         "rho_variant_written": "rho",
+        "candidate_transfer": {
+            "rho_variant": (source_provenance.get("target") or {}).get("rho_variant"),
+            "target_rho_value_sha256": (source_provenance.get("target") or {}).get(
+                "rho_value_sha256"
+            ),
+            "source_rho_xfastest_sha256": (
+                (source_provenance.get("exported_arrays") or {}).get(
+                    "source_rho_xfastest"
+                )
+                or {}
+            ).get("sha256"),
+        },
         "rho_to_alpha_convention": alpha_metadata,
         "derived_generation": {
             "contract": "C3 identity projection (rho_projected = rho_filtered = rho; alpha = beta_max * rho)",
@@ -136,6 +150,7 @@ def inject_canonical_state_into_fixed_grid_contract(
                 "beta_max_source": "decoded from the recorded alpha/rho ratio on cells with rho > 0.5",
             },
             "arrays_refreshed_same_generation": ["rho", "rho_filtered", "rho_projected", "alpha"],
+            "new_rho_sha256": _array_sha256(new_rho),
             "new_alpha_sha256": _array_sha256(new_alpha),
             "new_rho_filtered_sha256": _array_sha256(new_rho_filtered),
             "new_rho_projected_sha256": _array_sha256(new_rho_projected),
@@ -152,7 +167,7 @@ def _validate_candidate_provenance(
     source_provenance: dict[str, Any],
     npz_path: Path,
     raw_arrays: dict[str, np.ndarray],
-) -> None:
+) -> dict[str, Any]:
     """Refuse an NPZ/provenance pair unless they were written together.
 
     ``transfer_and_write_openfoam_source_state`` binds a candidate's exported
@@ -190,6 +205,56 @@ def _validate_candidate_provenance(
                 f"(dtype/shape/order/value changed); the NPZ and provenance must "
                 "come from the same candidate transfer"
             )
+
+    candidate = source_provenance.get("candidate_binding")
+    if not isinstance(candidate, dict):
+        raise ValueError("source-state provenance is missing candidate_binding")
+    required_text = (
+        "path",
+        "sha256",
+        "problem_id",
+        "problem_spec_sha256",
+        "candidate_id",
+    )
+    for key in required_text:
+        if not isinstance(candidate.get(key), str) or not candidate[key]:
+            raise ValueError(
+                f"source-state provenance candidate_binding.{key} must be a non-empty string"
+            )
+    for key in ("sha256", "problem_spec_sha256"):
+        value = candidate[key]
+        if len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+            raise ValueError(
+                f"source-state provenance candidate_binding.{key} must be a lowercase SHA-256"
+            )
+    if candidate.get("execution_ready") is not True:
+        raise ValueError("source-state provenance candidate binding is not execution-ready")
+    iteration = candidate.get("iteration")
+    if isinstance(iteration, bool) or not isinstance(iteration, int) or iteration < 0:
+        raise ValueError(
+            "source-state provenance candidate_binding.iteration must be a non-negative integer"
+        )
+    parent = candidate.get("parent_candidate_id")
+    if parent is not None and (not isinstance(parent, str) or not parent):
+        raise ValueError(
+            "source-state provenance candidate_binding.parent_candidate_id must be null or a non-empty string"
+        )
+    if (iteration == 0) != (parent is None):
+        raise ValueError(
+            "source-state provenance candidate lineage requires no parent at iteration 0 "
+            "and a parent after iteration 0"
+        )
+    binding_path = Path(candidate["path"]).resolve()
+    if not binding_path.is_file():
+        raise ValueError(
+            f"source-state provenance candidate binding does not exist: {binding_path}"
+        )
+    if _sha256_file(binding_path) != candidate["sha256"]:
+        raise ValueError(
+            "source-state provenance candidate binding file hash mismatch; the binding "
+            "changed after the source-state transfer was written"
+        )
+    return dict(candidate)
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -334,6 +399,42 @@ def _write_atomically(
         density_target = temporary / density_relative
         _write_cell_vti(density_state.grid, new_arrays, density_target, kind="fixed_grid_density")
         provenance["written_density_vti_sha256"] = _sha256_file(density_target)
+        topology_relative = density_state.topology_state_json.relative_to(source_dir)
+        topology_target = temporary / topology_relative
+        candidate = provenance["candidate_binding"]
+        state = dict(density_state.state)
+        state.update(
+            problem_id=candidate["problem_id"],
+            problem_spec_sha256=candidate["problem_spec_sha256"],
+            candidate_id=candidate["candidate_id"],
+            parent_candidate_id=candidate["parent_candidate_id"],
+            iteration=candidate["iteration"],
+            density_vti_sha256=provenance["written_density_vti_sha256"],
+            density_sha256=provenance["written_density_vti_sha256"],
+        )
+        artifacts = dict(state.get("artifacts") or {})
+        artifacts["density_vti"] = {
+            "path": str(density_relative),
+            "sha256": provenance["written_density_vti_sha256"],
+        }
+        state["artifacts"] = artifacts
+        state["canonical_candidate_binding"] = {
+            **candidate,
+            "rho_variant": (
+                provenance.get("candidate_transfer") or {}
+            ).get("rho_variant"),
+            "source_state_npz_sha256": provenance["source_files"][
+                "openfoam_source_state_npz"
+            ]["sha256"],
+            "source_state_provenance_sha256": provenance["source_files"][
+                "source_state_provenance_json"
+            ]["sha256"],
+        }
+        topology_target.write_text(
+            json.dumps(state, sort_keys=True, separators=(",", ":"), allow_nan=False),
+            encoding="utf-8",
+        )
+        provenance["written_topology_state_sha256"] = _sha256_file(topology_target)
         provenance_json = temporary / "canonical_state_injection.json"
         provenance_json.write_text(
             json.dumps(provenance, sort_keys=True, separators=(",", ":"), allow_nan=False),
@@ -343,7 +444,6 @@ def _write_atomically(
     except Exception:
         shutil.rmtree(temporary, ignore_errors=True)
         raise
-    topology_relative = density_state.topology_state_json.relative_to(source_dir)
     return CanonicalStateInjectionArtifacts(
         directory=output,
         topology_state_json=output / topology_relative,
