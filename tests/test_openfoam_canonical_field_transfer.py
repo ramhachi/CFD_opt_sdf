@@ -159,6 +159,103 @@ def test_transfers_gradient_with_duality_and_records_provenance(tmp_path: Path) 
     assert provenance["differentiated_response"]["openfoam_adjoint_solver_id"] == SOLVER_ID
     assert provenance["differentiated_response"]["adjoint_convergence"]["converged"] is True
     assert provenance["differentiated_response"]["adjoint_convergence"]["iterations"] == 713
+    # Gate 0 (WP4/C1) semantic binding: direction, sign, and units are recorded.
+    semantic = provenance["differentiated_response"]
+    assert semantic["response_kind"] == "force"
+    assert semantic["physical_direction_global"] == pytest.approx(
+        [0.7071067811865476, 0.7071067811865476, 0.0], abs=1e-9
+    )
+    assert semantic["canonical_objective_sign"] == 1  # rotated_force is minimized
+    assert {"objective_id": "multipoint_force", "sense": "minimize"} in semantic["referencing_objectives"]
+    assert "coefficient" in semantic["value_units"]
+
+
+def _mutated_spec(tmp_path: Path, *, mutation: str) -> Path:
+    """Copy the g2 example spec and apply one semantic mutation (via yaml round-trip)."""
+
+    import copy
+
+    import yaml
+
+    data = yaml.safe_load(Path("examples/g2_openfoam_compile/project.yaml").read_text(encoding="utf-8"))
+    responses = {item["id"]: item for item in data["responses"]}
+    if mutation == "kind_moment":
+        responses["rotated_force"]["kind"] = "moment"
+    elif mutation == "no_direction":
+        del responses["rotated_force"]["direction"]
+    elif mutation == "mixed_sense":
+        data["objectives"].append(
+            {
+                "id": "also_rotated",
+                "sense": "maximize",
+                "terms": [{"coefficient": 1.0, "flow_case_id": "straight", "response_id": "rotated_force"}],
+            }
+        )
+    elif mutation == "orphan_response":
+        responses["rotated_force"]["options"] = dict(responses["rotated_force"].get("options") or {})
+        responses["rotated_force"]["options"]["openfoam_adjoint_solver_id"] = "resp_orphan_force"
+        for objective in data["objectives"]:
+            objective["terms"] = [
+                term for term in objective["terms"] if term.get("response_id") != "rotated_force"
+            ]
+        for constraint in data.get("constraints") or []:
+            constraint["terms"] = [
+                term for term in constraint["terms"] if term.get("response_id") != "rotated_force"
+            ]
+    else:
+        raise AssertionError(mutation)
+    path = tmp_path / "mutated_project.yaml"
+    path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def _transfer_with_spec(tmp_path: Path, spec_path: Path, *, response_id: str = "rotated_force", solver_id: str = SOLVER_ID):
+    spec = load_problem_spec(spec_path)
+    grid = UniformCartesianCellGrid(
+        origin=(-0.2, -0.1, -0.04),
+        spacing=(0.02, 0.02, 0.02),
+        cell_shape=(2, 3, 2),
+    )
+    masks = {mask_id: np.ones(grid.cell_count, dtype=np.uint8) for mask_id in CANONICAL_MASK_IDS}
+    path = write_canonical_grid_snapshot(spec, grid=grid, masks=masks, path=tmp_path / "snapshot.json")
+    snapshot = load_and_verify_canonical_grid_snapshot(path, spec)
+    mapping = np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64)
+    mapping_path = tmp_path / "mapping.npy"
+    np.save(mapping_path, mapping, allow_pickle=False)
+    return reconstruct_and_write_canonical_gradient_transfer(
+        case_dir=_write_case(tmp_path, solver_id=solver_id),
+        adjoint_solver_id=solver_id,
+        block_mesh_dict=_write_block_mesh(tmp_path / "system/blockMeshDict"),
+        verified_snapshot=snapshot,
+        source_global_cell_labels_by_xfastest=mapping_path,
+        output_directory=tmp_path / "canonical_result",
+        response_id=response_id,
+        problem_spec=spec,
+    )
+
+
+def test_rejects_non_force_response_kind(tmp_path: Path) -> None:
+    spec_path = _mutated_spec(tmp_path, mutation="kind_moment")
+    with pytest.raises(ValueError, match="kind='force'"):
+        _transfer_with_spec(tmp_path, spec_path)
+
+
+def test_rejects_response_without_direction(tmp_path: Path) -> None:
+    spec_path = _mutated_spec(tmp_path, mutation="no_direction")
+    with pytest.raises(ValueError, match="direction must contain exactly three finite numbers"):
+        _transfer_with_spec(tmp_path, spec_path)
+
+
+def test_rejects_mixed_objective_senses(tmp_path: Path) -> None:
+    spec_path = _mutated_spec(tmp_path, mutation="mixed_sense")
+    with pytest.raises(ValueError, match="mixed senses"):
+        _transfer_with_spec(tmp_path, spec_path)
+
+
+def test_rejects_response_with_no_declared_consumer(tmp_path: Path) -> None:
+    spec_path = _mutated_spec(tmp_path, mutation="orphan_response")
+    with pytest.raises(ValueError, match="no declared objective"):
+        _transfer_with_spec(tmp_path, spec_path, solver_id="resp_orphan_force")
 
 
 def test_rejects_response_bound_to_mismatched_adjoint_solver_id(tmp_path: Path) -> None:

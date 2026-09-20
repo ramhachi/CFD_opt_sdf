@@ -155,7 +155,7 @@ def write_canonical_gradient_transfer(
     _validate_reconstructed_fields(reconstructed)
     _validate_source_mesh(source_mesh, reconstructed)
     _validate_verified_snapshot(verified_snapshot)
-    _validate_response_binding(
+    response_binding = _validate_response_binding(
         problem_spec=problem_spec,
         verified_snapshot=verified_snapshot,
         response_id=response_id,
@@ -194,6 +194,7 @@ def write_canonical_gradient_transfer(
         canonical_gradient=canonical_gradient,
         response_id=response_id,
         adjoint_convergence=adjoint_convergence,
+        response_binding=response_binding,
     )
     return _write_atomically(output_directory, payload, provenance)
 
@@ -216,6 +217,89 @@ def _declared_adjoint_solver_id(response) -> str:
             )
         return declared
     return f"resp_{response.id}"
+
+
+def _global_direction(spec: ProblemSpec, direction) -> tuple[float, float, float]:
+    """Resolve a response direction declared in the problem frame to global axes."""
+
+    basis = spec.coordinate_frame.basis
+    x, y, z = direction
+    resolved = [x * basis.x[axis] + y * basis.y[axis] + z * basis.z[axis] for axis in range(3)]
+    norm = float(np.sqrt(sum(component * component for component in resolved)))
+    if not np.isfinite(norm) or norm <= 0.0:
+        raise ValueError("response direction must resolve to a finite non-zero global vector")
+    return tuple(float(component / norm) for component in resolved)  # type: ignore[return-value]
+
+
+def _response_semantic_binding(problem_spec: ProblemSpec, response_id: str) -> dict[str, Any]:
+    """Fail-closed semantic binding of a response to direction, sign, and units.
+
+    Gate 0 (WP4/C1) completion: response membership and the adjoint-solver id
+    are necessary but not sufficient. A gradient export must also record the
+    physical direction the force is projected on (resolved to global axes),
+    which declared objectives/constraints consume the response and with what
+    sense (the canonical objective sign a downstream optimizer must apply),
+    and the value units of this template's objective functional.
+    """
+
+    responses_by_id = {response.id: response for response in problem_spec.responses}
+    response = responses_by_id[response_id]
+    if response.kind != "force":
+        raise ValueError(
+            f"gradient export supports only kind='force' responses; response "
+            f"{response_id!r} declares kind {response.kind!r}"
+        )
+    if response.direction is None:
+        raise ValueError(
+            f"response {response_id!r} declares no direction; the gradient cannot "
+            "be bound to a physical force direction"
+        )
+    objective_refs = [
+        {"objective_id": objective.id, "sense": objective.sense}
+        for objective in problem_spec.objectives
+        for term in objective.terms
+        if term.response_id == response_id
+    ]
+    constraint_refs = [
+        {"constraint_id": constraint.id, "relation": constraint.relation, "limit": constraint.limit}
+        for constraint in problem_spec.constraints
+        for term in constraint.terms
+        if term.response_id == response_id
+    ]
+    if not objective_refs and not constraint_refs:
+        raise ValueError(
+            f"response {response_id!r} is referenced by no declared objective and no "
+            "constraint; a gradient with no declared consumer semantics is refused"
+        )
+    senses = sorted({ref["sense"] for ref in objective_refs})
+    if len(senses) > 1:
+        raise ValueError(
+            f"response {response_id!r} is referenced by objectives with mixed senses "
+            f"{senses!r}; the canonical objective sign is ambiguous"
+        )
+    canonical_sign = None
+    if senses == ["minimize"]:
+        canonical_sign = 1
+    elif senses == ["maximize"]:
+        canonical_sign = -1
+    return {
+        "problem_spec_response_id": response_id,
+        "response_kind": response.kind,
+        "flow_case_id": response.flow_case_id,
+        "physical_direction_global": list(_global_direction(problem_spec, response.direction)),
+        "referencing_objectives": objective_refs,
+        "referencing_constraints": constraint_refs,
+        "canonical_objective_sign": canonical_sign,
+        "canonical_objective_sign_convention": (
+            "downstream minimize J with J = sign * response: minimize -> +1, "
+            "maximize -> -1. The exported array itself is d(+response)/dstate "
+            "with the OpenFOAM objective's own sign"
+        ),
+        "value_units": (
+            "dimensionless coefficient (porousDirectionalForce: "
+            "2/(Aref UInf^2) * integral alpha beta (U . d) dV); not Newtons"
+        ),
+    }
 
 
 def _validate_response_binding(
@@ -256,6 +340,7 @@ def _validate_response_binding(
             f"adjoint_solver_id {actual_solver_id!r}; refusing to bind a gradient "
             "differentiated by one solver to a response declared for another"
         )
+    return _response_semantic_binding(problem_spec, response_id)
 
 
 _ADJOINT_LOG_FATAL_PATTERNS = (
@@ -410,6 +495,7 @@ def _provenance(
     canonical_gradient: np.ndarray,
     response_id: str,
     adjoint_convergence: dict[str, Any] | None = None,
+    response_binding: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     snapshot = verified_snapshot.snapshot
     source_fields = {
@@ -439,6 +525,7 @@ def _provenance(
             "openfoam_adjoint_solver_id": reconstructed.provenance.get("adjoint_solver_id"),
             "binding": "verified: response_id resolves to this exact adjoint_solver_id in problem_spec",
             "adjoint_convergence": adjoint_convergence,
+            **(response_binding or {}),
         },
         "target": {
             "snapshot_path": str(snapshot.path.resolve()),
