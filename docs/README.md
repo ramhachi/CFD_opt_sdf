@@ -62,6 +62,11 @@ Start here in a new terminal, after reading the repository root
 - [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.
+- [`downforce_architecture_research_2026_09.md`](downforce_architecture_research_2026_09.md)
+  — advisory research note (external literature and proposals only) on why the
+  Stage T downforce ranking failed on the thickness axis and which architecture
+  tracks could address it. Subordinate to `phase_plan.md`; it adds no repository
+  evidence and changes no gate.
 
 ## Compatibility policy
 
