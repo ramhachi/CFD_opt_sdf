@@ -99,7 +99,7 @@ def _top_ovars_nonuniform(values: list[float]) -> str:
     )
 
 
-def _build_case(tmp_path: Path) -> Path:
+def _build_case(tmp_path: Path, *, include_alpha_tilda: bool = True) -> Path:
     case = tmp_path / "case"
     # Local processor order deliberately differs from global labels.
     data = {
@@ -110,7 +110,8 @@ def _build_case(tmp_path: Path) -> Path:
         root = case / f"processor{processor}"
         _write_gz(root / "constant/polyMesh/cellProcAddressing.gz", _labels(item["labels"]))
         _write_gz(root / "1/topOSensresp_force.gz", _field("topOSensresp_force", item["sens"], "[1 1 -2 0 0 0 0]"))
-        _write_gz(root / "1/alphaTilda.gz", _field("alphaTilda", item["alpha_tilda"]))
+        if include_alpha_tilda:
+            _write_gz(root / "1/alphaTilda.gz", _field("alphaTilda", item["alpha_tilda"]))
         _write_gz(root / "1/beta.gz", _field("beta", item["beta"]))
         _write_gz(root / "0/alpha.gz", _uniform_alpha(0.15 + processor * 0.05))
     return case
@@ -292,3 +293,22 @@ def test_runtime_g2_straight_case_reconstructs_final_fields_with_audit_provenanc
     audit = provenance["raw_topology_sensitivity_audit_candidates"]
     assert len(audit) == 4
     assert all(item["status"] == "audit_only_not_output" for item in audit)
+
+
+def test_identity_profile_substitutes_beta_for_missing_alpha_tilda(tmp_path: Path) -> None:
+    case = _build_case(tmp_path, include_alpha_tilda=False)
+    with pytest.raises(ValueError):
+        reconstruct_final_decomposed_openfoam_fields(case, adjoint_solver_id="resp_force")
+
+    reconstructed = reconstruct_final_decomposed_openfoam_fields(
+        case,
+        adjoint_solver_id="resp_force",
+        allow_identity_profile=True,
+    )
+    assert reconstructed.identity_profile is True
+    assert np.array_equal(reconstructed.alpha_tilda, reconstructed.beta)
+    assert reconstructed.provenance["identity_profile"] is True
+    assert (
+        reconstructed.provenance["fields"]["alpha_tilda"]["source"]
+        == "identity_profile_beta_substitute"
+    )

@@ -56,6 +56,7 @@ def _write_case(
     primal_converged: bool = True,
     audit_only: bool = False,
     adjoint_residual_qualified: bool = True,
+    include_alpha_tilda: bool = True,
 ) -> Path:
     case = tmp_path / "case"
     root = case / "processor0"
@@ -63,7 +64,8 @@ def _write_case(
     (root / "constant/polyMesh/cellProcAddressing").write_text(_labels(list(range(6))), encoding="utf-8")
     (root / "1").mkdir()
     (root / f"1/topOSens{solver_id}").write_text(_field(f"topOSens{solver_id}", [1, 2, 3, 4, 5, 6]), encoding="utf-8")
-    (root / "1/alphaTilda").write_text(_field("alphaTilda", [0.1] * 6), encoding="utf-8")
+    if include_alpha_tilda:
+        (root / "1/alphaTilda").write_text(_field("alphaTilda", [0.1] * 6), encoding="utf-8")
     (root / "1/beta").write_text(_field("beta", [0.9] * 6), encoding="utf-8")
     (root / "0").mkdir()
     (root / "0/alpha").write_text(_uniform_alpha(0.5), encoding="utf-8")
@@ -647,3 +649,42 @@ def _identity_mapping(tmp_path: Path, count: int) -> Path:
     path = tmp_path / f"identity_mapping_{count}.npy"
     np.save(path, np.arange(count, dtype=np.int64), allow_pickle=False)
     return path
+
+
+def test_identity_profile_export_requires_the_explicit_flag(tmp_path: Path) -> None:
+    spec = _spec()
+    snapshot = _verified_snapshot(tmp_path)
+    block_mesh = _write_block_mesh(tmp_path / "system/blockMeshDict")
+    mapping = np.asarray([1, 0, 3, 2, 5, 4], dtype=np.int64)
+    mapping_path = tmp_path / "source_global_cell_labels_by_xfastest.npy"
+    np.save(mapping_path, mapping, allow_pickle=False)
+    case = _write_case(tmp_path, include_alpha_tilda=False)
+
+    with pytest.raises(ValueError, match="alphaTilda"):
+        reconstruct_and_write_canonical_gradient_transfer(
+            case_dir=case,
+            adjoint_solver_id=SOLVER_ID,
+            block_mesh_dict=block_mesh,
+            verified_snapshot=snapshot,
+            source_global_cell_labels_by_xfastest=mapping_path,
+            output_directory=tmp_path / "rejected",
+            response_id="rotated_force",
+            problem_spec=spec,
+        )
+
+    artifacts = reconstruct_and_write_canonical_gradient_transfer(
+        case_dir=case,
+        adjoint_solver_id=SOLVER_ID,
+        block_mesh_dict=block_mesh,
+        verified_snapshot=snapshot,
+        source_global_cell_labels_by_xfastest=mapping_path,
+        output_directory=tmp_path / "identity_result",
+        response_id="rotated_force",
+        problem_spec=spec,
+        allow_identity_profile=True,
+    )
+    provenance = json.loads(artifacts.provenance_json.read_text(encoding="utf-8"))
+    assert provenance["identity_profile"] is True
+    assert (
+        provenance["source"]["field_reconstruction"]["identity_profile"] is True
+    )

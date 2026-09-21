@@ -82,6 +82,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
     problem_spec: ProblemSpec,
     final_time: str | None = None,
     adjoint_log_file: str = "log.adjointOptimisationFoam",
+    allow_identity_profile: bool = False,
 ) -> CanonicalGradientTransferArtifacts:
     """Reconstruct and atomically persist a canonical ``topOSens`` gradient.
 
@@ -118,6 +119,7 @@ def reconstruct_and_write_canonical_gradient_transfer(
         case_dir,
         adjoint_solver_id=adjoint_solver_id,
         final_time=final_time,
+        allow_identity_profile=allow_identity_profile,
     )
     case_qualification = _require_gradient_export_qualified(
         Path(case_dir),
@@ -387,6 +389,7 @@ def _require_gradient_export_qualified(
         )
 
     selected_final_time = reconstructed.provenance.get("final_time")
+    identity_profile = bool(reconstructed.identity_profile)
     fields = reconstructed.provenance.get("fields")
     sensitivity = fields.get("top_o_sensitivity") if isinstance(fields, dict) else None
     sensitivity_time = sensitivity.get("time") if isinstance(sensitivity, dict) else None
@@ -748,6 +751,7 @@ def _provenance(
     return {
         "schema_version": _ARTIFACT_SCHEMA_VERSION,
         "kind": _ARTIFACT_KIND,
+        "identity_profile": bool(reconstructed.identity_profile),
         "source": {
             "block_mesh": source_mesh.to_dict(),
             "global_label_count": int(reconstructed.global_cell_labels.size),

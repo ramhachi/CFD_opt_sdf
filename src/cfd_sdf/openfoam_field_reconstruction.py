@@ -56,6 +56,7 @@ class ReconstructedOpenFoamFields:
     beta: np.ndarray
     raw_alpha: np.ndarray | None
     provenance: Mapping[str, object]
+    identity_profile: bool = False
 
 
 def reconstruct_final_decomposed_openfoam_fields(
@@ -63,6 +64,7 @@ def reconstruct_final_decomposed_openfoam_fields(
     *,
     adjoint_solver_id: str,
     final_time: str | None = None,
+    allow_identity_profile: bool = False,
 ) -> ReconstructedOpenFoamFields:
     """Read final G2 fields from all processors, or reject incomplete evidence.
 
@@ -70,6 +72,13 @@ def reconstruct_final_decomposed_openfoam_fields(
     omitted the greatest numeric time directory shared by every processor is
     selected.  ``alphaTilda``, ``beta``, and ``topOSens<adjoint_solver_id>``
     must all be nonuniform ``volScalarField`` files at that exact time.
+
+    ``allow_identity_profile`` is the explicit identity-profile exception: when
+    the case declares no filter/projection (``regularise false``), OpenFOAM
+    does not write ``alphaTilda`` and ``beta`` equals ``alpha``.  With the flag
+    set, ``alpha_tilda`` is the reconstructed ``beta`` and the provenance
+    records the substitution; without it, the missing field remains a hard
+    failure.
     """
 
     root = Path(case_dir).resolve()
@@ -93,12 +102,32 @@ def reconstruct_final_decomposed_openfoam_fields(
                 f"Final {final_sensitivity_name!r} is required; raw topologySens audit candidates cannot substitute it"
             ) from exc
         raise
-    alpha_tilda, alpha_tilda_labels, alpha_tilda_provenance = _reconstruct_nonuniform_field(
-        root, processors, labels_by_processor, selected_time, "alphaTilda"
-    )
-    beta, beta_labels, beta_provenance = _reconstruct_nonuniform_field(
-        root, processors, labels_by_processor, selected_time, "beta"
-    )
+    try:
+        alpha_tilda, alpha_tilda_labels, alpha_tilda_provenance = _reconstruct_nonuniform_field(
+            root, processors, labels_by_processor, selected_time, "alphaTilda"
+        )
+        identity_profile = False
+    except ValueError:
+        if not allow_identity_profile:
+            raise
+        beta, beta_labels, beta_provenance = _reconstruct_nonuniform_field(
+            root, processors, labels_by_processor, selected_time, "beta"
+        )
+        alpha_tilda = np.array(beta, copy=True)
+        alpha_tilda_labels = beta_labels
+        alpha_tilda_provenance = {
+            "field": "alphaTilda",
+            "source": "identity_profile_beta_substitute",
+            "reason": "the case declares no filter/projection (regularise false); "
+            "beta equals alpha and alphaTilda is not written",
+            "source_files": list(beta_provenance.get("source_files", [])),
+            "time": beta_provenance.get("time"),
+        }
+        identity_profile = True
+    if not identity_profile:
+        beta, beta_labels, beta_provenance = _reconstruct_nonuniform_field(
+            root, processors, labels_by_processor, selected_time, "beta"
+        )
     if not (np.array_equal(labels, alpha_tilda_labels) and np.array_equal(labels, beta_labels)):
         raise ValueError("Reconstructed final fields do not share the same global cell-label ordering")
     raw_alpha, raw_alpha_provenance = _reconstruct_raw_alpha(
@@ -111,6 +140,7 @@ def reconstruct_final_decomposed_openfoam_fields(
         "final_time": selected_time,
         "processor_count": len(processors),
         "cell_count": int(labels.size),
+        "identity_profile": identity_profile,
         "fields": {
             "top_o_sensitivity": sensitivity_provenance,
             "alpha_tilda": alpha_tilda_provenance,
@@ -131,6 +161,7 @@ def reconstruct_final_decomposed_openfoam_fields(
         beta=beta,
         raw_alpha=raw_alpha,
         provenance=provenance,
+        identity_profile=identity_profile,
     )
 
 

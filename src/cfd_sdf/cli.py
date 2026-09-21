@@ -670,6 +670,12 @@ def transfer_openfoam_gradient_to_canonical(
         "not spec ids, so the correspondence must be declared, not inferred.",
     ),
     final_time: str | None = typer.Option(None, help="Optional explicit OpenFOAM time directory."),
+    allow_identity_profile: bool = typer.Option(
+        False,
+        "--allow-identity-profile/--require-alpha-tilda",
+        help="Explicit identity-profile exception: beta substitutes the missing alphaTilda "
+        "when the case declares no filter/projection (regularise false).",
+    ),
 ) -> None:
     """Write topOSens on the canonical grid using the qualified dual P.T @ g_source."""
 
@@ -691,6 +697,7 @@ def transfer_openfoam_gradient_to_canonical(
             final_time=final_time,
             response_id=response_id,
             problem_spec=spec,
+            allow_identity_profile=allow_identity_profile,
         )
     except (OSError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
