@@ -1,0 +1,67 @@
+{
+  "kind": "df2_grid_campaign_registration",
+  "schema_version": 1,
+  "created": "2026-09-21",
+  "issue": "DF2 (P3/P6/P16 scope)",
+  "status": "registered_not_run",
+  "preconditions": {
+    "transfer_diagnostic_exact": "docs/evidence/p0_transfer_diagnostic_2026_09.json",
+    "df0_shape_policy_exclusions": "docs/evidence/wp6_2_scope_repair_manifest_2026_09.json",
+    "minimum_solid_width_m": 0.15
+  },
+  "campaigns": [
+    {
+      "campaign_id": "stage_t_grid_family_fixed_shapes_2026_09",
+      "question": "what is the Stage T response-specific grid uncertainty for registered fixed binary shapes inside the 0.15 m policy?",
+      "shapes": "registered analytic shapes excluding plate_a20_t05, plate_a20_t10, wing_endplate_a20, wing_gurney_a20, wing_two_element (DF0 policy exclusions)",
+      "grid_family": {
+        "kind": "integer halving of the canonical voxel",
+        "voxels_m": [0.05, 0.025, 0.0125],
+        "note": "multi-stage coarse-to-fine projection is allowed for cost; the grid family is registered before any run"
+      },
+      "responses": ["downforce", "drag"],
+      "anchors": {
+        "cells_per_feature_reference": ">= 7 cells per feature estimated from Ghasemi & Elham 2022 interface force error < 4%",
+        "not_a_target_physics_threshold": true
+      },
+      "gates": ["primal residual", "response stationarity", "mesh/geometry binding", "no extraction in this campaign"],
+      "required_pairs": "all registered shapes at every registered resolution",
+      "stop_conditions": [
+        "non-monotone response under refinement stops the campaign and returns to a domain/BC/discretisation factor study",
+        "no GCI is reported outside an observed asymptotic range"
+      ],
+      "budget": {"max_shapes": 13, "max_grids": 3, "stage_v_finest_runs_included": false}
+    },
+    {
+      "campaign_id": "stage_v_three_grid_anchor_2026_09",
+      "question": "does the same anchor geometry reach the registered downforce grid bound on the fixed plain family?",
+      "grid_family": {
+        "kind": "plain fixed-domain family",
+        "levels": ["V1", "V2", "V3"],
+        "reference": "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+        "bounds": {"drag_coefficient_relative": 0.02, "downforce_absolute": 0.005}
+      },
+      "responses": ["downforce", "drag"],
+      "gates": [
+        "stage_v_qualification_profile_v1 mesh gate",
+        "explicit residualControl",
+        "final-window force stationarity"
+      ],
+      "required_pairs": "V1->V2 and V2->V3 for every registered anchor",
+      "stop_conditions": [
+        "a candidate missing any gate leaves the required pair explicit; no silent exclusion",
+        "finest-level runs are limited to decision points of this campaign"
+      ],
+      "budget": {
+        "max_anchors": 3,
+        "max_levels": 3,
+        "finest_level_cells_estimate": 1350000,
+        "note": "V3 executable on the 32 GiB Mac per docs/evidence/stage_v_v3_requalification_2026_09.json"
+      }
+    }
+  ],
+  "claims_not_made": [
+    "no grid-independent downforce claim until the registered bounds are met",
+    "no target-physics or full-vehicle extrapolation from these laminar campaigns"
+  ]
+}

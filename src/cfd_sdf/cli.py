@@ -28,6 +28,11 @@ from .density_optimizer import DensityOptimizerControls, run_density_optimizatio
 from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
 from .evidence_audit import build_evidence_audit
 from .export_vtk import export_vti, export_zero_surface
+from .fd_preregistration import (
+    FdDirection,
+    build_fd_campaign_manifest,
+    write_fd_campaign_manifest,
+)
 from .fixed_grid_backend import probe_openfoam_fixed_grid_backend
 from .fixed_grid_canonical_state_injection import (
     inject_canonical_state_into_fixed_grid_contract,
@@ -70,6 +75,7 @@ from .openfoam_canonical_state_transfer import (
     transfer_and_write_openfoam_source_state,
 )
 from .openfoam_cell_order_derivation import derive_and_write_openfoam_cell_order_mapping
+from .openfoam_grid_transfer import ExactCartesianOverlapTransfer
 from .optimization import run_parametric_optimization
 from .openfoam_evidence import extract_openfoam_flow_case_evidence
 from .openfoam_mass_imbalance import produce_openfoam_normalized_mass_imbalance
@@ -105,6 +111,7 @@ from .stage_t_candidate_binding import (
     write_stage_t_candidate_binding,
 )
 from .topology import run_topology_exploration
+from .transfer_diagnostic import diagnose_transfer, load_grid_json
 from .validation import validate_outputs
 from .research_cli import app as research_app
 
@@ -2157,6 +2164,147 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+@app.command("preregister-fd-campaign")
+def preregister_fd_campaign(
+    campaign_id: str = typer.Argument(..., help="Stable campaign id."),
+    output: Path = typer.Option(..., help="Output manifest JSON path."),
+    candidate_binding: Path = typer.Option(
+        ..., help="Candidate binding JSON (candidate identity/hash)."
+    ),
+    problem_spec_sha256: str = typer.Option(..., help="ProblemSpec SHA-256 under test."),
+    grid_family: str = typer.Option(..., help="Declared grid family."),
+    refinement_ratio: float = typer.Option(..., help="Declared refinement ratio."),
+    response_scale: float = typer.Option(
+        ..., help="Pre-registered response scale for near-zero absolute-error rows."
+    ),
+    response: list[str] = typer.Option(..., help="Response ids; repeat the option."),
+    epsilon: list[float] = typer.Option(..., help="FD epsilons; at least four."),
+    random_seed: list[int] = typer.Option(
+        ..., help="Random direction seeds; at least two."
+    ),
+    sign_convention: str = typer.Option(
+        ..., help="Declared gradient sign convention (e.g. dJ/drho = -g_downforce)."
+    ),
+    hypothesis: str = typer.Option(..., help="Pre-registered hypothesis."),
+    decision: str = typer.Option(..., help="Pre-registered decision rule."),
+    code_commit: str | None = typer.Option(None, help="Code commit under test."),
+) -> None:
+    """Write the immutable FD-campaign pre-registration manifest (DF2)."""
+    directions = [
+        FdDirection(
+            name="gradient_aligned",
+            role="gradient_aligned",
+            seed=None,
+            sign_convention=sign_convention,
+            description="direction = -normalized declared objective gradient",
+        )
+    ]
+    directions += [
+        FdDirection(
+            name=f"random_seed_{seed}",
+            role="random",
+            seed=seed,
+            sign_convention=sign_convention,
+            description=f"seeded random direction on the feasible support (seed {seed})",
+        )
+        for seed in random_seed
+    ]
+    manifest = build_fd_campaign_manifest(
+        campaign_id=campaign_id,
+        hypothesis=hypothesis,
+        decision=decision,
+        fixture={
+            "candidate_binding": str(candidate_binding.resolve()),
+            "problem_spec_sha256": problem_spec_sha256,
+            "grid_family": grid_family,
+            "refinement_ratio": float(refinement_ratio),
+            "response_scale": float(response_scale),
+        },
+        responses=response,
+        epsilons=epsilon,
+        directions=directions,
+        uncertainty_rule="central-difference relative error against the analytic "
+        "directional derivative; near-zero references judged by a pre-registered "
+        "absolute error from the response scale",
+        gates={
+            "convergence": "primal and adjoint residual gates from the registered "
+            "problem-spec convergence criteria; no unconverged run enters the FD table",
+            "stationarity": "response stationarity window per registered profile",
+            "mesh": "mesh qualification profile of the run case",
+            "geometry": "candidate binding and geometry hash must match the manifest",
+            "required_pairs": "gradient-aligned direction plus every registered "
+            "random seed, at every registered epsilon",
+            "resolvability": "relative error <= 5% and sign agreement; otherwise "
+            "the row is resolved as fail, never dropped",
+        },
+        stop_conditions=(
+            "stop and re-register if any required run misses a convergence gate",
+            "do not change epsilons, seeds, or directions after the first result",
+        ),
+        fallback_conditions=(
+            "if the mapped chain is exact but ratios stay biased, register a "
+            "solver-side experiment (perturbed-state adjoint or residual/step study)",
+        ),
+        code_commit=code_commit,
+    )
+    path = write_fd_campaign_manifest(manifest, output)
+    console.print(
+        json.dumps(
+            {
+                "output": str(path),
+                "campaign_id": manifest.campaign_id,
+                "manifest_hash": manifest.manifest_hash(),
+                "profile_id": manifest.profile_id,
+                "n_epsilons": len(manifest.epsilons),
+                "n_directions": len(manifest.directions),
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("diagnose-fixed-grid-transfer")
+def diagnose_fixed_grid_transfer(
+    source_grid_json: Path = typer.Argument(
+        ..., help="Source (solver) grid JSON: topology_state.json or grid snapshot."
+    ),
+    target_grid_json: Path = typer.Argument(
+        ..., help="Target (canonical) grid JSON."
+    ),
+    output: Path = typer.Option(..., help="Output diagnostic JSON path."),
+    expect_source_sha256: str | None = typer.Option(
+        None, help="Expected source grid SHA-256 (fail-closed when given)."
+    ),
+    expect_target_sha256: str | None = typer.Option(
+        None, help="Expected target grid SHA-256 (fail-closed when given)."
+    ),
+) -> None:
+    """Measure consistency, conservation and adjoint identity of the fixed-grid transfer."""
+    source = load_grid_json(source_grid_json)
+    target = load_grid_json(target_grid_json)
+    transfer = ExactCartesianOverlapTransfer.build(
+        source_grid=source,
+        target_grid=target,
+        expected_source_grid_sha256=expect_source_sha256,
+        expected_target_grid_sha256=expect_target_sha256,
+    )
+    diagnostic = diagnose_transfer(transfer)
+    artifact = {
+        "kind": "fixed_grid_transfer_diagnostic",
+        "issue": "P6",
+        "source_grid_json": str(source_grid_json.resolve()),
+        "target_grid_json": str(target_grid_json.resolve()),
+        "source_grid_sha256": source.sha256,
+        "target_grid_sha256": target.sha256,
+        "transfer": diagnostic.to_dict(),
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
+    console.print(json.dumps(artifact["transfer"], indent=2))
+    if diagnostic.verdict != "exact":
+        raise typer.Exit(code=1)
 
 
 @app.command("measure-shape-feature-sizes")
