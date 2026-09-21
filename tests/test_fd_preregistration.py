@@ -9,10 +9,15 @@ import pytest
 
 from cfd_sdf.fd_preregistration import (
     FD_QUALIFICATION_PROFILE_V1,
+    FD_V2_REQUIRED_BASE_GATES,
+    FD_V2_REQUIRED_PERTURBATION_GATES,
     FdDirection,
+    FdDirectionV2,
     FdPreregistrationError,
     build_fd_campaign_manifest,
+    build_fd_campaign_manifest_v2,
     evaluate_fd_campaign_rows,
+    evaluate_fd_campaign_v2,
     read_fd_campaign_manifest,
     write_fd_campaign_manifest,
 )
@@ -244,3 +249,127 @@ def test_fd_row_evaluation_near_zero_uses_absolute_rule():
     verdict = evaluate_fd_campaign_rows(manifest, rows)
     assert any(check["status"] == "absolute_rule" for check in verdict["checks"])
     assert verdict["passed"] is False
+
+
+def _v2_kwargs(**overrides) -> dict:
+    kwargs = dict(
+        campaign_id="fd_v2_test",
+        hypothesis="primal-only perturbations bound the ratio",
+        decision="Path A if every registered direction passes",
+        fixture={
+            "candidate_binding": "work/p0_closed_loop/stage_t_candidate_binding.json",
+            "problem_spec_sha256": "a" * 64,
+            "grid_family": "canonical_to_source",
+            "refinement_ratio": 2.0,
+            "response_scale": 0.78,
+        },
+        responses=["downforce"],
+        epsilons=[3e-5, 1e-4, 3e-4, 1e-3],
+        directions=[
+            FdDirectionV2("gradient_aligned", "gradient_aligned", None, 0.008552, "dJ/drho = -g"),
+            FdDirectionV2("random_seed_11", "random", 11, 0.00028, "dJ/drho = -g"),
+            FdDirectionV2("random_seed_2026", "random", 2026, 0.000298, "dJ/drho = -g"),
+        ],
+        base_gates={gate: True for gate in FD_V2_REQUIRED_BASE_GATES},
+        perturbation_gate_template={gate: True for gate in FD_V2_REQUIRED_PERTURBATION_GATES},
+        noise_floor=1e-4,
+        uncertainty_rule="registered",
+        stop_conditions=("re-register on gate failure",),
+    )
+    kwargs.update(overrides)
+    return kwargs
+
+
+_V2_ANALYTIC = {
+    "gradient_aligned": 0.008552,
+    "random_seed_11": 0.00028,
+    "random_seed_2026": 0.000298,
+}
+
+
+def _v2_rows(ratios: dict[str, float], *, converged: bool = True) -> list[dict]:
+    rows = []
+    for direction in ("gradient_aligned", "random_seed_11", "random_seed_2026"):
+        for epsilon in (3e-5, 1e-4, 3e-4, 1e-3):
+            rows.append(
+                {
+                    "direction": direction,
+                    "epsilon": epsilon,
+                    "fd": ratios[direction] * _V2_ANALYTIC[direction],
+                    "converged": converged,
+                    "gates": {gate: True for gate in FD_V2_REQUIRED_PERTURBATION_GATES},
+                }
+            )
+    return rows
+
+
+def test_v2_manifest_separates_base_and_perturbation_gates():
+    manifest = build_fd_campaign_manifest_v2(**_v2_kwargs())
+    assert manifest.base_gates["adjoint_residual"] is True
+    assert "adjoint_residual" not in manifest.perturbation_gate_template
+    with pytest.raises(FdPreregistrationError, match="adjoint gate"):
+        build_fd_campaign_manifest_v2(
+            **_v2_kwargs(
+                perturbation_gate_template={
+                    **{gate: True for gate in FD_V2_REQUIRED_PERTURBATION_GATES},
+                    "adjoint_residual": True,
+                }
+            )
+        )
+    with pytest.raises(FdPreregistrationError, match="non-zero analytic reference"):
+        build_fd_campaign_manifest_v2(
+            **_v2_kwargs(
+                directions=[
+                    FdDirectionV2("gradient_aligned", "gradient_aligned", None, 0.0, "dJ/drho = -g"),
+                    FdDirectionV2("random_seed_11", "random", 11, 0.00028, "dJ/drho = -g"),
+                    FdDirectionV2("random_seed_2026", "random", 2026, 0.000298, "dJ/drho = -g"),
+                ]
+            )
+        )
+
+
+def test_v2_evaluation_enforces_noise_floor_and_plateau():
+    manifest = build_fd_campaign_manifest_v2(**_v2_kwargs())
+    base_analytic = dict(_V2_ANALYTIC)
+    # all ratios inside 5% -> pass
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=base_analytic,
+        rows=_v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.02, "random_seed_2026": 0.99}),
+    )
+    assert verdict["passed"] is True
+    assert verdict["below_noise_floor_directions"] == []
+
+    # the aligned ratio is 1.2178 (measured) -> relative failure
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=base_analytic,
+        rows=_v2_rows({"gradient_aligned": 1.2178, "random_seed_11": 1.0, "random_seed_2026": 1.0}),
+    )
+    assert verdict["passed"] is False
+    assert any(item["reason"] == "relative_error" for item in verdict["failures"])
+
+    # a direction whose analytic is inside the noise floor is recorded, not passed
+    near_zero = dict(base_analytic, random_seed_11=1e-6)
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=near_zero,
+        rows=_v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0}),
+    )
+    assert "random_seed_11" in verdict["below_noise_floor_directions"]
+
+    # a non-plateau direction fails even if each row is close
+    rows = _v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0})
+    for row in rows:
+        if row["direction"] == "random_seed_2026":
+            row["fd"] = (0.9 if row["epsilon"] < 1e-3 else 1.0) * _V2_ANALYTIC["random_seed_2026"]
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=base_analytic,
+        rows=rows,
+    )
+    assert any(item["reason"] == "epsilon_not_plateau" for item in verdict["failures"])

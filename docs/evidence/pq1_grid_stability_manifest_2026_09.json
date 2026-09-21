@@ -1,0 +1,50 @@
+{
+  "kind": "pq1_grid_stability_manifest",
+  "created": "2026-09-21",
+  "registered_before_computation": true,
+  "status": "registered_not_run",
+  "question": "does the FD/adjoint ratio move toward 1 when one grid is refined at a time at the same physical state?",
+  "prerequisites": {
+    "pq1_verdict": "docs/evidence/pq1_fd_verdict_2026_09.json",
+    "pq1_manifest_v2": "docs/evidence/pq1_fd_manifest_v2_2026_09.json",
+    "objective_binding_audit": "docs/evidence/pq1_objective_binding_audit_2026_09.json",
+    "frozen_campaign": "docs/evidence/fd_campaign_p6_solver_side_result_2026_09.json"
+  },
+  "fixed_conditions": {
+    "candidate": "p0_closed_loop_candidate_0000 (canonical rho, identity profile)",
+    "operating_point": "matched_re_laminar fixture (U=(1,0,0), nu=1e-2, laminar)",
+    "scheme": "bounded Gauss upwind (frozen-campaign configuration)",
+    "design": "maxInitChange 0 (frozen)",
+    "regularisation": "false (one-owner Python transform)",
+    "epsilons": [3e-5, 1e-4, 3e-4, 1e-3],
+    "directions": ["gradient_aligned", "random_seed_11", "random_seed_2026"]
+  },
+  "factors": [
+    {
+      "id": "source_grid_refinement",
+      "one_factor": "refine the adjoint source grid (blockMesh) while keeping the canonical state and the physical domain",
+      "why": "tests the solver discretization of the adjoint/source chain; the analytic comparison cancels the transfer, so any ratio movement is solver-side",
+      "levels": ["current 32x16x16 (0.09375/0.1/0.075)", "halved spacing on each axis"],
+      "required_runs": "one base run per level; FD rows reused when the injected physical state is identical",
+      "note": "a new blockMeshDict must keep the declared fixed domain and clearance profile"
+    },
+    {
+      "id": "canonical_grid_refinement",
+      "one_factor": "refine the canonical design grid (voxel 0.05 -> 0.025) with a regenerated fixture",
+      "why": "tests whether the design parametrization (support cells and direction shape) moves the ratio",
+      "levels": ["voxel 0.05", "voxel 0.025"],
+      "required_runs": "full fixture regeneration (spec variant, canonical snapshot, injection) plus base runs; register only after the source-grid factor is judged"
+    }
+  ],
+  "metric": {
+    "primary": "FD/analytic ratio per direction",
+    "secondary": "epsilon plateau spread, sign, base gates",
+    "decision": "if a refined level moves every direction toward 1 without worsening the plateau, register that level as the qualified configuration; if ratios diverge or signs flip, PQ1 becomes No-Go and the adjoint formulation is revised"
+  },
+  "stop_conditions": [
+    "one factor at a time; no simultaneous changes",
+    "a failed base gate is reported as failed, never dropped",
+    "no scalar correction is applied while the grid factor is unresolved"
+  ],
+  "budget": {"max_base_runs": 2, "note": "primal+adjoint per level; FD rows reused only when the injected state is bit-identical"}
+}

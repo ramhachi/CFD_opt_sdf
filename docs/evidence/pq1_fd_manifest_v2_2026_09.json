@@ -1,0 +1,83 @@
+{
+  "manifest": {
+    "campaign_id": "p6_solver_side_fd_v2_2026_09",
+    "hypothesis": "with frozen design, identity profile and qualified primal, the residual FD/adjoint mismatch is a solver-side continuous-adjoint consistency effect",
+    "decision": "Path A if every registered direction is inside 5%; Path B bounded exception if signs and error intervals are stable but 5% fails; No-Go on sign flips or epsilon instability",
+    "fixture": {
+      "candidate_binding": "work/p0_closed_loop/stage_t_candidate_binding.json",
+      "problem_spec_sha256": "2b0291c0557a6b32d0f8628a0e6ccc4fc40e6466affbc9831c9000ffc9fe17a6",
+      "grid_family": "canonical_60x32x24_to_source_32x16x16",
+      "refinement_ratio": 2.0,
+      "response_scale": 0.78,
+      "source_campaign_result": "work/df2_fd_refresh/fd_campaign/fd_campaign_result.json",
+      "source_campaign_result_sha256": "86954eb4cb90b4d854061bee14e57dd77920e4e7a40afe01e20c74f0d3b22e88"
+    },
+    "responses": [
+      "downforce"
+    ],
+    "epsilons": [
+      3e-05,
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "directions": [
+      {
+        "name": "gradient_aligned",
+        "role": "gradient_aligned",
+        "seed": null,
+        "analytic_reference": -0.00855210839130539,
+        "sign_convention": "dJ/drho = -d(downforce)/drho",
+        "description": ""
+      },
+      {
+        "name": "random_seed_11",
+        "role": "random",
+        "seed": 11,
+        "analytic_reference": 0.0002797007809367206,
+        "sign_convention": "dJ/drho = -d(downforce)/drho",
+        "description": ""
+      },
+      {
+        "name": "random_seed_2026",
+        "role": "random",
+        "seed": 2026,
+        "analytic_reference": 0.0002984713528883524,
+        "sign_convention": "dJ/drho = -d(downforce)/drho",
+        "description": ""
+      }
+    ],
+    "base_gates": {
+      "mesh": false,
+      "primal_residual": true,
+      "primal_stationarity": true,
+      "adjoint_residual": true,
+      "final_time_binding": true,
+      "response_hash": true
+    },
+    "perturbation_gate_template": {
+      "mesh": true,
+      "spec_binding": true,
+      "solver_profile": true,
+      "primal_residual": true,
+      "primal_stationarity": true,
+      "response_hash": true
+    },
+    "noise_floor": 0.0001,
+    "uncertainty_rule": "central-difference relative error against the base analytic derivative; directions whose analytic is below noise_floor*response_scale are recorded but cannot support a ratio pass",
+    "stop_conditions": [
+      "no threshold, direction, or epsilon may change after seeing results",
+      "grid-stability is a separate registered campaign"
+    ],
+    "fallback_conditions": [
+      "if signs and intervals are stable but 5% fails, restrict PQ3 to a bounded research loop with per-direction FD bracketing"
+    ],
+    "environment": {
+      "registered_at_utc": "2026-09-21T14:01:13.953902+00:00"
+    },
+    "code_commit": "345118d",
+    "created": "2026-09-21",
+    "schema_version": 2
+  },
+  "manifest_hash": "9a34445c0164b0a5fd6eca834b2699cf7ee33ce973d0b1540f4211ac2df77177"
+}

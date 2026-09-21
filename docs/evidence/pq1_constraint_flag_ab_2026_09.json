@@ -1,0 +1,38 @@
+{
+  "artifact_id": "pq1_constraint_flag_ab_2026_09",
+  "evidence_class": "numerical_verification_ab",
+  "issue": "PQ1 objective binding",
+  "factor": "downforce adjoint solver declaration: isConstraint true + target 0 (baseline) vs isConstraint false without target (treatment)",
+  "method": "same injected base state and same template except the downforce adjoint declaration; primal identical (downforce 0.300720062967); FD rows reused unchanged from the frozen campaign; analytic recomputed from each arm canonical gradient",
+  "rows": {
+    "gradient_aligned": {
+      "analytic_objective_mode": -0.00855210839130539,
+      "analytic_constraint_mode": -0.00855210839130539,
+      "ratio_objective_mode_mean": 1.2178558567268472,
+      "ratio_constraint_mode_mean": 1.2178558567268472,
+      "ratio_objective_mode_spread": 0.00011498140221100073
+    },
+    "random_seed_11": {
+      "analytic_objective_mode": 0.0002797007809367206,
+      "analytic_constraint_mode": 0.0002797007809367206,
+      "ratio_objective_mode_mean": 1.3764396670708738,
+      "ratio_constraint_mode_mean": 1.3764396670708738,
+      "ratio_objective_mode_spread": 0.0007865513219711406
+    },
+    "random_seed_2026": {
+      "analytic_objective_mode": 0.0002984713528883524,
+      "analytic_constraint_mode": 0.0002984713528883524,
+      "ratio_objective_mode_mean": 1.5677512396198088,
+      "ratio_constraint_mode_mean": 1.5677512396198088,
+      "ratio_objective_mode_spread": 0.0025630582140321323
+    }
+  },
+  "conclusions": {
+    "constraint_flag_changes_analytic": false,
+    "note": "the FD rows are primal-only and unchanged; only the adjoint-derived analytic changed"
+  },
+  "claims_not_supported": [
+    "no claim about other states, grids, or responses",
+    "no target-physics claim"
+  ]
+}
