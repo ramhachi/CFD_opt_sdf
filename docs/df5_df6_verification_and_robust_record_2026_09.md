@@ -49,3 +49,15 @@ Current standing evidence (recorded, not re-judged):
 
 DF6 promotion still requires DF5 to pass, and the robust backend must be
 compared against the current one under the same KKT/feasibility definition.
+
+## Update — Stage V scheme factor (later 2026-09-21)
+
+`docs/stage_v_downforce_drift_resolution_2026_09.md` records the completed
+scheme screen: with `bounded Gauss linearUpwind grad(U)` the finest drag drift
+falls from 3.00% to 0.364% (inside the 2% bound, drag reference qualified),
+while the downforce drift improves only from 0.01291 to 0.01037 and stays
+non-monotone (no GCI). DF5 ranking may proceed on drag with the qualified
+family; downforce must use the measured candidate-specific band (~0.0104) and
+required-pair improvements must exceed it. The next registered factor
+(domain/boundary) is `docs/evidence/stage_v_domain_boundary_factor_manifest_2026_09.json`
+(registered, not run).

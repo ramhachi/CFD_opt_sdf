@@ -1,0 +1,42 @@
+{
+  "kind": "stage_v_scheme_factor_manifest",
+  "created": "2026-09-21",
+  "registered_before_computation": true,
+  "hypothesis": "the V1->V2 downforce drift of the plain fixed-domain family is dominated by the first-order upwind convection scheme",
+  "factor": {
+    "name": "div(phi,U) convection scheme",
+    "baseline": "bounded Gauss upwind",
+    "treatment": "bounded Gauss linearUpwind grad(U)"
+  },
+  "levels": [
+    "V1",
+    "V2"
+  ],
+  "metric": {
+    "downforce_absolute_drift": "|downforce(V2) - downforce(V1)|",
+    "drag_relative_drift": "|Cd(V2) - Cd(V1)| / |Cd(V1)|",
+    "bounds": {
+      "downforce_absolute": 0.005,
+      "drag_relative": 0.02
+    }
+  },
+  "decision": "if the treatment arm moves the downforce drift below the bound, register the scheme as the discretization factor and continue to V3 for that arm; otherwise accept the measured band for the planned ranking experiment and escalate the mesh-convergence policy",
+  "stop_conditions": [
+    "no V3 run in this campaign",
+    "a treatment arm that fails any qualification gate is reported as failed, never dropped"
+  ],
+  "budget": {
+    "runs": 3,
+    "note": "V1 control + V1/V2 treatment"
+  },
+  "inputs": {
+    "baseline_results": {
+      "path": "work/stage_v_fixed_domain_2026_09/results.json",
+      "sha256": "dc4e945e06b6c544e178293ea1bb88a3e82c1f316caff6924fbdfe7e078abf72"
+    },
+    "baseline_evidence": {
+      "path": "docs/evidence/stage_v_fixed_domain_grid_study_2026_09.json",
+      "sha256": "668449c13c4e624756f61a1209f0f69b4e6774eb9bfdc7b776f01077317815c9"
+    }
+  }
+}
