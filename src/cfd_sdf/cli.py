@@ -27,6 +27,7 @@ from .cfd import write_cfd_summary
 from .density_optimizer import DensityOptimizerControls, run_density_optimization
 from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
 from .evidence_audit import build_evidence_audit
+from .extraction_sweep import run_extraction_threshold_sweep
 from .export_vtk import export_vti, export_zero_surface
 from .fd_preregistration import (
     FdDirection,
@@ -2164,6 +2165,53 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+@app.command("sweep-density-extraction")
+def sweep_density_extraction(
+    topology_state_json: Path = typer.Argument(
+        ..., help="Fixed-grid topology state of the candidate to extract."
+    ),
+    output_dir: Path = typer.Option(..., help="Sweep output directory."),
+    threshold: list[float] = typer.Option(
+        ..., help="Registered iso-surface thresholds; repeat the option."
+    ),
+    rule: str = typer.Option(
+        "registered_range_min_abs_volume_error",
+        help="Registered selection rule.",
+    ),
+    range_low: float = typer.Option(..., help="Registered range lower bound."),
+    range_high: float = typer.Option(..., help="Registered range upper bound."),
+    rho_variant: str | None = typer.Option(
+        None, help="Optional rho variant: rho, rho_filtered, rho_projected."
+    ),
+) -> None:
+    """Run the preregistered density-to-SDF threshold sweep (DF4)."""
+    summary = run_extraction_threshold_sweep(
+        topology_state_json,
+        thresholds=threshold,
+        output_dir=output_dir,
+        selection_rule={"kind": rule, "range": [range_low, range_high]},
+        rho_variant=rho_variant,
+    )
+    console.print(
+        json.dumps(
+            {
+                "selected_threshold": summary["selected_threshold"],
+                "selection_reason": summary["selection_reason"],
+                "rows": [
+                    {
+                        "threshold": row["threshold"],
+                        "status": row["status"],
+                        "ready_for_stage_s": row["ready_for_stage_s"],
+                        "volume_relative_difference": row["volume_relative_difference"],
+                    }
+                    for row in summary["rows"]
+                ],
+            },
+            indent=2,
+        )
+    )
 
 
 @app.command("preregister-fd-campaign")

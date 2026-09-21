@@ -1861,3 +1861,165 @@ def _write_project(
     project_yaml = tmp_path / "project.yaml"
     project_yaml.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
     return project_yaml
+
+
+def test_surface_sensitivity_exports_drag_from_its_own_adjoint_field(tmp_path: Path) -> None:
+    case_dir = tmp_path / "case"
+    time_dir = case_dir / "constant" / "polyMesh"
+    time_dir.mkdir(parents=True)
+    (time_dir / "boundary").write_text(
+        """
+FoamFile {}
+2
+(
+    design_front_wing_initial
+    {
+        type wall;
+        nFaces 2;
+        startFace 0;
+    }
+    other
+    {
+        type wall;
+        nFaces 1;
+        startFace 2;
+    }
+)
+""",
+        encoding="utf-8",
+    )
+    (time_dir / "points").write_text(
+        """
+FoamFile {}
+4
+(
+(0 0 0)
+(1 0 0)
+(0 1 0)
+(1 1 0)
+)
+""",
+        encoding="utf-8",
+    )
+    (time_dir / "faces").write_text(
+        """
+FoamFile {}
+3
+(
+3(0 1 2)
+3(0 1 3)
+3(0 2 3)
+)
+""",
+        encoding="utf-8",
+    )
+    downforce_field = case_dir / "faceSensNormaldownforce"
+    downforce_field.write_text(
+        """
+FoamFile {}
+dimensions      [0 0 0 0 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    design_front_wing_initial
+    {
+        type            calculated;
+        value           nonuniform List<scalar>
+2
+(
+1.5
+-2.0
+)
+;
+    }
+}
+""",
+        encoding="utf-8",
+    )
+    drag_field = case_dir / "faceSensNormalas1"
+    drag_field.write_text(
+        """
+FoamFile {}
+dimensions      [0 0 0 0 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    design_front_wing_initial
+    {
+        type            calculated;
+        value           nonuniform List<scalar>
+2
+(
+0.25
+-0.5
+)
+;
+    }
+}
+""",
+        encoding="utf-8",
+    )
+
+    exported = export_openfoam_surface_sensitivity_to_csv(
+        case_dir=case_dir,
+        sensitivity_file=downforce_field,
+        drag_sensitivity_file=drag_field,
+        output_csv=tmp_path / "surface_sensitivity_drag.csv",
+        patches=["design_front_wing_initial"],
+    )
+    payload = exported.to_dict()
+    assert payload["drag_sensitivity_mode"] == "faceSensNormal-of-drag-adjoint-solver"
+    assert payload["drag_min_sensitivity"] == -0.5
+    assert payload["drag_max_sensitivity"] == 0.25
+    rows = list(csv.DictReader(exported.output_csv.open(encoding="utf-8")))
+    assert rows[0]["drag_surface_sensitivity"] == "0.25"
+    assert rows[1]["drag_surface_sensitivity"] == "-0.5"
+
+
+def test_surface_sensitivity_require_drag_rejects_zero_fill(tmp_path: Path) -> None:
+    case_dir = tmp_path / "case"
+    time_dir = case_dir / "constant" / "polyMesh"
+    time_dir.mkdir(parents=True)
+    (time_dir / "boundary").write_text(
+        """
+FoamFile {}
+1
+(
+    wall
+    {
+        type wall;
+        nFaces 1;
+        startFace 0;
+    }
+)
+""",
+        encoding="utf-8",
+    )
+    (time_dir / "points").write_text(
+        "FoamFile {}\n1\n(\n(0 0 0)\n)\n", encoding="utf-8"
+    )
+    (time_dir / "faces").write_text(
+        "FoamFile {}\n1\n(\n1(0)\n)\n", encoding="utf-8"
+    )
+    field = case_dir / "faceSensNormaldownforce"
+    field.write_text(
+        """
+FoamFile {}
+boundaryField
+{
+    wall
+    {
+        value uniform 1.0;
+    }
+}
+""",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="zero-filled drag"):
+        export_openfoam_surface_sensitivity_to_csv(
+            case_dir=case_dir,
+            sensitivity_file=field,
+            output_csv=tmp_path / "out.csv",
+            patches=["wall"],
+            require_drag=True,
+        )

@@ -1,0 +1,113 @@
+{
+  "kind": "density_extraction_threshold_sweep",
+  "schema_version": 1,
+  "topology_state_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/ramp_interp/fixture/topology_state.json",
+  "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/df4_sweep",
+  "thresholds": [
+    0.45,
+    0.5,
+    0.55
+  ],
+  "selection_rule": {
+    "kind": "registered_range_min_abs_volume_error",
+    "range": [
+      0.45,
+      0.55
+    ]
+  },
+  "selected_threshold": 0.45,
+  "selected_manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/df4_sweep/threshold_0.45/handoff_manifest.json",
+  "selection_reason": "minimum |volume relative difference| among gate-passing thresholds inside the registered range",
+  "n_ready_for_stage_s": 0,
+  "rows": [
+    {
+      "threshold": 0.45,
+      "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/df4_sweep/threshold_0.45",
+      "status": "ok",
+      "error": null,
+      "ok": true,
+      "ready_for_stage_s": false,
+      "watertight": true,
+      "positive_volume": true,
+      "component_count": 2,
+      "volume_relative_difference": 0.7163440071294069,
+      "revoxelized_relative_difference": 0.8205128205128206,
+      "checks": {
+        "input_hashes": true,
+        "cell_data_contract": true,
+        "surface_geometry": true,
+        "sdf_sign": true,
+        "discreteness_within_limit": false,
+        "source_mask_validation": true,
+        "source_component_validation": true,
+        "revoxelized_mask_validation": true,
+        "revoxelized_component_validation": true
+      },
+      "manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/df4_sweep/threshold_0.45/handoff_manifest.json",
+      "manifest_sha256": "cdc2fe329bab4ba3a6424d5d57ad306078355990e9c36c518d02ee0a4cb481e0",
+      "geometry_metrics": {
+        "n_cells": 112,
+        "volume_m3": 0.014000000000000004,
+        "empty": false,
+        "n_components_26": 2,
+        "component_cells": [
+          56,
+          56
+        ],
+        "max_inscribed_diameter_m": 0.05,
+        "thickness_ridge_m_min": 0.05,
+        "thickness_ridge_m_p5": 0.05,
+        "thickness_ridge_m_p50": 0.05,
+        "thickness_ridge_m_max": 0.05,
+        "ridge_cells_m": 3024,
+        "fraction_ridge_below_threshold": null,
+        "local_thickness_threshold_m": null,
+        "supersample_factor": 4
+      },
+      "geometry_metrics_status": "measured"
+    },
+    {
+      "threshold": 0.5,
+      "output_dir": "work/df4_sweep/threshold_0.5",
+      "status": "error",
+      "error": "iso_value must lie strictly inside the interpolated density range; iso_value=0.5, range=[0, 0.5]",
+      "ok": false,
+      "ready_for_stage_s": false,
+      "watertight": false,
+      "positive_volume": false,
+      "component_count": null,
+      "volume_relative_difference": null,
+      "revoxelized_relative_difference": null,
+      "checks": {},
+      "manifest_json": null,
+      "manifest_sha256": null,
+      "geometry_metrics": null,
+      "geometry_metrics_status": "not_requested"
+    },
+    {
+      "threshold": 0.55,
+      "output_dir": "work/df4_sweep/threshold_0.55",
+      "status": "error",
+      "error": "Density-to-SDF connectivity validation failed: nominal_components",
+      "ok": false,
+      "ready_for_stage_s": false,
+      "watertight": false,
+      "positive_volume": false,
+      "component_count": null,
+      "volume_relative_difference": null,
+      "revoxelized_relative_difference": null,
+      "checks": {},
+      "manifest_json": null,
+      "manifest_sha256": null,
+      "geometry_metrics": null,
+      "geometry_metrics_status": "not_requested"
+    }
+  ],
+  "claims": {
+    "extraction_sensitivity_measured": false,
+    "selection_is_registered_not_observed_best": true
+  },
+  "notes": [
+    "every failed threshold remains an explicit row; the selection rule operates only inside the pre-registered range"
+  ]
+}
