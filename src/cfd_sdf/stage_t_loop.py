@@ -86,6 +86,19 @@ class ResponseOracle(Protocol):
         """Adjoint evaluation consuming the accepted primal artifact."""
 
 
+class ParentOracle(Protocol):
+    """Optional fast path: one invocation returns values and gradients.
+
+    A real solver that produces the primal and the adjoint in one qualified run
+    can implement ``evaluate_parent``; the loop then uses it once per accepted
+    parent instead of ``evaluate_values`` + ``evaluate_gradients``. Trials
+    still use ``evaluate_values`` only.
+    """
+
+    def evaluate_parent(self, rho_design: np.ndarray) -> OracleResult:
+        ...
+
+
 class TrialBackend(Protocol):
     def propose(
         self,
@@ -261,7 +274,9 @@ def make_oracle_from_compiled(
     primal_evaluator: Callable[[DesignTransformState], dict[str, Any]],
     adjoint_evaluator: Callable[
         [DesignTransformState, dict[str, Any]], dict[str, Any]
-    ],
+    ]
+    | None = None,
+    parent_evaluator: Callable[[DesignTransformState], dict[str, Any]] | None = None,
 ) -> Callable[..., OracleResult]:
     """Adapt split primal/adjoint evaluators to the two-space oracle protocol.
 
@@ -275,10 +290,7 @@ def make_oracle_from_compiled(
     constraint in projection space.
     """
 
-    def _values(rho_design: np.ndarray) -> OracleResult:
-        rho = np.asarray(rho_design, dtype=np.float64)
-        state = transform.forward(rho)
-        payload = primal_evaluator(state)
+    def _compile_values(rho: np.ndarray, payload: dict[str, Any]) -> OracleResult:
         primitive_values = payload["values"]
         objective = compiled.objective_value(primitive_values)
         constraint_values = compiled.constraint_values(primitive_values)
@@ -300,21 +312,9 @@ def make_oracle_from_compiled(
             artifact_hash=_artifact_hash(rho, transform, payload),
         )
 
-    def _gradients(rho_design: np.ndarray, values: OracleResult) -> OracleResult:
-        if values.primal_artifact is None:
-            raise ValueError(
-                "evaluate_gradients requires the accepted primal artifact; a "
-                "values-only result cannot seed an adjoint evaluation"
-            )
-        rho = np.asarray(rho_design, dtype=np.float64)
-        expected_hash = _artifact_hash(rho, transform, values.primal_artifact)
-        if values.artifact_hash != expected_hash:
-            raise ValueError(
-                "primal artifact does not belong to this rho/transform/response; "
-                "refusing to run the adjoint on a mismatched artifact"
-            )
-        state = transform.forward(rho)
-        payload = adjoint_evaluator(state, values.primal_artifact)
+    def _compile_gradients(
+        rho: np.ndarray, payload: dict[str, Any], values: OracleResult
+    ) -> OracleResult:
         if payload.get("adjoint_converged") is not True:
             raise ValueError(
                 "adjoint evaluation did not report converged=True; parent gradients "
@@ -331,7 +331,7 @@ def make_oracle_from_compiled(
             key: value
             for key, value in values.constraint_values.items()
             if key != compiled.volume_constraint.constraint_id
-        }
+        } if compiled.volume_constraint is not None else dict(values.constraint_values)
         constraint_values = dict(values.constraint_values)
         constraint_gradients = compiled.constraint_gradients(design_gradients)
         volume_value, volume_gradient = _volume_value_gradient(
@@ -360,6 +360,40 @@ def make_oracle_from_compiled(
             adjoint_status="converged",
         )
 
+    def _values(rho_design: np.ndarray) -> OracleResult:
+        rho = np.asarray(rho_design, dtype=np.float64)
+        state = transform.forward(rho)
+        payload = primal_evaluator(state)
+        return _compile_values(rho, payload)
+
+    def _gradients(rho_design: np.ndarray, values: OracleResult) -> OracleResult:
+        if adjoint_evaluator is None:
+            raise ValueError("this oracle has no adjoint_evaluator; use evaluate_parent")
+        if values.primal_artifact is None:
+            raise ValueError(
+                "evaluate_gradients requires the accepted primal artifact; a "
+                "values-only result cannot seed an adjoint evaluation"
+            )
+        rho = np.asarray(rho_design, dtype=np.float64)
+        expected_hash = _artifact_hash(rho, transform, values.primal_artifact)
+        if values.artifact_hash != expected_hash:
+            raise ValueError(
+                "primal artifact does not belong to this rho/transform/response; "
+                "refusing to run the adjoint on a mismatched artifact"
+            )
+        state = transform.forward(rho)
+        payload = adjoint_evaluator(state, values.primal_artifact)
+        return _compile_gradients(rho, payload, values)
+
+    def _parent(rho_design: np.ndarray) -> OracleResult:
+        if parent_evaluator is None:
+            raise ValueError("this oracle has no parent_evaluator")
+        rho = np.asarray(rho_design, dtype=np.float64)
+        state = transform.forward(rho)
+        payload = parent_evaluator(state)
+        values = _compile_values(rho, payload)
+        return _compile_gradients(rho, payload, values)
+
     class CompiledOracle:
         def evaluate_values(self, rho_design: np.ndarray) -> OracleResult:
             return _values(rho_design)
@@ -368,6 +402,12 @@ def make_oracle_from_compiled(
             self, rho_design: np.ndarray, values: OracleResult
         ) -> OracleResult:
             return _gradients(rho_design, values)
+
+    if parent_evaluator is not None:
+        def evaluate_parent(self, rho_design: np.ndarray) -> OracleResult:
+            return _parent(rho_design)
+
+        CompiledOracle.evaluate_parent = evaluate_parent  # type: ignore[attr-defined]
 
     return CompiledOracle()
 
@@ -401,7 +441,12 @@ def run_stage_t_loop(
 
     transform = spec.transform
     backend = backend or ProjectedGradientBackend()
-    counts = {"value_evaluations": 0, "gradient_evaluations": 0, "bracket_evaluations": 0}
+    counts = {
+        "value_evaluations": 0,
+        "gradient_evaluations": 0,
+        "parent_evaluations": 0,
+        "bracket_evaluations": 0,
+    }
     trace: list[dict[str, Any]] = []
 
     def evaluate_values(rho: np.ndarray) -> OracleResult:
@@ -411,6 +456,20 @@ def run_stage_t_loop(
     def evaluate_gradients(rho: np.ndarray, values: OracleResult) -> OracleResult:
         counts["gradient_evaluations"] += 1
         return _call_gradients(oracle, rho, values)
+
+    parent_oracle = getattr(oracle, "evaluate_parent", None)
+    if parent_oracle is not None:
+        def evaluate_parent(rho: np.ndarray) -> OracleResult:
+            counts["parent_evaluations"] += 1
+            result = parent_oracle(rho)
+            if not result.has_gradients():
+                raise ValueError("evaluate_parent returned a result without gradients")
+            if result.adjoint_status != "converged":
+                raise ValueError(
+                    "parent gradients require adjoint_status='converged'; "
+                    "missing evidence is fail-closed"
+                )
+            return result
 
     if resume_from is not None:
         checkpoint = json.loads(Path(resume_from).read_text(encoding="utf-8"))
@@ -426,14 +485,20 @@ def run_stage_t_loop(
         )
         trace = list(checkpoint.get("trace", []))
         counts = dict(checkpoint.get("counts", counts))
-        parent_values = evaluate_values(state.rho)
-        parent_result = evaluate_gradients(state.rho, parent_values)
+        if parent_oracle is not None:
+            parent_values = parent_result = evaluate_parent(state.rho)
+        else:
+            parent_values = evaluate_values(state.rho)
+            parent_result = evaluate_gradients(state.rho, parent_values)
     else:
         if initial_rho is None:
             raise ValueError("initial_rho is required when not resuming")
         state = AcceptanceState(rho=np.clip(initial_rho, 0.0, 1.0), move_radius=spec.move_limit)
-        parent_values = evaluate_values(state.rho)
-        parent_result = evaluate_gradients(state.rho, parent_values)
+        if parent_oracle is not None:
+            parent_values = parent_result = evaluate_parent(state.rho)
+        else:
+            parent_values = evaluate_values(state.rho)
+            parent_result = evaluate_gradients(state.rho, parent_values)
 
     parent_eval = parent_result.to_evaluation()
     state.objective = parent_result.objective
@@ -499,8 +564,11 @@ def run_stage_t_loop(
             # reuse the accepted trial's value payload; one adjoint for the new parent
             if last_value_result is None:
                 raise ValueError("accepted trial has no value payload to reuse")
-            parent_values = last_value_result
-            parent_result = evaluate_gradients(state.rho, parent_values)
+            if parent_oracle is not None:
+                parent_values = parent_result = evaluate_parent(state.rho)
+            else:
+                parent_values = last_value_result
+                parent_result = evaluate_gradients(state.rho, parent_values)
             parent_eval = parent_result.to_evaluation()
             state.objective = parent_result.objective
             iteration_trace.update(

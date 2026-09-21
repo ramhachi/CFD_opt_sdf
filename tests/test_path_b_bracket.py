@@ -109,3 +109,21 @@ def test_zero_direction_and_invalid_spec_are_rejected():
         BracketSpec(epsilon=1e-3, noise_floor_abs=-1.0)
     with pytest.raises(PathBBracketError, match="bounds"):
         BracketSpec(epsilon=1e-3, noise_floor_abs=1e-9, lower=1.0, upper=0.0)
+
+
+def test_zero_lower_bound_cells_block_the_centered_bracket():
+    # an increasing direction at a cell with rho == 0 cannot form a symmetric
+    # centered pair: no epsilon > 0 keeps the minus side inside the box
+    spec = BracketSpec(epsilon=1e-4, noise_floor_abs=1e-9)
+    rho = np.array([0.0, 0.5, 0.5, 0.5])
+    outcome = evaluate_path_b_bracket(
+        spec=spec,
+        parent_rho=rho,
+        parent_gradient=np.full(4, -1.0),
+        proposal_delta=np.ones(4),
+        active=np.ones(4, dtype=bool),
+        evaluate_values=_linear_evaluator(-1.0),
+    )
+    assert outcome.ok is False
+    assert outcome.reason == "bracket_bounds_asymmetric_minus"
+    assert outcome.d_fd is None
