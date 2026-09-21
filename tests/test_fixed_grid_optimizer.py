@@ -136,6 +136,132 @@ def test_fixed_grid_constrained_step_rejects_sampled_connectivity_derivatives(
         )
 
 
+def test_fixed_grid_constrained_step_uses_compiled_problem_spec(
+    tmp_path: Path,
+) -> None:
+    topology_state = _write_topology_state(tmp_path / "contract", rho_value=0.4)
+    sensitivity = _write_sensitivity(
+        tmp_path / "sensitivity",
+        downforce=np.zeros(4, dtype=np.float32),
+        drag=np.ones(4, dtype=np.float32),
+        dry_coefficients={"drag_coefficient": 2.0, "downforce_coefficient": 0.1},
+    )
+    spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="drag")
+
+    result = run_fixed_grid_constrained_density_step(
+        topology_state,
+        sensitivity_vti=sensitivity,
+        output_dir=tmp_path / "step",
+        controls=FixedGridOptimizerControls(
+            move_limit=0.1,
+            enforce_efficiency=False,
+            enforce_connectivity=False,
+            enforce_volume=False,
+        ),
+        problem_spec_json=spec_path,
+    )
+
+    assert result.summary["problem"]["objective_source"] == "problem_spec_compiler"
+    assert result.summary["problem"]["objectives"][0]["id"] == "declared_objective"
+    assert result.summary["objective"]["base_objective"] == pytest.approx(2.0)
+    density = pv.read(result.output_density_vti).cell_data["rho"]
+    assert np.allclose(density, 0.3)
+
+
+def test_fixed_grid_constrained_step_rejects_undeclared_response_gradient(
+    tmp_path: Path,
+) -> None:
+    topology_state = _write_topology_state(tmp_path / "contract", rho_value=0.4)
+    sensitivity = _write_sensitivity(
+        tmp_path / "sensitivity",
+        downforce=np.ones(4, dtype=np.float32),
+    )
+    spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="lift")
+
+    with pytest.raises(ValueError, match="missing arrays"):
+        run_fixed_grid_constrained_density_step(
+            topology_state,
+            sensitivity_vti=sensitivity,
+            output_dir=tmp_path / "step",
+            controls=FixedGridOptimizerControls(
+                enforce_efficiency=False,
+                enforce_connectivity=False,
+                enforce_volume=False,
+            ),
+            problem_spec_json=spec_path,
+        )
+
+
+def _write_problem_spec(path: Path, *, sense: str, response_id: str) -> Path:
+    import yaml
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {
+        "schema_version": 2,
+        "problem_id": "optimizer_compiler_fixture",
+        "units": {"length": "m", "time": "s", "mass": "kg"},
+        "coordinate_frame": {
+            "id": "global_frame",
+            "origin_m": [0.0, 0.0, 0.0],
+            "basis": {"x": [1.0, 0.0, 0.0], "y": [0.0, 1.0, 0.0], "z": [0.0, 0.0, 1.0]},
+        },
+        "grid": {"kind": "uniform_cartesian", "voxel_size_m": 1.0, "padding_m": 0.0},
+        "geometry_regions": [
+            {"id": "design_box", "role": "design_domain", "file": "geometry/design_box.stl"}
+        ],
+        "flow_cases": [
+            {
+                "id": "straight",
+                "freestream_velocity_mps": [30.0, 0.0, 0.0],
+                "fluid": {
+                    "model": "incompressible_newtonian",
+                    "density_kg_m3": 1.225,
+                    "dynamic_viscosity_pa_s": 1.8e-5,
+                },
+                "turbulence": {"model": "k_omega_sst"},
+                "boundary_conditions": {"inlet": "freestream", "outlet": "pressure_outlet"},
+                "motion_profiles": {},
+            }
+        ],
+        "responses": [
+            {"id": "drag", "kind": "force", "flow_case_id": "straight", "direction": [1.0, 0.0, 0.0]},
+            {"id": "downforce", "kind": "force", "flow_case_id": "straight", "direction": [0.0, 0.0, -1.0]},
+            {"id": "lift", "kind": "force", "flow_case_id": "straight", "direction": [0.0, 0.0, 1.0]},
+        ],
+        "objectives": [
+            {
+                "id": "declared_objective",
+                "sense": sense,
+                "terms": [
+                    {"coefficient": 1.0, "flow_case_id": "straight", "response_id": response_id}
+                ],
+            }
+        ],
+        "constraints": [],
+        "topology_policy": {
+            "minimum_solid_width_m": None,
+            "minimum_void_width_m": None,
+            "minimum_gap_m": None,
+            "erosion_radius_m": None,
+            "root_groups": [],
+            "solid_connectivity": {
+                "mode": "disabled",
+                "required_root_group_ids": [],
+                "max_components": None,
+                "evaluate_eroded": False,
+            },
+            "void_connectivity": {
+                "mode": "disabled",
+                "required_root_group_ids": [],
+                "max_components": None,
+                "evaluate_eroded": False,
+            },
+        },
+    }
+    path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return path
+
+
 def _write_topology_state(directory: Path, *, rho_value: float) -> Path:
     directory.mkdir(parents=True)
     grid = CartesianCellGrid(
@@ -174,8 +300,10 @@ def _write_sensitivity(
     directory: Path,
     *,
     downforce: np.ndarray,
+    drag: np.ndarray | None = None,
     efficiency: np.ndarray | None = None,
     efficiency_constraint: float = -1.0,
+    dry_coefficients: dict[str, float] | None = None,
     connectivity_nominal: np.ndarray | None = None,
     connectivity_eroded: np.ndarray | None = None,
     sample_mask: np.ndarray | None = None,
@@ -200,7 +328,11 @@ def _write_sensitivity(
     )
     arrays = {
         "d_downforce_d_rho": downforce.astype(np.float32),
-        "d_drag_d_rho": np.zeros(count, dtype=np.float32),
+        "d_drag_d_rho": (
+            np.zeros(count, dtype=np.float32)
+            if drag is None
+            else drag.astype(np.float32)
+        ),
         "d_efficiency_constraint_d_rho": (
             np.zeros(count, dtype=np.float32)
             if efficiency is None
@@ -227,6 +359,7 @@ def _write_sensitivity(
         "primal_values": {
             "objective": 0.0,
             "efficiency_constraint": efficiency_constraint,
+            **(dry_coefficients or {}),
         },
         "base_objectives": {
             "connectivity_nominal_violation_l1": 1.0,

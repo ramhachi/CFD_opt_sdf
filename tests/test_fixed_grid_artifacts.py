@@ -772,3 +772,44 @@ def test_v1_sensitivity_rejects_missing_gradient_arrays(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match=r"at least one d_\* gradient array"):
         read_fixed_grid_sensitivity_summary(_write_json(tmp_path, data, "v1_no_gradients.json"))
+
+TRANSFORM_BLOCK = {
+    "schema_version": 1,
+    "kind": "design_transform",
+    "transform_hash": "a" * 64,
+    "filter": {"kind": "cone_density_filter", "filter_radius_m": 0.075},
+    "projection": {"kind": "tanh_heaviside", "b": 16.0, "eta": 0.5},
+    "ramp": {"kind": "ramp", "q": 30.0},
+    "intermediates": {"rho_filtered": "array", "rho_projected": "array", "beta": "array"},
+}
+
+
+def test_v2_sensitivity_reads_optional_transform_lineage(tmp_path: Path) -> None:
+    from cfd_sdf.fixed_grid_artifacts import validate_transform_lineage
+
+    data = _v2_sensitivity()
+    assert read_fixed_grid_sensitivity_summary(
+        _write_json(tmp_path, data, "no_transform.json")
+    ).transform is None
+
+    data["transform"] = TRANSFORM_BLOCK
+    summary = read_fixed_grid_sensitivity_summary(
+        _write_json(tmp_path, data, "with_transform.json")
+    )
+    assert summary.transform is not None
+    assert summary.transform.transform_hash == "a" * 64
+    assert summary.transform.filter["kind"] == "cone_density_filter"
+    validate_transform_lineage(summary.transform, {"transform_hash": "a" * 64})
+    with pytest.raises(ValueError, match="transform lineage mismatch"):
+        validate_transform_lineage(summary.transform, {"transform_hash": "b" * 64})
+
+
+def test_v2_primal_rejects_malformed_transform_lineage(tmp_path: Path) -> None:
+    data = _v2_primal()
+    data["transform"] = dict(TRANSFORM_BLOCK, transform_hash="not-a-digest")
+    with pytest.raises(ValueError, match="transform_hash"):
+        read_fixed_grid_primal_summary(_write_json(tmp_path, data, "bad_transform.json"))
+
+    data["transform"] = dict(TRANSFORM_BLOCK, kind="something_else")
+    with pytest.raises(ValueError, match="design_transform"):
+        read_fixed_grid_primal_summary(_write_json(tmp_path, data, "bad_kind.json"))

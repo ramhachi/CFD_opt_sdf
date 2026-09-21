@@ -94,11 +94,11 @@ def occupancy_metrics(
 ) -> dict[str, Any]:
     """Volume, components and feature-thickness statistics of one occupancy."""
 
-    solid = (
-        as_canonical_3d(solid)
-        if np.asarray(solid).shape != CANONICAL_SHAPE
-        else np.asarray(solid, dtype=bool)
-    )
+    solid = np.asarray(solid, dtype=bool)
+    if solid.ndim == 1:
+        solid = as_canonical_3d(solid)
+    elif solid.ndim != 3:
+        raise ValueError("occupancy must be a flat canonical array or a 3D bool array")
     spacing = float(spacing_m)
     metrics: dict[str, Any] = {
         "n_cells": int(solid.sum()),

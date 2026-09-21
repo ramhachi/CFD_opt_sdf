@@ -1299,6 +1299,16 @@ def run_fixed_grid_constrained_step(
         None,
         help="Optional fixed_grid_connectivity_summary.json for current connectivity values.",
     ),
+    problem_spec_json: Path | None = typer.Option(
+        None,
+        "--problem-spec",
+        help="ProblemSpec YAML; the objective and constraints are compiled from it.",
+    ),
+    allow_legacy_objective: bool = typer.Option(
+        False,
+        "--allow-legacy-objective/--require-problem-spec",
+        help="Diagnostic only: run the historical hard-coded downforce objective when no ProblemSpec is given.",
+    ),
     move_limit: float = typer.Option(
         0.03,
         help="Maximum absolute density change per active cell.",
@@ -1361,6 +1371,11 @@ def run_fixed_grid_constrained_step(
     ),
 ) -> None:
     """Run one T5 fixed-grid constrained density-update step."""
+    if problem_spec_json is None and not allow_legacy_objective:
+        raise typer.BadParameter(
+            "a ProblemSpec is required for the production constrained step; pass "
+            "--allow-legacy-objective for the historical diagnostic path"
+        )
     controls = FixedGridOptimizerControls(
         optimizer_backend=optimizer_backend,
         move_limit=move_limit,
@@ -1385,6 +1400,7 @@ def run_fixed_grid_constrained_step(
         sensitivity_summary_json=sensitivity_summary_json,
         primal_summary_json=primal_summary_json,
         connectivity_summary_json=connectivity_summary_json,
+        problem_spec_json=problem_spec_json,
     )
     console.print(json.dumps(artifacts.to_dict(), indent=2))
     console.print(f"Wrote {artifacts.update_vti}")

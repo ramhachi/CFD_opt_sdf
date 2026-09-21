@@ -48,6 +48,13 @@ sys.path.insert(0, str(ROOT / "src"))
 import stage_t_ramp_interp as base  # noqa: E402
 
 from cfd_sdf.canonical_geometry_masks import build_canonical_geometry_mask_snapshot  # noqa: E402
+from cfd_sdf.design_transform import (  # noqa: E402
+    BlockFilter as ModuleBlockFilter,
+    ConeFilter as ModuleConeFilter,
+    DesignTransform,
+    RampInterpolation,
+    TanhProjection,
+)
 from cfd_sdf.cfd import evaluate_check_mesh  # noqa: E402
 from cfd_sdf.execution import run_openfoam_case  # noqa: E402
 from cfd_sdf.openfoam import generate_openfoam_case, problem_spec_to_project_config  # noqa: E402
@@ -94,46 +101,28 @@ def setup(width_m: float, eta: float = 0.5, kind: str = "cone") -> "base.Ctx":
         shutil.copy2(OLD_CELL_ORDER, out / "cell_order" / OLD_CELL_ORDER.name)
     ctx = base.Ctx(ALPHA_MAX)
     ctx.width_m = width_m
-    ctx.filter = ConeFilter(ctx, width_m / 2.0) if kind == "cone" else BlockFilter(ctx, width_m)
+    if kind == "cone":
+        ctx.filter = ModuleConeFilter(
+            shape=ctx.shape,
+            spacing_m=float(ctx.grid.spacing[0]),
+            active_mask=ctx.active,
+            radius_m=width_m / 2.0,
+        )
+    else:
+        ctx.filter = ModuleBlockFilter(
+            shape=ctx.shape,
+            spacing_m=float(ctx.grid.spacing[0]),
+            active_mask=ctx.active,
+            width_m=width_m,
+        )
     ctx.b = 0.0  # projection sharpness; set per continuation stage
     ctx.eta = eta  # projection threshold; > 0.5 = eroded physical design (larger guaranteed solid size)
     ctx.name_tag = ("" if eta == 0.5 else f"_eta{eta:g}") + ("" if kind == "cone" else f"_{kind}")
     # 1-D hat-filter estimate: a slab of thickness t at rho=1 reaches centre value 1-(1-t/2R)^2
     ctx.filter.meta["predicted_min_slab_thickness_cells_1d_estimate"] = 2 * ctx.filter.radius_cells * (1 - (1 - eta) ** 0.5)
     ctx.filter.meta["projection_eta"] = eta
+    ctx.filter.production_allowed  # diagnostics role is declared by the module meta
     return ctx
-
-
-class ConeFilter:
-    """H = M K M / d, H.T = M K (M ./ d); K = cone convolution, d = K M."""
-
-    def __init__(self, ctx: "base.Ctx", radius_m: float) -> None:
-        voxel = float(ctx.grid.spacing[0])
-        assert all(abs(s - voxel) < 1e-12 for s in ctx.grid.spacing)
-        self.radius_m, self.radius_cells = radius_m, radius_m / voxel
-        r = int(np.ceil(self.radius_cells))
-        ijk = np.mgrid[-r:r + 1, -r:r + 1, -r:r + 1]
-        dist = np.sqrt((ijk ** 2).sum(axis=0))
-        self.kernel = np.maximum(self.radius_cells - dist, 0.0)
-        self.mask = ctx.to3d(ctx.active).astype(np.float64)
-        self.denom = convolve(self.mask, self.kernel, mode="constant", cval=0.0)
-        self.denom_safe = np.where(self.mask > 0, self.denom, 1.0)
-        self.ctx = ctx
-        self.meta = {
-            "kind": "cone_density_filter", "minimum_solid_width_m": 2 * radius_m,
-            "relation": "filter_radius_m = minimum_solid_width_m / 2", "filter_radius_m": radius_m,
-            "filter_radius_cells": self.radius_cells, "weights": "max(R - |x_i - x_j|, 0), uniform cell volume",
-            "boundary": "restricted to active design cells; normalised by the sum of weights present",
-            "transpose": "H.T y = M K (M y / d) with d = K M (exact; H is not symmetric)",
-        }
-
-    def H(self, x: np.ndarray) -> np.ndarray:
-        x3 = self.ctx.to3d(x) * self.mask
-        return self.ctx.flat(self.mask * convolve(x3, self.kernel, mode="constant", cval=0.0) / self.denom_safe)
-
-    def HT(self, y: np.ndarray) -> np.ndarray:
-        y3 = self.ctx.to3d(y) * self.mask / self.denom_safe
-        return self.ctx.flat(self.mask * convolve(y3, self.kernel, mode="constant", cval=0.0))
 
 
 ETA = 0.5
@@ -141,17 +130,11 @@ ETA = 0.5
 
 def project(x: np.ndarray, b: float, eta: float = ETA) -> np.ndarray:
     """tanh Heaviside projection at threshold eta; b -> 0 is the identity, b large is a step."""
-    if b <= 0:
-        return x
-    den = np.tanh(b * eta) + np.tanh(b * (1 - eta))
-    return (np.tanh(b * eta) + np.tanh(b * (x - eta))) / den
+    return TanhProjection(b, eta).forward(x)
 
 
 def dproject(x: np.ndarray, b: float, eta: float = ETA) -> np.ndarray:
-    if b <= 0:
-        return np.ones_like(x)
-    den = np.tanh(b * eta) + np.tanh(b * (1 - eta))
-    return b * (1 - np.tanh(b * (x - eta)) ** 2) / den
+    return TanhProjection(b, eta).derivative(x)
 
 
 def physical(ctx, rho: np.ndarray, q: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -159,56 +142,6 @@ def physical(ctx, rho: np.ndarray, q: float) -> tuple[np.ndarray, np.ndarray, np
     rho_tilde = np.clip(ctx.filter.H(rho), 0.0, 1.0)
     p = np.clip(project(rho_tilde, ctx.b, ctx.eta), 0.0, 1.0)  # tanh rounding can exceed 1 by 1e-7; the binding refuses that
     return rho_tilde, p, base.ramp(p, q)
-
-
-class BlockFilter:
-    """Piecewise-constant (super-cell) filter: rho_tilde = block mean of rho over
-    non-overlapping blocks tiling the active design box. Every block is one
-    effective design variable, so no solid feature can be thinner than a block:
-    the minimum length scale is enforced exactly rather than statistically.
-    H = B D^-1 B^T (B: cell-in-block indicator, D: block cell counts) is an
-    orthogonal projection, hence symmetric: H.T == H (checked in selftest)."""
-
-    def __init__(self, ctx: "base.Ctx", width_m: float) -> None:
-        voxel = float(ctx.grid.spacing[0])
-        idx = np.flatnonzero(ctx.active)
-        nx, ny, nz = ctx.shape
-        ix, iy, iz = idx % nx, (idx // nx) % ny, idx // (nx * ny)
-        self.lo = np.array([ix.min(), iy.min(), iz.min()])
-        ext = np.array([ix.max(), iy.max(), iz.max()]) - self.lo + 1
-        assert int(ctx.active.sum()) == int(np.prod(ext)), "active design cells must form one box"
-        n = int(round(width_m / voxel))
-        # the block edge must tile the box; x (50 cells) is not divisible by 4 -> nearest divisor
-        self.block = np.array([min((d for d in range(1, e + 1) if e % d == 0), key=lambda d: abs(d - n)) for e in ext])
-        self.nblocks = ext // self.block
-        self.ext = ext
-        self.mask = ctx.to3d(ctx.active).astype(np.float64)
-        self.ctx = ctx
-        self.radius_cells = float(self.block.min()) / 2.0
-        self.meta = {
-            "kind": "block_average_filter", "minimum_solid_width_m": width_m,
-            "block_cells": self.block.tolist(), "block_m": (self.block * voxel).tolist(),
-            "relation": "block edge (y, z) = minimum_solid_width_m; x edge = nearest divisor of the box length",
-            "guaranteed_min_solid_thickness_cells": int(self.block.min()),
-            "transpose": "H = B D^-1 B^T is an orthogonal projection: H.T == H (exact)",
-        }
-
-    def _blocks(self, x3: np.ndarray) -> np.ndarray:
-        s = tuple(slice(self.lo[i], self.lo[i] + self.ext[i]) for i in range(3))
-        sub = x3[s]
-        b = self.block
-        return sub.reshape(self.nblocks[0], b[0], self.nblocks[1], b[1], self.nblocks[2], b[2]), s
-
-    def H(self, x: np.ndarray) -> np.ndarray:
-        x3 = self.ctx.to3d(x) * self.mask
-        blocks, s = self._blocks(x3)
-        mean = blocks.mean(axis=(1, 3, 5), keepdims=True)
-        out = np.zeros_like(x3)
-        out[s] = np.broadcast_to(mean, blocks.shape).reshape(tuple(self.ext))
-        return self.ctx.flat(out * self.mask)
-
-    def HT(self, y: np.ndarray) -> np.ndarray:
-        return self.H(y)
 
 
 def chain_gradient(ctx: "base.Ctx", rho: np.ndarray, q: float, g_beta: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -219,8 +152,18 @@ def chain_gradient(ctx: "base.Ctx", rho: np.ndarray, q: float, g_beta: np.ndarra
 
 def write(ctx, cid, rho, q, *, parent, iteration, note):
     rho_tilde, p, _ = physical(ctx, rho, q)
+    transform = DesignTransform(
+        shape=ctx.shape,
+        spacing_m=float(ctx.grid.spacing[0]),
+        active_mask=ctx.active,
+        filter=ctx.filter,
+        projection=TanhProjection(ctx.b, ctx.eta),
+        ramp=RampInterpolation(q),
+    )
+    transform.production_ready(allow_diagnostics=True)
     meta = {"filter": ctx.filter.meta, "projection": {"kind": "tanh_heaviside", "eta": ctx.eta, "b": ctx.b,
-                                                       "chain": "beta = f_q(h_b(H rho)); g_rho = H.T(h_b'(H rho) f_q'(h_b(H rho)) g_beta)"}}
+                                                       "chain": "beta = f_q(h_b(H rho)); g_rho = H.T(h_b'(H rho) f_q'(h_b(H rho)) g_beta)"},
+            "transform": transform.describe(), "transform_hash": transform.transform_hash()}
     return base.write_candidate(ctx, cid, rho, q, parent=parent, iteration=iteration, note=note,
                                 rho_tilde=rho_tilde, ramp_arg=p, extra_meta=meta)
 
@@ -650,7 +593,7 @@ def selftest() -> None:
     assert abs(lhs - rhs) < 1e-9 * max(abs(lhs), 1.0), (lhs, rhs)
     ones = ctx.active.astype(float)
     assert np.allclose(F.H(ones)[ctx.active], 1.0)  # normalisation: constants preserved on active cells
-    if isinstance(F, ConeFilter):
+    if isinstance(F, ModuleConeFilter):
         assert not np.allclose(F.H(x)[ctx.active], F.HT(x)[ctx.active])  # cone H is not symmetric near the boundary
     delta = np.zeros_like(x); delta[np.flatnonzero(ctx.active)[5000]] = 1.0
     assert int((F.H(delta) > 0).sum()) > 1 and int((F.H(delta) > 0).sum()) <= (2 * int(np.ceil(F.radius_cells)) + 1) ** 3
@@ -664,7 +607,12 @@ def selftest() -> None:
     fd = (J(rho + h * d) - J(rho - h * d)) / (2 * h)
     _, g = chain_gradient(ctx, rho, q, c)
     assert abs(fd - np.dot(g, d)) < 1e-6 * abs(fd), (fd, np.dot(g, d))
-    Bf = BlockFilter(ctx, 0.2)
+    Bf = ModuleBlockFilter(
+        shape=ctx.shape,
+        spacing_m=float(ctx.grid.spacing[0]),
+        active_mask=ctx.active,
+        width_m=0.2,
+    )
     assert np.allclose(np.dot(Bf.H(x), y), np.dot(x, Bf.HT(y))) and np.allclose(Bf.H(Bf.H(x)), Bf.H(x))  # symmetric projection
     assert np.allclose(Bf.H(ones)[ctx.active], 1.0) and Bf.block.tolist() == [5, 4, 4], Bf.block
     print("block filter ok", Bf.meta["block_cells"], Bf.nblocks.tolist())
