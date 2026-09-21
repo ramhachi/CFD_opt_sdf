@@ -56,3 +56,26 @@ discrete primal response at this state and resolution.
   (iii) should accepted-step magnitudes be corrected by a measured
   direction-dependent factor, or should acceptance require FD confirmation on
   candidate-bound directions?
+
+## Control — primal residual tightening (2026-09-21, later same day)
+
+The registered campaign `p6_tight_residual_probe_2026_09`
+(`docs/evidence/fd_campaign_p6_tight_residual_manifest_2026_09.json`) re-ran
+the same 24 rows with `residualControl` tightened from `5e-7` to `5e-9` and the
+primal `nIters` cap raised from 1000 to 5000:
+
+| direction | baseline ratio | tight ratio | delta |
+| --- | --- | --- | --- |
+| gradient-aligned | 1.2178 | 1.2179 | < 0.01% |
+| random seed 11 | 1.3764 | 1.3759 | < 0.04% |
+| random seed 2026 | 1.5680 | 1.5684 | < 0.03% |
+
+Primal iterations rose from 91 to 114 with no change in the ratios. Primal
+convergence is therefore exonerated as the cause, and the mismatch is a stable
+property of the continuous adjoint against this discrete primal.
+
+Consequences for DF3: the acceptance controller must keep re-evaluating the
+primal for every trial (it does), and no accepted-step magnitude may rely on the
+5% gradient gate in this configuration. The gate failure is recorded as a
+configuration-specific bound; the production identity chain needs either a
+theoretical magnitude correction or FD-confirmed step sizes.

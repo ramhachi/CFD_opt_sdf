@@ -40,9 +40,12 @@ from cfd_sdf.fd_preregistration import (  # noqa: E402
 from cfd_sdf.fixed_grid_canonical_state_injection import (  # noqa: E402
     inject_canonical_state_into_fixed_grid_contract,
 )
+from cfd_sdf.execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case  # noqa: E402
 from cfd_sdf.fixed_grid_primal import (  # noqa: E402
     load_fixed_grid_density_state,
+    prepare_fixed_grid_primal_case,
     run_fixed_grid_primal_case,
+    summarize_fixed_grid_primal_case,
 )
 
 WORK = ROOT / "work" / "df2_fd_refresh"
@@ -52,6 +55,9 @@ import os
 
 TEMPLATE = Path(os.environ.get("DF2_TEMPLATE", str(WORK / "template_frozen")))
 CAMPAIGN_SUBDIR = os.environ.get("DF2_CAMPAIGN_SUBDIR", "fd_campaign")
+TIGHT_RESIDUAL = os.environ.get("DF2_TIGHT_RESIDUAL", "0") == "1"
+TIGHT_PRIMAL_RESIDUAL = "5.e-9"
+TIGHT_PRIMAL_NITERS = 5000
 EPSILONS = (3.0e-5, 1.0e-4, 3.0e-4, 1.0e-3)
 RANDOM_SEEDS = (11, 2026)
 
@@ -121,6 +127,23 @@ def _write_candidate_sidecar(
     provenance_path.write_text(json.dumps(provenance, indent=2), encoding="utf-8")
 
 
+def _tighten_primal_residual(case_dir: Path) -> None:
+    """Match the p.*/U.* residualControl to 5e-9 and lift the primal nIters cap."""
+
+    import re
+
+    path = case_dir / "system" / "optimisationDict"
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(r'("p\.\*"\s+)5\.e-7;', rf"\g<1>{TIGHT_PRIMAL_RESIDUAL};", text)
+    text = re.sub(r'("U\.\*"\s+)5\.e-7;', rf"\g<1>{TIGHT_PRIMAL_RESIDUAL};", text)
+    text, count = re.subn(r"\bnIters\s+1000\s*;", f"nIters {TIGHT_PRIMAL_NITERS};", text)
+    if count != 1:
+        raise SystemExit(
+            f"expected exactly one primal nIters=1000 to patch in {path}, found {count}"
+        )
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
 def run_signed_case(
     *,
     transfer,
@@ -152,23 +175,48 @@ def run_signed_case(
         topology_state_json=WORK / "injected_contract" / "topology_state.json",
         output_directory=case_root / "contract",
     )
-    result = run_fixed_grid_primal_case(
-        contract.topology_state_json,
-        case_dir=case_root / "case",
-        template_case_dir=TEMPLATE,
-        density_variant="seed",
-        backend="auto",
-        execute=True,
-        adjoint_iterations=1,
-        timeout_seconds=1800,
-    )
-    summary = result.summary
+    if TIGHT_RESIDUAL:
+        prepared = prepare_fixed_grid_primal_case(
+            contract.topology_state_json,
+            case_dir=case_root / "case",
+            template_case_dir=TEMPLATE,
+            density_variant="seed",
+            adjoint_iterations=1,
+        )
+        _tighten_primal_residual(prepared.case_dir)
+        run_result = run_openfoam_case(
+            prepared.case_dir,
+            backend="auto",
+            dry_run=False,
+            timeout_seconds=3600,
+            docker_image=DEFAULT_OPENFOAM_DOCKER_IMAGE,
+        )
+        summary = summarize_fixed_grid_primal_case(
+            prepared.case_dir,
+            topology_state_json=prepared.topology_state_json,
+            run_result=run_result.to_dict(),
+            docker_image=DEFAULT_OPENFOAM_DOCKER_IMAGE,
+        )
+        primal_summary_json = prepared.case_dir / "fixed_grid_primal_summary.json"
+    else:
+        result = run_fixed_grid_primal_case(
+            contract.topology_state_json,
+            case_dir=case_root / "case",
+            template_case_dir=TEMPLATE,
+            density_variant="seed",
+            backend="auto",
+            execute=True,
+            adjoint_iterations=1,
+            timeout_seconds=1800,
+        )
+        summary = result.summary
+        primal_summary_json = result.primal_summary_json
     convergence = summary.get("convergence") or {}
     downforce = summary.get("downforce_coefficient")
     primal_converged = bool(convergence.get("primal_converged"))
     return {
         "tag": tag,
-        "primal_summary_json": str(result.primal_summary_json),
+        "primal_summary_json": str(primal_summary_json),
         "status": summary.get("status"),
         "primal_converged": primal_converged,
         "primal_iterations": convergence.get("primal_iterations"),
@@ -176,6 +224,7 @@ def run_signed_case(
         "drag_coefficient": summary.get("drag_coefficient"),
         "objective_J": -float(downforce) if downforce is not None else None,
         "usable": primal_converged and downforce is not None,
+        "tight_primal_residual": TIGHT_RESIDUAL,
     }
 
 
