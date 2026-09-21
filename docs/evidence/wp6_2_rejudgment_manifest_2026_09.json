@@ -1,0 +1,59 @@
+{
+  "kind": "wp6_2_rejudgment_manifest",
+  "created": "2026-09-21",
+  "registered_before_computation": true,
+  "inputs": {
+    "reachable_evidence": {
+      "path": "docs/evidence/reachable_set_cross_fidelity_ranking_2026_09.json",
+      "sha256": "4beef93632235108daabc49898ba0f1d0b78e98b522076e204db62e1036f8e74"
+    },
+    "first_program_evidence": {
+      "path": "docs/evidence/fixed_shape_cross_fidelity_ranking_2026_09.json",
+      "sha256": "9f84b28b88b886f7efe729b94f379c1ca7e7e93e83b9a1f7088c5845b617e0cd"
+    }
+  },
+  "candidate_sets": {
+    "reachable_set_8": [
+      "wing_camber_bent",
+      "wing_chord03_a20",
+      "wing_endplate_a20",
+      "wing_flat_ctrl_c30",
+      "wing_gurney_a20",
+      "wing_tandem_xoff",
+      "wing_thick_a20",
+      "wing_two_element"
+    ],
+    "combined_pool_17": [
+      "box_bluff03",
+      "plate_a00_ref",
+      "plate_a10_nd",
+      "plate_a20_nd",
+      "plate_a20_span04",
+      "plate_a20_t10",
+      "plate_a20_up",
+      "plate_a20_zneg15",
+      "plate_a30_nd",
+      "wing_camber_bent",
+      "wing_chord03_a20",
+      "wing_endplate_a20",
+      "wing_flat_ctrl_c30",
+      "wing_gurney_a20",
+      "wing_tandem_xoff",
+      "wing_thick_a20",
+      "wing_two_element"
+    ],
+    "pool_excluded": [
+      "plate_a20_t05"
+    ]
+  },
+  "candidate_uncertainty_rule": "downforce: max(inherited 0.0147, measured |V2 - V1|); drag: max(inherited 0.034, measured relative |V2 - V1|)",
+  "extraction_sensitivity": {
+    "status": "not_applicable_analytic_anchor",
+    "reason": "the program is defined on analytic anchor shapes evaluated on the same grid with no density-to-surface extraction in the loop; there is no extraction term to measure. This is an applicability declaration, not a zero measurement."
+  },
+  "resolvability_rule": "Gate 4: |I| > 2 * max(S_b, S_c, S_extraction)",
+  "required_pairs": [],
+  "required_pairs_note": "the program's resolvability rule is applied to every generated pair; no additional pair subset is required",
+  "verdict_rule": "cross_fidelity_ranking module: no_go / pass / unresolved",
+  "j_scale": 1.0
+}

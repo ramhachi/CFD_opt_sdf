@@ -341,3 +341,41 @@ def test_ranking_qualification_assess_and_to_dict():
         RankingQualification.assess(
             surrogate, _scores("stage_v_v2", {"c1": 0.90, "c3": 1.00}), UNCERTAINTY
         )
+
+
+def test_candidate_specific_uncertainty_can_only_shrink_resolvability():
+    reference = _scores("stage_v_v2", {"c1": 0.90, "c2": 1.00, "c3": 1.10, "c4": 1.20})
+    surrogate = _scores("stage_t", {"c1": 0.85, "c2": 1.00, "c3": 1.15, "c4": 1.30})
+    flat = qualify_cross_fidelity_ranking(
+        surrogate,
+        reference,
+        uncertainty=UNCERTAINTY,
+        response_id="downforce_coefficient",
+    )
+    assert flat.n_signed_pairs >= 1
+
+    widened = qualify_cross_fidelity_ranking(
+        surrogate,
+        reference,
+        uncertainty=UNCERTAINTY,
+        response_id="downforce_coefficient",
+        candidate_uncertainty={"c2": 10.0},
+    )
+    assert widened.n_signed_pairs <= flat.n_signed_pairs
+    assert widened.candidate_uncertainty["c2"] == 10.0
+    assert widened.candidate_uncertainty["c1"] == UNCERTAINTY.downforce_abs
+    payload = widened.to_dict()
+    assert payload["candidate_uncertainty"]["c2"] == 10.0
+
+
+def test_candidate_specific_uncertainty_rejects_unknown_candidate():
+    reference = _scores("stage_v_v2", {"c1": 0.90, "c2": 1.00, "c3": 1.10, "c4": 1.20})
+    surrogate = _scores("stage_t", {"c1": 0.85, "c2": 1.00, "c3": 1.15, "c4": 1.30})
+    with pytest.raises(ValueError, match="unknown candidate"):
+        qualify_cross_fidelity_ranking(
+            surrogate,
+            reference,
+            uncertainty=UNCERTAINTY,
+            response_id="downforce_coefficient",
+            candidate_uncertainty={"missing": 0.1},
+        )

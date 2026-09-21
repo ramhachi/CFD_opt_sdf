@@ -46,17 +46,37 @@ committed.
    candidate (5.77%, `wing_flat_ctrl_c30`). The common band may not be reused
    unconditionally.
 5. **Closure conditions**: (1) union/part measurement done; (2) declared vs
-   measured mismatch machine-readable; (3) extraction `not_measured`;
-   (4) candidate/response-specific grid uncertainty registered; (5) a newly
-   preregistered report re-judging required pairs — **not performed**; only
-   the scope-repair manifest exists.
+   measured mismatch machine-readable; (3) extraction `not_measured` in the
+   historical reports; (4) candidate/response-specific grid uncertainty
+   registered; (5) preregistered re-judgment — **completed 2026-09-21**:
+   `docs/evidence/wp6_2_rejudgment_manifest_2026_09.json` (registered before
+   computation) and `docs/evidence/wp6_2_rejudgment_2026_09.json`.
+
+## Re-judgment result (condition 5)
+
+`scripts/rejudge_wp6_2_ranking_2026_09.py` re-judged the unchanged historical
+measurements with candidate-specific bands
+(`max(inherited, measured |V2 - V1|)`) and the Gate-4 rule, declaring the
+extraction term **not applicable by construction** (analytic anchor shapes,
+same-grid, no density-to-surface extraction in the loop — an applicability
+declaration, not a zero measurement):
+
+| set | response | V1 | V2 | signed pairs | inversions |
+| --- | --- | --- | --- | --- | --- |
+| reachable set (8) | downforce | pass | pass | 25 | 0 |
+| reachable set (8) | drag | unresolved | unresolved | 22 / 23 | 0 |
+| combined pool (17) | downforce | unresolved | unresolved | 121 | 0 |
+| combined pool (17) | drag | unresolved | unresolved | 104 / 108 | 0 |
+
+Aggregate verdict: `unresolved` for both responses (the 17-shape pool is
+unresolved), with zero resolvable inversions everywhere.
 
 ## Verdict
 
 The original claim "downforce ranking transfers exactly within the reachable
-set" is narrowed to **provisional: within the measured minimum-width subset
-and the declared bands, while extraction sensitivity is not measured**. P18
-remains **scope-bounded monitoring** until extraction sensitivity is measured
-and a preregistered re-judged report exists. The WP6-2 observation itself
-(8 shapes, zero resolvable inversions at V1/V2) stands as a diagnostic-set
-finding.
+set" survives candidate-specific bands **for the 8-shape reachable set only**,
+and only within the declared minimum-width subset and the not-applicable
+extraction scope. The combined 17-shape pool remains `unresolved`. P18 is
+**closed as a fixed-shape diagnostic finding**: no optimizer-generated-shape
+capability, no absolute calibration, no grid-independent claim. Any future
+production claim must come from DF2/DF3/DF5 evidence, not from this record.

@@ -147,6 +147,7 @@ class RankingReport:
     response_uncertainty: float
     j_scale: float
     extraction_sensitivity: Mapping[str, float]
+    candidate_uncertainty: Mapping[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -168,6 +169,7 @@ class RankingReport:
             "response_uncertainty": self.response_uncertainty,
             "j_scale": self.j_scale,
             "extraction_sensitivity": dict(sorted(self.extraction_sensitivity.items())),
+            "candidate_uncertainty": dict(sorted(self.candidate_uncertainty.items())),
         }
 
 
@@ -310,6 +312,7 @@ def qualify_cross_fidelity_ranking(
     extraction_sensitivity: Mapping[str, float] | None = None,
     required_pairs: Sequence[tuple[str, str]] = (),
     require_benchmark_coverage: bool = False,
+    candidate_uncertainty: Mapping[str, float] | None = None,
 ) -> RankingReport:
     surrogate_values = dict(surrogate.values)
     reference_values = dict(reference.values)
@@ -332,6 +335,9 @@ def qualify_cross_fidelity_ranking(
         )
     response_uncertainty = _response_uncertainty(uncertainty, response_id)
     extraction = _validated_extraction(extraction_sensitivity, candidates)
+    per_candidate = _validated_candidate_uncertainty(
+        candidate_uncertainty, candidates, response_uncertainty
+    )
 
     surrogate_order = tuple(rank_values(surrogate_values))
     reference_order = tuple(rank_values(reference_values))
@@ -352,17 +358,19 @@ def qualify_cross_fidelity_ranking(
             )
             surrogate_sign = _sign(surrogate_improvement)
             reference_sign = _sign(reference_improvement)
+            band_a = per_candidate[candidate_a]
+            band_b = per_candidate[candidate_b]
             surrogate_resolvable = pair_is_resolvable(
                 surrogate_improvement,
-                response_uncertainty,
-                response_uncertainty,
+                band_a,
+                band_b,
                 extraction_a,
                 extraction_b,
             )
             reference_resolvable = pair_is_resolvable(
                 reference_improvement,
-                response_uncertainty,
-                response_uncertainty,
+                band_a,
+                band_b,
                 extraction_a,
                 extraction_b,
             )
@@ -399,8 +407,8 @@ def qualify_cross_fidelity_ranking(
     adjacent_resolvable = any(
         pair_is_resolvable(
             pair_sign(reference_values[reference_order[index]], reference_values[reference_order[index + 1]], j_scale),
-            response_uncertainty,
-            response_uncertainty,
+            per_candidate[reference_order[index]],
+            per_candidate[reference_order[index + 1]],
             extraction.get(reference_order[index], 0.0),
             extraction.get(reference_order[index + 1], 0.0),
         )
@@ -439,6 +447,7 @@ def qualify_cross_fidelity_ranking(
         response_uncertainty=response_uncertainty,
         j_scale=float(j_scale),
         extraction_sensitivity=dict(extraction),
+        candidate_uncertainty=dict(per_candidate),
     )
 
 
@@ -450,6 +459,36 @@ def _response_uncertainty(uncertainty: Uncertainty, response_id: str) -> float:
             f"supported response ids: {sorted(_RESPONSE_UNCERTAINTY_FIELDS)!r}"
         )
     return float(getattr(uncertainty, field_name))
+
+
+def _validated_candidate_uncertainty(
+    candidate_uncertainty: Mapping[str, float] | None,
+    candidates: Sequence[str],
+    default: float,
+) -> dict[str, float]:
+    """Per-candidate bands, defaulting to the response-level band.
+
+    The Gate-4 rule is applied to the pair as
+    ``2 * max(band_a, band_b, extraction_a, extraction_b)``; candidate-specific
+    bands therefore never make a pair easier to resolve than the flat band.
+    """
+
+    resolved = {candidate: float(default) for candidate in candidates}
+    if candidate_uncertainty is None:
+        return resolved
+    if not isinstance(candidate_uncertainty, Mapping):
+        raise ValueError(
+            "candidate_uncertainty must be a mapping of candidate id to float"
+        )
+    for candidate_id, band in candidate_uncertainty.items():
+        if candidate_id not in candidates:
+            raise ValueError(
+                f"candidate_uncertainty references unknown candidate {candidate_id!r}"
+            )
+        resolved[candidate_id] = _require_finite_band(
+            f"candidate_uncertainty[{candidate_id!r}]", band
+        )
+    return resolved
 
 
 def _validated_extraction(
