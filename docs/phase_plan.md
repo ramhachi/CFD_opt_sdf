@@ -1,6 +1,6 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-09
+Date: 2026-09-22
 Status: authoritative
 Scope: generic rigid-object external aerodynamics with topology change
 Architecture decision: adopted on 2026-09-09
@@ -40,16 +40,9 @@ LBM has no wall treatment, force integration, SDF coupling, adjoint, or 3D
 support. Neither its passing benchmark nor a successful OpenFOAM process
 qualifies target aerodynamics or a complete optimization pipeline.
 
-Next execution order:
-
-1. Establish reproducible runtime and numerical evidence on Mac and Windows.
-2. Validate wall treatment, force integration and spatial convergence on
-   bounded laminar cases before coupling an SDF interface.
-3. Add CUDA only behind the same reference tests and report memory/precision
-   separately for each device.
-4. Validate stationary residuals and directional derivatives before adjoints
-   and constrained shape optimization; retain the existing density/Brinkman
-   route for topology work and independent body-fitted verification.
+The current execution order is maintained only in [section 11](#11-immediate-execution-order).
+The early cross-platform steps above remain product-level gates; they do not
+override the measured PQ0/PQ1 state or the next issue-driven slice.
 
 See [cross-platform commands and evidence](cross_platform_research.md).
 
@@ -126,11 +119,11 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | G2 case compiler | Current-spec numerical convergence passed; physical/native-artifact qualification pending | On 2026-09-07 both freshly compiled flows passed the declared primal, response, adjoint and normalized-mass convergence gates under the current specification hash. See `evidence/openfoam_convergence_2026_09.json`. Response-unit, gradient and grid-transfer semantics plus porous/body-fitted comparisons remain unqualified. |
 | G3 geometry/resolution gates | Partial — bounded STL/declared-resolution preflight; fixed far-field domain + clearance preflight implemented | `research preflight` checks STL metadata and declared feature/grid ratios. The 2026-09-19 V3 diagnosis localized all 220 under-determined cells of one rejected candidate to its wall/outer-boundary contact, so clearance is a measured hard-gate requirement. On 2026-09-20 WP1 implemented it: the Stage V far-field box is bound to the ProblemSpec's `grid.domain_bounds_m`, and a declared-margin pre-mesh clearance preflight (profile `stage_v_clearance_v1`, 0.25 m) refuses candidates before `blockMesh`/`snappyHexMesh` — the recorded wrong candidate is rejected with a no-launch artifact (`evidence/stage_v_domain_clearance_2026_09.json`). Self-intersection, actual shape thickness, complete mask/connectivity and density-to-SDF fidelity qualification remain. |
 | G4 benchmark ladder | Missing — implementation required | No complete three-family, three-grid generic acceptance set exists. |
-| Stage T canonical backend | Narrow numerical gate passed | Fixed-grid Brinkman primal/adjoints converged on the 8192-cell laminar fixture. At move/epsilon `1e-4`, directional derivatives agreed with finite differences within 2.23–4.35%, and an objective-only update agreed with primal re-evaluation within 4.51%. Move `0.03` was outside the useful local regime. See `architecture_effectiveness_2026_09.md`. |
-| Stage T canonical closed loop | Gradient chain verified; optimization still missing | On 2026-09-12 the full loop ran on real OpenFOAM: canonical 46080-cell `rho` -> `P @ rho` -> injection into the 2909 active source cells -> converged primal/adjoints -> `P.T @ topOSens` -> canonical gradient. Finite differences on the canonical grid agreed with the analytic directional derivative to 1.03%-0.56% (ratio 0.990 -> 0.994) along the gradient direction over 16 converged runs. The cell-order permutation is now measured, not assumed. Two limits are recorded: `top_o_sensitivity_gradient` is `d(+downforce)/drho`, the negative of `dJ/drho`; and a generic localized direction retains an unexplained ratio of approximately 0.90 that neither a two-decade residual tightening nor disabling regularisation removes. See `p0_openfoam_closed_loop_2026_09.md`. |
-| Stage T production optimizer | P0 candidate and state-transfer capability added; numerical qualification remains missing | Stage T candidate lineage can be bound fail-closed to a native ProblemSpec, canonical grid, STL-derived masks, and exact topology/density hashes. Canonical rho can be conservatively transferred to a uniform Cartesian OpenFOAM source grid with `source = P @ target`; the artifact remains `qualified=false`. Direction suites carry the verified candidate identity into plus/minus topology states, and the gradient gate rejects mixed objectives, binding mismatches, and incomplete direction-by-epsilon coverage. The real G2 run still awaits solver-field consumption of the state artifact, candidate-bound `P.T` gradient return, semantic response-unit and topology-value bindings, fresh multi-direction FD evidence, production connectivity derivatives, nonlinear acceptance/rollback, checkpoint/resume, and a GCMMA-equivalent iteration. |
-| Stage S | Cell-density handoff capability added; never yet given a real design | Stage T cell-data `rho` can be converted to a hash-bound iso-surface and SDF with explicit interpolation, threshold, grid, mask, component and root-availability diagnostics. Its repeated `diagnostic_only` verdicts were **not** a handoff defect: every input it was ever given was degenerate, because Stage T never produced material (see below). Quantitative acceptance gates, a re-run on a real design, and a qualified sharp-interface solver all remain missing. No SDF evolution exists at all — no Hamilton-Jacobi update, reinitialization, or normal velocity from a shape gradient. |
-| Stage V | Prototype with fail-closed single-level execution | Body-fitted snappyHexMesh execution can be driven directly from a native v2 `ProblemSpec` with an explicit candidate STL at a selectable resolution. The single-level path now writes a mesh preflight and refuses `simpleFoam` when the registered mesh profile fails; Docker timeout/Ctrl-C also removes the exact named container so a stopped wrapper cannot leave a solver mutating evidence. `forceCoeffs` derives `Aref`/`lRef`/`dragDir`/`liftDir` from declared reference values and reports Newtons alongside coefficients. Candidate-to-far-field clearance, target-profile grid convergence and cross-fidelity acceptance remain. |
+| Stage T canonical backend | Path B bounded exception on the refined source grid | The 64x32x32 source-grid campaign with perturbation residual `5e-9` gives FD/adjoint ratios `1.1504 / 1.1134 / 1.1441`; all registered directions are epsilon-stable and keep their sign, but all fail the 5% production gate. Only two source-grid levels exist and the base mesh gate remains unmeasured, so this is refined-grid evidence rather than grid convergence. |
+| Stage T canonical closed loop | Component path implemented; real nonlinear path not integrated | PQ0 added the compiler, DesignTransform, merit/trust controller, checkpoint binding and declared-versus-solved audit. Post-implementation inspection found that the nonlinear loop does not consume `CompiledProblem.volume_constraint`, its value/gradient adapter can rerun the same primitive evaluator instead of reusing the primal artifact, and Path B proposal bracketing is not connected. |
+| Stage T production optimizer | Not qualified | The next reduced problem is downforce maximization with a projected-volume inequality. The current real audit fixture solves an unconstrained `drag - downforce` objective, and no optimizer-generated candidate has completed a real volume-constrained OpenFOAM nonlinear loop. Projected-gradient/SLSQP remain proposal backends; MMA/GCMMA is deferred. |
+| Stage S | Extraction capability implemented; no qualified handoff candidate | Stage T cell data can be converted to a hash-bound iso-surface/SDF and evaluated across thresholds for volume, components and root availability. The latest registered sweep produced no `ready_for_stage_s=true` candidate. Downforce surface-gradient qualification, one accepted body-fitted update, Hamilton-Jacobi evolution, reinitialization and curvature control remain missing. |
+| Stage V | Drag bounded; downforce reference unresolved | With `linearUpwind`, drag finest-transition drift is 0.364% and passes its 2% bound. Downforce remains non-monotone with 0.010374 drift against the 0.005 absolute bound. The preregistered domain/boundary V2 factor campaign is not run; there is no downforce GCI or grid-independent claim. |
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
 the fixed-grid Brinkman model. It does not prove constrained optimization or
@@ -555,62 +548,69 @@ cross-fidelity comparison with Stage T/Stage S.
 
 The adopted detailed plan is
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
-It retains Stage T -> Stage S -> Stage V and now governs the work after the
-DF0--DF6 component implementation.
+It retains Stage T -> Stage S -> Stage V and governs work after PQ0/PQ1.
 
-Current status on 2026-09-21:
+Current status on 2026-09-22:
 
-- DF0 closed P18 as a **fixed-shape diagnostic only**. The eight-shape
-  downforce set still passes with candidate-specific bands (25 resolvable
-  pairs, zero inversions); the combined 17-shape pool remains unresolved for
-  both responses. This is not optimizer-generated-shape qualification.
-- DF1--DF6 supplied the compiler, DesignTransform, finite-difference campaign,
-  nonlinear trial controller, extraction sweep, Stage S drag sensitivity path,
-  independent-verification algebra and robust-three-field prototype. These are
-  component/capability results, not one production OpenFOAM closed loop.
-- P6 is now a solver-side continuous-adjoint/discrete-primal mismatch: +21.8%
-  on the aligned direction and +37.6%/+56.8% on two random directions. Transfer,
-  design movement and primal residual tolerance are exonerated.
-- The `linearUpwind` Stage V family qualifies drag at 0.364% finest-transition
-  drift. Downforce remains non-monotone at 0.010374, above the registered 0.005
-  bound, so there is no downforce GCI or grid-independent claim.
-- The first extraction sweep did not produce a Stage S-ready candidate.
+- PQ0 implemented the compiler, DesignTransform, nonlinear controller,
+  checkpoint binding, extraction/uncertainty hardening and production
+  exclusion for unfinished robust fields. Its real-artifact audit proves
+  `declared_equals_solved` only for the current unconstrained
+  `drag - downforce` fixture.
+- Post-implementation inspection found three PQ3 blockers: the nonlinear loop
+  does not add `CompiledProblem.volume_constraint`; the nominal value/gradient
+  API can execute the same primitive evaluator twice instead of reusing an
+  accepted primal artifact; and trial-adjoint semantics plus the Path B
+  centered FD bracket are not integrated.
+- PQ1 is **Path B bounded exception**. Refining the source grid from 32x16x16
+  to 64x32x32 moves all FD/adjoint ratios toward one. With tight perturbation
+  residuals the ratios are `1.1504 / 1.1134 / 1.1441` and epsilon plateaus
+  are stable, but the 5% production gate still fails. Two grid levels do not
+  establish grid convergence; the base mesh gate is still unmeasured.
+- Stage V `linearUpwind` qualifies drag at 0.364% finest-transition drift.
+  Downforce remains non-monotone at 0.010374 against the 0.005 bound. The
+  preregistered domain/boundary factor remains unrun.
+- No optimizer-generated candidate has `ready_for_stage_s=true`.
 
 Execute in this order:
 
-1. **PQ0 — production integration closure.** Make the compiler the sole owner
-   of the solved objective/constraints, fix the projected-volume pullback,
-   connect DesignTransform to the oracle, split parent-gradient from
-   trial-value evaluation, bind checkpoints, and close the extraction and
-   uncertainty fail-open edges. Do not start a long optimiser run before this.
-2. **PQ1 — Stage T gradient qualification.** Repair base-versus-perturbation
-   campaign gate semantics, audit the objective/BC/source derivative, and run
-   the registered direction-by-epsilon-by-grid study. Decide production pass,
-   bounded FD-confirmed research use, or No-Go.
-3. **PQ2 — Stage V downforce reference.** In parallel where resources allow,
-   run the already registered domain/boundary factor with `linearUpwind`, then
-   register only one result-driven factor at a time. Keep drag and downforce
-   conclusions separate.
-4. **PQ3 — first real OpenFOAM closed loop.** Only after PQ0 and a PQ1 decision,
-   run the minimal feasible Stage T problem with nonlinear primal acceptance,
-   rollback and reproducible restart. The current backend is a projected-gradient
-   or SLSQP proposal backend; it is not GCMMA.
-5. **PQ4 — T-to-S handoff and Stage S.** Apply the registered extraction sweep
-   to the PQ3 candidate, qualify both drag/downforce surface gradients by FD,
-   and accept one body-fitted shape step.
-6. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
-   Stage S candidates on at least three qualified grids; preregister
-   baseline-to-T and T-to-S required pairs and candidate-specific combined
-   uncertainties.
-7. **PQ6 — production backend and target physics.** Only after PQ5, integrate
-   robust three-field constraints, add an actual MMA/GCMMA backend if warranted,
-   and advance through turbulence, finite-wing, moving-ground/multipoint,
+1. **PQ0.1 — nonlinear integration repair.** Connect the real projected-volume
+   value/gradient to `run_stage_t_loop`; replace the response-named fake-volume
+   test; split primal and adjoint callbacks; reuse accepted primal artifacts;
+   make trial adjoint not-applicable and parent adjoint fail-closed; add the
+   Path B centered primal-FD bracket; disambiguate projection output from
+   solver beta; and audit a downforce-only plus volume reduced problem.
+2. **PQ0.2 — real OpenFOAM oracle smoke.** Run one parent primal, its adjoint,
+   the two-sided FD bracket, one trial primal, an accept/rollback and a
+   checkpoint resume. This is execution capability, not optimization evidence.
+3. **PQ1.1 — remaining gradient qualification.** Measure the base mesh gate,
+   register and run canonical-grid refinement, and add a third source-grid
+   level only if the result requires it. Keep Path B until every registered
+   direction passes 5%; do not scale the gradient magnitude empirically.
+4. **PQ2 — Stage V downforce reference.** This may run in parallel with
+   PQ0.1--PQ1.1. Execute the registered two-run V2 domain/boundary campaign
+   unchanged, then register only one result-driven factor at a time.
+5. **PQ3 — bounded OpenFOAM closed loop.** After PQ0.2 and the PQ1 decision,
+   run the downforce-plus-volume problem for at most three accepted steps.
+   Under Path B every proposal requires a centered primal FD bracket and actual
+   trial-primal acceptance. Projected-gradient/SLSQP are proposal backends;
+   neither is called GCMMA.
+6. **PQ4 — T-to-S handoff and one Stage S step.** Extract only the PQ3 final
+   candidate, pass volume/component/root/width/clearance gates, qualify both
+   drag and downforce surface derivatives by FD, and accept at most one
+   body-fitted shape step.
+7. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
+   Stage S candidates on at least three qualified grids. Preregister
+   baseline-to-T and T-to-S required pairs and candidate-specific uncertainty.
+8. **PQ6 — production backend and target physics.** Only after PQ5, integrate
+   robust fields/connectivity, add actual MMA/GCMMA if warranted, and advance
+   through turbulence, finite-wing, moving-ground/multipoint,
    vehicle-interference and physical-validation gates.
 
 No new parametric candidate generator belongs to this execution sequence.
 Fixed-shape generators may be used only as registered diagnostics. A stronger
 optimiser, robust projection, control-volume post-processing or custom
-sharp-interface solver must not be used to bypass PQ0--PQ5.
+sharp-interface solver must not be used to bypass PQ0.1--PQ5.
 
 ## 12. Document authority
 

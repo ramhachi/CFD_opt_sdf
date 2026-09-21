@@ -44,3 +44,20 @@ objective は宣言どおり 2 本（minimize drag / maximize downforce）で、
 2. volume budget の ProblemSpec field 化（contract amendment）は保留。
 3. legacy `run_fixed_grid_constrained_density_step`（spec なし）は diagnostic
    のまま。production CLI は spec + transform declaration を要求。
+
+## 2026-09-22 post-implementation audit
+
+上の `Status: PQ0 slice implemented` は component slice の記録であり、実 OpenFOAM
+nonlinear path の閉鎖を意味しない。追加監査で次を確認した。
+
+1. `stage_t_loop.make_oracle_from_compiled` は `compiled.volume_constraint` の
+   value/gradient を `OracleResult` へ追加しない。
+2. `evaluate_values` と `evaluate_gradients` は同じ `primitive_evaluator` を呼び、
+   gradient call へ渡した primal values/artifact を再利用しない。
+3. primal-only trial も `adjoint_converged` を要求し、payload 欠落時は `True` になる。
+4. Path B に必要な proposal ごとの centered primal FD bracket は loop 未接続である。
+5. real-artifact audit fixture は unconstrained `drag - downforce` であり、次の
+   downforce-only + projected-volume 問題を監査していない。
+
+従って PQ0 の表現は「component implementation complete」とし、PQ3 entry gate は
+詳細計画の PQ0.1/PQ0.2 を通過した時点で初めて閉じる。

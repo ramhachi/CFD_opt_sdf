@@ -14,8 +14,8 @@ Start here in a new terminal, after reading the repository root
 2. [`phase_plan.md`](phase_plan.md) - the sole roadmap, status, and execution
    order.
 3. [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
-   - adopted post-implementation integration and qualification plan (PQ0--PQ6);
-   subordinate to the roadmap.
+   - adopted post-PQ1 integration and qualification plan
+   (PQ0.1/PQ0.2/PQ1.1/PQ2--PQ6); subordinate to the roadmap.
 4. [`problem_register_2026_09.md`](problem_register_2026_09.md) - the issue
    ledger, including P1-P18 and the measured contradictions.
 5. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) -
@@ -66,10 +66,10 @@ Start here in a new terminal, after reading the repository root
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.
 - [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
-  — adopted post-implementation plan for retaining T -> S -> V while closing
-  production integration, qualifying the Stage T gradient and Stage V
-  downforce reference, running the first real closed loop, qualifying Stage S,
-  and then performing independent verification and target-physics work.
+  — adopted post-PQ1 plan for retaining T -> S -> V while closing the
+  nonlinear volume/oracle/FD-bracket path, bounding the remaining Stage T
+  gradient and Stage V downforce errors, then running the first limited closed
+  loop, Stage S step and independent verification.
   `phase_plan.md` remains the sole execution-order authority.
 - [`glm_downforce_assessment_2026_09.md`](glm_downforce_assessment_2026_09.md)
   — the GLM-session downforce-focused investigation and plan (WP4–WP6 results,

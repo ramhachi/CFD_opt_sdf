@@ -1,508 +1,548 @@
-# ダウンフォース最適化 — 実装後の統合・資格化計画（2026-09-21）
+# ダウンフォース最適化 — PQ0/PQ1 実装後の統合・資格化計画（2026-09-22）
 
-Status: **adopted post-implementation plan**. 2026-09-21 の実装と実測を反映し、
-旧 DF0–DF7 実装計画の次に実行する作業を定める。
+Status: **adopted post-PQ1 plan**
 
 Authority: [`phase_plan.md`](phase_plan.md) がロードマップ、状態、実行順の唯一の
-authority である。本書は、その順序を実装・数値実験・合否判定へ展開する詳細計画である。
-問題の状態は [`problem_register_2026_09.md`](problem_register_2026_09.md)、schema と
-artifact semantics は [`problem_contract_v2.md`](problem_contract_v2.md) と
+authority である。本書は、その順序を実装、数値実験、合否判定へ展開する詳細計画である。
+問題状態は [`problem_register_2026_09.md`](problem_register_2026_09.md)、schema と artifact
+semantics は [`problem_contract_v2.md`](problem_contract_v2.md) と
 [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) に従う。
 
-Baseline: branch `feat/p0-openfoam-closed-loop`, implementation baseline
-`4bbd8e3`。ここに記す数値はこの時点までの evidence artifact に限定する。
+Baseline: branch `feat/p0-openfoam-closed-loop`, commit
+`1d4046341dfb599582a9976061a07689d32c5927`。
+
+本書は 2026-09-21 版を同じファイルで改訂した。古い計画書を増やさず、PQ0/PQ1 の実装結果と
+実装後監査を一つの active plan に反映する。
 
 ---
 
 ## 1. 結論
 
-Stage T → Stage S → Stage V の構造は維持する。Stage T を捨てる根拠はなく、OpenFOAM
-Stage V は引き続き独立した truth/audit とする。一方、**部品の実装完了と、downforce
-最適化器としての資格化は別である**。
-
-2026-09-21 までに DF0–DF6 の主要部品は実装された。具体的には ProblemSpec compiler、
-DesignTransform、P6 有限差分 campaign、非線形 trial controller、restart、抽出 sweep、
-Stage S drag sensitivity path、独立比較 algebra、robust three-field の基礎である。
-しかし、これらは一つの production OpenFOAM closed loop としてまだ接続されていない。
-また、現在の実測は次の二つの主要 blocker を示している。
-
-1. Stage T の continuous adjoint は、凍結設計上の discrete primal FD に対して
-   gradient-aligned 方向で +21.8%、random 方向で +37.6% / +56.8% の差を持つ。
-   transfer、設計変化、primal residual は原因から除外されたが、solver 側の不整合は
-   未解決である。
-2. Stage V の `linearUpwind` family は drag の最細格子 drift を 0.364% まで下げたが、
-   downforce は 0.010374 で登録上限 0.005 を超え、三格子列も非単調である。
-   downforce の grid-independent claim と GCI は出せない。
-
-したがって次の仕事は、**PQ0 統合整合性 → PQ1 Stage T gradient → PQ2 Stage V
-downforce reference → PQ3 実 closed loop → PQ4 Stage S → PQ5 独立検証 → PQ6
-production/target physics** の順とする。PQ は post-implementation qualification を表す。
-
----
-
-## 2. 現在地
-
-### 2.1 実装済みだが、意味を限定すべきもの
-
-| 項目 | 現在の証拠 | 正しく言えること | まだ言えないこと |
-| --- | --- | --- | --- |
-| DF0 / P18 | 8-shape downforce は候補別 band 後も V1/V2 で pass、25 resolvable pairs、反転 0。17-shape pool は両応答 `unresolved` | 登録された8固定形状では順位反転を観測しなかった | optimizer reachable set 全体、絶対値精度、grid-independent ranking |
-| DF1 | compiler、filter/projection/RAMP、transform hash、lineage validator の unit evidence | 必要な primitive と変換部品が存在する | 宣言問題と production solver が完全一致する |
-| DF2 / P6 | transfer identity は machine precision、凍結設計 FD campaign 完遂 | mismatch は transfer や primal residual ではなく solver-side chain に局在する | gradient magnitude が 5% gate 内で正しい |
-| DF3 | primal re-evaluation、rollback、move reduction、checkpoint の pure-Python loop | 受理制御の部品と deterministic fixture がある | 実 OpenFOAM closed loop、GCMMA 実装、production convergence |
-| DF4 | extraction sweep と drag surface sensitivity ingestion | 不合格 threshold を含めて抽出結果を記録できる | `ready_for_stage_s=true` の実 candidate、FD-qualified Stage S step |
-| DF5 | required-pair / uncertainty / gate algebra | 比較結果を fail-closed に分類できる | baseline/T/S の三格子実証 |
-| DF6 | robust three-field の forward/backward と topology check | robust formulation の基礎 API がある | closed-loop integration、dilated-volume gradient、worst-case active-set処理、production cost |
-| Stage V | drag drift 0.364% with `linearUpwind`; downforce drift 0.010374 | drag reference family は登録 2% bound 内 | downforce reference の 0.005 bound、GCI、FSAE target physics |
-
-### 2.2 既存 candidate の抽出結果
-
-既存 `work/ramp_interp/fixture` に対する閾値 0.45 / 0.50 / 0.55 の登録 sweep は、
-0.45 で体積相対差 0.716、0.50 で iso 値範囲外、0.55 で connectivity fail だった。
-これは抽出 machinery の capability evidence であり、handoff 成功ではない。PQ3 で生成する
-新しい候補に対して同じ規則を再実行する。
-
-### 2.3 P18 の扱い
-
-P18 は [`p18_closure_record_2026_09.md`](p18_closure_record_2026_09.md) により
-**固定形状 diagnostic として閉じた**。この closure を optimizer-generated shapes へ
-拡張しない。今後の候補は candidate hash、transform hash、局所 feature、抽出規則、
-候補別数値不確かさ、required decision pairs を新たに登録する。
-
----
-
-## 3. 統合前に解消する実装上の不整合
-
-以下は新機能候補ではなく、現行部品を正しい一経路にするための必須修正である。
-
-| ID | 不整合 | 影響 | PQ0 での処置 |
-| --- | --- | --- | --- |
-| I1 | `compile_problem()` が `volume_constraint=None` を返す | projected occupied-volume inequality が宣言問題から消える | ProblemSpecから明示的にcompileする。宣言がなければ暗黙追加せず fail closed |
-| I2 | legacy fixed optimizer が control default から connectivity / volume bound を追加し得る | `declared != solved` | compiler出力以外の制約をproduction pathから除き、全 solved term をartifactへ列挙 |
-| I3 | `VolumeOccupationConstraint.gradient()` が `DesignTransform.backward()` を使い RAMP derivative まで掛ける | volumeは `rho_projected` 上の定義なのに、`q>0` で勾配が誤る | projectionまでの専用 pullback を追加し、`q=30` を含むFDで検証 |
-| I4 | `make_oracle_from_compiled()` がtransformを実際には使わない | solver入力空間と返却gradient空間が曖昧 | `rho_design -> state -> solver field` と `g_solver -> g_design` を型・metadata・hashで明示 |
-| I5 | legacy更新は `rho_filtered=rho_projected=rho`, `alpha=beta_max*rho` を再生成する | canonical transformを迂回する | production runnerをDesignTransform一本へ接続。legacy pathはdiagnosticと明記 |
-| I6 | trial evaluation でも gradient/adjoint を要求し、accepted trialを再評価する | OpenFOAM計算を重複し、planned cost modelと違う | parentはvalue+gradient、trialはprimal value-onlyへAPI分離し、受理済みpayloadを再利用 |
-| I7 | controllerは projected-gradient + merit/trust であり、MMA/GCMMAではない | algorithm claimが実装より強い | 現段階を nonlinear merit/trust controller と呼ぶ。moving asymptote実装後のみGCMMAと呼ぶ |
-| I8 | checkpointがProblemSpec hashとbackend stateを完全に束縛しない | resume時に別問題・別backendを混ぜ得る | spec/transform/backend/oracle profile/input hashesを照合し不一致時に停止 |
-| I9 | extraction selectionで `0.0 or inf` となる箇所がある | 完全一致の0を最悪値として扱う | `None` と数値0を分離する regression test を追加 |
-| I10 | candidate-specific uncertaintyがdocstringに反してdefault bandより小さく設定できる | Gate 4を意図せず緩める | `max(default, candidate)` をAPI内で強制し縮小指定をrejectまたはclamp |
-| I11 | independent verificationが三格子をschema上で必須化せず、欠落 uncertainty が0になり得る | algebraだけでqualifiedに見える | grid level数、response別uncertainty、extraction statusを必須化 |
-| I12 | robust fieldsはdilated volume値を持つがそのconstraint gradientとworst-case tie ruleがloop未接続 | robust最適化を実行できない | PQ6までprototype扱い。PQ0/PQ3のproduction pathへはまだ入れない |
-
-I1–I12 は、全てを一度に高度化する指示ではない。PQ0 は既存部品を一本化し、未統合機能を
-明示的に無効化する。actual GCMMA と robust formulation は PQ5 の証拠が揃うまで保留する。
-
----
-
-## 4. 維持するアーキテクチャと情報境界
+採用する構造は変えない。
 
 ```text
-ProblemSpec v2
-    │ compile: objective / constraints / response bindings / topology policy
-    ▼
-CompiledProblem ───────────────┐
-    │                          │ hash-bound declaration
-    ▼                          ▼
-rho_design ── DesignTransform ──> rho_filtered ──> rho_projected ──> beta/alpha
-    ▲                                                           │
-    │ exact transpose pullback                                  ▼
-g_design <────────────────────────────── solver primitive gradient
-    │
-    ▼
-nonlinear merit/trust controller
-    ├─ parent: primal + adjoint gradient, once
-    ├─ trial: primal values + constraints + geometry gates
-    └─ accept / rollback / move update / checkpoint
-    │
-    ▼
-Stage T candidate ── registered extraction ──> Stage S ──> independent Stage V
+ProblemSpec
+  -> Stage T: density / Brinkman による topology 探索
+  -> Stage S: 抽出境界の sharp-interface 改善
+  -> Stage V: body-fitted OpenFOAM による独立検証
 ```
 
-守る原則は次の通り。
+現在の実装は、compiler、DesignTransform、非線形受理、checkpoint、有限差分 campaign、
+抽出 sweep、独立検証 algebra まで前進した。PQ1 では source grid の細分化により
+FD/adjoint 比が粗格子の `1.22 / 1.38 / 1.57` から `1.15 / 1.11 / 1.14` へ移動し、
+30 倍の epsilon 範囲で安定した。したがって continuous adjoint の符号情報を限定研究に使う
+根拠は得たが、5% の production gate は通っていない。
 
-1. objectiveは符号を含めてprimitive responseからPython側で合成する。
-2. 制約はすべて `g <= 0` に正規化し、宣言されていない制約をproduction runへ追加しない。
-3. volumeは `rho_projected`、porous resistanceはRAMP後のfieldという空間差を保つ。
-4. optimizerに返す勾配は、solverが微分したfieldを明記してからexact transposeで戻す。
-5. accepted/rejectedは必ず非線形primal値と全制約・geometry gateで決める。
-6. Stage Vは最適化のtuning signalに使わず、候補固定後の独立比較に限定する。
-7. contract/capability、数値資格、reduced-case physics、FSAE target physics、実験妥当性を
-   別々のevidence classとして保存する。
+実装後監査では、PQ3 を始める前に閉じるべき統合ギャップも判明した。
+
+1. `CompiledProblem.volume_constraint` は one-step optimizer では使われるが、
+   `run_stage_t_loop` の nonlinear path では value/gradient に連結されていない。
+2. `make_oracle_from_compiled()` の value/gradient API は分かれているが、両方が同じ
+   `primitive_evaluator` を再実行し、accepted trial の primal artifact を再利用しない。
+3. trial は primal-only であるべきなのに、現在は `adjoint_converged` を必須判定し、欠落時は
+   `True` を既定値にする。parent adjoint と trial primal の意味が混ざっている。
+4. Path B が要求する「各提案方向の centered primal FD bracket」は nonlinear loop に未接続である。
+5. 現在の実 P0 fixture は `drag - downforce` の無制約問題であり、次に解くべき
+   「downforce 最大化 + 投影後体積制約」を表していない。
+6. `DesignTransformState.rho_projected` は射影出力、fixed-grid artifact の
+   `rho_projected` は RAMP 後の OpenFOAM `beta` であり、同名が異なる状態を表す。
+
+従って次の順序を採用する。
+
+```text
+PQ0.1  nonlinear path の統合修復
+   -> PQ0.2  実 OpenFOAM oracle の最小 smoke
+   -> PQ1.1  gradient の残る grid/mesh 資格化
+   -> PQ3    Path B 限定 closed loop（1–3 accepted steps）
+   -> PQ4    T-to-S handoff と一つの sharp-interface step
+   -> PQ5    baseline/T/S の独立三格子検証
+   -> PQ6    production optimizer と target-physics ladder
+
+PQ2 Stage V domain/boundary factor は PQ0.1–PQ1.1 と並行可能
+```
+
+長時間最適化、robust 三場、MMA/GCMMA 導入、front-wing への拡張は、上の gate を飛ばして
+始めない。
 
 ---
 
-## 5. PQ0 — production integration closure
+## 2. 現在地と証拠範囲
 
-### 目的
+### 2.1 実装済み
 
-実装済み部品を、宣言と計算が一致する最小の一経路にする。PQ0中はOpenFOAMの長時間runを
-行わず、pure-Python fixtureと既存artifactで統合誤りを除く。
+| 項目 | 現在の実装 | 証拠として言える範囲 |
+| --- | --- | --- |
+| Problem compiler | objective/response constraint を標準 minimization と `g <= 0` へ変換し、compile-time volume budget を持てる | contract/capability |
+| DesignTransform | filter → tanh projection → RAMP の forward と pullback | unit-level numerical/capability |
+| Nonlinear controller | merit/trust、trial primal、rollback、checkpoint/resume | synthetic integration capability |
+| PQ0 audit | 実 P0 artifact で `declared_equals_solved=true` | 当該 unconstrained `drag - downforce` fixture の contract evidence |
+| PQ1 campaign | base adjoint と perturbation primal を役割分離し、manifest の epsilon/direction を fail-closed に消費 | campaign semantics |
+| Refined source grid | 64x32x32、tight residual で比 `1.1504 / 1.1134 / 1.1441`、plateau 幅 `0.00043 / 0.00003 / 0.00450` | 当該 frozen state/response/configuration の数値 evidence |
+| Stage V scheme | `linearUpwind` で drag finest drift 0.364% | 当該候補の drag numerical evidence |
+| Extraction | threshold sweep、component/root/volume diagnostics | capability。Stage S-ready candidate は未生成 |
+| Robust fields | nominal/eroded/dilated prototype と production exclusion | prototype capability |
 
-### 作業
+### 2.2 まだ言えないこと
 
-1. compilerにvolume inequalityを接続し、objective/constraint/geometry requirementの
-   全 solved set をmachine-readableに出力する。
-2. DesignTransformに `beta` gradient用と `rho_projected` gradient用の別pullbackを持たせ、
-   各APIが受け取るgradient spaceを名前とmetadataで固定する。
-3. legacy fixed optimizerはproduction entryから外すか、compiler/transformを消費するadapterに
-   する。暗黙のvolume/connectivity、identity transform更新は禁止する。
-4. oracleを次に分割する。
-   - parent evaluation: primal値、primitive gradients、資格gate
-   - trial evaluation: primal値、constraint値、geometry gate
-   - accepted trial: trial payloadを次parentとして再利用し、次iteration開始時に一度だけadjoint
-5. checkpointへProblemSpec、CompiledProblem、DesignTransform、backend、solver profile、rho、
-   response artifactのhashを保存し、resume時に全照合する。
-6. I9–I11のfail-closed修正を行う。DF6 prototypeはproduction registryから除外したままにする。
-7. docstring、CLI、artifact中の `GCMMA-shaped` 表現を実装内容に合わせて訂正する。
+- downforce gradient が production 精度であること。
+- source-grid convergence または grid independence。比較した source grid は二段階だけである。
+- 現在の nonlinear loop が物理体積制約を解いていること。
+- 実 OpenFOAM evaluator で primal-only trial と parent adjoint が重複なく動くこと。
+- optimizer-generated candidate の Stage T → Stage V 改善順位が保存されること。
+- Stage V downforce が grid-independent であること。
+- Stage S の形状勾配、再初期化、曲率制御が資格化されたこと。
+- full vehicle、高 Reynolds 数、moving ground、multipoint 条件へ一般化できること。
+
+### 2.3 PQ1 の正しい解釈
+
+細格子結果は **refined-grid epsilon-stable** である。二つの source-grid level しかないため、
+`grid-consistent` や `converged` とは呼ばない。全方向が 1 に近づいたことから source-grid
+離散化が mismatch の主要寄与である可能性は高いが、唯一原因とは確定しない。
+
+Path B は gradient magnitude を経験係数で補正する経路ではない。使えるのは、符号の安定した
+adjoint を proposal 生成に使い、各 proposal を primal FD と実 trial primal で確認する限定経路
+だけである。
+
+---
+
+## 3. 解く問題を固定する
+
+最初の実 closed loop は、次の reduced problem に固定する。
+
+```text
+design variable: rho in [0, 1]
+
+rho
+  -> mask-aware filter
+  -> tanh projection = rho_projection
+  -> RAMP interpolation = beta_solver
+  -> OpenFOAM Brinkman field
+
+minimize  J(rho) = -C_DF(rho)
+
+subject to
+  g_V(rho) = V(rho_projection) - V_max <= 0
+  fixed/forbidden/root masks
+  declared geometry gates
+  move/trust bounds
+```
+
+`C_DF` は global `-z` 方向の正の downforce coefficient とし、最大化を標準 minimization
+`J=-C_DF` へ変換する。体積は RAMP 後の抵抗係数ではなく、射影後の幾何占有率に対して定義する。
+
+drag は最初の loop では report-only response とする。drag を設計要件にする場合は、後続 manifest
+で `C_D <= C_D,max` の制約として追加する。無次元化・scale・weight を登録しない
+`drag - downforce` の単純和は使わない。
+
+最初の reduced problem で connectivity を無効にする場合、その候補は connectivity-qualified と
+呼ばない。root、minimum width、connectivity を PQ3 の geometry gate に要求するなら、fixture
+と初期 feasible seed に明示し、未実装の微分制約を暗黙に解いたことにしない。
+
+---
+
+## 4. PQ0.1 — nonlinear production path の統合修復
+
+### 4.1 目的
+
+実装済み部品を一つの意味的に正しい nonlinear path にする。新しい optimizer や抽象層は作らず、
+既存の `CompiledProblem`、`DesignTransform`、`run_stage_t_loop` を接続する。
+
+### 4.2 Volume constraint を nonlinear loop へ接続
+
+`make_oracle_from_compiled()` は solver primitive constraints に加え、
+`compiled.volume_constraint` を同じ `OracleResult` へ追加する。
+
+- value: `V(rho_projection) - V_max`
+- gradient: `DesignTransform.pullback_from_projected(...)`
+- response constraint と volume constraint の ID 重複を fail-closed に拒否
+- parent/trial/checkpoint/history の全てで同じ constraint ID と定義 hash を使用
+- trial は CFD 前に安価な volume/box/mask gate を評価し、明白な infeasible proposal を拒否可能にする
+
+現在の test にある「downforce response を `volume_budget` と命名した制約」は廃止し、実際の
+projection occupancy を検査する。
+
+### 4.3 Primal と adjoint の実行契約を分離
+
+oracle は次の二つを別 callback として持つ。
+
+```text
+evaluate_values(rho)
+  -> primal artifact + response values + primal/geometry status
+
+evaluate_gradients(rho, accepted_primal_artifact)
+  -> accepted primal を入力に adjoint だけを実行
+  -> response gradients + adjoint status
+```
+
+`evaluate_gradients` は渡された primal artifact の candidate hash、state hash、final time、
+response hash、solver profile を照合する。同じ `rho` から primal を黙って再実行しない。
+
+accepted trial は次 iteration の parent primal artifact として再利用する。必要な solver 実行は
+「初期 parent primal 1回、各 accepted parent の adjoint 1回、各 trial の primal 1回」を基本とする。
+API 呼出し数だけでなく、実 evaluator の primal/adjoint invocation ID で重複を検査する。
+
+### 4.4 Parent と trial の収束状態を分ける
+
+trial primal に adjoint 状態を要求しない。
+
+```text
+trial.adjoint_status = not_applicable
+parent.adjoint_status = converged | failed
+```
+
+parent gradient は adjoint status、最終残差、required response、最終 time、field hash のいずれかが
+欠ければ fail-closed に停止する。欠落を `True` とみなさない。trial acceptance は primal、geometry、
+constraints、実 objective、trust/merit だけで判定する。
+
+### 4.5 Path B centered FD bracket を実装
+
+proposal `d` ごとに `d_hat = d / ||d||_inf` を作り、parent で次を評価する。
+
+```text
+D_adj = grad(J)^T d_hat
+D_FD  = [J(rho + epsilon d_hat) - J(rho - epsilon d_hat)] / (2 epsilon)
+```
+
+- `rho ± epsilon d_hat` が bounds/masks を対称に満たす epsilon を manifest から選ぶ。
+- clip によって方向を変えない。対称点が作れない場合は move を縮め、作れなければ proposal を拒否する。
+- 両側 primal は同じ solver/mesh/residual profile を使う。
+- `|J+ - J-|` が登録 noise floor 以下なら判定不能として step を進めない。
+- minimization convention で `D_adj < 0`、`D_FD < 0` かつ符号が一致する場合だけ
+  trial primal へ進む。
+- magnitude 補正係数は掛けない。
+- FD bracket artifact を proposal、parent、epsilon、両側 run hash とともに保存する。
+
+### 4.6 状態名を一意にする
+
+内部 semantic name を次へ統一する。
+
+| 状態 | 意味 |
+| --- | --- |
+| `rho_design` | optimizer design variable |
+| `rho_filtered` | filter output |
+| `rho_projection` | tanh projection output。volume と geometry occupancy の基準 |
+| `beta_solver` | RAMP 後に OpenFOAM が使う Brinkman interpolation field |
+
+既存 artifact schema を直ちに破壊しない。schema version を上げるまでは旧 key に semantic metadata
+を必須化し、reader 側で一度だけ変換する。新しい同義 key の二重保存は避ける。
+
+### 4.7 PQ0.1 exit gate
+
+- nonlinear loop の objective、response constraints、volume constraint が compiler の
+  `solved_set` と完全一致する。
+- synthetic evaluator で volume infeasible proposal が拒否され、volume gradient の centered FD が通る。
+- trial は adjoint なしで評価でき、parent は adjoint 欠落で必ず停止する。
+- accepted trial の primal artifact が次 parent で再利用され、重複 primal がない。
+- Path B bracket の sign match、sign mismatch、noise-floor、非対称 bounds の回帰 test が通る。
+- checkpoint resume が problem/transform/oracle/bracket profile の変更を拒否する。
+- projection output と solver beta の lineage が machine-readable に区別される。
+- `declared_equals_solved=true` audit が「downforce 最大化 + volume inequality」の新 fixture で成立する。
+
+### 4.8 停止条件
+
+- volume constraint を `ProblemSpec` と transform declaration の二重所有にして一致を推測する必要がある。
+- primal artifact を adjoint adapter が一意に再利用できない。
+- centered FD の solver noise floor を測れない。
+- reduced problem に feasible initial state が存在しない。
+
+この場合は schema または adapter を先に直し、optimizer tuning へ進まない。
+
+---
+
+## 5. PQ0.2 — 実 OpenFOAM oracle の最小 smoke
+
+PQ0.1 の synthetic tests の次に、長時間 campaign の前に一つの実 solver trace を作る。
+
+### 実行列
+
+1. feasible parent primal
+2. 同じ parent artifact を消費する parent adjoint
+3. Path B bracket の `rho + epsilon d_hat` primal
+4. Path B bracket の `rho - epsilon d_hat` primal
+5. 一つの trial primal
+6. accept または rollback
+7. checkpoint から resume し、受理済み trial primal を parent として再利用
 
 ### 合格条件
 
-- compiler artifactに宣言objective/constraintと実際のsolved setが一対一で現れる。
-- `q=0` と `q=30` のprojected-volume gradientが中心差分と登録許容差内で一致する。
-- transform chainの各fieldに対するdot-product/FD testが通り、gradient spaceを取り違える
-  mutation testがfail closedになる。
-- 一つのouter iterationで、parent adjointは1回、各trialはprimal-only、受理後の重複primalは0回。
-- spec、transform、backendのいずれかを変えたcheckpoint resumeが拒否される。
-- extraction差0、uncertainty縮小、二格子だけのverificationがそれぞれtestで検出される。
-- repository full test、compileall、`git diff --check` が通る。
+- primal/adjoint の invocation ID と input/output hash が一意に追跡できる。
+- parent primal の暗黙再実行がない。
+- trial に adjoint を走らせない。
+- volume、objective、geometry gate が同じ candidate hash を参照する。
+- interruption 後の resume が同じ decision/history を再現する。
+- sign、units、`dJ/drho=-dC_DF/drho` が artifact に明記される。
 
-### 停止条件
-
-ProblemSpec v2にvolume budgetのauthorityを一意に置けない場合は、推測でdefaultを追加しない。
-contract amendmentを独立diffとして先に決める。
-
-### 成果物
-
-- integration testとmutation test
-- 一つのfixtureについてのcompiled-problem/transform/checkpoint artifact
-- `declared == solved` audit report
-- legacy diagnostic pathの明示的status
+これは closed-loop 改善の証明ではなく、production execution path の capability evidence である。
 
 ---
 
-## 6. PQ1 — Stage T gradient oracle の資格化
+## 6. PQ1.1 — gradient oracle の残る資格化
 
-### 目的
+### 6.1 現判定
 
-P6の +22%〜+57% mismatchを原因別に分離し、production勾配として通すか、限定的な
-FD-confirmed research loopへ落とすかを決める。
+PQ1 は refined source grid 上の **Path B bounded exception** である。Path A ではない。
 
-### 最初に修復するcampaign semantics
+### 6.2 次の順序
 
-現在のFD campaignは各perturbation rowへadjoint gateを要求するmanifestと、実際にはperturbed
-caseでadjointを走らせないrunnerが一致していない。有限差分側に必要なのはqualified primal
-valueである。次のように再登録する。
+1. base mesh gate を測定し、現在の `not_measured` を解消する。
+2. canonical grid refinement を専用 immutable manifest として登録する。
+3. frozen design、response、domain、solver、direction、epsilon、residual を固定し、canonical
+   parameterization だけを変更する。
+4. source grid を変えない比較で、canonical parameterization が比へ与える効果を判定する。
+5. source-grid dependence が主要なままなら、結果を見る前に第三 source-grid level を登録し、
+   三段階で収束傾向を調べる。
 
-- base: mesh、primal residual/stationarity、requested adjoint residual/final-time/hash gateを全て要求
-- `+epsilon/-epsilon`: 同一mesh/spec/solver profile、primal residual/stationarity、response hashを要求
-- analytic derivative: base adjointから一度だけ取得
-- campaign provenance: baselineとtight-residual probeを別manifest/hashとして束縛
+二段階の grid 比から Richardson extrapolation、観測次数、GCI を作らない。非単調なら convergence
+claim を止め、level ごとの bounded evidence として残す。
 
-### 原因分離の順序
+### 6.3 判定
 
-1. downforce objective source、normal/sign、boundary contribution、porous source derivative、
-   sensitivity fieldとfinal-time bindingをcode+dictionary auditする。
-2. gradient-alignedに加え、analytic derivativeが数値ノイズ床より十分大きい直交/ランダム方向を
-   事前登録する。ほぼ0のrandom derivativeをratio passの根拠にしない。
-3. 同一物理形状でStage T格子とadjoint source gridを一因子ずつ細分化し、ratioが1へ近づくか測る。
-4. regularisation、primal residual、transferは既に反証/除外した仮説として再試行しない。
-5. scalar補正は、方向・epsilon・gridに依存しないことと理論的原因が示せた場合にだけ候補にする。
+| 判定 | 条件 | 次 |
+| --- | --- | --- |
+| Path A | 全登録方向で符号一致、epsilon plateau、relative error <= 5%、mesh/base gates measured pass | 通常の限定 PQ3 |
+| Path B | 5% は未達だが符号と plateau が安定し、各 proposal の centered FD bracket を実行できる | 1–3 accepted steps の research PQ3 |
+| No-Go | 符号反転、plateau 不成立、mesh/base gate fail、または FD bracket が proposal を支持しない | loop 停止。solver-side adjoint formulation を修正 |
 
-### 判定経路
-
-**Path A — production gradient pass**
-
-- 事前登録した全有効方向で相対誤差5%以内。
-- epsilon plateau、符号、response binding、全資格gateを満たす。
-- grid refinementで誤差が悪化せず、選択gridをartifactに固定する。
-
-**Path B — bounded research exception**
-
-5%を満たさないが符号と誤差区間がgrid/directionに対して安定する場合、production gradientとは
-呼ばない。PQ3は小規模research campaignに限定し、各提案方向をprimal FDでbracketし、実primal
-re-evaluationでのみ受理する。magnitude補正は使わず、結果にはconfiguration-specific boundを付ける。
-
-**No-Go for closed loop**
-
-符号反転、epsilon不安定、grid refinementで発散、またはobjective/BC derivative欠落が残る場合、
-PQ3を開始しない。solver-side adjoint formulationを修正してPQ1を再実行する。
-
-### 成果物
-
-- preregistered FD manifest v2
-- direction × epsilon × grid のmachine-readable report
-- base/perturbation別gate table
-- P6 close、bounded exception、またはNo-Goの三値判定
+Path B のまま PQ3 へ進む場合、現比 `1.11–1.15` を補正値として使わない。異なる state、方向、
+constraint gradient へ外挿しない。
 
 ---
 
 ## 7. PQ2 — Stage V downforce reference の数値資格化
 
-### 目的
+PQ2 は PQ0.1、PQ0.2、PQ1.1 と独立に進められる。登録済み
+`evidence/stage_v_domain_boundary_factor_manifest_2026_09.json` を変更せず実行する。
 
-dragで成功した`linearUpwind` familyを固定し、downforceの0.010374 driftがdomain/boundary、
-body近傍解像、steady assumptionのどこから来るかを一因子ずつ調べる。
+### 実行
 
-### 実行順
+- fixed candidate、matched-Re laminar、`linearUpwind`、V2 を固定する。
+- far-field domain extension を 1 run。
+- far-field boundary treatment variant を 1 run。
+- mesh/stationarity gate に失敗した run も除外せず failed と記録する。
+- この campaign で V3 や複数因子同時変更を追加しない。
 
-1. 登録済み
-   [`evidence/stage_v_domain_boundary_factor_manifest_2026_09.json`](evidence/stage_v_domain_boundary_factor_manifest_2026_09.json)
-   を変更せず実行する。candidate、力の正規化、scheme、mesh family、gateを固定する。
-2. domain extensionとfar-field boundary treatmentの主効果を判定する。複数因子を同時変更しない。
-3. downforce driftが残る場合、結果に応じて次の一因子だけを事前登録する。
-   - body/leading-edge近傍解像
-   - span/end treatmentと境界距離
-   - steady vs time-resolved response
-4. 各campaignでpressure、viscous、total force、stationarity、residual、mesh profileを別fieldに保存する。
+### 判定
 
-### 合格と限定継続
+- V2 downforce 変化が 0.005 を超える因子がある場合、その因子を固定した三格子 family を新しく
+  事前登録し、V2→V3 drift を再測定する。
+- どちらも 0.005 以下なら、残る 0.010374 の非単調 drift を当該候補の measured numerical band
+  として扱う。grid-independent や GCI とは呼ばない。
+- drag は 2% relative、downforce は 0.005 absolute で別々に判定する。
 
-- **grid-qualified**: 三格子全てがprofile gateを満たし、最細transitionがdownforce 0.005以内。
-  単調/asymptoticである場合だけGCIを報告する。
-- **bounded reference**: 0.005を満たさなくても、candidate-specific数値bandを保守的に登録し、
-  PQ5のrequired improvementがそのcombined uncertaintyを超える場合だけ限定比較に使える。
-  この場合もgrid-independentとは呼ばない。
-- **unusable reference**: driftが候補差と同程度以上、またはgate failure/非定常依存が残る場合、
-  downforce ranking conclusionを停止する。dragのqualified resultは分離して保持する。
-
-### 成果物
-
-- domain/boundary factor report
-- 次因子が必要なら実行前manifest
-- response別 numerical uncertainty table
-- P16更新
-
-PQ2はPQ0/PQ1と計算資源が競合しない範囲で並行できる。ただし、その結果をPQ3の受理判定へ
-接続してはならない。
+PQ2 が未完でも Stage T execution capability を調べる PQ3 は開始できる。ただし、PQ2 が閉じるまで
+Stage V を truth value とした改善量や target-physics claim は作らない。
 
 ---
 
-## 8. PQ3 — 最初の実 OpenFOAM closed loop
+## 8. PQ3 — 最初の限定 OpenFOAM closed loop
 
-### Entry gate
+### 8.1 Entry gate
 
-- PQ0合格。
-- PQ1 Path A、または制約を明記したPath B manifest。
-- feasible seedまたは明示的restoration phase。
-- solver/case/transform/ProblemSpec hashesが固定されている。
+- PQ0.1 の全 exit gate が pass。
+- PQ0.2 の実 oracle smoke が pass。
+- PQ1.1 が Path A、または制約を明記した Path B manifest が確定。
+- reduced problem、`V_max`、filter/projection/RAMP、初期 feasible seed、move bounds、noise floor、
+  accepted-step 上限を事前登録。
+- geometry/topology policy のうち、実際に強制する項目と report-only 項目を分離。
 
-PQ2のgrid-independent downforceはPQ3開始の必須条件ではない。PQ3はStage T loopの成立を調べる
-段階であり、最終改善の主張はPQ5まで保留する。
+### 8.2 Campaign
 
-### 最小campaign
+- objective: `minimize -C_DF`
+- constraint: projected volume inequality
+- accepted steps: 最大 3
+- trial: primal-only
+- parent: accepted primal reuse + adjoint-only
+- Path B: 全 proposal に centered primal FD bracket
+- acceptance: 実 trial primal、volume、geometry、merit/trust、noise margin
+- rejection: rollback し、continuation/accepted counter を進めない
+- restart: 少なくとも一度、意図的中断から再開する
 
-1. 単一flow case、単一downforce objective、projected-volume inequality、必要最小限のgeometry gate。
-2. backendは現在のprojected-gradientまたはSLSQP bounded proposalを使い、実装名どおりに記録する。
-3. parentでprimal+adjointを一度実行し、trialはprimal value-onlyで評価する。
-4. trialはobjective、全constraints、geometry gate、solver qualificationを満たした場合だけ受理する。
-5. reject時は同じparentへrollbackし、move radius/penaltyを更新する。
-6. 各accepted stateでrho系列、solver field、primitive responses、gradients、constraint、hashを保存する。
-7. 中断・resume runと連続runが同じaccepted historyを生成することを確認する。
+初回 campaign では robust three-field、connectivity finite-difference production constraint、
+actual MMA/GCMMA、mesh adaptation を入れない。これらが必要な問題設定なら PQ3 の結果を
+`capability only` とし、後続 gate を定義してから追加する。
 
-### 合格条件
+### 8.3 合格条件
 
-- 少なくとも一つの非自明なaccepted stepがあり、実primal objectiveが登録した予測/不確かさの範囲で改善する。
-- accepted stateは全solver/constraint/geometry gateを満たす。
-- reject後にparent artifactが変化しない。
-- resumeがaccepted historyとfinal rho hashを再現する。
-- 同一seed/run profileで再現可能である。
-- 最終候補がhandoff preregistrationを持つ。`ready_for_stage_s` はPQ4の抽出結果で判定する。
+- 1–3 steps の範囲で少なくとも一つの accepted step がある。
+- 各 accepted step は実 primal で `C_DF` を noise margin より大きく改善する。
+- volume と強制 geometry gates を全 accepted state が満たす。
+- accepted/rejected trial、FD bracket、rollback、checkpoint が immutable lineage を持つ。
+- rerun/resume で同じ accepted history と final hash を再現する。
+- 最終 candidate に extraction preregistration を結び付ける。
 
-### 停止条件
+### 8.4 停止条件
 
-- PQ1 Path BでFD bracketが提案方向の符号を支持しない。
-- trialのprimalが収束しない、制約を改善しない、geometry gateを繰り返し破る。
-- objective改善がStage T数値不確かさを超えない。
+- Path B FD bracket が adjoint proposal の descent sign を支持しない。
+- volume を満たす feasible trial が作れない。
+- primal/adjoint/geometry gate が fail。
+- improvement が repeatability/noise floor 以下。
+- accepted trial の再利用または rollback lineage が壊れる。
 
-停止時はbackendを強くする前に、gradient、feasibility、transform、constraint scalingのどこで
-止まったかを分離する。actual MMA/GCMMA導入を失敗隠しに使わない。
+停止は optimizer 強化の合図ではない。原因を objective、constraint、gradient、solver、geometry の
+どこに局在できるかを記録し、その一因子だけを修正する。
 
 ---
 
-## 9. PQ4 — T-to-S handoff と Stage S の最初の一歩
+## 9. PQ4 — T-to-S handoff と最初の sharp-interface step
 
-### 作業
+### 9.1 抽出
 
-1. PQ3の最終accepted candidateへ登録threshold sweepを実行する。
-2. volume差、watertightness、component、self-intersection、feature survival、revoxelized差を測る。
-3. thresholdは事前登録したrange/ruleから選び、観測後のbest threshold選択をしない。
-4. downforceとdragの各adjoint surface sensitivityをsolver suffixで分離して取得する。
-5. surface gradientを法線方向の中心差分で符号・scaleまで検証する。
-6. 最初のshape updateは既存OpenFOAM capabilityの`volumetricBSplines` + morpherを優先する。
-7. remesh後に全geometry/mesh/response gateを再評価し、失敗時はrollbackする。
+PQ3 final accepted candidate だけを対象に、事前登録した threshold sweep を実行する。
 
-### 合格条件
+- projected-volume discrepancy
+- component count と root attachment
+- minimum solid/void width と gap
+- surface self-intersection/manifoldness
+- clearance
+- candidate/field/threshold/hash lineage
 
-- `ready_for_stage_s=true` の実candidateが得られる。
-- 選択thresholdと未選択rowが全てhash付きで残る。
-- downforce/drag surface gradientが登録FD gateを通る。
-- 一つのStage S stepが非線形primalで受理され、constraintとgeometryを維持する。
+`ready_for_stage_s=true` は全 gate を満たした threshold にだけ付ける。既存 sweep の失敗結果を
+上書きせず、新 candidate の evidence を別 artifact として保存する。
 
-### 停止条件
+### 9.2 Stage S
 
-抽出差またはremesh差がresponse改善より大きい場合、Stage Sを進めずhandoff layerを修正する。
-custom CutFEM/ghost-node solverは、この既存body-fitted経路が原理的に不可能と示されるまで導入しない。
+最初の一歩は body-fitted surface gradient を使う一つの小さな形状更新に限定する。
+
+- drag と downforce の surface directional derivative を別々に centered FD で確認。
+- downforce objective の符号と法線規約を固定。
+- reinitialization、curvature smoothing、mesh morphing の各作用を別 hash で記録。
+- 一 step 後に volume、thickness、clearance、mesh quality を再評価。
+
+gradient FD が不合格なら Hamilton–Jacobi の長時間 evolution を開始しない。
 
 ---
 
 ## 10. PQ5 — 独立 Stage V verification
 
-### 比較対象
+比較対象を先に固定する。
 
-- baseline
-- PQ3のStage T candidate
-- PQ4のStage S candidate
+1. baseline
+2. PQ3 Stage T candidate
+3. PQ4 Stage S candidate
 
-required pairsは最低でも `baseline -> Stage T` と `Stage T -> Stage S` を事前登録する。
+各 candidate を同じ qualified profile の三格子以上で評価し、drag と downforce を別 response として
+扱う。baseline→T と T→S の required pair を事前登録し、candidate-specific numerical band と
+extraction/geometry uncertainty を合わせて、差が解像可能か判定する。
 
-### 実行と判定
+報告語は次に限定する。
 
-1. 同一のdeclared domain、clearance preflight、flow condition、force normalizationで各候補を評価する。
-2. 各候補は最低三つのqualified grid levelを持つ。grid level欠落をuncertainty 0として扱わない。
-3. pressure、viscous、total force、moment、mesh/residual/stationarity gateを保存する。
-4. numerical uncertaintyとextraction/remesh uncertaintyを候補・response別に保存する。
-5. required pairの改善を登録combined-uncertainty ruleと比較する。
-6. Stage V結果はoptimizerへ戻さず、`used_in_optimization=false` を強制する。
+- `resolved improvement`: uncertainty band を越える改善が全 required pair で一致
+- `resolved degradation`: uncertainty band を越える悪化
+- `unresolved`: 差が band 内または pair の符号が定まらない
+- `invalid`: mesh、stationarity、lineage、geometry gate のいずれかが不合格
 
-### 判定語
-
-- `improved`: 正しい方向の差が登録combined uncertaintyを超え、両候補の全gateが通る。
-- `unresolved`: 差がband内、抽出未測定、またはdownforce referenceが限定bandしか持たない。
-- `regressed`: 誤った方向の差がbandを超える。
-- `gate_failed`: どちらかの候補がmesh/residual/stationarity/geometry gateを満たさない。
-
-downforceが`unresolved`でもdragのqualified結論を消さない。応答ごとに結論を分離する。
-
-### PQ5 exit
-
-`baseline -> T` と `T -> S` がdownforceで`improved`なら、縮約caseでのT→S→V architectureを
-qualifiedとする。これは依然としてreduced laminar caseの結論であり、FSAE vehicle/Reynolds
-numberへは外挿しない。
+順位相関だけで production optimizer を合格させない。絶対値、差分、grid drift、surface/volume
+geometry の同一性を同じ candidate lineage で確認する。
 
 ---
 
 ## 11. PQ6 — production optimizer と target-physics ladder
 
-PQ5で縮約caseが成立した後だけ開始する。
+PQ5 までの evidence が成立した場合だけ、次を一つずつ追加する。
 
-### 11.1 robust length scale
+1. nominal/eroded/dilated 三場の volume、minimum width、worst-case tie rule と全 pullback
+2. analytic または adjoint connectivity constraint
+3. actual MMA/GCMMA backend。moving asymptotes state と checkpoint を含む
+4. turbulence model/wall treatment の qualification
+5. finite wing、ground effect、multipoint yaw/ride height
+6. isolated front wing、endplate/root、vehicle interference
+7. wind-tunnel または他の独立 physical validation
 
-1. eroded/intermediate/dilated三場を同一loopへ統合する。
-2. dilated fieldのvolume constraint gradientをFD検証する。
-3. worst-case objectiveのactive fieldとtie/subgradient ruleをartifact化する。
-4. 三場が同じtopologyを持つことをa posterioriに確認する。これを保証の代用にしない。
-5. outer iterationあたり三組のprimal/adjoint costをbudget manifestに入れる。
-
-### 11.2 actual MMA/GCMMA backend
-
-moving asymptotes、separable convex approximation、conservative inner iteration、KKT residualを
-実装または既存libraryから導入した時点で初めてMMA/GCMMAと呼ぶ。選定は再現性、license、
-sparse scaling、checkpoint stateを基準にし、PQ3のbackendと同一問題・同一合否規則で比較する。
-
-### 11.3 physics ladder
-
-各levelは前levelの独立検証をentry gateとする。
-
-1. reduced laminar porous/body-fitted parity
-2. turbulence bridgeでporous sourceとwall distance/`nut`の相互作用を分離
-3. finite wing、end condition、multi-element geometry
-4. moving ground、ride-height/yaw/multipoint
-5. full-vehicle interference
-6. mesh/solver/model-form uncertaintyを伴うtarget-Re verification
-7. wind-tunnelまたは走行計測によるphysical validation
-
-どのlevelでも、前levelのthresholdを黙って流用しない。ProblemSpec、qualification profile、
-uncertainty、required comparisonsをlevelごとに登録する。
+各追加は同じ problem、同じ acceptance rule、同じ evidence class で直前 backend と比較する。
+単に iteration 数が減る、または objective が大きく動くことを採用理由にしない。
 
 ---
 
-## 12. 実行順、並行性、計算資源
+## 12. 実行順と並行性
 
-| 順序 | 作業 | 並行可否 | 主な計算負荷 |
+| 順位 | Slice | 依存 | 重い solver run |
 | --- | --- | --- | --- |
-| 1 | PQ0 integration closure | 単独で先行 | unit/integration tests |
-| 2A | PQ1 gradient qualification | PQ2と並行可 | Stage T primal/adjoint FD campaign |
-| 2B | PQ2 Stage V domain/boundary factor | PQ1と並行可 | heavy OpenFOAM three-grid/factor runs |
-| 3 | PQ3 first real closed loop | PQ0必須、PQ1判定必須 | repeated Stage T primal/adjoint |
-| 4 | PQ4 Stage S | PQ3 candidate必須 | extraction + body-fitted adjoint/morphing |
-| 5 | PQ5 independent Stage V | PQ3/PQ4 candidate固定後 | 3 candidates × 3+ grids |
-| 6 | PQ6 production/physics | PQ5 pass後 | robust 3-field、target-physics campaigns |
+| 1A | PQ0.1 nonlinear integration | なし | なし。unit/synthetic integration |
+| 1B | PQ2 domain/boundary factor | 登録済み manifest | V2 × 2。1A と並行可 |
+| 2 | PQ0.2 real oracle smoke | PQ0.1 | parent/FD/trial の最小組 |
+| 3 | PQ1.1 mesh/canonical/source grid qualification | PQ0.2 と campaign manifest | 複数 primal/adjoint。PQ2 と並行可 |
+| 4 | PQ3 bounded closed loop | PQ0.2 + PQ1 Path A/B | accepted 最大 3 steps |
+| 5 | PQ4 extraction/Stage S | PQ3 candidate | extraction + surface FD + 1 step |
+| 6 | PQ5 independent Stage V | fixed T/S candidates + usable PQ2 classification | 3 candidates × 3+ grids |
+| 7 | PQ6 production/physics | PQ5 decision | 段階ごとに登録 |
 
-計算資源は、cheapなcontract/FD fixtureから先に使う。Stage Vの長時間runは登録manifestと
-stop ruleがあるcampaignだけに限定する。同じ不合格条件で格子やiteration上限を無制限に増やさない。
+OpenFOAM の重い campaign を同時に走らせて residual、wall time、memory pressure を変えない。
+並行実行する場合も solver resource と output directory を分離し、各 run manifest に実行環境を残す。
 
 ---
 
-## 13. マイルストーンと decision gate
+## 13. Milestone と decision gate
 
-| Milestone | 完了条件 | 次の判断 |
+| Milestone | 完了条件 | 意味 |
 | --- | --- | --- |
-| M0 | PQ0全合格、declared==solved、one transform owner | Stage T数値campaignをproduction code pathで実行可 |
-| M1 | PQ1 Path A/B/No-Go確定 | Path AはPQ3、Path Bは限定PQ3、No-Goはsolver修正 |
-| M2 | PQ2 grid-qualified/bounded/unusable確定 | PQ5で使えるdownforce evidence範囲を固定 |
-| M3 | PQ3 accepted closed-loop candidateと再現可能restart | extractionへ進む |
-| M4 | `ready_for_stage_s=true`、surface FD、Stage S一歩 | independent comparisonへ進む |
-| M5 | baseline→T、T→S required pair verdict | architecture pass/unresolved/regressedを決める |
-| M6 | robust/backend qualification | target-physics ladderへ進む |
-| M7 | target caseの数値・model-form・physical validation | 実車設計判断に使える範囲を宣言 |
+| M0.1 | volume/oracle/adjoint/FD bracket semantics が nonlinear path で pass | component ではなく一経路として整合 |
+| M0.2 | 実 OpenFOAM smoke と restart が pass | execution capability |
+| M1 | PQ1 Path A/B/No-Go 更新 | gradient の利用範囲を固定 |
+| M2 | PQ2 usable/bounded/invalid 判定 | Stage V reference の数値範囲を固定 |
+| M3 | PQ3 accepted candidate と再現可能 history | 限定 closed-loop capability |
+| M4 | Stage S-ready extraction + FD-qualified one-step | sharp-interface capability |
+| M5 | required pair の resolved/unresolved/invalid 判定 | architecture の対象候補に対する数値判断 |
+| M6 | robust/backend/physics ladder の個別合格 | production claim の候補 |
+
+Milestone は下位 evidence を自動的に target-physics evidence へ昇格させない。
 
 ---
 
-## 14. 共通 evidence と検証規則
+## 14. Evidence と検証規則
 
-各sliceは、少なくとも次を別fieldで残す。
+各 slice は少なくとも次を別 field で記録する。
 
-- command、return code、environment、git commit
-- ProblemSpec / transform / candidate / solver dictionaryのpathとSHA-256
-- mesh、primal residual、adjoint residual、force stationarity、geometry gate
-- raw response、gradient、constraint、uncertainty
-- evidence class: contract / capability / numerical / reduced-physics / target-physics / physical
-- pass、bounded、unresolved、No-Goのmachine verdict
-- 結論で除外したclaim
+- evidence class
+- input spec/candidate/transform/mesh/solver hashes
+- requested と actual backend/profile
+- primal/adjoint termination reason、residual、final time
+- objective と各 constraint の value/gradient space/units/sign
+- proposal、FD bracket、trial、decision、rollback lineage
+- mesh/stationarity/geometry gate
+- measured、derived、not measured の区別
+- supported claim と unsupported claim
 
-コードまたはdocsを変えたsliceでは次を実行する。
+コードまたは docs を変えた slice では、最小 relevant test に加えて次を実行する。
 
 ```bash
-.venv/bin/python -m compileall src tests
+.venv/bin/python -m compileall src tests scripts
 .venv/bin/python -m pytest -q
 git diff --check
 ```
 
-OpenFOAM campaignでは、full test通過とsolver run成功を混同しない。solver outputはcampaign
-manifestとqualification reportを通して初めてevidenceになる。
+solver campaign は command、environment、artifact path、hash、run count を記録する。artifact を
+手編集して pass に変えず、再計算または新しい correction artifact で訂正する。
 
 ---
 
 ## 15. 明示的に保留すること
 
-- Stage T solverの全面置換
-- 固定形状rankingだけを根拠にしたproduction optimization claim
-- 現在のmerit/trust controllerをGCMMAと呼ぶこと
-- P6 mismatchの経験的な一律scale補正
-- downforceのGCIまたはgrid-independent claim
-- 既存の不合格fixtureを使ったStage S成功claim
-- PQ5前のrobust three-field production投入
-- reduced steady laminar evidenceからFSAE/full-vehicle performanceへの外挿
-- 独立検証前のStage V結果によるoptimizer tuning
+- gradient magnitude への経験的 scale correction
+- PQ3 の 3 accepted steps を超える長時間 optimization
+- actual MMA/GCMMA backend
+- robust three-field production campaign
+- production connectivity finite differences
+- adaptive mesh / mesh epochs
+- 新しい parametric candidate generator
+- Stage S の長時間 Hamilton–Jacobi evolution
+- turbulent/high-Re/front-wing/full-vehicle claim
 
-この保留はアーキテクチャを弱めるものではない。何が実装され、何が数値的に正しく、何が
-対象物理で有効かを分けることで、次の計算が実際に判断を前へ進めるようにする。
+これらは価値がないのではなく、現在の blocker を解決しないため後段へ置く。
 
 ---
 
-## 16. 直近の一つの作業
+## 16. 直近の reviewable slice
 
-次のreviewable sliceは **PQ0 production integration closure** である。I1–I11を一括で雑に
-直すのではなく、次の順で小さく閉じる。
+次の一つの作業は **PQ0.1 nonlinear production path の統合修復**である。
 
-1. projected-volume constraintとgradient-space API
-2. compiler-only solved setとDesignTransform接続
-3. parent-gradient / trial-value oracle分離
-4. checkpoint/hash binding
-5. extraction/uncertainty/three-grid fail-closed修正
-6. integration fixture、mutation tests、full validation
+実装順は次に固定する。
 
-PQ0が通るまで、長時間のproduction optimizer run、actual GCMMA導入、robust三場campaignは
-開始しない。PQ2の登録済みdomain/boundary factorだけは、独立したreference campaignとして
-計算資源に余裕があれば並行実行できる。
+1. nonlinear loop に real projected-volume value/gradient を接続し、偽の volume test を置換。
+2. primal callback と adjoint callback を分離し、accepted primal artifact を再利用。
+3. trial adjoint を `not_applicable`、parent adjoint を fail-closed にする。
+4. Path B centered FD bracket と noise-floor/bounds 判定を受理前へ接続。
+5. downforce-only + volume reduced problem で `declared_equals_solved` audit を再生成。
+6. projection output と solver beta の semantic metadata を一意にする。
+
+この slice が通った後にだけ PQ0.2 の実 OpenFOAM smoke を走らせる。PQ2 の登録済み V2 二因子
+campaign は独立に進めてよい。PQ3 の長時間化、MMA/GCMMA、robust 三場は開始しない。

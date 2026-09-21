@@ -1,6 +1,7 @@
 # PQ1 — Stage T gradient oracle 判定記録（2026-09-21）
 
-Status: PQ1 判定 = **Path B（bounded research exception）**。PQ0 合格済み（`345118d`）。
+Status: PQ1 判定 = **Path B（bounded research exception）**。PQ0 component slice 実装済み
+（`345118d`）。実 nonlinear path の entry gate は PQ0.1/PQ0.2 で閉じる。
 
 ## 判定
 
@@ -77,8 +78,10 @@ epsilon を固定した。
 | random_seed_2026 | 1.1441 | 4.5e-3 |
 
 - 前回の seed_11 最小 ε 外れ値は **残差床の効果**であり、比の不安定ではないと確定。
-- 比はまだ 5% gate を超えるが、**細格子で grid-consistent・ε-stable・方向別区間
-  （1.11–1.15）** となった。粗格子（1.22–1.57）からの移動は source grid 離散化の効果。
+- 比はまだ 5% gate を超えるが、**refined-grid で ε-stable・方向別区間
+  （1.11–1.15）** となった。粗格子（1.22–1.57）からの移動は source grid 離散化の
+  主要寄与を示す。source-grid level は二つだけなので grid convergence や
+  grid independence は主張しない。
 - 判定: **Path B bounded exception（細格子構成）**。magnitude 補正は行わず、PQ3 は
   提案方向ごとの primal FD bracket を必須とする。
 

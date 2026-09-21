@@ -69,8 +69,32 @@ Inspect status and diff before any later implementation work.
 
 ## Exact Current Architecture
 
+**2026-09-22 addendum 6 (PQ0/PQ1 implementation complete; post-implementation
+integration audit).** The live baseline is `1d40463`. PQ1 refined the source
+grid from 32x16x16 to 64x32x32 and tightened perturbation residuals. The
+FD/adjoint ratios are now 1.1504/1.1134/1.1441 with stable epsilon plateaus:
+all directions moved toward one, but all still fail the 5% production gate.
+This is a Path B bounded exception on one refined grid, not grid convergence;
+only two source-grid levels exist and the base mesh gate is unmeasured.
+
+PQ0's component implementation is retained, but code inspection found that
+the nonlinear loop does not consume `CompiledProblem.volume_constraint`, its
+nominal value/gradient adapter can rerun one primitive evaluator instead of
+reusing the accepted primal artifact, and trial adjoint semantics plus the
+Path B centered-FD bracket are not integrated. The real P0 audit fixture is an
+unconstrained `drag - downforce` problem. It does not qualify the next
+downforce-plus-volume reduced problem.
+
+The immediate slice is PQ0.1: connect projected volume to the nonlinear path,
+split primal and adjoint callbacks with artifact reuse, make trial adjoint
+not-applicable and parent adjoint fail-closed, add per-proposal centered FD
+bracketing, and disambiguate projection output from solver beta. Then run the
+minimal real OpenFOAM oracle smoke (PQ0.2). The registered PQ2 V2
+domain/boundary campaign may run independently. Do not start a long PQ3 loop.
+
 **2026-09-21 addendum 5 (DF0--DF6 component implementation and post-implementation
-plan).** DF0--DF6 supplied the P18 audit/re-judgment, ProblemSpec compiler,
+plan; superseded for current status/order by addendum 6).** DF0--DF6 supplied
+the P18 audit/re-judgment, ProblemSpec compiler,
 DesignTransform, frozen-design P6 campaign, nonlinear merit/trust controller,
 restartable loop, extraction sweep, Stage S drag sensitivity ingestion,
 required-pair verification algebra and robust-three-field prototype. Treat this
@@ -373,11 +397,13 @@ useful negative fixture; do not "fix" it by relaxing mesh thresholds.
 
 ### Missing or not qualified
 
-- PQ0 production integration: compiler-owned volume/constraint semantics,
-  projected-volume pullback, DesignTransform-to-oracle binding,
-  parent-gradient/trial-value separation and complete checkpoint binding.
-- PQ1 production gradient qualification; current continuous adjoint differs
-  from discrete primal FD by 22--57% in the frozen-design campaign.
+- PQ0.1 nonlinear integration: the real projected-volume constraint is not
+  consumed by `run_stage_t_loop`; primal reuse, parent-adjoint/trial-primal
+  semantics and Path B centered FD bracketing are incomplete.
+- PQ0.2 real OpenFOAM oracle smoke through the new nonlinear path.
+- PQ1 production gradient qualification. The refined-grid ratios
+  1.1504/1.1134/1.1441 are epsilon-stable but fail 5%; mesh/canonical-grid and
+  possible third-source-grid evidence remain.
 - Complete G3 geometry/resolution gates for an optimizer-generated candidate.
 - A real OpenFOAM closed loop driven through the new compiler/transform/controller.
 - `ready_for_stage_s=true` extraction and FD-qualified drag/downforce Stage S
@@ -402,16 +428,16 @@ observations. The detailed measurements remain in
 | P1 | Conditional positive observation, general qualification unresolved. WP6 found a downforce inversion on the thickness axis; WP6-2 found no resolvable inversion in its eight-shape set. P18 prevents generalising that set to the full minimum-width policy or optimiser-generated shapes. |
 | P2 | Partially addressed, not closed. Python-owned RAMP/projection produced non-degenerate material and removed the old double-projection defect in its measured path, but the recorded V3 candidate still has 320 grey physical-beta cells and the full handoff/discreteness contract is not qualified. |
 | P3 | Unresolved. Stage T resolution and the 46080-to-8192 transfer may affect the result; same-grid/further-refined force convergence is not complete. |
-| P4 | Compiler/transform components exist, but production integration is incomplete. `volume_constraint=None`, possible legacy implicit constraints and a bypassing identity update keep `declared == solved` open; PQ0 closes these before a long run. |
+| P4 | Compiler/transform components exist, but the nonlinear path omits the compiled projected-volume constraint. The real audit fixture is unconstrained `drag - downforce`, so it does not qualify the next downforce-plus-volume problem. PQ0.1 closes this before a real loop. |
 | P5 | Diagnosed and avoided, not a production optimizer solution. Native ISQP line-search behavior led to the permanent Python-optimizer decision; the Python optimizer still lacks production qualification. |
-| P6 | Open and localized to the solver side. Frozen-design FD/analytic is 1.2178 aligned and 1.3764/1.5680 on two random directions. Transfer is exact; design movement and primal residual tightening do not explain it. PQ1 audits objective/BC/source derivatives and grid consistency. |
+| P6 | Path B bounded exception. Source-grid refinement plus tight residuals moves FD/analytic to 1.1504/1.1134/1.1441 with stable epsilon plateaus. The 5% gate still fails; two grids do not prove convergence and the mesh gate is unmeasured. |
 | P7 | Closed 2026-09-20 (WP4): injection now refreshes `rho`, `rho_filtered`, `rho_projected`, and `alpha` in the same generation when the contract provably satisfies the C3 identity contract (beta_max decoded from the recorded alpha/rho ratio), and refuses (fail-closed, no stale carry-over) any contract whose filter/projection/Brinkman state is not identity. Three mutation tests added. |
 | P8 | Partially addressed in the filtered prototype, which has a move floor and no-op detection. A production acceptance rule, reset policy, and evidence-backed optimizer closure remain missing. |
 | P9 | Unresolved. Stage S must remove zero-extent/domain-boundary components from iso-surface output; the old 5120-face six-component signature is a writer behavior, not a design. |
 | P10 | Unimplemented by design. No Hamilton-Jacobi update, reinitialization, shape-gradient normal velocity, or curvature control exists. It must wait until the density surrogate/ranking gates are passed. |
 | P11 | Closed as an independent diagnosis and retained as a P2 symptom. The measured beta-band leakage showed alphaMax=2500 already blocks beta above about 0.1; behavior for beta 0.7-1.0 remains an explicit caveat because those cells were not generated in the original runs. |
 | P12 | Partially closed. The correct step0 candidate has qualified V0-V3 mesh-profile, solver, and force-stationarity gates. Other candidates, target physics, and grid-independent downforce remain unqualified. |
-| P13 | Closed for the guarded current path. Fail-closed adjoint gates were added and the historical P13 record reports 581 passing tests. The current validation snapshot is recorded below. Any new optimizer evidence must still show the requested adjoints converged before consuming gradients. |
+| P13 | The historical unqualified-adjoint consumption is closed. The current adapter still allows value/gradient calls to rerun one evaluator, requires an adjoint bool for primal-only trials, and defaults missing status to true. PQ0.1 separates parent adjoint from trial primal and reuses the accepted primal artifact. |
 | P14 | Closed for the measured RAMP path. Python owns projection, OpenFOAM regularisation is disabled/identity as recorded, and the injected/solver field difference was `1.9e-9`. Do not generalize this closure to unbound historical artifacts. |
 | P15 | The original "thin geometry alone explains non-convergent downforce" causal claim was refuted for the correct thick candidate: geometry and mesh quality passed, yet downforce remained non-converged. The remaining numerical question is tracked by P16 and the latest local-refinement/transient plan. |
 | P16 | Updated 2026-09-21. `linearUpwind` reduces drag drift to 0.364% (passes 2%) but downforce only to 0.010374 (fails 0.005); the three-grid sequence is non-monotone, so no GCI. The next registered factor is domain/boundary. |
@@ -437,20 +463,23 @@ stop/go rules, evidence classes and theory are in
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
 The current order is:
 
-1. PQ0: close production integration semantics and fail-open edges.
-2. PQ1: qualify or bound the Stage T gradient oracle.
-3. PQ2: run the registered Stage V domain/boundary factor and classify the
-   downforce reference; this may run in parallel with PQ1.
-4. PQ3: run the first real OpenFOAM closed loop after PQ0 and the PQ1 decision.
-5. PQ4: qualify extraction and one body-fitted Stage S step.
-6. PQ5: independently compare baseline, Stage T and Stage S on three grids.
-7. PQ6: only after PQ5, integrate robust fields/actual MMA or GCMMA and advance
+1. PQ0.1: connect nonlinear volume/oracle/adjoint/FD-bracket semantics.
+2. PQ0.2: run the minimal real OpenFOAM oracle smoke and resume trace.
+3. PQ1.1: measure the mesh gate and canonical-grid factor; add a third source
+   grid only if the registered result requires it.
+4. PQ2: run the registered Stage V domain/boundary factor and classify the
+   downforce reference; this may run in parallel with PQ0.1--PQ1.1.
+5. PQ3: run at most three accepted OpenFOAM closed-loop steps after PQ0.2 and
+   the PQ1 Path A/B decision.
+6. PQ4: qualify extraction and one body-fitted Stage S step.
+7. PQ5: independently compare baseline, Stage T and Stage S on three grids.
+8. PQ6: only after PQ5, integrate robust fields/actual MMA or GCMMA and advance
    through the target-physics ladder.
 
-The immediate reviewable slice is PQ0. Historical DF0--DF7 and WP0--WP7
+The immediate reviewable slice is PQ0.1. Historical DF0--DF7 and WP0--WP7
 material remains useful evidence context but does not reorder this sequence.
 The registered PQ2 reference campaign is the only heavy run that may proceed
-independently before PQ0 closes.
+independently before PQ0.1/PQ0.2 close.
 
 ## Global Stop/Go Rules
 

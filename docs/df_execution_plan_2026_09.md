@@ -1,7 +1,7 @@
 # DF0–DF7 実行計画 — 2026-09-21
 
 Status: **historical implementation plan; DF0--DF6 component slices were
-implemented on 2026-09-21.** The active next-work plan is PQ0--PQ6 in
+implemented on 2026-09-21.** The active next-work plan is PQ0.1/PQ0.2/PQ1.1/PQ2--PQ6 in
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md),
 subordinate to [`phase_plan.md`](phase_plan.md).
 
@@ -430,11 +430,11 @@ hash / evidence class / 結論を evidence JSON の別 fields に記録する。
 
 ## 5. 実装後の移行先
 
-DF0--DF6のcomponent slicesは実装済みである。次のreviewable sliceは
+DF0--DF6とPQ0/PQ1のcomponent/campaign slicesは実装済みである。次のreviewable sliceは
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
-の **PQ0 production integration closure**。旧DF0を再実行せず、compiler/volume semantics、
-DesignTransform接続、parent-gradient/trial-value oracle、checkpoint binding、fail-closed
-verificationを一本のproduction pathへ統合する。
+の **PQ0.1 nonlinear production-path integration**。旧DF0/PQ0を再実行せず、
+projected-volume、primal artifact reuse、parent-adjoint/trial-primal semantics、
+Path B centered FD bracketを一本のproduction pathへ統合する。
 
 ---
 
