@@ -68,6 +68,11 @@ from .fixed_grid_sensitivity import (
 )
 from .gradient_check import run_finite_difference_gradient_check
 from .handoff import build_density_to_sdf_handoff
+from .independent_verification import (
+    CandidateMeasurement,
+    RequiredPair,
+    verify_required_pairs,
+)
 from .openfoam import generate_openfoam_case, problem_spec_to_project_config
 from .openfoam_canonical_field_transfer import (
     reconstruct_and_write_canonical_gradient_transfer,
@@ -2165,6 +2170,66 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+@app.command("verify-required-pairs")
+def verify_required_pairs_command(
+    input_json: Path = typer.Argument(
+        ...,
+        help="Verification input JSON with measurements, required_pairs, and optional responses.",
+    ),
+    output: Path = typer.Option(..., help="Output verdict JSON path."),
+) -> None:
+    """Verdict Stage V required pairs against candidate-specific uncertainty (DF5)."""
+    document = json.loads(input_json.read_text(encoding="utf-8"))
+    measurements = [
+        CandidateMeasurement(
+            candidate_id=str(item["candidate_id"]),
+            role=str(item["role"]),
+            responses={str(k): float(v) for k, v in item["responses"].items()},
+            improvement_direction={
+                str(k): str(v) for k, v in item.get("improvement_direction", {}).items()
+            },
+            numerical_uncertainty={
+                str(k): float(v) for k, v in item.get("numerical_uncertainty", {}).items()
+            },
+            extraction_uncertainty={
+                str(k): float(v) for k, v in item.get("extraction_uncertainty", {}).items()
+            },
+            gates={str(k): bool(v) for k, v in item.get("gates", {}).items()},
+            grid_levels=tuple(str(v) for v in item.get("grid_levels", [])),
+            used_in_optimization=bool(item.get("used_in_optimization", False)),
+            extraction_status=str(item.get("extraction_status", "measured")),
+        )
+        for item in document["measurements"]
+    ]
+    required = [
+        RequiredPair(
+            from_role=str(item["from_role"]),
+            to_role=str(item["to_role"]),
+            label=str(item.get("label", f"{item['from_role']}->{item['to_role']}")),
+        )
+        for item in document["required_pairs"]
+    ]
+    verdict = verify_required_pairs(
+        measurements,
+        required,
+        responses=[str(value) for value in document.get("responses", [])] or None,
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(verdict, indent=2), encoding="utf-8")
+    console.print(
+        json.dumps(
+            {
+                "output": str(output),
+                "passed": verdict["passed"],
+                "unresolved_or_failed": verdict["unresolved_or_failed"],
+            },
+            indent=2,
+        )
+    )
+    if not verdict["passed"]:
+        raise typer.Exit(code=1)
 
 
 @app.command("sweep-density-extraction")
