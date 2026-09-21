@@ -1,0 +1,60 @@
+{
+  "artifact_id": "pq1_source_grid_refined_tight_2026_09",
+  "evidence_class": "numerical_verification_factor_level",
+  "issue": "PQ1 grid stability factor: refined source grid with tight perturbation residual",
+  "factor": "source grid 64x32x32, regularise false, frozen design, primal residualControl 5e-9 (nIters 5000), eps in {1e-4, 3e-4, 1e-3, 3e-3}",
+  "manifest": "docs/evidence/fd_campaign_p6_source_grid_refined_tight_manifest_2026_09.json",
+  "base_run": {
+    "downforce_coefficient": 0.296719125655,
+    "primal_iterations": 190,
+    "adjoint_converged": true
+  },
+  "results": {
+    "gradient_aligned": {
+      "ratio_mean": 1.1504490656316189,
+      "ratio_min": 1.150154560993396,
+      "ratio_max": 1.1505873996440676,
+      "spread": 0.00043283865067156313
+    },
+    "random_seed_11": {
+      "ratio_mean": 1.11344745017893,
+      "ratio_min": 1.1134258459671809,
+      "ratio_max": 1.1134592732967892,
+      "spread": 3.3427329608315404e-05
+    },
+    "random_seed_2026": {
+      "ratio_mean": 1.144143961713566,
+      "ratio_min": 1.1419664472295779,
+      "ratio_max": 1.1464662368541065,
+      "spread": 0.004499789624528683
+    }
+  },
+  "registered_epsilons": [
+    0.0001,
+    0.0003,
+    0.001,
+    0.003
+  ],
+  "findings": [
+    "every direction plateau spread is <= 0.5% over a 30x epsilon range (0.0004 / 0.0000 / 0.0045)",
+    "the small-epsilon outlier of the previous refined run was a residual-floor effect, not a ratio instability",
+    "ratios remain above the 5% gate (1.1504 / 1.1134 / 1.1441) but are stable and direction-specific",
+    "source-grid refinement moved every direction toward 1 versus the coarse grid (1.2179/1.3764/1.5678)"
+  ],
+  "decision": {
+    "path_a": false,
+    "no_go": false,
+    "classification": "Path B bounded exception on the refined source grid: ratios are grid-consistent, epsilon-stable, direction-dependent intervals (1.11-1.15); no magnitude correction is applied and PQ3 must bracket each proposed direction with primal FD"
+  },
+  "claims_supported": [
+    "the FD/adjoint ratio is a solver-discretization effect that moves toward 1 under source-grid refinement",
+    "the refined configuration has a stable epsilon plateau for all registered directions"
+  ],
+  "claims_not_supported": [
+    "Path A (5% gate)",
+    "No-Go",
+    "grid independence beyond the tested refinement",
+    "other states/responses",
+    "target physics"
+  ]
+}

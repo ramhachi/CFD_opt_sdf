@@ -48,10 +48,14 @@ from cfd_sdf.fixed_grid_primal import (  # noqa: E402
     summarize_fixed_grid_primal_case,
 )
 
-WORK = ROOT / "work" / "df2_fd_refresh"
+WORK = Path(os.environ.get("DF2_WORK", str(ROOT / "work" / "df2_fd_refresh")))
 OUT = WORK / "fd_campaign"  # overridden by DF2_CAMPAIGN_SUBDIR at runtime
-MANIFEST = ROOT / "docs" / "evidence" / "fd_campaign_p6_solver_side_manifest_2026_09.json"
-import os
+MANIFEST = Path(
+    os.environ.get(
+        "DF2_MANIFEST",
+        str(ROOT / "docs" / "evidence" / "fd_campaign_p6_solver_side_manifest_2026_09.json"),
+    )
+)
 
 TEMPLATE = Path(os.environ.get("DF2_TEMPLATE", str(WORK / "template_frozen")))
 CAMPAIGN_SUBDIR = os.environ.get("DF2_CAMPAIGN_SUBDIR", "fd_campaign")
@@ -60,6 +64,20 @@ TIGHT_PRIMAL_RESIDUAL = "5.e-9"
 TIGHT_PRIMAL_NITERS = 5000
 EPSILONS = (3.0e-5, 1.0e-4, 3.0e-4, 1.0e-3)
 RANDOM_SEEDS = (11, 2026)
+
+
+def _manifest_plan(manifest_path: Path) -> tuple[tuple[float, ...], str, tuple[int, ...]]:
+    """Registered epsilons, aligned-direction name, and random seeds."""
+
+    document = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    raw = document.get("manifest", document)
+    epsilons = tuple(float(value) for value in raw["epsilons"])
+    directions = raw["directions"]
+    aligned = next(
+        str(item["name"]) for item in directions if item["role"] == "gradient_aligned"
+    )
+    seeds = tuple(int(item["seed"]) for item in directions if item["role"] == "random")
+    return epsilons, aligned, seeds
 
 
 def _random_direction(support: np.ndarray, seed: int) -> np.ndarray:
@@ -236,6 +254,7 @@ def main() -> None:
     print(f"template={TEMPLATE} out={OUT}", flush=True)
 
     manifest, manifest_hash = read_fd_campaign_manifest(MANIFEST)
+    registered_epsilons, aligned_name, registered_seeds = _manifest_plan(MANIFEST)
     provenance = json.loads((WORK / "source_state" / "provenance.json").read_text())
     transfer = suite.build_transfer(provenance)
     mapping = np.load(
@@ -261,12 +280,12 @@ def main() -> None:
         raise SystemExit("the feasible support is empty; refusing to run the campaign")
 
     directions = {
-        "gradient_aligned": suite._normalized_direction(g_canonical, support),
+        aligned_name: suite._normalized_direction(g_canonical, support),
         **{
             f"random_seed_{seed}": suite._normalized_direction(
                 _random_direction(support, seed), support
             )
-            for seed in RANDOM_SEEDS
+            for seed in registered_seeds
         },
     }
 
@@ -274,7 +293,7 @@ def main() -> None:
     print(f"campaign subdir: {CAMPAIGN_SUBDIR}", flush=True)
     rows: list[dict] = []
     for direction_name, direction in directions.items():
-        for epsilon in EPSILONS:
+        for epsilon in registered_epsilons:
             row_dir = OUT / "runs" / direction_name / f"{epsilon:.0e}"
             plus = run_signed_case(
                 transfer=transfer,
@@ -331,9 +350,12 @@ def main() -> None:
         manifest,
         [row for row in rows if row["converged"]],
     )
+    result_epsilons = list(registered_epsilons)
     result = {
         "kind": "df2_solver_side_fd_campaign_result",
         "manifest_hash": manifest_hash,
+        "registered_epsilons": result_epsilons,
+        "registered_directions": [aligned_name, *[f"random_seed_{seed}" for seed in registered_seeds]],
         "rows": rows,
         "verdict": verdict,
         "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",

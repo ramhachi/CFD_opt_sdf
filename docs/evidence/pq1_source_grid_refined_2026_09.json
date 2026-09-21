@@ -1,0 +1,97 @@
+{
+  "artifact_id": "pq1_source_grid_refined_2026_09",
+  "evidence_class": "numerical_verification_factor_level",
+  "issue": "PQ1 grid stability factor: source grid refinement",
+  "factor": "adjoint source grid refined from 32x16x16 (0.09375/0.1/0.075) to 64x32x32 (0.046875/0.05/0.0375); same canonical state, same domain, same template (frozen, regularise off), same directions and epsilons",
+  "base_run": {
+    "downforce_coefficient": 0.296719125655,
+    "primal_iterations": 190,
+    "adjoint_converged": true
+  },
+  "coarse_source_grid": {
+    "gradient_aligned": {
+      "ratio_mean": 1.2178558567268472,
+      "ratio_min": 1.217812753316703,
+      "ratio_max": 1.217927734718914,
+      "spread": 0.00011498140221100073,
+      "sign_stable": true
+    },
+    "random_seed_11": {
+      "ratio_mean": 1.3764396670708738,
+      "ratio_min": 1.3760419216698956,
+      "ratio_max": 1.3768284729918667,
+      "spread": 0.0007865513219711406,
+      "sign_stable": true
+    },
+    "random_seed_2026": {
+      "ratio_mean": 1.5677512396198088,
+      "ratio_min": 1.5662027953558333,
+      "ratio_max": 1.5687658535698654,
+      "spread": 0.0025630582140321323,
+      "sign_stable": true
+    }
+  },
+  "refined_source_grid": {
+    "gradient_aligned": {
+      "ratio_mean": 1.1499350770693042,
+      "ratio_min": 1.14821500931547,
+      "ratio_max": 1.1510614343236631,
+      "spread": 0.0028464250081932096,
+      "sign_stable": true
+    },
+    "random_seed_11": {
+      "ratio_mean": 1.0749103015823596,
+      "ratio_min": 0.9990910411501726,
+      "ratio_max": 1.1169463294817772,
+      "spread": 0.11785528833160464,
+      "sign_stable": true
+    },
+    "random_seed_2026": {
+      "ratio_mean": 1.1596276876656302,
+      "ratio_min": 1.1382774898895658,
+      "ratio_max": 1.1909729825459343,
+      "spread": 0.052695492656368526,
+      "sign_stable": true
+    }
+  },
+  "comparison": {
+    "gradient_aligned": {
+      "before": 1.2179,
+      "after": 1.1499350770693042,
+      "plateau_before": 0.0001,
+      "plateau_after": 0.0028464250081932096
+    },
+    "random_seed_11": {
+      "before": 1.3764,
+      "after": 1.0749103015823596,
+      "plateau_before": 0.0008,
+      "plateau_after": 0.11785528833160464
+    },
+    "random_seed_2026": {
+      "before": 1.5678,
+      "after": 1.1596276876656302,
+      "plateau_before": 0.0026,
+      "plateau_after": 0.052695492656368526
+    }
+  },
+  "findings": [
+    "every direction moves toward 1 when the source grid is refined; no sign flips",
+    "the aligned direction plateau tightens (spread 2.8e-3)",
+    "random_seed_11 shows a small-epsilon outlier (0.999 at 3e-5 vs 1.08-1.12 above) - the small-epsilon FD difference is near the solver residual floor on the finer grid",
+    "random_seed_2026 plateau is 5.3e-2, marginally above the 5% rule"
+  ],
+  "decision": {
+    "no_go": false,
+    "path_a": false,
+    "classification": "partial grid movement; refined source grid is the leading configuration but the epsilon plateau of the random directions must be re-established with a tighter perturbation residual or a larger epsilon range before any Path A claim"
+  },
+  "claims_supported": [
+    "the ratio is grid-dependent and moves toward 1 under source-grid refinement at a fixed physical state"
+  ],
+  "claims_not_supported": [
+    "Path A",
+    "No-Go",
+    "any other state/grid/response",
+    "magnitude correction"
+  ]
+}
