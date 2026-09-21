@@ -126,6 +126,21 @@ def test_accept_trial_restoration_requires_monotone_violation_reduction():
     assert decision.reason == "constraint_violation_not_reduced"
 
 
+def test_path_b_profile_accepts_low_trust_step_and_shrinks_move():
+    parent = _evaluation(1.0, {"g": -0.1})
+    trial = _evaluation(0.98, {"g": -0.09})
+    decision = accept_trial(
+        parent=parent,
+        trial=trial,
+        predicted_trial_objective=0.5,
+        state=_state(),
+        trust_veto=False,
+    )
+    assert decision.accepted is True
+    assert decision.status == "accept_low_trust_shrink"
+    assert decision.new_move_radius == pytest.approx(0.05)
+
+
 def test_accept_trial_rejects_low_trust_ratio_feasible_step():
     parent = _evaluation(1.0, {"g": -0.1})
     trial = _evaluation(0.98, {"g": -0.09})

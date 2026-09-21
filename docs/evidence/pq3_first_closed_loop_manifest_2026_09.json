@@ -1,0 +1,39 @@
+{
+  "kind": "pq3_first_closed_loop_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "reduced_problem": {
+    "objective": "minimize J = -C_DF (maximize downforce)",
+    "constraint": "g_V = V(rho_projection) - V_max <= 0 (compiled volume budget)",
+    "drag": "report-only",
+    "transform": "identity filter, b=0, q=0 (one owner)",
+    "source_grid": "32x16x16 (0.09375/0.1/0.075), template_frozen (regularise false, maxInitChange 0)"
+  },
+  "seed": {
+    "rule": "rho_seed = max(rho_canonical, 1e-3) on active cells; inactive unchanged",
+    "why": "the centered Path B bracket needs 0 < rho < 1 on active cells; the canonical design has large rho=0 regions",
+    "floor": 0.001
+  },
+  "volume_budget_rule": "V_max = V(seed) + 0.002 (small binding margin)",
+  "bracket": {
+    "epsilon": 0.0001,
+    "noise_floor_abs": 1e-06,
+    "bounds": [
+      0.0,
+      1.0
+    ]
+  },
+  "move_limit": 0.02,
+  "max_iterations": 3,
+  "acceptance": "controller merit/trust + bracket descent-sign match + real trial primal + volume",
+  "stop_conditions": [
+    "a proposal that cannot form a symmetric centered pair is rejected, never clipped",
+    "no magnitude correction of the adjoint",
+    "no adjoint on trials"
+  ],
+  "budget": {
+    "parent_runs": "<= 1 + accepted",
+    "trial_runs": "per proposal",
+    "bracket_runs": "2 per accepted proposal"
+  }
+}

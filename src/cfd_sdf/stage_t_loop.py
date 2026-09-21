@@ -126,8 +126,9 @@ class ProjectedGradientBackend:
 
     backend_id = "projected-gradient-constrained"
 
-    def __init__(self, *, max_bisection: int = 40) -> None:
+    def __init__(self, *, max_bisection: int = 40, bound_margin: float = 1e-6) -> None:
         self.max_bisection = max_bisection
+        self.bound_margin = float(bound_margin)
 
     def propose(
         self,
@@ -145,6 +146,13 @@ class ProjectedGradientBackend:
             direction = np.zeros_like(gradient)
         else:
             direction = -gradient / norm
+        # A centered bracket needs every perturbed cell to be at least epsilon
+        # away from both bounds, whatever the direction sign. The registered
+        # margin therefore freezes cells closer than it to either bound.
+        rho_values = np.asarray(rho, dtype=np.float64)
+        margin = self.bound_margin
+        direction[rho_values <= margin] = 0.0
+        direction[rho_values >= 1.0 - margin] = 0.0
 
         def feasible(alpha: float) -> bool:
             for name, grad in constraint_gradients.items():
@@ -182,6 +190,7 @@ class LoopSpec:
     backend_id: str = "projected-gradient-constrained"
     oracle_profile: str = "default"
     bracket: BracketSpec | None = None
+    trust_veto: bool = True
 
 
 @dataclass
@@ -556,6 +565,7 @@ def run_stage_t_loop(
             ),
             max_inner_iterations=spec.max_inner_iterations,
             pre_accept_gate=pre_accept_gate,
+            trust_veto=spec.trust_veto,
         )
         iteration_trace["inner"] = inner_trace
         if decision.accepted and trial_rho is not None:
@@ -624,6 +634,7 @@ def _checkpoint_binding(spec: LoopSpec) -> dict[str, Any]:
         "backend_id": spec.backend_id,
         "oracle_profile": spec.oracle_profile,
         "bracket_hash": _bracket_hash(spec),
+        "trust_veto": bool(spec.trust_veto),
     }
 
 

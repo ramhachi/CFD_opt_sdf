@@ -136,12 +136,19 @@ def accept_trial(
     trust_high: float = DEFAULT_TRUST_HIGH,
     move_floor: float = DEFAULT_MOVE_FLOOR,
     penalty_growth: float = DEFAULT_PENALTY_GROWTH,
+    trust_veto: bool = True,
 ) -> AcceptanceDecision:
     """Decide accept/reject/rollback for one evaluated trial.
 
-    Order of checks: qualification (primal, adjoint, geometry), hard-feasibility
-    (with monotone-restoration exception), merit decrease (conservative check),
-    then trust-ratio-driven move update for the next proposal.
+    Order of checks: qualification (primal, geometry), hard-feasibility (with
+    monotone-restoration exception), merit decrease (conservative check), then
+    the trust-ratio rule.
+
+    ``trust_veto=True`` (default) rejects a feasible merit-decreasing step
+    whose actual/predicted ratio is below ``trust_low``. Under the Path B
+    profile the adjoint magnitude is not trusted, so ``trust_veto=False``
+    accepts such a step and only shrinks the next move radius; the acceptance
+    then rests on the real primal, the constraints and the FD bracket.
     """
 
     parent_merit = merit(parent.objective, parent.constraint_values, penalty=state.penalty)
@@ -246,10 +253,18 @@ def accept_trial(
         )
 
     if ratio is not None and ratio < trust_low:
+        if trust_veto:
+            return decision(
+                False,
+                "reject",
+                "trust_ratio_low",
+                ratio=ratio,
+                new_move=state.move_radius / 2.0,
+            )
         return decision(
-            False,
-            "reject",
-            "trust_ratio_low",
+            True,
+            "accept_low_trust_shrink",
+            "feasible merit decrease with low trust; next move shrunk",
             ratio=ratio,
             new_move=state.move_radius / 2.0,
         )
@@ -276,6 +291,7 @@ def run_conservative_inner_loop(
     max_inner_iterations: int = 8,
     pre_accept_gate: Callable[[TrialProposal, np.ndarray], tuple[bool, dict[str, Any]]]
     | None = None,
+    trust_veto: bool = True,
 ) -> tuple[AcceptanceDecision, np.ndarray | None, list[dict[str, Any]]]:
     """GCMMA-like inner iterations: re-propose from the same parent until accepted.
 
@@ -302,6 +318,7 @@ def run_conservative_inner_loop(
             trial=trial,
             predicted_trial_objective=predicted_objective(proposal),
             state=working,
+            trust_veto=trust_veto,
         )
         entry = dict(decision.trace)
         entry["inner_iteration"] = inner

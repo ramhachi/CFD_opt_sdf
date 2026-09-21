@@ -75,11 +75,25 @@ def test_below_noise_floor_is_rejected():
     assert outcome.reason == "below_noise_floor"
 
 
-def test_asymmetric_bounds_are_rejected_without_clipping():
+def test_epsilon_backoff_recovers_near_bound_cells():
     spec = BracketSpec(epsilon=0.1, noise_floor_abs=1e-9)
     outcome = evaluate_path_b_bracket(
         spec=spec,
         parent_rho=np.full(4, 0.95),
+        parent_gradient=np.full(4, -1.0),
+        proposal_delta=np.full(4, 0.1),
+        active=np.ones(4, dtype=bool),
+        evaluate_values=_linear_evaluator(-1.0),
+    )
+    assert outcome.ok is True
+    assert outcome.epsilon == pytest.approx(0.05)
+
+
+def test_exact_bound_cells_are_rejected_at_min_epsilon():
+    spec = BracketSpec(epsilon=0.1, noise_floor_abs=1e-9)
+    outcome = evaluate_path_b_bracket(
+        spec=spec,
+        parent_rho=np.full(4, 1.0),
         parent_gradient=np.full(4, -1.0),
         proposal_delta=np.full(4, 0.1),
         active=np.ones(4, dtype=bool),
@@ -109,6 +123,21 @@ def test_zero_direction_and_invalid_spec_are_rejected():
         BracketSpec(epsilon=1e-3, noise_floor_abs=-1.0)
     with pytest.raises(PathBBracketError, match="bounds"):
         BracketSpec(epsilon=1e-3, noise_floor_abs=1e-9, lower=1.0, upper=0.0)
+
+
+def test_epsilon_backoff_finds_a_symmetric_pair():
+    spec = BracketSpec(epsilon=1e-3, noise_floor_abs=1e-12, backoff=10.0)
+    # rho = 0.0005: the 1e-3 pair leaves the box on the minus side, 1e-4 fits
+    outcome = evaluate_path_b_bracket(
+        spec=spec,
+        parent_rho=np.array([0.0005, 0.5, 0.5, 0.5]),
+        parent_gradient=np.full(4, -1.0),
+        proposal_delta=np.ones(4),
+        active=np.ones(4, dtype=bool),
+        evaluate_values=_linear_evaluator(-1.0),
+    )
+    assert outcome.ok is True
+    assert outcome.epsilon == pytest.approx(1e-4)
 
 
 def test_zero_lower_bound_cells_block_the_centered_bracket():

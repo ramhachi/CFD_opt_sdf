@@ -34,10 +34,19 @@ class PathBBracketError(ValueError):
 
 @dataclass(frozen=True)
 class BracketSpec:
+    """Registered bracket rule.
+
+    ``epsilon`` is the maximum step; when the symmetric pair does not fit the
+    box at that step, the bracket backs off by ``backoff`` until ``min_epsilon``
+    before rejecting. The direction is never clipped or renormalized.
+    """
+
     epsilon: float
     noise_floor_abs: float
     lower: float = 0.0
     upper: float = 1.0
+    backoff: float = 2.0
+    min_epsilon: float | None = None
     schema_version: int = BRACKET_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -47,6 +56,12 @@ class BracketSpec:
             raise PathBBracketError("bracket noise floor must be finite and non-negative")
         if not self.lower < self.upper:
             raise PathBBracketError("bracket bounds must be increasing")
+        if self.backoff <= 1.0 or not np.isfinite(self.backoff):
+            raise PathBBracketError("bracket backoff must be finite and greater than 1")
+        floor = self.epsilon / 1024.0 if self.min_epsilon is None else float(self.min_epsilon)
+        if floor <= 0.0 or floor > self.epsilon:
+            raise PathBBracketError("bracket min_epsilon must be within (0, epsilon]")
+        object.__setattr__(self, "min_epsilon", floor)
 
 
 @dataclass(frozen=True)
@@ -94,21 +109,36 @@ def evaluate_path_b_bracket(
         return BracketOutcome(False, "zero_direction", spec.epsilon, peak)
     d_hat = delta / peak
 
-    plus = rho + spec.epsilon * d_hat
-    minus = rho - spec.epsilon * d_hat
-    for label, candidate in (("plus", plus), ("minus", minus)):
-        if np.any(candidate[active] < spec.lower - 1e-12) or np.any(
-            candidate[active] > spec.upper + 1e-12
-        ):
+    epsilon = spec.epsilon
+    plus = rho + epsilon * d_hat
+    minus = rho - epsilon * d_hat
+    while True:
+        violation = None
+        for label, candidate in (("plus", plus), ("minus", minus)):
+            if np.any(candidate[active] < spec.lower - 1e-12) or np.any(
+                candidate[active] > spec.upper + 1e-12
+            ):
+                violation = label
+                break
+        if violation is None:
+            break
+        if epsilon / spec.backoff < float(spec.min_epsilon):
             return BracketOutcome(
                 False,
-                f"bracket_bounds_asymmetric_{label}",
-                spec.epsilon,
+                f"bracket_bounds_asymmetric_{violation}",
+                epsilon,
                 peak,
-                details={"note": "no clipping; the proposal must shrink or be rejected"},
+                details={
+                    "note": "no clipping; epsilon backed off to min_epsilon without a "
+                    "symmetric pair",
+                    "min_epsilon": float(spec.min_epsilon),
+                },
             )
-        if np.any(candidate[~active] != rho[~active]):
-            raise PathBBracketError("bracket must not perturb inactive cells")
+        epsilon = epsilon / spec.backoff
+        plus = rho + epsilon * d_hat
+        minus = rho - epsilon * d_hat
+    if np.any(plus[~active] != rho[~active]) or np.any(minus[~active] != rho[~active]):
+        raise PathBBracketError("bracket must not perturb inactive cells")
 
     plus_result = evaluate_values(plus)
     minus_result = evaluate_values(minus)
@@ -116,7 +146,7 @@ def evaluate_path_b_bracket(
     j_minus = float(minus_result.objective)
     difference = abs(j_plus - j_minus)
     d_adj = float(np.dot(gradient, d_hat))
-    d_fd = (j_plus - j_minus) / (2.0 * spec.epsilon)
+    d_fd = (j_plus - j_minus) / (2.0 * epsilon)
     common = {
         "d_adj": d_adj,
         "d_fd": d_fd,
@@ -131,17 +161,17 @@ def evaluate_path_b_bracket(
     }
     if difference <= spec.noise_floor_abs:
         return BracketOutcome(
-            False, "below_noise_floor", spec.epsilon, peak, **common
+            False, "below_noise_floor", epsilon, peak, **common
         )
     if d_adj >= 0.0 or d_fd >= 0.0:
         return BracketOutcome(
             False,
             "not_a_descent_direction",
-            spec.epsilon,
+            epsilon,
             peak,
             **common,
         )
-    return BracketOutcome(True, "descent_sign_match", spec.epsilon, peak, **common)
+    return BracketOutcome(True, "descent_sign_match", epsilon, peak, **common)
 
 
 __all__ = [
