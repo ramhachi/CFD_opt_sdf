@@ -32,23 +32,33 @@ from .nonlinear_acceptance import (
     TrialProposal,
     run_conservative_inner_loop,
 )
+from .path_b_bracket import BracketSpec, evaluate_path_b_bracket
 from .problem_spec_compiler import CompiledProblem
 
 
 @dataclass(frozen=True)
 class OracleResult:
+    """Values and (optionally) gradients, bound to one primal artifact.
+
+    ``adjoint_status`` is ``None`` for a values-only result and ``"converged"``
+    only after an adjoint evaluation that verified its evidence. Trials never
+    carry an adjoint status (PQ0.1 4.4).
+    """
+
     objective: float
     constraint_values: dict[str, float]
     primal_converged: bool
-    adjoint_converged: bool
-    solver_status: str = "unknown"
     geometry_ok: bool = True
     geometry_metrics: dict[str, Any] = field(default_factory=dict)
+    solver_status: str = "unknown"
     response_hash: str | None = None
+    primal_artifact: dict[str, Any] | None = None
+    artifact_hash: str | None = None
     objective_gradient: np.ndarray | None = None
     constraint_gradients: dict[str, np.ndarray] = field(default_factory=dict)
     gradient_space: str | None = None
     transform_hash: str | None = None
+    adjoint_status: str | None = None
 
     def has_gradients(self) -> bool:
         return self.objective_gradient is not None
@@ -58,21 +68,22 @@ class OracleResult:
             objective=self.objective,
             constraint_values=dict(self.constraint_values),
             primal_converged=self.primal_converged,
-            adjoint_converged=self.adjoint_converged,
             geometry_ok=self.geometry_ok,
+            adjoint_status="not_applicable",
             geometry_metrics=dict(self.geometry_metrics),
             solver_status=self.solver_status,
+            primal_artifact_hash=self.artifact_hash,
         )
 
 
 class ResponseOracle(Protocol):
     def evaluate_values(self, rho_design: np.ndarray) -> OracleResult:
-        """Primal-only evaluation (values, constraints, gates)."""
+        """Primal-only evaluation (values, constraints, gates, artifact)."""
 
     def evaluate_gradients(
         self, rho_design: np.ndarray, values: OracleResult
     ) -> OracleResult:
-        """Adjoint evaluation at the same design; returns values + gradients."""
+        """Adjoint evaluation consuming the accepted primal artifact."""
 
 
 class TrialBackend(Protocol):
@@ -157,6 +168,7 @@ class LoopSpec:
     checkpoint_every: int = 1
     backend_id: str = "projected-gradient-constrained"
     oracle_profile: str = "default"
+    bracket: BracketSpec | None = None
 
 
 @dataclass
@@ -198,81 +210,164 @@ def _linear_prediction(
     return float(parent.objective + objective_delta)
 
 
+def _artifact_hash(
+    rho: np.ndarray, transform: DesignTransform, payload: dict[str, Any]
+) -> str:
+    values = payload.get("values")
+    encoded = json.dumps(
+        {
+            "rho_sha256": _rho_sha256(rho),
+            "transform_hash": transform.transform_hash(),
+            "response_hash": payload.get("response_hash"),
+            "values": {
+                f"{case}/{response}": float(value)
+                for (case, response), value in sorted(values.items())
+            }
+            if isinstance(values, dict)
+            else None,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _volume_value_gradient(
+    *,
+    transform: DesignTransform,
+    compiled: CompiledProblem,
+    rho: np.ndarray,
+    constraint_values: dict[str, float],
+) -> tuple[float | None, np.ndarray | None]:
+    """Add the compiled projected-volume constraint (PQ0.1 4.2)."""
+
+    volume_constraint = compiled.volume_constraint
+    if volume_constraint is None:
+        return None, None
+    if volume_constraint.constraint_id in constraint_values:
+        raise ValueError(
+            f"volume constraint id {volume_constraint.constraint_id!r} collides with a "
+            "response constraint id; ids must be unique"
+        )
+    value = volume_constraint.value(transform, rho)
+    gradient = volume_constraint.gradient(transform, rho)
+    return value, gradient
+
+
 def make_oracle_from_compiled(
     *,
     transform: DesignTransform,
     compiled: CompiledProblem,
-    primitive_evaluator: Callable[[DesignTransformState], dict[str, Any]],
+    primal_evaluator: Callable[[DesignTransformState], dict[str, Any]],
+    adjoint_evaluator: Callable[
+        [DesignTransformState, dict[str, Any]], dict[str, Any]
+    ],
 ) -> Callable[..., OracleResult]:
-    """Adapt a solver-field evaluator to the two-space oracle protocol.
+    """Adapt split primal/adjoint evaluators to the two-space oracle protocol.
 
-    ``primitive_evaluator(state)`` consumes the declared transform state (the
-    solver sees ``state.beta``) and returns:
-
-    - ``values``: ``{(flow_case, response): float}``;
-    - ``gradients``: ``{(flow_case, response): np.ndarray}`` **in the solver
-      field (beta) space**; the adapter maps them to design space with
-      ``transform.pullback_from_beta``;
-    - ``primal_converged`` / ``adjoint_converged`` / ``solver_status`` /
-      ``geometry_ok`` / ``geometry_metrics`` / ``response_hash``.
-
-    ``evaluate_values`` passes no gradients; ``evaluate_gradients`` requires
-    them and records the transform hash and gradient space.
+    ``primal_evaluator(state)`` returns ``values``, primal status, geometry
+    status and an optional ``response_hash``; its payload becomes the bound
+    primal artifact. ``adjoint_evaluator(state, primal_artifact)`` consumes
+    that artifact, must not silently re-run the primal, and returns
+    ``gradients`` in the solver-field (beta) space plus
+    ``adjoint_converged: true``; the adapter maps the gradients to design space
+    with ``transform.pullback_from_beta`` and adds the compiled volume
+    constraint in projection space.
     """
 
-    def _evaluate(
-        rho_design: np.ndarray, *, with_gradients: bool, values: OracleResult | None
-    ) -> OracleResult:
+    def _values(rho_design: np.ndarray) -> OracleResult:
         rho = np.asarray(rho_design, dtype=np.float64)
         state = transform.forward(rho)
-        payload = primitive_evaluator(state)
+        payload = primal_evaluator(state)
         primitive_values = payload["values"]
         objective = compiled.objective_value(primitive_values)
         constraint_values = compiled.constraint_values(primitive_values)
-        result = OracleResult(
+        volume_value, _ = _volume_value_gradient(
+            transform=transform, compiled=compiled, rho=rho, constraint_values=constraint_values
+        )
+        if volume_value is not None:
+            constraint_values = dict(constraint_values)
+            constraint_values[compiled.volume_constraint.constraint_id] = volume_value
+        return OracleResult(
             objective=objective,
             constraint_values=constraint_values,
-            primal_converged=bool(payload.get("primal_converged", True)),
-            adjoint_converged=bool(payload.get("adjoint_converged", True)),
-            solver_status=str(payload.get("solver_status", "ok")),
+            primal_converged=bool(payload.get("primal_converged", False)),
             geometry_ok=bool(payload.get("geometry_ok", True)),
             geometry_metrics=dict(payload.get("geometry_metrics", {})),
+            solver_status=str(payload.get("solver_status", "unknown")),
             response_hash=payload.get("response_hash"),
+            primal_artifact=payload,
+            artifact_hash=_artifact_hash(rho, transform, payload),
         )
-        if not with_gradients:
-            return result
+
+    def _gradients(rho_design: np.ndarray, values: OracleResult) -> OracleResult:
+        if values.primal_artifact is None:
+            raise ValueError(
+                "evaluate_gradients requires the accepted primal artifact; a "
+                "values-only result cannot seed an adjoint evaluation"
+            )
+        rho = np.asarray(rho_design, dtype=np.float64)
+        expected_hash = _artifact_hash(rho, transform, values.primal_artifact)
+        if values.artifact_hash != expected_hash:
+            raise ValueError(
+                "primal artifact does not belong to this rho/transform/response; "
+                "refusing to run the adjoint on a mismatched artifact"
+            )
+        state = transform.forward(rho)
+        payload = adjoint_evaluator(state, values.primal_artifact)
+        if payload.get("adjoint_converged") is not True:
+            raise ValueError(
+                "adjoint evaluation did not report converged=True; parent gradients "
+                "are fail-closed and never defaulted"
+            )
         raw_gradients = payload.get("gradients")
         if not isinstance(raw_gradients, dict) or not raw_gradients:
-            raise ValueError(
-                "evaluate_gradients requires solver-field gradients from the evaluator"
-            )
+            raise ValueError("adjoint evaluation returned no solver-field gradients")
         design_gradients = {
             key: transform.pullback_from_beta(rho, np.asarray(gradient, dtype=np.float64))
             for key, gradient in raw_gradients.items()
         }
+        response_constraint_values = {
+            key: value
+            for key, value in values.constraint_values.items()
+            if key != compiled.volume_constraint.constraint_id
+        }
+        constraint_values = dict(values.constraint_values)
+        constraint_gradients = compiled.constraint_gradients(design_gradients)
+        volume_value, volume_gradient = _volume_value_gradient(
+            transform=transform,
+            compiled=compiled,
+            rho=rho,
+            constraint_values=response_constraint_values,
+        )
+        if volume_value is not None:
+            constraint_values[compiled.volume_constraint.constraint_id] = volume_value
+            constraint_gradients[compiled.volume_constraint.constraint_id] = volume_gradient
         return OracleResult(
-            objective=result.objective,
-            constraint_values=result.constraint_values,
-            primal_converged=result.primal_converged,
-            adjoint_converged=result.adjoint_converged,
-            solver_status=result.solver_status,
-            geometry_ok=result.geometry_ok,
-            geometry_metrics=result.geometry_metrics,
-            response_hash=result.response_hash,
+            objective=values.objective,
+            constraint_values=constraint_values,
+            primal_converged=values.primal_converged,
+            geometry_ok=values.geometry_ok,
+            geometry_metrics=values.geometry_metrics,
+            solver_status=values.solver_status,
+            response_hash=values.response_hash,
+            primal_artifact=values.primal_artifact,
+            artifact_hash=values.artifact_hash,
             objective_gradient=compiled.objective_gradient(design_gradients),
-            constraint_gradients=compiled.constraint_gradients(design_gradients),
+            constraint_gradients=constraint_gradients,
             gradient_space="rho_design",
             transform_hash=transform.transform_hash(),
+            adjoint_status="converged",
         )
 
     class CompiledOracle:
         def evaluate_values(self, rho_design: np.ndarray) -> OracleResult:
-            return _evaluate(rho_design, with_gradients=False, values=None)
+            return _values(rho_design)
 
         def evaluate_gradients(
-            self, rho_design: np.ndarray, values: OracleResult | None = None
+            self, rho_design: np.ndarray, values: OracleResult
         ) -> OracleResult:
-            return _evaluate(rho_design, with_gradients=True, values=values)
+            return _gradients(rho_design, values)
 
     return CompiledOracle()
 
@@ -285,6 +380,11 @@ def _call_gradients(oracle: Any, rho: np.ndarray, values: OracleResult) -> Oracl
     result = oracle.evaluate_gradients(rho, values)
     if not result.has_gradients():
         raise ValueError("evaluate_gradients returned a result without gradients")
+    if result.adjoint_status != "converged":
+        raise ValueError(
+            "parent gradients require adjoint_status='converged'; "
+            "missing evidence is fail-closed"
+        )
     return result
 
 
@@ -301,7 +401,7 @@ def run_stage_t_loop(
 
     transform = spec.transform
     backend = backend or ProjectedGradientBackend()
-    counts = {"value_evaluations": 0, "gradient_evaluations": 0}
+    counts = {"value_evaluations": 0, "gradient_evaluations": 0, "bracket_evaluations": 0}
     trace: list[dict[str, Any]] = []
 
     def evaluate_values(rho: np.ndarray) -> OracleResult:
@@ -367,6 +467,20 @@ def run_stage_t_loop(
             last_value_result = evaluate_values(rho_trial)
             return last_value_result.to_evaluation()
 
+        pre_accept_gate = None
+        if spec.bracket is not None:
+            def pre_accept_gate(proposal, trial_rho):
+                counts["bracket_evaluations"] += 1
+                outcome = evaluate_path_b_bracket(
+                    spec=spec.bracket,
+                    parent_rho=state.rho,
+                    parent_gradient=parent_result.objective_gradient,
+                    proposal_delta=proposal.delta,
+                    active=transform.active,
+                    evaluate_values=evaluate_values,
+                )
+                return outcome.ok, outcome.to_dict()
+
         decision, trial_rho, inner_trace = run_conservative_inner_loop(
             parent=parent_eval,
             state=state,
@@ -376,6 +490,7 @@ def run_stage_t_loop(
                 parent=parent_result, proposal=proposal, transform=transform
             ),
             max_inner_iterations=spec.max_inner_iterations,
+            pre_accept_gate=pre_accept_gate,
         )
         iteration_trace["inner"] = inner_trace
         if decision.accepted and trial_rho is not None:
@@ -423,6 +538,16 @@ def run_stage_t_loop(
     )
 
 
+def _bracket_hash(spec: LoopSpec) -> str | None:
+    if spec.bracket is None:
+        return None
+    import json as _json
+
+    return hashlib.sha256(
+        _json.dumps(spec.bracket.__dict__, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
 def _checkpoint_binding(spec: LoopSpec) -> dict[str, Any]:
     return {
         "transform_hash": spec.transform.transform_hash(),
@@ -430,6 +555,7 @@ def _checkpoint_binding(spec: LoopSpec) -> dict[str, Any]:
         "compiled_problem_hash": spec.compiled.compiled_problem_hash(),
         "backend_id": spec.backend_id,
         "oracle_profile": spec.oracle_profile,
+        "bracket_hash": _bracket_hash(spec),
     }
 
 

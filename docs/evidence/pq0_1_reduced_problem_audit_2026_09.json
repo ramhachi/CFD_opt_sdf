@@ -1,0 +1,116 @@
+{
+  "artifact_id": "pq0_1_reduced_problem_audit_2026_09",
+  "evidence_class": "contract_integration",
+  "issue": "PQ0.1 (4.2, 4.6, 4.7)",
+  "reduced_problem": {
+    "objective": "minimize J = -C_DF (maximize downforce)",
+    "constraint": "g_V = V(rho_projection) - 0.029067262693466128 <= 0",
+    "drag": "report-only, not part of the solved set",
+    "volume_field": "projection output recomputed from rho_filtered; the artifact array rho_projected is the RAMP output (OpenFOAM beta)"
+  },
+  "inputs": {
+    "topology_state_json": {
+      "path": "work/df2_fd_refresh/injected_contract/topology_state.json",
+      "sha256": "e42b37d1a24e3dacfe0fa91277878e7b2c6123c0f7e438cef682e39d55eeb2be"
+    },
+    "sensitivity_vti": {
+      "path": "work/df2_fd_refresh/primal_base/fixed_grid_sensitivity.vti",
+      "sha256": "9004a1ebc56d6ecea67e692d0f8612d6cdb4ca96c490f4780699c2485aad110e"
+    },
+    "problem_spec": {
+      "path": "work/pq0_1_audit/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "transform_declaration": {
+      "path": "work/pq0_1_audit/transform_volume.json",
+      "sha256": "cf048f93d9686f42bc44ea578b79ed6c843b1e70a4864c536ec54cddd2307c29"
+    }
+  },
+  "declared_equals_solved": true,
+  "solved_set": {
+    "objectives": [
+      {
+        "id": "maximize_downforce",
+        "sense": "maximize",
+        "source": "problem_spec.objectives",
+        "terms": [
+          {
+            "coefficient": 1.0,
+            "flow_case_id": "straight",
+            "response_id": "downforce"
+          }
+        ]
+      }
+    ],
+    "constraints": [],
+    "volume": {
+      "id": "volume_fraction_max",
+      "limit": 0.029067262693466128,
+      "field": "rho_projected",
+      "source": "compile_time_declaration"
+    },
+    "geometry_requirements": []
+  },
+  "measured_linearized_constraints": [
+    {
+      "name": "volume_fraction_max",
+      "value": -0.009999999999999998,
+      "limit": 0.0,
+      "residual": -0.009999999999999998,
+      "linearized_change": 0.0011627800589180718,
+      "predicted_value": -0.008837219941081926,
+      "predicted_violation": -0.008837219941081926,
+      "satisfied": true
+    }
+  ],
+  "semantic_names": {
+    "rho_design": "design variable (artifact array 'rho')",
+    "rho_filtered": "filter output (artifact array 'rho_filtered')",
+    "rho_projection": "projection output; volume and geometry occupancy basis; recomputed from rho_filtered and the declared projection, not stored as an array",
+    "beta_solver": "artifact array 'rho_projected' = RAMP output = the OpenFOAM beta field the solver sees",
+    "brinkman_alpha": "artifact array 'alpha' = beta_max * beta_solver"
+  },
+  "transform": {
+    "declaration_hash": "8bb47d2ed298c330638d9ee3f9c9f95ba5d27928bafd2c468f64b07b824d30dc",
+    "transform_hash": "7435ff731eea9d8cc0d0fe4587e92e0abe8952a89bf1b2857c4b764b5af2b886",
+    "description": {
+      "schema_version": 1,
+      "kind": "design_transform",
+      "shape": [
+        32,
+        16,
+        16
+      ],
+      "spacing_m": 0.09375,
+      "active_cells": 2909,
+      "active_mask_sha256": "e5265a087656dda19924d65243c21173a3ac0fff9822a2e4890d0469c602c871",
+      "filter": {
+        "kind": "identity_filter",
+        "minimum_solid_width_m": null,
+        "relation": "rho_filtered = rho_design",
+        "boundary": "active design cells only",
+        "transpose": "H.T = H = M (exact)"
+      },
+      "projection": {
+        "kind": "identity",
+        "b": 0.0,
+        "eta": 0.5
+      },
+      "ramp": {
+        "kind": "ramp",
+        "q": 0.0
+      }
+    },
+    "volume_definition": "projection_output_recomputed_from_rho_filtered",
+    "artifact_rho_projected_note": "the fixed-grid artifact array rho_projected is the RAMP output (OpenFOAM beta); the volume field is the projection output"
+  },
+  "notes": [
+    "the previous fake volume test (a downforce response constraint named volume_budget) is retired; this audit uses the compiled projected-volume constraint",
+    "the volume value at the base state is -0.01 against the 0.0 normalized limit (feasible with margin)",
+    "drag remains report-only in this reduced problem"
+  ],
+  "claims_not_supported": [
+    "no solver run is involved; contract/integration evidence only",
+    "no optimization-quality claim"
+  ]
+}

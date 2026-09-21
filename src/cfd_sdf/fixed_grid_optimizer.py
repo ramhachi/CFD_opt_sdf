@@ -411,6 +411,19 @@ def run_fixed_grid_constrained_density_step(
             if transform is not None
             else None
         ),
+        "semantic_names": {
+            "rho_design": "design variable (artifact array 'rho')",
+            "rho_filtered": "filter output (artifact array 'rho_filtered')",
+            "rho_projection": (
+                "projection output; volume and geometry occupancy basis; recomputed "
+                "from rho_filtered and the declared projection, not stored as an array"
+            ),
+            "beta_solver": (
+                "artifact array 'rho_projected' = RAMP output = the OpenFOAM beta "
+                "field the solver sees"
+            ),
+            "brinkman_alpha": "artifact array 'alpha' = beta_max * beta_solver",
+        },
         "ignored_legacy_controls": _ignored_legacy_controls(controls, compiled),
         "constraint_values_measured": (
             compiled.constraint_values(primitive_values) if compiled is not None else {}

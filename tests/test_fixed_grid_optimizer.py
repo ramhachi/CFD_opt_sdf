@@ -280,6 +280,10 @@ def test_production_solved_set_is_compiler_only_and_transform_owned(
         ramp=RampInterpolation(30.0),
     )
     assert summary["transform"]["transform_hash"] == transform.transform_hash()
+    semantic = summary["semantic_names"]
+    assert "recomputed" in semantic["rho_projection"]
+    assert "rho_projected" in semantic["beta_solver"]
+    assert "beta_max" in semantic["brinkman_alpha"]
     density = pv.read(result.output_density_vti).cell_data
     candidate_rho = np.asarray(density["rho"], dtype=np.float64)
     expected = transform.forward(candidate_rho)

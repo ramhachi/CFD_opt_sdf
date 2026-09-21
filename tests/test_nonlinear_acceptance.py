@@ -23,7 +23,7 @@ from cfd_sdf.nonlinear_acceptance import (
     violation,
 )
 from cfd_sdf.problem_spec import load_problem_spec
-from cfd_sdf.problem_spec_compiler import compile_problem
+from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem
 from cfd_sdf.stage_t_loop import (
     LoopSpec,
     ProjectedGradientBackend,
@@ -37,14 +37,12 @@ def _evaluation(
     constraints: dict[str, float],
     *,
     primal: bool = True,
-    adjoint: bool = True,
     geometry: bool = True,
 ) -> TrialEvaluation:
     return TrialEvaluation(
         objective=objective,
         constraint_values=dict(constraints),
         primal_converged=primal,
-        adjoint_converged=adjoint,
         geometry_ok=geometry,
     )
 
@@ -77,7 +75,6 @@ def test_accept_trial_rolls_back_on_qualification_and_geometry_failures():
     parent = _evaluation(1.0, {"g": -0.1})
     for kwargs, reason in (
         ({"primal": False}, "primal_not_converged"),
-        ({"adjoint": False}, "adjoint_not_converged"),
         ({"geometry": False}, "geometry_gate_failed"),
     ):
         trial = _evaluation(0.5, {"g": -0.1}, **kwargs)
@@ -172,7 +169,7 @@ def test_conservative_inner_loop_retries_from_same_parent_until_accepted():
     assert trial_rho is not None and trial_rho[0] <= 0.2
 
 
-def _spec(tmp_path: Path, *, volume_limit: float = 0.5):
+def _spec(tmp_path: Path, *, volume_limit: float | None = None):
     import yaml
 
     data = {
@@ -212,16 +209,7 @@ def _spec(tmp_path: Path, *, volume_limit: float = 0.5):
                 "terms": [{"coefficient": 1.0, "flow_case_id": "straight", "response_id": "downforce"}],
             }
         ],
-        "constraints": [
-            {
-                "id": "volume_budget",
-                "relation": "<=",
-                "limit": volume_limit,
-                "terms": [
-                    {"coefficient": 1.0, "flow_case_id": "straight", "response_id": "downforce"}
-                ],
-            }
-        ],
+        "constraints": [],
         "topology_policy": {
             "minimum_solid_width_m": None,
             "minimum_void_width_m": None,
@@ -268,27 +256,50 @@ def _fake_loop(
     checkpoint: Path | None = None,
     resume: Path | None = None,
     volume_limit: float = 0.5,
+    bracket=None,
 ):
-    spec = _spec(tmp_path, volume_limit=volume_limit)
-    compiled = compile_problem(spec)
+    spec = _spec(tmp_path)
+    compiled = compile_problem(
+        spec,
+        volume_budget=(
+            VolumeBudget("volume_fraction_max", volume_limit)
+            if volume_limit is not None
+            else None
+        ),
+    )
     transform = _transform()
     initial = np.full(4, 0.1)
 
-    def primitive_evaluator(state) -> dict:
+    def primal_evaluator(state) -> dict:
         field = np.asarray(state.beta, dtype=np.float64)
         total = float(np.sum(field))
         return {
             "values": {("straight", "downforce"): total},
-            "gradients": {("straight", "downforce"): np.ones_like(field)},
             "primal_converged": True,
+            "response_hash": "test",
+        }
+
+    def adjoint_evaluator(state, primal_artifact) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
             "adjoint_converged": True,
         }
 
     oracle = make_oracle_from_compiled(
-        transform=transform, compiled=compiled, primitive_evaluator=primitive_evaluator
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
     )
     return run_stage_t_loop(
-        spec=LoopSpec(transform=transform, compiled=compiled, move_limit=0.1, max_iterations=iterations),
+        spec=LoopSpec(
+            transform=transform,
+            compiled=compiled,
+            move_limit=0.1,
+            max_iterations=iterations,
+            bracket=bracket,
+        ),
         oracle=oracle,
         backend=ProjectedGradientBackend(),
         initial_rho=initial,
@@ -304,6 +315,10 @@ def test_loop_accepts_monotone_feasible_steps(tmp_path: Path):
     assert result.accepted >= 2
     assert result.final_evaluation.objective <= -0.9 + 1e-9
     assert result.final_evaluation.objective < -4 * 0.1
+    assert "volume_fraction_max" in result.final_evaluation.constraint_values
+    accepted_rows = [row for row in result.trace if row.get("accepted")]
+    for row in accepted_rows:
+        assert row["trial_constraints"]["volume_fraction_max"] <= 1e-9
     # one parent adjoint per accepted parent; no duplicate primal after acceptance
     assert result.counts["gradient_evaluations"] == 1 + result.accepted
     assert result.counts["value_evaluations"] == 1 + sum(
@@ -313,7 +328,7 @@ def test_loop_accepts_monotone_feasible_steps(tmp_path: Path):
     assert result.final_evaluation.transform_hash == result.transform_hash
     for row in result.trace:
         if row.get("accepted"):
-            assert row["trial_constraints"]["volume_budget"] <= 1e-9
+            assert row["trial_constraints"]["volume_fraction_max"] <= 1e-9
             assert "objective_gradient" not in row  # trace carries measurements, not gradients
     assert result.transform_hash == _transform().transform_hash()
 
@@ -332,24 +347,32 @@ def test_loop_checkpoint_resume_is_deterministic(tmp_path: Path):
 
 def test_loop_rejects_unconverged_oracle_trials_and_still_accepts(tmp_path: Path):
     spec = _spec(tmp_path)
-    compiled = compile_problem(spec)
+    compiled = compile_problem(spec, volume_budget=VolumeBudget("volume_fraction_max", 0.45))
     transform = _transform()
     calls = {"count": 0}
 
-    def primitive_evaluator(state) -> dict:
+    def primal_evaluator(state) -> dict:
         calls["count"] += 1
         field = np.asarray(state.beta, dtype=np.float64)
         total = float(np.sum(field))
         return {
             "values": {("straight", "downforce"): total},
-            "gradients": {("straight", "downforce"): np.ones_like(field)},
             "primal_converged": total <= 0.45,
-            "adjoint_converged": True,
             "solver_status": "converged" if total <= 0.45 else "iteration_cap",
         }
 
+    def adjoint_evaluator(state, primal_artifact) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
+            "adjoint_converged": True,
+        }
+
     oracle = make_oracle_from_compiled(
-        transform=transform, compiled=compiled, primitive_evaluator=primitive_evaluator
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
     )
     result = run_stage_t_loop(
         spec=LoopSpec(transform=transform, compiled=compiled, move_limit=0.1, max_iterations=6),
@@ -382,6 +405,7 @@ def test_checkpoint_resume_rejects_binding_mismatch(tmp_path: Path):
         ("compiled_problem_hash", "0" * 64),
         ("backend_id", "some-other-backend"),
         ("oracle_profile", "some-other-profile"),
+        ("bracket_hash", "0" * 64),
     ):
         mutated = dict(document, **{key: value})
         mutated_path = tmp_path / f"mutated_{key}.json"
@@ -411,18 +435,26 @@ def test_oracle_maps_solver_field_gradients_through_the_transform():
     compiled = compile_problem(spec)
     captured = {}
 
-    def primitive_evaluator(state):
+    def primal_evaluator(state):
         field = np.asarray(state.beta, dtype=np.float64)
         captured["field"] = field.copy()
         return {
             "values": {("straight", "downforce"): float(np.sum(field))},
-            "gradients": {("straight", "downforce"): np.full_like(field, 0.5)},
             "primal_converged": True,
+        }
+
+    def adjoint_evaluator(state, primal_artifact):
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.full_like(field, 0.5)},
             "adjoint_converged": True,
         }
 
     oracle = make_oracle_from_compiled(
-        transform=transform, compiled=compiled, primitive_evaluator=primitive_evaluator
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
     )
     rho = np.full(4, 0.5)
     values = oracle.evaluate_values(rho)
@@ -441,3 +473,153 @@ def _tmp_spec_dir():
     from pathlib import Path as _Path
 
     return _Path(tempfile.mkdtemp())
+
+
+def test_loop_bracket_passes_for_a_descent_proposal(tmp_path: Path):
+    from cfd_sdf.path_b_bracket import BracketSpec
+
+    result = _fake_loop(
+        tmp_path,
+        iterations=3,
+        volume_limit=0.9,
+        bracket=BracketSpec(epsilon=1e-3, noise_floor_abs=1e-12),
+    )
+    assert result.accepted >= 1
+    assert result.counts["bracket_evaluations"] >= 1
+    accepted = [row for row in result.trace if row.get("accepted")]
+    for row in accepted:
+        gate = row["inner"][-1]["pre_accept_gate"]
+        assert gate["ok"] is True
+        assert gate["d_adj"] < 0.0 and gate["d_fd"] < 0.0
+
+
+def test_loop_bracket_noise_floor_blocks_every_step(tmp_path: Path):
+    from cfd_sdf.path_b_bracket import BracketSpec
+
+    result = _fake_loop(
+        tmp_path,
+        iterations=2,
+        volume_limit=0.9,
+        bracket=BracketSpec(epsilon=1e-3, noise_floor_abs=1e6),
+    )
+    assert result.accepted == 0
+    assert result.counts["bracket_evaluations"] >= 1
+
+
+def test_parent_adjoint_failure_is_fail_closed(tmp_path: Path):
+    from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem
+
+    spec = _spec(tmp_path)
+    compiled = compile_problem(spec, volume_budget=VolumeBudget("volume_fraction_max", 0.9))
+    transform = _transform()
+
+    def primal_evaluator(state) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "values": {("straight", "downforce"): float(np.sum(field))},
+            "primal_converged": True,
+        }
+
+    def adjoint_evaluator(state, primal_artifact) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
+            "adjoint_converged": False,
+        }
+
+    oracle = make_oracle_from_compiled(
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
+    )
+    with pytest.raises(ValueError, match="adjoint"):
+        run_stage_t_loop(
+            spec=LoopSpec(transform=transform, compiled=compiled, max_iterations=1),
+            oracle=oracle,
+            initial_rho=np.full(4, 0.1),
+        )
+
+
+def test_primal_artifact_mismatch_is_fail_closed(tmp_path: Path):
+    from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem
+
+    spec = _spec(tmp_path)
+    compiled = compile_problem(spec, volume_budget=VolumeBudget("volume_fraction_max", 0.9))
+    transform = _transform()
+    calls = {"primal": 0}
+
+    def primal_evaluator(state) -> dict:
+        calls["primal"] += 1
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "values": {("straight", "downforce"): float(np.sum(field))},
+            "primal_converged": True,
+        }
+
+    def adjoint_evaluator(state, primal_artifact) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
+            "adjoint_converged": True,
+        }
+
+    oracle = make_oracle_from_compiled(
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
+    )
+    values = oracle.evaluate_values(np.full(4, 0.1))
+    with pytest.raises(ValueError, match="artifact"):
+        oracle.evaluate_gradients(np.full(4, 0.2), values)
+    assert calls["primal"] == 1  # the adjoint path never re-ran the primal
+
+
+def test_volume_constraint_id_collision_is_rejected(tmp_path: Path):
+    import yaml
+
+    from cfd_sdf.problem_spec import load_problem_spec
+    from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem
+
+    data = yaml.safe_load((_spec(tmp_path).path).read_text(encoding="utf-8"))
+    data["constraints"] = [
+        {
+            "id": "volume_fraction_max",
+            "relation": "<=",
+            "limit": 0.5,
+            "terms": [
+                {"coefficient": 1.0, "flow_case_id": "straight", "response_id": "downforce"}
+            ],
+        }
+    ]
+    path = tmp_path / "collision.yaml"
+    path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    spec = load_problem_spec(path)
+    compiled = compile_problem(
+        spec, volume_budget=VolumeBudget("volume_fraction_max", 0.5)
+    )
+    transform = _transform()
+
+    def primal_evaluator(state) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "values": {("straight", "downforce"): float(np.sum(field))},
+            "primal_converged": True,
+        }
+
+    def adjoint_evaluator(state, primal_artifact) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        return {
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
+            "adjoint_converged": True,
+        }
+
+    oracle = make_oracle_from_compiled(
+        transform=transform,
+        compiled=compiled,
+        primal_evaluator=primal_evaluator,
+        adjoint_evaluator=adjoint_evaluator,
+    )
+    with pytest.raises(ValueError, match="collides"):
+        oracle.evaluate_values(np.full(4, 0.1))

@@ -36,15 +36,20 @@ DEFAULT_PENALTY_GROWTH = 1.1
 
 @dataclass(frozen=True)
 class TrialEvaluation:
-    """Everything re-measured at a trial before any acceptance decision."""
+    """Everything re-measured at a trial before any acceptance decision.
+
+    Trials are primal-only: ``adjoint_status`` is ``not_applicable`` by
+    construction and never enters acceptance (PQ0.1 4.4).
+    """
 
     objective: float
     constraint_values: dict[str, float]
     primal_converged: bool
-    adjoint_converged: bool
     geometry_ok: bool
+    adjoint_status: str = "not_applicable"
     geometry_metrics: dict[str, Any] = field(default_factory=dict)
     solver_status: str = "unknown"
+    primal_artifact_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -156,7 +161,8 @@ def accept_trial(
         "penalty": state.penalty,
         "move_radius": state.move_radius,
         "primal_converged": trial.primal_converged,
-        "adjoint_converged": trial.adjoint_converged,
+        "adjoint_status": trial.adjoint_status,
+        "primal_artifact_hash": trial.primal_artifact_hash,
         "geometry_ok": trial.geometry_ok,
         "solver_status": trial.solver_status,
     }
@@ -195,8 +201,6 @@ def accept_trial(
 
     if not trial.primal_converged:
         return decision(False, "reject", "primal_not_converged", new_move=state.move_radius / 2.0)
-    if not trial.adjoint_converged:
-        return decision(False, "reject", "adjoint_not_converged", new_move=state.move_radius / 2.0)
     if not trial.geometry_ok:
         return decision(False, "reject", "geometry_gate_failed", new_move=state.move_radius / 2.0)
 
@@ -270,6 +274,8 @@ def run_conservative_inner_loop(
     evaluate: Callable[[np.ndarray, TrialProposal], TrialEvaluation],
     predicted_objective: Callable[[TrialProposal], float],
     max_inner_iterations: int = 8,
+    pre_accept_gate: Callable[[TrialProposal, np.ndarray], tuple[bool, dict[str, Any]]]
+    | None = None,
 ) -> tuple[AcceptanceDecision, np.ndarray | None, list[dict[str, Any]]]:
     """GCMMA-like inner iterations: re-propose from the same parent until accepted.
 
@@ -299,6 +305,21 @@ def run_conservative_inner_loop(
         )
         entry = dict(decision.trace)
         entry["inner_iteration"] = inner
+        if decision.accepted and pre_accept_gate is not None:
+            gate_ok, gate_info = pre_accept_gate(proposal, trial_rho)
+            entry["pre_accept_gate"] = gate_info
+            if not gate_ok:
+                decision = AcceptanceDecision(
+                    accepted=False,
+                    status="reject",
+                    reason=str(gate_info.get("reason", "pre_accept_gate_failed")),
+                    merit_parent=decision.merit_parent,
+                    merit_trial=decision.merit_trial,
+                    trust_ratio=decision.trust_ratio,
+                    new_move_radius=max(state.move_radius / 2.0, DEFAULT_MOVE_FLOOR),
+                    new_penalty=state.penalty,
+                    trace=entry,
+                )
         trace.append(entry)
         if decision.accepted:
             state.move_radius = decision.new_move_radius
