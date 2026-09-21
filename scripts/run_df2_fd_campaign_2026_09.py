@@ -47,6 +47,7 @@ from cfd_sdf.fixed_grid_primal import (  # noqa: E402
 WORK = ROOT / "work" / "df2_fd_refresh"
 OUT = WORK / "fd_campaign"
 MANIFEST = ROOT / "docs" / "evidence" / "fd_campaign_p6_solver_side_manifest_2026_09.json"
+TEMPLATE = WORK / "template_frozen"
 EPSILONS = (3.0e-5, 1.0e-4, 3.0e-4, 1.0e-3)
 RANDOM_SEEDS = (11, 2026)
 
@@ -150,6 +151,7 @@ def run_signed_case(
     result = run_fixed_grid_primal_case(
         contract.topology_state_json,
         case_dir=case_root / "case",
+        template_case_dir=TEMPLATE,
         density_variant="seed",
         backend="auto",
         execute=True,
@@ -278,7 +280,7 @@ def main() -> None:
         "rows": rows,
         "verdict": verdict,
         "sign_convention": "dJ/drho = -d(downforce_coefficient)/drho",
-        "solver_template": "work/df2_fd_refresh/template_regularise_off (regularise false)",
+        "solver_template": "work/df2_fd_refresh/template_frozen (regularise false, maxInitChange 0)",
         "claims_not_made": [
             "no target-physics claim",
             "no claim outside the reduced laminar fixture and the registered rows",

@@ -1,51 +1,58 @@
-# P6 diagnosis record — DF2 transfer-algebra result (2026-09-21)
+# P6 diagnosis record — updated with the frozen-design FD campaign (2026-09-21)
 
-Status: DF2 deliverable, subordinate to
-[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
-DF2 and to the P6 entry in [`problem_register_2026_09.md`](problem_register_2026_09.md).
-
-The P6 ledger entry (`一般方向で約10%の勾配バイアス / 機構未解明`) suspects the
-non-integer overlap transfer (`P`/`P.T`, spacing ratios 1.875/1.5). This record
-replaces that suspicion with a measurement, in the same style as the P18
-closure record: the ledger status line should point here when its pending edits
-are committed.
+Status: supersedes the "next experiment" section of the earlier P6 record. The
+registered solver-side campaign ran to completion on a frozen design; the
+result is a reproducible, direction-dependent mismatch of **+22% to +57%**
+between the finite-difference primal derivative and the continuous adjoint.
+P6 therefore stays open with the cause localized to the solver-side chain, not
+the transfer algebra and not the campaign machinery.
 
 ## Artifacts
 
-- `docs/evidence/p0_transfer_diagnostic_2026_09.json` — transfer diagnostic on
-  the real P0 grid pair (canonical 60x32x24, 0.05 m vs source 32x16x16,
-  0.09375/0.1/0.075 m; ratios 1.875 / 2.0 / 1.5).
-- `docs/evidence/fd_campaign_p6_solver_side_manifest_2026_09.json` — immutable
-  pre-registration (profile `fd_gradient_v1`) of the next FD campaign.
-- `docs/evidence/df2_grid_campaign_registration_2026_09.json` — registered
-  Stage T / Stage V grid campaigns (not run).
-- Command: `.venv/bin/cfd-sdf diagnose-fixed-grid-transfer <source> <target> --output ...`.
+- `docs/evidence/fd_campaign_p6_solver_side_result_2026_09.json` — the
+  qualified negative result (verdict `passed: false`, 4 failing rows).
+- `docs/evidence/p0_transfer_diagnostic_2026_09.json` — transfer algebra exact.
+- `docs/df2_refresh_campaign_audit_2026_09.md` — the earlier design-update
+  confound and its fix (`maxInitChange 0` frozen template).
+- `docs/evidence/fd_campaign_p6_solver_side_manifest_2026_09.json` — the
+  immutable registration that was executed unchanged.
+- Runner: `scripts/run_df2_fd_campaign_2026_09.py`.
 
 ## Measured facts
 
-The exact-overlap transfer used by the canonical closed loop is, on this real
-grid pair:
+| direction | FD/analytic ratio | spread over epsilons | relative error |
+| --- | --- | --- | --- |
+| gradient-aligned | 1.2178 | < 0.1% | 21.8% (fails 5% gate) |
+| random seed 11 | 1.3764 | < 0.4% | 37.6% |
+| random seed 2026 | 1.5680 | < 0.1% | 56.8% |
 
-| property | measured | note |
-| --- | --- | --- |
-| consistency (each source row sums to 1) | 6.4e-15 | constant fields are preserved |
-| conservation (`sum_s (P x)_s V_s = sum_t x_t V_t`) | 1.5e-16 | full coverage holds by construction |
-| adjoint identity `<P x, y> = <x, P.T y>` | 5.1e-15 | `P.T` is the exact discrete adjoint of the value transfer |
-| volume-weighted pullback difference (informational) | 0.82 | would only matter for a different (integral) transfer definition; not a defect |
-| verdict | `exact` | also exact for clean integer-ratio pairs |
+Controls that isolate the cause:
 
-## Consequence for P6
+- transfer identity: `g_canonical == P.T g_source` exactly (max diff 0.0);
+  `dot(g_canonical, d) == dot(g_source, P d)` to machine precision;
+- design frozen: maximum `|beta_final - injected|` across all 24 runs is
+  `2.98e-8`;
+- primal converged in 91 iterations in every run; FD stable across
+  `3e-5 ... 1e-3` for every direction.
 
-The transfer algebra is exonerated: non-integer ratios do not introduce a
-mapping defect in this implementation. The residual ~0.90 FD ratio on generic
-directions therefore lives in the solver-side chain (primal re-solve, injection
-consumption, adjoint convergence at the perturbed state, or the nonlinearity of
-the response between the perturbation scale and the solver tolerance).
+Because the analytic prediction never passes through the transfer in this
+comparison (`dot(g_canonical, d) = dot(g_source, P d)`), the mismatch is
+exclusively between the OpenFOAM continuous-adjoint sensitivity and the
+discrete primal response at this state and resolution.
 
-The next experiment is pre-registered with fixed epsilons, directions, seeds,
-sign convention, gates, and stop conditions
-(`fd_campaign_p6_solver_side_manifest_2026_09.json`). P6 remains open with a
-narrowed scope: **not** a transfer operator defect; a solver-side chain effect
-to be bounded or resolved by the registered campaign. Until it completes,
-acceptance stays limited to gradient-aligned directions, and any new direction
-family must be FD-qualified before it can drive an accepted step (DF3).
+## Consequences
+
+- The registered gradient gate as applied to this configuration rejects every
+  direction, including the gradient-aligned one (ratio 1.22 ≈ 22% error). A
+  step accepted on the canonical gradient can therefore be trusted in sign and
+  approximate direction but not in magnitude.
+- The historical alarm-fxture result (0.99 aligned / 0.90 random, regularise
+  true) and this result (1.22 / 1.38–1.57, regularise false, identity profile)
+  are different numerical chains; they must not be merged into one conclusion.
+- Next registered questions, in order: (i) does refining the Stage T grid or
+  the source grid move the ratio toward 1 (discretisation-consistency study)?
+  (ii) does the continuous adjoint's boundary-condition/objective
+  implementation explain the aligned-direction 22% at this resolution?
+  (iii) should accepted-step magnitudes be corrected by a measured
+  direction-dependent factor, or should acceptance require FD confirmation on
+  candidate-bound directions?
