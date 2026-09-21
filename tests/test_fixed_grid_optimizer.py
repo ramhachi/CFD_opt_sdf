@@ -136,6 +136,32 @@ def test_fixed_grid_constrained_step_rejects_sampled_connectivity_derivatives(
         )
 
 
+def _write_transform_declaration(
+    path: Path,
+    *,
+    filter_kind: str = "identity",
+    radius_m: float = 1.0,
+    projection_b: float = 0.0,
+    ramp_q: float = 0.0,
+    volume_limit: float | None = None,
+) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    document = {
+        "kind": "design_transform_declaration",
+        "schema_version": 1,
+        "filter": {"kind": filter_kind, "spacing_m": 1.0, "radius_m": radius_m},
+        "projection": {"b": projection_b, "eta": 0.5},
+        "ramp": {"q": ramp_q},
+        "volume_budget": (
+            {"constraint_id": "volume_fraction_max", "limit": volume_limit}
+            if volume_limit is not None
+            else None
+        ),
+    }
+    path.write_text(json.dumps(document, indent=2), encoding="utf-8")
+    return path
+
+
 def test_fixed_grid_constrained_step_uses_compiled_problem_spec(
     tmp_path: Path,
 ) -> None:
@@ -147,6 +173,7 @@ def test_fixed_grid_constrained_step_uses_compiled_problem_spec(
         dry_coefficients={"drag_coefficient": 2.0, "downforce_coefficient": 0.1},
     )
     spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="drag")
+    declaration = _write_transform_declaration(tmp_path / "transform.json")
 
     result = run_fixed_grid_constrained_density_step(
         topology_state,
@@ -159,11 +186,16 @@ def test_fixed_grid_constrained_step_uses_compiled_problem_spec(
             enforce_volume=False,
         ),
         problem_spec_json=spec_path,
+        transform_declaration_json=declaration,
     )
 
     assert result.summary["problem"]["objective_source"] == "problem_spec_compiler"
     assert result.summary["problem"]["objectives"][0]["id"] == "declared_objective"
     assert result.summary["objective"]["base_objective"] == pytest.approx(2.0)
+    assert result.summary["declared_equals_solved"] is True
+    assert result.summary["solved_set"]["volume"] is None
+    assert result.summary["transform"]["transform_hash"]
+    assert result.summary["transform"]["declaration_hash"]
     density = pv.read(result.output_density_vti).cell_data["rho"]
     assert np.allclose(density, 0.3)
 
@@ -177,6 +209,7 @@ def test_fixed_grid_constrained_step_rejects_undeclared_response_gradient(
         downforce=np.ones(4, dtype=np.float32),
     )
     spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="lift")
+    declaration = _write_transform_declaration(tmp_path / "transform.json")
 
     with pytest.raises(ValueError, match="missing arrays"):
         run_fixed_grid_constrained_density_step(
@@ -189,6 +222,119 @@ def test_fixed_grid_constrained_step_rejects_undeclared_response_gradient(
                 enforce_volume=False,
             ),
             problem_spec_json=spec_path,
+            transform_declaration_json=declaration,
+        )
+
+
+def test_production_solved_set_is_compiler_only_and_transform_owned(
+    tmp_path: Path,
+) -> None:
+    topology_state = _write_topology_state(tmp_path / "contract", rho_value=0.4)
+    sensitivity = _write_sensitivity(
+        tmp_path / "sensitivity",
+        downforce=np.zeros(4, dtype=np.float32),
+        drag=np.ones(4, dtype=np.float32),
+        dry_coefficients={"drag_coefficient": 2.0, "downforce_coefficient": 0.1},
+    )
+    spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="drag")
+    declaration = _write_transform_declaration(
+        tmp_path / "transform.json",
+        filter_kind="cone",
+        radius_m=1.0,
+        projection_b=4.0,
+        ramp_q=30.0,
+        volume_limit=0.5,
+    )
+
+    result = run_fixed_grid_constrained_density_step(
+        topology_state,
+        sensitivity_vti=sensitivity,
+        output_dir=tmp_path / "step",
+        controls=FixedGridOptimizerControls(
+            move_limit=0.1,
+            enforce_efficiency=False,
+            enforce_connectivity=False,
+            enforce_volume=False,
+        ),
+        problem_spec_json=spec_path,
+        transform_declaration_json=declaration,
+    )
+
+    summary = result.summary
+    assert summary["declared_equals_solved"] is True
+    assert summary["solved_set"]["volume"]["limit"] == pytest.approx(0.5)
+    assert summary["solved_set"]["volume"]["source"] == "compile_time_declaration"
+    assert any(
+        "enforce_volume=False" in item for item in summary["ignored_legacy_controls"]
+    )
+    # the derived arrays come from the declared transform, not identity copies
+    from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolation, TanhProjection
+
+    active = np.ones(4, dtype=bool)
+    transform = DesignTransform(
+        shape=(4, 1, 1),
+        spacing_m=1.0,
+        active_mask=active,
+        filter=ConeFilter(shape=(4, 1, 1), spacing_m=1.0, active_mask=active, radius_m=1.0),
+        projection=TanhProjection(4.0, 0.5),
+        ramp=RampInterpolation(30.0),
+    )
+    assert summary["transform"]["transform_hash"] == transform.transform_hash()
+    density = pv.read(result.output_density_vti).cell_data
+    candidate_rho = np.asarray(density["rho"], dtype=np.float64)
+    expected = transform.forward(candidate_rho)
+    assert np.allclose(np.asarray(density["rho_filtered"], dtype=np.float64), expected.rho_filtered, atol=1e-6)
+    assert np.allclose(np.asarray(density["rho_projected"], dtype=np.float64), expected.beta, atol=1e-6)
+
+
+def test_production_path_fails_closed_on_undeclared_or_diagnostic_declarations(
+    tmp_path: Path,
+) -> None:
+    topology_state = _write_topology_state(tmp_path / "contract", rho_value=0.4)
+    sensitivity = _write_sensitivity(
+        tmp_path / "sensitivity",
+        downforce=np.ones(4, dtype=np.float32),
+        dry_coefficients={"drag_coefficient": 1.0, "downforce_coefficient": 0.0},
+    )
+    spec_path = _write_problem_spec(tmp_path / "spec.yaml", sense="minimize", response_id="drag")
+
+    with pytest.raises(ValueError, match="design-transform"):
+        run_fixed_grid_constrained_density_step(
+            topology_state,
+            sensitivity_vti=sensitivity,
+            output_dir=tmp_path / "no_declaration",
+            controls=FixedGridOptimizerControls(
+                enforce_efficiency=False, enforce_connectivity=False, enforce_volume=False
+            ),
+            problem_spec_json=spec_path,
+        )
+
+    block_declaration = _write_transform_declaration(
+        tmp_path / "block.json", filter_kind="block"
+    )
+    with pytest.raises(ValueError, match="block filter"):
+        run_fixed_grid_constrained_density_step(
+            topology_state,
+            sensitivity_vti=sensitivity,
+            output_dir=tmp_path / "block",
+            controls=FixedGridOptimizerControls(
+                enforce_efficiency=False, enforce_connectivity=False, enforce_volume=False
+            ),
+            problem_spec_json=spec_path,
+            transform_declaration_json=block_declaration,
+        )
+
+    no_budget = _write_transform_declaration(tmp_path / "no_budget.json")
+    with pytest.raises(ValueError, match="undeclared constraints"):
+        run_fixed_grid_constrained_density_step(
+            topology_state,
+            sensitivity_vti=sensitivity,
+            output_dir=tmp_path / "implicit_volume",
+            controls=FixedGridOptimizerControls(
+                enforce_efficiency=False, enforce_connectivity=False, enforce_volume=True
+            ),
+            problem_spec_json=spec_path,
+            transform_declaration_json=no_budget,
         )
 
 

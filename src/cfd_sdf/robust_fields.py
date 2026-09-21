@@ -179,6 +179,18 @@ class RobustThreeField:
             ),
         }
 
+    def production_status(self) -> dict[str, Any]:
+        """PQ6 gate: this prototype is not part of the production registry."""
+
+        return {
+            "production_ready": False,
+            "reason": (
+                "PQ6 pending: the dilated-volume constraint gradient, the worst-case "
+                "active-set rule, and the closed-loop integration are not qualified; "
+                "do not connect this module to the production path"
+            ),
+        }
+
     def parameter_report(self) -> dict[str, Any]:
         return {
             "kind": "robust_three_field_parameters",

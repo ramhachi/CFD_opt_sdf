@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from pathlib import Path
 
@@ -40,6 +41,7 @@ def _measurement(
         gates=gates
         or {"mesh": True, "residual": True, "stationarity": True},
         grid_levels=("V1", "V2", "V3"),
+        extraction_status="measured",
         used_in_optimization=used_in_optimization,
     )
 
@@ -105,9 +107,7 @@ def test_reference_used_in_optimization_is_rejected():
 def test_not_measured_extraction_forces_unresolved():
     baseline = _measurement("baseline", "baseline", -0.50)
     stage_t = _measurement("stage_t", "stage_t", -0.70)
-    stage_t = CandidateMeasurement(
-        **{**stage_t.__dict__, "extraction_status": "not_measured"}
-    ) if hasattr(stage_t, "__dict__") else stage_t
+    stage_t = dataclasses.replace(stage_t, extraction_status="not_measured")
     verdict = verify_required_pairs(
         [baseline, stage_t],
         [RequiredPair("baseline", "stage_t", "baseline->T")],
@@ -143,6 +143,8 @@ def test_cli_writes_verdict_and_exits_nonzero_on_unresolved(tmp_path: Path):
                 "numerical_uncertainty": {"downforce": 0.05},
                 "extraction_uncertainty": {"downforce": 0.0},
                 "gates": {"mesh": True, "residual": True, "stationarity": True},
+                "grid_levels": ["V1", "V2", "V3"],
+                "extraction_status": "measured",
             },
             {
                 "candidate_id": "stage_t",
@@ -152,6 +154,8 @@ def test_cli_writes_verdict_and_exits_nonzero_on_unresolved(tmp_path: Path):
                 "numerical_uncertainty": {"downforce": 0.005},
                 "extraction_uncertainty": {"downforce": 0.005},
                 "gates": {"mesh": True, "residual": True, "stationarity": True},
+                "grid_levels": ["V1", "V2", "V3"],
+                "extraction_status": "measured",
             },
         ],
         "required_pairs": [{"from_role": "baseline", "to_role": "stage_t", "label": "baseline->T"}],
@@ -168,3 +172,35 @@ def test_cli_writes_verdict_and_exits_nonzero_on_unresolved(tmp_path: Path):
     verdict = json.loads(output_path.read_text(encoding="utf-8"))
     assert verdict["pairs"][0]["verdict"] == "unresolved"
     assert verdict["combined_uncertainty_rule"].startswith("root_sum_square")
+
+
+def test_missing_grid_levels_and_response_uncertainty_are_rejected():
+    baseline = _measurement("baseline", "baseline", -0.50)
+    stage_t = _measurement("stage_t", "stage_t", -0.60)
+    two_levels = dataclasses.replace(baseline, grid_levels=("V1", "V2"))
+    with pytest.raises(IndependentVerificationError, match="grid level"):
+        verify_required_pairs(
+            [two_levels, stage_t],
+            [RequiredPair("baseline", "stage_t", "baseline->T")],
+            responses=["downforce"],
+        )
+
+    missing_band = dataclasses.replace(
+        baseline,
+        numerical_uncertainty={"drag": 0.01},
+        extraction_uncertainty={"drag": 0.0},
+    )
+    with pytest.raises(IndependentVerificationError, match="missing numerical uncertainty"):
+        verify_required_pairs(
+            [missing_band, stage_t],
+            [RequiredPair("baseline", "stage_t", "baseline->T")],
+            responses=["downforce"],
+        )
+
+    with pytest.raises(IndependentVerificationError, match="extraction_status"):
+        bad_status = dataclasses.replace(baseline, extraction_status="unknown")
+        verify_required_pairs(
+            [bad_status, stage_t],
+            [RequiredPair("baseline", "stage_t", "baseline->T")],
+            responses=["downforce"],
+        )

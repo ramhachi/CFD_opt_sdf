@@ -11,7 +11,11 @@ import yaml
 
 from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolation, TanhProjection
 from cfd_sdf.problem_spec import load_problem_spec
-from cfd_sdf.problem_spec_compiler import ProblemCompileError, compile_problem
+from cfd_sdf.problem_spec_compiler import (
+    ProblemCompileError,
+    VolumeBudget,
+    compile_problem,
+)
 
 
 def _spec_data() -> dict:
@@ -200,6 +204,61 @@ def test_multipoint_terms_aggregate_both_primitives(tmp_path: Path):
         ("yawed", "downforce_yawed"): np.array([0.0, 1.0]),
     }
     assert np.allclose(compiled.objective_gradient(gradients), np.array([-0.7, -0.3]))
+
+
+def test_volume_gradient_matches_fd_in_projection_space_with_ramp(tmp_path: Path):
+    shape = (4, 3, 2)
+    active = np.ones(int(np.prod(shape)), dtype=bool)
+    transform = DesignTransform(
+        shape=shape,
+        spacing_m=1.0,
+        active_mask=active,
+        filter=ConeFilter(shape=shape, spacing_m=1.0, active_mask=active, radius_m=1.0),
+        projection=TanhProjection(8.0, 0.5),
+        ramp=RampInterpolation(30.0),
+    )
+    rng = np.random.default_rng(7)
+    rho = np.clip(rng.uniform(0.2, 0.8, size=active.size), 0.0, 1.0)
+    direction = rng.normal(size=active.size)
+    from cfd_sdf.problem_spec_compiler import VolumeOccupationConstraint
+
+    constraint = VolumeOccupationConstraint("volume_fraction_max", limit=0.2)
+    step = 1e-6
+    fd = (
+        constraint.value(transform, rho + step * direction)
+        - constraint.value(transform, rho - step * direction)
+    ) / (2 * step)
+    gradient = constraint.gradient(transform, rho)
+    assert float(np.dot(gradient, direction)) == pytest.approx(fd, rel=1e-4, abs=1e-9)
+
+    # mutation test: the RAMP-space pullback is a different function at q > 0
+    state = transform.forward(rho)
+    g_projected = np.zeros_like(state.rho_projected)
+    g_projected[active] = 1.0 / active.size
+    ramp_space = transform.pullback_from_beta(rho, g_projected)
+    assert float(np.dot(ramp_space, direction)) != pytest.approx(fd, rel=1e-2)
+
+
+def test_compile_problem_attaches_explicit_volume_budget(tmp_path: Path):
+    spec = _spec(tmp_path)
+    without = compile_problem(spec)
+    assert without.volume_constraint is None
+    assert without.solved_set()["volume"] is None
+
+    with_budget = compile_problem(
+        spec, volume_budget=VolumeBudget("volume_fraction_max", 0.5)
+    )
+    assert with_budget.volume_constraint is not None
+    solved = with_budget.solved_set()
+    assert solved["volume"]["limit"] == pytest.approx(0.5)
+    assert solved["volume"]["field"] == "rho_projected"
+    assert solved["volume"]["source"] == "compile_time_declaration"
+    assert with_budget.compiled_problem_hash() != without.compiled_problem_hash()
+
+    with pytest.raises(ProblemCompileError, match="limit"):
+        VolumeBudget("volume_fraction_max", 1.5)
+    with pytest.raises(ProblemCompileError, match="constraint_id"):
+        VolumeBudget("", 0.5)
 
 
 def test_volume_constraint_uses_projected_field(tmp_path: Path):

@@ -173,13 +173,16 @@ def run_extraction_threshold_sweep(
     reason = "no eligible threshold inside the registered range"
     if eligible:
         if rule_kind == "registered_range_min_abs_volume_error":
+            eligible = [
+                row for row in eligible if row.volume_relative_difference is not None
+            ]
             selected = min(
                 eligible,
                 key=lambda row: (
-                    abs(row.volume_relative_difference or float("inf")),
+                    abs(float(row.volume_relative_difference)),
                     row.threshold,
                 ),
-            )
+            ) if eligible else None
             reason = (
                 "minimum |volume relative difference| among gate-passing thresholds "
                 "inside the registered range"

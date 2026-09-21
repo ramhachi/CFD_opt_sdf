@@ -553,81 +553,64 @@ cross-fidelity comparison with Stage T/Stage S.
 
 ## 11. Immediate execution order
 
-The canonical `P @ rho` state is now consumed by a real solver case and the
-`P.T @ topOSens` gradient returns to the canonical grid, verified by finite
-differences. That item is complete; the sequence below reflects what the
-2026-09-12 measurements changed.
+The adopted detailed plan is
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
+It retains Stage T -> Stage S -> Stage V and now governs the work after the
+DF0--DF6 component implementation.
 
-1. **Re-test the ranking on the binarized candidates.** Binarization itself is
-   done: penalized interpolation with `alphaMax` at the saturation knee produces
-   solid designs, the Stage S handoff is gated on discreteness, and Stage V is a
-   qualified reference. Three watertight single-component candidates spanning
-   1.078 to 2.814 in Stage T downforce are exported and give two independent pair
-   signs. **This is the decisive experiment and it is the only thing that can
-   settle whether the architecture works.** — **run 2026-09-20 (WP6, fixed-shape
-   program)**: 10 pre-registered analytic binary shapes, same-grid T1, anchor
-   STL Stage V (V1+V2 all qualified), Gate-4 verdicts at the pre-declared
-   uncertainty (downforce abs 0.0147, Cd rel 0.034). Verdicts: **downforce --
-   no_go** (one resolvable sign inversion at V2: the thickness pair
-   plate_a20_nd/plate_a20_t05, surrogate +0.232 vs reference -0.034; the surrogate
-   over-rewards thickness that the body-fitted ladder cannot resolve), **drag --
-   unresolved-but-sign-consistent** (37/37 resolvable pairs agree; rho 0.976,
-   tau 0.911). See `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`.
-   Per stop rules the optimizer must NOT be tuned to reverse this; the surrogate
-   reformulation study for the thickness axis is the registered next step.
-   **Contained 2026-09-20 (WP6-2, reachable-set program, second pre-registered
-   8-candidate ranking)**: the no_go is confined to the sub-minimum-width
-   thickness axis (a 1-cell-thick plate at the T1 voxel), which the declared
-   `minimum_solid_width` design policy excludes. Inside the reachable design
-   space downforce ranks EXACTLY like qualified Stage V at both levels
-   (tau 1.000, 25/25 pairs), and the combined 17-shape pool gives 121
-   downforce pairs and 110 drag pairs with ZERO resolvable sign inversions
-   (`evidence/reachable_set_cross_fidelity_ranking_2026_09.json`). Downforce
-   optimization under the min-width policy is structurally supported;
-   absolute magnitude calibration remains an open item (Stage T |DF| is
-   0.45-0.75 of Stage V, ranking-only claim restored).
-2. **Establish that the Stage T grid resolves what it optimizes.** The same-grid
-   T1 evaluation (46,080 cells for design, solver and handoff alike) removes the
-   46k-to-8k transfer as a factor, and is now the default. What remains is to
-   show Stage T's forces converge under further refinement.
-   **Implementation required.**
-3. **Finish the formulation.** Two items are known-open from the binarization
-   work: the volume constraint is an equality, so surplus budget is dumped at
-   `beta` around 0.003 instead of being released (an inequality fixes it), and
-   above `q = 100` the design develops cell-scale roughness that breaks
-   watertightness, which a density filter before projection should remove.
-   **Implementation required.**
-4. Fix the repository template's objective/constraint declaration so the solved
-   problem matches the declared one, and add a check that refuses a Stage T run
-   whose OpenFOAM objectives and constraints do not correspond to the
-   ProblemSpec's declared objectives and constraints. The `--response-id` guard
-   on the canonical gradient transfer is the first instance of this class of
-   check; the optimization problem itself needs the same treatment.
-   **Implementation required.**
-5. Re-run the density -> iso-surface/SDF handoff on a real Stage T design and
-   add the remaining surface-distance, self-intersection, minimum-feature and
-   feature-survival gates, then produce one `ready_for_stage_s=true` canonical
-   artifact. **Qualification implementation required.**
-6. Re-evaluate the baseline and the optimized candidate with three-grid
-   body-fitted OpenFOAM through `prepare-openfoam-from-problem-spec`, including
-   pressure, skin-friction, total-force and cross-fidelity comparison. The
-   force units and directions are now reconciled between the two fidelities;
-   what remains is the study itself and its acceptance criterion.
-   **Implementation required.**
-7. Resolve or bound the approximately 10% directional-derivative bias on generic
-   directions. Regularisation has been causally exonerated; the named untested
-   candidate is `P`'s fractional-overlap redistribution under non-integer
-   refinement ratios. Until it is understood, gradient-gate rows on
-   non-gradient-aligned directions must not be read as pass/fail.
-8. Establish a feasible seed or an explicit feasibility-restoration phase;
-   add nonlinear candidate acceptance, rollback, and move-radius reduction.
-   **Implementation required.**
-9. Complete G3 and execute G4 B0–B2 before production optimizer work.
-   **Implementation required.**
-10. Implement production Stage T derivatives and a sparse/scalable constrained
-   backend, then advance through B3–B5, Stage S refinement, and Stage V.
+Current status on 2026-09-21:
+
+- DF0 closed P18 as a **fixed-shape diagnostic only**. The eight-shape
+  downforce set still passes with candidate-specific bands (25 resolvable
+  pairs, zero inversions); the combined 17-shape pool remains unresolved for
+  both responses. This is not optimizer-generated-shape qualification.
+- DF1--DF6 supplied the compiler, DesignTransform, finite-difference campaign,
+  nonlinear trial controller, extraction sweep, Stage S drag sensitivity path,
+  independent-verification algebra and robust-three-field prototype. These are
+  component/capability results, not one production OpenFOAM closed loop.
+- P6 is now a solver-side continuous-adjoint/discrete-primal mismatch: +21.8%
+  on the aligned direction and +37.6%/+56.8% on two random directions. Transfer,
+  design movement and primal residual tolerance are exonerated.
+- The `linearUpwind` Stage V family qualifies drag at 0.364% finest-transition
+  drift. Downforce remains non-monotone at 0.010374, above the registered 0.005
+  bound, so there is no downforce GCI or grid-independent claim.
+- The first extraction sweep did not produce a Stage S-ready candidate.
+
+Execute in this order:
+
+1. **PQ0 — production integration closure.** Make the compiler the sole owner
+   of the solved objective/constraints, fix the projected-volume pullback,
+   connect DesignTransform to the oracle, split parent-gradient from
+   trial-value evaluation, bind checkpoints, and close the extraction and
+   uncertainty fail-open edges. Do not start a long optimiser run before this.
+2. **PQ1 — Stage T gradient qualification.** Repair base-versus-perturbation
+   campaign gate semantics, audit the objective/BC/source derivative, and run
+   the registered direction-by-epsilon-by-grid study. Decide production pass,
+   bounded FD-confirmed research use, or No-Go.
+3. **PQ2 — Stage V downforce reference.** In parallel where resources allow,
+   run the already registered domain/boundary factor with `linearUpwind`, then
+   register only one result-driven factor at a time. Keep drag and downforce
+   conclusions separate.
+4. **PQ3 — first real OpenFOAM closed loop.** Only after PQ0 and a PQ1 decision,
+   run the minimal feasible Stage T problem with nonlinear primal acceptance,
+   rollback and reproducible restart. The current backend is a projected-gradient
+   or SLSQP proposal backend; it is not GCMMA.
+5. **PQ4 — T-to-S handoff and Stage S.** Apply the registered extraction sweep
+   to the PQ3 candidate, qualify both drag/downforce surface gradients by FD,
+   and accept one body-fitted shape step.
+6. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
+   Stage S candidates on at least three qualified grids; preregister
+   baseline-to-T and T-to-S required pairs and candidate-specific combined
+   uncertainties.
+7. **PQ6 — production backend and target physics.** Only after PQ5, integrate
+   robust three-field constraints, add an actual MMA/GCMMA backend if warranted,
+   and advance through turbulence, finite-wing, moving-ground/multipoint,
+   vehicle-interference and physical-validation gates.
 
 No new parametric candidate generator belongs to this execution sequence.
+Fixed-shape generators may be used only as registered diagnostics. A stronger
+optimiser, robust projection, control-volume post-processing or custom
+sharp-interface solver must not be used to bypass PQ0--PQ5.
 
 ## 12. Document authority
 
@@ -635,6 +618,8 @@ No new parametric candidate generator belongs to this execution sequence.
 - `docs/problem_contract_v2.md`: authoritative user problem schema.
 - `docs/fixed_grid_data_contract_v2.md`: authoritative Stage T artifact schema.
 - `docs/fixed_grid_backend_decision.md`: selected-backend decision record.
+- `docs/downforce_optimization_architecture_plan_2026_09.md`: adopted detailed
+  downforce implementation and qualification plan, subordinate to this roadmap.
 - `docs/git_branching_strategy.md`: repository workflow.
 
 If another document conflicts with this roadmap, this file wins and the

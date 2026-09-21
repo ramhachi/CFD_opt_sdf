@@ -1,4 +1,4 @@
-"""GCMMA-shaped acceptance control for the Stage T nonlinear loop (DF3).
+"""Merit/trust acceptance control with conservative inner retries (DF3/PQ0).
 
 The historical step marked a trial ``accepted_by_linearization`` from the linear
 prediction alone and still wrote artifacts. The architecture plan requires the
@@ -6,12 +6,16 @@ opposite: a trial is accepted only after the primal is re-solved and every
 constraint and geometry gate is re-evaluated, and a rejected trial rolls back
 to the same parent with a reduced move radius.
 
-The acceptance rule here is the conservative-check idea of Svanberg's GCMMA:
-the objective/constraint model is accepted only if the actual merit decreases;
-otherwise the controller increases the penalty (the inner-iteration analog) and
-the backend re-proposes from the same parent with a smaller move radius.
-Gradients are evaluated once per parent; only function values are re-evaluated
-at trials, matching the GCMMA cost model.
+The acceptance rule borrows the conservative-check structure of Svanberg's
+GCMMA: the objective/constraint model is accepted only if the actual merit
+decreases; otherwise the controller increases the penalty (the inner-iteration
+analog) and the backend re-proposes from the same parent with a smaller move
+radius. Gradients are evaluated once per parent; only function values are
+re-evaluated at trials.
+
+This is **not** an MMA/GCMMA implementation: it has no moving asymptotes and no
+separable convex subproblem. It is a nonlinear merit/trust controller; the
+MMA/GCMMA name applies only after such a backend exists (PQ6).
 """
 
 from __future__ import annotations

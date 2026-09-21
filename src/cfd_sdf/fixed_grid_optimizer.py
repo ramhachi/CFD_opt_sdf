@@ -15,6 +15,11 @@ from .fixed_grid_contract import (
     _read_cell_vti,
     _write_cell_vti,
 )
+from .design_transform import DesignTransform
+from .design_transform_declaration import (
+    DesignTransformDeclarationError,
+    load_design_transform_declaration,
+)
 from .fixed_grid_primal import load_fixed_grid_density_state
 from .problem_spec import load_problem_spec
 from .problem_spec_compiler import CompiledProblem, ProblemCompileError, compile_problem
@@ -119,6 +124,7 @@ def run_fixed_grid_constrained_density_step(
     primal_summary_json: Path | None = None,
     connectivity_summary_json: Path | None = None,
     problem_spec_json: Path | None = None,
+    transform_declaration_json: Path | None = None,
 ) -> FixedGridConstrainedStepArtifacts:
     controls = controls or FixedGridOptimizerControls()
     _validate_controls(controls)
@@ -137,7 +143,44 @@ def run_fixed_grid_constrained_density_step(
         "fixed_grid_sensitivity.vti",
         "density.vti",
     )
-    compiled = compile_problem(load_problem_spec(problem_spec_json)) if problem_spec_json else None
+    compiled = None
+    transform: DesignTransform | None = None
+    transform_declaration_hash: str | None = None
+    if problem_spec_json is not None:
+        if transform_declaration_json is None:
+            raise ProblemCompileError(
+                "the production (ProblemSpec) path requires an explicit design-transform "
+                "declaration; legacy identity updates are diagnostic only"
+            )
+        declaration = load_design_transform_declaration(transform_declaration_json)
+        transform_declaration_hash = declaration.declaration_hash
+        compiled = compile_problem(
+            load_problem_spec(problem_spec_json),
+            volume_budget=declaration.volume_budget,
+        )
+        grid_spacing = density_state.grid.spacing
+        if declaration.document["filter"]["kind"] == "cone" and len(
+            set(float(v) for v in grid_spacing)
+        ) != 1:
+            raise DesignTransformDeclarationError(
+                "the cone design transform requires a uniform cell spacing"
+            )
+        design_active = (
+            (np.asarray(density_state.arrays["active_design_mask"], dtype=np.uint8) > 0)
+            & (np.asarray(density_state.arrays["allowed_mask"], dtype=np.uint8) > 0)
+            & ~(np.asarray(density_state.arrays["forbidden_mask"], dtype=np.uint8) > 0)
+            & ~(np.asarray(density_state.arrays["fixed_solid_mask"], dtype=np.uint8) > 0)
+        )
+        transform = declaration.build(
+            shape=tuple(int(v) for v in density_state.grid.cell_shape),
+            spacing_m=float(grid_spacing[0]),
+            active_mask=design_active,
+        )
+        if float(declaration.document["filter"]["spacing_m"]) != float(grid_spacing[0]):
+            raise DesignTransformDeclarationError(
+                "declaration.filter.spacing_m does not match the density grid spacing"
+            )
+        _validate_transform_against_artifact(transform, density_state.arrays, design_active)
     _validate_sensitivity_arrays(
         density_state.arrays,
         sensitivity_arrays,
@@ -213,6 +256,7 @@ def run_fixed_grid_constrained_density_step(
         compiled=compiled,
         primitive_values=primitive_values,
         primitive_gradients=primitive_gradients,
+        transform=transform,
     )
     _check_connectivity_derivative_readiness(
         sensitivity_arrays,
@@ -255,6 +299,7 @@ def run_fixed_grid_constrained_density_step(
     output_arrays = _updated_density_arrays(
         density_state.arrays,
         candidate_density,
+        transform=transform,
     )
     _write_cell_vti(
         density_state.grid,
@@ -350,6 +395,23 @@ def run_fixed_grid_constrained_density_step(
         ),
         "objective": objective_prediction,
         "problem": problem_metadata,
+        "declared_equals_solved": bool(compiled is not None),
+        "solved_set": compiled.solved_set() if compiled is not None else None,
+        "transform": (
+            {
+                "declaration_hash": transform_declaration_hash,
+                "transform_hash": transform.transform_hash(),
+                "description": transform.describe(),
+                "volume_definition": "projection_output_recomputed_from_rho_filtered",
+                "artifact_rho_projected_note": (
+                    "the fixed-grid artifact array rho_projected is the RAMP output "
+                    "(OpenFOAM beta); the volume field is the projection output"
+                ),
+            }
+            if transform is not None
+            else None
+        ),
+        "ignored_legacy_controls": _ignored_legacy_controls(controls, compiled),
         "constraint_values_measured": (
             compiled.constraint_values(primitive_values) if compiled is not None else {}
         ),
@@ -403,6 +465,7 @@ def _build_constraints(
     compiled: CompiledProblem | None = None,
     primitive_values: dict[tuple[str, str], float] | None = None,
     primitive_gradients: dict[tuple[str, str], np.ndarray] | None = None,
+    transform: DesignTransform | None = None,
 ) -> list[_LinearConstraint]:
     if compiled is not None:
         return _spec_constraints(
@@ -415,6 +478,8 @@ def _build_constraints(
             compiled=compiled,
             primitive_values=primitive_values or {},
             primitive_gradients=primitive_gradients or {},
+            transform=transform,
+            density=density,
         )
     return _legacy_constraints(
         density=density,
@@ -438,7 +503,16 @@ def _spec_constraints(
     compiled: CompiledProblem,
     primitive_values: dict[tuple[str, str], float],
     primitive_gradients: dict[tuple[str, str], np.ndarray],
+    transform: DesignTransform | None,
+    density: np.ndarray,
 ) -> list[_LinearConstraint]:
+    """The production solved set: compiler declarations only.
+
+    Legacy control switches may not add constraints (the compiler output is the
+    complete solved set) and may not remove declared ones; a switch that asks
+    for an undeclared constraint is a fail-closed conflict.
+    """
+
     constraints: list[_LinearConstraint] = []
     for constraint in compiled.constraints:
         constraints.append(
@@ -453,44 +527,67 @@ def _spec_constraints(
     declared_connectivity = [
         item for item in compiled.geometry_requirements if item.kind == "connectivity"
     ]
-    if declared_connectivity and not controls.enforce_connectivity:
+    if declared_connectivity:
+        if not controls.enforce_connectivity:
+            raise ProblemCompileError(
+                "ProblemSpec declares connectivity requirements but enforce_connectivity "
+                "is False; declared constraints cannot be switched off in production"
+            )
+        for requirement in declared_connectivity:
+            declared = requirement.declared
+            constraints.append(
+                _constraint(
+                    f"{requirement.requirement_id}_nominal",
+                    value=_resolve_connectivity_objective(
+                        "nominal", sensitivity_summary, connectivity_summary
+                    ),
+                    limit=0.0,
+                    gradient=np.asarray(
+                        sensitivity_arrays["d_connectivity_nominal_d_rho"],
+                        dtype=np.float64,
+                    ),
+                    active=active,
+                )
+            )
+            if bool(declared.get("evaluate_eroded")):
+                constraints.append(
+                    _constraint(
+                        f"{requirement.requirement_id}_eroded",
+                        value=_resolve_connectivity_objective(
+                            "eroded", sensitivity_summary, connectivity_summary
+                        ),
+                        limit=0.0,
+                        gradient=np.asarray(
+                            sensitivity_arrays["d_connectivity_eroded_d_rho"],
+                            dtype=np.float64,
+                        ),
+                        active=active,
+                    )
+                )
+    elif controls.enforce_connectivity:
         raise ProblemCompileError(
-            "ProblemSpec declares connectivity requirements but enforce_connectivity is False"
+            "enforce_connectivity is set but the ProblemSpec declares no connectivity "
+            "requirement; production may not add undeclared constraints"
         )
-    if controls.enforce_connectivity:
-        constraints.extend(
-            _legacy_connectivity_constraints(
+    if compiled.volume_constraint is not None:
+        if transform is None:
+            raise ProblemCompileError(
+                "the declared volume constraint requires the design transform"
+            )
+        volume_constraint = compiled.volume_constraint
+        constraints.append(
+            _constraint(
+                volume_constraint.constraint_id,
+                value=volume_constraint.value(transform, density),
+                limit=0.0,
+                gradient=volume_constraint.gradient(transform, density),
                 active=active,
-                sensitivity_arrays=sensitivity_arrays,
-                controls=controls,
-                sensitivity_summary=sensitivity_summary,
-                connectivity_summary=connectivity_summary,
             )
         )
-    if controls.enforce_volume:
-        if density_arrays is None:
-            raise ProblemCompileError("projected-volume constraint requires the density arrays")
-        volume_value = _projected_volume_fraction(density_arrays, active)
-        active_count = max(int(np.count_nonzero(active)), 1)
-        volume_gradient = np.zeros(active.shape, dtype=np.float64)
-        volume_gradient[active] = 1.0 / float(active_count)
-        constraints.extend(
-            [
-                _constraint(
-                    "volume_fraction_max",
-                    value=volume_value,
-                    limit=controls.volume_fraction_max,
-                    gradient=volume_gradient,
-                    active=active,
-                ),
-                _constraint(
-                    "volume_fraction_min",
-                    value=controls.volume_fraction_min,
-                    limit=volume_value,
-                    gradient=-volume_gradient,
-                    active=active,
-                ),
-            ]
+    elif controls.enforce_volume:
+        raise ProblemCompileError(
+            "enforce_volume is set but no volume budget was declared at compile time; "
+            "production may not add undeclared constraints"
         )
     return constraints
 
@@ -1058,14 +1155,28 @@ def _linearized_prediction(
 def _updated_density_arrays(
     arrays: dict[str, np.ndarray],
     density: np.ndarray,
+    *,
+    transform: DesignTransform | None = None,
 ) -> dict[str, np.ndarray]:
     beta_max = _infer_beta_max(arrays)
     rho = np.asarray(density, dtype=np.float32)
+    if transform is not None:
+        state = transform.forward(np.asarray(density, dtype=np.float64))
+        beta = np.asarray(state.beta, dtype=np.float32)
+        derived = {
+            "rho_filtered": np.asarray(state.rho_filtered, dtype=np.float32),
+            "rho_projected": beta,
+            "alpha": (beta_max * beta).astype(np.float32),
+        }
+    else:
+        derived = {
+            "rho_filtered": rho.copy(),
+            "rho_projected": rho.copy(),
+            "alpha": (beta_max * rho).astype(np.float32),
+        }
     result = {
         "rho": rho,
-        "rho_filtered": rho.copy(),
-        "rho_projected": rho.copy(),
-        "alpha": (beta_max * rho).astype(np.float32),
+        **derived,
         "allowed_mask": np.asarray(arrays["allowed_mask"], dtype=np.uint8),
         "forbidden_mask": np.asarray(arrays["forbidden_mask"], dtype=np.uint8),
         "fixed_solid_mask": np.asarray(arrays["fixed_solid_mask"], dtype=np.uint8),
@@ -1195,6 +1306,68 @@ def _resolve_primitive_values(
             )
         values[(flow_case, response_id)] = found
     return values
+
+
+def _validate_transform_against_artifact(
+    transform: DesignTransform,
+    arrays: dict[str, np.ndarray],
+    design_active: np.ndarray,
+) -> None:
+    """Fail closed when the stored intermediate is not this transform's output."""
+
+    rho = np.asarray(arrays["rho"], dtype=np.float64)
+    expected = transform.filter.H(rho)
+    stored = arrays.get("rho_filtered")
+    if stored is None:
+        raise ProblemCompileError(
+            "the density artifact must carry rho_filtered for the declared transform"
+        )
+    difference = float(np.max(np.abs(np.asarray(stored, dtype=np.float64) - expected)))
+    scale = max(float(np.max(np.abs(expected))), 1.0)
+    if difference > 1.0e-5 * scale:
+        raise ProblemCompileError(
+            "stored rho_filtered does not match the declared design transform "
+            f"(max abs difference {difference:g}); the transform declaration and the "
+            "artifact are not the same generation"
+        )
+    if not np.array_equal(design_active, np.asarray(transform.active, dtype=bool)):
+        raise ProblemCompileError(
+            "the declared transform active mask does not match the density artifact"
+        )
+
+
+def _ignored_legacy_controls(
+    controls: FixedGridOptimizerControls,
+    compiled: CompiledProblem | None,
+) -> list[str]:
+    """Legacy switches that the production solved set deliberately ignores."""
+
+    if compiled is None:
+        return []
+    ignored: list[str] = []
+    if not controls.enforce_volume and compiled.volume_constraint is not None:
+        ignored.append(
+            "enforce_volume=False: the declared compile-time volume constraint is still solved"
+        )
+    if controls.enforce_volume and compiled.volume_constraint is not None:
+        declared = compiled.volume_constraint.limit
+        if abs(float(controls.volume_fraction_max) - declared) > 1e-12:
+            ignored.append(
+                "volume_fraction_max: the declared budget "
+                f"{declared:g} overrides the legacy control "
+                f"{float(controls.volume_fraction_max):g}"
+            )
+        if float(controls.volume_fraction_min) > 0.0:
+            ignored.append(
+                "volume_fraction_min: no lower volume bound is declared; the legacy "
+                "control is not solved"
+            )
+    if controls.enforce_efficiency:
+        ignored.append(
+            "enforce_efficiency: efficiency constraints come from the ProblemSpec "
+            "declaration, not from this switch"
+        )
+    return ignored
 
 
 def _projected_volume_fraction(

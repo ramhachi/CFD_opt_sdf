@@ -96,11 +96,40 @@ class CompiledConstraint:
 
 
 @dataclass(frozen=True)
-class VolumeOccupationConstraint:
-    """``g_V = V_occ(rho_projected) - V_max <= 0``."""
+class VolumeBudget:
+    """Explicit compile-time volume declaration; ProblemSpec v2 has no field for it.
+
+    The contract amendment that would make this a ProblemSpec field is a
+    separate decision (architecture plan PQ0 stop condition). Until then the
+    budget must be declared at compile time or the production runner fails
+    closed; no default is guessed.
+    """
 
     constraint_id: str
     limit: float
+
+    def __post_init__(self) -> None:
+        if not self.constraint_id:
+            raise ProblemCompileError("volume budget constraint_id must not be empty")
+        if not 0.0 <= float(self.limit) <= 1.0:
+            raise ProblemCompileError("volume budget limit must be within [0, 1]")
+
+
+@dataclass(frozen=True)
+class VolumeOccupationConstraint:
+    """``g_V = V_occ(rho_projected) - V_max <= 0``.
+
+    ``V_occ`` and its gradient live in the **projection output** space
+    (``DesignTransformState.rho_projected``); the RAMP derivative is not part
+    of this constraint. The artifact array named ``rho_projected`` is the RAMP
+    output (OpenFOAM beta) under the fixed-grid contract, so the production
+    runner recomputes the projection output from the stored ``rho_filtered``
+    and the declared projection instead of reading that array.
+    """
+
+    constraint_id: str
+    limit: float
+    field: str = "rho_projected"
 
     def value(self, transform: DesignTransform, rho: np.ndarray) -> float:
         state = transform.forward(rho)
@@ -113,7 +142,7 @@ class VolumeOccupationConstraint:
         count = max(int(active.sum()), 1)
         g_projected = np.zeros_like(occupancy)
         g_projected[active] = 1.0 / float(count)
-        return transform.backward(rho, g_projected)
+        return transform.pullback_from_projected(rho, g_projected)
 
 
 @dataclass(frozen=True)
@@ -131,6 +160,78 @@ class CompiledProblem:
     volume_constraint: VolumeOccupationConstraint | None
     geometry_requirements: tuple[GeometryRequirement, ...]
     response_bindings: dict[str, str]
+
+    def solved_set(self) -> dict[str, Any]:
+        """Machine-readable declared-versus-solved audit for the production runner."""
+
+        return {
+            "objectives": [
+                {
+                    "id": objective.objective_id,
+                    "sense": objective.sense,
+                    "source": "problem_spec.objectives",
+                    "terms": [
+                        {
+                            "coefficient": term.coefficient,
+                            "flow_case_id": term.flow_case_id,
+                            "response_id": term.response_id,
+                        }
+                        for term in objective.terms
+                    ],
+                }
+                for objective in self.objectives
+            ],
+            "constraints": [
+                {
+                    "id": constraint.constraint_id,
+                    "relation": constraint.relation,
+                    "limit": constraint.limit,
+                    "source": "problem_spec.constraints",
+                    "terms": [
+                        {
+                            "coefficient": term.coefficient,
+                            "flow_case_id": term.flow_case_id,
+                            "response_id": term.response_id,
+                        }
+                        for term in constraint.terms
+                    ],
+                }
+                for constraint in self.constraints
+            ],
+            "volume": (
+                {
+                    "id": self.volume_constraint.constraint_id,
+                    "limit": self.volume_constraint.limit,
+                    "field": self.volume_constraint.field,
+                    "source": "compile_time_declaration",
+                }
+                if self.volume_constraint is not None
+                else None
+            ),
+            "geometry_requirements": [
+                {
+                    "id": requirement.requirement_id,
+                    "kind": requirement.kind,
+                    "source": "topology_policy",
+                    "declared": requirement.declared,
+                }
+                for requirement in self.geometry_requirements
+            ],
+        }
+
+    def compiled_problem_hash(self) -> str:
+        import hashlib
+        import json as _json
+
+        payload = _json.dumps(
+            {
+                "problem_spec_sha256": self.problem_spec_sha256,
+                "solved_set": self.solved_set(),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def required_primitives(self) -> set[tuple[str, str]]:
         required: set[tuple[str, str]] = set()
@@ -197,8 +298,18 @@ def _response_index(spec: Any) -> dict[str, Any]:
     return {response.id: response for response in spec.responses}
 
 
-def compile_problem(spec: Any, *, sha256: str | None = None) -> CompiledProblem:
-    """Compile a loaded ``ProblemSpec`` (fail-closed on unsupported declarations)."""
+def compile_problem(
+    spec: Any,
+    *,
+    sha256: str | None = None,
+    volume_budget: VolumeBudget | None = None,
+) -> CompiledProblem:
+    """Compile a loaded ``ProblemSpec`` (fail-closed on unsupported declarations).
+
+    ``volume_budget`` is the explicit compile-time volume declaration. When it
+    is absent, no volume constraint is solved, and the production runner must
+    refuse to add one from legacy control defaults.
+    """
 
     from .problem_spec import problem_spec_sha256  # local import avoids cycles
 
@@ -245,11 +356,16 @@ def compile_problem(spec: Any, *, sha256: str | None = None) -> CompiledProblem:
         solver = options.get("openfoam_adjoint_solver_id")
         response_bindings[response.id] = str(solver) if solver else response.id
 
+    volume_constraint = (
+        VolumeOccupationConstraint(volume_budget.constraint_id, volume_budget.limit)
+        if volume_budget is not None
+        else None
+    )
     return CompiledProblem(
         problem_spec_sha256=sha256 or problem_spec_sha256(spec),
         objectives=tuple(objectives),
         constraints=tuple(constraints),
-        volume_constraint=None,
+        volume_constraint=volume_constraint,
         geometry_requirements=tuple(requirements),
         response_bindings=response_bindings,
     )
@@ -335,6 +451,7 @@ __all__ = [
     "GeometryRequirement",
     "ProblemCompileError",
     "SUPPORTED_RESPONSE_KINDS",
+    "VolumeBudget",
     "VolumeOccupationConstraint",
     "compile_problem",
 ]

@@ -1,0 +1,107 @@
+{
+  "artifact_id": "pq0_declared_solved_audit_2026_09",
+  "evidence_class": "contract_integration",
+  "issue": "PQ0 (I1, I2, I3, I5)",
+  "command": ".venv/bin/cfd-sdf run-fixed-grid-constrained-step work/df2_fd_refresh/injected_contract/topology_state.json --sensitivity-vti work/df2_fd_refresh/primal_base/fixed_grid_sensitivity.vti --output-dir work/pq0_audit/step --problem-spec work/p0_closed_loop/project.yaml --transform-declaration work/pq0_audit/transform_identity.json --no-enforce-efficiency --no-enforce-connectivity --no-enforce-volume",
+  "inputs": {
+    "topology_state_json": {
+      "path": "work/df2_fd_refresh/injected_contract/topology_state.json",
+      "sha256": "e42b37d1a24e3dacfe0fa91277878e7b2c6123c0f7e438cef682e39d55eeb2be"
+    },
+    "sensitivity_vti": {
+      "path": "work/df2_fd_refresh/primal_base/fixed_grid_sensitivity.vti",
+      "sha256": "9004a1ebc56d6ecea67e692d0f8612d6cdb4ca96c490f4780699c2485aad110e"
+    },
+    "problem_spec": {
+      "path": "work/p0_closed_loop/project.yaml",
+      "sha256": "b66c159f6217683161ab48a7aa96a3706c0415d84074312d327d5136385b0f27"
+    },
+    "transform_declaration": {
+      "path": "work/pq0_audit/transform_identity.json",
+      "sha256": "98eb79586f1dd849b578c64a9142f8c8b24bad06715c66a04c14ee71687c4fff"
+    }
+  },
+  "declared_equals_solved": true,
+  "solved_set": {
+    "objectives": [
+      {
+        "id": "minimize_drag",
+        "sense": "minimize",
+        "source": "problem_spec.objectives",
+        "terms": [
+          {
+            "coefficient": 1.0,
+            "flow_case_id": "straight",
+            "response_id": "drag"
+          }
+        ]
+      },
+      {
+        "id": "maximize_downforce",
+        "sense": "maximize",
+        "source": "problem_spec.objectives",
+        "terms": [
+          {
+            "coefficient": 1.0,
+            "flow_case_id": "straight",
+            "response_id": "downforce"
+          }
+        ]
+      }
+    ],
+    "constraints": [],
+    "volume": null,
+    "geometry_requirements": []
+  },
+  "transform": {
+    "declaration_hash": "9b59c21d9f30ad0b2e4f364376f96102de99781e68f8e2a590292ef657cbfa55",
+    "transform_hash": "7435ff731eea9d8cc0d0fe4587e92e0abe8952a89bf1b2857c4b764b5af2b886",
+    "description": {
+      "schema_version": 1,
+      "kind": "design_transform",
+      "shape": [
+        32,
+        16,
+        16
+      ],
+      "spacing_m": 0.09375,
+      "active_cells": 2909,
+      "active_mask_sha256": "e5265a087656dda19924d65243c21173a3ac0fff9822a2e4890d0469c602c871",
+      "filter": {
+        "kind": "identity_filter",
+        "minimum_solid_width_m": null,
+        "relation": "rho_filtered = rho_design",
+        "boundary": "active design cells only",
+        "transpose": "H.T = H = M (exact)"
+      },
+      "projection": {
+        "kind": "identity",
+        "b": 0.0,
+        "eta": 0.5
+      },
+      "ramp": {
+        "kind": "ramp",
+        "q": 0.0
+      }
+    },
+    "volume_definition": "projection_output_recomputed_from_rho_filtered",
+    "artifact_rho_projected_note": "the fixed-grid artifact array rho_projected is the RAMP output (OpenFOAM beta); the volume field is the projection output"
+  },
+  "ignored_legacy_controls": [],
+  "objective": {
+    "base_objective": 0.5549522941530001,
+    "linearized_delta": -0.6765521375919095,
+    "predicted_objective": -0.1215998434389094
+  },
+  "constraint_values_measured": {},
+  "linearized_constraints_ok": true,
+  "notes": [
+    "the production path compiles the declared two-objective problem (minimize drag and maximize downforce), unlike the legacy hard-coded -downforce objective",
+    "no volume budget is declared, so no volume constraint is solved and enforce_volume=False is consistent",
+    "the identity transform declaration owns the derived arrays; no implicit identity regeneration"
+  ],
+  "claims_not_supported": [
+    "no solver run is involved; this is a contract/integration audit only",
+    "no optimization-quality claim"
+  ]
+}

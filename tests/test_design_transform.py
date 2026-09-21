@@ -202,3 +202,31 @@ def test_projected_volume_constraint_value_and_gradient_use_projection():
     ) / (2 * step)
     gradient = constraint.gradient(transform, rho)
     assert float(np.dot(gradient, direction)) == pytest.approx(fd, rel=1e-4, abs=1e-9)
+
+
+def test_pullback_spaces_differ_only_by_the_ramp_derivative():
+    rng = np.random.default_rng(9)
+    rho = np.clip(rng.uniform(0.2, 0.8, size=ACTIVE.size), 0.0, 1.0)
+    seed = rng.normal(size=ACTIVE.size)
+    identity_ramp = _transform(ramp=RampInterpolation(0.0))
+    assert np.allclose(
+        identity_ramp.pullback_from_beta(rho, seed),
+        identity_ramp.pullback_from_projected(rho, seed),
+    )
+
+    ramped = _transform(
+        projection=TanhProjection(8.0, 0.5),
+        ramp=RampInterpolation(30.0),
+    )
+    state = ramped.forward(rho)
+    expected_projected = ramped.filter.HT(
+        ramped.projection.derivative(state.rho_filtered) * seed
+    )
+    expected_beta = ramped.filter.HT(
+        ramped.projection.derivative(state.rho_filtered)
+        * ramped.ramp.derivative(state.rho_projected)
+        * seed
+    )
+    assert np.allclose(ramped.pullback_from_projected(rho, seed), expected_projected)
+    assert np.allclose(ramped.pullback_from_beta(rho, seed), expected_beta)
+    assert not np.allclose(expected_projected, expected_beta)

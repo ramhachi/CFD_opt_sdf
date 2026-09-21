@@ -7,7 +7,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolation, TanhProjection
+from cfd_sdf.design_transform import (
+    DesignTransform,
+    IdentityFilter,
+    RampInterpolation,
+    TanhProjection,
+)
 from cfd_sdf.nonlinear_acceptance import (
     AcceptanceState,
     TrialEvaluation,
@@ -250,7 +255,7 @@ def _transform(n: int = 4) -> DesignTransform:
         shape=shape,
         spacing_m=1.0,
         active_mask=active,
-        filter=ConeFilter(shape=shape, spacing_m=1.0, active_mask=active, radius_m=1.0),
+        filter=IdentityFilter(shape=shape, spacing_m=1.0, active_mask=active),
         projection=TanhProjection(0.0, 0.5),
         ramp=RampInterpolation(0.0),
     )
@@ -269,11 +274,12 @@ def _fake_loop(
     transform = _transform()
     initial = np.full(4, 0.1)
 
-    def primitive_evaluator(rho: np.ndarray) -> dict:
-        total = float(np.sum(rho))
+    def primitive_evaluator(state) -> dict:
+        field = np.asarray(state.beta, dtype=np.float64)
+        total = float(np.sum(field))
         return {
             "values": {("straight", "downforce"): total},
-            "gradients": {("straight", "downforce"): np.ones_like(rho)},
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
             "primal_converged": True,
             "adjoint_converged": True,
         }
@@ -298,6 +304,13 @@ def test_loop_accepts_monotone_feasible_steps(tmp_path: Path):
     assert result.accepted >= 2
     assert result.final_evaluation.objective <= -0.9 + 1e-9
     assert result.final_evaluation.objective < -4 * 0.1
+    # one parent adjoint per accepted parent; no duplicate primal after acceptance
+    assert result.counts["gradient_evaluations"] == 1 + result.accepted
+    assert result.counts["value_evaluations"] == 1 + sum(
+        len(row.get("inner", [])) for row in result.trace
+    )
+    assert result.final_evaluation.gradient_space == "rho_design"
+    assert result.final_evaluation.transform_hash == result.transform_hash
     for row in result.trace:
         if row.get("accepted"):
             assert row["trial_constraints"]["volume_budget"] <= 1e-9
@@ -313,7 +326,8 @@ def test_loop_checkpoint_resume_is_deterministic(tmp_path: Path):
 
     assert len(resumed.trace) == 5
     assert np.allclose(resumed.final_rho, single.final_rho)
-    assert np.allclose(partial.final_rho, resumed.final_rho, atol=1e-12) or len(single.trace) == 5
+    # resume re-evaluates the parent once (values + adjoint); that cost is explicit
+    assert resumed.counts["gradient_evaluations"] == single.counts["gradient_evaluations"] + 1
 
 
 def test_loop_rejects_unconverged_oracle_trials_and_still_accepts(tmp_path: Path):
@@ -322,12 +336,13 @@ def test_loop_rejects_unconverged_oracle_trials_and_still_accepts(tmp_path: Path
     transform = _transform()
     calls = {"count": 0}
 
-    def primitive_evaluator(rho: np.ndarray) -> dict:
+    def primitive_evaluator(state) -> dict:
         calls["count"] += 1
-        total = float(np.sum(rho))
+        field = np.asarray(state.beta, dtype=np.float64)
+        total = float(np.sum(field))
         return {
             "values": {("straight", "downforce"): total},
-            "gradients": {("straight", "downforce"): np.ones_like(rho)},
+            "gradients": {("straight", "downforce"): np.ones_like(field)},
             "primal_converged": total <= 0.45,
             "adjoint_converged": True,
             "solver_status": "converged" if total <= 0.45 else "iteration_cap",
@@ -348,3 +363,81 @@ def test_loop_rejects_unconverged_oracle_trials_and_still_accepts(tmp_path: Path
     )
     assert result.accepted >= 1
     assert result.final_evaluation.objective <= 0.45 + 1e-9
+    assert result.counts["gradient_evaluations"] == 1 + result.accepted
+
+
+def test_checkpoint_resume_rejects_binding_mismatch(tmp_path: Path):
+    import json
+
+    checkpoint = tmp_path / "checkpoint.json"
+    _fake_loop(tmp_path / "partial", iterations=2, checkpoint=checkpoint)
+    document = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert document["kind"] == "stage_t_loop_checkpoint"
+    assert document["problem_spec_sha256"] and document["compiled_problem_hash"]
+    assert document["backend_id"] and document["oracle_profile"]
+
+    for key, value in (
+        ("problem_spec_sha256", "0" * 64),
+        ("transform_hash", "0" * 64),
+        ("compiled_problem_hash", "0" * 64),
+        ("backend_id", "some-other-backend"),
+        ("oracle_profile", "some-other-profile"),
+    ):
+        mutated = dict(document, **{key: value})
+        mutated_path = tmp_path / f"mutated_{key}.json"
+        mutated_path.write_text(json.dumps(mutated), encoding="utf-8")
+        with pytest.raises(ValueError, match=key):
+            _fake_loop(
+                tmp_path / f"resume_{key}",
+                iterations=3,
+                resume=mutated_path,
+            )
+
+
+def test_oracle_maps_solver_field_gradients_through_the_transform():
+    from cfd_sdf.design_transform import ConeFilter
+
+    shape = (4, 1, 1)
+    active = np.ones(4, dtype=bool)
+    transform = DesignTransform(
+        shape=shape,
+        spacing_m=1.0,
+        active_mask=active,
+        filter=ConeFilter(shape=shape, spacing_m=1.0, active_mask=active, radius_m=1.0),
+        projection=TanhProjection(6.0, 0.5),
+        ramp=RampInterpolation(30.0),
+    )
+    spec = _spec(_tmp_spec_dir())
+    compiled = compile_problem(spec)
+    captured = {}
+
+    def primitive_evaluator(state):
+        field = np.asarray(state.beta, dtype=np.float64)
+        captured["field"] = field.copy()
+        return {
+            "values": {("straight", "downforce"): float(np.sum(field))},
+            "gradients": {("straight", "downforce"): np.full_like(field, 0.5)},
+            "primal_converged": True,
+            "adjoint_converged": True,
+        }
+
+    oracle = make_oracle_from_compiled(
+        transform=transform, compiled=compiled, primitive_evaluator=primitive_evaluator
+    )
+    rho = np.full(4, 0.5)
+    values = oracle.evaluate_values(rho)
+    assert values.objective_gradient is None
+    result = oracle.evaluate_gradients(rho, values)
+    assert result.gradient_space == "rho_design"
+    assert result.transform_hash == transform.transform_hash()
+    assert np.allclose(captured["field"], transform.forward(rho).beta)
+    expected = transform.pullback_from_beta(rho, np.full(4, 0.5))
+    # objective sense is maximize -> -1 factor
+    assert np.allclose(result.objective_gradient, -expected)
+
+
+def _tmp_spec_dir():
+    import tempfile
+    from pathlib import Path as _Path
+
+    return _Path(tempfile.mkdtemp())

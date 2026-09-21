@@ -1,7 +1,7 @@
 # OpenCode Handoff: CFD2026_09
 
 Status: repository-local working memory for a fresh OpenCode session
-Snapshot date: 2026-09-20
+Snapshot date: 2026-09-21
 Scope: generic rigid-object external aerodynamics with density/Brinkman topology,
 SDF handoff/refinement, and independent body-fitted verification
 
@@ -16,15 +16,16 @@ For a fresh terminal, read in this order:
 1. [`../AGENTS.md`](../AGENTS.md) for repository-local OpenCode rules.
 2. [`README.md`](README.md) for the documentation map and compatibility policy.
 3. [`phase_plan.md`](phase_plan.md) for the sole roadmap, status, and execution order.
-4. [`problem_register_2026_09.md`](problem_register_2026_09.md) for the P1-P17 issue ledger and artifact semantics.
-5. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) for detailed implementation slices and older resolution instructions.
-6. [`problem_contract_v2.md`](problem_contract_v2.md) and [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) for schemas.
-7. [`git_branching_strategy.md`](git_branching_strategy.md) for branch workflow.
+4. [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md) for the adopted detailed downforce plan.
+5. [`problem_register_2026_09.md`](problem_register_2026_09.md) for the P1-P18 issue ledger and artifact semantics.
+6. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) for detailed implementation slices and older resolution instructions.
+7. [`problem_contract_v2.md`](problem_contract_v2.md) and [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) for schemas.
+8. [`git_branching_strategy.md`](git_branching_strategy.md) for branch workflow.
 
 The authority split is intentional:
 
 - `docs/phase_plan.md` remains the sole roadmap, status, and execution-order authority.
-- `docs/problem_register_2026_09.md` remains the issue ledger, including P1-P17 and the measured contradictions.
+- `docs/problem_register_2026_09.md` remains the issue ledger, including P1-P18 and the measured contradictions.
 - `docs/problem_resolution_plan_2026_09.md` is a detailed implementation record, subordinate to the latest phase-plan order.
 - `docs/problem_contract_v2.md` is the user/problem schema authority.
 - `docs/fixed_grid_data_contract_v2.md` is the Stage T artifact-schema authority.
@@ -68,22 +69,55 @@ Inspect status and diff before any later implementation work.
 
 ## Exact Current Architecture
 
-**2026-09-20 addendum 3 (WP6-2 reachable-set program, downforce containment).**
-A second pre-registered 8-candidate ranking inside the declared
-minimum-solid-width design policy (thickness >= 0.15 m) ranked downforce
-EXACTLY like qualified anchor-STL Stage V at both V1 and V2 (tau 1.000,
-verdict "pass"); the combined reachable 17-shape pool gives 121 downforce /
-110 drag pairs with ZERO resolvable sign inversions at both levels
-(`evidence/reachable_set_cross_fidelity_ranking_2026_09.json`). The P1 no_go
-is therefore CONTAINED to the sub-policy thickness axis (a 1-cell plate). The
-downforce ranking claim for the product architecture now has the same status
-as drag (ordering transfers inside the policy space; absolute magnitudes are
-not calibrated: Stage T |DF| = 0.45-0.75 x Stage V). Composite analytic shapes
-now exist (`ShapeDefinition.parts` union), registered in
-`reachable_set_definitions()`. The standing caveat: any design below the
-min-width policy must be dropped by topology constraints before hypothesis
-testing ends; P16's declared band (downforce 0.0129-0.0147, Cd ~0.03) remains
-explicit and unresolved.
+**2026-09-21 addendum 5 (DF0--DF6 component implementation and post-implementation
+plan).** DF0--DF6 supplied the P18 audit/re-judgment, ProblemSpec compiler,
+DesignTransform, frozen-design P6 campaign, nonlinear merit/trust controller,
+restartable loop, extraction sweep, Stage S drag sensitivity ingestion,
+required-pair verification algebra and robust-three-field prototype. Treat this
+as component/capability completion, not a production OpenFOAM optimiser.
+
+Two measured blockers now control the work. P6 is a stable solver-side
+continuous-adjoint/discrete-primal mismatch: FD/analytic is 1.2178 aligned and
+1.3764/1.5680 on two random directions; transfer, design movement and primal
+residual tolerance are exonerated. In Stage V, `linearUpwind` qualifies drag at
+0.364% finest-transition drift, while downforce stays non-monotone at 0.010374
+against the 0.005 bound. The registered next Stage V factor is domain/boundary.
+
+P18 is closed only as a fixed-shape diagnostic: the eight-shape downforce set
+still passes with candidate-specific bands (25 resolvable pairs, zero
+inversions), while the combined 17-shape pool remains unresolved for both
+responses. The current detailed plan is PQ0--PQ6 in
+`downforce_optimization_architecture_plan_2026_09.md`: integration closure,
+gradient qualification, Stage V reference qualification, first real closed
+loop, Stage S, independent verification, then production backend/target
+physics. Do not resume from the stale "next DF0" instruction below; it is a
+historical addendum.
+
+**2026-09-20 addendum 4 (adopted downforce plan and WP6-2 scope audit).**
+The retained architecture and its qualification sequence are now specified in
+`downforce_optimization_architecture_plan_2026_09.md`; `phase_plan.md` remains
+the sole execution-order authority. A repository-level audit found that the
+WP6-2 eight-shape no-inversion result is a positive fixed-shape observation,
+not yet a universal minimum-width-policy qualification: its manifest mixes
+`>=0.15 m` and `>=0.10 m`, composite parts include features below `0.15 m`, the
+combined 17-shape machine verdict is `unresolved` for both responses,
+extraction sensitivity is unmeasured, and candidate-specific V1-to-V2 drift can
+exceed the inherited uncertainty band. P18 records this evidence-applicability
+gap. The next slice is DF0 evidence/preregistration repair, followed by the
+ProblemSpec compiler and unified DesignTransform; do not start by tuning the
+optimizer or replacing Stage T.
+
+**2026-09-20 addendum 3 (WP6-2 reachable-set program; scope corrected by
+addendum 4).** A second pre-registered eight-candidate ranking produced exact
+downforce ordering agreement with qualified anchor-STL Stage V at V1 and V2
+(tau 1.000), and the combined 17-shape pool contained no resolvable sign
+inversion (`evidence/reachable_set_cross_fidelity_ranking_2026_09.json`). These
+are positive fixed-shape observations. The earlier conclusion that P1 was
+fully contained to a sub-policy one-cell thickness axis is superseded by
+addendum 4/P18: the registered width boundary is inconsistent, composite
+features cross it, combined verdicts remain `unresolved`, and the uncertainty
+scope is incomplete. Absolute magnitudes also remain uncalibrated. Composite
+analytic shapes (`ShapeDefinition.parts`) remain valid diagnostic assets.
 
 **2026-09-20 addendum 2 (WP4 completion + WP5/WP6 decisive experiment).** Gate 0
 is complete for the wired paths: C1 semantic binding now records the response's
@@ -311,9 +345,9 @@ Its diagnostic artifacts are:
 - `work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V3/log.checkMesh`
 - `work/filtered_ramp/wmin_0.2/stage_v_mesh/opt_q100_b0_step5_try1_block_keep_round/V3/stage_v_level_preflight.json`
 
-The missing implementation is to reject this physical clearance violation
-before meshing, using a fixed ProblemSpec far-field box and a declared physical
-margin. Do not "fix" it by relaxing the registered mesh thresholds.
+This historical failure is now caught before meshing by the fixed ProblemSpec
+far-field binding and `stage_v_clearance_v1` preflight. The evidence remains a
+useful negative fixture; do not "fix" it by relaxing mesh thresholds.
 
 ## Implemented Versus Missing
 
@@ -322,26 +356,42 @@ margin. Do not "fix" it by relaxing the registered mesh thresholds.
 - v2 generic ProblemSpec loading, canonical hash/snapshot, v1 read-only migration, typed geometry roles, responses, objectives, constraints, and topology policy.
 - Generic OpenFOAM case compilation, deterministic manifests, supported force-response rendering, patch mapping, execution assets, and fail-closed numerical convergence extraction.
 - Local, WSL, and Docker execution planning; Docker timeout/Ctrl-C cleanup; structured run summaries.
-- Canonical fixed-grid state transfer `source = P @ target` and gradient pullback `P.T @ source`, with measured cell ordering and finite-difference evidence for the recorded direction.
-- Candidate binding and provenance checks for the current Stage T contract path, plus a response-ID guard. Full semantic response/solver/direction/units binding is not complete.
-- Python-side RAMP/filter prototype, density-to-SDF handoff diagnostics, candidate export, Stage V single-level execution, mesh preflight, residual-control gate, force-stationarity gate, and profile-based mesh qualification.
-- Correct candidate V0-V3 Stage V execution qualification on the reduced steady laminar case.
+- Canonical fixed-grid transfer and exact transpose; the current P6 mismatch is
+  localized beyond that transfer.
+- Fail-closed primal/adjoint, residual, final-time, response-binding, hash and
+  four-array-generation gates for the wired historical path.
+- ProblemSpec compiler, one-owner DesignTransform with lineage hash,
+  nonlinear merit/trust trial controller, rollback and restartable loop as
+  component implementations.
+- P18 evidence audit and candidate-specific fixed-shape re-judgment.
+- Extraction sweep, separate drag-surface-sensitivity ingestion,
+  independent-required-pair algebra and robust-three-field prototype.
+- Fixed Stage V domain/clearance preflight, qualified fixed-domain grid runs,
+  transient screen and convection-scheme factor campaign.
+- Drag reference qualification with `linearUpwind` on the measured candidate.
 - Bounded CPU and Apple Metal Taylor-Green research reference, clearly separated from aerodynamic claims.
 
 ### Missing or not qualified
 
-- Fixed ProblemSpec far-field binding and candidate-to-boundary physical-clearance preflight before `blockMesh`/`snappyHexMesh`.
-- Complete G3 geometry/resolution gates: self-intersections, actual shape thickness, full mask/connectivity checks, fixed-domain binding, and density-to-SDF fidelity.
-- Native v2 artifact semantic bindings for response units, rho-gradient convention, solver/canonical grid mapping, and topology policy values.
-- Full provenance generation and stale-array prevention for every candidate state (`rho`, `rho_filtered`, `rho_projected`, and `alpha`).
-- Same-grid and refined-grid Stage T force convergence, non-integer transfer bias resolution, and a qualified alphaMax study.
-- Production optimizer with physical volume constraints, nonlinear acceptance/rollback, checkpoint/resume, continuation baselines, feasible-seed restoration, and GCMMA-equivalent constrained updates.
-- Stage S quantitative handoff qualification and actual SDF shape evolution.
-- Stage V downforce grid convergence, local wake/wall refinement, and complete pressure/viscous/cross-fidelity ranking evidence.
+- PQ0 production integration: compiler-owned volume/constraint semantics,
+  projected-volume pullback, DesignTransform-to-oracle binding,
+  parent-gradient/trial-value separation and complete checkpoint binding.
+- PQ1 production gradient qualification; current continuous adjoint differs
+  from discrete primal FD by 22--57% in the frozen-design campaign.
+- Complete G3 geometry/resolution gates for an optimizer-generated candidate.
+- A real OpenFOAM closed loop driven through the new compiler/transform/controller.
+- `ready_for_stage_s=true` extraction and FD-qualified drag/downforce Stage S
+  surface updates.
+- Stage V downforce grid qualification; current `linearUpwind` drift is
+  0.010374 against 0.005 and non-monotone. Domain/boundary is registered but not run.
+- Three-grid baseline/T/S required-pair verification with candidate-specific
+  numerical and extraction uncertainty.
+- Actual MMA/GCMMA and robust-three-field closed-loop integration; the current
+  controller/prototype must not be named as those production capabilities.
 - G4 B0-B5 benchmark ladder and any target-Re or full-vehicle qualification.
 - Windows RTX 4070 Ti CUDA runtime and VRAM qualification; current evidence does not establish it.
 
-## P1-P17 Issue Ledger Summary
+## P1-P18 Issue Ledger Summary
 
 This table summarizes the current status without deleting the older contradictory
 observations. The detailed measurements remain in
@@ -349,12 +399,12 @@ observations. The detailed measurements remain in
 
 | ID | Current status and unresolved point |
 | --- | --- |
-| P1 | Unresolved. The old grey-candidate test showed ranking inversion against an unqualified reference; the later binary-candidate test produced one positive pair sign across qualified V0-V2, but the pair count, margin, and downforce convergence are insufficient for ranking qualification. Do not call the surrogate pass or No-Go. |
+| P1 | Conditional positive observation, general qualification unresolved. WP6 found a downforce inversion on the thickness axis; WP6-2 found no resolvable inversion in its eight-shape set. P18 prevents generalising that set to the full minimum-width policy or optimiser-generated shapes. |
 | P2 | Partially addressed, not closed. Python-owned RAMP/projection produced non-degenerate material and removed the old double-projection defect in its measured path, but the recorded V3 candidate still has 320 grey physical-beta cells and the full handoff/discreteness contract is not qualified. |
 | P3 | Unresolved. Stage T resolution and the 46080-to-8192 transfer may affect the result; same-grid/further-refined force convergence is not complete. |
-| P4 | Partially addressed. P4a wrong objective/constraint declaration, P4b infeasible volume formulation, and P4e reduced-Re versus declared target-condition mismatch remain. P4c sign convention has a guard. P4d response membership has a guard, but full semantic binding to solver, direction, sign, units, and objective is incomplete. |
+| P4 | Compiler/transform components exist, but production integration is incomplete. `volume_constraint=None`, possible legacy implicit constraints and a bypassing identity update keep `declared == solved` open; PQ0 closes these before a long run. |
 | P5 | Diagnosed and avoided, not a production optimizer solution. Native ISQP line-search behavior led to the permanent Python-optimizer decision; the Python optimizer still lacks production qualification. |
-| P6 | Unresolved. Gradient-aligned directions are near 1% error, while localized filtered-random directions remain around 0.90. Non-integer overlap redistribution is a hypothesis, not a confirmed cause. |
+| P6 | Open and localized to the solver side. Frozen-design FD/analytic is 1.2178 aligned and 1.3764/1.5680 on two random directions. Transfer is exact; design movement and primal residual tightening do not explain it. PQ1 audits objective/BC/source derivatives and grid consistency. |
 | P7 | Closed 2026-09-20 (WP4): injection now refreshes `rho`, `rho_filtered`, `rho_projected`, and `alpha` in the same generation when the contract provably satisfies the C3 identity contract (beta_max decoded from the recorded alpha/rho ratio), and refuses (fail-closed, no stale carry-over) any contract whose filter/projection/Brinkman state is not identity. Three mutation tests added. |
 | P8 | Partially addressed in the filtered prototype, which has a move floor and no-op detection. A production acceptance rule, reset policy, and evidence-backed optimizer closure remain missing. |
 | P9 | Unresolved. Stage S must remove zero-extent/domain-boundary components from iso-surface output; the old 5120-face six-component signature is a writer behavior, not a design. |
@@ -364,81 +414,43 @@ observations. The detailed measurements remain in
 | P13 | Closed for the guarded current path. Fail-closed adjoint gates were added and the historical P13 record reports 581 passing tests. The current validation snapshot is recorded below. Any new optimizer evidence must still show the requested adjoints converged before consuming gradients. |
 | P14 | Closed for the measured RAMP path. Python owns projection, OpenFOAM regularisation is disabled/identity as recorded, and the injected/solver field difference was `1.9e-9`. Do not generalize this closure to unbound historical artifacts. |
 | P15 | The original "thin geometry alone explains non-convergent downforce" causal claim was refuted for the correct thick candidate: geometry and mesh quality passed, yet downforce remained non-converged. The remaining numerical question is tracked by P16 and the latest local-refinement/transient plan. |
-| P16 | Updated 2026-09-20 under the fixed domain: finest downforce drift improved 0.02993 (union box) -> 0.01291 (plain fixed-domain family), 0.01470 with the pre-declared wake-refinement family, still above the 0.005 bound. A factor-isolation experiment showed near-wake level-3 refinement moves forces by only ~0.003, so wake resolution is not the drift driver; the pre-declared next action is a steady vs time-resolved comparison on the same plain-V2 mesh. All union-box force values/ratios/drifts are not transferable to the fixed-domain reference. |
+| P16 | Updated 2026-09-21. `linearUpwind` reduces drag drift to 0.364% (passes 2%) but downforce only to 0.010374 (fails 0.005); the three-grid sequence is non-monotone, so no GCI. The next registered factor is domain/boundary. |
 | P17 | Closed as gate implementation (2026-09-20). WP1 binds the Stage V far-field box to `grid.domain_bounds_m` and runs a declared `stage_v_clearance_v1` (0.25 m) pre-mesh clearance preflight; the recorded wrong candidate is rejected with a no-launch artifact, and the correct candidate passes. Real re-meshing under the fixed domain has not been re-run yet. Evidence: `evidence/stage_v_domain_clearance_2026_09.json`, `tests/test_stage_v_domain_preflight.py` (601 passed). |
+| P18 | Closed as a fixed-shape diagnostic only. Candidate-specific re-judgment leaves the eight-shape downforce set pass/pass with 25 resolvable pairs and zero inversions; the 17-shape aggregate remains unresolved. No optimizer-generated-shape, absolute-calibration or grid-independent claim follows. |
 
 ### Contradictions that must remain visible
 
 - "Stage V V0-V3 qualified" means mesh-profile, residual-control, and force-stationarity gates passed for one reduced candidate. It does not mean downforce grid convergence, target-physics qualification, or ranking qualification.
 - `raw_mesh_ok=false` and `stage_v_qualified=true` coexist by design in the registered profile. Concave-cell output is the only allowed raw failed marker within numeric limits; it is not a raw clean pass.
-- The old grey-candidate negative ranking and the later binary-candidate positive sign are results for different physical candidates and different qualification states. Neither result alone settles P1.
+- The old grey-candidate inversion, WP6 thickness-axis inversion and WP6-2
+  eight-shape no-inversion result concern different candidate sets and evidence
+  scopes. P18's limited closure does not generalise any of them to
+  optimiser-generated shapes; PQ3/PQ5 must create that evidence.
 - The thick-candidate V3 result refutes the first P15 causal explanation, but it does not solve P16. A smaller downforce drift is still above the pre-registered bound.
 - The `keep_round` V3 failure must not be combined with the `step0` V3 force sequence. They are different candidate IDs and different artifacts.
 - Current Stage V evidence is steady incompressible laminar at the reduced operating point. Do not call it RANS or extrapolate it to FSAE high-Re vehicle aerodynamics.
 
 ## Issue-Driven Next Implementation Plan
 
-The latest `phase_plan.md` order controls. The older resolution plan still
-provides useful contract tests, but it must not reorder the immediate Stage V
-qualification slice. Do not start a long optimizer run to answer a geometry or
-reference-quality question.
+The latest `phase_plan.md` order controls. The full acceptance criteria,
+stop/go rules, evidence classes and theory are in
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
+The current order is:
 
-| Package | Dependencies | Acceptance criteria | Stop/go rule | Required evidence |
-| --- | --- | --- | --- | --- |
-| WP0: preserve and classify | None | Current branch, commit, spec hash, candidate IDs, and existing evidence paths are recorded; historical artifacts are immutable. | Stop if the input candidate or evidence hash is unclear. Go only with a reproducible baseline. | Baseline manifest, `git status`, commit, environment report, input SHA-256 list. |
-| WP1: fixed domain and clearance preflight | v2 ProblemSpec, Stage V adapter, candidate STL | A fixed ProblemSpec far-field box is required; case generation uses it rather than candidate union bounds. A physical candidate-to-six-boundary clearance is computed against a declared margin, recorded, and checked before meshing. | Stop before any mesh command if domain is missing/invalid, candidate is outside, clearance is non-finite or below margin, or candidate/spec hashes do not bind. | Versioned domain/clearance profile, `stage_v_domain_preflight.json`, updated case metadata, candidate/spec hashes, negative and positive unit fixtures. |
-| WP2: requalify the two distinct candidates | WP1 | The correct `step0` candidate is evaluated with the fixed domain; the wrong `keep_round` candidate fails the new preflight before `blockMesh` or `snappyHexMesh`. No threshold is relaxed to rescue it. | Stop if the wrong candidate reaches meshing, or if the correct candidate's domain differs from the recorded manifest. Go to grid study only with a preflight-passing candidate. | Per-candidate preflight, no-launch failure artifact for wrong candidate, mesh logs, profile qualification JSON, solver summary, force history, hashes. |
-| WP3: settle the reduced Stage V reference one factor at a time | WP2 and correct candidate fixed | Freeze candidate, operating point, numerics, force normalization, and profile. Use predeclared local refinement around body/wake; require three qualified levels and Cd relative <= 0.02 plus downforce absolute <= 0.005. If steady downforce still fails, compare steady and time-resolved runs on the same mesh. | Stop ranking if any level is unqualified, force stationarity fails, downforce misses the bound, or the model comparison changes the question. Do not auto-add global V4 without a predeclared experiment. | Experiment manifest, local-refinement meshes, all raw/profile mesh records, solver residual/continuity records, force components/history, grid convergence JSON, steady/transient comparison. |
-| WP4: restore Gate 0 before new optimizer evidence | WP3 for ranking use; individual contract tests can run earlier | Complete C0-C3 and P7/P14 checks: converged requested adjoints, semantic response/solver/direction/sign/unit binding, candidate-specific immutable provenance, four-array generation consistency, and one projection/filter owner. | Stop gradient export, candidate acceptance, and ranking if any binding or convergence check fails. Historical diagnostic artifacts remain diagnostic-only. | Mutation tests, binding artifact, candidate manifest, array/hash lineage, projection profile, finite-difference report, failure reports. |
-| WP5: fixed-shape numerical separation | WP4 for any ranking conclusion; fixed analytic shapes may be used to debug | Run pre-registered binary shapes on same-grid T and V, then isolate extraction threshold, Stage T resolution, alphaMax/leakage, and transfer factors one at a time. Resolve P3/P6/P11 without mixing optimizer changes. | Stop if the experiment changes geometry, physics, grid, projection, and transfer simultaneously, or if a failure is attributed to an unisolated factor. | Geometry/occupancy/STL shared IDs, same-grid T reports, V reports, alphaMax sweep, transfer FD suites, extraction metrics, uncertainty table. |
-| WP6: ranking qualification | WP3, WP4, WP5 | Use at least eight pre-registered candidates. Report Spearman, Kendall, every required pair sign, uncertainty, extraction sensitivity, and response-specific pass/unresolved/No-Go. Only count a difference when it exceeds the declared uncertainty. | Stop and report unresolved or response-specific No-Go; do not tune the optimizer to reverse a fixed-shape result. | Cross-fidelity ranking JSON/Markdown, all candidate manifests and hashes, qualified T/V runs, uncertainty and pair-sign table. |
-| WP7: production optimizer and Stage S | WP6 pass for surrogate-dependent work; G3/G4 gates | Add physical beta volume, nonlinear re-evaluation/rollback, checkpoint/resume, feasible seed restoration, production constrained backend, quantitative density-to-SDF fidelity, P9 cleanup, then SDF evolution. | Stop if Gate 4 is unresolved/No-Go or if a candidate lacks independent qualification. Do not advance to FSAE/full vehicle from reduced laminar evidence. | Immutable iteration history, accepted/rejected candidate artifacts, constraints, SDF fidelity metrics, Stage S qualification, independent Stage V report. |
+1. PQ0: close production integration semantics and fail-open edges.
+2. PQ1: qualify or bound the Stage T gradient oracle.
+3. PQ2: run the registered Stage V domain/boundary factor and classify the
+   downforce reference; this may run in parallel with PQ1.
+4. PQ3: run the first real OpenFOAM closed loop after PQ0 and the PQ1 decision.
+5. PQ4: qualify extraction and one body-fitted Stage S step.
+6. PQ5: independently compare baseline, Stage T and Stage S on three grids.
+7. PQ6: only after PQ5, integrate robust fields/actual MMA or GCMMA and advance
+   through the target-physics ladder.
 
-### Immediate next slice: fixed domain plus pre-mesh clearance
-
-**Status 2026-09-20: WP1 is implemented and validated** (commits after
-`8be881d` on `feat/p0-openfoam-closed-loop`). The fixed-domain binding
-(`grid.domain_bounds_m` -> `problem_spec_to_project_config` -> `build_fields` ->
-blockMesh/case_metadata) and the fail-closed pre-mesh clearance preflight
-(`stage_v_clearance_v1`, declared 0.25 m margin) exist in
-`src/cfd_sdf/stage_v_domain_preflight.py`, are wired into
-`scripts/stage_t_filtered_ramp.py` (`mesh_sweep`, `phase_stagev_level`), and
-cover the original 8 required behaviors including both recorded candidate IDs
-(`tests/test_stage_v_domain_preflight.py`). The recorded wrong candidate
-`opt_q100_b0_step5_try1_block_keep_round` is rejected before meshing with a
-no-launch artifact
-(`work/filtered_ramp/wmin_0.2/stage_v_mesh/<cid>/<level>/stage_v_domain_preflight.json`);
-the correct candidate passes (minimum clearance 0.37396 m at `top`).
-Evidence: `evidence/stage_v_domain_clearance_2026_09.json`. What remains from
-WP1 is only re-running actual Stage V meshing/solving under the fixed domain
-(WP2), which now belongs to the WP3 grid study below.
-
-Original specification of the slice (kept for context; do not weaken its
-fail-closed requirements):
-
-After WP1 (implemented 2026-09-20), the next slices in order are WP2 (re-run
-actual meshing/solving for the correct candidate under the fixed domain) and
-WP3 (grid study). The bounded Stage V profile uses the existing v2
-`grid.domain_bounds_m` as the explicit fixed outer box for this case, rather
-than inventing bounds from the candidate's union bounds. If future profiles need
-different canonical and CFD boxes, add a versioned explicit contract field; do
-not silently reinterpret or infer one from geometry.
-
-The implementation must:
-
-1. Require finite lower/upper bounds with positive extents and a valid grid alignment for the selected Stage V resolution.
-2. Carry those bounds from ProblemSpec through `problem_spec_to_project_config`, field generation, blockMesh rendering, and `case_metadata.json`.
-3. Declare the physical clearance margin in the versioned ProblemSpec/profile used by the run. Do not use a result-dependent or silently cell-count-derived threshold.
-4. Compute candidate clearance to each axis-aligned far-field plane from the candidate surface bounds: `xmin-lower_x`, `upper_x-xmax`, `ymin-lower_y`, `upper_y-ymax`, `zmin-lower_z`, and `upper_z-zmax`.
-5. Fail closed if any candidate point is outside the fixed box or any clearance is below the declared physical margin. Record the limiting patch and all six values.
-6. Run this preflight before `blockMesh`, `surfaceFeatureExtract`, `snappyHexMesh`, and `simpleFoam`. A failed preflight may write a diagnostic artifact but must not write a solver-launch artifact claiming permission.
-7. Bind the preflight to the ProblemSpec SHA-256, candidate STL SHA-256, selected flow case, voxel size, margin/profile ID, and domain bounds.
-8. Add tests for missing/invalid domain, exact boundary contact, below-margin clearance, just-passing clearance, and the two recorded candidate IDs. The wrong candidate must be rejected at this preflight layer.
-
-The expected evidence is a new versioned clearance/profile report, not a
-rewrite of `stage_v_v3_requalification_2026_09.json`. The existing V3 JSON is
-the historical record of what was measured; the new report must show that the
-same class of boundary failure is caught earlier.
+The immediate reviewable slice is PQ0. Historical DF0--DF7 and WP0--WP7
+material remains useful evidence context but does not reorder this sequence.
+The registered PQ2 reference campaign is the only heavy run that may proceed
+independently before PQ0 closes.
 
 ## Global Stop/Go Rules
 

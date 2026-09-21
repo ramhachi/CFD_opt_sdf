@@ -60,6 +60,44 @@ def _validate_design(rho: np.ndarray, active: np.ndarray, *, tolerance: float = 
 
 
 @dataclass
+class IdentityFilter:
+    """No filter: the transform passes the design through unchanged.
+
+    Declared explicitly by identity-profile production runs; the block filter
+    remains diagnostics-only and the cone filter is the filtered production
+    profile.
+    """
+
+    shape: tuple[int, int, int]
+    spacing_m: float
+    active_mask: np.ndarray
+    production_allowed: bool = True
+    kind: str = "identity_filter"
+
+    def __post_init__(self) -> None:
+        if self.spacing_m <= 0.0 or not math.isfinite(self.spacing_m):
+            raise DesignTransformError("spacing must be finite and positive")
+        self.mask = _as3d(self.active_mask, self.shape).astype(np.float64)
+        if not np.any(self.mask > 0):
+            raise DesignTransformError("active mask is empty")
+        self.radius_m = 0.0
+        self.radius_cells = 0.0
+        self.meta = {
+            "kind": self.kind,
+            "minimum_solid_width_m": None,
+            "relation": "rho_filtered = rho_design",
+            "boundary": "active design cells only",
+            "transpose": "H.T = H = M (exact)",
+        }
+
+    def H(self, flat: np.ndarray) -> np.ndarray:
+        return _as_flat(_as3d(flat, self.shape) * self.mask)
+
+    def HT(self, flat: np.ndarray) -> np.ndarray:
+        return self.H(flat)
+
+
+@dataclass
 class ConeFilter:
     """Cone (linear-hat) density filter over a physical radius.
 
@@ -284,19 +322,44 @@ class DesignTransform:
             beta=beta,
         )
 
-    def backward(self, rho: np.ndarray, g_beta: np.ndarray) -> np.ndarray:
-        """``g_rho = H.T (projection' * ramp' * g_beta)`` evaluated at ``rho``."""
+    def pullback_from_beta(self, rho: np.ndarray, g_beta: np.ndarray) -> np.ndarray:
+        """Gradient space ``beta`` (RAMP output) -> design space.
 
-        gradient = np.asarray(g_beta, dtype=np.float64)
-        if gradient.shape != self.active.shape:
-            raise DesignTransformError("adjoint seed shape does not match the design")
-        if not np.isfinite(gradient).all():
-            raise DesignTransformError("adjoint seed contains non-finite values")
+        ``g_rho = H.T (projection' * ramp' * g_beta)`` evaluated at ``rho``.
+        """
+
+        gradient = self._validate_adjoint_seed(g_beta)
         state = self.forward(rho)
         derivative = self.projection.derivative(state.rho_filtered) * self.ramp.derivative(
             state.rho_projected
         )
         return self.filter.HT(derivative * gradient)
+
+    def pullback_from_projected(self, rho: np.ndarray, g_projected: np.ndarray) -> np.ndarray:
+        """Gradient space ``rho_projected`` (projection output) -> design space.
+
+        ``g_rho = H.T (projection' * g_projected)``; the RAMP derivative is
+        deliberately absent because the projection output is not the RAMP
+        output. Occupied-volume constraints are defined on this space.
+        """
+
+        gradient = self._validate_adjoint_seed(g_projected)
+        state = self.forward(rho)
+        derivative = self.projection.derivative(state.rho_filtered)
+        return self.filter.HT(derivative * gradient)
+
+    def _validate_adjoint_seed(self, seed: np.ndarray) -> np.ndarray:
+        gradient = np.asarray(seed, dtype=np.float64)
+        if gradient.shape != self.active.shape:
+            raise DesignTransformError("adjoint seed shape does not match the design")
+        if not np.isfinite(gradient).all():
+            raise DesignTransformError("adjoint seed contains non-finite values")
+        return gradient
+
+    def backward(self, rho: np.ndarray, g_beta: np.ndarray) -> np.ndarray:
+        """Alias of :meth:`pullback_from_beta` (kept for the beta-space callers)."""
+
+        return self.pullback_from_beta(rho, g_beta)
 
     def chain(self, rho: np.ndarray, g_beta: np.ndarray) -> tuple[DesignTransformState, np.ndarray]:
         state = self.forward(rho)
@@ -346,6 +409,7 @@ class DesignTransform:
 __all__ = [
     "BlockFilter",
     "ConeFilter",
+    "IdentityFilter",
     "DesignTransform",
     "DesignTransformError",
     "DesignTransformState",

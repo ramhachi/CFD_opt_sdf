@@ -1,11 +1,17 @@
 # DF0–DF7 実行計画 — 2026-09-21
 
-Status: draft execution plan, subordinate to
-[`phase_plan.md`](phase_plan.md) and
-[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+Status: **historical implementation plan; DF0--DF6 component slices were
+implemented on 2026-09-21.** The active next-work plan is PQ0--PQ6 in
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md),
+subordinate to [`phase_plan.md`](phase_plan.md).
+
 Scope: concrete slice-by-slice implementation plan for the adopted DF0–DF7
 work packages, grounded in the current repository state and external
 primary-source research.
+
+This document is retained to explain why the DF0--DF6 modules were built. Its
+repository-state table and "next action" section describe the pre-implementation
+snapshot and must not be used as current status. DF7 was not completed.
 
 Authority: `phase_plan.md` remains the sole roadmap/status authority. This
 document adds execution detail (target files, test slices, research
@@ -422,13 +428,13 @@ hash / evidence class / 結論を evidence JSON の別 fields に記録する。
 
 ---
 
-## 5. 次の実行手順（session 開始時の直近アクション）
+## 5. 実装後の移行先
 
-1. DF0 slice branch `feat/df0-evidence-audit` を切る。
-2. `scripts/measure_shape_feature_sizes.py` + `scripts/audit_wp6_2_reports.py` +
-   `tests/test_evidence_audit.py` を実装する。
-3. audit JSON `docs/evidence/wp6_2_evidence_audit_2026_09.json` + P18 closure record +
-   preregistration schema 草案を 1 reviewable diff にまとめ、validate 後に commit + push。
+DF0--DF6のcomponent slicesは実装済みである。次のreviewable sliceは
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+の **PQ0 production integration closure**。旧DF0を再実行せず、compiler/volume semantics、
+DesignTransform接続、parent-gradient/trial-value oracle、checkpoint binding、fail-closed
+verificationを一本のproduction pathへ統合する。
 
 ---
 

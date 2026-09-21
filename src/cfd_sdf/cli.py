@@ -1324,6 +1324,11 @@ def run_fixed_grid_constrained_step(
         "--problem-spec",
         help="ProblemSpec YAML; the objective and constraints are compiled from it.",
     ),
+    transform_declaration_json: Path | None = typer.Option(
+        None,
+        "--transform-declaration",
+        help="Declared design-transform JSON (required with --problem-spec).",
+    ),
     allow_legacy_objective: bool = typer.Option(
         False,
         "--allow-legacy-objective/--require-problem-spec",
@@ -1396,6 +1401,11 @@ def run_fixed_grid_constrained_step(
             "a ProblemSpec is required for the production constrained step; pass "
             "--allow-legacy-objective for the historical diagnostic path"
         )
+    if problem_spec_json is not None and transform_declaration_json is None:
+        raise typer.BadParameter(
+            "--transform-declaration is required with --problem-spec; production runs "
+            "declare the design transform explicitly"
+        )
     controls = FixedGridOptimizerControls(
         optimizer_backend=optimizer_backend,
         move_limit=move_limit,
@@ -1421,6 +1431,7 @@ def run_fixed_grid_constrained_step(
         primal_summary_json=primal_summary_json,
         connectivity_summary_json=connectivity_summary_json,
         problem_spec_json=problem_spec_json,
+        transform_declaration_json=transform_declaration_json,
     )
     console.print(json.dumps(artifacts.to_dict(), indent=2))
     console.print(f"Wrote {artifacts.update_vti}")
@@ -2204,9 +2215,9 @@ def verify_required_pairs_command(
                 str(k): float(v) for k, v in item.get("extraction_uncertainty", {}).items()
             },
             gates={str(k): bool(v) for k, v in item.get("gates", {}).items()},
-            grid_levels=tuple(str(v) for v in item.get("grid_levels", [])),
+            grid_levels=tuple(str(v) for v in item["grid_levels"]),
+            extraction_status=str(item["extraction_status"]),
             used_in_optimization=bool(item.get("used_in_optimization", False)),
-            extraction_status=str(item.get("extraction_status", "measured")),
         )
         for item in document["measurements"]
     ]

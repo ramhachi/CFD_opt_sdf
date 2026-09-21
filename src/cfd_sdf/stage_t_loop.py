@@ -1,17 +1,18 @@
-"""Restartable Stage T nonlinear loop around the accepted-trial controller (DF3).
+"""Restartable Stage T nonlinear loop around the accepted-trial controller (DF3/PQ0).
 
-The loop is oracle-agnostic: ``ResponseOracle`` returns primitive objective and
-constraint values plus their gradients (already pulled back to the design
-variable by the transform owned in ``design_transform``), and a ``TrialBackend``
-proposes a bounded trial. Acceptance is decided only by
-``nonlinear_acceptance`` after the oracle re-evaluates the trial; a rejected
-trial rolls back to the same parent with a reduced move radius and the penalty
-growth of the GCMMA-like inner loop.
+The loop separates the two evaluation kinds explicitly (PQ0 I4/I6):
 
-Everything is deterministic and JSON-serializable: the trace records each
-measurement, and ``checkpoint``/``resume`` bind the design, transform,
-oracle-response, and controller state so a campaign can stop and continue
-without re-accepting an unverified step.
+- ``evaluate_values``: primal values, constraints and geometry gates only;
+  every trial uses this;
+- ``evaluate_gradients``: the parent's adjoint gradients, called once per
+  accepted parent (the accepted trial's value payload is reused), so no primal
+  is re-run after acceptance and no trial pays for an adjoint.
+
+Gradient spaces are declared, not implied: the oracle adapter maps
+``g_solver -> g_design`` through the declared ``DesignTransform`` pullback and
+records the transform hash on every result. Checkpoints bind the ProblemSpec,
+the compiled problem, the transform, the backend id, the oracle profile and the
+design/response hashes; a resume with any mismatch is refused (PQ0 I8).
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ from typing import Any, Callable, Protocol
 
 import numpy as np
 
-from .design_transform import DesignTransform
+from .design_transform import DesignTransform, DesignTransformState
 from .nonlinear_acceptance import (
     AcceptanceState,
     TrialEvaluation,
@@ -38,14 +39,19 @@ from .problem_spec_compiler import CompiledProblem
 class OracleResult:
     objective: float
     constraint_values: dict[str, float]
-    objective_gradient: np.ndarray
-    constraint_gradients: dict[str, np.ndarray]
     primal_converged: bool
     adjoint_converged: bool
     solver_status: str = "unknown"
     geometry_ok: bool = True
     geometry_metrics: dict[str, Any] = field(default_factory=dict)
     response_hash: str | None = None
+    objective_gradient: np.ndarray | None = None
+    constraint_gradients: dict[str, np.ndarray] = field(default_factory=dict)
+    gradient_space: str | None = None
+    transform_hash: str | None = None
+
+    def has_gradients(self) -> bool:
+        return self.objective_gradient is not None
 
     def to_evaluation(self) -> TrialEvaluation:
         return TrialEvaluation(
@@ -60,8 +66,13 @@ class OracleResult:
 
 
 class ResponseOracle(Protocol):
-    def evaluate(self, rho_design: np.ndarray) -> OracleResult:
-        ...
+    def evaluate_values(self, rho_design: np.ndarray) -> OracleResult:
+        """Primal-only evaluation (values, constraints, gates)."""
+
+    def evaluate_gradients(
+        self, rho_design: np.ndarray, values: OracleResult
+    ) -> OracleResult:
+        """Adjoint evaluation at the same design; returns values + gradients."""
 
 
 class TrialBackend(Protocol):
@@ -84,9 +95,12 @@ class ProjectedGradientBackend:
     For each candidate step length ``alpha`` the direction is
     ``-grad / ||grad||_inf * alpha`` (bounded by ``move_radius``); the largest
     ``alpha`` that keeps every linearized constraint feasible is found by
-    bisection. This is deliberately simple: DF3 validates the acceptance
-    machinery, DF6 replaces the proposal step behind the same interface.
+    bisection. This is deliberately simple: PQ0 validates the acceptance
+    machinery, a moving-asymptotes backend replaces the proposal step behind
+    the same interface.
     """
+
+    backend_id = "projected-gradient-constrained"
 
     def __init__(self, *, max_bisection: int = 40) -> None:
         self.max_bisection = max_bisection
@@ -141,6 +155,8 @@ class LoopSpec:
     max_iterations: int = 20
     max_inner_iterations: int = 8
     checkpoint_every: int = 1
+    backend_id: str = "projected-gradient-constrained"
+    oracle_profile: str = "default"
 
 
 @dataclass
@@ -151,12 +167,14 @@ class LoopResult:
     accepted: int
     rejected: int
     transform_hash: str
+    counts: dict[str, int]
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "transform_hash": self.transform_hash,
             "accepted": self.accepted,
             "rejected": self.rejected,
+            "counts": self.counts,
             "trace": self.trace,
             "final_rho": [float(v) for v in self.final_rho],
         }
@@ -184,27 +202,36 @@ def make_oracle_from_compiled(
     *,
     transform: DesignTransform,
     compiled: CompiledProblem,
-    primitive_evaluator: Callable[[np.ndarray], dict[str, Any]],
-) -> Callable[[np.ndarray], OracleResult]:
-    """Adapt a primitive-response evaluator to the loop's oracle protocol.
+    primitive_evaluator: Callable[[DesignTransformState], dict[str, Any]],
+) -> Callable[..., OracleResult]:
+    """Adapt a solver-field evaluator to the two-space oracle protocol.
 
-    ``primitive_evaluator(rho_design)`` must return ``values`` (keyed by
-    ``(flow_case, response)``), ``gradients``, ``primal_converged``,
-    ``adjoint_converged``, and optionally ``solver_status``/``geometry``.
+    ``primitive_evaluator(state)`` consumes the declared transform state (the
+    solver sees ``state.beta``) and returns:
+
+    - ``values``: ``{(flow_case, response): float}``;
+    - ``gradients``: ``{(flow_case, response): np.ndarray}`` **in the solver
+      field (beta) space**; the adapter maps them to design space with
+      ``transform.pullback_from_beta``;
+    - ``primal_converged`` / ``adjoint_converged`` / ``solver_status`` /
+      ``geometry_ok`` / ``geometry_metrics`` / ``response_hash``.
+
+    ``evaluate_values`` passes no gradients; ``evaluate_gradients`` requires
+    them and records the transform hash and gradient space.
     """
 
-    def evaluate(rho_design: np.ndarray) -> OracleResult:
-        payload = primitive_evaluator(np.asarray(rho_design, dtype=np.float64))
-        values = payload["values"]
-        gradients = payload["gradients"]
-        objective = compiled.objective_value(values)
-        g_values = compiled.constraint_values(values)
-        g_gradients = compiled.constraint_gradients(gradients)
-        return OracleResult(
+    def _evaluate(
+        rho_design: np.ndarray, *, with_gradients: bool, values: OracleResult | None
+    ) -> OracleResult:
+        rho = np.asarray(rho_design, dtype=np.float64)
+        state = transform.forward(rho)
+        payload = primitive_evaluator(state)
+        primitive_values = payload["values"]
+        objective = compiled.objective_value(primitive_values)
+        constraint_values = compiled.constraint_values(primitive_values)
+        result = OracleResult(
             objective=objective,
-            constraint_values=g_values,
-            objective_gradient=compiled.objective_gradient(gradients),
-            constraint_gradients=g_gradients,
+            constraint_values=constraint_values,
             primal_converged=bool(payload.get("primal_converged", True)),
             adjoint_converged=bool(payload.get("adjoint_converged", True)),
             solver_status=str(payload.get("solver_status", "ok")),
@@ -212,8 +239,53 @@ def make_oracle_from_compiled(
             geometry_metrics=dict(payload.get("geometry_metrics", {})),
             response_hash=payload.get("response_hash"),
         )
+        if not with_gradients:
+            return result
+        raw_gradients = payload.get("gradients")
+        if not isinstance(raw_gradients, dict) or not raw_gradients:
+            raise ValueError(
+                "evaluate_gradients requires solver-field gradients from the evaluator"
+            )
+        design_gradients = {
+            key: transform.pullback_from_beta(rho, np.asarray(gradient, dtype=np.float64))
+            for key, gradient in raw_gradients.items()
+        }
+        return OracleResult(
+            objective=result.objective,
+            constraint_values=result.constraint_values,
+            primal_converged=result.primal_converged,
+            adjoint_converged=result.adjoint_converged,
+            solver_status=result.solver_status,
+            geometry_ok=result.geometry_ok,
+            geometry_metrics=result.geometry_metrics,
+            response_hash=result.response_hash,
+            objective_gradient=compiled.objective_gradient(design_gradients),
+            constraint_gradients=compiled.constraint_gradients(design_gradients),
+            gradient_space="rho_design",
+            transform_hash=transform.transform_hash(),
+        )
 
-    return evaluate
+    class CompiledOracle:
+        def evaluate_values(self, rho_design: np.ndarray) -> OracleResult:
+            return _evaluate(rho_design, with_gradients=False, values=None)
+
+        def evaluate_gradients(
+            self, rho_design: np.ndarray, values: OracleResult | None = None
+        ) -> OracleResult:
+            return _evaluate(rho_design, with_gradients=True, values=values)
+
+    return CompiledOracle()
+
+
+def _call_values(oracle: Any, rho: np.ndarray) -> OracleResult:
+    return oracle.evaluate_values(rho)
+
+
+def _call_gradients(oracle: Any, rho: np.ndarray, values: OracleResult) -> OracleResult:
+    result = oracle.evaluate_gradients(rho, values)
+    if not result.has_gradients():
+        raise ValueError("evaluate_gradients returned a result without gradients")
+    return result
 
 
 def run_stage_t_loop(
@@ -228,15 +300,21 @@ def run_stage_t_loop(
     """Run (or resume) the accepted-trial loop; deterministic for deterministic inputs."""
 
     transform = spec.transform
-    active = transform.active
     backend = backend or ProjectedGradientBackend()
-    evaluate = oracle.evaluate if hasattr(oracle, "evaluate") else oracle
-
+    counts = {"value_evaluations": 0, "gradient_evaluations": 0}
     trace: list[dict[str, Any]] = []
+
+    def evaluate_values(rho: np.ndarray) -> OracleResult:
+        counts["value_evaluations"] += 1
+        return _call_values(oracle, rho)
+
+    def evaluate_gradients(rho: np.ndarray, values: OracleResult) -> OracleResult:
+        counts["gradient_evaluations"] += 1
+        return _call_gradients(oracle, rho, values)
+
     if resume_from is not None:
         checkpoint = json.loads(Path(resume_from).read_text(encoding="utf-8"))
-        if checkpoint["transform_hash"] != transform.transform_hash():
-            raise ValueError("checkpoint transform hash does not match the current transform")
+        _validate_checkpoint(checkpoint, spec)
         rho = np.asarray(checkpoint["rho"], dtype=np.float64)
         state = AcceptanceState(
             rho=rho,
@@ -247,12 +325,15 @@ def run_stage_t_loop(
             penalty=float(checkpoint["penalty"]),
         )
         trace = list(checkpoint.get("trace", []))
-        parent_result = evaluate(state.rho)
+        counts = dict(checkpoint.get("counts", counts))
+        parent_values = evaluate_values(state.rho)
+        parent_result = evaluate_gradients(state.rho, parent_values)
     else:
         if initial_rho is None:
             raise ValueError("initial_rho is required when not resuming")
         state = AcceptanceState(rho=np.clip(initial_rho, 0.0, 1.0), move_radius=spec.move_limit)
-        parent_result = evaluate(state.rho)
+        parent_values = evaluate_values(state.rho)
+        parent_result = evaluate_gradients(state.rho, parent_values)
 
     parent_eval = parent_result.to_evaluation()
     state.objective = parent_result.objective
@@ -263,14 +344,14 @@ def run_stage_t_loop(
             "iteration": state.iteration,
             "parent_objective": parent_result.objective,
             "parent_constraints": dict(parent_result.constraint_values),
+            "parent_gradient_space": parent_result.gradient_space,
+            "transform_hash": parent_result.transform_hash,
             "move_radius_in": state.move_radius,
             "penalty_in": state.penalty,
         }
 
-        proposals: list[TrialProposal] = []
-
         def propose(working: AcceptanceState) -> TrialProposal:
-            proposal = backend.propose(
+            return backend.propose(
                 rho=working.rho,
                 objective_gradient=parent_result.objective_gradient,
                 constraint_gradients=parent_result.constraint_gradients,
@@ -278,11 +359,13 @@ def run_stage_t_loop(
                 move_radius=working.move_radius,
                 backend_state={},
             )
-            proposals.append(proposal)
-            return proposal
+
+        last_value_result: OracleResult | None = None
 
         def evaluate_trial(rho_trial: np.ndarray, proposal: TrialProposal) -> TrialEvaluation:
-            return evaluate(rho_trial).to_evaluation()
+            nonlocal last_value_result
+            last_value_result = evaluate_values(rho_trial)
+            return last_value_result.to_evaluation()
 
         decision, trial_rho, inner_trace = run_conservative_inner_loop(
             parent=parent_eval,
@@ -298,7 +381,11 @@ def run_stage_t_loop(
         if decision.accepted and trial_rho is not None:
             state.rho = trial_rho
             state.accepted += 1
-            parent_result = evaluate(state.rho)
+            # reuse the accepted trial's value payload; one adjoint for the new parent
+            if last_value_result is None:
+                raise ValueError("accepted trial has no value payload to reuse")
+            parent_values = last_value_result
+            parent_result = evaluate_gradients(state.rho, parent_values)
             parent_eval = parent_result.to_evaluation()
             state.objective = parent_result.objective
             iteration_trace.update(
@@ -323,7 +410,7 @@ def run_stage_t_loop(
         trace.append(iteration_trace)
 
         if checkpoint_path is not None and state.iteration % spec.checkpoint_every == 0:
-            _write_checkpoint(checkpoint_path, state, transform, trace, parent_result)
+            _write_checkpoint(checkpoint_path, spec, state, trace, parent_result, counts)
 
     return LoopResult(
         trace=trace,
@@ -332,20 +419,44 @@ def run_stage_t_loop(
         accepted=state.accepted,
         rejected=state.rejected,
         transform_hash=transform.transform_hash(),
+        counts=counts,
     )
+
+
+def _checkpoint_binding(spec: LoopSpec) -> dict[str, Any]:
+    return {
+        "transform_hash": spec.transform.transform_hash(),
+        "problem_spec_sha256": spec.compiled.problem_spec_sha256,
+        "compiled_problem_hash": spec.compiled.compiled_problem_hash(),
+        "backend_id": spec.backend_id,
+        "oracle_profile": spec.oracle_profile,
+    }
+
+
+def _validate_checkpoint(checkpoint: dict[str, Any], spec: LoopSpec) -> None:
+    if checkpoint.get("kind") != "stage_t_loop_checkpoint":
+        raise ValueError("checkpoint kind is not stage_t_loop_checkpoint")
+    expected = _checkpoint_binding(spec)
+    for key, value in expected.items():
+        if checkpoint.get(key) != value:
+            raise ValueError(
+                f"checkpoint {key} mismatch: checkpoint={checkpoint.get(key)!r}, "
+                f"current={value!r}; refusing to resume a different problem/transform/backend"
+            )
 
 
 def _write_checkpoint(
     path: Path,
+    spec: LoopSpec,
     state: AcceptanceState,
-    transform: DesignTransform,
     trace: list[dict[str, Any]],
     last_evaluation: OracleResult,
+    counts: dict[str, int],
 ) -> None:
     payload = {
         "kind": "stage_t_loop_checkpoint",
-        "schema_version": 1,
-        "transform_hash": transform.transform_hash(),
+        "schema_version": 2,
+        **_checkpoint_binding(spec),
         "rho": [float(v) for v in state.rho],
         "move_radius": float(state.move_radius),
         "penalty": float(state.penalty),
@@ -356,6 +467,7 @@ def _write_checkpoint(
         "constraints": dict(last_evaluation.constraint_values),
         "response_hash": last_evaluation.response_hash,
         "rho_sha256": _rho_sha256(state.rho),
+        "counts": dict(counts),
         "trace": trace,
     }
     path = Path(path)

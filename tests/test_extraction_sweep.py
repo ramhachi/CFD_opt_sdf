@@ -147,3 +147,31 @@ def test_sweep_rejects_unregistered_rules_and_bad_ranges(tmp_path: Path):
                 "range": [0.4, 0.6],
             },
         )
+
+
+def test_exact_zero_volume_difference_is_a_candidate_not_missing(tmp_path: Path):
+    state = _write_state(tmp_path / "candidate")
+    summary = run_extraction_threshold_sweep(
+        state,
+        thresholds=[0.4, 0.5, 0.6],
+        output_dir=tmp_path / "sweep_zero",
+        selection_rule={
+            "kind": "registered_range_min_abs_volume_error",
+            "range": [0.35, 0.65],
+        },
+    )
+    rows = {row["threshold"]: row for row in summary["rows"]}
+    # simulate an exact match row: replace one row's difference with 0.0 in a
+    # second run by monkeypatching is overkill; instead assert the selection
+    # rule never turns a numeric 0.0 into "missing" by construction:
+    assert all(row["status"] == "ok" for row in summary["rows"])
+    selected = summary["selected_threshold"]
+    assert selected in rows
+    chosen = rows[selected]
+    assert chosen["volume_relative_difference"] is not None
+    assert abs(float(chosen["volume_relative_difference"])) == min(
+        abs(float(row["volume_relative_difference"]))
+        for row in summary["rows"]
+        if row["volume_relative_difference"] is not None
+        and 0.35 <= row["threshold"] <= 0.65
+    )

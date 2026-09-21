@@ -41,9 +41,10 @@ class CandidateMeasurement:
     numerical_uncertainty: dict[str, float]
     extraction_uncertainty: dict[str, float]
     gates: dict[str, bool]
-    grid_levels: tuple[str, ...] = ()
+    grid_levels: tuple[str, ...]
+    extraction_status: str
     used_in_optimization: bool = False
-    extraction_status: str = "measured"
+    min_grid_levels: int = 3
 
     def validate_extraction_status(self) -> None:
         if self.extraction_status not in {"measured", "not_measured"}:
@@ -51,6 +52,22 @@ class CandidateMeasurement:
                 f"candidate {self.candidate_id!r} has unknown extraction_status "
                 f"{self.extraction_status!r}"
             )
+
+    def validate_grid_levels(self) -> None:
+        levels = {str(level) for level in self.grid_levels if str(level)}
+        if len(levels) < int(self.min_grid_levels):
+            raise IndependentVerificationError(
+                f"candidate {self.candidate_id!r} declares {len(levels)} grid level(s); "
+                f"at least {self.min_grid_levels} distinct qualified levels are required"
+            )
+
+    def validate_response_uncertainty(self) -> None:
+        for response in self.responses:
+            if response not in self.numerical_uncertainty:
+                raise IndependentVerificationError(
+                    f"candidate {self.candidate_id!r} is missing numerical uncertainty "
+                    f"for response {response!r}; a missing band is not zero"
+                )
 
     def combined_uncertainty(self, response: str) -> float:
         numerical = float(self.numerical_uncertainty.get(response, 0.0))
@@ -118,6 +135,8 @@ def verify_required_pairs(
     for measurement in measurements:
         measurement.validate()
         measurement.validate_extraction_status()
+        measurement.validate_grid_levels()
+        measurement.validate_response_uncertainty()
         if measurement.role in by_role:
             raise IndependentVerificationError(f"duplicate candidate role {measurement.role!r}")
         by_role[measurement.role] = measurement

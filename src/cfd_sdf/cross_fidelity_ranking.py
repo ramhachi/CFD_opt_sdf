@@ -148,6 +148,7 @@ class RankingReport:
     j_scale: float
     extraction_sensitivity: Mapping[str, float]
     candidate_uncertainty: Mapping[str, float] = field(default_factory=dict)
+    candidate_uncertainty_clamped: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -170,6 +171,7 @@ class RankingReport:
             "j_scale": self.j_scale,
             "extraction_sensitivity": dict(sorted(self.extraction_sensitivity.items())),
             "candidate_uncertainty": dict(sorted(self.candidate_uncertainty.items())),
+            "candidate_uncertainty_clamped": list(self.candidate_uncertainty_clamped),
         }
 
 
@@ -338,6 +340,15 @@ def qualify_cross_fidelity_ranking(
     per_candidate = _validated_candidate_uncertainty(
         candidate_uncertainty, candidates, response_uncertainty
     )
+    clamped = tuple(
+        sorted(
+            candidate
+            for candidate, band in per_candidate.items()
+            if candidate_uncertainty is not None
+            and candidate in candidate_uncertainty
+            and float(candidate_uncertainty[candidate]) < response_uncertainty
+        )
+    )
 
     surrogate_order = tuple(rank_values(surrogate_values))
     reference_order = tuple(rank_values(reference_values))
@@ -448,6 +459,7 @@ def qualify_cross_fidelity_ranking(
         j_scale=float(j_scale),
         extraction_sensitivity=dict(extraction),
         candidate_uncertainty=dict(per_candidate),
+        candidate_uncertainty_clamped=clamped,
     )
 
 
@@ -485,8 +497,9 @@ def _validated_candidate_uncertainty(
             raise ValueError(
                 f"candidate_uncertainty references unknown candidate {candidate_id!r}"
             )
-        resolved[candidate_id] = _require_finite_band(
-            f"candidate_uncertainty[{candidate_id!r}]", band
+        resolved[candidate_id] = max(
+            float(default),
+            _require_finite_band(f"candidate_uncertainty[{candidate_id!r}]", band),
         )
     return resolved
 

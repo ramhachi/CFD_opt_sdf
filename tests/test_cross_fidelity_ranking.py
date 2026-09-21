@@ -379,3 +379,19 @@ def test_candidate_specific_uncertainty_rejects_unknown_candidate():
             response_id="downforce_coefficient",
             candidate_uncertainty={"missing": 0.1},
         )
+
+
+def test_candidate_uncertainty_cannot_shrink_the_registered_band():
+    reference = _scores("stage_v_v2", {"c1": 0.90, "c2": 1.00, "c3": 1.10, "c4": 1.20})
+    surrogate = _scores("stage_t", {"c1": 0.85, "c2": 1.00, "c3": 1.15, "c4": 1.30})
+    report = qualify_cross_fidelity_ranking(
+        surrogate,
+        reference,
+        uncertainty=UNCERTAINTY,
+        response_id="downforce_coefficient",
+        candidate_uncertainty={"c1": 1e-6, "c2": 1e-6},
+    )
+    assert report.candidate_uncertainty["c1"] == UNCERTAINTY.downforce_abs
+    assert report.candidate_uncertainty["c2"] == UNCERTAINTY.downforce_abs
+    assert set(report.candidate_uncertainty_clamped) == {"c1", "c2"}
+    assert report.to_dict()["candidate_uncertainty_clamped"] == ["c1", "c2"]

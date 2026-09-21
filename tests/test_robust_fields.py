@@ -114,3 +114,10 @@ def test_parameter_report_declares_relations_and_cost():
     assert report["eta_dilated"] < report["eta_intermediate"] < report["eta_eroded"]
     assert "Trillet" in report["analytic_relations"]
     assert "three primal/adjoint" in report["cost"]
+
+
+def test_robust_fields_are_not_in_the_production_registry():
+    robust = RobustThreeField(_transform())
+    status = robust.production_status()
+    assert status["production_ready"] is False
+    assert "PQ6" in status["reason"]

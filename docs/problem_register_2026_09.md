@@ -7,13 +7,18 @@
 
 ## 要約
 
-T→S→Vのパイプラインは実機OpenFOAMで一周した。勾配連鎖は有限差分で検証できた。
-Stage Tは初めて実設計を生成した。
+T→S→Vのパイプラインは実機OpenFOAMで一周し、Stage Tは初めて実設計を生成した。
+その後、DF0--DF6のcompiler、transform、受理制御、抽出、検証algebra、robust prototypeが
+実装された。ただし、これらはまだ一つのproduction closed loopとして統合・資格化されていない。
 
-一方、**このアーキテクチャが成立する条件そのもの（安い代理モデルが候補の順位を
-保存すること）は、現時点で支持されていない。**
+一方、**このアーキテクチャが成立する条件そのもの（安い代理モデルが、実際の optimizer
+reachable set で応答値と候補順位を十分に保存すること）は、現時点で資格化されていない。**
+WP6-2 の8形状では downforce の解像可能な反転がなく、候補別bandによる再判定後も25組で
+反転0だった。P18は固定形状diagnosticとして閉じたが、production optimizerの一般的な
+裏付けには使えない。現在の主要blockerはP6のsolver-side gradient mismatchとP16の
+downforce Stage V数値不確かさである。
 
-ただしその否定的所見は、**未資格の参照（P12）と未収束の随伴（P13）の上に乗っている**ため、
+ただし初期の否定的所見は、**未資格の参照（P12）と未収束の随伴（P13）の上に乗っていた**ため、
 Brinkman方式一般のNo-Goへ昇格させてはならない。
 
 2026-09-12の測定により、観測されている失敗群は1本の連鎖で説明できることが分かった。
@@ -27,12 +32,12 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 
 | # | 問題 | 重大度 | 状態 |
 | --- | --- | --- | --- |
-| P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **最終判定（2026-09-20, WP6+WP6-2）**: 到達可能設計空間（min solid width設計政策内、厚さ>=0.15 m）では **downforce 8/8形状完踏合、tau=1.000** (V1/V2)。17形状合成プールでもdownforce 121組/drag 110組とも解像可能な反転**ゼロ**（tau 0.87-0.90, rho 0.96-0.97）。no_goは設計政策が除外する**閾下解像度厚さ軸（1セル）に局在**。詳細はreachable_set_cross_fidelity_ranking_2026_09.json |
+| P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **条件付き肯定観測、一般資格は未成立（2026-09-20, WP6+WP6-2）**: WP6 の厚さ軸ではdownforce反転。WP6-2の8形状ではV1/V2とも解像可能な反転ゼロ、tau=1.000。一方、17形状合成poolのmachine verdictは両応答とも`unresolved`。reachable-set/min-widthへの一般化はP18を閉じてから判定する |
 | P2 | 設計が二値化しない | 最重大 | **機構を実測で特定、罰則付き補間で解消の見込み**（検証中） |
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
-| P4 | 「宣言された問題」と「解かれている問題」の乖離（5件） | 高 | 2件ガード済 / 3件未修正 |
+| P4 | 「宣言された問題」と「解かれている問題」の乖離（5件） | 高 | compiler/transform部品は実装済み。volume constraint、legacy暗黙制約、production oracle統合が未解決（PQ0） |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
-| P6 | 一般方向で約10%の勾配バイアス | 中 | 機構未解明 |
+| P6 | continuous adjoint と discrete primal FD のsolver-side不整合 | 高 | **原因範囲を縮小（2026-09-21）**。凍結設計でaligned +21.8%、random +37.6%/+56.8%。transfer、設計変化、primal residualは除外。solver-side objective/BC/source/grid consistencyをPQ1で判定 |
 | P7 | 注入が`rho`のみ更新し他配列が陳腐化 | 中 | **解消（2026-09-20）**。C3 identity契約が検証できるときは4配列を同世代で一斉更新、検証できない場合は`owns no filter/projection profile`でfail-closed |
 | P8 | move limitにフロアがなくno-opを受理 | 低 | 修正着手中 |
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
@@ -42,8 +47,9 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P13 | 最適化ループの随伴が未収束のまま勾配に使われた | 最重大 | **解消**（fail-closedゲート、581 passed） |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
-| P16 | Stage Vが解像できる最小差 | — | **固定domain参照へ更新（2026-09-20）**。最細downforce drift 0.02993→0.01291、wake refinement併用でも0.0147。登録gate 0.005未達。旧union-boxの値・比率は参照移転不可 |
+| P16 | Stage Vが解像できる最小差 | — | **scheme因子まで更新（2026-09-21）**。`linearUpwind`でdrag drift 0.364%は2% bound内。downforce driftは0.010374で0.005未達、三格子非単調でGCIなし。次は登録済みdomain/boundary因子 |
 | P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
+| P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -51,6 +57,60 @@ P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）�
 
 修正済み: 力の単位・参照量の不一致、Stage Vがv2 specから駆動できない問題、
 勾配の符号規約の曖昧さ、勾配と宣言応答の非束縛。
+
+---
+
+## P18 — WP6-2 evidence-applicability gap（固定形状diagnosticとして解消）
+
+### 症状
+
+`work/fixed_shape_ranking_2026_09/reachable_set_ranking_manifest.json` の purpose は
+T1 voxel 0.05 m の3セル、すなわち `>=0.15 m` を検定対象とする。一方、同じ manifest の
+`definition.reachable_set` は `>=0.10 m` と記録する。さらに
+`analytic_candidate_shapes.py` の複合形状には、0.10 m厚のsecondary element、0.05 m spanの
+endplate、0.05 m chord / 0.12 m thicknessのgurney partが含まれる。
+
+8形状の downforce 順位がV1/V2で一致し、解像可能な反転がなかった観測は有効である。しかし、
+`evidence/reachable_set_cross_fidelity_ranking_2026_09.json` の17形状統合poolは、反転ゼロという
+副所見を持ちながら最終machine verdictがdownforce/dragとも`unresolved`である。同reportの
+extraction sensitivityは空であり、ゼロを測定したことを意味しない。一部候補のV1->V2
+downforce driftも、他候補から継承した0.0147を上回る。
+
+### 影響
+
+WP6-2は「この固定形状集合で順位反転を観測しなかった」とは言えるが、
+`minimum_solid_width`が全局所featureに厳密に適用されたoptimizer reachable setの資格、
+absolute response constraintの精度、将来のoptimizer-generated geometryの順位保存を証明しない。
+したがってP1を最終closeせず、条件付き観測として保持する。
+
+### 解消条件
+
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+の旧DF0計画に従い、次を満たす。
+
+1. union partsを含む実形状からlocal feature size、gap、componentを計測する。
+2. 宣言policyと計測値の不一致をmachine-readableにする。
+3. extraction sensitivityを測定するか`not_measured`として判定から除外する。
+4. candidate/response固有のgrid uncertaintyを登録する。
+5. required pairsとaggregate verdictを事前登録した新reportで再判定する。
+
+歴史的 evidence JSON は書き換えない。P18 closureは新しいmanifestとevidence artifactで記録する。
+
+### Closure（2026-09-21）
+
+[`p18_closure_record_2026_09.md`](p18_closure_record_2026_09.md) と
+`evidence/wp6_2_rejudgment_manifest_2026_09.json` に事前登録し、候補別band
+`max(inherited band, |V2-V1|)`で再判定した。
+
+- reachable 8-shape downforce: V1/V2とも`pass`、25 resolvable pairs、反転0
+- reachable 8-shape drag: `unresolved`、反転0
+- combined 17-shape downforce/drag: ともに`unresolved`、反転0
+- analytic anchorを同一gridで比較する固定形状programでは、density-to-surface extractionを
+  経由しないためextraction termは`not_applicable`とした。ゼロ測定ではない。
+
+従ってP18は固定形状diagnosticとして閉じる。8形状の観測は保持するが、optimizer-generated
+shape、absolute calibration、grid-independent rankingへは拡張しない。将来のproduction
+claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ---
 
@@ -202,6 +262,20 @@ Gate 4を適用した。
 
 根拠: `evidence/fixed_shape_cross_fidelity_ranking_2026_09.json`、
 `work/fixed_shape_ranking_2026_09/`
+
+### 追記（2026-09-20）— WP6-2 と P18 による適用範囲の訂正
+
+次の8形状を用いたWP6-2では、V1/V2のdownforce順位が完全一致し、解像可能な反転はなかった。
+これはWP6の厚さ軸no-goが全形状軸へ直ちに一般化しないことを示す肯定的所見である。
+
+ただしP18の監査により、これを「minimum-width policy内の最終資格」とした先の結論は撤回する。
+manifestの幅定義、複合partの局所寸法、候補固有grid drift、未測定のextraction sensitivityが
+整合しておらず、17形状poolのmachine verdictも両応答で`unresolved`である。従ってP1の現在状態は
+**条件付き肯定観測、一般資格は未成立**である。歴史的なWP6/WP6-2数値は保持し、DF0の
+候補別band再判定で8-shape観測だけを固定形状diagnosticとして閉じた。
+
+根拠: `evidence/reachable_set_cross_fidelity_ranking_2026_09.json`、
+`evidence/wp6_2_rejudgment_2026_09.json`、P18 closure record。
 
 ---
 
@@ -370,7 +444,34 @@ Lagrange乗数がISQPのペナルティ係数`c = 2`に固着するのは、elas
 
 ---
 
-## P6 — 一般方向で約10%の勾配バイアス（中・機構未解明）
+## P6 — continuous adjoint / discrete primal FD 不整合（高・solver側へ局在）
+
+### 現在の判定（2026-09-21）
+
+凍結設計、identity profile、登録済み24-run campaignで再測定した結果、過去の「約10%」より
+大きく、方向依存の mismatch が再現した。
+
+| direction | FD / analytic | 相対誤差 |
+| --- | ---: | ---: |
+| gradient-aligned | 1.2178 | 21.8% |
+| random seed 11 | 1.3764 | 37.6% |
+| random seed 2026 | 1.5680 | 56.8% |
+
+各方向でepsilonを変えたspreadは0.4%未満。`g_canonical = P.T g_source` とdot-product identityは
+machine precisionで一致し、24 runの最大設計変化は`2.98e-8`だった。primal residualを
+`5e-7`から`5e-9`へ厳しくしてiterationが91から114へ増えてもratioは0.04%未満しか変わらない。
+従ってtransfer、設計の更新、primal residual toleranceは原因から除外され、原因はこの構成の
+OpenFOAM continuous-adjoint sensitivityとdiscrete primal responseの間に局在する。
+
+現在の勾配は符号と概略方向のdiagnosticには使えるが、5% gateを通るproduction magnitudeでは
+ない。次はPQ1に従い、base adjoint / perturbation primalのgate semanticsを再登録した上で、
+objective、boundary contribution、porous source derivative、Stage T/source grid consistencyを
+一因子ずつ調べる。経験的な一律scale補正は禁止する。
+
+根拠: [`p6_diagnosis_record_2026_09.md`](p6_diagnosis_record_2026_09.md)、
+`evidence/fd_campaign_p6_solver_side_result_2026_09.json`。
+
+### 歴史的観測（現在の判定で上書きしない）
 
 勾配方向（sensitivity）のFD比は0.990→0.994、相対誤差1.03%→0.56%で正しい。
 しかし局在したランダム方向では比が約0.90で安定し、epsを1桁変えても1に近づかない。
@@ -392,8 +493,8 @@ Lagrange乗数がISQPのペナルティ係数`c = 2`に固着するのは、elas
 残る候補は`P`の部分重なり再配分（refinement比が非整数：1.875、1.5）だが未検証。
 切り分け手順は`problem_resolution_plan_2026_09.md`§8が定める。
 
-運用上の影響は限定的（最適化器が辿るのは勾配方向）。ただし一般方向の方向微分検査を
-pass/failで読んではならない。
+この歴史的構成では運用上の影響を限定的と評価していたが、凍結設計campaignでaligned方向も
+21.8%外れたため、その評価は現在のproduction判断には使わない。
 
 ---
 
@@ -715,7 +816,8 @@ SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した
 
 ## P16 — Stage Vが解像できる最小差（判定基準）
 
-今後のすべての順位主張はこの基準で判定する。
+今後のすべての順位主張は候補・response別の最新bandで判定する。次の表は固定domainへ
+移る前のunion-box候補についての歴史的記録であり、現在のbandとして再利用しない。
 
 | | ダウンフォース |
 | --- | --- |
@@ -753,12 +855,25 @@ SHA-256は`docs/evidence/stage_v_v3_requalification_2026_09.json`に固定した
   定常点と一致（Δdownforce = -8.6e-5、ΔCd相対 = -0.09%、最終窓std ≈ 8e-8、シェッディング
   なし）。定常梯子点は非定常成分に汚染されていない
   （`evidence/stage_v_transient_check_2026_09.json`）。
-- したがってP16の残余driftは「離散化familyの効果」であり、一因子比較としてさらに分離できる
-  要素は事前宣言済み枠内で尽きた。残る誠実な進路は (a) 事前登録した別の離散化因子（表面
-  refinement深さ、圧力ソルバtolerance等）、または (b) 測定不確かさ帯を明示した上で
-  Gate 0/WP4契約修復 → 8候補順位検定へ進むこと、のいずれかである。
-- 事前宣言済みの次一手: 同一plain V2メッシュでの定常/非定常比較。それでもboundを
-  外した場合、設計定式化の変更はしない。
+- 定常/非定常因子は上記の比較で除外した。次はscheme因子を一因子で調べた。
+
+### convection scheme因子（2026-09-21）
+
+`bounded Gauss linearUpwind grad(U)`へ変え、V2→V3最細transitionを同じcandidate/domain/gateで
+比較した（[`stage_v_downforce_drift_resolution_2026_09.md`](stage_v_downforce_drift_resolution_2026_09.md)）。
+
+| family | drag relative drift | downforce absolute drift | 判定 |
+| --- | ---: | ---: | --- |
+| baseline upwind | 3.00% | 0.012907 | 両方fail |
+| `linearUpwind` | **0.364%** | **0.010374** | drag pass、downforce fail |
+
+全4 qualification gateは両armで通り、treatment V3は2289 iterationで収束した。dragでは
+schemeが主要因で、`linearUpwind` familyは登録2% boundを満たす。downforceは改善が小さく、
+baseline/treatmentとも三格子が非単調なのでGCIは出さない。現候補のhonestなdownforce
+numerical bandは約0.0104で、grid-independent claimではない。
+
+次は登録済み`evidence/stage_v_domain_boundary_factor_manifest_2026_09.json`を変更せず実行する。
+その結果が出るまで、設計定式化を変えてdriftを見かけ上小さくしない。
 
 ## P17 — 候補面とStage V外周境界のclearanceが未検査（最重大）
 
@@ -809,7 +924,10 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
 
 ---
 
-## 実証できたこと
+## 2026-09-12時点で実証できたこと（歴史的記録）
+
+この節の表は初期closed-loop直後のsnapshotであり、現在のstatusではない。特にP6、P12、P16、
+P18はその後のevidenceで更新された。現在の判断には冒頭一覧と各問題の最新追記を使う。
 
 | 項目 | 結果 |
 | --- | --- |
@@ -821,18 +939,21 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
 | Stage V | v2 specから直接駆動。3解像度、候補Bの2成分とも欠落なくメッシュ化、Cd単調収束。**ただしP12により参照として未資格** |
 | 目的関数の健全性 | 空領域（ρ≡0）で drag = downforce = 0.0 ちょうど。幾何非依存のオフセットなし |
 
-## 未解決の問い（重要度順）
+## 現在の未解決の問い（重要度順）
 
-1. **二値化され十分に解像された設計に対して、代理モデルは順位を保存するか。**
-   これが未回答である限り、代理モデルの忠実度について肯定・否定いずれの主張も
-   成立しない。
-2. Stage Tの格子はどこまで細かくすれば力が収束するか。
-3. P6のバイアスの機構は何か。
-4. body-fittedのdownforceは格子収束するか（現状Cdのみ単調収束）。
+1. PQ0で、宣言したProblemSpecとproduction pathが実際に解くobjective/constraint/transformを
+   一致させられるか。
+2. P6のcontinuous-adjoint/discrete-primal mismatchはobjective/BC/source derivativeか、
+   Stage T/source grid consistencyか。5% gateを通るか、bounded exceptionになるか。
+3. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
+4. PQ3のoptimizer-generated binary candidateで、Stage Tの実primal改善とgeometry/constraintを
+   同時に維持できるか。
+5. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか。
 
-## 主張してよい範囲・してはいけない範囲
+## 2026-09-12時点の主張境界（歴史的記録）
 
-監査の§13に従う。
+監査の§13に従った当時の記録である。現在は本台帳の最新追記と
+`downforce_optimization_architecture_plan_2026_09.md` §2/§14/§15を優先する。
 
 **主張できる**
 
@@ -850,19 +971,19 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手
+## 次の一手（2026-09-21）
 
-詳細は`problem_resolution_plan_2026_09.md`§10が定める。順序は次のとおり。
+実行順は`phase_plan.md` §11、詳細は
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+に従う。
 
-| # | 内容 | 狙い |
-| --- | --- | --- |
-| 0 | 漏れ速度と`alphaMax`3点sweep（P11） | そもそも固体を表現できるかを先に知る |
-| 1 | C0/C1/C2契約修復（P13、P4d、P7） | 以後の証拠を採用可能にする |
-| 2 | C7 Stage V hard gate（P12） | 参照を資格化する。P1の前提 |
-| 3 | C3射影一本化 + C6同一格子（P14、P3） | 二重フィルタと転送を因子から外す |
-| 4 | 固定形状診断 + FD再設計（§8） | 最適化を使わず因子を分離する |
-| 5 | C4/C5 optimizer数理修復（P8ほか） | ここまで通ってから |
-| 6 | 順位資格化（8候補以上） | 0–5が通った場合のみ |
+1. PQ0: production integration closure
+2. PQ1: Stage T gradient qualification
+3. PQ2: registered Stage V domain/boundary factor（PQ1と並行可）
+4. PQ3: first real OpenFOAM closed loop
+5. PQ4: qualified extraction and Stage S first step
+6. PQ5: independent three-grid required-pair verification
+7. PQ6: robust/backend integration and target-physics ladder
 
-判定点は明確である。**契約を修復した同一格子のbinary試験で順位が保存されるか。**
-通ればアーキテクチャを段階的に強化する。失敗すればStage T surrogate自体の置換を検討する。
+直近の判定点は **PQ0で`declared == solved`とone-transform-ownerを成立させ、PQ1でP6を
+production pass / bounded exception / No-Goのいずれかに分類できるか** である。
