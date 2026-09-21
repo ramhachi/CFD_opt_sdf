@@ -62,3 +62,20 @@ update, not a property of the transferred gradient.
 - Not supported: any FD ratio, P6 closure, or transfer-exoneration conclusion
   from this campaign. P6 stays open; the next registered action is the
   frozen-design template.
+
+## Appendix — regularisation A/B attempt (same day, invalid)
+
+A second registered campaign (`p6_regularised_ab_2026_09`,
+`docs/evidence/fd_campaign_p6_regularised_ab_manifest_2026_09.json`) re-ran the
+same 24 rows with `regularise true` and `maxInitChange 0`. It reproduced the
+original design-movement ratios (18/41/22) instead of the frozen ratios
+(1.22/1.38/1.57), and the check on `gradient_aligned/1e-03/plus` shows
+`max|beta_final - injected| = 0.187`: with solver-side regularisation the
+solver's own filter/projection maps the injected rho to a different `beta`, so
+the design cannot be frozen by `maxInitChange` alone.
+
+This is a re-confirmation of the one-owner rule (P14): the solver-side
+projection must stay off, and the A/B says nothing about whether regularisation
+would improve the FD ratio. The valid configuration remains
+`regularise false` + frozen design, whose ratios 1.2178 / 1.3764 / 1.5680 are
+recorded in `docs/evidence/fd_campaign_p6_solver_side_result_2026_09.json`.

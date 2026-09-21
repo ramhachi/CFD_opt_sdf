@@ -21,6 +21,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -45,9 +46,12 @@ from cfd_sdf.fixed_grid_primal import (  # noqa: E402
 )
 
 WORK = ROOT / "work" / "df2_fd_refresh"
-OUT = WORK / "fd_campaign"
+OUT = WORK / "fd_campaign"  # overridden by DF2_CAMPAIGN_SUBDIR at runtime
 MANIFEST = ROOT / "docs" / "evidence" / "fd_campaign_p6_solver_side_manifest_2026_09.json"
-TEMPLATE = WORK / "template_frozen"
+import os
+
+TEMPLATE = Path(os.environ.get("DF2_TEMPLATE", str(WORK / "template_frozen")))
+CAMPAIGN_SUBDIR = os.environ.get("DF2_CAMPAIGN_SUBDIR", "fd_campaign")
 EPSILONS = (3.0e-5, 1.0e-4, 3.0e-4, 1.0e-3)
 RANDOM_SEEDS = (11, 2026)
 
@@ -176,8 +180,11 @@ def run_signed_case(
 
 
 def main() -> None:
+    global OUT
+    OUT = WORK / CAMPAIGN_SUBDIR
     if OUT.exists():
         raise SystemExit(f"{OUT} already exists; remove it before re-running")
+    print(f"template={TEMPLATE} out={OUT}", flush=True)
 
     manifest, manifest_hash = read_fd_campaign_manifest(MANIFEST)
     provenance = json.loads((WORK / "source_state" / "provenance.json").read_text())
@@ -215,6 +222,7 @@ def main() -> None:
     }
 
     OUT.mkdir(parents=True)
+    print(f"campaign subdir: {CAMPAIGN_SUBDIR}", flush=True)
     rows: list[dict] = []
     for direction_name, direction in directions.items():
         for epsilon in EPSILONS:
