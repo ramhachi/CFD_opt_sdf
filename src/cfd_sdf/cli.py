@@ -15,6 +15,7 @@ from .adjoint_calibration import (
     run_paired_adjoint_direction_check,
 )
 from .adjoint_topology import run_adjoint_topology_optimization
+from .analytic_candidate_shapes import reachable_set_definitions, shape_definitions
 from .canonical_grid_snapshot import load_and_verify_canonical_grid_snapshot
 from .config import load_project
 from .constraints import check_constraints
@@ -25,6 +26,7 @@ from .convergence_qualification import (
 from .cfd import write_cfd_summary
 from .density_optimizer import DensityOptimizerControls, run_density_optimization
 from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
+from .evidence_audit import build_evidence_audit
 from .export_vtk import export_vti, export_zero_surface
 from .fixed_grid_backend import probe_openfoam_fixed_grid_backend
 from .fixed_grid_canonical_state_injection import (
@@ -88,6 +90,11 @@ from .runner import run_practical_optimization
 from .sample_geometry import write_front_wing_demo_geometry
 from .sensitivity import write_density_update_preview, write_mock_sensitivity_artifacts
 from .sdf import build_fields, cache_path, load_cache
+from .shape_feature_metrics import (
+    measure_shape_definitions,
+    measure_shape_registry,
+    policy_exclusion_report,
+)
 from .solver_case_compiler import (
     DEFAULT_FIXED_GRID_PATCH_IDS,
     compile_openfoam_solver_case_bundle,
@@ -2134,6 +2141,88 @@ def clean(project_yaml: Path) -> None:
     if config.resolved_output_dir.exists():
         shutil.rmtree(config.resolved_output_dir)
         console.print(f"Removed {config.resolved_output_dir}")
+
+
+@app.command("measure-shape-feature-sizes")
+def measure_shape_feature_sizes(
+    output: Path = typer.Option(..., help="Output JSON path for the measurement table."),
+    registry_dir: Path | None = typer.Option(
+        None,
+        help="Registry directory holding shape_registry_manifest.json; measures the as-run occupancy too.",
+    ),
+    policy_width: list[float] = typer.Option(
+        [0.10, 0.15],
+        help="Declared minimum-solid-width policy values compared against the measurements.",
+    ),
+) -> None:
+    """Measure per-part local thickness, components, gaps and overlaps of the registered shapes."""
+    definitions = {**shape_definitions(), **reachable_set_definitions()}
+    threshold_m = min(policy_width)
+    table = measure_shape_definitions(definitions, threshold_m=threshold_m)
+    artifact: dict = {
+        "kind": "registered_shape_feature_sizes",
+        "measurements": table,
+        "policy_exclusions": policy_exclusion_report(table, policy_width),
+    }
+    if registry_dir is not None:
+        artifact["as_run_registry"] = measure_shape_registry(
+            registry_dir, threshold_m=threshold_m
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
+    console.print(
+        json.dumps(
+            {
+                "output": str(output),
+                "n_shapes": table["n_shapes"],
+                "policy_exclusions": artifact["policy_exclusions"]["excluded_shape_ids"],
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("audit-wp6-reports")
+def audit_wp6_reports(
+    manifest: Path = typer.Argument(..., help="WP6-2 ranking manifest JSON."),
+    reachable_evidence: Path = typer.Argument(..., help="WP6-2 ranking evidence JSON."),
+    output: Path = typer.Option(..., help="Output audit evidence JSON path."),
+    first_program_evidence: Path | None = typer.Option(
+        None, help="Optional first-program ranking evidence JSON."
+    ),
+    registry_dir: Path | None = typer.Option(
+        None, help="Optional shape registry directory for as-run occupancy measurement."
+    ),
+    repair_manifest: Path | None = typer.Option(
+        None, help="Optional path for the narrowed scope-repair manifest JSON."
+    ),
+) -> None:
+    """Fail-closed audit of the WP6-2 manifest, verdicts, drift and feature sizes (P18/DF0)."""
+    result = build_evidence_audit(
+        manifest_path=manifest,
+        reachable_evidence_path=reachable_evidence,
+        first_program_evidence_path=first_program_evidence,
+        registry_dir=registry_dir,
+        output_path=output,
+    )
+    if repair_manifest is not None:
+        repair_manifest.parent.mkdir(parents=True, exist_ok=True)
+        repair_manifest.write_text(
+            json.dumps(result["scope_repair_manifest"], indent=2), encoding="utf-8"
+        )
+    console.print(
+        json.dumps(
+            {
+                "ok": result["ok"],
+                "output": str(output),
+                "blocking_findings": result["conclusions"]["blocking_findings"],
+                "action_findings": result["conclusions"]["action_findings"],
+            },
+            indent=2,
+        )
+    )
+    if not result["ok"]:
+        raise typer.Exit(code=1)
 
 
 def _load_compiled_openfoam_bundle_flow_case_dirs(
