@@ -187,11 +187,23 @@ round-trip hash が一致しない場合、optimizer backend へは進めない�
    事前登録して実行。
 2. filter/projection を加えて chain rule を FD 検証（DF1 transform の使用範囲で）。
 3. transfer: integer-ratio `P`/`P.T`（既存 exact-overlap 実装）の FD 検証、
-   non-integer overlap transfer の検証。P6 の約 10% bias の原因特定または上限化
-   （triage は `problem_resolution_plan_2026_09.md` §8）。fallback: contract の
-   `applicable_transfer_ratios` で適用可能比を制限する。
-4. **固定 binary shapes の三格子 Stage T 評価**: 8-shape 集合を Stage T grid family で
-   再実行し response ことに数値不確かさを得る。OpenFOAM 実行 + budget manifest。
+   non-integer overlap transfer の検証。
+   P6 の約 10% bias の診断は 3 段分解（レビュー F3 を反映）:
+   (a) primal 側転写誤差、(b) adjoint 側転写誤差、(c) 両者合成、を FD で分離する。
+   根拠は consistency（P と P.T の写像整合）と conservativity（積分保存）の区別
+   （Farhat et al. 2004 common refinement、de Boer et al. 2008、Najian Asl et al.
+   2020 — non-matching 間の nearest-element 逐次写像では adjoint 転置側に
+   spurious oscillation が残る実測）。修復経路は (i) integer-ratio contract 制限、
+   (ii) common-refinement 型 conservative transfer の実装、の順で検討し、
+   (i) で止める判断に文献的根拠を付ける。triage は
+   `problem_resolution_plan_2026_09.md` §8。
+4. **固定 binary shapes の三格子 Stage T 評価**: 8-shape 集合を Stage T grid family
+   （事前登録した integer-halving voxel family。レビュー F4 を反映）で再実行し、
+   response ことに数値不確かさを得る。Ghasemi & Elham 2022 の実測（feature あたり
+   >=7 cells で interface 力誤差 <4%）を Stage T manifest に錨として preregister
+   する — ただし target physics の threshold には転用しない。multi-stage
+   coarse→projection→refine procedure は cost 削減の先行例（3D で最大 45%）として
+   DF3 の格子上げ方針に使う。OpenFOAM 実行 + budget manifest。
 5. **同一 anchor geometry の Stage V 三格子**: plain fixed-domain family（V1/V2/V3
    qualified）を anchor candidate で再確認。response ごとに registered bound（downforce
    absolute 5e-3）と比較し、asymptotic range 内なら GCI を報告。
@@ -222,11 +234,20 @@ unsteady/discretisation factor study に戻る。
 1. **runner 化**: `src/cfd_sdf/stage_t_loop.py` に iteration runner を作る
    （OpenFOAM primal/adjoint driver を wrapper 経由で呼び、artifact hash で lineage）。
    既存 script の OC engine / filtered-ramp engine と restore option を共有する。
-2. **controller**: `NonlinearAcceptanceController`（新規 pure module）。
-   state machine = {propose, accept, reject+rollback, restore, restart}。
-   trial 提案は backend（SLSQP adapter を検証用に継続使用）が bounded で行い、受理は
-   実 primal 再評価 + 全 constraint 再計算 + geometry Gate で決める。reject → rollback +
-   move radius 半減 + 同一 parent hash からの再試行。理由は trace に記録。
+2. **controller（GCMMA 型保守性 loop。レビュー F1 を反映）**:
+   `NonlinearAcceptanceController`（新規 pure module）。
+   - outer iteration: 勾配は 1 回だけ評価し、MMA/GCMMA 型の convex な conservative
+     近似 subproblem を backend が解いて bounded trial を出す。
+   - inner iteration: trial の真の目的・全制約を **実 primal 再評価** し、近似が
+     conservative（Svanberg の GCMMA 実装と同型: `f̃_i(trial) >= f_i(trial)` の判定、
+     ただし objective は sense 変換後に統一符号で判定）でなければ asymptote / penalty
+     を保守化して同一 x 上で再解く（inner iteration で勾配は再評価しない）。
+   - 受理は conservativity check + 全 hard constraint tolerance 内 + geometry Gate。
+     reject → rollback + 対象 i の `rho^(k,ν+1)` 更新（GCMMA 式 (3.9) 相当）+ 同一
+     parent hash からの再試行。move limit / step norm / iteration cap は事前登録。
+   - SLSQP adapter は診断 reference としてこの構造と並行検証する。
+   DF6 の backend 導入はこの受理数理の変更ではなく、近似 subproblem solver の
+   差し替えである。
 3. **restart**: optimizer state、continuation parameter、design/transform/response hash の
    full checkpoint/resume（`copy_optimizer_step_artifacts` stub の本実装に相当）。
 4. **feasibility**: feasible seed を使う。seed なしで始める場合の restoration phase は
@@ -316,13 +337,27 @@ discretisation で比較し、改善量が combined uncertainty を超えるか�
 
 **前提**: DF5 合格まで着手禁止（architecture plan §DF6）。本計画の現在位置では未着手。
 
-**決定事項**
-- **robust three-field**: eroded/intermediate/dilated 導入。nominal volume と worst-case
-  performance/constraint の使用範囲を ProblemSpec で明示。projection sharpness・RAMP q・
-  move limit の continuation を同時に急変させない schedule を manifest 化。
-- **backend 選定**: `mmapy`（GPL-3、dependency は numpy/scipy）利用 vs Svanberg 論文からの
-  自前実装。選定基準は reproducibility と license 登録の容易さ。GCMMA は既存
-  optimizer interface の背後に置き、DF3 と同じ KKT/feasibility 定義で比較する。
+**決定事項（レビュー F2 を反映）**
+- **robust three-field の使用条件を正確に書く**: eroded/intermediate/dilated の
+  length scale 制御は三場が同一 topology を共有する場合に限る保証であり、一貫性は
+  a posteriori 確認である。solid/void 両側の同時制御には **dilated design 側への
+  volume constraint 適用が必要**（Trillet, Duysinx & Fernández 2021, arXiv:2101.08605）。
+  filter/projection パラメータと length scale の対応は Qian & Sigmund 2013 /
+  Trillet et al. 2021 の解析式で事前計算し、試行錯誤を preregistration に混ぜない。
+  robust 三場は outer iteration あたり primal+adjoint を 3 回走らせるため、budget
+  manifest に 3 倍 primal cost を前提化する。filter boundary treatment は domain
+  edge 近傍で length scale を崩す既知問題（Clausen & Andreassen 2017）として
+  geometry Gate で実測する。
+- **fallback path**: robust 三場が topology 不一致を残した場合、Zhou et al. 2015
+  （geometric constraints、追加 PDE 解なし・微分可能）とその解析的
+  hyperparameter 版（Arrieta, Romano & Johnson 2025, arXiv:2507.16108; SSP 併用）を
+  fallback 候補として登録。nominal volume と worst-case performance/constraint の
+  使用範囲は ProblemSpec で明示。projection sharpness・RAMP q・move limit の
+  continuation を同時に急変させない schedule を manifest 化。
+- **backend 選定**: `mmapy`（GPL-3、dependency は numpy/scipy）利用 vs Svanberg 論文
+  （1987 と GCMMA FORTRAN manual）からの自前実装。選定基準は reproducibility と
+  license 登録の容易さ。DF3 の GCMMA 型受理数理は維持されたまま、近似 subproblem
+  solver のみを差し替える。backend 間は同一 KKT/feasibility 定義で比較する。
 - **derivatives**: production connectivity derivative（現在は T3 reserved zero field）と、
   robust erosion/dilation state の勾配の FD 検証。
 
