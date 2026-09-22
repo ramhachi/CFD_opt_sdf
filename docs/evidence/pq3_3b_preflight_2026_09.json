@@ -1,0 +1,77 @@
+{
+  "kind": "pq3_3b_preflight",
+  "schema_version": 1,
+  "created": "manual",
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256": "d2868753da3efac6e959a465b964a627c33dc6601e5e4d72ed53b22b15836884",
+    "objective": -2.72646951325,
+    "iteration": 3,
+    "accepted": 3
+  },
+  "levels": [
+    {
+      "level": "level_1_b8_q30",
+      "b": 8.0,
+      "q": 30.0,
+      "move_limit": 0.03,
+      "filter_radius_m": 0.15,
+      "candidate_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+      "gradient_sha256": "6f46a28ac6565c471265a952a085825d7d46589ffabe8c75edbe84614ddf6d5f",
+      "transform_hash": "47697db6defe8babb716c5d6586fca0cc79965fdabd54a741b21bf733f8eda88",
+      "active_mask_sha256": "5dc390628d8c34899980e9eb1ffa98647e6703bfeaa19f26e3f951a1234620fe",
+      "phi_low_kappa0": 0.009222446674848141,
+      "phi_high_kappa": 1073741824.0,
+      "phi_high_value": 0.009867782122386209,
+      "bracketed": false,
+      "phi_monotone_nondecreasing": true,
+      "target": 0.027330260416666672,
+      "v_target_le_vmax": true,
+      "v_max": 0.07632566813424899,
+      "final_phi_at_bisected_kappa": null,
+      "final_residual": null,
+      "within_tolerance": null,
+      "inactive_max_abs_drift": null
+    },
+    {
+      "level": "level_2_b16_q100",
+      "b": 16.0,
+      "q": 100.0,
+      "move_limit": 0.01,
+      "filter_radius_m": 0.15,
+      "candidate_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+      "gradient_sha256": "4785ebaf34c57162777a1981f34d66b0787004d3f66575ebbc8bd7e96026df0e",
+      "transform_hash": "92d0444ab7e4cf95c058f1fff5fbfca89f02dd448590ca6c6971dcef7553942d",
+      "active_mask_sha256": "5dc390628d8c34899980e9eb1ffa98647e6703bfeaa19f26e3f951a1234620fe",
+      "phi_low_kappa0": 0.008153815951170913,
+      "phi_high_kappa": 1073741824.0,
+      "phi_high_value": 0.008447098093475273,
+      "bracketed": false,
+      "phi_monotone_nondecreasing": true,
+      "target": 0.027330260416666672,
+      "v_target_le_vmax": true,
+      "v_max": 0.07632566813424899,
+      "final_phi_at_bisected_kappa": null,
+      "final_residual": null,
+      "within_tolerance": null,
+      "inactive_max_abs_drift": null
+    }
+  ],
+  "summary": {
+    "V_target": 0.027330260416666672,
+    "V_target_le_vmax_all": true,
+    "all_bracketed": false,
+    "all_monotone": true,
+    "all_residuals_within_tolerance": true,
+    "all_masks_invariant": false,
+    "preflight_pass": false
+  },
+  "claims_supported": [
+    "each continuation level brackets the registered target inside the move box",
+    "phi(kappa) is monotone non-decreasing over the sampled range",
+    "non-active cells are untouched across kappa"
+  ],
+  "claims_not_supported": [
+    "no OpenFOAM optimization run: the preflight is a reachability gate only"
+  ]
+}
