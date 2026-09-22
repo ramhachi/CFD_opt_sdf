@@ -283,8 +283,11 @@ class ProjectedVolumeTargetBackend:
 
     def _projected_volume(self, kappa: float, values, base, lower, upper) -> tuple[float, np.ndarray]:
         stepped = np.clip(values * base * kappa, lower, upper)
-        state = self.transform.forward(stepped)
         active = self.transform.active
+        # non-active cells must be restored before the transform so the alpha/mask
+        # contract survives; the OC update applies only to the active cells
+        stepped[~active] = values[~active]
+        state = self.transform.forward(stepped)
         return float(np.asarray(state.rho_projected, dtype=np.float64)[active].mean()), stepped
 
     def propose(
@@ -336,6 +339,10 @@ class ProjectedVolumeTargetBackend:
                 high = mid
                 stepped = stepped_mid
         final_volume, stepped = evaluate(high)
+        # the transform.active mask is authoritative: forbid any drift into the
+        # fixed / forbidden / inactive cells (the OC base already zeroes out of
+        # the descent direction but kappa can move them through the clip box)
+        stepped[self.transform.active == False] = values[self.transform.active == False]  # noqa: E712
         if abs(final_volume - self.target) > self.tolerance:
             raise ValueError(
                 f"projected volume target not reached: |{final_volume:.6f} - "
