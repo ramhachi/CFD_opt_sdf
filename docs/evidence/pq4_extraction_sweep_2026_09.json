@@ -1,0 +1,263 @@
+{
+  "artifact_id": "pq4_extraction_sweep_2026_09",
+  "evidence_class": "capability_and_negative_gate",
+  "issue": "PQ4 extraction gate on the PQ3 v5 candidate",
+  "manifest": {
+    "path": "docs/evidence/pq4_extraction_sweep_manifest_2026_09.json",
+    "registered_before_computation": true
+  },
+  "candidate": {
+    "id": "pq3_v5_final",
+    "rho_sha256": "ad96e1dc92227cfe06232728b4aa15e1239e6ad133a91ecc76dd1553f4540a00",
+    "downforce": 0.995099373413,
+    "field_stats": {
+      "max": 0.5000100738443265,
+      "nonzero_cells": 1408,
+      "mean": 0.006850682469658318
+    },
+    "note": "the capability loop used the identity transform (b=0, q=0); the accepted steps produced a grey/porous field, not a binary design"
+  },
+  "inputs": {
+    "topology_state_json": {
+      "path": "work/pq4_candidate/topology_state.json",
+      "sha256": "bf90c30a0845744f1b3151f3a1a336342e48bfb200d88ea5f17fd7604d723df2"
+    },
+    "density_vti": {
+      "path": "work/pq4_candidate/density.vti",
+      "sha256": "a66c7b8fad95c6a42aefdbc2b5786fe149e87ad6bc30d8357f5537dff0a15b04"
+    }
+  },
+  "rows": [
+    {
+      "threshold": 0.2,
+      "status": "ok",
+      "watertight": true,
+      "component_count": 1,
+      "volume_relative_difference": 0.11150477170094705,
+      "revoxelized_relative_difference": 0.02564102564102566,
+      "ready_for_stage_s": false,
+      "checks": {
+        "input_hashes": true,
+        "cell_data_contract": true,
+        "surface_geometry": true,
+        "sdf_sign": true,
+        "discreteness_within_limit": false,
+        "source_mask_validation": true,
+        "source_component_validation": true,
+        "revoxelized_mask_validation": true,
+        "revoxelized_component_validation": true
+      }
+    },
+    {
+      "threshold": 0.3,
+      "status": "ok",
+      "watertight": true,
+      "component_count": 2,
+      "volume_relative_difference": 0.29721602599347086,
+      "revoxelized_relative_difference": 0.26923076923076916,
+      "ready_for_stage_s": false,
+      "checks": {
+        "input_hashes": true,
+        "cell_data_contract": true,
+        "surface_geometry": true,
+        "sdf_sign": true,
+        "discreteness_within_limit": false,
+        "source_mask_validation": true,
+        "source_component_validation": true,
+        "revoxelized_mask_validation": true,
+        "revoxelized_component_validation": true
+      }
+    },
+    {
+      "threshold": 0.4,
+      "status": "ok",
+      "watertight": true,
+      "component_count": 2,
+      "volume_relative_difference": 0.5897358339109936,
+      "revoxelized_relative_difference": 0.7532051282051282,
+      "ready_for_stage_s": false,
+      "checks": {
+        "input_hashes": true,
+        "cell_data_contract": true,
+        "surface_geometry": true,
+        "sdf_sign": true,
+        "discreteness_within_limit": false,
+        "source_mask_validation": true,
+        "source_component_validation": true,
+        "revoxelized_mask_validation": true,
+        "revoxelized_component_validation": true
+      }
+    },
+    {
+      "threshold": 0.5,
+      "status": "error",
+      "watertight": false,
+      "component_count": null,
+      "volume_relative_difference": null,
+      "revoxelized_relative_difference": null,
+      "ready_for_stage_s": false,
+      "checks": {}
+    }
+  ],
+  "selected_threshold": 0.2,
+  "selection_reason": "first gate-passing threshold inside the registered range",
+  "qualification_failure_reasons": [
+    "quantitative_fidelity_limits_not_configured",
+    "surface_distance_not_evaluated",
+    "minimum_feature_survival_not_evaluated",
+    "self_intersection_not_evaluated",
+    "density_field_not_sufficiently_discrete",
+    "source_root_connectivity_not_available",
+    "revoxelized_root_connectivity_not_available"
+  ],
+  "verdict": {
+    "ready_for_stage_s": false,
+    "reason": "no threshold passes the extraction gates: the field is not sufficiently discrete (grey/porous from the identity-transform capability loop), and the quantitative fidelity limits (surface distance, feature survival, self-intersection) are not implemented, so the gate cannot be evaluated",
+    "stage_s_started": false
+  },
+  "next_actions": [
+    "implement the extraction fidelity limits in the handoff layer (surface distance, minimum feature survival, self-intersection, root connectivity) so ready_for_stage_s can be evaluated",
+    "run a production-regime PQ3 with filter/projection/RAMP continuation (b>0, q>0) and a discrete endpoint to produce a Stage S-ready candidate"
+  ],
+  "claims_supported": [
+    "the extraction sweep executes on the real PQ3 candidate and records every threshold as a row"
+  ],
+  "claims_not_supported": [
+    "no Stage S step",
+    "no sharp-interface capability claim",
+    "no improvement claim"
+  ],
+  "quantitative_qualification": {
+    "profile_id": "extraction_qualification_v1",
+    "profile": {
+      "surface_distance_max_m": 0.05,
+      "surface_distance_rms_max_m": 0.025,
+      "feature_shrink_max_voxels": 1.0,
+      "require_watertight": true,
+      "require_winding_consistent": true,
+      "require_positive_volume": true,
+      "require_no_duplicate_faces": true,
+      "require_root_connectivity": true
+    },
+    "implemented": "src/cfd_sdf/extraction_qualification.py + sweep --qualify-extraction",
+    "rows": [
+      {
+        "threshold": 0.2,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "surface_distance_exceeds_profile",
+          "surface_distance_rms_exceeds_profile"
+        ],
+        "checks": {
+          "surface_distance": {
+            "max_m": 0.07071067811865477,
+            "rms_m": 0.04799238236567521,
+            "status": "measured"
+          },
+          "feature_survival": {
+            "status": "measured",
+            "source_min_feature_m": 0.15000000000000002,
+            "revoxelized_min_feature_m": 0.15000000000000002,
+            "shrink_voxels": 0.0
+          },
+          "mesh_manifold": {
+            "watertight": true,
+            "winding_consistent": true,
+            "positive_volume": true,
+            "duplicate_face_count": 0
+          },
+          "root_connectivity": {
+            "status": "not_applicable",
+            "reason": "source root mask is empty"
+          }
+        }
+      },
+      {
+        "threshold": 0.3,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "surface_distance_exceeds_profile",
+          "surface_distance_rms_exceeds_profile"
+        ],
+        "checks": {
+          "surface_distance": {
+            "max_m": 0.07071067811865477,
+            "rms_m": 0.03236760526365207,
+            "status": "measured"
+          },
+          "feature_survival": {
+            "status": "measured",
+            "source_min_feature_m": 0.15000000000000002,
+            "revoxelized_min_feature_m": 0.15000000000000002,
+            "shrink_voxels": 0.0
+          },
+          "mesh_manifold": {
+            "watertight": true,
+            "winding_consistent": true,
+            "positive_volume": true,
+            "duplicate_face_count": 0
+          },
+          "root_connectivity": {
+            "status": "not_applicable",
+            "reason": "source root mask is empty"
+          }
+        }
+      },
+      {
+        "threshold": 0.4,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "surface_distance_exceeds_profile",
+          "surface_distance_rms_exceeds_profile",
+          "feature_shrink_exceeds_profile"
+        ],
+        "checks": {
+          "surface_distance": {
+            "max_m": 0.08660254037844388,
+            "rms_m": 0.0523430598873179,
+            "status": "measured"
+          },
+          "feature_survival": {
+            "status": "measured",
+            "source_min_feature_m": 0.15000000000000002,
+            "revoxelized_min_feature_m": 0.05,
+            "shrink_voxels": 2.0000000000000004
+          },
+          "mesh_manifold": {
+            "watertight": true,
+            "winding_consistent": true,
+            "positive_volume": true,
+            "duplicate_face_count": 0
+          },
+          "root_connectivity": {
+            "status": "not_applicable",
+            "reason": "source root mask is empty"
+          }
+        }
+      },
+      {
+        "threshold": 0.5,
+        "ready_for_stage_s": false,
+        "reasons": null,
+        "checks": null
+      }
+    ],
+    "verdict": {
+      "ready_for_stage_s": false,
+      "reasons": [
+        "surface_distance_exceeds_profile",
+        "surface_distance_rms_exceeds_profile"
+      ],
+      "measured": {
+        "surface_distance_max_m": 0.07071067811865477,
+        "surface_distance_rms_m": 0.04799238236567521
+      }
+    },
+    "notes": [
+      "the surface-distance metric samples a cell-centered EDT at mesh vertices; it carries a ~0.5 voxel (0.025 m) quantization floor",
+      "feature survival passes at thresholds 0.2/0.3 (0.15 -> 0.15 m, 0 shrink) and fails at 0.4 (2 voxel shrink)",
+      "root connectivity is not_applicable (the canonical fixture has no root cells)",
+      "profile calibration on an analytic ground-truth shape is the registered next measurement before any threshold change"
+    ]
+  }
+}

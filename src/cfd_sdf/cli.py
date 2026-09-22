@@ -27,6 +27,7 @@ from .cfd import write_cfd_summary
 from .density_optimizer import DensityOptimizerControls, run_density_optimization
 from .execution import DEFAULT_OPENFOAM_DOCKER_IMAGE, run_openfoam_case
 from .evidence_audit import build_evidence_audit
+from .extraction_qualification import EXTRACTION_QUALIFICATION_PROFILE_V1
 from .extraction_sweep import run_extraction_threshold_sweep
 from .export_vtk import export_vti, export_zero_surface
 from .fd_preregistration import (
@@ -2268,6 +2269,12 @@ def sweep_density_extraction(
     rho_variant: str | None = typer.Option(
         None, help="Optional rho variant: rho, rho_filtered, rho_projected."
     ),
+    qualify_extraction: bool = typer.Option(
+        False,
+        "--qualify-extraction/--no-qualify-extraction",
+        help="Evaluate the quantitative extraction gates (surface distance, feature "
+        "survival, manifoldness, root connectivity) with the registered v1 profile.",
+    ),
 ) -> None:
     """Run the preregistered density-to-SDF threshold sweep (DF4)."""
     summary = run_extraction_threshold_sweep(
@@ -2276,6 +2283,9 @@ def sweep_density_extraction(
         output_dir=output_dir,
         selection_rule={"kind": rule, "range": [range_low, range_high]},
         rho_variant=rho_variant,
+        qualification_profile=(
+            EXTRACTION_QUALIFICATION_PROFILE_V1 if qualify_extraction else None
+        ),
     )
     console.print(
         json.dumps(

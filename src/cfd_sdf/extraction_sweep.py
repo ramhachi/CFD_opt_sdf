@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from .fixed_grid_contract import _read_cell_vti
+from .extraction_qualification import ExtractionQualification, qualify_extraction
 from .handoff import build_density_to_sdf_handoff
 from .shape_feature_metrics import occupancy_metrics
 
@@ -47,6 +48,7 @@ class SweepRow:
     manifest_sha256: str | None = None
     geometry_metrics: dict[str, Any] | None = None
     geometry_metrics_status: str = "not_requested"
+    qualification: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -79,8 +81,15 @@ def run_extraction_threshold_sweep(
     output_dir: str | Path,
     selection_rule: dict[str, Any],
     rho_variant: str | None = None,
+    qualification_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Run the registered thresholds and apply the registered selection rule."""
+    """Run the registered thresholds and apply the registered selection rule.
+
+    ``qualification_profile`` enables the quantitative extraction gates
+    (surface distance, feature survival, manifoldness, root connectivity); the
+    row's ``ready_for_stage_s`` then comes from the qualification verdict while
+    the handoff report's placeholder reasons are kept separately.
+    """
 
     rule_kind = selection_rule.get("kind")
     if rule_kind not in SELECTION_RULES:
@@ -117,6 +126,13 @@ def run_extraction_threshold_sweep(
             report = artifacts.fidelity_report
             volume = report.get("volume", {})
             surface = report.get("surface", {})
+            qualification: ExtractionQualification | None = None
+            if qualification_profile is not None:
+                qualification = qualify_extraction(
+                    artifacts.manifest_json,
+                    mesh_path=artifacts.surface_stl,
+                    profile=qualification_profile,
+                )
             geometry_metrics, geometry_status = _geometry_metrics(
                 artifacts.revoxelized_density_vti
             )
@@ -127,7 +143,11 @@ def run_extraction_threshold_sweep(
                     status="ok",
                     error=None,
                     ok=bool(report.get("ok")),
-                    ready_for_stage_s=bool(report.get("ready_for_stage_s")),
+                    ready_for_stage_s=(
+                        qualification.ready_for_stage_s
+                        if qualification is not None
+                        else bool(report.get("ready_for_stage_s"))
+                    ),
                     watertight=bool(surface.get("watertight")),
                     positive_volume=bool(surface.get("positive_volume")),
                     component_count=surface.get("component_count"),
@@ -140,6 +160,7 @@ def run_extraction_threshold_sweep(
                     manifest_sha256=_sha256_file(artifacts.manifest_json),
                     geometry_metrics=geometry_metrics,
                     geometry_metrics_status=geometry_status,
+                    qualification=qualification.to_dict() if qualification else None,
                 )
             )
         except Exception as exc:  # noqa: BLE001 - a failed threshold stays in the table
@@ -208,6 +229,7 @@ def run_extraction_threshold_sweep(
                 row.status == "ok" for row in rows
             ),
             "selection_is_registered_not_observed_best": True,
+            "quantitative_qualification_evaluated": qualification_profile is not None,
         },
         "notes": (
             "every failed threshold remains an explicit row; the selection rule "
