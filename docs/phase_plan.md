@@ -602,6 +602,22 @@ Execute in this order:
    targets, verify the final residual, and test b=8/b=16 reachability from the
    saved state. Use a projected target no larger than Vmax; do not reuse the raw
    design target 0.10 as a projected-volume target.
+   **Current status (2026-09-23):** the raw-design target basis was abandoned
+   after preflight v1 (diagnostic evidence) showed measurably sub-threshold
+   material; the multiplicative OC family was measured locally infeasible for
+   the projected target 0.018 inside a single step's move box at every level
+   (preflight v2/v3 evidence and the blocked manifest are registered as
+   diagnostics). The registered two-phase policy (projected-volume restoration
+   backend + volume-corrected objective backend) reached the target in 1/3/7
+   steps in preflight v3 at b=4/8/16, but preflight v4 (strict level lineage +
+   canonical J = -downforce routing + Path B brackets + real trial primals)
+   accepted only b=4: at b=8 the composite correction direction is not a
+   descent direction (d_adj >= 0 with a Path B sign mismatch) at every
+   registered alpha, so the chain stops before b=16 and preflight_v4 passes =
+   false. The campaign manifest v3 is registered as `registered_blocked`, and
+   the campaign runner exists as a static fail-closed implementation that
+   refuses `--verify-preconditions` under a blocked manifest. No long campaign
+   has been started and no Stage S-ready claim is made.
 4. **PQ3.3b bounded real-OpenFOAM continuation.** Register a new immutable
    manifest. Recompute the parent at each b/q level; require Path B brackets,
    real trial primals, projected-volume feasibility, minimum iteration counts

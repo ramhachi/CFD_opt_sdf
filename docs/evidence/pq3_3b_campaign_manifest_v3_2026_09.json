@@ -1,0 +1,111 @@
+{
+  "b_q_schedule": [
+    {
+      "b": 4.0,
+      "name": "level_0_growth_b4_q15",
+      "q": 15.0
+    },
+    {
+      "b": 8.0,
+      "name": "level_1_b8_q30",
+      "q": 30.0
+    },
+    {
+      "b": 16.0,
+      "name": "level_2_b16_q100",
+      "q": 100.0
+    }
+  ],
+  "blocked_reason": {
+    "b16_candidate_rule": {
+      "chain_reached_b16": false,
+      "improved_candidate_at_b16": false,
+      "verdict": false
+    },
+    "canonical_objective_sign_pass": true,
+    "exact_level_lineage_pass": true,
+    "mask_invariance_pass": true,
+    "move_box_pass": true,
+    "path_b_bracket_pass": false,
+    "phase1_contract_pass": true,
+    "preflight_pass": false,
+    "projected_volume_pass": true,
+    "raw_downforce_improvement_pass": false,
+    "real_trial_objective_improvement_pass": false
+  },
+  "canonical_grid": {
+    "topology_state_sha256": "d70307ba289affc7c13ed18ff0fb7da29bec45cc7c9a61ae54061a0647a837e0"
+  },
+  "checkpoint_resume_rule": "every accepted state; resume asserts the sha256 rho chain",
+  "compiled_problem_hash": "recorded-by-runner-at-campaign-time",
+  "convergence_thresholds": {
+    "field_residual": 0.0001,
+    "objective_improvement": 1e-06,
+    "volume_residual": 0.0001
+  },
+  "filter_radius_m": 0.15,
+  "fresh_output_rule": "work/pq3_3b_campaign must not exist when the runner starts",
+  "immutable": true,
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256": "d2868753da3efac6e959a465b964a627c33dc6601e5e4d72ed53b22b15836884"
+  },
+  "input_rho_sha256": null,
+  "iteration_bounds": {
+    "level_0_growth_b4_q15": 40,
+    "level_1_b8_q30": 40,
+    "level_2_b16_q100": 30
+  },
+  "kind": "pq3_3b_campaign_manifest_v3",
+  "move_limit": {
+    "level_0_growth_b4_q15": 0.05,
+    "level_1_b8_q30": 0.03,
+    "level_2_b16_q100": 0.01
+  },
+  "noise_calibration": {
+    "downforce_noise_threshold": 1e-06,
+    "objective_noise_threshold": 1e-06,
+    "path": "docs/evidence/pq3_3b_noise_calibration_2026_09.json"
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize"
+  },
+  "objective_alpha_ladder": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625
+  ],
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "pass_conditions_before_campaign": [
+    "preflight v4 passes and the status is registered_preflight_pass_awaiting_user_go",
+    "the runner turns off any implicit fall-back to the multiplicative OC backends",
+    "Phase 1 states recorded as restoration_feasible; objective_accepted only after the full Phase 2 gate set"
+  ],
+  "path_b_epsilon": 0.0001,
+  "phase_1_backend": {
+    "id": "projected-volume-restoration-oc"
+  },
+  "phase_2_backend": {
+    "id": "volume-corrected-objective-oc"
+  },
+  "preflight_v4": {
+    "path": "docs/evidence/pq3_3b_preflight_v4_2026_09.json",
+    "sha256": "3a41a705d4a4a7c42a57f1f0c05dc8106e5dd44b9134ea27116424500f87a399"
+  },
+  "problem_spec": {
+    "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+    "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 8,
+  "schema_version": 4,
+  "solver_controls_hash": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46",
+  "state_lineage": "previous_level.accepted_rho_sha256 == next_level.input_rho_sha256",
+  "status": "registered_blocked",
+  "template_tree_hash": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

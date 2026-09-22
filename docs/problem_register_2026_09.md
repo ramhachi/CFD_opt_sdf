@@ -122,6 +122,19 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
 
+> **2026-09-23 preflight v4 current status:** PQ3.3b preflight v4
+> (`docs/evidence/pq3_3b_preflight_v4_2026_09.json`) routes the canonical
+> objective through `ProblemSpec -> compile_problem -> make_oracle_from_compiled
+> -> evaluate_parent -> OracleResult.objective_gradient` (J = -downforce), enforces
+> exact rho carryover across levels (no simulated decay), and measures the
+> registered alpha ladder with real trial primals and Path B brackets. Result:
+> b=4 accepted alpha=1.0 with real downforce improvement; at b=8 no alpha is
+> accepted (d_adj >= 0 with a Path B sign mismatch), so the chain stops before
+> b=16 with preflight_v4 passes = false, the campaign manifest v3 is
+> `registered_blocked`, and the runner is a static fail-closed implementation.
+> P19 and P20 remain open; no campaign run, no Stage S-ready claim.
+
+
 ### 症状
 
 PQ3.3の`VolumeTargetBackend`は、objective gradientが非ゼロのcellをactiveとみなし、

@@ -493,6 +493,31 @@ in [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_
 Do not start the long PQ3.3b campaign or Stage S from the current
 `ready_for_stage_s=false` artifact.
 
+## 2026-09-23: PQ3.3b preflight v4 / manifest v3 current status
+
+- Evidence retained unmodified: preflight v1/v2/v3, the blocked manifest and
+  campaign manifest v2 (all diagnostic).
+- Preflight v4 (append-only `docs/evidence/pq3_3b_preflight_v4_2026_09.json`)
+  pins the canonical objective route
+  `ProblemSpec -> compile_problem -> make_oracle_from_compiled ->
+  evaluate_parent -> OracleResult.objective_gradient` (J = -downforce, sense
+  sign -1) and forbids passing raw OpenFoamOracle response gradients to
+  Phase 2 backends (structurally rejected).
+- Levels inherit the exact accepted rho (hash-equality recorded); the v3
+  simulated-decay switch is abolished.
+- Phase 2 uses the registered alpha ladder (1.0/0.5/0.25/0.125/0.0625) with the
+  full gate set (Path B centered bracket, real trial primal, canonical
+  objective improvement, raw downforce improvement, mask invariance,
+  move-box zero-violation, projected volume <= Vmax).
+- Measured outcome: b=4 Phase 2 accepted alpha=1.0 (downforce 0.6703 ->
+  0.8434 at its fresh parent); at b=8 every alpha fails with d_adj >= 0 and a
+  Path B sign mismatch; the chain stops before b=16; preflight_pass=false.
+- Manifest v3 `docs/evidence/pq3_3b_campaign_manifest_v3_2026_09.json` is
+  registered as `registered_blocked`; the campaign runner
+  `scripts/pq3_3b_campaign_2026_09.py` is a static fail-closed implementation
+  that refuses `--run` under a blocked manifest.
+- P19/P20 remain open. No campaign run and no Stage S-readiness claim.
+
 ## Global Stop/Go Rules
 
 - No gradient export or optimizer acceptance from an unqualified primal/adjoint.
