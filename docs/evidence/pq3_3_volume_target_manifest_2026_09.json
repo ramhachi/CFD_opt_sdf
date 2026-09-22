@@ -1,0 +1,77 @@
+{
+  "kind": "pq3_3_volume_target_manifest",
+  "created": "2026-09-22",
+  "registered_before_computation": true,
+  "diagnosis_from_pq3_2": [
+    "the projected-gradient backend only respects an upper volume bound, so the design never filled the budget (beta_max 0.417 at b=0)",
+    "with the 3-cell filter and b=8/16 the projection then removed the sub-threshold field (beta_max 0.036, projected volume 0.0028)"
+  ],
+  "proposal_rule": "optimality-criteria volume-target step: mean(rho_new[active]) = target by bisection within the move box; acceptance still requires the real primal, constraints and the Path B bracket",
+  "declared_minimum_solid_width_m": 0.3,
+  "chunks": [
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.02,
+      "volume_target": 0.03,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.04,
+      "volume_target": 0.06,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 0.0,
+      "q": 0.0,
+      "volume_delta": 0.06,
+      "volume_target": 0.1,
+      "iterations": 3,
+      "move_limit": 0.05
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 8.0,
+      "q": 30.0,
+      "volume_delta": 0.06,
+      "volume_target": 0.1,
+      "iterations": 3,
+      "move_limit": 0.03
+    },
+    {
+      "filter_radius_m": 0.15,
+      "b": 16.0,
+      "q": 100.0,
+      "volume_delta": 0.06,
+      "volume_target": 0.1,
+      "iterations": 3,
+      "move_limit": 0.01
+    }
+  ],
+  "volume_absolute_tolerance": 0.0001,
+  "bracket": {
+    "epsilon": 0.0001,
+    "noise_floor_abs": 1e-06
+  },
+  "acceptance_profile": {
+    "trust_veto": false
+  },
+  "hard_gates": {
+    "beta_mean_nd_max": 0.01,
+    "max_rho_min": 0.9,
+    "volume_violation_max": 0.0001
+  },
+  "stop_conditions": [
+    "no schedule or threshold change after seeing results"
+  ],
+  "budget": {
+    "iterations": 15
+  }
+}

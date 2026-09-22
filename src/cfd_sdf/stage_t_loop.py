@@ -179,6 +179,71 @@ class ProjectedGradientBackend:
         )
 
 
+class VolumeTargetBackend:
+    """Optimality-criteria style proposal with a registered volume target.
+
+    The projected-gradient backend only respects an upper volume bound, so a
+    downforce gradient alone never fills the material budget and the tanh
+    projection then removes anything below the threshold. This backend
+    multiplies the design toward the favourable cells and bisects a scalar
+    multiplier so that ``mean(rho_new[active]) == target`` (subject to the move
+    box). It is a *proposal* rule only: acceptance still requires the real
+    primal, the constraints and the Path B bracket.
+    """
+
+    backend_id = "volume-target-oc"
+
+    def __init__(self, *, target: float, eta: float = 0.5, bisection: int = 60) -> None:
+        if not 0.0 < float(target) < 1.0:
+            raise ValueError("volume target must be within (0, 1)")
+        self.target = float(target)
+        self.eta = float(eta)
+        self.bisection = int(bisection)
+
+    def propose(
+        self,
+        *,
+        rho: np.ndarray,
+        objective_gradient: np.ndarray,
+        constraint_gradients: dict[str, np.ndarray],
+        constraint_values: dict[str, float],
+        move_radius: float,
+        backend_state: dict[str, Any],
+    ) -> TrialProposal:
+        values = np.asarray(rho, dtype=np.float64)
+        gradient = np.asarray(objective_gradient, dtype=np.float64)
+        active = gradient != 0.0
+        lower = np.clip(values - move_radius, 0.0, 1.0)
+        upper = np.clip(values + move_radius, 0.0, 1.0)
+        base = np.maximum(-gradient, 0.0) ** self.eta
+
+        def candidate(kappa: float) -> np.ndarray:
+            stepped = np.clip(values * base * kappa, lower, upper)
+            stepped[~active] = values[~active]
+            return stepped
+
+        low, high = 0.0, 1.0
+        while float(np.mean(candidate(high)[active])) < self.target and high < 1e16:
+            high *= 10.0
+        for _ in range(self.bisection):
+            mid = 0.5 * (low + high)
+            if float(np.mean(candidate(mid)[active])) < self.target:
+                low = mid
+            else:
+                high = mid
+        proposed = candidate(high)
+        return TrialProposal(
+            delta=proposed - values,
+            backend=self.backend_id,
+            metadata={
+                "target": self.target,
+                "eta": self.eta,
+                "kappa": high,
+                "mean_after": float(np.mean(proposed[active])),
+            },
+        )
+
+
 @dataclass(frozen=True)
 class LoopSpec:
     transform: DesignTransform
