@@ -2275,6 +2275,12 @@ def sweep_density_extraction(
         help="Quantitative extraction gates: none, v1, or v2 (v2 is calibrated on "
         "analytic ground truth).",
     ),
+    stage_s_entry_problem_spec: Path | None = typer.Option(
+        None,
+        "--stage-s-entry-problem-spec",
+        help="ProblemSpec YAML; enables the composite Stage S entry gate and makes "
+        "ready_for_stage_s the conjunction of all sub-gates.",
+    ),
 ) -> None:
     """Run the preregistered density-to-SDF threshold sweep (DF4)."""
     if qualification_profile not in {"none", *EXTRACTION_QUALIFICATION_PROFILES}:
@@ -2286,12 +2292,21 @@ def sweep_density_extraction(
         topology_state_json,
         thresholds=threshold,
         output_dir=output_dir,
-        selection_rule={"kind": rule, "range": [range_low, range_high]},
+        selection_rule={
+            "kind": rule,
+            "range": [range_low, range_high],
+            "require_ready_for_stage_s": True,
+        },
         rho_variant=rho_variant,
         qualification_profile=(
             None
             if qualification_profile == "none"
             else EXTRACTION_QUALIFICATION_PROFILES.get(qualification_profile)
+        ),
+        stage_s_entry=(
+            {"problem_spec_yaml": stage_s_entry_problem_spec}
+            if stage_s_entry_problem_spec is not None
+            else None
         ),
     )
     console.print(

@@ -111,15 +111,16 @@
     "revoxelized_root_connectivity_not_available"
   ],
   "verdict": {
-    "ready_for_stage_s": true,
-    "profile_id": "extraction_qualification_v2",
-    "selected_threshold": 0.2,
-    "note": "the v1 verdict (not ready) was a mis-calibrated profile, not a candidate defect; the calibration preceded the v2 registration",
+    "ready_for_stage_s": false,
+    "profile_id": "stage_s_entry_v1",
+    "selected_threshold": null,
+    "extraction_profile_v2_pass": true,
+    "note": "the earlier ready-for-Stage-S claim was a local extraction verdict; the composite gate (Codex review PQ4.0) restores ready_for_stage_s=false until the source field is discrete and every sub-gate passes",
     "stage_s_started": false
   },
   "next_actions": [
-    "Stage S first step: body-fitted case from the extracted STL at threshold 0.2, downforce/drag surface sensitivity extraction, centered normal-displacement FD qualification, then one small shape update",
-    "keep the v1 evidence as the recorded pre-calibration verdict"
+    "PQ3.1: rerun the Stage T loop with a production transform (filter, projection continuation, RAMP continuation, b>0, q>0) and the hard gates mean_nd <= 0.01 and max_rho >= 0.9 to obtain a discrete candidate",
+    "PQ4.1: rerun the full composite gate on that candidate; only then register a Stage S baseline"
   ],
   "claims_supported": [
     "the extraction sweep executes on the real PQ3 candidate and records every threshold as a row"
@@ -301,5 +302,65 @@
       "ready_for_stage_s": true,
       "reason": "thresholds 0.2/0.3 pass every quantitative gate under the calibrated profile"
     }
-  }
+  },
+  "composite_stage_s_entry": {
+    "gate": "stage_s_entry_v1 (lineage & discreteness & extraction profile & volume fidelity & width/gap & components/root & manifoldness & clearance)",
+    "inputs": {
+      "problem_spec": "work/pq4_candidate/project.yaml",
+      "extraction_profile": "v2",
+      "selection_rule": "require_ready_for_stage_s=true"
+    },
+    "rows": [
+      {
+        "threshold": 0.2,
+        "extraction_profile_pass": true,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "discreteness:source density is not sufficiently discrete"
+        ]
+      },
+      {
+        "threshold": 0.3,
+        "extraction_profile_pass": true,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "discreteness:source density is not sufficiently discrete",
+          "volume_fidelity:volume difference exceeds the registered profile"
+        ]
+      },
+      {
+        "threshold": 0.4,
+        "extraction_profile_pass": false,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "discreteness:source density is not sufficiently discrete",
+          "extraction_profile:feature_shrink_exceeds_profile",
+          "volume_fidelity:volume difference exceeds the registered profile"
+        ]
+      },
+      {
+        "threshold": 0.5,
+        "extraction_profile_pass": null,
+        "ready_for_stage_s": false,
+        "reasons": []
+      }
+    ],
+    "selected_threshold": null,
+    "selection_reason": "no eligible threshold inside the registered range",
+    "verdict": {
+      "ready_for_stage_s": false,
+      "extraction_profile_pass_at": [
+        0.2,
+        0.3
+      ],
+      "blocking_gate": "discreteness: the Stage T field is grey (mean_nd 0.0333 > 0.01, max_rho 0.50001 < 0.9)",
+      "selected_threshold": null
+    }
+  },
+  "corrections_from_review": [
+    "ready_for_stage_s is now a conjunction; the local extraction verdict is recorded separately as extraction_profile_pass",
+    "the selection rule must declare require_ready_for_stage_s=true",
+    "added reverse surface distance, non-manifold edge count and self-intersection status to the extraction checks",
+    "added composite sub-gates: volume fidelity (calibrated tolerances), width/gap policy, component/root policy, clearance preflight"
+  ]
 }

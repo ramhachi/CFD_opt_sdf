@@ -8,8 +8,93 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from cfd_sdf.extraction_qualification import EXTRACTION_QUALIFICATION_PROFILE_V1
 from cfd_sdf.extraction_sweep import ExtractionSweepError, run_extraction_threshold_sweep
 from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _write_cell_vti
+
+# the unit fixture uses 1 m voxels; distances are scaled accordingly
+TEST_EXTRACTION_PROFILE = dict(
+    EXTRACTION_QUALIFICATION_PROFILE_V1,
+    surface_distance_max_m=1.5,
+    surface_distance_rms_max_m=1.5,
+)
+
+
+def _entry_config(tmp_path: Path) -> dict:
+    import yaml
+
+    spec = {
+        "schema_version": 2,
+        "problem_id": "sweep_fixture",
+        "units": {"length": "m", "time": "s", "mass": "kg"},
+        "coordinate_frame": {
+            "id": "global_frame",
+            "origin_m": [0.0, 0.0, 0.0],
+            "basis": {"x": [1.0, 0.0, 0.0], "y": [0.0, 1.0, 0.0], "z": [0.0, 0.0, 1.0]},
+        },
+        "grid": {"kind": "uniform_cartesian", "voxel_size_m": 1.0, "padding_m": 0.0},
+        "geometry_regions": [
+            {"id": "design_box", "role": "design_domain", "file": "geometry/design_box.stl"}
+        ],
+        "flow_cases": [
+            {
+                "id": "straight",
+                "freestream_velocity_mps": [1.0, 0.0, 0.0],
+                "fluid": {
+                    "model": "incompressible_newtonian",
+                    "density_kg_m3": 1.0,
+                    "dynamic_viscosity_pa_s": 1e-2,
+                },
+                "turbulence": {"model": "laminar"},
+                "boundary_conditions": {"inlet": "freestream", "outlet": "pressure_outlet"},
+                "motion_profiles": {},
+            }
+        ],
+        "responses": [
+            {"id": "downforce", "kind": "force", "flow_case_id": "straight", "direction": [0.0, 0.0, -1.0]}
+        ],
+        "objectives": [
+            {"id": "maximize_downforce", "sense": "maximize",
+             "terms": [{"coefficient": 1.0, "flow_case_id": "straight", "response_id": "downforce"}]}
+        ],
+        "constraints": [],
+        "topology_policy": {
+            "minimum_solid_width_m": None,
+            "minimum_void_width_m": None,
+            "minimum_gap_m": None,
+            "erosion_radius_m": None,
+            "root_groups": [],
+            "solid_connectivity": {"mode": "disabled", "required_root_group_ids": [],
+                                   "max_components": None, "evaluate_eroded": False},
+            "void_connectivity": {"mode": "disabled", "required_root_group_ids": [],
+                                  "max_components": None, "evaluate_eroded": False},
+        },
+        "grid_domain": None,
+    }
+    spec.pop("grid_domain")
+    spec["grid"]["domain_bounds_m"] = {"lower": [-1.0, -1.0, -1.0], "upper": [9.0, 9.0, 9.0]}
+    path = tmp_path / "sweep_spec.yaml"
+    path.write_text(yaml.safe_dump(spec, sort_keys=False), encoding="utf-8")
+    return {
+        "problem_spec_yaml": path,
+        "extraction_profile": TEST_EXTRACTION_PROFILE,
+        "volume_profile": {
+            "profile_id": "volume_fidelity_test",
+            "relative_max": 0.5,
+            "revoxelized_relative_max": 0.5,
+            "absolute_max_m3": 50.0,
+        },
+    }
+
+
+def _rule(**overrides) -> dict:
+    rule = {
+        "kind": "registered_range_min_abs_volume_error",
+        "range": [0.4, 0.6],
+        "require_ready_for_stage_s": True,
+    }
+    rule.update(overrides)
+    return rule
 
 
 def _write_state(
@@ -71,10 +156,8 @@ def test_sweep_records_all_thresholds_and_selects_inside_range(tmp_path: Path):
         state,
         thresholds=[0.3, 0.5, 0.7],
         output_dir=tmp_path / "sweep",
-        selection_rule={
-            "kind": "registered_range_min_abs_volume_error",
-            "range": [0.4, 0.6],
-        },
+        selection_rule=_rule(),
+        stage_s_entry=_entry_config(tmp_path),
     )
     assert len(summary["rows"]) == 3
     assert all(row["status"] == "ok" for row in summary["rows"])
@@ -93,10 +176,8 @@ def test_sweep_selects_first_passing_threshold_when_registered(tmp_path: Path):
         state,
         thresholds=[0.3, 0.5, 0.7],
         output_dir=tmp_path / "sweep_first",
-        selection_rule={
-            "kind": "registered_range_first_that_passes",
-            "range": [0.25, 0.75],
-        },
+        selection_rule=_rule(kind="registered_range_first_that_passes", range=[0.25, 0.75]),
+        stage_s_entry=_entry_config(tmp_path),
     )
     assert summary["selected_threshold"] == pytest.approx(0.3)
 
@@ -107,10 +188,8 @@ def test_sweep_keeps_failed_threshold_rows(tmp_path: Path):
         state,
         thresholds=[0.5],
         output_dir=tmp_path / "sweep_failed",
-        selection_rule={
-            "kind": "registered_range_min_abs_volume_error",
-            "range": [0.4, 0.6],
-        },
+        selection_rule=_rule(),
+        stage_s_entry=_entry_config(tmp_path),
     )
     assert summary["rows"][0]["status"] == "error"
     assert summary["rows"][0]["error"]
@@ -125,27 +204,21 @@ def test_sweep_rejects_unregistered_rules_and_bad_ranges(tmp_path: Path):
             state,
             thresholds=[0.5],
             output_dir=tmp_path / "o1",
-            selection_rule={"kind": "best_observed", "range": [0.4, 0.6]},
+            selection_rule=_rule(kind="best_observed"),
         )
     with pytest.raises(ExtractionSweepError, match="range"):
         run_extraction_threshold_sweep(
             state,
             thresholds=[0.5],
             output_dir=tmp_path / "o2",
-            selection_rule={
-                "kind": "registered_range_min_abs_volume_error",
-                "range": [0.7, 0.3],
-            },
+            selection_rule=_rule(range=[0.7, 0.3]),
         )
     with pytest.raises(ExtractionSweepError, match="thresholds must be inside"):
         run_extraction_threshold_sweep(
             state,
             thresholds=[1.5],
             output_dir=tmp_path / "o3",
-            selection_rule={
-                "kind": "registered_range_min_abs_volume_error",
-                "range": [0.4, 0.6],
-            },
+            selection_rule=_rule(),
         )
 
 
@@ -155,10 +228,8 @@ def test_exact_zero_volume_difference_is_a_candidate_not_missing(tmp_path: Path)
         state,
         thresholds=[0.4, 0.5, 0.6],
         output_dir=tmp_path / "sweep_zero",
-        selection_rule={
-            "kind": "registered_range_min_abs_volume_error",
-            "range": [0.35, 0.65],
-        },
+        selection_rule=_rule(range=[0.35, 0.65]),
+        stage_s_entry=_entry_config(tmp_path),
     )
     rows = {row["threshold"]: row for row in summary["rows"]}
     # simulate an exact match row: replace one row's difference with 0.0 in a
@@ -173,5 +244,6 @@ def test_exact_zero_volume_difference_is_a_candidate_not_missing(tmp_path: Path)
         abs(float(row["volume_relative_difference"]))
         for row in summary["rows"]
         if row["volume_relative_difference"] is not None
+        and row["ready_for_stage_s"]
         and 0.35 <= row["threshold"] <= 0.65
     )

@@ -18,6 +18,7 @@ from typing import Any
 from .fixed_grid_contract import _read_cell_vti
 from .extraction_qualification import ExtractionQualification, qualify_extraction
 from .handoff import build_density_to_sdf_handoff
+from .stage_s_entry import StageSEntryVerdict, qualify_stage_s_entry
 from .shape_feature_metrics import occupancy_metrics
 
 SELECTION_RULES = (
@@ -49,6 +50,8 @@ class SweepRow:
     geometry_metrics: dict[str, Any] | None = None
     geometry_metrics_status: str = "not_requested"
     qualification: dict[str, Any] | None = None
+    extraction_profile_pass: bool | None = None
+    stage_s_entry: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -82,13 +85,19 @@ def run_extraction_threshold_sweep(
     selection_rule: dict[str, Any],
     rho_variant: str | None = None,
     qualification_profile: dict[str, Any] | None = None,
+    stage_s_entry: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the registered thresholds and apply the registered selection rule.
 
-    ``qualification_profile`` enables the quantitative extraction gates
-    (surface distance, feature survival, manifoldness, root connectivity); the
-    row's ``ready_for_stage_s`` then comes from the qualification verdict while
-    the handoff report's placeholder reasons are kept separately.
+    ``stage_s_entry`` (a mapping with ``problem_spec_yaml``) enables the
+    composite Stage S entry gate: the row's ``ready_for_stage_s`` is the
+    conjunction of lineage, discreteness, extraction profile, volume fidelity,
+    width/gap, component/root policy and clearance. The local extraction
+    verdict is recorded separately as ``extraction_profile_pass`` and can never
+    override a global failure.
+
+    ``selection_rule`` must declare ``require_ready_for_stage_s: true``; the
+    selection never picks a threshold that failed the composite gate.
     """
 
     rule_kind = selection_rule.get("kind")
@@ -104,6 +113,11 @@ def run_extraction_threshold_sweep(
     ):
         raise ExtractionSweepError(
             "selection_rule.range must be an increasing pair inside (0, 1)"
+        )
+    if selection_rule.get("require_ready_for_stage_s") is not True:
+        raise ExtractionSweepError(
+            "the selection rule must declare require_ready_for_stage_s=true; "
+            "selecting a threshold that failed the Stage S entry gate is refused"
         )
     if not thresholds:
         raise ExtractionSweepError("at least one threshold is required")
@@ -127,11 +141,21 @@ def run_extraction_threshold_sweep(
             volume = report.get("volume", {})
             surface = report.get("surface", {})
             qualification: ExtractionQualification | None = None
-            if qualification_profile is not None:
+            entry: StageSEntryVerdict | None = None
+            if qualification_profile is not None or stage_s_entry is not None:
                 qualification = qualify_extraction(
                     artifacts.manifest_json,
                     mesh_path=artifacts.surface_stl,
                     profile=qualification_profile,
+                )
+            if stage_s_entry is not None:
+                entry = qualify_stage_s_entry(
+                    artifacts.manifest_json,
+                    mesh_path=artifacts.surface_stl,
+                    problem_spec_yaml=stage_s_entry["problem_spec_yaml"],
+                    extraction_profile=stage_s_entry.get("extraction_profile"),
+                    volume_profile=stage_s_entry.get("volume_profile"),
+                    clearance_profile=stage_s_entry.get("clearance_profile"),
                 )
             geometry_metrics, geometry_status = _geometry_metrics(
                 artifacts.revoxelized_density_vti
@@ -144,8 +168,10 @@ def run_extraction_threshold_sweep(
                     error=None,
                     ok=bool(report.get("ok")),
                     ready_for_stage_s=(
-                        qualification.ready_for_stage_s
-                        if qualification is not None
+                        entry.ready_for_stage_s
+                        if entry is not None
+                        else False
+                        if stage_s_entry is not None
                         else bool(report.get("ready_for_stage_s"))
                     ),
                     watertight=bool(surface.get("watertight")),
@@ -161,6 +187,10 @@ def run_extraction_threshold_sweep(
                     geometry_metrics=geometry_metrics,
                     geometry_metrics_status=geometry_status,
                     qualification=qualification.to_dict() if qualification else None,
+                    extraction_profile_pass=(
+                        qualification.ready_for_stage_s if qualification is not None else None
+                    ),
+                    stage_s_entry=entry.to_dict() if entry else None,
                 )
             )
         except Exception as exc:  # noqa: BLE001 - a failed threshold stays in the table
@@ -230,6 +260,7 @@ def run_extraction_threshold_sweep(
             ),
             "selection_is_registered_not_observed_best": True,
             "quantitative_qualification_evaluated": qualification_profile is not None,
+            "stage_s_entry_gate_evaluated": stage_s_entry is not None,
         },
         "notes": (
             "every failed threshold remains an explicit row; the selection rule "

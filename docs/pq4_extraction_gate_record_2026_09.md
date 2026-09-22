@@ -1,6 +1,8 @@
 # PQ4 — T-to-S extraction gate on the PQ3 candidate（2026-09-22）
 
-Status: extraction executed; **candidate is not Stage S-ready**; Stage S not started。
+Status: extraction executed; **composite Stage S entry gate = false**（discreteness が阻害）; Stage S not started。
+
+> 2026-09-22 追記: 本文の途中で `ready_for_stage_s` を局所抽出判定の意味で使っていた箇所は、Codex レビュー（PQ4.0）を受けて合成判定へ修正済み。最終判定は `stage_s_entry_v1` の論理積で、現 candidate は **false**。`extraction_profile_pass` は 0.2/0.3 で true（別フィールド）。
 
 ## 実行
 
@@ -94,3 +96,39 @@ wing_two_element）で metric floor を測定（`docs/evidence/pq4_profile_calib
 欠陥ではなくプロファイルの校正ミス）。次の PQ4 slice は Stage S 第一歩:
 body-fitted case 生成 → downforce/drag surface sensitivity → 法線変位の centered FD 資格化 →
 1 つの shape update。
+
+## PQ4.0 — Codex レビューに基づく合成 Gate 修正（2026-09-22）
+
+1. **`ready_for_stage_s` を合成判定へ戻した**（`src/cfd_sdf/stage_s_entry.py`）:
+   lineage ∧ discreteness ∧ extraction profile ∧ volume fidelity ∧ width/gap ∧
+   components/root ∧ manifoldness ∧ clearance。局所抽出 pass は `extraction_profile_pass`
+   として別記録し、global 判定を上書きしない。
+2. **選択規則を fail-closed 化**: `selection_rule` は `require_ready_for_stage_s=true` を必須。
+3. **不足 gate を追加**:
+   - reverse surface distance（voxel boundary → mesh、`trimesh.proximity`）
+   - non-manifold edge count と self-intersection status（manifold3d 不在時は `not_evaluated` を明記）
+   - volume fidelity（analytic ground truth で校正した相対 0.25 / revox 0.20 / 絶対 0.02 m³）
+   - width/gap（ridge thickness の p5 と component 間 gap を ProblemSpec policy と比較、未宣言は `not_required`）
+   - components/root（root 必須 policy で root mask が空なら fail）
+   - clearance（`stage_v_clearance_v1` preflight を抽出 surface に適用）
+4. **再判定（`work/pq4_sweep_entry`）**:
+
+| threshold | extraction_profile_pass | ready_for_stage_s | 主な理由 |
+| --- | --- | --- | --- |
+| 0.2 | True | **False** | discreteness（mean_nd 0.0333 > 0.01、max_rho 0.50001 < 0.9） |
+| 0.3 | True | False | discreteness + volume fidelity |
+| 0.4 | False | False | discreteness + feature shrink |
+| 0.5 | - (handoff error) | False | - |
+
+`selected_threshold = None`（fail-closed）。したがって PQ4 の結論は
+**「v2 校正と抽出 profile は有効、しかし Stage T field が grey のため Stage S へは進めない」**であり、
+`phase_plan.md` の「qualified Stage S candidate なし」と一致する。
+
+## 次の固定順
+
+1. **PQ3.1**: filter / projection continuation / RAMP continuation（b>0, q>0）で
+   production-regime の Stage T loop を再実行し、`mean_nd <= 0.01`、`max_rho >= 0.9`、
+   volume feasible、Path B bracket pass の discrete candidate を得る。
+2. **PQ4.1**: その candidate に対して完全な合成 Gate（lineage/volume/component/root/width/gap/
+   self-intersection/clearance）を再実行する。
+3. 合格後のみ Stage S baseline 登録と surface FD 資格化へ進む。

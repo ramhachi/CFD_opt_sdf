@@ -169,15 +169,54 @@ def qualify_extraction(
             reasons.append("feature_shrink_exceeds_profile")
     checks["feature_survival"] = feature
 
+    # --- reverse distance (voxel boundary -> mesh) --------------------------
+    reverse = {"status": "not_applicable"}
+    if material.any():
+        boundary = material & ~ndimage.binary_erosion(
+            material, structure=np.ones((3, 3, 3), dtype=bool)
+        )
+        boundary_indices = np.argwhere(boundary)
+        if boundary_indices.size:
+            rng = np.random.default_rng(20260922)
+            if boundary_indices.shape[0] > 5000:
+                choice = rng.choice(boundary_indices.shape[0], size=5000, replace=False)
+                boundary_indices = boundary_indices[choice]
+            origin = np.asarray(revoxelized_grid.origin, dtype=np.float64)
+            spacing_vec = np.asarray(revoxelized_grid.spacing, dtype=np.float64)
+            points = origin + (boundary_indices + 0.5) * spacing_vec
+            import trimesh
+
+            proximity = trimesh.proximity.ProximityQuery(mesh)
+            distance = np.abs(proximity.signed_distance(points))
+            reverse = {
+                "status": "measured",
+                "max_m": float(distance.max()),
+                "rms_m": float(np.sqrt(np.mean(distance**2))),
+                "sample_count": int(points.shape[0]),
+            }
+    checks["reverse_surface_distance"] = reverse
+    if reverse["status"] == "measured":
+        if reverse["max_m"] > float(profile["surface_distance_max_m"]):
+            reasons.append("reverse_surface_distance_exceeds_profile")
+        if reverse["rms_m"] > float(profile["surface_distance_rms_max_m"]):
+            reasons.append("reverse_surface_distance_rms_exceeds_profile")
+
     # --- mesh manifoldness --------------------------------------------------
     unique_faces = np.unique(mesh.faces, axis=0).shape[0]
+    edges = np.sort(mesh.edges_sorted, axis=1)
+    _, edge_counts = np.unique(edges, axis=0, return_counts=True)
+    non_manifold_edges = int(np.count_nonzero(edge_counts != 2))
     manifold = {
         "watertight": bool(mesh.is_watertight),
         "winding_consistent": bool(mesh.is_winding_consistent),
         "positive_volume": bool(mesh.is_volume and mesh.volume > 0.0),
         "duplicate_face_count": int(len(mesh.faces) - unique_faces),
+        "non_manifold_edge_count": non_manifold_edges,
+        "self_intersection": _self_intersection_status(mesh),
     }
     checks["mesh_manifold"] = manifold
+    if profile["require_no_duplicate_faces"] and manifold["non_manifold_edge_count"] > 0:
+        reasons.append("mesh_has_non_manifold_edges")
     if profile["require_watertight"] and not manifold["watertight"]:
         reasons.append("mesh_not_watertight")
     if profile["require_winding_consistent"] and not manifold["winding_consistent"]:
@@ -217,6 +256,21 @@ def qualify_extraction(
         reasons=reasons,
         checks=checks,
     )
+
+
+def _self_intersection_status(mesh) -> str:
+    """Direct self-intersection test when manifold3d is available, else recorded."""
+
+    try:
+        import manifold3d  # noqa: F401
+    except ImportError:
+        return "not_evaluated_no_manifold3d"
+    try:
+        import trimesh
+
+        return "none" if not trimesh.boolean.intersection([mesh, mesh]).is_empty else "fail"
+    except Exception:  # noqa: BLE001 - recorded, never hidden
+        return "not_evaluated_boolean_error"
 
 
 def _load_mesh(path: Path):
