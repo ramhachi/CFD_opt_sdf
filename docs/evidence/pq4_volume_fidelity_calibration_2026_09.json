@@ -1,0 +1,55 @@
+{
+  "artifact_id": "pq4_volume_fidelity_calibration_2026_09",
+  "evidence_class": "numerical_metric_calibration",
+  "issue": "PQ4.0a (bridge plan Work B, item 4)",
+  "method": "binary analytic occupancy -> handoff at 0.5 -> the three volume errors per shape",
+  "rows": [
+    {
+      "shape": "handoff",
+      "report_path": "box_bluff03/handoff/fidelity_report.json",
+      "report_sha256": "0ca86570172e8704e8278e7245c29ec4c10f2f67562efb0170a24d5c2174485c",
+      "source_mesh_relative": 0.10689982415635631,
+      "revoxelized_relative": 0.023323615160349868,
+      "absolute_m3": 0.0045833299607037775
+    },
+    {
+      "shape": "handoff",
+      "report_path": "plate_a20_nd/handoff/fidelity_report.json",
+      "report_sha256": "57d3a7eb002d28ede61b65f58d8b1806407ce6ec92aadb238d45bf9d6e7ca5bb",
+      "source_mesh_relative": 0.09326974780678358,
+      "revoxelized_relative": 0.10969793322734489,
+      "absolute_m3": 0.00733333392130836
+    },
+    {
+      "shape": "handoff",
+      "report_path": "wing_camber_bent/handoff/fidelity_report.json",
+      "report_sha256": "9d2fa1b37a78c12e6041c01ca45a2af82dfebfcca724bc457c29021933ca97a6",
+      "source_mesh_relative": 0.14231571083085073,
+      "revoxelized_relative": 0.15196078431372542,
+      "absolute_m3": 0.010887151878560083
+    },
+    {
+      "shape": "handoff",
+      "report_path": "wing_two_element/handoff/fidelity_report.json",
+      "report_sha256": "3ba4beea1fbd7d373b1ab6723c386e5d0c18b5ed4fb8f1ed2ff032f9226a3b2c",
+      "source_mesh_relative": 0.1807754989118781,
+      "revoxelized_relative": 0.1606334841628959,
+      "absolute_m3": 0.009987846314881269
+    }
+  ],
+  "measured_floors": {
+    "source_relative_max": 0.1807754989118781,
+    "revoxelized_relative_max": 0.1606334841628959,
+    "absolute_max_m3": 0.010887151878560083
+  },
+  "registered_profile": {
+    "profile_id": "volume_fidelity_v1",
+    "relative_max": 0.25,
+    "revoxelized_relative_max": 0.2,
+    "absolute_max_m3": 0.02,
+    "note": "tolernces sit above the analytic ground-truth floors; already registered in stage_s_entry.VOLUME_FIDELITY_PROFILE_V1 and this artifact documents the measurement"
+  },
+  "claims_not_supported": [
+    "no threshold change: the registered values were already inside these bounds, only the calibration reference was missing"
+  ]
+}

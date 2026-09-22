@@ -48,9 +48,9 @@ VOLUME_FIDELITY_PROFILE_V1: dict[str, Any] = {
     "relative_max": 0.25,
     "revoxelized_relative_max": 0.20,
     "absolute_max_m3": 0.02,
-    "calibration": "docs/evidence/pq4_profile_calibration_2026_09.json",
+    "calibration": "docs/evidence/pq4_volume_fidelity_calibration_2026_09.json",
     "note": "tolernces sit above the analytic binary ground-truth floor "
-    "(relative 0.09-0.18, absolute 0.005-0.011 m3)",
+    "(relative 0.093-0.181, revoxelized 0.023-0.161, absolute 0.0046-0.0109 m3)",
 }
 
 
@@ -215,35 +215,54 @@ def qualify_stage_s_entry(
     else:
         material_metrics = occupancy_metrics(material, spacing)
         measured_solid = material_metrics["thickness_ridge_m_p5"]
-        width["measured"]["minimum_solid_width_m"] = measured_solid
+        width["measured"]["ridge_width_p5_m"] = measured_solid
+        width["note"] = (
+            "ridge_width_p5_m is the p5 of the local-thickness ridge on the "
+            "canonical grid, a quantization-aware lower-bound estimate; it is "
+            "not the strict minimum-surface distance and is never silently "
+            "substituted for a declared minimum"
+        )
         if policy.minimum_solid_width_m is not None:
             width["declared"]["minimum_solid_width_m"] = policy.minimum_solid_width_m
             if measured_solid < policy.minimum_solid_width_m - spacing / 2:
                 width["pass"] = False
-                _fail(reasons, "width_gap", "minimum solid width below the declared policy")
+                _fail(reasons, "width_gap", "ridge width p5 below the declared minimum")
         complement = ~material
         if complement.any():
             void_metrics = occupancy_metrics(complement, spacing)
-            measured_void = void_metrics["thickness_ridge_m_p5"]
-            width["measured"]["minimum_void_width_m"] = measured_void
+            width["measured"]["void_ridge_width_p5_m"] = void_metrics[
+                "thickness_ridge_m_p5"
+            ]
             if policy.minimum_void_width_m is not None:
                 width["declared"]["minimum_void_width_m"] = policy.minimum_void_width_m
-                if measured_void < policy.minimum_void_width_m - spacing / 2:
+                if (
+                    void_metrics["thickness_ridge_m_p5"]
+                    < policy.minimum_void_width_m - spacing / 2
+                ):
                     width["pass"] = False
                     _fail(reasons, "width_gap", "minimum void width below the declared policy")
         components, count = ndimage.label(material, structure=np.ones((3, 3, 3), dtype=bool))
         if count > 1:
-            distance = ndimage.distance_transform_edt(~material, sampling=spacing)
+            # component-to-component gap: the shortest distance between the
+            # centers of one component's cells and the centers of the other
+            # component's cells, computed per pair with an EDT whose zero set
+            # is exactly that pair's first component (the previous formula
+            # computed the EDT of the complement of the *union* of components
+            # and sampled it on material, which always returned 0)
             gaps = []
             for label in range(1, count + 1):
                 blob = components == label
-                gap = float(distance[blob].min())
-                gaps.append(gap)
-            measured_gap = min(gaps)
-            width["measured"]["minimum_gap_m"] = measured_gap
+                for other_label in range(label + 1, count + 1):
+                    other = components == other_label
+                    distance = ndimage.distance_transform_edt(
+                        ~blob, sampling=spacing
+                    )
+                    gaps.append(float(distance[other].min()))
+            measured_gap = min(gaps) if gaps else None
+            width["measured"]["component_boundary_gap_m"] = measured_gap
             if policy.minimum_gap_m is not None:
                 width["declared"]["minimum_gap_m"] = policy.minimum_gap_m
-                if measured_gap < policy.minimum_gap_m - spacing / 2:
+                if measured_gap is None or measured_gap < policy.minimum_gap_m - spacing / 2:
                     width["pass"] = False
                     _fail(reasons, "width_gap", "minimum gap below the declared policy")
     sub["width_gap"] = width

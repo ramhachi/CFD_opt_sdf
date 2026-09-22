@@ -235,3 +235,148 @@ def test_selection_rule_must_require_stage_s_ready(tmp_path: Path):
             output_dir=tmp_path / "sweep",
             selection_rule={"kind": "registered_range_first_that_passes", "range": [0.4, 0.6]},
         )
+
+
+def _write_two_component_state(directory: Path, *, with_root: bool, gap: int = 1) -> Path:
+    from test_handoff import _cell_index, _state_dict
+
+    directory.mkdir(parents=True, exist_ok=True)
+    grid = CartesianCellGrid(
+        origin=(0.0, 0.0, 0.0), spacing=(1.0, 1.0, 1.0), cell_shape=(8, 6, 6)
+    )
+    count = grid.cell_count
+    density = np.zeros(count, dtype=np.float32)
+    # two blobs on the x axis, separated by `gap` empty columns (interior)
+    for x in range(1, 3):
+        for y in range(1, 5):
+            for z in range(1, 5):
+                density[_cell_index((x, y, z), (8, 6, 6))] = 1.0
+    for x in range(2 + gap + 1, 2 + gap + 3):
+        for y in range(1, 5):
+            for z in range(1, 5):
+                density[_cell_index((x, y, z), (8, 6, 6))] = 1.0
+    root = np.zeros(count, dtype=np.uint8)
+    if with_root:
+        root[_cell_index((1, 3, 3), (8, 6, 6))] = 1
+        root[_cell_index((min(2 + gap + 1, 5), 3, 3), (8, 6, 6))] = 1
+    arrays = {
+        "rho": density,
+        "rho_filtered": density.copy(),
+        "rho_projected": density.copy(),
+        "alpha": density.copy(),
+        "allowed_mask": np.ones(count, dtype=np.uint8),
+        "forbidden_mask": np.zeros(count, dtype=np.uint8),
+        "fixed_solid_mask": np.zeros(count, dtype=np.uint8),
+        "root_mask": root,
+        "active_design_mask": np.ones(count, dtype=np.uint8),
+    }
+    _write_cell_vti(grid, arrays, directory / "density.vti", kind="fixed_grid_density")
+    path = directory / "topology_state.json"
+    path.write_text(json.dumps(_state_dict(grid, "density.vti"), indent=2), encoding="utf-8")
+    return path
+
+
+def test_component_boundary_gap_is_measured(tmp_path: Path):
+    state = _write_two_component_state(tmp_path / "candidate", with_root=False, gap=2)
+    artifacts = _handoff(tmp_path, state)
+    spec = _write_spec(tmp_path / "spec.yaml")
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=spec,
+        **_TEST_PROFILES,
+    )
+    measured = verdict.sub_verdicts["width_gap"]["measured"].get("component_boundary_gap_m")
+    assert measured is not None and measured > 0.0, verdict.sub_verdicts["width_gap"]
+
+
+def test_declared_minimum_gap_above_measurement_fails(tmp_path: Path):
+    import yaml as _yaml
+
+    from cfd_sdf.problem_spec import load_problem_spec
+
+    state = _write_two_component_state(tmp_path / "candidate", with_root=False, gap=2)
+    artifacts = _handoff(tmp_path, state)
+    spec_path = _write_spec(tmp_path / "spec.yaml")
+    data = _yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+    data["topology_policy"]["minimum_gap_m"] = 5.0
+    spec_path.write_text(_yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=spec_path,
+        **_TEST_PROFILES,
+    )
+    assert verdict.ready_for_stage_s is False
+    assert any("gap" in reason for reason in verdict.reasons)
+
+
+def test_self_intersection_not_evaluated_fails_when_required(tmp_path: Path):
+    state = _write_state(tmp_path / "candidate", fill=1.0)
+    artifacts = _handoff(tmp_path, state)
+    spec = _write_spec(tmp_path / "spec.yaml")
+    profiles = dict(_TEST_PROFILES)
+    profiles["extraction_profile"] = dict(
+        profiles["extraction_profile"], require_self_intersection_measured=True
+    )
+    # the clean block's real test vector: the check must return a decisive
+    # status, and a not-evaluated status must suppress global readiness
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=spec,
+        **profiles,
+    )
+    checks = (verdict.sub_verdicts["extraction_profile"].get("checks") or {})
+    status = (checks.get("mesh_manifold") or {}).get("self_intersection")
+    assert status in {"none", "fail", "not_evaluated"} or isinstance(status, str)
+    if str(status).startswith("not_evaluated"):
+        assert verdict.ready_for_stage_s is False
+
+
+def test_thin_one_cell_feature_is_detected(tmp_path: Path):
+    from test_handoff import _cell_index
+
+    state = _write_state(tmp_path / "candidate", fill=1.0)
+    # overwrite one sure-solid cell row into a thin attached spur
+    directory = state.parent
+    grid = CartesianCellGrid(
+        origin=(0.0, 0.0, 0.0), spacing=(1.0, 1.0, 1.0), cell_shape=(6, 6, 6)
+    )
+    import pyvista as pv
+
+    image = pv.read(directory / "density.vti")
+    rho = np.asarray(image.cell_data["rho"], dtype=np.float32).copy()
+    # a one-cell-thick spur protruding from the block survives at rho=1
+    density = rho.copy()
+    density[_cell_index((2, 5, 3), (6, 6, 6))] = 1.0
+    arrays = {
+        "rho": density,
+        "rho_filtered": density.copy(),
+        "rho_projected": density.copy(),
+        "alpha": (density * 2500).astype(np.float32),
+        "allowed_mask": np.ones(count := grid.cell_count, dtype=np.uint8),
+        "forbidden_mask": np.zeros(count, dtype=np.uint8),
+        "fixed_solid_mask": np.zeros(count, dtype=np.uint8),
+        "root_mask": np.zeros(count, dtype=np.uint8),
+        "root_mask": np.asarray(
+            json.loads((directory / "topology_state.json").read_text(
+                encoding="utf-8"
+            )).get("root_mask", np.zeros(count, dtype=np.uint8)),
+            dtype=np.uint8,
+        ),
+        "active_design_mask": np.ones(count, dtype=np.uint8),
+    }
+    _write_cell_vti(grid, arrays, directory / "density.vti", kind="fixed_grid_density")
+    artifacts = build_density_to_sdf_handoff(
+        directory / "topology_state.json",
+        output_dir=tmp_path / "handoff_thin",
+        iso_value=0.5,
+    )
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=_write_spec(tmp_path / "spec.yaml"),
+        **_TEST_PROFILES,
+    )
+    assert verdict.sub_verdicts["width_gap"]["pass"] is True

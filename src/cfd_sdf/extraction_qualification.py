@@ -45,6 +45,7 @@ EXTRACTION_QUALIFICATION_PROFILE_V1: dict[str, Any] = {
     "require_winding_consistent": True,
     "require_positive_volume": True,
     "require_no_duplicate_faces": True,
+    "require_self_intersection_measured": True,
     "require_root_connectivity": True,
     "scope": "fixed-grid density-to-SDF handoff on the canonical Cartesian grid",
 }
@@ -63,6 +64,7 @@ EXTRACTION_QUALIFICATION_PROFILE_V2: dict[str, Any] = {
     "require_winding_consistent": True,
     "require_positive_volume": True,
     "require_no_duplicate_faces": True,
+    "require_self_intersection_measured": True,
     "require_root_connectivity": True,
     "calibration": "docs/evidence/pq4_profile_calibration_2026_09.json",
     "scope": "fixed-grid density-to-SDF handoff on the canonical Cartesian grid",
@@ -212,11 +214,16 @@ def qualify_extraction(
         "positive_volume": bool(mesh.is_volume and mesh.volume > 0.0),
         "duplicate_face_count": int(len(mesh.faces) - unique_faces),
         "non_manifold_edge_count": non_manifold_edges,
-        "self_intersection": _self_intersection_status(mesh),
+        "self_intersection": _triangles_self_intersect(mesh),
     }
     checks["mesh_manifold"] = manifold
     if profile["require_no_duplicate_faces"] and manifold["non_manifold_edge_count"] > 0:
         reasons.append("mesh_has_non_manifold_edges")
+    if (
+        profile.get("require_self_intersection_measured")
+        and manifold["self_intersection"].startswith("not_evaluated")
+    ):
+        reasons.append(f"self_intersection:{manifold['self_intersection']}")
     if profile["require_watertight"] and not manifold["watertight"]:
         reasons.append("mesh_not_watertight")
     if profile["require_winding_consistent"] and not manifold["winding_consistent"]:
@@ -258,19 +265,80 @@ def qualify_extraction(
     )
 
 
-def _self_intersection_status(mesh) -> str:
-    """Direct self-intersection test when manifold3d is available, else recorded."""
+def _triangles_self_intersect(mesh) -> str:
+    """Direct triangle-triangle self-intersection test (edge/plane narrow phase).
 
-    try:
-        import manifold3d  # noqa: F401
-    except ImportError:
-        return "not_evaluated_no_manifold3d"
-    try:
-        import trimesh
+    Vectorized over the AABB-overlap candidate pairs; pairs sharing a vertex
+    are excluded. Returns "none", "fail", or a "not_evaluated_*" status that a
+    required profile turns into a failure.
+    """
 
-        return "none" if not trimesh.boolean.intersection([mesh, mesh]).is_empty else "fail"
-    except Exception:  # noqa: BLE001 - recorded, never hidden
-        return "not_evaluated_boolean_error"
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    n = faces.shape[0]
+    if n > 12_000:
+        return "not_evaluated_too_many_triangles"
+    tri = vertices[faces]  # (n, 3, 3)
+    tri_min = tri.min(axis=1)
+    tri_max = tri.max(axis=1)
+
+    overlap_min = np.maximum(tri_min[:, None, :], tri_min[None, :, :])
+    overlap_max = np.minimum(tri_max[:, None, :], tri_max[None, :, :])
+    candidate_pairs = np.all(overlap_min <= overlap_max, axis=2)
+    iu = np.triu_indices(n, k=1)
+    pair_i, pair_j = iu[0][candidate_pairs[iu]], iu[1][candidate_pairs[iu]]
+    if pair_i.size == 0:
+        return "none"
+
+    # exclude pairs sharing a vertex via sorted-vertex label overlap
+    labels = np.sort(faces, axis=1)  # (n, 3) sorted vertex ids per triangle
+    labels_pairs_a = labels[pair_i]
+    labels_pairs_b = labels[pair_j]
+    column_a = np.repeat(labels_pairs_a, 3, axis=1)  # (p, 9)
+    column_b = np.tile(labels_pairs_b, (1, 3))       # (p, 9)
+    shared = (column_a == column_b).any(axis=1)
+    keep = ~shared
+    pair_i, pair_j = pair_i[keep], pair_j[keep]
+    if pair_i.size == 0:
+        return "none"
+
+    A = tri[pair_i]
+    B = tri[pair_j]
+    hits = _edges_pierce_triangles(A, B) | _edges_pierce_triangles(B, A)
+    return "fail" if bool(np.any(hits)) else "none"
+
+
+def _edges_pierce_triangles(frm: np.ndarray, to: np.ndarray) -> np.ndarray:
+    """Vectorized edge-triangle pierce test for candidate pairs (one direction)."""
+
+    hit = np.zeros(frm.shape[0], dtype=bool)
+    for edge in range(3):
+        p0 = frm[:, edge, :]
+        p1 = frm[:, (edge + 1) % 3, :]
+        normal = np.cross(to[:, 1, :] - to[:, 0, :], to[:, 2, :] - to[:, 0, :])
+        denom = np.einsum("ij,ij->i", normal, normal)
+        denom = np.where(np.abs(denom) < 1e-30, np.nan, denom)
+        d0 = np.einsum("ij,ij->i", p0 - to[:, 0, :], normal)
+        d1 = np.einsum("ij,ij->i", p1 - to[:, 0, :], normal)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            t = d0 / (d0 - d1)
+        crossing = (d0 * d1 < 0) & np.isfinite(t)
+        point = p0 + np.nan_to_num(t)[:, None] * (p1 - p0)
+        v0 = to[:, 1, :] - to[:, 0, :]
+        v1 = to[:, 2, :] - to[:, 0, :]
+        v2 = point - to[:, 0, :]
+        d00 = np.einsum("ij,ij->i", v0, v0)
+        d01 = np.einsum("ij,ij->i", v0, v1)
+        d11 = np.einsum("ij,ij->i", v1, v1)
+        d20 = np.einsum("ij,ij->i", v2, v0)
+        d21 = np.einsum("ij,ij->i", v2, v1)
+        denom_b = d00 * d11 - d01 * d01
+        denom_b = np.where(np.abs(denom_b) < 1e-30, np.nan, denom_b)
+        v = (d11 * d20 - d01 * d21) / denom_b
+        w = (d00 * d20 - d01 * d21) / denom_b
+        inside = (v >= -1e-12) & (w >= -1e-12) & (v + w <= 1 + 1e-12)
+        hit |= crossing & inside & ~np.isnan(v) & ~np.isnan(w)
+    return hit
 
 
 def _load_mesh(path: Path):
