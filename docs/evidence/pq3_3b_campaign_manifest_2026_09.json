@@ -1,0 +1,109 @@
+{
+  "kind": "pq3_3b_campaign_manifest",
+  "schema_version": 2,
+  "status": "registered_blocked_backend_family",
+  "immutable": true,
+  "created": "2026-09-22T23:36+09:00",
+  "purpose": "PQ3.3b OpenFOAM campaign that grows mean(rho_projection[active]) to the registered projected target through multi-iteration OC steps with a re-computed parent gradient per iteration.",
+  "supersedes_provisional_basis": "raw design mean 0.02733 from checkpoint_chunk02 was previously used as V_target; the judged basis is now mean(rho_projection[active]) vs V_max in the projected basis.",
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256_sha_file": "sha256 of the checkpoint file, recorded in docs/evidence/pq3_3b_preflight_v2_2026_09.json",
+    "iteration": 3,
+    "accepted": 3,
+    "objective": -2.72646951325
+  },
+  "fixed_configuration": {
+    "shape": [60, 32, 24],
+    "spacing_m": 0.05,
+    "filter": "cone_density_filter",
+    "filter_radius_m": 0.15,
+    "volume_basis": "mean(rho_projection[active])",
+    "v_max_projected": 0.07632566813424899,
+    "target": 0.018,
+    "target_comparison_basis": "projected basis only; the raw design mean is never used as infeasibility evidence",
+    "backend_id": "projected-volume-target-oc",
+    "backend_tolerance": 0.0001,
+    "backend_eta": 0.5,
+    "parent_gradient_recompute": "per iteration, via OpenFoamOracle.parent_evaluator, and pulled back to design space with transform.pullback_from_beta before the backend consumes it",
+    "topology_state": "work/df2_fd_refresh/topology_state.json (unchanged)",
+    "template_parent": "work/df2_fd_refresh/template_frozen (unchanged)"
+  },
+  "levels": [
+    {
+      "name": "level_0_growth_b4_q15",
+      "b": 4.0,
+      "q": 15.0,
+      "move_limit": 0.05,
+      "max_iterations": 40,
+      "per_iteration_target_policy": "reachable-frontier-cap: target_i = min(0.018, phi_upper(move box at iteration i)); a step whose frontier is below the current phi is a family failure, not a campaign failure; the level Exit is |phi - 0.018| <= tol or max_iterations exhausted (then No-Go for this level)"
+    },
+    {
+      "name": "level_1_b8_q30",
+      "b": 8.0,
+      "q": 30.0,
+      "move_limit": 0.03,
+      "max_iterations": 40,
+      "per_iteration_target_policy": "reachable-frontier-cap, same definition as level 0"
+    },
+    {
+      "name": "level_2_b16_q100",
+      "b": 16.0,
+      "q": 100.0,
+      "move_limit": 0.01,
+      "max_iterations": 30,
+      "per_iteration_target_policy": "reachable-frontier-cap, same definition as level 0"
+    }
+  ],
+  "acceptance_gates": [
+    "each level records preflight v2 numbers: masks_invariant true, phi monotone non-decreasing, frontier growth measured",
+    "every level Exit: |mean(rho_projection[active]) - 0.018| <= 1e-4",
+    "mean(rho_projection[active]) <= 0.07632566813424899 at every accepted state",
+    "final state: discreteness in rho_projection (mean_nd <= 0.01, max_rho >= 0.9) and the stage_s_entry composite ready_for_stage_s verdict must be recorded",
+    "no raw-design-mean.argument may be used to declare infeasibility"
+  ],
+  "go_conditions_before_campaign": [
+    "a backend kappa family that can raise phi above phi(design) in at least one registered level (measured with a fresh parent gradient per iteration)",
+    "preflight v2 re-run after the family decision: summary.all_levels_growth_possible == true",
+    "manifest immutability check via the sidecar sha256"
+  ],
+  "measured_preflight_v2_result": {
+    "level_0_growth_b4_q15": {
+      "phi_design": 0.016602975859949236,
+      "phi_frontier": 0.014566517657576909,
+      "frontier_growth": -0.002036458202372327,
+      "masks_invariant": true,
+      "bracketed_at_0.018": false
+    },
+    "level_1_b8_q30": {
+      "phi_design": 0.010933707843866918,
+      "phi_frontier": 0.00942994528968086,
+      "frontier_growth": -0.0015037625541860587,
+      "masks_invariant": true,
+      "bracketed_at_0.018": false
+    },
+    "level_2_b16_q100": {
+      "phi_design": 0.008806530315092527,
+      "phi_frontier": 0.008475890948287925,
+      "frontier_growth": -0.0003306393668046012,
+      "masks_invariant": true,
+      "bracketed_at_0.018": false
+    },
+    "interpretation": "the registered multiplicative OC family (stepped = clip(values * max(-g,0)^eta * kappa, box)) cannot raise phi above phi(design): the gradient support is split nearly evenly (9420 receivers vs 9780 penalised, no zero cells) and receiver magnitudes are tiny (p50 ~ 9e-6), so no receiver crosses the tanh 0.5 threshold within the move box while the penalised half loses sub-threshold mass. Single-step AND multi-iteration growth to 0.018 is therefore not achievable with the current family; a campaign must NOT be started under the current backend."
+  },
+  "backend_family_redesign_candidates": [
+    {
+      "id": "A",
+      "name": "signed-translation family",
+      "definition": "stepped = clip(values + kappa * move * d, lower, upper) with per-cell d = sign(-pullback-downforce-gradient) combined with a projected-volume ascent direction; phi(kappa) is monotone per cell so bisection keeps its contract",
+      "risk": "two-direction family needs an explicit secondary bracket or per-cell velocity weighting to keep the single-kappa bisection meaningful"
+    },
+    {
+      "id": "B",
+      "name": "volume-steered uniform-ascent family",
+      "definition": "stepped = clip(values + kappa * move * u, lower, upper) where u is the design-space pullback of the constant projected-volume ascent unit vector, restricted to the allowed cells; bisection on kappa keeps |phi - target| bound",
+      "risk": "ignores the downforce gradient during volume growth; the growth phase must be bounded and re-primed by a fresh parent gradient afterwards"
+    }
+  ],
+  "next_step_owner": "user decision on backend family (A or B) before scripts/pq3_3b_campaign_2026_09.py is written; the long OpenFOAM campaign is NOT started"
+}
