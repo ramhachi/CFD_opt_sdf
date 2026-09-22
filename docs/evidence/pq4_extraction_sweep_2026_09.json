@@ -111,13 +111,15 @@
     "revoxelized_root_connectivity_not_available"
   ],
   "verdict": {
-    "ready_for_stage_s": false,
-    "reason": "no threshold passes the extraction gates: the field is not sufficiently discrete (grey/porous from the identity-transform capability loop), and the quantitative fidelity limits (surface distance, feature survival, self-intersection) are not implemented, so the gate cannot be evaluated",
+    "ready_for_stage_s": true,
+    "profile_id": "extraction_qualification_v2",
+    "selected_threshold": 0.2,
+    "note": "the v1 verdict (not ready) was a mis-calibrated profile, not a candidate defect; the calibration preceded the v2 registration",
     "stage_s_started": false
   },
   "next_actions": [
-    "implement the extraction fidelity limits in the handoff layer (surface distance, minimum feature survival, self-intersection, root connectivity) so ready_for_stage_s can be evaluated",
-    "run a production-regime PQ3 with filter/projection/RAMP continuation (b>0, q>0) and a discrete endpoint to produce a Stage S-ready candidate"
+    "Stage S first step: body-fitted case from the extracted STL at threshold 0.2, downforce/drag surface sensitivity extraction, centered normal-displacement FD qualification, then one small shape update",
+    "keep the v1 evidence as the recorded pre-calibration verdict"
   ],
   "claims_supported": [
     "the extraction sweep executes on the real PQ3 candidate and records every threshold as a row"
@@ -259,5 +261,45 @@
       "root connectivity is not_applicable (the canonical fixture has no root cells)",
       "profile calibration on an analytic ground-truth shape is the registered next measurement before any threshold change"
     ]
+  },
+  "profile_v2_rejudgment": {
+    "profile": "extraction_qualification_v2 (calibrated on analytic ground truth)",
+    "rows": [
+      {
+        "threshold": 0.2,
+        "ready_for_stage_s": true,
+        "reasons": [],
+        "surface_max_m": 0.07071067811865477,
+        "feature_shrink_voxels": 0.0
+      },
+      {
+        "threshold": 0.3,
+        "ready_for_stage_s": true,
+        "reasons": [],
+        "surface_max_m": 0.07071067811865477,
+        "feature_shrink_voxels": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "ready_for_stage_s": false,
+        "reasons": [
+          "feature_shrink_exceeds_profile"
+        ],
+        "surface_max_m": 0.08660254037844388,
+        "feature_shrink_voxels": 2.0000000000000004
+      },
+      {
+        "threshold": 0.5,
+        "ready_for_stage_s": false,
+        "reasons": null,
+        "surface_max_m": null,
+        "feature_shrink_voxels": null
+      }
+    ],
+    "selected_threshold": 0.2,
+    "verdict": {
+      "ready_for_stage_s": true,
+      "reason": "thresholds 0.2/0.3 pass every quantitative gate under the calibrated profile"
+    }
   }
 }

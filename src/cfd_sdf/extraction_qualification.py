@@ -50,6 +50,30 @@ EXTRACTION_QUALIFICATION_PROFILE_V1: dict[str, Any] = {
 }
 
 
+# v2: calibrated on analytic ground truth (docs/evidence/pq4_profile_calibration_2026_09.json).
+# A perfect binary field measures 1.41-1.73 voxels max and ~1 voxel RMS on the
+# cell-centered metric, so v1 (1.0 / 0.5 voxel) sat below the metric floor and no
+# candidate could pass. v2 thresholds are 2.0 / 1.25 voxels.
+EXTRACTION_QUALIFICATION_PROFILE_V2: dict[str, Any] = {
+    "profile_id": "extraction_qualification_v2",
+    "surface_distance_max_m": 0.10,
+    "surface_distance_rms_max_m": 0.0625,
+    "feature_shrink_max_voxels": 1.0,
+    "require_watertight": True,
+    "require_winding_consistent": True,
+    "require_positive_volume": True,
+    "require_no_duplicate_faces": True,
+    "require_root_connectivity": True,
+    "calibration": "docs/evidence/pq4_profile_calibration_2026_09.json",
+    "scope": "fixed-grid density-to-SDF handoff on the canonical Cartesian grid",
+}
+
+EXTRACTION_QUALIFICATION_PROFILES: dict[str, dict[str, Any]] = {
+    "v1": EXTRACTION_QUALIFICATION_PROFILE_V1,
+    "v2": EXTRACTION_QUALIFICATION_PROFILE_V2,
+}
+
+
 class ExtractionQualificationError(ValueError):
     """Fail-closed extraction qualification contract violation."""
 
@@ -217,6 +241,8 @@ def _sample_distance_at_vertices(
 
 __all__ = [
     "EXTRACTION_QUALIFICATION_PROFILE_V1",
+    "EXTRACTION_QUALIFICATION_PROFILE_V2",
+    "EXTRACTION_QUALIFICATION_PROFILES",
     "ExtractionQualification",
     "ExtractionQualificationError",
     "qualify_extraction",

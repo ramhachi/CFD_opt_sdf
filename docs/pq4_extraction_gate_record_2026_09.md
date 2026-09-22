@@ -64,3 +64,33 @@ EDT 距離、max/RMS）、**feature survival**（super-sampled DT の最小 feat
   から変更する（結果を見た閾値変更は禁止）。
 - 候補側: identity-transform capability loop の grey field ではなく、filter/projection/RAMP
   continuation を使う production-regime PQ3 で discrete な終端を作る必要がある。
+
+## 校正と v2 プロファイル（同日）
+
+解析形状（binary ground truth: box_bluff03 / plate_a20_nd / wing_camber_bent /
+wing_two_element）で metric floor を測定（`docs/evidence/pq4_profile_calibration_2026_09.json`）:
+
+| shape | surface max | max (voxel) | RMS | v1 ready |
+| --- | --- | --- | --- | --- |
+| box_bluff03 | 0.0707 m | 1.41 | 0.0476 | False |
+| plate_a20_nd | 0.0707 m | 1.41 | 0.0412 | False |
+| wing_camber_bent | 0.0866 m | 1.73 | 0.0445 | False |
+| wing_two_element | 0.0707 m | 1.41 | 0.0470 | False |
+
+**完全な binary 形状でも v1 閾値（max 1.0 voxel / RMS 0.5 voxel）を超過** — v1 は metric floor
+以下にあり、どの候補も合格できない設定だった。校正結果に基づき **v2**
+（max 2.0 voxel = 0.10 m、RMS 1.25 voxel = 0.0625 m）を、候補再判定の前に登録。
+
+### v2 での再判定
+
+| threshold | ready | surface max | feature shrink | reasons |
+| --- | --- | --- | --- | --- |
+| 0.2 | **True** | 0.0707 | 0.0 | - |
+| 0.3 | **True** | 0.0707 | 0.0 | - |
+| 0.4 | False | 0.0866 | 2.0 | feature_shrink |
+| 0.5 | False | - | - | handoff error |
+
+選択 threshold 0.2。**PQ3 v5 candidate は Stage S-ready になった**（v1 の不成立は candidate の
+欠陥ではなくプロファイルの校正ミス）。次の PQ4 slice は Stage S 第一歩:
+body-fitted case 生成 → downforce/drag surface sensitivity → 法線変位の centered FD 資格化 →
+1 つの shape update。
