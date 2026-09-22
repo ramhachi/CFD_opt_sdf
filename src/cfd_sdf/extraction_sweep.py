@@ -142,13 +142,10 @@ def run_extraction_threshold_sweep(
             surface = report.get("surface", {})
             qualification: ExtractionQualification | None = None
             entry: StageSEntryVerdict | None = None
-            if qualification_profile is not None or stage_s_entry is not None:
-                qualification = qualify_extraction(
-                    artifacts.manifest_json,
-                    mesh_path=artifacts.surface_stl,
-                    profile=qualification_profile,
-                )
             if stage_s_entry is not None:
+                # the composite gate owns the verdict; the extraction profile it
+                # uses is forwarded so the local row field and the composite
+                # sub-verdict always come from the same profile
                 entry = qualify_stage_s_entry(
                     artifacts.manifest_json,
                     mesh_path=artifacts.surface_stl,
@@ -157,6 +154,12 @@ def run_extraction_threshold_sweep(
                     volume_profile=stage_s_entry.get("volume_profile"),
                     clearance_profile=stage_s_entry.get("clearance_profile"),
                     volume_constraint=stage_s_entry.get("volume_constraint"),
+                )
+            elif qualification_profile is not None:
+                qualification = qualify_extraction(
+                    artifacts.manifest_json,
+                    mesh_path=artifacts.surface_stl,
+                    profile=qualification_profile,
                 )
             geometry_metrics, geometry_status = _geometry_metrics(
                 artifacts.revoxelized_density_vti
@@ -175,6 +178,19 @@ def run_extraction_threshold_sweep(
                         if stage_s_entry is not None
                         else bool(report.get("ready_for_stage_s"))
                     ),
+                    extraction_profile_pass=(
+                        (
+                            (entry.sub_verdicts.get("extraction_profile") or {}).get("pass")
+                            if entry is not None
+                            else None
+                        )
+                        if stage_s_entry is not None
+                        else (
+                            qualification.ready_for_stage_s
+                            if qualification is not None
+                            else None
+                        )
+                    ),
                     watertight=bool(surface.get("watertight")),
                     positive_volume=bool(surface.get("positive_volume")),
                     component_count=surface.get("component_count"),
@@ -188,9 +204,6 @@ def run_extraction_threshold_sweep(
                     geometry_metrics=geometry_metrics,
                     geometry_metrics_status=geometry_status,
                     qualification=qualification.to_dict() if qualification else None,
-                    extraction_profile_pass=(
-                        qualification.ready_for_stage_s if qualification is not None else None
-                    ),
                     stage_s_entry=entry.to_dict() if entry else None,
                 )
             )

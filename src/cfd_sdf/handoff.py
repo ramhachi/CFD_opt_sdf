@@ -67,7 +67,7 @@ DISCRETENESS_MIN_MAX_RHO = 0.9
 # candidates while the count of triangles with aspect ratio > 100 dropped by 90-100%.
 SURFACE_CLEAN_TOLERANCE_FRACTION = 0.02
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-_RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected"})
+_RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected", "rho_projection"})
 _MASK_NAMES = (
     "allowed_mask",
     "forbidden_mask",
