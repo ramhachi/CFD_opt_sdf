@@ -244,6 +244,115 @@ class VolumeTargetBackend:
         )
 
 
+class ProjectedVolumeTargetBackend:
+    """OC-style proposal that bisects kappa to hit a *projected* volume target.
+
+    The raw design-volume target of ``VolumeTargetBackend`` is not the quantity
+    the volume constraint and the Stage S geometry see: the projection and the
+    RAMP live between the design and the solver field, so a raw-design target
+    does not survive continuation (measured in PQ3.2/3.3). This backend
+
+    1. builds ``rho(kappa) = clip(values * max(-grad, 0)^eta * kappa, box)``;
+    2. evaluates ``phi(kappa) = mean(rho_projection(rho(kappa))[active])``
+       through the declared transform;
+    3. bisects kappa until ``|phi - target| <= tolerance``, failing closed when
+       even the box endpoints cannot bracket the target (the continuation step
+       is too large; register an intermediate level instead).
+    """
+
+    backend_id = "projected-volume-target-oc"
+
+    def __init__(
+        self,
+        *,
+        transform,
+        target: float,
+        tolerance: float = 1e-4,
+        eta: float = 0.5,
+        bisection: int = 60,
+    ) -> None:
+        if not 0.0 < float(target) < 1.0:
+            raise ValueError("projected volume target must be within (0, 1)")
+        if tolerance <= 0.0:
+            raise ValueError("projected volume tolerance must be positive")
+        self.transform = transform
+        self.target = float(target)
+        self.tolerance = float(tolerance)
+        self.eta = float(eta)
+        self.bisection = int(bisection)
+
+    def _projected_volume(self, kappa: float, values, base, lower, upper) -> tuple[float, np.ndarray]:
+        stepped = np.clip(values * base * kappa, lower, upper)
+        state = self.transform.forward(stepped)
+        active = self.transform.active
+        return float(np.asarray(state.rho_projected, dtype=np.float64)[active].mean()), stepped
+
+    def propose(
+        self,
+        *,
+        rho: np.ndarray,
+        objective_gradient: np.ndarray,
+        constraint_gradients: dict[str, np.ndarray],
+        constraint_values: dict[str, float],
+        move_radius: float,
+        backend_state: dict[str, Any],
+    ) -> TrialProposal:
+        values = np.asarray(rho, dtype=np.float64)
+        gradient = np.asarray(objective_gradient, dtype=np.float64)
+        base = np.maximum(-gradient, 0.0) ** self.eta
+        lower = np.clip(values - move_radius, 0.0, 1.0)
+        upper = np.clip(values + move_radius, 0.0, 1.0)
+
+        def evaluate(kappa: float):
+            return self._projected_volume(kappa, values, base, lower, upper)
+
+        # bracket [lo, hi] kappa so that target is inside the reachable range
+        phi_low, stepped_low = evaluate(0.0)
+        hi = 1.0
+        phi_hi, stepped_hi = evaluate(hi)
+        grows = 0
+        while phi_hi < self.target and grows < 30:
+            hi *= 2.0
+            phi_hi, stepped_hi = evaluate(hi)
+            grows += 1
+        if phi_low >= self.target:
+            raise ValueError(
+                "projected volume target is below the kappa=0 design; register a "
+                "smaller target or expand the move box"
+            )
+        if phi_hi < self.target:
+            raise ValueError(
+                "projected volume target is unreachable inside the move box even at "
+                f"kappa={hi:.3g}; register an intermediate continuation level"
+            )
+        low, high = 0.0, hi
+        stepped = stepped_hi
+        for _ in range(self.bisection):
+            mid = 0.5 * (low + high)
+            phi_mid, stepped_mid = evaluate(mid)
+            if phi_mid < self.target:
+                low = mid
+            else:
+                high = mid
+                stepped = stepped_mid
+        final_volume, stepped = evaluate(high)
+        if abs(final_volume - self.target) > self.tolerance:
+            raise ValueError(
+                f"projected volume target not reached: |{final_volume:.6f} - "
+                f"{self.target:.6f}| > {self.tolerance}"
+            )
+        return TrialProposal(
+            delta=stepped - values,
+            backend=self.backend_id,
+            metadata={
+                "target": self.target,
+                "kappa": high,
+                "projected_volume_after": final_volume,
+                "design_mean_after": float(np.mean(stepped[self.transform.active])),
+            },
+        )
+
+
 @dataclass(frozen=True)
 class LoopSpec:
     transform: DesignTransform
@@ -750,8 +859,10 @@ __all__ = [
     "LoopSpec",
     "OracleResult",
     "ProjectedGradientBackend",
+    "ProjectedVolumeTargetBackend",
     "ResponseOracle",
     "TrialBackend",
+    "VolumeTargetBackend",
     "make_oracle_from_compiled",
     "run_stage_t_loop",
 ]
