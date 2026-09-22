@@ -77,8 +77,14 @@ def qualify_stage_s_entry(
     extraction_profile: dict[str, Any] | None = None,
     volume_profile: dict[str, Any] | None = None,
     clearance_profile: dict[str, Any] | None = None,
+    volume_constraint: dict[str, Any] | None = None,
 ) -> StageSEntryVerdict:
-    """Compose the complete Stage S entry gate for one handoff."""
+    """Compose the complete Stage S entry gate for one handoff.
+
+    ``volume_constraint`` optionally registers the optimizer's projected-volume
+    limit and its feasibility tolerance:
+    ``{"projected_volume": v, "limit": vmax, "absolute_tolerance": 1e-4}``.
+    """
 
     import hashlib
 
@@ -281,6 +287,23 @@ def qualify_stage_s_entry(
                     _fail(reasons, "components_root", "an unattached material component exists")
     components["pass"] = bool(components_ok)
     sub["components_root"] = components
+
+    # --- optimizer volume constraint ----------------------------------------
+    if volume_constraint is not None:
+        projected = float(volume_constraint["projected_volume"])
+        limit = float(volume_constraint["limit"])
+        tolerance = float(volume_constraint.get("absolute_tolerance", 0.0))
+        violation = projected - limit
+        volume_pass = violation <= tolerance
+        sub["volume_constraint"] = {
+            "pass": bool(volume_pass),
+            "projected_volume": projected,
+            "limit": limit,
+            "violation": violation,
+            "absolute_tolerance": tolerance,
+        }
+        if not volume_pass:
+            _fail(reasons, "volume_constraint", "the projected volume exceeds the declared limit")
 
     # --- clearance -----------------------------------------------------------
     try:

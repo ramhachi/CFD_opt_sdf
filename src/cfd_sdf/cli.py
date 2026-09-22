@@ -2281,6 +2281,15 @@ def sweep_density_extraction(
         help="ProblemSpec YAML; enables the composite Stage S entry gate and makes "
         "ready_for_stage_s the conjunction of all sub-gates.",
     ),
+    stage_s_volume_projected: float | None = typer.Option(
+        None, help="Candidate projected volume for the optimizer volume sub-gate."
+    ),
+    stage_s_volume_limit: float | None = typer.Option(
+        None, help="Declared projected-volume limit for the volume sub-gate."
+    ),
+    stage_s_volume_tolerance: float = typer.Option(
+        0.0, help="Absolute feasibility tolerance for the projected-volume sub-gate."
+    ),
 ) -> None:
     """Run the preregistered density-to-SDF threshold sweep (DF4)."""
     if qualification_profile not in {"none", *EXTRACTION_QUALIFICATION_PROFILES}:
@@ -2304,7 +2313,19 @@ def sweep_density_extraction(
             else EXTRACTION_QUALIFICATION_PROFILES.get(qualification_profile)
         ),
         stage_s_entry=(
-            {"problem_spec_yaml": stage_s_entry_problem_spec}
+            {
+                "problem_spec_yaml": stage_s_entry_problem_spec,
+                "volume_constraint": (
+                    {
+                        "projected_volume": stage_s_volume_projected,
+                        "limit": stage_s_volume_limit,
+                        "absolute_tolerance": stage_s_volume_tolerance,
+                    }
+                    if stage_s_volume_projected is not None
+                    and stage_s_volume_limit is not None
+                    else None
+                ),
+            }
             if stage_s_entry_problem_spec is not None
             else None
         ),

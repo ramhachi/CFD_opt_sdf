@@ -1,0 +1,105 @@
+{
+  "artifact_id": "pq3_1_candidate_judgment_2026_09",
+  "evidence_class": "bounded_closed_loop_production_regime_negative_geometry",
+  "issue": "PQ3.1 candidate materialization and composite gate",
+  "manifests": {
+    "v1": "docs/evidence/pq3_1_production_loop_manifest_2026_09.json",
+    "v2": "docs/evidence/pq3_1_production_loop_manifest_v2_2026_09.json"
+  },
+  "candidate": {
+    "id": "pq3_1_v2_final",
+    "checkpoint": "work/pq3_1_production_loop_v2/checkpoint_stage3_binarize.json",
+    "density_array": "rho_projected (OpenFOAM beta, the field the solver saw)",
+    "transform": "cone filter radius 0.075, b=16, q=100",
+    "solver_field_stats": {
+      "mean_nd": 0.008735247824122189,
+      "max_rho": 0.9934285879135132
+    },
+    "projection_stats": {
+      "mean_nd": 0.008335896457691803,
+      "max_rho": 0.999934510532657
+    },
+    "projected_volume": 0.01840204205240806,
+    "volume_limit": 0.018325312500000003,
+    "volume_violation": 7.672955240805787e-05,
+    "design_field_stats": {
+      "mean_nd": 0.032549375293454336,
+      "max_rho": 1.0
+    }
+  },
+  "stage_history": [
+    {
+      "stage": "stage1_grow",
+      "accepted": 5,
+      "rejected": 0,
+      "mean_nd_design": 0.03354817058172704,
+      "max_rho_design": 0.5010724962272143,
+      "projected_volume": 0.016516805148647798
+    },
+    {
+      "stage": "stage2_sharpen",
+      "accepted": 11,
+      "rejected": 2,
+      "mean_nd_design": 0.032549375293454336,
+      "max_rho_design": 1.0,
+      "projected_volume": 0.018325312541301823
+    },
+    {
+      "stage": "stage3_binarize",
+      "accepted": 0,
+      "rejected": 12,
+      "mean_nd_design": 0.032549375293454336,
+      "max_rho_design": 1.0,
+      "projected_volume": 0.01840204205240806
+    }
+  ],
+  "composite_gate": {
+    "extraction_profile_v2": [
+      {
+        "threshold": 0.4,
+        "pass": false,
+        "surface_distance_max_m": 0.2598076211353316,
+        "reverse_max_m": 0.032717831540472087,
+        "volume_relative": 0.5497114085420354,
+        "feature_shrink_voxels": 1.585786437626905
+      },
+      {
+        "threshold": 0.5,
+        "pass": false,
+        "surface_distance_max_m": 0.6576473218982953,
+        "reverse_max_m": 0.016959292260922496,
+        "volume_relative": 0.8578654427661545,
+        "feature_shrink_voxels": 1.4999999999999998
+      },
+      {
+        "threshold": 0.6,
+        "pass": false,
+        "surface_distance_max_m": null,
+        "reverse_max_m": null,
+        "volume_relative": 0.9806675239330377,
+        "feature_shrink_voxels": null
+      }
+    ],
+    "ready_for_stage_s": false,
+    "selected_threshold": null
+  },
+  "findings": [
+    "the continuation loop reached the discreteness gates on the solver field: beta mean_nd 0.00874 <= 0.01 and max_rho 0.9934 >= 0.9",
+    "max_rho reached 1.0 on the design field during stage 2; the design field itself stayed grey (mean_nd 0.0325) because the projection, not the design, carries the binarization",
+    "the extraction gates fail: the 0.4-0.6 contours bridge the sparse material (one-way surface distance up to 0.66 m, volume errors 55-93%)",
+    "the projected volume rose to the fixed upper bound during stage 2 and ended 7.7e-5 above it, which made stage 3 reject every proposal (0 accepted / 12 rejected)",
+    "root-cause hypothesis: the fixed upper-bound volume budget gave no incentive for coherent growth, and the filter radius (0.075 = 1.5 cells) is too small to keep features extraction-survivable"
+  ],
+  "next_registered": [
+    "PQ3.2: register a volume-ramp growth schedule with a larger declared minimum solid width (filter radius >= 0.15 = 3 cells), a slack/progressing volume target, and a pre-registered volume feasibility tolerance; then re-run the continuation and the composite gate"
+  ],
+  "claims_supported": [
+    "the production continuation loop runs with the real oracle and reaches solver-field discreteness",
+    "the composite gate correctly rejects a discrete-but-not-extractable candidate"
+  ],
+  "claims_not_supported": [
+    "no Stage S readiness",
+    "no shape update",
+    "no improvement or target-physics claim"
+  ]
+}

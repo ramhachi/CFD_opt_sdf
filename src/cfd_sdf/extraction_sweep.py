@@ -156,6 +156,7 @@ def run_extraction_threshold_sweep(
                     extraction_profile=stage_s_entry.get("extraction_profile"),
                     volume_profile=stage_s_entry.get("volume_profile"),
                     clearance_profile=stage_s_entry.get("clearance_profile"),
+                    volume_constraint=stage_s_entry.get("volume_constraint"),
                 )
             geometry_metrics, geometry_status = _geometry_metrics(
                 artifacts.revoxelized_density_vti
