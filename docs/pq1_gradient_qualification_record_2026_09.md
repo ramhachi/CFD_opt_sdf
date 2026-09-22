@@ -89,3 +89,27 @@ epsilon を固定した。
 
 runner が manifest の ε・方向を無視していたバグを修正（`_manifest_plan`）。
 登録 manifest と実行条件の一致が fail-closed で保証されるようになった。
+
+## 追記3 — PQ1.1: mesh gate 測定と canonical parameterization 因子（2026-09-22）
+
+- **mesh gate 解消**: 細分化 source grid（64x32x32）で `checkMesh -allGeometry -allTopology` が
+  `Mesh OK`（determinant / concave / interpolation / volume ratio すべて OK）。
+  これで PQ1 verdict の `not_measured_gates` は空になった。
+- **canonical 細分化**（`docs/evidence/pq1_canonical_refined_2026_09.json`）:
+  source grid・物理状態・残差・方向・ε を固定し canonical だけ 0.05 → 0.025（120x64x48）に変更。
+  base downforce は 0.296719125655 → 0.296719119463（差 6e-9、2x ブロックアップサンプルで
+  注入場が同一であることの確認）。
+
+| 方向 | 粗 canonical | 細 canonical |
+| --- | --- | --- |
+| gradient_aligned | 1.1504 | **1.1172** |
+| random_seed_11 | 1.1134 | **2.2454** |
+| random_seed_2026 | 1.1441 | **1.8916** |
+
+- plateau は全方向で tight（spread ≤ 0.021）、符号反転なし → No-Go ではない。
+- 解釈: 比は **design 格子と source 格子の結合**に依存する。設計格子だけを細かくすると、
+  粗い source 格子が平均化してしまうパターンを励起し、random 方向の不一致が増大する。
+- 判定は Path B のまま。**将来の構成は canonical と source を同時に細分化する**必要がある
+  （joint-refinement requirement）。
+- 次因子 `pq1_third_source_grid_manifest_2026_09.json`（128x64x64、registered_not_run）を登録。
+  三段階目の傾向を見るまで Richardson/GCI は出さない。
