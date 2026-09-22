@@ -1,12 +1,19 @@
 # ダウンフォース最適化 — PQ0/PQ1 実装後の統合・資格化計画（2026-09-22）
 
-Status: **adopted post-PQ1 plan**
+Status: **adopted architecture and qualification plan**
 
 Authority: [`phase_plan.md`](phase_plan.md) がロードマップ、状態、実行順の唯一の
 authority である。本書は、その順序を実装、数値実験、合否判定へ展開する詳細計画である。
 問題状態は [`problem_register_2026_09.md`](problem_register_2026_09.md)、schema と artifact
 semantics は [`problem_contract_v2.md`](problem_contract_v2.md) と
 [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) に従う。
+
+> **2026-09-22 current-state note:** PQ0.1、PQ0.2、PQ1.1、最初のPQ3 closed loop、
+> PQ3.1--PQ3.3は実行済みである。本書の未実行形で書かれた各節は、その時点のentry/exit
+> criteriaを保存する。PQ3.3後の現在地、field-semantic再判定、projected-volume continuation、
+> PQ4.1、最初のStage S stepの実行順は
+> [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
+> に従う。`phase_plan.md`が最終authorityである。
 
 Baseline: branch `feat/p0-openfoam-closed-loop`, commit
 `1d4046341dfb599582a9976061a07689d32c5927`。

@@ -9,15 +9,18 @@
 
 T→S→Vのパイプラインは実機OpenFOAMで一周し、Stage Tは初めて実設計を生成した。
 その後、DF0--DF6のcompiler、transform、受理制御、抽出、検証algebra、robust prototypeが
-実装された。ただし、これらはまだ一つのproduction closed loopとして統合・資格化されていない。
+実装された。PQ0.1/PQ0.2 は projected-volume、parent/trial oracle、Path B bracket、rollback、
+resume を実 OpenFOAM の bounded closed loopとして統合し、PQ3は3 accepted stepを得た。
+ただし、これはPath B下のcapability evidenceであり、production gradient、抽出可能な終端候補、
+Stage V downforce referenceはまだ資格化されていない。
 
 一方、**このアーキテクチャが成立する条件そのもの（安い代理モデルが、実際の optimizer
 reachable set で応答値と候補順位を十分に保存すること）は、現時点で資格化されていない。**
 WP6-2 の8形状では downforce の解像可能な反転がなく、候補別bandによる再判定後も25組で
 反転0だった。P18は固定形状diagnosticとして閉じたが、production optimizerの一般的な
 裏付けには使えない。PQ1は細 source grid で Path B に進んだが5% gateは未達である。
-現在の主要blockerはP4/P13のnonlinear integration、P6の残るgrid dependence、P16の
-downforce Stage V数値不確かさである。
+現在の主要blockerは、P6の残るdesign/source-grid coupling、P16のdownforce Stage V数値不確かさ、
+P19のprojected-volume/geometry-field意味論、P20のStage S entry測定である。
 
 ただし初期の否定的所見は、**未資格の参照（P12）と未収束の随伴（P13）の上に乗っていた**ため、
 Brinkman方式一般のNo-Goへ昇格させてはならない。
@@ -34,23 +37,25 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | # | 問題 | 重大度 | 状態 |
 | --- | --- | --- | --- |
 | P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **条件付き肯定観測、一般資格は未成立（2026-09-20, WP6+WP6-2）**: WP6 の厚さ軸ではdownforce反転。WP6-2の8形状ではV1/V2とも解像可能な反転ゼロ、tau=1.000。一方、17形状合成poolのmachine verdictは両応答とも`unresolved`。reachable-set/min-widthへの一般化はP18を閉じてから判定する |
-| P2 | 設計が二値化しない | 最重大 | **機構を実測で特定、罰則付き補間で解消の見込み**（検証中） |
+| P2 | 設計が二値化しない | 最重大 | **solver fieldの登録済み離散指標は達成、抽出可能性は未成立（2026-09-22, PQ3.3）**。`beta_solver` mean_nd 0.00388 / max 0.94395。ただしglobal指標は空領域で希釈され、最終b=16は0 accepted。P19/P20を閉じて再判定 |
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
-| P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **PQ0部品実装後もnonlinear pathは未閉鎖（2026-09-22）**。compiler volumeはone-step pathにのみ接続。実P0 auditはunconstrained `drag - downforce` fixtureで、次のdownforce+volume問題を証明しない。PQ0.1で修復 |
+| P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
-| P6 | continuous adjoint と discrete primal FD のsolver-side不整合 | 高 | **Path B（2026-09-22）**。source grid細分化+tight residualでFD/adjoint比は1.1504/1.1134/1.1441へ改善しepsilon-stable。ただし5% gate未達、mesh gate未測定、二gridのみ。canonical gridと必要時第三source gridをPQ1.1で判定 |
+| P6 | continuous adjoint と discrete primal FD のsolver-side不整合 | 高 | **Path B（2026-09-22）**。source grid細分化+tight residualでFD/adjoint比は1.1504/1.1134/1.1441へ改善しepsilon-stable。refined-source mesh gateはpass。canonical-only refinementは1.1172/2.2454/1.8916でcoupling依存を示した。5% gate未達、第三source gridは登録済み未実行 |
 | P7 | 注入が`rho`のみ更新し他配列が陳腐化 | 中 | **解消（2026-09-20）**。C3 identity契約が検証できるときは4配列を同世代で一斉更新、検証できない場合は`owns no filter/projection profile`でfail-closed |
 | P8 | move limitにフロアがなくno-opを受理 | 低 | 修正着手中 |
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
 | P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
 | P11 | Brinkman浸透層が格子で解像されていない | — | **P2の症状として閉じた**（測定済） |
 | P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。他候補・target physicsは未資格 |
-| P13 | 最適化ループの随伴・primal実行契約 | 最重大 | 旧「未収束随伴を消費」は解消。**現adapterは未閉鎖（2026-09-22）**: value/gradientが同じevaluatorを再実行し得る、trialがadjoint boolを要求、欠落はTrue。PQ0.1でparent adjointとtrial primalを分離 |
+| P13 | 最適化ループの随伴・primal実行契約 | 最重大 | **bounded pathでは解消（2026-09-22, PQ0.1/PQ0.2）**。accepted primal再利用、parent adjoint fail-closed、trial primal-only、real bracket/rollback/resumeを実測。勾配精度そのものはP6としてopen |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
 | P16 | Stage Vが解像できる最小差 | — | **scheme因子まで更新（2026-09-21）**。`linearUpwind`でdrag drift 0.364%は2% bound内。downforce driftは0.010374で0.005未達、三格子非単調でGCIなし。次は登録済みdomain/boundary因子 |
 | P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
+| P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **open（2026-09-22, PQ3.3後）**。backendはraw `rho_design`平均をtargetにし、handoffはRAMP後`beta_solver`を0.4--0.6で抽出。採用制約・geometry基準は`rho_projection`。PQ3.3a再materializeとprojected-volume backendが必要 |
+| P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **open（2026-09-22, PQ4.0監査）**。self-intersectionが自己boolean、gap EDTが0、p5をminimumと呼ぶ、volume閾値の校正artifact不一致。PQ4.0aで修正後にPQ4.1 |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -112,6 +117,78 @@ absolute response constraintの精度、将来のoptimizer-generated geometryの
 従ってP18は固定形状diagnosticとして閉じる。8形状の観測は保持するが、optimizer-generated
 shape、absolute calibration、grid-independent rankingへは拡張しない。将来のproduction
 claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
+
+---
+
+## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
+
+### 症状
+
+PQ3.3の`VolumeTargetBackend`は、objective gradientが非ゼロのcellをactiveとみなし、
+move box内で`mean(rho_design_new)=target`となるscalar multiplierを二分探索する。一方、
+採用された制約と形状占有率は`V(rho_projection)`である。PQ3.3ではraw design targetを維持しても、
+`b=0 -> 8 -> 16`でprojected volumeが`0.02745 -> 0.01469 -> 0.01302`へ低下した。
+
+さらにcandidate materializationは、RAMP後の`beta_solver`をfixed-grid artifactの
+`rho_projected`へ書き、0.4/0.5/0.6でcontourした。採用計画のgeometry fieldはRAMP前の
+`rho_projection`である。RAMP q=100では`beta_solver=0.5`が
+`rho_projection≈0.9902`に相当するため、現sweepは意図した0.5等値面より大幅に厳しい。
+
+### 影響
+
+- PQ3.3の`discrete_candidate=true`はsolver fieldのglobal mean_nd/max/volume upper-boundだけを
+  表し、抽出可能なgeometryを意味しない。
+- 0.4 contourの66% volume errorと0.5のempty revoxelizationは実測だが、
+  `rho_projection` geometryの同じthreshold verdictではない。
+- 現時点の`ready_for_stage_s=false`はfail-closedに維持するが、抽出不能の原因を
+  projection continuationだけに確定できない。
+
+### 解消条件
+
+[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)の
+Work A/C/Dに従う。
+
+1. 既存PQ3.3 candidateから四場を再計算し、別名・別hashで保存する。
+2. `rho_projection`をgeometry sourceとして再sweepし、RAMP threshold mappingとmask一致を確認する。
+3. volume targetを`V(rho_projection)`へ変更し、宣言active mask、attainable bracket、最終残差を
+   fail-closedに検査する。
+4. b/q levelごとにparentを再計算し、最終b=16でaccepted/converged stateを得る。
+5. terminal candidateを元のprojected-volume upper-bound問題で再評価する。
+
+既存PQ3.3 evidenceは上書きせず、誤ったartifact IDとfield semanticを訂正artifactで参照する。
+
+---
+
+## P20 — Stage S entryの幾何測定不備（高・open）
+
+### 症状
+
+PQ4.0は`ready_for_stage_s`を全sub-gateの論理積に戻し、local extraction passによる上書きを
+防いだ。この合成論理は正しい。一方、個別測定には次が残る。
+
+1. self-intersectionはmeshと同じmeshのboolean intersectionを呼び、自己交差を検出しない。
+   `not_evaluated`もglobal reasonへ追加されない。
+2. component間gapは`distance_transform_edt(~material)`をmaterial cell上で読むため0となる。
+3. `thickness_ridge_m_p5`を`minimum_solid_width`として扱い、ProblemSpecのminimum意味論と
+   一致しない。
+4. volume profileが参照する校正artifactはsurface-distanceを測ったもので、登録volume閾値を
+   支持しない。
+
+### 影響
+
+現行gateがfalseを返した判断は保守側なので保持できる。しかし、将来trueを返す場合の
+幾何資格が十分にfail-closedとは言えない。したがって現行PQ4.0実装だけでStage S entryを
+許可しない。
+
+### 解消条件
+
+1. 実self-intersection測定を導入し、必須なのに測定不能ならfailとする。
+2. component境界間の実距離を測り、analytic multi-component fixtureで校正する。
+3. minimumとquantile metricを区別し、ProblemSpecに対応するmetricを登録する。
+4. binary analytic shapesでsource/surface/revoxelized volume errorを測ってprofileを再登録する。
+5. clean/defect/unavailable-dependencyの回帰testを追加する。
+
+P20 closure後の新candidateだけをPQ4.1の`ready_for_stage_s`判定に使う。
 
 ---
 
@@ -446,6 +523,17 @@ PQ0で `CompiledProblem.volume_constraint`、`DesignTransform`、`solved_set` au
 を接続し、downforce-only objective と projected-volume inequality で
 `declared_equals_solved` を再監査する。
 
+### 追記（2026-09-22）— bounded reduced problemでのclosure
+
+PQ0.1は上記の接続を実装し、downforce-only objectiveとprojected-volume inequalityの
+`declared_equals_solved=true`を新しい実artifactで確認した。PQ0.2はparent/trial/bracket/
+rollback/resumeを実OpenFOAMで実行し、PQ3は同じ経路で3 accepted stepを得た。従ってP4は
+**このreduced problemのbounded pathでは解消**とする。
+
+native ISQPの歴史的template、target-Re/full-vehicle physics、robust constraints、将来の
+production backendまで解消したという意味ではない。projected-volume targetとgeometry fieldの
+新しい不一致はP19で別に追跡する。
+
 ---
 
 ## P5 — native ISQPが降下方向を与えない（中・回避済）
@@ -679,7 +767,7 @@ meshが有効、solverが収束、forceが格子独立、Stage Vが決定的参�
 **P1の否定的結果はこの参照の上に乗っている。** dragの3格子一貫反転は重要な観測として
 保持するが、参照側の数値誤差を修復または上限評価するまで一般的No-Goへ昇格させない。
 
-## P13 — 最適化ループの随伴・primal実行契約（最重大・修正中）
+## P13 — 最適化ループの随伴・primal実行契約（最重大・bounded pathで解消）
 
 `scripts/stage_t_python_loop.py:162`が`adjoint_iterations=1`を渡し、
 `fixed_grid_primal.py::_patch_optimisation_dict`がテンプレートの`nIters 4000;`を
@@ -712,6 +800,13 @@ PQ0.1では次へ分離する。
 - trialはprimal-onlyでadjoint statusを`not_applicable`
 - accepted trial artifactを次parentで再利用
 - API call countではなく実solver invocation IDで重複を検査
+
+### 追記（2026-09-22）— PQ0.1/PQ0.2 closure
+
+上記4項目はPQ0.1で実装され、PQ0.2の実OpenFOAM smokeでparent artifact reuse、trial
+primal-only、bracket、rollback、resumeを確認した。従ってP13はbounded reduced pathについて
+解消する。continuous-adjointとdiscrete primal FDの量的一致は別問題であり、P6のPath Bを
+維持する。
 
 ## P14 — 射影が二重にかかる（高・未修正）
 
@@ -993,13 +1088,15 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 
 ## 現在の未解決の問い（重要度順）
 
-1. PQ0.1で、projected-volume、primal reuse、parent adjoint、trial semantics、Path B bracketを
-   一つのnonlinear production pathとして閉じられるか。
-2. P6はcanonical gridまたは追加source gridで5% gateへ収束するか、Path Bに留まるか。
-3. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
-4. PQ3のoptimizer-generated candidateで、Stage Tの実primal改善とvolume/geometryを
-   同時に維持できるか。
-5. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか。
+1. P19を修正して`rho_projection`を抽出したとき、PQ3.3のgeometry failureはどこまで
+   field semanticの取り違えで説明されるか。
+2. projected-volume targetとlevel内収束を使うPQ3.3bで、b=16のaccepted/converged/
+   extractable candidateを作れるか。
+3. P20の測定をfail-closedに直した完全Gateで、実candidateが`ready_for_stage_s=true`になるか。
+4. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
+   Path Bに留まるか。
+5. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
+6. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか。
 
 ## 2026-09-12時点の主張境界（歴史的記録）
 
@@ -1022,21 +1119,19 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-22）
+## 次の一手（2026-09-22, PQ3.3後）
 
 実行順は`phase_plan.md` §11、詳細は
-[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
 に従う。
 
-1. PQ0.1: nonlinear volume/oracle/adjoint/FD-bracket integration
-2. PQ0.2: minimal real OpenFOAM oracle smoke
-3. PQ1.1: mesh gate + canonical-grid factor、必要時のみ第三source-grid level
-4. PQ2: registered Stage V domain/boundary factor（PQ0.1--PQ1.1と並行可）
-5. PQ3: at most three accepted OpenFOAM closed-loop steps
-6. PQ4: qualified extraction and one Stage S step
-7. PQ5: independent three-grid required-pair verification
-8. PQ6: robust/backend integration and target-physics ladder
+1. PQ3.3a: 保存済みcandidateを四場へ再構成し、`rho_projection`で安価に再抽出する。
+2. PQ4.0a: self-intersection、gap、minimum-width、volume calibrationをfail-closedに直す。
+3. PQ3.3b preflight: projected-volume target backend、到達可能性、manifestを固定する。
+4. PQ3.3b: b/q levelごとに再評価・再最適化し、最終levelのaccepted/converged stateを得る。
+5. PQ4.1: 正しいgeometry fieldで完全なcomposite Gateを実行する。
+6. Gate合格後のみ、drag/downforce surface FDと最大一つのStage S updateへ進む。
+7. PQ2は並行実行可能。PQ5/PQ6はStage S後の独立検証・target-physics ladderとして維持する。
 
-直近の判定点は **PQ0.1でdownforce+projected-volume問題を一経路として正しく解けるか** である。
-その後のPQ0.2で、実OpenFOAMのprimal reuse、adjoint-only parent、primal-only trial、restartを
-最小traceで確認する。
+直近の判定点は、**PQ3.3の抽出失敗が`beta_solver`と`rho_projection`の取り違えでどこまで
+説明されるか**である。これを確定する前に長時間PQ3.3bを開始しない。

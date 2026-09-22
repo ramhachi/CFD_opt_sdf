@@ -13,17 +13,21 @@ Start here in a new terminal, after reading the repository root
    commands, and reporting template.
 2. [`phase_plan.md`](phase_plan.md) - the sole roadmap, status, and execution
    order.
-3. [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
-   - adopted post-PQ1 integration and qualification plan
+3. [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
+   - current post-PQ3.3 execution detail: field-semantic re-judgment,
+   projected-volume continuation, complete Stage S entry gate, and the first
+   shape step; subordinate to the roadmap.
+4. [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+   - adopted post-PQ1 architecture and qualification plan
    (PQ0.1/PQ0.2/PQ1.1/PQ2--PQ6); subordinate to the roadmap.
-4. [`problem_register_2026_09.md`](problem_register_2026_09.md) - the issue
-   ledger, including P1-P18 and the measured contradictions.
-5. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) -
+5. [`problem_register_2026_09.md`](problem_register_2026_09.md) - the issue
+   ledger, including P1-P20 and the measured contradictions.
+6. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) -
    detailed implementation and test slices, subordinate to the latest roadmap.
-6. [`problem_contract_v2.md`](problem_contract_v2.md) and
+7. [`problem_contract_v2.md`](problem_contract_v2.md) and
    [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) - active
    schemas and artifact semantics.
-7. [`git_branching_strategy.md`](git_branching_strategy.md) - branch workflow.
+8. [`git_branching_strategy.md`](git_branching_strategy.md) - branch workflow.
 
 ## Authoritative documents
 
@@ -71,6 +75,11 @@ Start here in a new terminal, after reading the repository root
   gradient and Stage V downforce errors, then running the first limited closed
   loop, Stage S step and independent verification.
   `phase_plan.md` remains the sole execution-order authority.
+- [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
+  — current post-PQ3.3 bridge plan. It records what PQ3.1--PQ3.3 established,
+  separates `rho_projection` geometry from RAMP `beta_solver`, and defines the
+  gated order for semantic re-materialization, projected-volume reoptimization,
+  PQ4.1 and the first Stage S step. It is subordinate to `phase_plan.md`.
 - [`glm_downforce_assessment_2026_09.md`](glm_downforce_assessment_2026_09.md)
   — the GLM-session downforce-focused investigation and plan (WP4–WP6 results,
   literature refinement, and the recommended WP7/B-ladder route), subordinate
