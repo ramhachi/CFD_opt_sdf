@@ -43,11 +43,17 @@ def _final_rho_and_state(campaign_dir: Path) -> tuple[np.ndarray, dict]:
 def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: str) -> dict:
     manifest = ca.load_json(manifest_path)
     meta = ca.load_json(campaign_dir / "campaign_meta.json")
-    if meta.get("status") != "blocked":
-        raise SystemExit("campaign is not in a blocked state; outcome not recorded")
+    terminal = None
+    if meta.get("status") == "terminal_evaluated_not_stage_s_qualified":
+        terminal_path = campaign_dir / "terminal.json"
+        if not terminal_path.is_file():
+            raise SystemExit("terminal campaign lacks terminal.json")
+        terminal = ca.load_json(terminal_path)
+    elif meta.get("status") != "blocked":
+        raise SystemExit("campaign is not in a recorded state; outcome not recorded")
     rho, state = _final_rho_and_state(campaign_dir)
     levels = {level["name"]: level for level in manifest["levels"]}
-    level = levels[meta["level"]]
+    level = levels[meta.get("level") or manifest["input_stop_state"]["level"]]
     grid = load_fixed_grid_density_state(_path(manifest["registered_inputs"]["canonical_grid"]))
     arrays = grid.arrays
     active = (
@@ -87,19 +93,24 @@ def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: st
         }
         for candidate in stopping["phase2"]["candidates"]
     ]
+    cycle_metrics = [entry["metric"] for entry in accepted]
     outcome = {
         "kind": kind,
         "schema_version": 1,
         "manifest_sha256": ca.sha256_file(manifest_path),
         "output_directory": str(campaign_dir.relative_to(ROOT)),
-        "status": {"status": meta["status"], "reason": meta["reason"], "level": meta["level"]},
+        "status": {
+            "status": meta["status"],
+            "reason": meta.get("reason"),
+            "level": meta.get("level") or manifest["input_stop_state"]["level"],
+        },
         "level_records": {
             level["name"]: {
                 "start_rho_sha256": manifest["input_stop_state"]["rho_sha256"],
                 "accepted_steps": len(accepted),
-                "last_trial_objective": state.get("last_trial_objective"),
-                "last_trial_downforce": state.get("last_trial_downforce"),
-                "last_metrics": state.get("metrics"),
+                "last_trial_objective": (terminal or state).get("objective", state.get("last_trial_objective")),
+                "last_trial_downforce": (terminal or {}).get("run", {}).get("downforce_coefficient", state.get("last_trial_downforce")),
+                "last_metrics": cycle_metrics[-manifest["convergence"]["window_accepted"]:],
                 "final_rho_sha256": sha256_array(rho),
                 "projected_volume_final": phi_final,
                 "projected_volume_fraction_of_v_max": phi_final / manifest["v_max_projected"],
@@ -114,9 +125,14 @@ def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: st
             "min_accepted_iterations": level["min_accepted_iterations"],
             "window_accepted": manifest["convergence"]["window_accepted"],
             "objective_delta_abs_max": manifest["convergence"]["objective_delta_abs_max"],
-            "level_converged": False,
-            "reason": "the registered convergence window was not met before the policy stop",
+            "level_converged": bool(meta.get("status") == "terminal_evaluated_not_stage_s_qualified"),
+            "reason": (
+                "the registered convergence window was met and the terminal evaluation ran"
+                if meta.get("status") == "terminal_evaluated_not_stage_s_qualified"
+                else "the registered convergence window was not met before the policy stop"
+            ),
         },
+        "terminal": terminal,
         "checkpoint": {
             "index": state["checkpoint_index"],
             "level_index": state["level_index"],
