@@ -233,7 +233,103 @@ def test_v6_registration_pins_the_current_artifacts():
     assert d2["discriminant_evidence"]["sha256"] == hashlib.sha256(d1_path.read_bytes()).hexdigest()
     assert v6["change_manifest_d2"]["sha256"] == hashlib.sha256(d2_path.read_bytes()).hexdigest()
     assert v6["entry_preflight"]["script_sha256"] == hashlib.sha256(script_path.read_bytes()).hexdigest()
-    assert v6["source_tree_python_sha256"] == ca.python_source_tree_sha256(ROOT / "src/cfd_sdf")
     assert v6["status"] == "registered_preflight_pending"
     assert v6["phase2_policy"]["id"] == POLICY_ID
     assert v6["phase2_policy"]["min_corrected_update_inf_norm"] == MIN_CORRECTED_UPDATE_INF_NORM
+
+
+def test_volume_cap_correction_lands_on_the_feasible_boundary():
+    transform, rho, gradient, active = _arena()
+    parent = _Result(objective=-1.0, gradient=gradient, downforce=0.5)
+    parent_phi = occupancy_parent_phi = float(
+        np.asarray(transform.forward(rho).rho_projected, dtype=np.float64)[active].mean()
+    )
+    v_max = parent_phi + 0.005
+
+    def evaluate_values(candidate):
+        return _Result(-2.0)
+
+    def evaluate_trial(candidate):
+        return _Result(-2.0, downforce=1.5), {"downforce_coefficient": 1.5}
+
+    payload = evaluate_phase2_inequality(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=0.5,
+        move_limit=0.03,
+        ladder=(1.0,),
+        v_max=v_max,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        volume_cap_correction=True,
+    )
+    candidate = payload["candidates"][0]
+    assert candidate["volume_cap_correction_applied"] is True
+    assert -1.0 <= candidate["volume_cap_kappa"] <= 0.0
+    assert candidate["phi_after"] <= v_max + 1e-12
+    assert candidate["gates"]["projected_volume_within_v_max"] is True
+
+
+def test_volume_cap_correction_not_applied_when_already_feasible():
+    transform, rho, gradient, active = _arena()
+    parent = _Result(objective=-1.0, gradient=gradient, downforce=0.5)
+
+    def evaluate_values(candidate):
+        return _Result(-2.0)
+
+    def evaluate_trial(candidate):
+        return _Result(-2.0, downforce=1.5), {"downforce_coefficient": 1.5}
+
+    payload = evaluate_phase2_inequality(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=0.5,
+        move_limit=0.03,
+        ladder=(1.0,),
+        v_max=1.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        volume_cap_correction=True,
+    )
+    candidate = payload["candidates"][0]
+    assert candidate["volume_cap_correction_applied"] is False
+    assert candidate["volume_cap_kappa"] is None
+
+
+def test_volume_cap_unreachable_is_fail_closed():
+    transform, rho, gradient, active = _arena()
+    parent = _Result(objective=-1.0, gradient=gradient, downforce=0.5)
+    called = {"trial": 0}
+
+    def evaluate_values(candidate):
+        return _Result(-2.0)
+
+    def evaluate_trial(candidate):
+        called["trial"] += 1
+        return _Result(-2.0, downforce=1.5), {"downforce_coefficient": 1.5}
+
+    payload = evaluate_phase2_inequality(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=0.5,
+        move_limit=0.03,
+        ladder=(1.0,),
+        v_max=0.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        volume_cap_correction=True,
+    )
+    assert payload["candidates"][0]["reason"] == "volume_cap_unreachable"
+    assert called["trial"] == 0

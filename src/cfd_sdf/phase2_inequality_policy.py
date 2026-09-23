@@ -53,6 +53,8 @@ class InequalityCandidate:
     reason: str = "not_evaluated"
     corrected_rho_sha256: str | None = None
     corrected_update_inf_norm: float | None = None
+    volume_cap_correction_applied: bool = False
+    volume_cap_kappa: float | None = None
     phi_after: float | None = None
     projected_volume_delta: float | None = None
     occupancy: dict | None = None
@@ -112,10 +114,18 @@ def evaluate_inequality_candidate(
     evaluate_values: Callable[[np.ndarray], Any],
     evaluate_trial: Callable[[np.ndarray], tuple[Any, dict]],
     freeze_box_faces: bool = True,
+    volume_cap_correction: bool = False,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
 ) -> tuple[InequalityCandidate, np.ndarray]:
-    """One alpha under the registered inequality policy; fail-closed gates."""
+    """One alpha under the registered inequality policy; fail-closed gates.
+
+    With ``volume_cap_correction`` the sign step is projected back onto the
+    feasible set whenever ``V(proposal) > Vmax``: the largest uniform downward
+    offset inside the move box that keeps ``V <= Vmax`` is bisected (the
+    active-set step at the volume cap). Without the flag the historic
+    behaviour (reject) is preserved.
+    """
     parent_objective, gradient = canonical_objective_from(parent_result)
     candidate = InequalityCandidate(alpha=float(alpha))
     values = np.asarray(rho_parent, dtype=np.float64)
@@ -129,6 +139,39 @@ def evaluate_inequality_candidate(
     proposal = np.clip(values - float(alpha) * move_limit * np.sign(gradient), box_low, box_high)
     proposal[frozen] = values[frozen]
     proposal = _restore(proposal, values, active)
+    phi_parent = float(
+        np.asarray(transform.forward(values).rho_projected, dtype=np.float64)[active].mean()
+    )
+
+    if volume_cap_correction:
+
+        def phi_at(kappa_cap: float) -> float:
+            stepped = np.clip(proposal + kappa_cap * move_limit, box_low, box_high)
+            stepped[frozen] = values[frozen]
+            stepped = _restore(stepped, values, active)
+            projected = np.asarray(transform.forward(stepped).rho_projected, dtype=np.float64)
+            return float(projected[active].mean())
+
+        phi_proposal = phi_at(0.0)
+        if phi_proposal > float(v_max):
+            phi_low = phi_at(-1.0)
+            if phi_low > float(v_max):
+                candidate.reason = "volume_cap_unreachable"
+                candidate.gate_detail = {"volume_cap_feasible": False}
+                return candidate, values
+            low_k, high_k = -1.0, 0.0
+            for _ in range(60):
+                mid = 0.5 * (low_k + high_k)
+                if phi_at(mid) <= float(v_max):
+                    low_k = mid
+                else:
+                    high_k = mid
+            proposal = np.clip(proposal + low_k * move_limit, box_low, box_high)
+            proposal[frozen] = values[frozen]
+            proposal = _restore(proposal, values, active)
+            candidate.volume_cap_correction_applied = True
+            candidate.volume_cap_kappa = float(low_k)
+
     delta = proposal - values
     candidate.corrected_rho_sha256 = _array_sha256(proposal)
     candidate.corrected_update_inf_norm = float(np.max(np.abs(delta)))
@@ -137,9 +180,6 @@ def evaluate_inequality_candidate(
         candidate.gate_detail = {"corrected_update_above_machine_scale": False}
         return candidate, values
 
-    phi_parent = float(
-        np.asarray(transform.forward(values).rho_projected, dtype=np.float64)[active].mean()
-    )
     phi_after = float(
         np.asarray(transform.forward(proposal).rho_projected, dtype=np.float64)[active].mean()
     )
@@ -242,6 +282,7 @@ def evaluate_phase2_inequality(
     evaluate_trial: Callable[[np.ndarray], tuple[Any, dict]],
     return_rho: bool = False,
     freeze_box_faces: bool = True,
+    volume_cap_correction: bool = False,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
 ) -> dict | tuple[dict, np.ndarray | None]:
@@ -263,6 +304,7 @@ def evaluate_phase2_inequality(
             evaluate_values=evaluate_values,
             evaluate_trial=evaluate_trial,
             freeze_box_faces=freeze_box_faces,
+            volume_cap_correction=volume_cap_correction,
             min_update_inf_norm=min_update_inf_norm,
             extractability_fraction=extractability_fraction,
         )
