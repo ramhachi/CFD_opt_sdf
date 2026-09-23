@@ -78,8 +78,11 @@ def main() -> None:
     if OUT.exists() or EVIDENCE.exists():
         raise SystemExit("PQ4.1 artifacts already exist; the evidence is append-only")
     outcome = ca.load_json(V9_OUTCOME)
-    terminal = outcome["terminal"]
-    rho_sha = terminal["rho_sha256"]
+    if outcome.get("terminal"):
+        rho_sha = outcome["terminal"]["rho_sha256"]
+    else:
+        # blocked campaign: judge its last accepted checkpoint state
+        rho_sha = outcome["checkpoint"]["rho_sha256"]
     latest = ca.load_json(CAMPAIGN / "latest.json")
     state = ca.load_json(CAMPAIGN / latest["state_path"])
     if state["rho_sha256"] != rho_sha:
