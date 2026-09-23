@@ -217,7 +217,10 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
         oracle = _oracle(manifest, transform, compiled, output, output / "runs")
         if state["phase1_done"] is None or not state["phase1_done"]:
             phi_now = phi_of(transform, rho, active)
-            if abs(phi_now - manifest["registered_target"]) <= manifest["volume_tolerance"]:
+            # Phase 1 is formation-only: the ascent-only restoration raises the
+            # projected volume to the formation target; a state already at or
+            # above that floor (for example a v6 cap-policy resume) is done.
+            if phi_now >= manifest["registered_target"] - manifest["volume_tolerance"]:
                 state = {**state, "phase1_done": True}
             else:
                 phase1, restored = run_restoration(
