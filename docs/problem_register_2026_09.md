@@ -38,6 +38,8 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | --- | --- | --- | --- |
 | P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **条件付き肯定観測、一般資格は未成立（2026-09-20, WP6+WP6-2）**: WP6 の厚さ軸ではdownforce反転。WP6-2の8形状ではV1/V2とも解像可能な反転ゼロ、tau=1.000。一方、17形状合成poolのmachine verdictは両応答とも`unresolved`。reachable-set/min-widthへの一般化はP18を閉じてから判定する |
 | P2 | 設計が二値化しない | 最重大 | **solver fieldの登録済み離散指標は達成、抽出可能性は未成立（2026-09-22, PQ3.3）**。`beta_solver` mean_nd 0.00388 / max 0.94395。ただしglobal指標は空領域で希釈され、最終b=16は0 accepted。P19/P20を閉じて再判定 |
+
+> **2026-09-23 quantification:** both terminal candidates re-grey during the campaign: the v9 (b=16) terminal measures `mean_nd 0.109` and the v11 (b=128, margin mask) terminal `0.0555` against the 0.01 bound although the b=128 continuation started at 0.0058. The extractability guard only prevents occupancy collapse; the acceptance policy has no discreteness criterion. Clearing P2 requires a registered discreteness gate in the Phase 2 acceptance (or a penalty), not a threshold change. The PQ4.1 self-intersection reason from v1 was a detector barycentric bug (fixed, P20); the corrected v2 keeps discreteness and clearance as the real failures, and clearance is structurally addressed by the v10/v11 margin mask.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |

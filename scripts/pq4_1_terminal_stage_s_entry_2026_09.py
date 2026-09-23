@@ -24,6 +24,7 @@ from cfd_sdf import campaign_assertions as ca  # noqa: E402
 from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolation, TanhProjection  # noqa: E402
 from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _read_cell_vti, _write_cell_vti  # noqa: E402
 from cfd_sdf.fixed_grid_primal import load_fixed_grid_density_state  # noqa: E402
+from cfd_sdf.extraction_sweep import run_extraction_threshold_sweep  # noqa: E402
 from cfd_sdf.handoff import build_density_to_sdf_handoff  # noqa: E402
 from cfd_sdf.stage_s_entry import qualify_stage_s_entry  # noqa: E402
 
@@ -50,6 +51,30 @@ def _array_sha256(values: np.ndarray) -> str:
 
 
 def main() -> None:
+    global CAMPAIGN, V9_OUTCOME, CANONICAL, PROJECTION_B, EVIDENCE, OUT, iso_thresholds
+    import argparse
+
+    parser = argparse.ArgumentParser(description="PQ4.1 composite Stage S entry judgment")
+    parser.add_argument("--campaign", default=str(CAMPAIGN))
+    parser.add_argument("--outcome", default=str(V9_OUTCOME))
+    parser.add_argument("--canonical-state", default=str(CANONICAL))
+    parser.add_argument("--projection-b", type=float, default=PROJECTION_B)
+    parser.add_argument("--evidence", default=str(EVIDENCE))
+    parser.add_argument("--kind", default="pq4_1_terminal_stage_s_entry_v2")
+    parser.add_argument("--out-dir", default=str(OUT))
+    parser.add_argument("--iso-thresholds", default="0.5",
+                        help="comma-separated registered iso thresholds; the registered "
+                             "range-first-that-passes selection rule requires ready_for_stage_s")
+    args = parser.parse_args()
+    CAMPAIGN = Path(args.campaign).resolve()
+    V9_OUTCOME = Path(args.outcome).resolve()
+    CANONICAL = Path(args.canonical_state).resolve()
+    PROJECTION_B = float(args.projection_b)
+    EVIDENCE = Path(args.evidence).resolve()
+    OUT = Path(args.out_dir).resolve()
+    kind = args.kind
+    global iso_thresholds
+    iso_thresholds = args.iso_thresholds
     if OUT.exists() or EVIDENCE.exists():
         raise SystemExit("PQ4.1 artifacts already exist; the evidence is append-only")
     outcome = ca.load_json(V9_OUTCOME)
@@ -69,6 +94,7 @@ def main() -> None:
     reference_grid, reference_arrays = _read_cell_vti(
         CANONICAL.parent / "density.vti", expected_kind="fixed_grid_density"
     )
+    # the canonical state dir is authoritative for both the state and its VTI
     active = (
         (np.asarray(reference_arrays["active_design_mask"]) > 0)
         & (np.asarray(reference_arrays["allowed_mask"]) > 0)
@@ -107,16 +133,20 @@ def main() -> None:
         bundle_paths[name] = str(path.relative_to(ROOT))
     candidate = OUT / "candidate"
     candidate.mkdir()
+    allowed_mask = np.asarray(reference_arrays["allowed_mask"])
     arrays = {
         "rho": fields["rho_design"],
         "rho_filtered": fields["rho_filtered"],
         "rho_projection": fields["rho_projection"],
         "alpha": (BETA_MAX * fields["beta_solver"].astype(np.float64)).astype(np.float32),
-        "allowed_mask": reference_arrays["allowed_mask"],
+        "allowed_mask": allowed_mask,
         "forbidden_mask": reference_arrays["forbidden_mask"],
         "fixed_solid_mask": reference_arrays["fixed_solid_mask"],
         "root_mask": reference_arrays["root_mask"],
-        "active_design_mask": reference_arrays["active_design_mask"],
+        # the candidate's active design mask must be consistent with the state
+        # masks: intersect with allowed so active is a subset of allowed
+        "active_design_mask": (np.asarray(reference_arrays["active_design_mask"]) > 0)
+        & (allowed_mask > 0),
     }
     _write_cell_vti(grid, arrays, candidate / "density.vti", kind="fixed_grid_density")
     topology_state = {
@@ -130,44 +160,58 @@ def main() -> None:
     }
     (candidate / "topology_state.json").write_text(json.dumps(topology_state, indent=2), encoding="utf-8")
 
-    verdict_record: dict
-    handoff_record: dict | None = None
+    thresholds = tuple(float(value) for value in iso_thresholds.split(",") if value.strip())
+    sweep_record: dict
     try:
-        handoff = build_density_to_sdf_handoff(
+        sweep = run_extraction_threshold_sweep(
             candidate / "topology_state.json",
-            output_dir=OUT / "handoff",
+            thresholds=list(thresholds),
+            output_dir=OUT / "sweep",
             rho_variant="rho_projection",
-            iso_value=ISO_VALUE,
-        )
-        handoff_record = {
-            "ok": bool(handoff.ok),
-            "manifest_json": str(handoff.manifest_json.relative_to(ROOT)),
-            "manifest_sha256": ca.sha256_file(handoff.manifest_json),
-            "surface_stl": str(handoff.surface_stl.relative_to(ROOT)),
-            "revoxelized_density_vti": str(handoff.revoxelized_density_vti.relative_to(ROOT)),
-            "fidelity_report": dict(handoff.fidelity_report),
-        }
-        verdict = qualify_stage_s_entry(
-            handoff.manifest_json,
-            mesh_path=handoff.surface_stl,
-            problem_spec_yaml=PROBLEM_SPEC,
-            volume_constraint={
-                "projected_volume": projected_volume,
-                "limit": V_MAX,
-                "absolute_tolerance": VOLUME_TOLERANCE,
+            selection_rule={
+                "kind": "registered_range_first_that_passes",
+                "range": [min(thresholds), max(thresholds)],
+                "require_ready_for_stage_s": True,
+            },
+            stage_s_entry={
+                "problem_spec_yaml": PROBLEM_SPEC,
+                "volume_constraint": {
+                    "projected_volume": projected_volume,
+                    "limit": V_MAX,
+                    "absolute_tolerance": VOLUME_TOLERANCE,
+                },
             },
         )
-        verdict_record = verdict.to_dict()
-    except Exception as exc:  # fail-closed: a handoff failure is the verdict
+        sweep_record = sweep
+        selected = sweep.get("selected") or {}
+        verdict_record = {
+            "ready_for_stage_s": bool(selected.get("ready_for_stage_s")),
+            "selected_threshold": selected.get("threshold"),
+            "profile_id": "stage_s_entry_v1",
+            "reasons": list((selected.get("stage_s_entry") or {}).get("reasons", [])),
+            "sub_verdicts": (selected.get("stage_s_entry") or {}).get("sub_verdicts", {}),
+            "sweep_rows": [
+                {
+                    "threshold": row["threshold"],
+                    "status": row["status"],
+                    "ready_for_stage_s": row.get("ready_for_stage_s"),
+                    "reasons": list((row.get("stage_s_entry") or {}).get("reasons", []))[:6],
+                }
+                for row in sweep["rows"]
+            ],
+        }
+    except Exception as exc:  # fail-closed: an extraction failure is the verdict
+        sweep_record = {"error": f"{type(exc).__name__}:{exc}"}
         verdict_record = {
             "ready_for_stage_s": False,
             "profile_id": "stage_s_entry_v1",
-            "reasons": [f"handoff_failure:{type(exc).__name__}:{exc}"],
+            "reasons": [f"extraction_failure:{type(exc).__name__}:{exc}"],
             "sub_verdicts": {},
         }
+    handoff_record = {"mode": "registered_threshold_sweep", "thresholds": list(thresholds)}
 
     evidence = {
-        "kind": "pq4_1_terminal_stage_s_entry_v2",
+        "kind": kind,
         "correction": {
             "supersedes": {
                 "path": "docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json",
@@ -206,6 +250,7 @@ def main() -> None:
             "within_limit": bool(projected_volume <= V_MAX + VOLUME_TOLERANCE),
         },
         "handoff": handoff_record,
+        "extraction_sweep": sweep_record,
         "stage_s_entry_verdict": verdict_record,
         "claims_supported": [
             "the v9 terminal candidate was extracted from rho_projection and judged by the complete composite Stage S entry gate",

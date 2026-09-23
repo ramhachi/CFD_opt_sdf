@@ -850,3 +850,18 @@ repair that unrelated documentation mismatch.
 - Still unrun: PQ1 third source grid, PQ1 grid stability, Stage V
   domain/boundary V2, DF2 Stage T grid family; Stage S first step and PQ5
   remain after a passing candidate. Do not claim Stage S readiness.
+
+## 2026-09-23: margin mask + b=128 continuation and the PQ4.1 v3 sweep
+
+- v10/v11 outcomes: `pq3_3b_campaign_v10_outcome_2026_09.json` (150 accepted,
+  budget exhausted), `pq3_3b_campaign_v11_outcome_2026_09.json` (b=128 window
+  met, terminal downforce 3.36972164196, V=Vmax, margin mask).
+- PQ4.1 v3 `docs/evidence/pq4_1_terminal_stage_s_entry_v3_2026_09.json`:
+  registered iso sweep (0.4/0.5/0.6), no threshold passes. iso 0.5
+  non-manifold pinch; 0.4/0.6 feature-shrink / surface-distance / volume
+  fidelity failures; every threshold fails discreteness because the terminal
+  re-greyed (mean_nd 0.0555 at b=128, started 0.0058).
+- Next registered change: a discreteness criterion in the Phase 2 acceptance
+  (transform-measured, no extra runs) in a new manifest. Still unrun: PQ1
+  third source grid, PQ1 grid stability, Stage V domain/boundary V2, DF2
+  grid family.

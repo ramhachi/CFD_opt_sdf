@@ -1,0 +1,99 @@
+{
+  "checkpoint": {
+    "accepted_count": 0,
+    "index": 107,
+    "level_index": 1,
+    "rho_file_sha256": "737c1c0a3beb55c1f692cac8cc27b300752cc4846ff12a5664d729046e6cdb13",
+    "rho_sha256": "0b2ec41186b70bf53ac4fb9ec7b7db2d0f7220c6c52277dc54b79a22c4f4eab6",
+    "verified_chain": true
+  },
+  "claims_not_supported": [
+    "no convergence or stationarity certificate; the registered window governs",
+    "no terminal independent evaluation and no Stage S readiness"
+  ],
+  "claims_supported": [
+    "the accepted steps and the stopping attempt are recorded with their gate verdicts and projections",
+    "the final rho and the checkpoint chain are hash-verified"
+  ],
+  "convergence": {
+    "level_converged": true,
+    "min_accepted_iterations": 10,
+    "objective_delta_abs_max": 0.0001,
+    "reason": "the registered convergence window was met and the terminal evaluation ran",
+    "window_accepted": 3
+  },
+  "kind": "pq3_3b_campaign_v11_outcome",
+  "level_records": {
+    "level_3_b128_margin": {
+      "accepted_steps": 106,
+      "final_rho_sha256": "0b2ec41186b70bf53ac4fb9ec7b7db2d0f7220c6c52277dc54b79a22c4f4eab6",
+      "last_metrics": [
+        {
+          "objective_delta_abs": 3.570986000012155e-05,
+          "projected_field_mean_abs_delta": 2.680123517180736e-06,
+          "projected_volume_delta_abs": 7.494005416219807e-16
+        },
+        {
+          "objective_delta_abs": 3.3673829999969485e-05,
+          "projected_field_mean_abs_delta": 2.5338340230422403e-06,
+          "projected_volume_delta_abs": 8.049116928532385e-16
+        },
+        {
+          "objective_delta_abs": 2.2961480000027734e-05,
+          "projected_field_mean_abs_delta": 1.716758186351211e-06,
+          "projected_volume_delta_abs": 3.3306690738754696e-16
+        }
+      ],
+      "last_trial_downforce": 3.36972164196,
+      "last_trial_objective": -3.36972164196,
+      "projected_volume_final": 0.07632566813424865,
+      "projected_volume_fraction_of_v_max": 0.9999999999999957,
+      "start_rho_sha256": "c4475f25e3db002c18310e031bf3b65010bb66fe9991a8d759b0dd05e98486d3",
+      "stopping_attempt": {
+        "attempt": 106,
+        "candidates": [
+          {
+            "alpha": 1.0,
+            "corrected_update_inf_norm": 0.010000000000000009,
+            "phi_after": 0.07632566813424865,
+            "projected_volume_within_v_max": true,
+            "reason": "accepted",
+            "volume_cap_correction_applied": true,
+            "volume_cap_kappa": -0.9999748196322157
+          }
+        ],
+        "parent_downforce_coefficient": 3.36969868048
+      }
+    }
+  },
+  "manifest_sha256": "74e3f426564adef8d3cd59d22950a6bceb741b590eaad6ac60f36a5ccc9b0b95",
+  "output_directory": "work/pq3_3b_campaign_v11",
+  "output_hashes": {
+    "campaign_meta_json": "8aebac047b5a2d42cb2a31d588502ab27b890cadda8c7b178134eda99aea226b",
+    "events_jsonl": "6561b37e9cb110b20b68908c1930e8b941c6d0e4a95c358720fa13b7db8a8442",
+    "latest_json": "e868f4e1eacf93a0fad22802fa3a1223bafa2e7ada8add24cbdfdacc50761f0a"
+  },
+  "schema_version": 1,
+  "status": {
+    "level": "level_3_b128_margin",
+    "reason": null,
+    "status": "terminal_evaluated_not_stage_s_qualified"
+  },
+  "terminal": {
+    "objective": -3.36972164196,
+    "projected_volume": 0.07632566813424865,
+    "rho_sha256": "0b2ec41186b70bf53ac4fb9ec7b7db2d0f7220c6c52277dc54b79a22c4f4eab6",
+    "run": {
+      "adjoint_iterations": null,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v11/terminal_independent/trial_474d57b4393f/case",
+      "downforce_coefficient": 3.36972164196,
+      "primal_iterations": 109,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "3bb8251cb75bc08b0f1023c436a70c598ee549caa675cf26b3ed44c5adc26145",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v11/terminal_independent/trial_474d57b4393f/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "49162d2953c3cfdc882d1fca04311f998a0826d7c9776fcdb88cbdb6bea13162"
+    },
+    "status": "terminal_evaluated_not_stage_s_qualified"
+  }
+}

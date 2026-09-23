@@ -761,6 +761,26 @@ Execute in this order:
    mismatch is closed; the remaining failures are the physical extraction
    issues tracked under P2/P17/P20 (grey design at the volume cap, surface
    self-intersection, clearance). No Stage S baseline is registered.
+
+   **Margin-mask and b=128 continuation (2026-09-23):** the self-intersection
+   reason was a detector bug (barycentric formula) and is fixed (P20); the
+   corrected PQ4.1 v2 keeps discreteness and clearance as the two real
+   failures. The v10/v11 campaigns then resumed the terminal rho under a
+   clearance margin mask (`allowed_mask` restricted to `|y_center| <= 0.475`)
+   and a b=128 continuation. The b=128 level accepted 256 steps in total, met
+   the registered convergence window (last deltas 3.57e-5 / 3.37e-5 / 2.30e-5)
+   and the independent terminal repeat gave downforce `3.36972164196` at
+   projected volume `0.0763257`. The PQ4.1 judgment on the registered
+   iso-threshold sweep (0.4/0.5/0.6) with the registered
+   range-first-that-passes rule selects no threshold: the terminal field
+   re-greyed during the campaign (`mean_nd 0.0555` at b=128 against the 0.01
+   bound, started at 0.0058), the iso-0.5 surface pinches (non-manifold,
+   handoff rejected) and iso 0.4/0.6 fail feature shrink / surface distance
+   and volume fidelity. Conclusion: the Phase 2 acceptance lacks a
+   discreteness criterion (the extractability guard only prevents an
+   occupancy collapse). The next registered change is a discreteness gate in
+   the acceptance (transform-measured, no extra solver runs); no Stage S
+   baseline is registered.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
