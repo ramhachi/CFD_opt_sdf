@@ -321,13 +321,14 @@ Work A–C を通過した後、新しい immutable manifest で実 OpenFOAM cam
 3. 各 proposal は Path B centered primal-FD bracket と実 trial primal を通す。
 4. projected-volume target は candidate proposal の形成に使うが、全 accepted state は元の
    `V(rho_projection) <= V_max` も満たす。
-5. 一つの level を抜けるには、最低 10 iteration を実行した上で、直近 3 accepted state が
+5. 一つの level を抜けるには、最低 10 accepted iteration を実行した上で、直近 3 accepted step が
    次を満たすことを要求する。
    - `|V_projection - V_target| <= 1e-4`
-   - objective change が、同一 state repeat から事前登録した solver noise threshold 以下
+   - 正の objective 改善量が `1e-4` 以下で、かつ採用判定の noise threshold (`1e-6`) より大きい
    - `mean(abs(delta rho_projection)) <= 1e-3`
-6. 最大 iteration は manifest に固定する。推奨上限は level あたり 30。連続 5 proposal が
-   reject、target が到達不能、bracket sign 不一致、solver/geometry gate failure のいずれかで停止する。
+6. 最大 iteration は manifest に固定する（v4 は level あたり 30）。同じ parent、同じ
+   alpha ladder の全候補が reject された場合、決定論的な再試行は新しい候補を作らないため
+   その時点で停止する。target 到達不能、solver/geometry gate failure でも停止する。
 7. `b=16` で少なくとも一つ accepted step がない campaign を terminal candidate と呼ばない。
 
 体積 equality target は continuation の数値的補助であり、物理問題の新しい equality constraint
@@ -405,7 +406,7 @@ validation である。
 | --- | --- | --- |
 | 正しい `rho_projection` 抽出で現候補の fidelity が大幅改善 | 旧診断は field semantic の交絡を含む | それでも terminal accepted/convergence がないため PQ3.3b を短縮せず、manifest を再検討 |
 | projected target が move box 内で到達不能 | backend tuning ではなく continuation step が大きすぎる | 高コスト run を開始せず、新しい中間 level manifest を登録 |
-| b=8 または b=16 で 5 連続 reject | final transform 下で改善方向を作れていない | campaign 停止。objective/volume/gradient のどこが阻害したか一因子診断 |
+| b=8 または b=16 で登録 alpha ladder の全候補が reject | 同じ parent で再試行しても新候補は生じない | campaign 停止。objective/volume/gradient のどこが阻害したか一因子診断 |
 | target は維持するが抽出 fidelity が不合格 | volume ではなく topology/feature-scale が原因 | robust formulation または geometry policy を別 work package として登録 |
 | `rho_projection` は良いが `beta_solver` response が消える | RAMP continuation が surrogate と geometry を分離している | q schedule と Brinkman interpolation を再資格化。Stage S へ進めない |
 | PQ4.1 が pass | 初めて Stage S baseline 登録可 | drag/downforce surface FD へ進む |

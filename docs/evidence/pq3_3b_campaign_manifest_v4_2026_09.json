@@ -1,0 +1,132 @@
+{
+  "kind": "pq3_3b_campaign_manifest_v4",
+  "schema_version": 4,
+  "immutable": true,
+  "status": "registered_preflight_pass_awaiting_user_go",
+  "execution_rule": "No full optimization during preparation; --run requires an explicit later user instruction and this SHA-256.",
+  "input_checkpoint": {
+    "path": "work/pq3_3_volume_target/checkpoint_chunk02.json",
+    "sha256": "d2868753da3efac6e959a465b964a627c33dc6601e5e4d72ed53b22b15836884"
+  },
+  "input_rho_sha256": "fc8012e81bab301f9e1aa329981de66032f3bc385e293e2d299c3e4a66e24599",
+  "problem_spec": {
+    "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+    "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+  },
+  "compiled_problem_hash": "5bb751c00a85c85638f57b5ee740c771a96f649755d8a4f14dddeb8e95127acc",
+  "compiled_problem_hash_rule": "sha256(json.dumps(dataclasses.asdict(compiled), sort_keys=True, separators=(comma,colon), allow_nan=False))",
+  "canonical_grid": {
+    "path": "work/df2_fd_refresh/topology_state.json",
+    "sha256": "d70307ba289affc7c13ed18ff0fb7da29bec45cc7c9a61ae54061a0647a837e0"
+  },
+  "source_grid": {
+    "path": "work/df2_fd_refresh/source_state/provenance.json",
+    "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "template_parent": {
+    "path": "work/df2_fd_refresh/template_frozen",
+    "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+  },
+  "template_trial": {
+    "path": "work/pq0_2_smoke/template_trial",
+    "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+  },
+  "solver_controls": {
+    "path": "work/df2_fd_refresh/template_frozen/system",
+    "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+  },
+  "preflight_v6": {
+    "path": "docs/evidence/pq3_3b_preflight_v6_2026_09.json",
+    "sha256": "46e913ae4f3cc4b5e36961192dbe696a5b79f7a57d28dd4fd05fc6a44cfcd03d"
+  },
+  "preflight_script": {
+    "path": "scripts/pq3_3b_preflight_v6_2026_09.py",
+    "sha256": "36e69b2b917973f07e3866d1a220107b4e038723cd13889c102b93a376470c91"
+  },
+  "noise_calibration": {
+    "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+    "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+  },
+  "phase2_policy": {
+    "id": "volume-corrected-objective-oc",
+    "freeze_exact_box_faces": true,
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ]
+  },
+  "phase1_policy": {
+    "id": "projected-volume-restoration-oc",
+    "ascent_only": true
+  },
+  "objective": {
+    "sense": "maximize",
+    "canonical": "J = -downforce",
+    "sense_sign": -1
+  },
+  "registered_target": 0.018,
+  "v_max_projected": 0.07632566813424899,
+  "filter_radius_m": 0.15,
+  "projection_eta": 0.5,
+  "levels": [
+    {
+      "name": "level_0_growth_b4_q15",
+      "b": 4.0,
+      "q": 15.0,
+      "move_limit": 0.05,
+      "min_accepted_iterations": 10,
+      "max_attempts": 30
+    },
+    {
+      "name": "level_1_b8_q30",
+      "b": 8.0,
+      "q": 30.0,
+      "move_limit": 0.03,
+      "min_accepted_iterations": 10,
+      "max_attempts": 30
+    },
+    {
+      "name": "level_2_b16_q100",
+      "b": 16.0,
+      "q": 100.0,
+      "move_limit": 0.01,
+      "min_accepted_iterations": 10,
+      "max_attempts": 30
+    }
+  ],
+  "volume_tolerance": 0.0001,
+  "path_b": {
+    "epsilon": 0.0001,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "noise_thresholds": {
+    "objective": 1e-06,
+    "downforce": 1e-06
+  },
+  "convergence": {
+    "window_accepted": 3,
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "volume_residual_max": 0.0001
+  },
+  "reject_stop_count": 1,
+  "output_directory": "work/pq3_3b_campaign_v4",
+  "resume_rule": "resume only from the verified objective_accepted rho chain; incomplete solver case directories block automatic resume and require explicit recovery",
+  "terminal_rule": "b16 has at least ten accepted steps and level convergence; repeat primal on final rho with only original projected V<=Vmax gate before Stage S assessment",
+  "claims_not_supported": [
+    "preflight does not establish campaign convergence",
+    "no Stage S-ready candidate or physical validation"
+  ],
+  "source_tree_python_sha256": "3dfbcf1b8526ebdf6faf870cb3d82285e10dd1a7afdb5e0c2611d19d580bf7df",
+  "runner_source": {
+    "path": "scripts/pq3_3b_campaign_v4_2026_09.py",
+    "sha256": "0b23b550448faf895c3a93ac0d65b529942727b3219d2b417ced943137e15df1"
+  },
+  "restoration_step_cap": 60
+}

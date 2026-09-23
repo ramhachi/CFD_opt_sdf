@@ -609,15 +609,40 @@ Execute in this order:
    (preflight v2/v3 evidence and the blocked manifest are registered as
    diagnostics). The registered two-phase policy (projected-volume restoration
    backend + volume-corrected objective backend) reached the target in 1/3/7
-   steps in preflight v3 at b=4/8/16, but preflight v4 (strict level lineage +
-   canonical J = -downforce routing + Path B brackets + real trial primals)
-   accepted only b=4: at b=8 the composite correction direction is not a
-   descent direction (d_adj >= 0 with a Path B sign mismatch) at every
-   registered alpha, so the chain stops before b=16 and preflight_v4 passes =
-   false. The campaign manifest v3 is registered as `registered_blocked`, and
-   the campaign runner exists as a static fail-closed implementation that
-   refuses `--verify-preconditions` under a blocked manifest. No long campaign
-   has been started and no Stage S-ready claim is made.
+   steps in preflight v3 at b=4/8/16. Preflight v4 accepted only b=4, but its
+   b=8 failure ledger was lost and it carried the b=4 restoration state rather
+   than the objective-accepted state. Preflight v5 corrected that lineage and
+   repeated the identical baseline as two independent uncached OpenFOAM runs.
+   It accepted b=4 and restored b=8 projected volume to 0.018 in three steps.
+   All five b=8 trial candidates improved canonical J and raw downforce, but
+   none could form the registered centered Path B pair: design-active cells
+   sat exactly at rho=1 and moved inward, so the minus perturbation exceeded
+   the box. No b=8 candidate was accepted and b=16 was not evaluated. This is
+   a bracket-feasibility failure, not measured evidence that the directions
+   are non-descent. The v3 manifest remains `registered_blocked` and no long
+   campaign has started.
+
+   **Preflight v6 result:** exact box-face cells were frozen in the Phase 2
+   proposal and its projected-volume correction; the centered Path B rule was
+   unchanged. With objective-accepted rho passed exactly between levels,
+   b=4/b=8/b=16 each restored projected volume to 0.018 and accepted alpha=1.0
+   after a signed adjoint/FD bracket and an improving real trial. The b=16
+   parent/trial raw downforce was 0.316591/0.319135. All 13 referenced solver
+   summaries in the v6 artifact were present and matched their recorded SHA-256.
+   This is **preflight feasibility only**: it proves neither ten accepted
+   iterations and level convergence nor extractable Stage S geometry.
+
+   **Preparation completed before the long run:** campaign manifest v4 fixes
+   the input, compiled-problem, Python source, runner, solver-image, template
+   and v6 evidence hashes. Its runner's read-only `--verify-preconditions`
+   passed for manifest SHA-256
+   `01d40d48ebe12f73e66ab646ed51c1cce611b28901f6cc7ee7564abed2753484`.
+   It checkpoints accepted rho, verifies the checkpoint chain on resume,
+   requires ten accepted steps and the registered stability window per level,
+   and makes an independent final primal check. The real multi-iteration
+   campaign remains **unrun**. Keep the old blocked manifests and v1-v6
+   artifacts unchanged. Stage S remains blocked until campaign convergence,
+   terminal evaluation and PQ4.1 pass.
 4. **PQ3.3b bounded real-OpenFOAM continuation.** Register a new immutable
    manifest. Recompute the parent at each b/q level; require Path B brackets,
    real trial primals, projected-volume feasibility, minimum iteration counts

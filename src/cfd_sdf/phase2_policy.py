@@ -51,11 +51,13 @@ class Phase2Candidate:
     """One alpha's measured candidate; every gate is an explicit verdict."""
 
     alpha: float
+    frozen_box_face_cells: int = 0
     accepted: bool = False
     reason: str = "not_evaluated"
     kappa_volume: float | None = None
     phi_after: float | None = None
     volume_residual: float | None = None
+    corrected_rho_sha256: str | None = None
     mask_drift_max: float | None = None
     move_box_violation_max: float | None = None
     bracket: dict | None = None
@@ -91,6 +93,7 @@ def evaluate_phase2_candidate(
     bracket_spec: BracketSpec,
     evaluate_values: Callable[[np.ndarray], Any],
     evaluate_trial: Callable[[np.ndarray], tuple[Any, dict]],
+    freeze_box_faces: bool = False,
 ) -> tuple[Phase2Candidate, np.ndarray]:
     """Steps 1-6 for a single alpha; returns the candidate and its rho_prime."""
     parent_objective, gradient = canonical_objective_from(parent_result)
@@ -100,16 +103,27 @@ def evaluate_phase2_candidate(
     box_low = np.clip(values - move_limit, 0.0, 1.0)
     box_high = np.clip(values + move_limit, 0.0, 1.0)
     active = np.asarray(transform.active, dtype=bool)
+    # A centered Path B bracket cannot perturb a design cell at an exact box
+    # face in both directions. The v6 diagnostic restricts the proposal to the
+    # tangent subspace of those faces; v4/v5 retain their recorded policy.
+    frozen = active & ((values == 0.0) | (values == 1.0)) if freeze_box_faces else np.zeros_like(active)
+    candidate.frozen_box_face_cells = int(np.count_nonzero(frozen))
+
+    def restore_policy(stepped: np.ndarray) -> np.ndarray:
+        restored = _restore(stepped, values, active)
+        restored[frozen] = values[frozen]
+        return restored
 
     # 1-2: canonical-objective proposal clipped inside the parent's move box
     proposal = np.clip(
         values - alpha * move_limit * np.sign(gradient), box_low, box_high
     )
+    proposal[frozen] = values[frozen]
 
     # 3: uniform offset bisected onto the projected-volume target
     def phi_at(kappa_volume: float) -> float:
         stepped = np.clip(proposal + kappa_volume * move_limit, box_low, box_high)
-        stepped = _restore(stepped, values, active)
+        stepped = restore_policy(stepped)
         state = transform.forward(stepped)
         projected = np.asarray(state.rho_projected, dtype=np.float64)
         return float(projected[active].mean())
@@ -133,7 +147,8 @@ def evaluate_phase2_candidate(
     corrected = np.clip(
         proposal + float(kappa_volume) * move_limit, box_low, box_high
     )
-    corrected = _restore(corrected, values, active)
+    corrected = restore_policy(corrected)
+    candidate.corrected_rho_sha256 = _array_sha256(corrected)
     candidate.kappa_volume = float(kappa_volume)
     candidate.phi_after = float(phi_final)
     candidate.volume_residual = abs(float(phi_final) - float(target))
@@ -221,10 +236,15 @@ def evaluate_phase2(
     bracket_spec: BracketSpec,
     evaluate_values: Callable[[np.ndarray], Any],
     evaluate_trial: Callable[[np.ndarray], tuple[Any, dict]],
-) -> dict:
-    """Evaluate the registered ladder in registered order, fail-closed."""
+    return_rho: bool = False,
+    freeze_box_faces: bool = False,
+) -> dict | tuple[dict, np.ndarray | None]:
+    """Evaluate the ladder, optionally returning accepted rho for level carryover.
+
+    The default dict return preserves the v4 script's recorded call contract.
+    """
     candidates: list[Phase2Candidate] = []
-    corrected_rho = np.asarray(rho_parent, dtype=np.float64)
+    accepted_rho = None
     for alpha in ladder:
         candidate, corrected_rho = evaluate_phase2_candidate(
             transform=transform,
@@ -241,6 +261,7 @@ def evaluate_phase2(
             bracket_spec=bracket_spec,
             evaluate_values=evaluate_values,
             evaluate_trial=evaluate_trial,
+            freeze_box_faces=freeze_box_faces,
         )
         candidates.append(candidate)
         print(
@@ -258,19 +279,19 @@ def evaluate_phase2(
             flush=True,
         )
         if candidate.accepted:
+            accepted_rho = corrected_rho.copy()
             break
-    accepted = [entry for entry in candidates if entry.accepted]
     payload: dict[str, Any] = {
         "ladder": [float(a) for a in ladder],
         "candidates": [entry.to_jsonable() for entry in candidates],
     }
-    if accepted:
+    if accepted_rho is not None:
         payload.update(
             {
-                "accepted_alpha": float(accepted[0].alpha),
+                "accepted_alpha": float(candidates[-1].alpha),
                 "all_failed": False,
                 "successful": True,
-                "corrected_rho_sha256": None,
+                "corrected_rho_sha256": _array_sha256(accepted_rho),
             }
         )
     else:
@@ -279,14 +300,12 @@ def evaluate_phase2(
                 "accepted_alpha": None,
                 "all_failed": True,
                 "successful": False,
+                "corrected_rho_sha256": None,
+                "error": "no Phase 2 alpha satisfied the registered candidate gates; "
+                "fail-closed: the campaign is not startable under this manifest",
             }
         )
-        raise ValueError(
-            "no Phase 2 alpha satisfied the registered candidate gates; "
-            "fail-closed: the campaign is not startable under this manifest"
-        )
-    payload["corrected_rho_sha256"] = _array_sha256(corrected_rho)
-    return payload
+    return (payload, accepted_rho) if return_rho else payload
 
 
 def _array_sha256(values: np.ndarray) -> str:

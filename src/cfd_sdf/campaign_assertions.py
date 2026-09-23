@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,12 @@ def sha256_file(path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def compiled_problem_sha256(compiled) -> str:
+    """Hash the compiled algebra and declared volume budget, not a placeholder."""
+    payload = json.dumps(asdict(compiled), sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def tree_sha256(root) -> str:
     """Deterministic hash over a template directory tree."""
     digest = hashlib.sha256()
@@ -58,6 +65,15 @@ def tree_sha256(root) -> str:
             digest.update(
                 hashlib.sha256(path.read_bytes()).hexdigest().encode("utf-8")
             )
+    return digest.hexdigest()
+
+
+def python_source_tree_sha256(root) -> str:
+    """Hash source code without generated __pycache__ and bytecode files."""
+    digest = hashlib.sha256()
+    for path in sorted(Path(root).rglob("*.py")):
+        digest.update(str(path.relative_to(root)).encode("utf-8"))
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
     return digest.hexdigest()
 
 

@@ -122,17 +122,25 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
 
-> **2026-09-23 preflight v4 current status:** PQ3.3b preflight v4
-> (`docs/evidence/pq3_3b_preflight_v4_2026_09.json`) routes the canonical
-> objective through `ProblemSpec -> compile_problem -> make_oracle_from_compiled
-> -> evaluate_parent -> OracleResult.objective_gradient` (J = -downforce), enforces
-> exact rho carryover across levels (no simulated decay), and measures the
-> registered alpha ladder with real trial primals and Path B brackets. Result:
-> b=4 accepted alpha=1.0 with real downforce improvement; at b=8 no alpha is
-> accepted (d_adj >= 0 with a Path B sign mismatch), so the chain stops before
-> b=16 with preflight_v4 passes = false, the campaign manifest v3 is
-> `registered_blocked`, and the runner is a static fail-closed implementation.
-> P19 and P20 remain open; no campaign run, no Stage S-ready claim.
+> **2026-09-23 preflight v5 current status:** The v4 b=8 failure reason was not
+> auditable because its per-alpha ledger was dropped on exception, and b=8
+> inherited the b=4 restoration rho instead of the objective-accepted rho.
+> Preflight v5 (`docs/evidence/pq3_3b_preflight_v5_2026_09.json`) corrects that
+> lineage, records every alpha, and calibrates baseline spread with two distinct
+> uncached OpenFOAM primals. b=4 accepts alpha=1.0; b=8 reaches projected
+> volume 0.018 in three restoration steps. Every b=8 trial improves canonical
+> J and raw downforce, yet all centered Path B brackets fail before FD because
+> their minus perturbation crosses a design bound. Adjoint/FD direction signs
+> at b=8 are therefore **unmeasured**, not known to disagree. b=16 remains
+> unreached; preflight_pass is false and manifest v3 stays `registered_blocked`.
+> Preflight v6 (`docs/evidence/pq3_3b_preflight_v6_2026_09.json`) freezes exact
+> design box-face cells during the Phase 2 proposal and volume correction while
+> retaining the centered Path B rule. b=4, b=8 and b=16 each have an accepted
+> alpha=1.0 real trial with projected volume 0.018 and matching negative
+> adjoint/FD directional signs. This closes the **single-step preflight
+> feasibility question**, not P19: the registered multi-iteration convergence,
+> terminal upper-bound re-evaluation and Stage S handoff are still unmeasured.
+> P19 and P20 remain open; no campaign run and no Stage S-ready claim.
 
 
 ### 症状

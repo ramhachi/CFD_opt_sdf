@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -121,13 +124,92 @@ def test_v_max_guard():
     assert ca.assert_projected_volume_upper_bound(0.0763, 0.07632566813424899)
 
 
-def test_runner_refuses_to_start_when_manifest_is_blocked(tmp_path):
-    import importlib.util
-
+def _runner_module():
     spec = importlib.util.spec_from_file_location(
         "pq3_3b_campaign_runner", REPO / "scripts" / "pq3_3b_campaign_2026_09.py"
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    return module
+
+
+def test_runner_refuses_to_start_when_manifest_is_blocked(tmp_path):
+    module = _runner_module()
+    output = tmp_path / "fresh-output"
     with pytest.raises(SystemExit, match="not awaiting the campaign go"):
-        module.run_campaign(tmp_path / "fresh-output")
+        module.run_campaign(output)
+    assert not output.exists()
+
+
+def _accepted_fixture(tmp_path, monkeypatch):
+    module = _runner_module()
+
+    def write_json(path, value):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return path
+
+    checkpoint = write_json(tmp_path / "checkpoint.json", {"rho": [0.2, 0.4]})
+    spec = write_json(tmp_path / "spec.json", {"objective": "maximize_downforce"})
+    grid = write_json(tmp_path / "grid.json", {"shape": [2, 1, 1]})
+    preflight = write_json(tmp_path / "preflight.json", {"summary": {"preflight_pass": True}})
+    noise = write_json(tmp_path / "noise.json", {"objective_noise_threshold": 1e-6})
+    template = tmp_path / "template"
+    template.mkdir()
+    (template / "controlDict").write_text("endTime 100;", encoding="utf-8")
+    manifest = _manifest()
+    manifest.update({
+        "compiled_problem_hash": "a" * 64,
+        "input_checkpoint": {"path": str(checkpoint), "sha256": ca.sha256_file(checkpoint)},
+        "input_rho_sha256": hashlib.sha256(np.asarray([0.2, 0.4], dtype=np.float64).tobytes()).hexdigest(),
+        "problem_spec": {"path": str(spec), "sha256": ca.sha256_file(spec)},
+        "canonical_grid": {"path": str(grid), "sha256": ca.sha256_file(grid)},
+        "template_parent": {"path": str(template)},
+        "template_tree_hash": ca.tree_sha256(template),
+        "solver_controls": {"path": str(template)},
+        "solver_controls_hash": ca.tree_sha256(template),
+        "noise_calibration": {"path": str(noise), "sha256": ca.sha256_file(noise)},
+        "preflight_v4": {"path": str(preflight), "sha256": ca.sha256_file(preflight)},
+    })
+    manifest_path = write_json(tmp_path / "manifest.json", manifest)
+    manifest_sha = ca.sha256_file(manifest_path)
+    sidecar = tmp_path / "manifest.json.sha256"
+    sidecar.write_text(manifest_sha + "\n", encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "MANIFEST", manifest_path)
+    monkeypatch.setattr(module, "MANIFEST_SIDE_CAR", sidecar)
+    monkeypatch.setattr(module, "PREFLIGHT_V4", preflight)
+    monkeypatch.setattr(module, "NOISE", noise)
+    return module, manifest_sha, manifest_path, spec, preflight
+
+
+def test_accepted_fixture_checks_referenced_hashes_without_creating_output(tmp_path, monkeypatch):
+    module, manifest_sha, _, spec, preflight = _accepted_fixture(tmp_path, monkeypatch)
+    output = tmp_path / "campaign-output"
+    assert module.verify_preconditions(output, expected_manifest_sha=manifest_sha)["status"] == ca.STATUS_AWAITING_GO
+    with pytest.raises(NotImplementedError, match="not implemented"):
+        module.run_campaign(output, expected_manifest_sha=manifest_sha)
+    assert not output.exists()
+
+    spec.write_text("modified", encoding="utf-8")
+    with pytest.raises(ValueError, match="problem_spec.*SHA-256"):
+        module.verify_preconditions(output, expected_manifest_sha=manifest_sha)
+    spec.write_text(json.dumps({"objective": "maximize_downforce"}), encoding="utf-8")
+    preflight.write_text("modified", encoding="utf-8")
+    with pytest.raises(ValueError, match="preflight_v4.*SHA-256"):
+        module.verify_preconditions(output, expected_manifest_sha=manifest_sha)
+    assert not output.exists()
+
+
+def test_runner_uses_pinned_manifest_sha_and_cli_run_output(tmp_path, monkeypatch):
+    module, manifest_sha, _, _, _ = _accepted_fixture(tmp_path, monkeypatch)
+    output = tmp_path / "campaign-output"
+    with pytest.raises(SystemExit, match="pinned --manifest-sha"):
+        module.verify_preconditions(output, expected_manifest_sha="0" * 64)
+    monkeypatch.setattr(sys, "argv", [
+        "pq3_3b_campaign_2026_09.py", "--run", "--manifest-sha", manifest_sha,
+        "--output", str(output),
+    ])
+    with pytest.raises(NotImplementedError, match="not implemented"):
+        module.main()
+    assert not output.exists()
