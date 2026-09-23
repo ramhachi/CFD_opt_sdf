@@ -58,7 +58,7 @@ def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = N
     if ca.sha256_file(manifest_path) != sidecar:
         raise ValueError("campaign manifest sidecar mismatch")
     manifest = ca.load_json(manifest_path)
-    if manifest.get("schema_version") not in (5, 6):
+    if manifest.get("schema_version") not in (5, 6, 7):
         raise ValueError("campaign manifest schema mismatch")
     if "change_manifest_d2" in manifest and ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
         raise ValueError("D2 change manifest hash mismatch")
@@ -198,7 +198,7 @@ def _stop(output: Path, reason: str, level: str) -> dict:
     return result
 
 
-def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> dict:
+def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max_new_attempts: int | None = None) -> dict:
     manifest_path = Path(manifest_path) if manifest_path is not None else MANIFEST
     manifest, output = verify_preconditions(resume=resume, manifest_path=manifest_path)
     spec = load_problem_spec(_path(manifest["registered_inputs"]["problem_spec"]))
@@ -258,7 +258,9 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                 rho = restored
                 state = {**state, "phase1_done": True}
                 _checkpoint(output, {**state, "checkpoint_index": state["checkpoint_index"] + 1}, rho)
+        session_attempts = 0
         for attempt in range(state.get("attempts_this_cycle", 0), level["max_attempts"]):
+            session_attempts += 1
             parent = oracle.evaluate_parent(rho)
             parent_run = run_evidence(parent)
             parent_downforce = float(parent_run["downforce_coefficient"])
@@ -294,7 +296,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
             if accepted is None:
                 exit_rule = manifest.get("cap_stationarity_exit") or {}
                 reasons = {candidate["reason"] for candidate in payload["candidates"]}
-                last_metric = state["metrics"][-1] if state["metrics"] else None
+                last_metric = state["metrics"][-1] if state["metrics"] else manifest.get("carryover_last_metric")
                 exit_allowed = cap_stationarity_exit_allowed(
                     enabled=bool(exit_rule.get("enabled")),
                     reasons=reasons,
@@ -379,6 +381,11 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                 limits=limits,
                 min_accepted=level["min_accepted_iterations"],
             )
+            if not converged and max_new_attempts is not None and session_attempts >= max_new_attempts:
+                result = {"status": "paused_session_budget", "level": level["name"], "attempts_this_session": session_attempts,
+                          "accepted_count": state["accepted_count"], "rho_sha256": sha256_array(rho)}
+                print(json.dumps(result), flush=True)
+                return result
             if converged:
                 _append_event(output, {"kind": "level_converged", "level": level["name"], "accepted_count": state["accepted_count"], "rho_sha256": sha256_array(rho)})
                 state = {
@@ -429,12 +436,13 @@ def main() -> None:
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--manifest", default=str(MANIFEST))
+    parser.add_argument("--max-new-attempts", type=int, default=None)
     args = parser.parse_args()
     if args.verify_preconditions:
         manifest, output = verify_preconditions(resume=args.resume, manifest_path=Path(args.manifest))
         print(json.dumps({"status": "preconditions_ok", "output": str(output), "policy": manifest["phase2_policy"]["id"], "volume_cap_correction": bool(manifest["phase2_policy"].get("volume_cap_correction", False))}))
     elif args.run:
-        run_campaign(resume=args.resume, manifest_path=Path(args.manifest))
+        run_campaign(resume=args.resume, manifest_path=Path(args.manifest), max_new_attempts=args.max_new_attempts)
     else:
         parser.error("specify --verify-preconditions or --run")
 

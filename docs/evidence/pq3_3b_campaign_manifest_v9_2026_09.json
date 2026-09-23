@@ -1,0 +1,212 @@
+{
+  "accepted_count_carryover": {
+    "level_2_b16_q100": 30
+  },
+  "cap_stationarity_exit": {
+    "all_candidates_rejected_as": [
+      "machine_scale_update_rejected",
+      "volume_cap_unreachable"
+    ],
+    "does_not_claim_convergence": true,
+    "enabled": true,
+    "independent_repeat": true,
+    "last_accepted_objective_delta_max": 0.0001,
+    "min_accepted_iterations": "cumulative accepted count for the level including the registered carryover",
+    "reproducibility_tolerance": 1e-06
+  },
+  "carryover_last_metric": {
+    "objective_delta_abs": 0.0023895714599997397,
+    "projected_field_mean_abs_delta": 9.799462507848464e-05,
+    "projected_volume_delta_abs": 1.3877787807814457e-17
+  },
+  "change": {
+    "description": "the b=16 attempt budget is extended from 30 to 150; the policy, the convergence window, the thresholds, the cap-stationarity exit and the terminal rule are unchanged",
+    "does_not_relax": [
+      "the 1e-4 objective window bound and the 1e-3 field/volume bounds",
+      "the 1e-6 improvement thresholds, Path B rules and the 1e-8 machine-scale gate"
+    ],
+    "evidence": {
+      "v8_b16_accepted_steps": 30,
+      "v8_b16_last_objective_delta_abs": 0.0023895714599997397,
+      "v8_stop_reason": "level_not_converged"
+    },
+    "id": "b16-attempt-budget-extension"
+  },
+  "claims_not_supported": [
+    "the budget extension is not a convergence claim",
+    "no terminal evaluation and no Stage S readiness in this registration"
+  ],
+  "convergence": {
+    "note": "the equality volume residual criterion is replaced by volume stability under the inequality policy",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v9_entry_preflight_2026_09.json",
+    "requirement": "must pass before the v9 campaign",
+    "script_path": "scripts/pq3_3b_v9_entry_preflight_2026_09.py",
+    "script_sha256": "0da1a287a7e7e105bef18de074988c9e344f34e5b9b3860e0b54b5df6791f731"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "checkpoint_index": 31,
+    "level": "level_2_b16_q100",
+    "rho_file_sha256": "3fc45273c47c6ebd5c968a52a51d7cc7f203bb89b2177193818e35418eb35bbc",
+    "rho_path": "work/pq3_3b_campaign_v8/checkpoints/rho_0031.npy",
+    "rho_sha256": "f942b9d44bbe88e84a06bb0dcd6dd9580d746729559f87acadcd474a2d14e506",
+    "source": "v8 final accepted checkpoint"
+  },
+  "kind": "pq3_3b_campaign_manifest_v9",
+  "levels": [
+    {
+      "b": 4.0,
+      "max_attempts": 30,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.05,
+      "name": "level_0_growth_b4_q15",
+      "q": 15.0
+    },
+    {
+      "b": 8.0,
+      "max_attempts": 30,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.03,
+      "name": "level_1_b8_q30",
+      "q": 30.0
+    },
+    {
+      "b": 16.0,
+      "max_attempts": 150,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_2_b16_q100",
+      "q": 100.0
+    }
+  ],
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v9",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-oc-inequality-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_inequality_policy.py",
+    "volume_cap_correction": true
+  },
+  "pinned_evidence": {
+    "campaign_v6_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v6_outcome_2026_09.json",
+      "sha256": "cc25d5eae3eddc8ba120f7ac086737e44978ebad124fed0e810399c6abe658c4"
+    },
+    "campaign_v7_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v7_outcome_2026_09.json",
+      "sha256": "837d6bab8e8a3b8b5e4a5c915d1f62f1e1ee0fc985c4a57157ad11e4b2135ddd"
+    },
+    "campaign_v8_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v8_outcome_2026_09.json",
+      "sha256": "ac2febc876596b0464bcdc2ccaa63566d05bb2f80e4aa92309b80b31be12c358"
+    },
+    "change_manifest_d2": {
+      "path": "docs/evidence/pq3_3b_d2_change_manifest_2026_09.json",
+      "sha256": "7cc2933a39c26ce1c1f89c1b8f0d0f029122fa622cdecb35c07f598dcdc2bebd"
+    },
+    "discriminant_outcome_d1": {
+      "path": "docs/evidence/pq3_3b_d1_discriminant_outcome_2026_09.json",
+      "sha256": "0e954ca79b5ffbff0d9c576061c3e072d18c45d571bf8d799c995e5f9b0e66c9"
+    },
+    "manifest_v8": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v8_2026_09.json",
+      "sha256": "c01803f7b39372d753a90fa9acdaa5a5c900a0fa6059808de017895ec4c2ab42"
+    }
+  },
+  "plan": {
+    "path": "docs/pq3_3b_post_v5_plan_2026_09.md",
+    "sha256": "7b6c1948f205098baab8225c3cdd0a38ca5bbed0f189a889e7b0bc7b9a5ce6ba"
+  },
+  "previous_registrations": {
+    "campaign_v8_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v8_outcome_2026_09.json",
+      "sha256": "ac2febc876596b0464bcdc2ccaa63566d05bb2f80e4aa92309b80b31be12c358"
+    },
+    "manifest_v8": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v8_2026_09.json",
+      "sha256": "c01803f7b39372d753a90fa9acdaa5a5c900a0fa6059808de017895ec4c2ab42"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/df2_fd_refresh/topology_state.json",
+      "sha256": "d70307ba289affc7c13ed18ff0fb7da29bec45cc7c9a61ae54061a0647a837e0"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from the verified objective_accepted rho chain; incomplete solver cases block automatic resume",
+  "schema_version": 8,
+  "source_tree_python_sha256": "2fe43a3933d4b4be56656aa659eb9ccf210ab39df30066a95f2bc45dc97177c8",
+  "status": "registered_preflight_pending",
+  "terminal_rule": "b16 exits by the registered window or the cap-stationarity exit with at least ten cumulative accepted steps; then an independent repeat primal on the final rho with only the original projected V<=Vmax gate before any Stage S assessment",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}
