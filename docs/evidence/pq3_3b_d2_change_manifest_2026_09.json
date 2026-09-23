@@ -1,0 +1,76 @@
+{
+  "budget": {
+    "entry_preflight_max_new_primals": 20,
+    "long_campaign_not_in_this_slice": true
+  },
+  "change": {
+    "extractability_baseline_b8_stop": {
+      "cells_gt_0.3": 439,
+      "cells_gt_0.4": 350,
+      "cells_gt_0.5": 281,
+      "cells_gt_0.6": 209,
+      "fraction_gt_0.3": 0.022864583333333334,
+      "fraction_gt_0.4": 0.018229166666666668,
+      "fraction_gt_0.5": 0.014635416666666666,
+      "fraction_gt_0.6": 0.010885416666666667,
+      "total_active": 19200
+    },
+    "extractability_fraction": 0.5,
+    "extractability_guard_is_not_a_pq41_substitute": true,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "id": "objective-oc-inequality-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "min_norm_rationale": "D0 measured machine-scale corrected norms <= 2.8e-17 and the smallest detectable D1 step at 0.03 inf-norm; 1e-8 is far above float noise and far below meaningful steps",
+    "module": "src/cfd_sdf/phase2_inequality_policy.py",
+    "unchanged": [
+      "Phase 1 projected-volume restoration to the formation target 0.018",
+      "Path B centered bracket epsilon 8e-4 and noise floor 1e-6",
+      "improvement thresholds 1e-6 (objective and raw downforce)",
+      "b/q schedule, move limits, filter radius and projection eta",
+      "box-face freeze policy in Phase 2"
+    ]
+  },
+  "claims_not_supported": [
+    "the change is registered; it is not yet qualified by the entry preflight"
+  ],
+  "decision": {
+    "adopted": "objective-oc-inequality-v1: the Phase 2 ladder now uses the objective sign step without the equality volume correction; the original inequality V <= Vmax is enforced",
+    "evidence": {
+      "d1_registered_corrected_step_improvement": 2.7124e-07,
+      "d2_objective_only_improvement_amp1": 0.13399131714800006,
+      "d3_exchange_improvement_amp1": 0.02789471006200006,
+      "d4_one_sided_inward_improvement_amp1": 8.056980299997463e-05,
+      "parent_spread": 0.0
+    },
+    "not_adopted": "d4 one-sided inward perturbation is recorded as a diagnostic only; it is not qualified by the centered Path B bracket",
+    "recorded_alternative": "d3 orthogonal volume exchange direction remains registered in the D1 outcome for a future manifest if the inequality campaign shows projected-volume drift",
+    "table_rows_applied": [
+      "upper-bound-only direction improves detectably",
+      "volume-exchange direction improves detectably"
+    ]
+  },
+  "diagnosis_evidence": {
+    "path": "docs/evidence/pq3_3b_stopped_state_diagnosis_2026_09.json",
+    "sha256": "9097ffff33ac443eff54233c1c341c7b2dbc287dc8433b18ee96ce7e8e886e2c"
+  },
+  "discriminant_evidence": {
+    "path": "docs/evidence/pq3_3b_d1_discriminant_outcome_2026_09.json",
+    "sha256": "0e954ca79b5ffbff0d9c576061c3e072d18c45d571bf8d799c995e5f9b0e66c9"
+  },
+  "immutable": true,
+  "kind": "pq3_3b_d2_change_manifest",
+  "plan": {
+    "path": "docs/pq3_3b_post_v5_plan_2026_09.md",
+    "sha256": "7b6c1948f205098baab8225c3cdd0a38ca5bbed0f189a889e7b0bc7b9a5ce6ba"
+  },
+  "rules": [
+    "registered thresholds are not relaxed after seeing results",
+    "no v4/v5 result is retroactively re-passed",
+    "a rejection at every alpha stops the level fail-closed until a new manifest"
+  ],
+  "schema_version": 1,
+  "status": "registered_awaiting_entry_qualification"
+}
