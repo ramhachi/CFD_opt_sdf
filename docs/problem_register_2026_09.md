@@ -140,7 +140,14 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 > adjoint/FD directional signs. This closes the **single-step preflight
 > feasibility question**, not P19: the registered multi-iteration convergence,
 > terminal upper-bound re-evaluation and Stage S handoff are still unmeasured.
-> P19 and P20 remain open; no campaign run and no Stage S-ready claim.
+> The later v4 campaign converged at b=4, then stopped after eight accepted
+> b=8 objective steps because the ninth-step centered objective difference was
+> below its registered noise floor. A separate same-state diagnostic supported
+> a wider centered epsilon with the original noise floor unchanged. The
+> registered v5 continuation resumes from the verified b=8 checkpoint; b=16,
+> terminal qualification and Stage S readiness remain unmeasured. See
+> `docs/evidence/pq3_3b_campaign_v4_outcome_2026_09.json` and
+> `docs/evidence/pq3_3b_bracket_recovery_v1_2026_09.json`.
 
 
 ### 症状

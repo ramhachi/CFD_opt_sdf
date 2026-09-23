@@ -1,0 +1,144 @@
+{
+  "kind": "pq3_3b_campaign_v4_outcome",
+  "schema_version": 1,
+  "manifest_sha256": "01d40d48ebe12f73e66ab646ed51c1cce611b28901f6cc7ee7564abed2753484",
+  "output_directory": "work/pq3_3b_campaign_v4",
+  "output_hashes": {
+    "campaign_meta_json": "150f34630194ec4a325b360f4ee8a1353a3da85e573c701a0723583aab81457d",
+    "events_jsonl": "1042f01ebfd8b46c9c6694a93f672e2b742fecb851704daca496176270a438c7",
+    "latest_json": "d19e3ba9b66f2edec2e89d9a21fa0468c9be44cee4d62d3e97389bd27eaa1113"
+  },
+  "status": {
+    "manifest_sha256": "01d40d48ebe12f73e66ab646ed51c1cce611b28901f6cc7ee7564abed2753484",
+    "status": "blocked",
+    "reason": "objective_rejected",
+    "level": "level_1_b8_q30"
+  },
+  "levels": [
+    {
+      "level": "level_0_growth_b4_q15",
+      "attempts": 23,
+      "accepted": 23,
+      "converged": true,
+      "initial_parent_downforce": 0.67028822071,
+      "last_accepted_downforce": 1.02477752364,
+      "last_accepted_rho_sha256": "973e088853dcc133c1dd1809f51aa0bc6971dc3473f73dad76da3ea8c4c5f20c"
+    },
+    {
+      "level": "level_1_b8_q30",
+      "attempts": 9,
+      "accepted": 8,
+      "converged": false,
+      "initial_parent_downforce": 0.482961477884,
+      "last_accepted_downforce": 0.579504694421,
+      "last_accepted_rho_sha256": "a7bece5d945d87f4ab6d09b8b4482930f192163be73a1b4f3a05fa53e4a9a414"
+    },
+    {
+      "level": "level_2_b16_q100",
+      "attempts": 0,
+      "accepted": 0,
+      "converged": false,
+      "initial_parent_downforce": null,
+      "last_accepted_downforce": null,
+      "last_accepted_rho_sha256": null
+    }
+  ],
+  "checkpoint": {
+    "index": 32,
+    "level_index": 1,
+    "accepted_count": 8,
+    "rho_sha256": "a7bece5d945d87f4ab6d09b8b4482930f192163be73a1b4f3a05fa53e4a9a414",
+    "verified_chain": true,
+    "last_metrics": [
+      {
+        "objective_delta_abs": 0.00025543887900003615,
+        "projected_field_mean_abs_delta": 1.3395989395509075e-05,
+        "volume_residual": 3.469446951953614e-18
+      },
+      {
+        "objective_delta_abs": 0.0002171531879999744,
+        "projected_field_mean_abs_delta": 1.1664491692849393e-05,
+        "volume_residual": 0.0
+      },
+      {
+        "objective_delta_abs": 0.00021192643300005365,
+        "projected_field_mean_abs_delta": 1.1443658737315056e-05,
+        "volume_residual": 3.469446951953614e-18
+      }
+    ]
+  },
+  "solver_summary_refs_checked": 72,
+  "solver_summary_hash_failures": 0,
+  "stopping_attempt": {
+    "level": "level_1_b8_q30",
+    "attempt": 9,
+    "parent_downforce": 0.579504694421,
+    "candidates": [
+      {
+        "alpha": 1.0,
+        "bracket_ok": false,
+        "bracket_reason": "below_noise_floor",
+        "fd_objective_difference": 7.262390000484231e-07,
+        "fd_noise_floor_abs": 1e-06,
+        "d_adj": -0.004097362943497303,
+        "d_fd": -0.0036311950002421156,
+        "trial_downforce": 0.579613500329,
+        "accepted": false
+      },
+      {
+        "alpha": 0.5,
+        "bracket_ok": false,
+        "bracket_reason": "below_noise_floor",
+        "fd_objective_difference": 7.223569999936785e-07,
+        "fd_noise_floor_abs": 1e-06,
+        "d_adj": -0.004074585432161804,
+        "d_fd": -0.0036117849999683926,
+        "trial_downforce": 0.579612800256,
+        "accepted": false
+      },
+      {
+        "alpha": 0.25,
+        "bracket_ok": false,
+        "bracket_reason": "below_noise_floor",
+        "fd_objective_difference": 7.227160000455868e-07,
+        "fd_noise_floor_abs": 1e-06,
+        "d_adj": -0.004077545393011882,
+        "d_fd": -0.003613580000227934,
+        "trial_downforce": 0.579558827911,
+        "accepted": false
+      },
+      {
+        "alpha": 0.125,
+        "bracket_ok": false,
+        "bracket_reason": "below_noise_floor",
+        "fd_objective_difference": 7.227339999804627e-07,
+        "fd_noise_floor_abs": 1e-06,
+        "d_adj": -0.004077632481792806,
+        "d_fd": -0.0036136699999023136,
+        "trial_downforce": 0.579531771634,
+        "accepted": false
+      },
+      {
+        "alpha": 0.0625,
+        "bracket_ok": false,
+        "bracket_reason": "below_noise_floor",
+        "fd_objective_difference": 7.227339999804627e-07,
+        "fd_noise_floor_abs": 1e-06,
+        "d_adj": -0.004077675670198939,
+        "d_fd": -0.0036136699999023136,
+        "trial_downforce": 0.579518232295,
+        "accepted": false
+      }
+    ]
+  },
+  "claims_supported": [
+    "b4 converged under the registered window",
+    "b8 accepted eight objective steps but did not converge",
+    "all b8 ninth-step alpha candidates failed the registered centered-FD noise-floor gate"
+  ],
+  "claims_not_supported": [
+    "no b16 campaign result",
+    "no terminal independent evaluation",
+    "no Stage S readiness or grid-independent downforce claim"
+  ]
+}

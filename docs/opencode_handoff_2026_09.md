@@ -42,8 +42,15 @@ not multi-iteration convergence or Stage S qualification. The previous v3
 manifest remains blocked. Manifest v4 and its runner were registered for a
 later long run; read-only preconditions passed at SHA-256
 `01d40d48ebe12f73e66ab646ed51c1cce611b28901f6cc7ee7564abed2753484`.
-No long optimization run has been started. Follow the
-latest `phase_plan.md` and v6 evidence rather than the older snapshot below.
+The v4 optimization campaign subsequently converged at b=4 and stopped after
+eight accepted b=8 objective steps because the ninth-step Path B difference
+fell below its registered absolute noise floor. A same-state diagnostic
+supported a wider centered epsilon without changing that floor. Manifest v5
+registers a local-state-dependent continuation from the verified b=8
+checkpoint in a new output directory. Its input snapshot and the v4 campaign
+output are retained under ignored `work/`, so a fresh checkout cannot resume
+without those host-local artifacts. Follow the latest `phase_plan.md` and
+immutable v4 outcome/recovery evidence rather than the older snapshot below.
 
 ## Snapshot and Git
 

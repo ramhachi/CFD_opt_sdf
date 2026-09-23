@@ -552,7 +552,7 @@ The current post-PQ3.3 execution detail is
 [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md).
 Both retain Stage T -> Stage S -> Stage V and are subordinate to this roadmap.
 
-Current status on 2026-09-22:
+Current status on 2026-09-23:
 
 - PQ0.1 closed the nonlinear integration defects for the reduced problem:
   compiled projected volume, parent/trial oracle separation, accepted-primal
@@ -619,8 +619,8 @@ Execute in this order:
    sat exactly at rho=1 and moved inward, so the minus perturbation exceeded
    the box. No b=8 candidate was accepted and b=16 was not evaluated. This is
    a bracket-feasibility failure, not measured evidence that the directions
-   are non-descent. The v3 manifest remains `registered_blocked` and no long
-   campaign has started.
+   are non-descent. At that preflight point, the v3 manifest remained
+   `registered_blocked`; the later v4 campaign result is recorded below.
 
    **Preflight v6 result:** exact box-face cells were frozen in the Phase 2
    proposal and its projected-volume correction; the centered Path B rule was
@@ -640,9 +640,26 @@ Execute in this order:
    It checkpoints accepted rho, verifies the checkpoint chain on resume,
    requires ten accepted steps and the registered stability window per level,
    and makes an independent final primal check. The real multi-iteration
-   campaign remains **unrun**. Keep the old blocked manifests and v1-v6
-   artifacts unchanged. Stage S remains blocked until campaign convergence,
-   terminal evaluation and PQ4.1 pass.
+   campaign was then run under the registered v4 manifest. The b=4 level
+   converged after 23 accepted objective steps. The b=8 level restored
+   projected volume to 0.018 and accepted eight objective steps, but its ninth
+   attempt stopped: every alpha's centered pair had an objective difference
+   near `7.2e-7`, below the registered `1e-6` absolute noise floor. All five
+   trial primals improved downforce; this does not waive the Path B bracket.
+   The b=16 level and terminal check were not run. The immutable result is
+   [`evidence/pq3_3b_campaign_v4_outcome_2026_09.json`](evidence/pq3_3b_campaign_v4_outcome_2026_09.json).
+
+   A separate diagnostic at the exact b=8 stopped rho repeated the parent
+   primal and tested centered epsilons `2e-4`, `4e-4` and `8e-4` with the same
+   `1e-6` floor. All three formed acceptable brackets with stable negative
+   FD slopes; see [`evidence/pq3_3b_bracket_recovery_v1_2026_09.json`](evidence/pq3_3b_bracket_recovery_v1_2026_09.json).
+   Manifest v5 registers `epsilon=8e-4` and a verified continuation from the
+   eighth accepted b=8 checkpoint in a separate output directory, preserving
+   the b=4 and b=8 histories. It is locally qualified at the stopped b=8
+   parent only; all future proposals retain fail-closed brackets. The user's
+   2026-09-23 instruction authorizes starting this bounded optimization.
+   Stage S remains blocked until campaign convergence, terminal evaluation
+   and PQ4.1 pass.
 4. **PQ3.3b bounded real-OpenFOAM continuation.** Register a new immutable
    manifest. Recompute the parent at each b/q level; require Path B brackets,
    real trial primals, projected-volume feasibility, minimum iteration counts
