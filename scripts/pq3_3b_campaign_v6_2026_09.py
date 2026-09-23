@@ -52,20 +52,27 @@ SHAPE = (60, 32, 24)
 SPACING_M = 0.05
 
 
-def verify_preconditions(*, resume: bool = False) -> tuple[dict, Path]:
-    sidecar = MANIFEST.with_suffix(".json.sha256").read_text(encoding="utf-8").strip()
-    if ca.sha256_file(MANIFEST) != sidecar:
-        raise ValueError("v6 manifest sidecar mismatch")
-    manifest = ca.load_json(MANIFEST)
-    if manifest.get("schema_version") != 5:
-        raise ValueError("v6 manifest schema mismatch")
-    if ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
+def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = None) -> tuple[dict, Path]:
+    manifest_path = Path(manifest_path) if manifest_path is not None else MANIFEST
+    sidecar = manifest_path.with_suffix(".json.sha256").read_text(encoding="utf-8").strip()
+    if ca.sha256_file(manifest_path) != sidecar:
+        raise ValueError("campaign manifest sidecar mismatch")
+    manifest = ca.load_json(manifest_path)
+    if manifest.get("schema_version") not in (5, 6):
+        raise ValueError("campaign manifest schema mismatch")
+    if "change_manifest_d2" in manifest and ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
         raise ValueError("D2 change manifest hash mismatch")
-    if ca.sha256_file(D1_OUTCOME) != manifest["discriminant_outcome_d1"]["sha256"]:
+    if "discriminant_outcome_d1" in manifest and ca.sha256_file(D1_OUTCOME) != manifest["discriminant_outcome_d1"]["sha256"]:
         raise ValueError("D1 outcome hash mismatch")
-    if ca.sha256_file(PREFLIGHT) != ca.sha256_file(ROOT / manifest["entry_preflight"]["artifact_path"]):
-        raise ValueError("entry preflight path/hash mismatch")
-    preflight = ca.load_json(PREFLIGHT)
+    for key, ref in manifest.get("pinned_evidence", {}).items():
+        path = ROOT / ref["path"]
+        actual = ca.tree_sha256(path) if path.is_dir() else ca.sha256_file(path)
+        if actual != ref["sha256"]:
+            raise ValueError(f"pinned evidence mismatch: {key}")
+    preflight_path = ROOT / manifest["entry_preflight"]["artifact_path"]
+    if ca.sha256_file(preflight_path) != manifest["entry_preflight"].get("artifact_sha256", ca.sha256_file(preflight_path)):
+        raise ValueError("entry preflight artifact hash mismatch")
+    preflight = ca.load_json(preflight_path)
     if preflight["summary"].get("entry_preflight_pass") is not True:
         raise ValueError("entry preflight did not pass; campaign refused")
     if ca.sha256_file(ROOT / manifest["entry_preflight"]["script_path"]) != manifest["entry_preflight"]["script_sha256"]:
@@ -167,8 +174,9 @@ def _stop(output: Path, reason: str, level: str) -> dict:
     return result
 
 
-def run_campaign(*, resume: bool = False) -> dict:
-    manifest, output = verify_preconditions(resume=resume)
+def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> dict:
+    manifest_path = Path(manifest_path) if manifest_path is not None else MANIFEST
+    manifest, output = verify_preconditions(resume=resume, manifest_path=manifest_path)
     spec = load_problem_spec(_path(manifest["registered_inputs"]["problem_spec"]))
     compiled = compile_problem(spec, volume_budget=VolumeBudget("volume_fraction_max", manifest["v_max_projected"]))
     grid = load_fixed_grid_density_state(_path(manifest["registered_inputs"]["canonical_grid"]))
@@ -186,12 +194,13 @@ def run_campaign(*, resume: bool = False) -> dict:
     start_index = next(
         index for index, level in enumerate(levels) if level["name"] == manifest["input_stop_state"]["level"]
     )
+    manifest_sha = ca.sha256_file(manifest_path)
     if resume:
         state, rho = _load_checkpoint(output)
     else:
         output.mkdir(parents=True)
         shutil.copytree(_path(manifest["registered_inputs"]["template_trial"]), output / "template_trial")
-        _write_json_atomic(output / "campaign_meta.json", {"manifest_sha256": ca.sha256_file(MANIFEST), "status": "running"})
+        _write_json_atomic(output / "campaign_meta.json", {"manifest_sha256": manifest_sha, "status": "running"})
         rho = np.load(ROOT / manifest["input_stop_state"]["rho_path"], allow_pickle=False)
         state = {
             "checkpoint_index": 0,
@@ -244,6 +253,7 @@ def run_campaign(*, resume: bool = False) -> dict:
                 evaluate_values=oracle.evaluate_values,
                 evaluate_trial=trial,
                 return_rho=True,
+                volume_cap_correction=bool(manifest["phase2_policy"].get("volume_cap_correction", False)),
                 min_update_inf_norm=manifest["phase2_policy"]["min_corrected_update_inf_norm"],
                 extractability_fraction=manifest["phase2_policy"]["extractability_fraction"],
             )
@@ -322,7 +332,7 @@ def run_campaign(*, resume: bool = False) -> dict:
         "run": terminal_run,
     }
     _write_json_atomic(output / "terminal.json", result)
-    _write_json_atomic(output / "campaign_meta.json", {"manifest_sha256": ca.sha256_file(MANIFEST), "status": result["status"]})
+    _write_json_atomic(output / "campaign_meta.json", {"manifest_sha256": manifest_sha, "status": result["status"]})
     print(json.dumps(result), flush=True)
     return result
 
@@ -332,12 +342,13 @@ def main() -> None:
     parser.add_argument("--verify-preconditions", action="store_true")
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--manifest", default=str(MANIFEST))
     args = parser.parse_args()
     if args.verify_preconditions:
-        manifest, output = verify_preconditions(resume=args.resume)
-        print(json.dumps({"status": "preconditions_ok", "output": str(output), "policy": manifest["phase2_policy"]["id"]}))
+        manifest, output = verify_preconditions(resume=args.resume, manifest_path=Path(args.manifest))
+        print(json.dumps({"status": "preconditions_ok", "output": str(output), "policy": manifest["phase2_policy"]["id"], "volume_cap_correction": bool(manifest["phase2_policy"].get("volume_cap_correction", False))}))
     elif args.run:
-        run_campaign(resume=args.resume)
+        run_campaign(resume=args.resume, manifest_path=Path(args.manifest))
     else:
         parser.error("specify --verify-preconditions or --run")
 
