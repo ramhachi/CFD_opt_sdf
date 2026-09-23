@@ -9,7 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from scripts.pq3_3b_campaign_v6_2026_09 import level_converged  # noqa: E402
+from scripts.pq3_3b_campaign_v6_2026_09 import (  # noqa: E402
+    cap_stationarity_exit_allowed,
+    level_converged,
+)
 
 LIMITS = {
     "window_accepted": 3,
@@ -39,3 +42,29 @@ def test_convergence_rejects_window_failures():
     assert level_converged(accepted_count=10, window=[GOOD, BAD_FIELD, GOOD], limits=LIMITS, min_accepted=10) is False
     assert level_converged(accepted_count=10, window=[GOOD, BAD_VOLUME, GOOD], limits=LIMITS, min_accepted=10) is False
     assert level_converged(accepted_count=10, window=[GOOD, ZERO_DELTA, GOOD], limits=LIMITS, min_accepted=10) is False
+
+
+def test_cap_stationarity_exit_requires_separate_criteria():
+    reasons = {"machine_scale_update_rejected", "volume_cap_unreachable"}
+    allowed = {
+        "all_rejected_as": reasons,
+        "last_metric": {"objective_delta_abs": 5e-5},
+        "last_metric_limit": 1e-4,
+        "accepted_count": 36,
+        "min_accepted": 10,
+    }
+    assert cap_stationarity_exit_allowed(enabled=True, reasons=reasons, **allowed) is True
+    # a feasible-direction rejection reason disqualifies the exit
+    assert cap_stationarity_exit_allowed(
+        enabled=True, reasons={"gates_failed"}, **allowed
+    ) is False
+    # a large last accepted delta disqualifies the exit
+    assert cap_stationarity_exit_allowed(
+        enabled=True, reasons=reasons, **{**allowed, "last_metric": {"objective_delta_abs": 2e-4}}
+    ) is False
+    # the min-accepted floor is enforced separately
+    assert cap_stationarity_exit_allowed(
+        enabled=True, reasons=reasons, **{**allowed, "accepted_count": 9}
+    ) is False
+    # disabled means disabled
+    assert cap_stationarity_exit_allowed(enabled=False, reasons=reasons, **allowed) is False

@@ -166,6 +166,30 @@ def level_converged(*, accepted_count: int, window: list[dict], limits: dict, mi
     )
 
 
+def cap_stationarity_exit_allowed(
+    *,
+    enabled: bool,
+    reasons: set,
+    all_rejected_as: set,
+    last_metric: dict | None,
+    last_metric_limit: float,
+    accepted_count: int,
+    min_accepted: int,
+) -> bool:
+    """Registered cap-stationarity exit (pure, unit-tested).
+
+    The accepted-step smallness criterion and the no-feasible-direction
+    criterion are checked separately; the exit never claims convergence.
+    """
+    if not enabled or not all_rejected_as:
+        return False
+    if not set(reasons) <= set(all_rejected_as):
+        return False
+    if last_metric is None or last_metric["objective_delta_abs"] > last_metric_limit:
+        return False
+    return accepted_count >= min_accepted
+
+
 def _stop(output: Path, reason: str, level: str) -> dict:
     meta = ca.load_json(output / "campaign_meta.json")
     _write_json_atomic(output / "campaign_meta.json", {**meta, "status": "blocked", "reason": reason, "level": level})
@@ -202,10 +226,12 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
         shutil.copytree(_path(manifest["registered_inputs"]["template_trial"]), output / "template_trial")
         _write_json_atomic(output / "campaign_meta.json", {"manifest_sha256": manifest_sha, "status": "running"})
         rho = np.load(ROOT / manifest["input_stop_state"]["rho_path"], allow_pickle=False)
+        carryover = manifest.get("accepted_count_carryover", {})
         state = {
             "checkpoint_index": 0,
             "level_index": start_index,
-            "accepted_count": 0,
+            "accepted_count": int(carryover.get(levels[start_index]["name"], 0)),
+            "attempts_this_cycle": 0,
             "metrics": [],
             "completed_levels": [level["name"] for level in levels[:start_index]],
             "phase1_done": None,
@@ -232,7 +258,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                 rho = restored
                 state = {**state, "phase1_done": True}
                 _checkpoint(output, {**state, "checkpoint_index": state["checkpoint_index"] + 1}, rho)
-        for attempt in range(state["accepted_count"], level["max_attempts"]):
+        for attempt in range(state.get("attempts_this_cycle", 0), level["max_attempts"]):
             parent = oracle.evaluate_parent(rho)
             parent_run = run_evidence(parent)
             parent_downforce = float(parent_run["downforce_coefficient"])
@@ -266,6 +292,61 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                  "input_rho_sha256": sha256_array(rho), "parent_run": parent_run, "phase2": payload},
             )
             if accepted is None:
+                exit_rule = manifest.get("cap_stationarity_exit") or {}
+                reasons = {candidate["reason"] for candidate in payload["candidates"]}
+                last_metric = state["metrics"][-1] if state["metrics"] else None
+                exit_allowed = cap_stationarity_exit_allowed(
+                    enabled=bool(exit_rule.get("enabled")),
+                    reasons=reasons,
+                    all_rejected_as=set(exit_rule.get("all_candidates_rejected_as", [])),
+                    last_metric=last_metric,
+                    last_metric_limit=float(exit_rule.get("last_accepted_objective_delta_max", 0.0)),
+                    accepted_count=state["accepted_count"],
+                    min_accepted=level["min_accepted_iterations"],
+                )
+                if exit_allowed:
+                    repeat_oracle = _oracle(manifest, transform, compiled, output, output / "stationarity_repeat")
+                    repeat = repeat_oracle.evaluate_values(rho)
+                    repeat_run = run_evidence(repeat)
+                    tolerance = float(exit_rule.get("reproducibility_tolerance", 1e-6))
+                    reproducible = bool(
+                        repeat.primal_converged
+                        and abs(float(repeat.objective) - float(parent.objective)) <= tolerance
+                        and abs(float(repeat_run["downforce_coefficient"]) - parent_downforce) <= tolerance
+                    )
+                    _append_event(
+                        output,
+                        {
+                            "kind": "cap_stationarity_check",
+                            "level": level["name"],
+                            "attempt": attempt + 1,
+                            "all_candidates_rejected_as": sorted(reasons),
+                            "last_accepted_objective_delta_abs": last_metric["objective_delta_abs"] if last_metric else None,
+                            "cumulative_accepted_count": state["accepted_count"],
+                            "repeat_run": repeat_run,
+                            "reproducible": reproducible,
+                        },
+                    )
+                    if not reproducible:
+                        return _stop(output, "stationarity_reproducibility_failed", level["name"])
+                    _append_event(
+                        output,
+                        {"kind": "level_exit_cap_stationarity", "level": level["name"], "rho_sha256": sha256_array(rho),
+                         "accepted_count": state["accepted_count"]},
+                    )
+                    state = {
+                        **state,
+                        "checkpoint_index": state["checkpoint_index"] + 1,
+                        "level_index": level_index + 1,
+                        "accepted_count": 0,
+                        "attempts_this_cycle": 0,
+                        "metrics": [],
+                        "completed_levels": state["completed_levels"] + [level["name"]],
+                        "phase1_done": False,
+                        "exit_reason": "cap_stationarity_exit",
+                    }
+                    _checkpoint(output, state, rho)
+                    break
                 return _stop(output, "objective_rejected", level["name"])
             candidate = payload["candidates"][-1]
             if not candidate["accepted"] or payload["corrected_rho_sha256"] != sha256_array(accepted):
@@ -282,6 +363,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                 "checkpoint_index": state["checkpoint_index"] + 1,
                 "level_index": level_index,
                 "accepted_count": state["accepted_count"] + 1,
+                "attempts_this_cycle": attempt + 1,
                 "metrics": (state["metrics"] + [metric])[-manifest["convergence"]["window_accepted"]:],
                 "phase1_done": True,
                 "last_trial_objective": candidate["trial_objective"],
@@ -304,6 +386,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None) -> 
                     "checkpoint_index": state["checkpoint_index"] + 1,
                     "level_index": level_index + 1,
                     "accepted_count": 0,
+                    "attempts_this_cycle": 0,
                     "metrics": [],
                     "completed_levels": state["completed_levels"] + [level["name"]],
                     "phase1_done": False,
