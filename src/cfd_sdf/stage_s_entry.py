@@ -160,7 +160,7 @@ def qualify_stage_s_entry(
         "pass": bool(disc_ok),
         "status": discreteness.get("status"),
         "mean_nd": discreteness.get("mean_nd"),
-        "mean_nd_max": discreteness.get("mean_nd_max"),
+        "mean_nd_max": discreteness.get("mean_nd_max", discreteness.get("max_mean_nd_allowed")),
         "max_rho_threshold": discreteness.get("max_rho_threshold"),
         "reasons": discreteness.get("reasons"),
     }

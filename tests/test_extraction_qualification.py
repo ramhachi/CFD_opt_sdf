@@ -168,3 +168,28 @@ def test_manifest_tamper_is_rejected(tmp_path: Path):
     tampered.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(ExtractionQualificationError, match="changed after the handoff"):
         qualify_extraction(tampered, mesh_path=artifacts.surface_stl)
+
+
+def test_measured_self_intersection_gates_the_profile_fail_closed():
+    from cfd_sdf.extraction_qualification import (
+        EXTRACTION_QUALIFICATION_PROFILE_V1,
+        _manifold_reasons,
+    )
+
+    manifold = {
+        "watertight": True,
+        "winding_consistent": True,
+        "positive_volume": True,
+        "duplicate_face_count": 0,
+        "non_manifold_edge_count": 0,
+        "self_intersection": "fail",
+    }
+    reasons = _manifold_reasons(manifold, EXTRACTION_QUALIFICATION_PROFILE_V1)
+    assert "mesh_self_intersects" in reasons
+
+    clean = {**manifold, "self_intersection": "pass"}
+    assert _manifold_reasons(clean, EXTRACTION_QUALIFICATION_PROFILE_V1) == []
+
+    not_evaluated = {**manifold, "self_intersection": "not_evaluated"}
+    reasons = _manifold_reasons(not_evaluated, EXTRACTION_QUALIFICATION_PROFILE_V1)
+    assert any(reason.startswith("self_intersection:") for reason in reasons)

@@ -95,6 +95,32 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _manifold_reasons(manifold: dict[str, Any], profile: dict[str, Any]) -> list[str]:
+    """Fail-closed manifold verdicts (pure, unit-tested).
+
+    A measured self-intersection is never acceptable; an unevaluated one is
+    rejected when the profile requires measurement.
+    """
+    reasons: list[str] = []
+    if profile["require_no_duplicate_faces"] and manifold["non_manifold_edge_count"] > 0:
+        reasons.append("mesh_has_non_manifold_edges")
+    if (
+        profile.get("require_self_intersection_measured")
+        and manifold["self_intersection"].startswith("not_evaluated")
+    ):
+        reasons.append(f"self_intersection:{manifold['self_intersection']}")
+    if manifold["self_intersection"] == "fail":
+        reasons.append("mesh_self_intersects")
+    if profile["require_watertight"] and not manifold["watertight"]:
+        reasons.append("mesh_not_watertight")
+    if profile["require_winding_consistent"] and not manifold["winding_consistent"]:
+        reasons.append("mesh_winding_inconsistent")
+    if profile["require_positive_volume"] and not manifold["positive_volume"]:
+        reasons.append("mesh_volume_not_positive")
+    if profile["require_no_duplicate_faces"] and manifold["duplicate_face_count"] > 0:
+        reasons.append("mesh_has_duplicate_faces")
+    return reasons
+
 def qualify_extraction(
     handoff_manifest_json: str | Path,
     *,
@@ -217,21 +243,7 @@ def qualify_extraction(
         "self_intersection": _triangles_self_intersect(mesh),
     }
     checks["mesh_manifold"] = manifold
-    if profile["require_no_duplicate_faces"] and manifold["non_manifold_edge_count"] > 0:
-        reasons.append("mesh_has_non_manifold_edges")
-    if (
-        profile.get("require_self_intersection_measured")
-        and manifold["self_intersection"].startswith("not_evaluated")
-    ):
-        reasons.append(f"self_intersection:{manifold['self_intersection']}")
-    if profile["require_watertight"] and not manifold["watertight"]:
-        reasons.append("mesh_not_watertight")
-    if profile["require_winding_consistent"] and not manifold["winding_consistent"]:
-        reasons.append("mesh_winding_inconsistent")
-    if profile["require_positive_volume"] and not manifold["positive_volume"]:
-        reasons.append("mesh_volume_not_positive")
-    if profile["require_no_duplicate_faces"] and manifold["duplicate_face_count"] > 0:
-        reasons.append("mesh_has_duplicate_faces")
+    reasons.extend(_manifold_reasons(manifold, profile))
 
     # --- root connectivity --------------------------------------------------
     root_mask = np.asarray(
