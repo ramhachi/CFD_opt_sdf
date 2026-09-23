@@ -136,6 +136,14 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 > still depends on the terminal candidate and the PQ4.1 composite gate. No
 > Stage S-ready claim, and the long v6 campaign has not started.
 
+> **2026-09-23 v6/v7 cycle update:** under the inequality policy with the
+> volume-cap correction, the b=8 level accepted 36 steps total across the two
+> cycles (same-level downforce 0.579818003757 -> 3.82622378522) and now sits
+> exactly on the projected-volume cap with a machine-scale stopping attempt.
+> The registered convergence window was not met; no convergence claim. P2
+> (binarization/extractability) and P19 remain open pending a pre-registered
+> cap-stationarity exit, the b=16 campaign and the terminal PQ4.1 evaluation.
+
 > **2026-09-23 preflight v5 current status:** The v4 b=8 failure reason was not
 > auditable because its per-alpha ledger was dropped on exception, and b=8
 > inherited the b=4 restoration rho instead of the objective-accepted rho.

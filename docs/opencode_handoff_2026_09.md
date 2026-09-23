@@ -815,3 +815,22 @@ repair that unrelated documentation mismatch.
   `docs/evidence/pq3_3b_v6_entry_preflight_2026_09.json` passed both stages.
 - Next: an explicit user go plus a v6 campaign runner (not implemented).
   Stage S remains blocked; do not claim convergence or readiness.
+
+## 2026-09-23: v6/v7 campaign cycles and the cap-constrained stop
+
+- v6 outcome `docs/evidence/pq3_3b_campaign_v6_outcome_2026_09.json`: nine
+  accepted b=8 inequality steps, stopped when every alpha exceeded Vmax.
+- v7 manifest/preflight/outcome: `pq3_3b_campaign_manifest_v7_2026_09.json`,
+  `pq3_3b_v7_entry_preflight_2026_09.json`,
+  `pq3_3b_campaign_v7_outcome_2026_09.json`. The cap-corrected policy accepted
+  27 more b=8 steps exactly on Vmax; same-level downforce 3.82622378522; the
+  registered window missed by one 1.31e-4 delta and attempt 28 rejected every
+  alpha at machine scale (<= 5.6e-17), fail-closed.
+- Next (not started): a new immutable manifest with a pre-registered
+  cap-stationarity exit measured separately from the accepted-step window,
+  then the b=16 campaign and terminal evaluation. No convergence claim.
+- Still unrun registrations: PQ1 third source grid (128x64x64, needs new grid
+  infrastructure + 24 FD rows), PQ1 grid stability, the Stage V domain/boundary
+  V2 factor, and the DF2 Stage T grid family. Code repairs pending after the
+  campaign path: P20 gap/min-width/calibration, P8 move-limit floor (the v6/v7
+  policy already rejects machine-scale no-ops via the 1e-8 gate), P9.

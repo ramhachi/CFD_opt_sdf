@@ -718,6 +718,30 @@ Execute in this order:
    target was maintained, and one b=16 inequality step accepted +0.02556. The
    long v6 campaign is NOT started; a campaign runner is not implemented and an
    explicit user go is required. Stage S remains blocked.
+
+   **Campaign cycles run (2026-09-23):** the v6 inequality campaign accepted
+   nine b=8 steps (same-level downforce 0.579818003757 upward; projected
+   volume reached 99.1% of Vmax) and stopped fail-closed when every alpha
+   exceeded the volume bound
+   ([`evidence/pq3_3b_campaign_v6_outcome_2026_09.json`](evidence/pq3_3b_campaign_v6_outcome_2026_09.json)).
+   The registered alternative was implemented as the minimal active-set
+   change: `volume_cap_correction` projects the sign step back onto the
+   feasible set. The v7 manifest resumed at the v6 checkpoint
+   ([`evidence/pq3_3b_campaign_manifest_v7_2026_09.json`](evidence/pq3_3b_campaign_manifest_v7_2026_09.json))
+   after its entry preflight passed
+   ([`evidence/pq3_3b_v7_entry_preflight_2026_09.json`](evidence/pq3_3b_v7_entry_preflight_2026_09.json)),
+   then accepted 27 more b=8 steps exactly on the Vmax boundary; same-level
+   downforce reached 3.82622378522. The registered convergence window was not
+   met (one accepted delta 1.31e-4 above the 1e-4 bound) before attempt 28
+   rejected every alpha on the machine-scale corrected-update gate, so the
+   level stopped fail-closed
+   ([`evidence/pq3_3b_campaign_v7_outcome_2026_09.json`](evidence/pq3_3b_campaign_v7_outcome_2026_09.json)).
+   The measured state is a cap-constrained near-stationary point of the
+   registered policy; no convergence or stationarity certificate is claimed.
+   A further level exit or the b=16 transition requires a new pre-registered
+   rule (for example a stationarity exit measured separately from the
+   accepted-step window) in a new immutable manifest; the long campaign
+   remains unstarted for that path and Stage S stays blocked.
 5. **PQ4.1 — complete T-to-S handoff.** Extract `rho_projection`, retain
    `beta_solver` as solver audit state, and require the full composite gate.
    Only `ready_for_stage_s=true` may register a Stage S baseline.
