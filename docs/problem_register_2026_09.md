@@ -122,6 +122,17 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
 
+> **2026-09-23 closure:** PQ4.1 ran the complete composite gate on the first
+> converged terminal candidate with the registered semantics: the optimizer
+> target and limit, the Phase 1/2 backends, the handoff and the geometry
+> extraction all use `rho_projection`; `beta_solver` is retained as the solver
+> audit field. The verdict is recorded
+> (`docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json`):
+> `ready_for_stage_s=false` on discreteness (`mean_nd 0.109` vs `0.01`),
+> a measured self-intersecting extracted surface and the clearance margin.
+> P19 is closed as a semantic mismatch; the residual failures are tracked
+> under P2/P17/P20. No Stage S baseline is registered.
+
 > **2026-09-23 D0-D3 post-v5 update:** the equality volume target 0.018 was
 > measured as the objective blocker at the stopped b=8 parent: the registered
 > corrected step improved only 2.71e-7 while the objective-only proposal
@@ -218,6 +229,16 @@ Work A/C/Dに従う。
 ---
 
 ## P20 — Stage S entryの幾何測定不備（高・open）
+
+> **2026-09-23 partial repair:** two fail-opens are fixed with regression
+> coverage: a measured self-intersection now gates the extraction profile
+> (`_manifold_reasons`, `mesh_self_intersects`), and the applied discreteness
+> threshold is recorded in the composite sub-verdict. Remaining P20 scope:
+> the component-gap definition, the minimum-width/`ridge_width_p5` contract
+> separation, the volume-calibration artifact shape label, and a
+> false-positive audit of the direct self-intersection detector (the first
+> terminal surface is watertight and manifold yet measured as
+> self-intersecting).
 
 ### 症状
 

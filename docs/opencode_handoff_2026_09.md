@@ -834,3 +834,19 @@ repair that unrelated documentation mismatch.
   V2 factor, and the DF2 Stage T grid family. Code repairs pending after the
   campaign path: P20 gap/min-width/calibration, P8 move-limit floor (the v6/v7
   policy already rejects machine-scale no-ops via the 1e-8 gate), P9.
+
+## 2026-09-23: terminal candidate reached and PQ4.1 judged
+
+- The Stage T chain completed: v8 exited b=8 by the pre-registered
+  cap-stationarity rule; v9 converged at b=16 (window met) and the
+  independent terminal repeat gave downforce 2.92433989091 at projected
+  volume 0.0763257. Outcomes:
+  `pq3_3b_campaign_v8_outcome_2026_09.json`,
+  `pq3_3b_campaign_v9_outcome_2026_09.json`.
+- PQ4.1 `docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json`:
+  `ready_for_stage_s=false` — discreteness `mean_nd 0.109` vs `0.01`,
+  measured self-intersecting extracted surface, clearance below margin;
+  lineage/volume/fidelity/width pass. P19 closed; P20 partially repaired.
+- Still unrun: PQ1 third source grid, PQ1 grid stability, Stage V
+  domain/boundary V2, DF2 Stage T grid family; Stage S first step and PQ5
+  remain after a passing candidate. Do not claim Stage S readiness.

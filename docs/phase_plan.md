@@ -745,6 +745,22 @@ Execute in this order:
 5. **PQ4.1 — complete T-to-S handoff.** Extract `rho_projection`, retain
    `beta_solver` as solver audit state, and require the full composite gate.
    Only `ready_for_stage_s=true` may register a Stage S baseline.
+
+   **Current status (2026-09-23):** the Stage T chain reached its first
+   converged terminal candidate (v9: b=8 exited by the pre-registered
+   cap-stationarity rule, b=16 met the convergence window, independent
+   terminal repeat downforce 2.92433989091 at projected volume 0.0763257).
+   The composite gate was run on the `rho_projection` iso-0.5 handoff
+   ([`evidence/pq4_1_terminal_stage_s_entry_2026_09.json`](evidence/pq4_1_terminal_stage_s_entry_2026_09.json)):
+   `ready_for_stage_s=false` with three measured reasons — discreteness
+   `mean_nd 0.109` against `0.01`, a measured self-intersecting extracted
+   surface, and the clearance preflight below the declared margin. Lineage,
+   the projected-volume constraint, volume fidelity (5.97% relative) and the
+   width/gap measurement pass. The semantic path (target, backend and geometry
+   all on `rho_projection`) is exercised end to end, so P19's semantic
+   mismatch is closed; the remaining failures are the physical extraction
+   issues tracked under P2/P17/P20 (grey design at the volume cap, surface
+   self-intersection, clearance). No Stage S baseline is registered.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
