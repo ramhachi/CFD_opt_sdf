@@ -77,7 +77,7 @@ def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: st
         if not terminal_path.is_file():
             raise SystemExit("terminal campaign lacks terminal.json")
         terminal = ca.load_json(terminal_path)
-    elif meta.get("status") != "blocked":
+    elif meta.get("status") not in ("blocked", "paused_learning_budget"):
         raise SystemExit("campaign is not in a recorded state; outcome not recorded")
     rho, state = _final_rho_and_state(campaign_dir)
     initial_state = ca.load_json(campaign_dir / "checkpoints/state_0000.json")
@@ -141,6 +141,11 @@ def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: st
             "reason": meta.get("reason"),
             "measured_stop_cause": measured_stop_cause,
             "level": meta.get("level") or manifest["input_stop_state"]["level"],
+            **(
+                {"learning_budget_stop": meta["learning_budget_stop"]}
+                if meta.get("status") == "paused_learning_budget"
+                else {}
+            ),
         },
         "level_records": {
             level["name"]: {
@@ -184,7 +189,11 @@ def record(manifest_path: Path, campaign_dir: Path, outcome_path: Path, kind: st
             "reason": (
                 "the registered convergence window was met and the terminal evaluation ran"
                 if meta.get("status") == "terminal_evaluated_not_stage_s_qualified"
-                else "the registered convergence window was not met before the policy stop"
+                else (
+                    "the bounded learning budget ended; no convergence claim is made"
+                    if meta.get("status") == "paused_learning_budget"
+                    else "the registered convergence window was not met before the policy stop"
+                )
             ),
         },
         "terminal": terminal,

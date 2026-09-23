@@ -1,0 +1,232 @@
+{
+  "accepted_count_carryover": {
+    "level_3_b128_margin": 6
+  },
+  "cap_stationarity_exit": {
+    "enabled": false
+  },
+  "carryover_last_metric": {
+    "objective_delta_abs": 0.04601317799999993,
+    "projected_field_mean_abs_delta": 0.0005665540116682221,
+    "projected_volume_delta_abs": 0.0004987516851570756
+  },
+  "carryover_metrics": [
+    {
+      "objective_delta_abs": 0.051581967870000245,
+      "projected_field_mean_abs_delta": 0.0016950027649147376,
+      "projected_volume_delta_abs": 0.0010969762936440114
+    },
+    {
+      "objective_delta_abs": 0.2147434455599999,
+      "projected_field_mean_abs_delta": 0.0027509861019183093,
+      "projected_volume_delta_abs": 0.0023507268129856623
+    },
+    {
+      "objective_delta_abs": 0.04601317799999993,
+      "projected_field_mean_abs_delta": 0.0005665540116682221,
+      "projected_volume_delta_abs": 0.0004987516851570756
+    }
+  ],
+  "change": {
+    "description": "repeat the v13-qualified tangent step from the persisted v12 checkpoint, recomputing gJ, gD and the free set after every accepted step",
+    "does_not_relax": [
+      "rho_projection active-cell mean_nd <= 0.01",
+      "rho_projection active-cell mean <= Vmax",
+      "Path B, response, occupancy, mask, move-box, or primal gates"
+    ],
+    "id": "bounded-projected-raw-gradient-learning-campaign",
+    "lineage_choice": "start from v12 checkpoint 1 because v13 qualified but did not persist its candidate array"
+  },
+  "claims_not_supported": [
+    "the bounded learning campaign does not establish convergence",
+    "registration does not start OpenFOAM",
+    "v14 does not establish Stage S readiness or a qualified Stage T ranking",
+    "the result is not grid-independent or target-physics evidence"
+  ],
+  "convergence": {
+    "note": "the equality volume residual criterion is replaced by volume stability under the inequality policy",
+    "objective_delta_abs_max": 0.0001,
+    "projected_field_mean_abs_delta_max": 0.001,
+    "projected_volume_delta_abs_max": 0.001,
+    "window_accepted": 3
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v13_entry_preflight_2026_09.json",
+    "artifact_sha256": "381f23582e1b70721e3ddf5bf0bca46911567b9355da52e0534b5997423a277c",
+    "requirement": "v13 first projected-direction step passed transform, Path B, and response gates",
+    "reuse": "exact v13 preflight at the identical v12 checkpoint 1 parent",
+    "script_path": "scripts/pq3_3b_v13_entry_preflight_2026_09.py",
+    "script_sha256": "47624286a314c400cd21d48890f23ff8a265d53c570ec239f364291d762fb25e"
+  },
+  "filter_radius_m": 0.15,
+  "immutable": true,
+  "input_stop_state": {
+    "accepted_count": 6,
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b",
+    "rho_path": "work/pq3_3b_campaign_v12/checkpoints/rho_0001.npy",
+    "rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+    "source": "v12 accepted checkpoint 1; v13 candidate is deliberately repeated, not treated as a persisted checkpoint",
+    "state_path": "work/pq3_3b_campaign_v12/checkpoints/state_0001.json",
+    "state_sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00"
+  },
+  "kind": "pq3_3b_campaign_manifest_v14",
+  "learning_campaign": {
+    "does_not_claim_convergence": true,
+    "max_fresh_attempts": 10,
+    "max_new_accepted_attempts": 10,
+    "stop_status": "paused_learning_budget",
+    "unrestricted_campaign": false
+  },
+  "levels": [
+    {
+      "b": 128.0,
+      "max_attempts": 10,
+      "min_accepted_iterations": 10,
+      "move_limit": 0.01,
+      "name": "level_3_b128_margin",
+      "q": 100.0
+    }
+  ],
+  "margin_mask": {
+    "density_vti": "work/pq3_3b_margin_masks/density.vti",
+    "density_vti_sha256": "8ec38505a742a136c992f145b38fdfae1a83bb90f745c7dde8843a687160a589",
+    "profile_margin_m": 0.25,
+    "rule": "allowed_mask = original allowed_mask AND |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444",
+    "surface_reach_bound_m": 0.5
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "output_directory": "work/pq3_3b_campaign_v14",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "phase1_policy": {
+    "ascent_only": true,
+    "formation_target": 0.018,
+    "id": "projected-volume-restoration-oc",
+    "unchanged_from_v5": true
+  },
+  "phase2_policy": {
+    "alpha_ladder": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0625
+    ],
+    "discreteness_field": "rho_projection",
+    "discreteness_mean_nd_max": 0.01,
+    "discreteness_metric": "mean(4*rho*(1-rho))",
+    "discreteness_scope": "active",
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "freeze_exact_box_faces": true,
+    "id": "objective-gradient-discreteness-projected-v1",
+    "min_corrected_update_inf_norm": 1e-08,
+    "module": "src/cfd_sdf/phase2_discreteness_direction.py",
+    "no_joint_volume_projection": true,
+    "stop_when_no_transform_candidate_satisfies_d_and_v": true,
+    "volume_cap_correction": false
+  },
+  "pinned_evidence": {
+    "campaign_v12_manifest": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v12_2026_09.json",
+      "sha256": "acf62c6f13f7346cf6022e0b215cdcef3c40880fccb1ca15b57bd7f757d5157f"
+    },
+    "campaign_v12_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v12_outcome_2026_09.json",
+      "sha256": "6475a8e12d8ea0fb1ca1357fbd3119a0eb252f4e36cadf72026015ec0525ef85"
+    },
+    "projected_direction_module": {
+      "path": "src/cfd_sdf/phase2_discreteness_direction.py",
+      "sha256": "741a259daf5119b233978c3dc26c293286e074f343c6c24f1ff776d72251a88d"
+    },
+    "shared_campaign_runner": {
+      "path": "scripts/pq3_3b_campaign_v6_2026_09.py",
+      "sha256": "69768198fd35ff0bc5b0ecc576f55440ec0ced46969292953ad42e75d5419151"
+    },
+    "shared_outcome_recorder": {
+      "path": "scripts/pq3_3b_record_v6_outcome_2026_09.py",
+      "sha256": "076d10c2f4a26848e59553149d6305796a025ed2c20484501a543316d7a7fc14"
+    },
+    "v13_direction_audit": {
+      "path": "docs/evidence/pq3_3b_v13_direction_audit_2026_09.json",
+      "sha256": "b2338298ad263fb5d9f02ffa3c1173ea59667777a1588cf250ea4378e9bfa2e1"
+    },
+    "v13_discriminant_manifest": {
+      "path": "docs/evidence/pq3_3b_v13_discriminant_manifest_2026_09.json",
+      "sha256": "2f7214b0c679651d53412e24443846c3dc940a80ef9ee7504051c6b77cf26735"
+    },
+    "v13_entry_preflight": {
+      "path": "docs/evidence/pq3_3b_v13_entry_preflight_2026_09.json",
+      "sha256": "381f23582e1b70721e3ddf5bf0bca46911567b9355da52e0534b5997423a277c"
+    }
+  },
+  "plan": {
+    "first_transform_feasible_only": true,
+    "per_accepted_step": "evaluate a fresh parent/adjoint request, then recompute objective and discreteness gradients and the free-cell set",
+    "response_backtracking": false,
+    "response_failure_action": "stop fail-closed; do not try a lower alpha",
+    "result_semantics": "a bounded stop or observed window is diagnostic and is not convergence",
+    "scope": "bounded learning campaign"
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "registered_target": 0.018,
+  "registration_base_git_head": "9e8d6cc876d9e871e27d4a6ee7246ba75ab830d0",
+  "reject_stop_count": 1,
+  "restoration_step_cap": 60,
+  "resume_rule": "resume only from a verified v14 checkpoint while below the immutable 10-attempt learning budget",
+  "schema_version": 12,
+  "source_tree_python_sha256": "4dd697d7c263853e284ccaa4d6f9ca7240f30f1b78b9b8757647ff1b38330396",
+  "status": "registered_entry_preflight_reused",
+  "terminal_rule": "stop at the learning budget or first failed attempt; do not perform or claim a converged terminal qualification",
+  "v_max_projected": 0.07632566813424899,
+  "volume_tolerance": 0.0001
+}

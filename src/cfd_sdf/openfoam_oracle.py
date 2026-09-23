@@ -245,6 +245,7 @@ class OpenFoamOracle:
             "primal_iterations": convergence.get("primal_iterations"),
             "adjoint_iterations": convergence.get("downforce_adjoint_iterations"),
             "summary": summary,
+            "reused": False,
         }
 
     def _reconstruct_gradients(self, artifact: dict[str, Any]) -> dict[tuple[str, str], np.ndarray]:

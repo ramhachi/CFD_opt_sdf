@@ -29,7 +29,13 @@ from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolat
 from cfd_sdf.fixed_grid_primal import load_fixed_grid_density_state  # noqa: E402
 from cfd_sdf.openfoam_oracle import OpenFoamOracle, OpenFoamOracleConfig  # noqa: E402
 from cfd_sdf.path_b_bracket import BracketSpec  # noqa: E402
+from cfd_sdf.phase2_discreteness_direction import (  # noqa: E402
+    POLICY_ID as PROJECTED_DIRECTION_POLICY_ID,
+    evaluate_phase2_discreteness_direction,
+)
 from cfd_sdf.phase2_inequality_policy import (  # noqa: E402
+    DISCRETENESS_POLICY_ID,
+    POLICY_ID as INEQUALITY_POLICY_ID,
     evaluate_phase2_inequality,
     projected_discreteness_mean_nd,
 )
@@ -61,8 +67,14 @@ def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = N
     if ca.sha256_file(manifest_path) != sidecar:
         raise ValueError("campaign manifest sidecar mismatch")
     manifest = ca.load_json(manifest_path)
-    if manifest.get("schema_version") not in (5, 6, 7, 8, 9, 10, 11):
+    if manifest.get("schema_version") not in (5, 6, 7, 8, 9, 10, 11, 12):
         raise ValueError("campaign manifest schema mismatch")
+    learning = manifest.get("learning_campaign") or {}
+    if learning:
+        for key in ("max_fresh_attempts", "max_new_accepted_attempts"):
+            value = learning.get(key)
+            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                raise ValueError(f"learning campaign requires a positive integer {key}")
     if "change_manifest_d2" in manifest and ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
         raise ValueError("D2 change manifest hash mismatch")
     if "discriminant_outcome_d1" in manifest and ca.sha256_file(D1_OUTCOME) != manifest["discriminant_outcome_d1"]["sha256"]:
@@ -218,6 +230,64 @@ def _stop(output: Path, reason: str, level: str) -> dict:
     return result
 
 
+def _pause_learning(
+    *, output: Path, manifest_sha: str, level: str, state: dict, rho: np.ndarray,
+    window_criteria_observed: bool,
+) -> dict:
+    result = {
+        "status": "paused_learning_budget",
+        "level": level,
+        "fresh_attempts": int(state["learning_attempt_count"]),
+        "accepted_this_learning_campaign": int(state["learning_accepted_count"]),
+        "accepted_count": int(state["accepted_count"]),
+        "rho_sha256": sha256_array(rho),
+        "registered_convergence_window_observed": bool(window_criteria_observed),
+        "does_not_claim_convergence": True,
+    }
+    _append_event(output, {"kind": "learning_budget_stop", **result})
+    _write_json_atomic(
+        output / "campaign_meta.json",
+        {
+            "manifest_sha256": manifest_sha,
+            "status": result["status"],
+            "level": level,
+            "learning_budget_stop": result,
+        },
+    )
+    print(json.dumps(result), flush=True)
+    return result
+
+
+def evaluate_registered_phase2(*, manifest: dict, **kwargs):
+    """Dispatch one Phase 2 attempt without changing registered v1/v2 behavior."""
+
+    policy = manifest["phase2_policy"]
+    policy_id = policy["id"]
+    common = {
+        **kwargs,
+        "ladder": tuple(policy["alpha_ladder"]),
+        "min_update_inf_norm": policy["min_corrected_update_inf_norm"],
+        "extractability_fraction": policy["extractability_fraction"],
+    }
+    if policy_id == PROJECTED_DIRECTION_POLICY_ID:
+        if bool(policy.get("volume_cap_correction", False)):
+            raise ValueError(
+                "projected discreteness direction does not permit volume correction"
+            )
+        return evaluate_phase2_discreteness_direction(
+            **common,
+            discreteness_mean_nd_max=policy["discreteness_mean_nd_max"],
+            freeze_box_faces=bool(policy.get("freeze_exact_box_faces", True)),
+        )
+    if policy_id in (INEQUALITY_POLICY_ID, DISCRETENESS_POLICY_ID):
+        return evaluate_phase2_inequality(
+            **common,
+            volume_cap_correction=bool(policy.get("volume_cap_correction", False)),
+            discreteness_mean_nd_max=policy.get("discreteness_mean_nd_max"),
+        )
+    raise ValueError(f"unsupported Phase 2 policy id: {policy_id}")
+
+
 def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max_new_attempts: int | None = None) -> dict:
     manifest_path = Path(manifest_path) if manifest_path is not None else MANIFEST
     manifest, output = verify_preconditions(resume=resume, manifest_path=manifest_path)
@@ -241,6 +311,11 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
     manifest_sha = ca.sha256_file(manifest_path)
     if resume:
         state, rho = _load_checkpoint(output)
+        if manifest.get("learning_campaign") and not all(
+            key in state
+            for key in ("learning_attempt_count", "learning_accepted_count")
+        ):
+            raise ValueError("learning campaign checkpoint lacks budget counters")
     else:
         output.mkdir(parents=True)
         shutil.copytree(_path(manifest["registered_inputs"]["template_trial"]), output / "template_trial")
@@ -256,6 +331,9 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
             "completed_levels": [level["name"] for level in levels[:start_index]],
             "phase1_done": None,
         }
+        if manifest.get("learning_campaign"):
+            state["learning_attempt_count"] = 0
+            state["learning_accepted_count"] = 0
         _checkpoint(output, state, np.asarray(rho, dtype=np.float64))
     for level_index in range(state["level_index"], len(levels)):
         level = levels[level_index]
@@ -280,7 +358,24 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 _checkpoint(output, {**state, "checkpoint_index": state["checkpoint_index"] + 1}, rho)
         session_attempts = 0
         for attempt in range(state.get("attempts_this_cycle", 0), level["max_attempts"]):
+            learning_campaign = manifest.get("learning_campaign") or {}
+            if learning_campaign and (
+                state["learning_attempt_count"]
+                >= int(learning_campaign["max_fresh_attempts"])
+                or state["learning_accepted_count"]
+                >= int(learning_campaign["max_new_accepted_attempts"])
+            ):
+                return _pause_learning(
+                    output=output,
+                    manifest_sha=manifest_sha,
+                    level=level["name"],
+                    state=state,
+                    rho=rho,
+                    window_criteria_observed=False,
+                )
             session_attempts += 1
+            if learning_campaign:
+                state["learning_attempt_count"] += 1
             discreteness_limit = manifest["phase2_policy"].get("discreteness_mean_nd_max")
             parent_guard = parent_discreteness_guard(transform, rho, discreteness_limit)
             if parent_guard["enabled"]:
@@ -307,13 +402,13 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 result = _oracle.evaluate_values(candidate)
                 return result, run_evidence(result)
 
-            payload, accepted = evaluate_phase2_inequality(
+            payload, accepted = evaluate_registered_phase2(
+                manifest=manifest,
                 transform=transform,
                 parent_result=parent,
                 rho_parent=rho,
                 parent_downforce=parent_downforce,
                 move_limit=level["move_limit"],
-                ladder=tuple(manifest["phase2_policy"]["alpha_ladder"]),
                 v_max=manifest["v_max_projected"],
                 objective_noise_threshold=manifest["noise_thresholds"]["objective"],
                 downforce_noise_threshold=manifest["noise_thresholds"]["downforce"],
@@ -321,13 +416,21 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 evaluate_values=oracle.evaluate_values,
                 evaluate_trial=trial,
                 return_rho=True,
-                volume_cap_correction=bool(manifest["phase2_policy"].get("volume_cap_correction", False)),
-                min_update_inf_norm=manifest["phase2_policy"]["min_corrected_update_inf_norm"],
-                extractability_fraction=manifest["phase2_policy"]["extractability_fraction"],
-                discreteness_mean_nd_max=manifest["phase2_policy"].get(
-                    "discreteness_mean_nd_max"
-                ),
             )
+            evaluator_calls = payload.get("evaluator_calls") or {}
+            payload["attempt_request_counts"] = {
+                "parent_adjoint_requests": 1,
+                "path_b_primal_requests": int(
+                    evaluator_calls.get("path_b_evaluator_requests", 0)
+                ),
+                "trial_primal_requests": int(
+                    evaluator_calls.get("trial_evaluator_requests", 0)
+                ),
+                "note": (
+                    "requests are not fresh-run claims; Path B run evidence and "
+                    "trial_run record summary hashes and reuse separately"
+                ),
+            }
             _append_event(
                 output,
                 {"kind": "objective_attempt", "level": level["name"], "attempt": attempt + 1,
@@ -411,21 +514,59 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 "last_trial_objective": candidate["trial_objective"],
                 "last_trial_downforce": candidate["trial_downforce"],
             }
+            learning_limit = learning_campaign.get(
+                "max_new_accepted_attempts"
+            )
+            if learning_campaign:
+                state["learning_accepted_count"] = (
+                    int(state.get("learning_accepted_count", 0)) + 1
+                )
             _checkpoint(output, state, rho)
             _append_event(output, {"kind": "objective_accepted", "level": level["name"], "rho_sha256": sha256_array(rho), "metric": metric})
             limits = manifest["convergence"]
             window = state["metrics"]
-            converged = level_converged(
+            window_criteria_observed = level_converged(
                 accepted_count=state["accepted_count"],
                 window=window,
                 limits=limits,
                 min_accepted=level["min_accepted_iterations"],
             )
+            converged = bool(window_criteria_observed and not learning_campaign)
+            if learning_campaign:
+                _append_event(
+                    output,
+                    {
+                        "kind": "learning_window_observation",
+                        "level": level["name"],
+                        "attempt": attempt + 1,
+                        "registered_convergence_window_observed": bool(
+                            window_criteria_observed
+                        ),
+                        "does_not_claim_convergence": True,
+                    },
+                )
             if not converged and max_new_attempts is not None and session_attempts >= max_new_attempts:
                 result = {"status": "paused_session_budget", "level": level["name"], "attempts_this_session": session_attempts,
                           "accepted_count": state["accepted_count"], "rho_sha256": sha256_array(rho)}
                 print(json.dumps(result), flush=True)
                 return result
+            learning_budget_exhausted = bool(
+                learning_limit is not None
+                and state["learning_accepted_count"] >= int(learning_limit)
+            ) or bool(
+                learning_campaign
+                and state["learning_attempt_count"]
+                >= int(learning_campaign["max_fresh_attempts"])
+            )
+            if not converged and learning_budget_exhausted:
+                return _pause_learning(
+                    output=output,
+                    manifest_sha=manifest_sha,
+                    level=level["name"],
+                    state=state,
+                    rho=rho,
+                    window_criteria_observed=window_criteria_observed,
+                )
             if converged:
                 _append_event(output, {"kind": "level_converged", "level": level["name"], "accepted_count": state["accepted_count"], "rho_sha256": sha256_array(rho)})
                 state = {

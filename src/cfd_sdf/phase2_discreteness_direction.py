@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 
+from cfd_sdf.canonical_objective import canonical_objective_from
+from cfd_sdf.path_b_bracket import BracketSpec, evaluate_path_b_bracket
 from cfd_sdf.phase2_inequality_policy import (
     BOX_TOLERANCE,
     EXTRACTABILITY_FRACTION,
@@ -59,6 +61,8 @@ class TransformCandidate:
     rho: np.ndarray
     metrics: dict[str, Any]
     gates: dict[str, bool]
+    discreteness_mean_nd_max: float
+    v_max: float
 
     @property
     def feasible(self) -> bool:
@@ -70,6 +74,8 @@ class TransformCandidate:
             "rho_sha256": _array_sha256(self.rho),
             "metrics": dict(self.metrics),
             "gates": dict(self.gates),
+            "discreteness_mean_nd_max": float(self.discreteness_mean_nd_max),
+            "v_max": float(self.v_max),
             "transform_feasible": self.feasible,
         }
 
@@ -222,7 +228,14 @@ def transform_candidate(
             metrics["move_box_violation_max"] <= BOX_TOLERANCE
         ),
     }
-    return TransformCandidate(float(alpha), proposal, metrics, gates)
+    return TransformCandidate(
+        float(alpha),
+        proposal,
+        metrics,
+        gates,
+        float(discreteness_mean_nd_max),
+        float(v_max),
+    )
 
 
 def backtrack_transform_candidates(
@@ -260,11 +273,268 @@ def backtrack_transform_candidates(
     return ledger, None
 
 
+def _campaign_record(candidate: TransformCandidate) -> dict[str, Any]:
+    """Flatten one transform candidate into the shared campaign ledger shape."""
+
+    payload = candidate.to_jsonable()
+    metrics = candidate.metrics
+    failed_gates = sorted(name for name, passed in candidate.gates.items() if not passed)
+    reason_by_gate = {
+        "corrected_update_above_machine_scale": "machine_scale_update_rejected",
+        "projected_discreteness_within_limit": "discreteness_limit_exceeded",
+        "projected_volume_within_v_max": "projected_volume_limit_exceeded",
+        "extractability_guard": "extractability_guard_failed",
+        "mask_invariance": "mask_invariance_failed",
+        "move_box_respected": "move_box_violation",
+    }
+    failure_reasons = [reason_by_gate[name] for name in failed_gates]
+    payload.update(
+        {
+            "accepted": False,
+            "reason": (
+                "+".join(failure_reasons)
+                if failed_gates
+                else "transform_feasible_response_pending"
+            ),
+            "failed_transform_gates": failed_gates,
+            "transform_failure_reasons": failure_reasons,
+            "corrected_rho_sha256": payload["rho_sha256"],
+            "corrected_update_inf_norm": metrics["corrected_update_inf_norm"],
+            "phi_after": metrics["projected_volume_candidate"],
+            "projected_volume_delta": (
+                metrics["projected_volume_candidate"]
+                - metrics["projected_volume_parent"]
+            ),
+            "occupancy": metrics["occupancy_candidate"],
+            "occupancy_parent": metrics["occupancy_parent"],
+            "discreteness_mean_nd_parent": metrics[
+                "discreteness_mean_nd_parent"
+            ],
+            "discreteness_mean_nd_candidate": metrics[
+                "discreteness_mean_nd_candidate"
+            ],
+            "discreteness_mean_nd_max": candidate.discreteness_mean_nd_max,
+            "discreteness_field": "rho_projection",
+            "discreteness_scope": "transform.active",
+            "mask_drift_max": metrics["mask_drift_max"],
+            "move_box_violation_max": metrics["move_box_violation_max"],
+            "bracket": None,
+            "bracket_ok": False,
+            "trial_objective": None,
+            "trial_downforce": None,
+            "trial_primal_converged": False,
+            "trial_run": None,
+        }
+    )
+    return payload
+
+
+def _run_evidence(result: Any) -> dict[str, Any]:
+    """Extract solver evidence without treating an evaluator request as a run."""
+
+    payload = getattr(result, "primal_artifact", None)
+    if not isinstance(payload, dict):
+        return {}
+    record = payload.get("artifact", payload)
+    if not isinstance(record, dict):
+        return {}
+    summary = record.get("summary", {})
+    return {
+        "case_dir": record.get("case_dir"),
+        "summary_json": record.get("summary_json"),
+        "summary_sha256": record.get("summary_sha256"),
+        "source_rho_sha256": record.get("source_rho_sha256"),
+        "primal_iterations": record.get("primal_iterations"),
+        "solver_status": (
+            summary.get("status", getattr(result, "solver_status", None))
+            if isinstance(summary, dict)
+            else getattr(result, "solver_status", None)
+        ),
+        "reused": record.get("reused"),
+    }
+
+
+def evaluate_phase2_discreteness_direction(
+    *,
+    transform,
+    parent_result: Any,
+    rho_parent: np.ndarray,
+    parent_downforce: float,
+    move_limit: float,
+    ladder: tuple[float, ...],
+    v_max: float,
+    discreteness_mean_nd_max: float,
+    objective_noise_threshold: float,
+    downforce_noise_threshold: float,
+    bracket_spec: BracketSpec,
+    evaluate_values: Callable[[np.ndarray], Any],
+    evaluate_trial: Callable[[np.ndarray], tuple[Any, dict]],
+    return_rho: bool = False,
+    freeze_box_faces: bool = True,
+    min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
+    extractability_fraction: float = EXTRACTABILITY_FRACTION,
+) -> dict | tuple[dict, np.ndarray | None]:
+    """Evaluate the projected raw-gradient policy with solver-free backtracking.
+
+    Every ladder entry is first checked by deterministic transform gates.  Only
+    the first transform-feasible candidate can consume the centered Path B pair
+    and a trial primal.  This keeps the v13 discriminant's solver-call contract
+    while producing the candidate ledger expected by the shared campaign.
+    """
+
+    parent_objective, objective_gradient = canonical_objective_from(parent_result)
+    direction = projected_raw_gradient_direction(
+        transform=transform,
+        rho=rho_parent,
+        objective_gradient=np.asarray(objective_gradient, dtype=np.float64),
+        freeze_box_faces=freeze_box_faces,
+    )
+    ledger, selected = backtrack_transform_candidates(
+        transform=transform,
+        rho=rho_parent,
+        direction=direction.values,
+        ladder=ladder,
+        move_limit=move_limit,
+        discreteness_mean_nd_max=discreteness_mean_nd_max,
+        v_max=v_max,
+        freeze_box_faces=freeze_box_faces,
+        min_update_inf_norm=min_update_inf_norm,
+        extractability_fraction=extractability_fraction,
+    )
+    records = [_campaign_record(candidate) for candidate in ledger]
+    accepted_rho = None
+    evaluator_calls = {
+        "path_b_evaluator_requests": 0,
+        "trial_evaluator_requests": 0,
+        "path_b_proven_fresh_solver_runs": 0,
+        "trial_proven_fresh_solver_runs": 0,
+        "path_b_freshness_unknown": 0,
+        "trial_freshness_unknown": 0,
+        "path_b_requests": [],
+    }
+
+    if selected is not None:
+        record = records[-1]
+        delta = selected.rho - np.asarray(rho_parent, dtype=np.float64)
+        def counted_values(candidate_rho: np.ndarray):
+            evaluator_calls["path_b_evaluator_requests"] += 1
+            result = evaluate_values(candidate_rho)
+            evidence = _run_evidence(result)
+            evaluator_calls["path_b_requests"].append(
+                {
+                    "request_index": evaluator_calls["path_b_evaluator_requests"],
+                    **evidence,
+                }
+            )
+            reused = evidence.get("reused")
+            if reused is False and evidence.get("summary_sha256"):
+                evaluator_calls["path_b_proven_fresh_solver_runs"] += 1
+            elif reused is None:
+                evaluator_calls["path_b_freshness_unknown"] += 1
+            return result
+
+        bracket = evaluate_path_b_bracket(
+            spec=bracket_spec,
+            parent_rho=np.asarray(rho_parent, dtype=np.float64),
+            parent_gradient=np.asarray(objective_gradient, dtype=np.float64),
+            proposal_delta=delta,
+            active=np.asarray(transform.active, dtype=bool),
+            evaluate_values=counted_values,
+        )
+        record["bracket"] = bracket.to_dict()
+        record["bracket_ok"] = bool(bracket.ok)
+        response_gates = {
+            "d_adj_negative": bool(
+                bracket.d_adj is not None and bracket.d_adj < 0.0
+            ),
+            "d_fd_below_negative_noise_floor": bool(
+                bracket.d_fd is not None
+                and bracket.d_fd < -float(bracket_spec.noise_floor_abs)
+            ),
+            "sign_match": bool(
+                bracket.d_adj is not None
+                and bracket.d_fd is not None
+                and np.sign(bracket.d_adj) == np.sign(bracket.d_fd)
+            ),
+        }
+        if bracket.ok:
+            evaluator_calls["trial_evaluator_requests"] += 1
+            trial_result, trial_run = evaluate_trial(selected.rho)
+            if isinstance(trial_run, dict) and "reused" in trial_run:
+                if trial_run["reused"] is False:
+                    evaluator_calls["trial_proven_fresh_solver_runs"] += 1
+            else:
+                evaluator_calls["trial_freshness_unknown"] += 1
+            record["trial_objective"] = float(trial_result.objective)
+            record["trial_primal_converged"] = bool(trial_result.primal_converged)
+            record["trial_run"] = trial_run
+            trial_downforce = None
+            if isinstance(trial_run, dict):
+                value = trial_run.get("downforce_coefficient")
+                if value is None and isinstance(trial_run.get("summary"), dict):
+                    value = trial_run["summary"].get("downforce_coefficient")
+                trial_downforce = None if value is None else float(value)
+            record["trial_downforce"] = trial_downforce
+            response_gates.update(
+                {
+                    "canonical_objective_improved": bool(
+                        float(trial_result.objective)
+                        < parent_objective - float(objective_noise_threshold)
+                    ),
+                    "raw_downforce_improved": bool(
+                        trial_downforce is not None
+                        and trial_downforce
+                        > float(parent_downforce) + float(downforce_noise_threshold)
+                    ),
+                    "trial_primal_converged": bool(trial_result.primal_converged),
+                }
+            )
+        else:
+            response_gates.update(
+                {
+                    "canonical_objective_improved": False,
+                    "raw_downforce_improved": False,
+                    "trial_primal_converged": False,
+                }
+            )
+        record["gates"].update(response_gates)
+        record["evaluator_calls"] = dict(evaluator_calls)
+        record["accepted"] = bool(all(record["gates"].values()))
+        if record["accepted"]:
+            record["reason"] = "accepted"
+            accepted_rho = selected.rho.copy()
+        elif not bracket.ok:
+            record["reason"] = "path_b_failed"
+        else:
+            record["reason"] = "response_gates_failed"
+
+    payload: dict[str, Any] = {
+        "policy_id": POLICY_ID,
+        "direction": direction.diagnostics,
+        "ladder": [float(alpha) for alpha in ladder],
+        "candidates": records,
+        "evaluator_calls": evaluator_calls,
+        "accepted_alpha": None,
+        "all_failed": accepted_rho is None,
+        "successful": accepted_rho is not None,
+        "corrected_rho_sha256": None,
+    }
+    if accepted_rho is not None:
+        payload["accepted_alpha"] = float(selected.alpha)
+        payload["corrected_rho_sha256"] = _array_sha256(accepted_rho)
+    else:
+        payload["error"] = (
+            "no projected-direction alpha satisfied the registered gates; fail-closed"
+        )
+    return (payload, accepted_rho) if return_rho else payload
+
+
 __all__ = [
     "POLICY_ID",
     "ProjectedDirection",
     "TransformCandidate",
     "backtrack_transform_candidates",
+    "evaluate_phase2_discreteness_direction",
     "projected_raw_gradient_direction",
     "transform_candidate",
 ]
