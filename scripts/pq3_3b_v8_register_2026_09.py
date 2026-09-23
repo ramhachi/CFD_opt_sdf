@@ -51,6 +51,7 @@ def build() -> dict:
     v7_steps = list(v7_outcome["level_records"].values())[0]["accepted_steps"]
     rho_path, state = _v7_final_rho()
     level_name = v7["input_stop_state"]["level"]
+    v7_last_metric = list(v7_outcome["level_records"].values())[0]["last_metrics"][-1]
     return {
         "kind": "pq3_3b_campaign_manifest_v8",
         "schema_version": 7,
@@ -90,6 +91,7 @@ def build() -> dict:
             },
         },
         "accepted_count_carryover": {level_name: int(v6_steps) + int(v7_steps)},
+        "carryover_last_metric": v7_last_metric,
         "cap_stationarity_exit": {
             "enabled": True,
             "all_candidates_rejected_as": ["machine_scale_update_rejected", "volume_cap_unreachable"],

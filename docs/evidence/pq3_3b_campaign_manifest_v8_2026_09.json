@@ -14,6 +14,11 @@
     "min_accepted_iterations": "cumulative accepted count for the level including the registered carryover",
     "reproducibility_tolerance": 1e-06
   },
+  "carryover_last_metric": {
+    "objective_delta_abs": 5.012135999971079e-05,
+    "projected_field_mean_abs_delta": 3.013794870636987e-06,
+    "projected_volume_delta_abs": 1.3877787807814457e-17
+  },
   "change": {
     "description": "pre-registered level exit measured separately from the convergence window: an attempt where every alpha is rejected as machine-scale or cap-unreachable, the last accepted objective delta is within the window bound, the cumulative accepted count meets the floor, and an independent fresh primal reproduces the parent response within tolerance",
     "does_not_relax": [
