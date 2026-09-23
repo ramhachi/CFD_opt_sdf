@@ -99,7 +99,7 @@ def run() -> dict:
         result = oracle.evaluate_values(candidate)
         return result, run_evidence(result)
 
-    payload = evaluate_phase2_inequality(
+    payload, _accepted_stage_a = evaluate_phase2_inequality(
         transform=transform,
         parent_result=parent,
         rho_parent=rho,
