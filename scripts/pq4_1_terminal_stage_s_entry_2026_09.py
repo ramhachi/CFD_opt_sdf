@@ -32,7 +32,7 @@ CAMPAIGN = ROOT / "work/pq3_3b_campaign_v9"
 CANONICAL = ROOT / "work/df2_fd_refresh/topology_state.json"
 PROBLEM_SPEC = ROOT / "work/pq4_candidate/project.yaml"
 OUT = ROOT / "work/pq4_1_terminal_candidate"
-EVIDENCE = ROOT / "docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json"
+EVIDENCE = ROOT / "docs/evidence/pq4_1_terminal_stage_s_entry_v2_2026_09.json"
 SHAPE = (60, 32, 24)
 SPACING_M = 0.05
 FILTER_RADIUS_M = 0.15
@@ -167,7 +167,21 @@ def main() -> None:
         }
 
     evidence = {
-        "kind": "pq4_1_terminal_stage_s_entry",
+        "kind": "pq4_1_terminal_stage_s_entry_v2",
+        "correction": {
+            "supersedes": {
+                "path": "docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json",
+                "sha256": "206434c51bcc90b54608f7419c5157078692e3e71e3a8d5c0bcf22618c17ed84",
+                "note": "kept unmodified; its extraction-profile verdict used a buggy barycentric formula",
+            },
+            "detector_fix": (
+                "extraction_qualification._edges_pierce_triangles computed the second "
+                "barycentric coordinate as (d00*d20 - d01*d21)/denom instead of "
+                "(d00*d21 - d01*d20)/denom, producing false self-intersection hits on "
+                "near-parallel non-crossing triangle pairs; verified against an exact "
+                "Moeller-Trumbore reference (property test)"
+            ),
+        },
         "schema_version": 1,
         "input": {
             "v9_outcome": {"path": str(V9_OUTCOME.relative_to(ROOT)), "sha256": ca.sha256_file(V9_OUTCOME)},

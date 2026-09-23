@@ -193,3 +193,64 @@ def test_measured_self_intersection_gates_the_profile_fail_closed():
     not_evaluated = {**manifold, "self_intersection": "not_evaluated"}
     reasons = _manifold_reasons(not_evaluated, EXTRACTION_QUALIFICATION_PROFILE_V1)
     assert any(reason.startswith("self_intersection:") for reason in reasons)
+
+
+def _exact_tri_tri_intersects(A, B) -> bool:
+    """Reference Möller–Trumbore segment-triangle test (both directions)."""
+
+    import numpy as np
+
+    for P, Q in ((A, B), (B, A)):
+        for e in range(3):
+            p0, p1 = P[e], P[(e + 1) % 3]
+            d = p1 - p0
+            e1 = Q[1] - Q[0]
+            e2 = Q[2] - Q[0]
+            h = np.cross(d, e2)
+            a = float(np.dot(e1, h))
+            if abs(a) < 1e-14:
+                continue
+            s = p0 - Q[0]
+            u = float(np.dot(s, h)) / a
+            if not 0.0 <= u <= 1.0:
+                continue
+            q = np.cross(s, e1)
+            v = float(np.dot(d, q)) / a
+            if v < 0.0 or u + v > 1.0:
+                continue
+            t = float(np.dot(e2, q)) / a
+            if 0.0 <= t <= 1.0:
+                return True
+    return False
+
+
+def test_edge_pierce_detector_matches_exact_moller_trumbore():
+    import numpy as np
+
+    from cfd_sdf.extraction_qualification import _edges_pierce_triangles
+
+    rng = np.random.default_rng(20260923)
+    frm = rng.uniform(-1.0, 1.0, (150, 3, 3))
+    to = rng.uniform(-1.0, 1.0, (150, 3, 3))
+    # half the pairs are translations of each other, so genuine crossings occur
+    to[:75] = frm[:75] + rng.normal(0.0, 0.35, (75, 1, 3))
+    got = _edges_pierce_triangles(frm, to) | _edges_pierce_triangles(to, frm)
+    expected = np.array(
+        [_exact_tri_tri_intersects(a, b) for a, b in zip(frm, to, strict=True)]
+    )
+    mismatches = int(np.count_nonzero(got != expected))
+    assert mismatches == 0, f"{mismatches} mismatches against the exact reference"
+
+
+def test_known_crossing_pair_is_flagged_and_near_parallel_pair_is_not():
+    import numpy as np
+
+    from cfd_sdf.extraction_qualification import _edges_pierce_triangles
+
+    a = np.array([[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]])
+    crossing = np.array([[[0.2, 0.2, -0.5], [0.2, 0.2, 0.5], [0.8, 0.5, 0.0]]])
+    assert bool(_edges_pierce_triangles(a, crossing)[0]) is True
+    assert bool(_edges_pierce_triangles(crossing, a)[0]) is True
+    # nearly parallel, non-crossing: the old formula reported this as a hit
+    near_parallel = np.array([[[0.0, 0.0, 1e-6], [1.0, 0.0, 1.2e-6], [0.0, 1.0, 0.8e-6]]])
+    assert bool(_edges_pierce_triangles(a, near_parallel)[0]) is False

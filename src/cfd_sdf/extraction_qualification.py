@@ -347,7 +347,7 @@ def _edges_pierce_triangles(frm: np.ndarray, to: np.ndarray) -> np.ndarray:
         denom_b = d00 * d11 - d01 * d01
         denom_b = np.where(np.abs(denom_b) < 1e-30, np.nan, denom_b)
         v = (d11 * d20 - d01 * d21) / denom_b
-        w = (d00 * d20 - d01 * d21) / denom_b
+        w = (d00 * d21 - d01 * d20) / denom_b
         inside = (v >= -1e-12) & (w >= -1e-12) & (v + w <= 1 + 1e-12)
         hit |= crossing & inside & ~np.isnan(v) & ~np.isnan(w)
     return hit
