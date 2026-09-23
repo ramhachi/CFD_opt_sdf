@@ -865,3 +865,19 @@ repair that unrelated documentation mismatch.
   (transform-measured, no extra runs) in a new manifest. Still unrun: PQ1
   third source grid, PQ1 grid stability, Stage V domain/boundary V2, DF2
   grid family.
+
+## 2026-09-23: v12 discreteness-preserving replay registered
+
+- V12 replays from v10 checkpoint 5, the last accepted b=128 checkpoint below
+  the registered bound (`mean_nd 0.0085623225`), and preserves its accepted
+  count and convergence history. It does not resume the grey v11 terminal.
+- The optional Phase 2 v2 gate measures active-cell `rho_projection`
+  `mean(4*rho*(1-rho)) <= 0.01`. A failing candidate is rejected before Path B
+  and trial OpenFOAM calls; a parent outside the bound stops before its parent
+  solve. Older manifests retain the v1 behavior.
+- The bounded entry preflight passes: alpha 1.0, 0.5 and 0.25 fail the new gate
+  without CFD; alpha 0.125 passes all gates at `mean_nd 0.0097368499`, projected
+  volume 0.0684122931 and downforce 2.32152697653.
+- Next execution order: run the immutable v12 campaign unchanged, perform its
+  independent terminal repeat, then run a new PQ4.1 composite threshold sweep.
+  Stage S remains blocked unless that sweep returns `ready_for_stage_s=true`.

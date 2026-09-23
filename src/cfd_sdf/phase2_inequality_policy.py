@@ -35,6 +35,7 @@ from cfd_sdf.path_b_bracket import BracketSpec, evaluate_path_b_bracket
 from cfd_sdf.projected_restoration import _restore
 
 POLICY_ID = "objective-oc-inequality-v1"
+DISCRETENESS_POLICY_ID = "objective-oc-inequality-v2"
 MIN_CORRECTED_UPDATE_INF_NORM = 1e-8
 MASK_DRIFT_TOLERANCE = 1e-12
 BOX_TOLERANCE = 1e-12
@@ -59,6 +60,11 @@ class InequalityCandidate:
     projected_volume_delta: float | None = None
     occupancy: dict | None = None
     occupancy_parent: dict | None = None
+    discreteness_mean_nd_parent: float | None = None
+    discreteness_mean_nd_candidate: float | None = None
+    discreteness_mean_nd_max: float | None = None
+    discreteness_field: str | None = None
+    discreteness_scope: str | None = None
     mask_drift_max: float | None = None
     move_box_violation_max: float | None = None
     bracket: dict | None = None
@@ -76,12 +82,7 @@ class InequalityCandidate:
         return payload
 
 
-def occupancy_metrics(transform, rho: np.ndarray, active: np.ndarray) -> dict:
-    """Projected-field occupancy counts/fractions at the registered thresholds."""
-    projected = np.asarray(
-        transform.forward(np.asarray(rho, dtype=np.float64)).rho_projected,
-        dtype=np.float64,
-    )
+def _occupancy_metrics_from_projected(projected: np.ndarray, active: np.ndarray) -> dict:
     values = projected[active]
     total = int(values.size)
     metrics = {"total_active": total}
@@ -90,6 +91,38 @@ def occupancy_metrics(transform, rho: np.ndarray, active: np.ndarray) -> dict:
         metrics[f"cells_gt_{threshold}"] = count
         metrics[f"fraction_gt_{threshold}"] = (count / total) if total else 0.0
     return metrics
+
+
+def occupancy_metrics(transform, rho: np.ndarray, active: np.ndarray) -> dict:
+    """Projected-field occupancy counts/fractions at the registered thresholds."""
+    projected = np.asarray(
+        transform.forward(np.asarray(rho, dtype=np.float64)).rho_projected,
+        dtype=np.float64,
+    )
+    return _occupancy_metrics_from_projected(projected, active)
+
+
+def _validate_discreteness_mean_nd_max(value: float | None) -> float | None:
+    if value is None:
+        return None
+    bound = float(value)
+    if not np.isfinite(bound) or not 0.0 <= bound <= 1.0:
+        raise ValueError("discreteness_mean_nd_max must be finite and within [0, 1]")
+    return bound
+
+
+def _discreteness_mean_nd(projected: np.ndarray, active: np.ndarray) -> float:
+    values = projected[active]
+    return float(np.mean(4.0 * values * (1.0 - values)))
+
+
+def projected_discreteness_mean_nd(transform, rho: np.ndarray) -> float:
+    """Return active-cell discreteness from the physical projection field."""
+    projected = np.asarray(
+        transform.forward(np.asarray(rho, dtype=np.float64)).rho_projected,
+        dtype=np.float64,
+    )
+    return _discreteness_mean_nd(projected, np.asarray(transform.active, dtype=bool))
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -117,6 +150,7 @@ def evaluate_inequality_candidate(
     volume_cap_correction: bool = False,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
+    discreteness_mean_nd_max: float | None = None,
 ) -> tuple[InequalityCandidate, np.ndarray]:
     """One alpha under the registered inequality policy; fail-closed gates.
 
@@ -128,6 +162,10 @@ def evaluate_inequality_candidate(
     """
     parent_objective, gradient = canonical_objective_from(parent_result)
     candidate = InequalityCandidate(alpha=float(alpha))
+    discreteness_mean_nd_max = _validate_discreteness_mean_nd_max(
+        discreteness_mean_nd_max
+    )
+    candidate.discreteness_mean_nd_max = discreteness_mean_nd_max
     values = np.asarray(rho_parent, dtype=np.float64)
     move_limit = float(move_limit)
     box_low = np.clip(values - move_limit, 0.0, 1.0)
@@ -139,9 +177,10 @@ def evaluate_inequality_candidate(
     proposal = np.clip(values - float(alpha) * move_limit * np.sign(gradient), box_low, box_high)
     proposal[frozen] = values[frozen]
     proposal = _restore(proposal, values, active)
-    phi_parent = float(
-        np.asarray(transform.forward(values).rho_projected, dtype=np.float64)[active].mean()
+    projected_parent = np.asarray(
+        transform.forward(values).rho_projected, dtype=np.float64
     )
+    phi_parent = float(projected_parent[active].mean())
 
     if volume_cap_correction:
 
@@ -180,15 +219,25 @@ def evaluate_inequality_candidate(
         candidate.gate_detail = {"corrected_update_above_machine_scale": False}
         return candidate, values
 
-    phi_after = float(
-        np.asarray(transform.forward(proposal).rho_projected, dtype=np.float64)[active].mean()
+    projected_candidate = np.asarray(
+        transform.forward(proposal).rho_projected, dtype=np.float64
     )
+    phi_after = float(projected_candidate[active].mean())
     candidate.phi_after = phi_after
     candidate.projected_volume_delta = phi_after - phi_parent
-    parent_occupancy = occupancy_metrics(transform, values, active)
-    candidate_occupancy = occupancy_metrics(transform, proposal, active)
+    parent_occupancy = _occupancy_metrics_from_projected(projected_parent, active)
+    candidate_occupancy = _occupancy_metrics_from_projected(projected_candidate, active)
     candidate.occupancy = candidate_occupancy
     candidate.occupancy_parent = parent_occupancy
+    candidate.discreteness_mean_nd_parent = _discreteness_mean_nd(
+        projected_parent, active
+    )
+    candidate.discreteness_mean_nd_candidate = _discreteness_mean_nd(
+        projected_candidate, active
+    )
+    if discreteness_mean_nd_max is not None:
+        candidate.discreteness_field = "rho_projection"
+        candidate.discreteness_scope = "transform.active"
 
     mask_drift = 0.0
     if bool((~active).any()):
@@ -196,6 +245,14 @@ def evaluate_inequality_candidate(
     candidate.mask_drift_max = mask_drift
     violation = np.maximum(proposal - box_high, box_low - proposal)
     candidate.move_box_violation_max = float(max(0.0, np.max(violation)))
+
+    if (
+        discreteness_mean_nd_max is not None
+        and candidate.discreteness_mean_nd_candidate > discreteness_mean_nd_max
+    ):
+        candidate.reason = "discreteness_limit_exceeded"
+        candidate.gate_detail = {"projected_discreteness_within_limit": False}
+        return candidate, proposal
 
     outcome = evaluate_path_b_bracket(
         spec=bracket_spec,
@@ -261,6 +318,8 @@ def evaluate_inequality_candidate(
         "move_box_respected": box_ok,
         "trial_primal_converged": primal_ok,
     }
+    if discreteness_mean_nd_max is not None:
+        candidate.gate_detail["projected_discreteness_within_limit"] = True
     candidate.accepted = bool(all(candidate.gate_detail.values()) and candidate.bracket_ok)
     candidate.reason = "accepted" if candidate.accepted else "gates_failed"
     return candidate, proposal
@@ -285,8 +344,12 @@ def evaluate_phase2_inequality(
     volume_cap_correction: bool = False,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
+    discreteness_mean_nd_max: float | None = None,
 ) -> dict | tuple[dict, np.ndarray | None]:
     """Evaluate the registered ladder under the inequality policy, fail-closed."""
+    discreteness_mean_nd_max = _validate_discreteness_mean_nd_max(
+        discreteness_mean_nd_max
+    )
     candidates: list[InequalityCandidate] = []
     accepted_rho = None
     for alpha in ladder:
@@ -307,6 +370,7 @@ def evaluate_phase2_inequality(
             volume_cap_correction=volume_cap_correction,
             min_update_inf_norm=min_update_inf_norm,
             extractability_fraction=extractability_fraction,
+            discreteness_mean_nd_max=discreteness_mean_nd_max,
         )
         candidates.append(candidate)
         print(
@@ -330,7 +394,11 @@ def evaluate_phase2_inequality(
             accepted_rho = proposal.copy()
             break
     payload: dict[str, Any] = {
-        "policy_id": POLICY_ID,
+        "policy_id": (
+            DISCRETENESS_POLICY_ID
+            if discreteness_mean_nd_max is not None
+            else POLICY_ID
+        ),
         "ladder": [float(alpha) for alpha in ladder],
         "candidates": [entry.to_jsonable() for entry in candidates],
     }

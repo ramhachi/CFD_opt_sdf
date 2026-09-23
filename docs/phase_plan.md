@@ -781,6 +781,23 @@ Execute in this order:
    occupancy collapse). The next registered change is a discreteness gate in
    the acceptance (transform-measured, no extra solver runs); no Stage S
    baseline is registered.
+
+   **V12 discreteness-preserving replay (2026-09-23):** the missing acceptance
+   invariant is now implemented and registered in
+   [`evidence/pq3_3b_campaign_manifest_v12_2026_09.json`](evidence/pq3_3b_campaign_manifest_v12_2026_09.json).
+   It measures `mean(4*rho_projection*(1-rho_projection))` on the active
+   transform cells and requires `<= 0.01` before Path B or a trial primal is
+   run. The replay begins at v10 checkpoint 5, the last accepted b=128 state
+   inside the bound (`mean_nd 0.0085623`), rather than the infeasible v11
+   terminal. The bounded entry preflight passed
+   ([`evidence/pq3_3b_v12_entry_preflight_2026_09.json`](evidence/pq3_3b_v12_entry_preflight_2026_09.json)):
+   alpha 1.0/0.5/0.25 were rejected without solver calls at mean_nd
+   0.03123/0.01589/0.01128, while alpha 0.125 passed every existing gate at
+   mean_nd 0.00973685, projected volume 0.0684123 and fresh downforce
+   2.32152697653. This establishes entry feasibility only. Execute the
+   registered v12 campaign without relaxing the bound; then rerun the full
+   PQ4.1 threshold sweep on its independent terminal candidate. Stage S may
+   start only if that new composite gate returns `ready_for_stage_s=true`.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

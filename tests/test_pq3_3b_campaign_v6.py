@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
+
+import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -12,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.pq3_3b_campaign_v6_2026_09 import (  # noqa: E402
     cap_stationarity_exit_allowed,
     level_converged,
+    parent_discreteness_guard,
 )
 
 LIMITS = {
@@ -68,3 +72,40 @@ def test_cap_stationarity_exit_requires_separate_criteria():
     ) is False
     # disabled means disabled
     assert cap_stationarity_exit_allowed(enabled=False, reasons=reasons, **allowed) is False
+
+
+def test_parent_discreteness_guard_is_optional_and_fail_closed():
+    class _Projection:
+        def __init__(self, values):
+            self.rho_projected = values
+
+    class _Transform:
+        active = [True, True]
+
+        def forward(self, _rho):
+            return _Projection(np.array([0.5, 0.5]))
+
+    transform = _Transform()
+    rho = np.zeros(2)
+    assert parent_discreteness_guard(transform, rho, None) == {
+        "enabled": False,
+        "mean_nd": None,
+        "mean_nd_max": None,
+        "pass": True,
+    }
+    guarded = parent_discreteness_guard(transform, rho, 0.01)
+    assert guarded["mean_nd"] == 1.0
+    assert guarded["pass"] is False
+
+
+def test_v12_replays_checkpoint_five_with_the_discreteness_gate():
+    manifest = json.loads(
+        (ROOT / "docs/evidence/pq3_3b_campaign_manifest_v12_2026_09.json").read_text()
+    )
+    level = manifest["input_stop_state"]["level"]
+    assert manifest["schema_version"] == 11
+    assert manifest["input_stop_state"]["rho_path"].endswith("checkpoints/rho_0005.npy")
+    assert manifest["accepted_count_carryover"][level] == 5
+    assert len(manifest["carryover_metrics"]) == 3
+    assert manifest["phase2_policy"]["discreteness_mean_nd_max"] == 0.01
+    assert manifest["output_directory"] == "work/pq3_3b_campaign_v12"

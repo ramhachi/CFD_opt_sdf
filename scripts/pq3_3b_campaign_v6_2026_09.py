@@ -29,7 +29,10 @@ from cfd_sdf.design_transform import ConeFilter, DesignTransform, RampInterpolat
 from cfd_sdf.fixed_grid_primal import load_fixed_grid_density_state  # noqa: E402
 from cfd_sdf.openfoam_oracle import OpenFoamOracle, OpenFoamOracleConfig  # noqa: E402
 from cfd_sdf.path_b_bracket import BracketSpec  # noqa: E402
-from cfd_sdf.phase2_inequality_policy import evaluate_phase2_inequality  # noqa: E402
+from cfd_sdf.phase2_inequality_policy import (  # noqa: E402
+    evaluate_phase2_inequality,
+    projected_discreteness_mean_nd,
+)
 from cfd_sdf.problem_spec import load_problem_spec  # noqa: E402
 from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem  # noqa: E402
 from cfd_sdf.stage_t_loop import make_oracle_from_compiled  # noqa: E402
@@ -58,7 +61,7 @@ def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = N
     if ca.sha256_file(manifest_path) != sidecar:
         raise ValueError("campaign manifest sidecar mismatch")
     manifest = ca.load_json(manifest_path)
-    if manifest.get("schema_version") not in (5, 6, 7, 8, 9, 10):
+    if manifest.get("schema_version") not in (5, 6, 7, 8, 9, 10, 11):
         raise ValueError("campaign manifest schema mismatch")
     if "change_manifest_d2" in manifest and ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
         raise ValueError("D2 change manifest hash mismatch")
@@ -84,6 +87,9 @@ def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = N
     for key in ("template_parent", "template_trial", "solver_controls"):
         _verify_ref(manifest["registered_inputs"][key], directory=True)
     rho_ref = manifest["input_stop_state"]
+    if "state_path" in rho_ref:
+        if ca.sha256_file(ROOT / rho_ref["state_path"]) != rho_ref["state_sha256"]:
+            raise ValueError("stop state file hash mismatch")
     rho_path = ROOT / rho_ref["rho_path"]
     if ca.sha256_file(rho_path) != rho_ref["rho_file_sha256"]:
         raise ValueError("stop rho file hash mismatch")
@@ -190,6 +196,20 @@ def cap_stationarity_exit_allowed(
     return accepted_count >= min_accepted
 
 
+def parent_discreteness_guard(transform, rho: np.ndarray, limit: float | None) -> dict:
+    """Measure the registered parent invariant without invoking a flow solver."""
+    if limit is None:
+        return {"enabled": False, "mean_nd": None, "mean_nd_max": None, "pass": True}
+    bound = float(limit)
+    mean_nd = projected_discreteness_mean_nd(transform, rho)
+    return {
+        "enabled": True,
+        "mean_nd": mean_nd,
+        "mean_nd_max": bound,
+        "pass": bool(mean_nd <= bound),
+    }
+
+
 def _stop(output: Path, reason: str, level: str) -> dict:
     meta = ca.load_json(output / "campaign_meta.json")
     _write_json_atomic(output / "campaign_meta.json", {**meta, "status": "blocked", "reason": reason, "level": level})
@@ -232,7 +252,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
             "level_index": start_index,
             "accepted_count": int(carryover.get(levels[start_index]["name"], 0)),
             "attempts_this_cycle": 0,
-            "metrics": [],
+            "metrics": list(manifest.get("carryover_metrics", [])),
             "completed_levels": [level["name"] for level in levels[:start_index]],
             "phase1_done": None,
         }
@@ -261,6 +281,23 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
         session_attempts = 0
         for attempt in range(state.get("attempts_this_cycle", 0), level["max_attempts"]):
             session_attempts += 1
+            discreteness_limit = manifest["phase2_policy"].get("discreteness_mean_nd_max")
+            parent_guard = parent_discreteness_guard(transform, rho, discreteness_limit)
+            if parent_guard["enabled"]:
+                _append_event(
+                    output,
+                    {
+                        "kind": "parent_discreteness_guard",
+                        "level": level["name"],
+                        "attempt": attempt + 1,
+                        "rho_sha256": sha256_array(rho),
+                        "mean_nd": parent_guard["mean_nd"],
+                        "mean_nd_max": parent_guard["mean_nd_max"],
+                        "pass": parent_guard["pass"],
+                    },
+                )
+                if not parent_guard["pass"]:
+                    return _stop(output, "parent_discreteness_limit_exceeded", level["name"])
             parent = oracle.evaluate_parent(rho)
             parent_run = run_evidence(parent)
             parent_downforce = float(parent_run["downforce_coefficient"])
@@ -287,6 +324,9 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 volume_cap_correction=bool(manifest["phase2_policy"].get("volume_cap_correction", False)),
                 min_update_inf_norm=manifest["phase2_policy"]["min_corrected_update_inf_norm"],
                 extractability_fraction=manifest["phase2_policy"]["extractability_fraction"],
+                discreteness_mean_nd_max=manifest["phase2_policy"].get(
+                    "discreteness_mean_nd_max"
+                ),
             )
             _append_event(
                 output,
