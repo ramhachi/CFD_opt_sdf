@@ -10,7 +10,7 @@
   "kind": "pq3_3b_v8_entry_preflight",
   "manifest": {
     "path": "docs/evidence/pq3_3b_campaign_manifest_v8_2026_09.json",
-    "sha256": "42d0dee1e4988b1156d6818b43e87ab493cb3b7949fc1a91e0c4653516107d8c"
+    "sha256": "c01803f7b39372d753a90fa9acdaa5a5c900a0fa6059808de017895ec4c2ab42"
   },
   "schema_version": 1,
   "stage_a_cap_stationarity": {
@@ -49,15 +49,15 @@
     "last_accepted_objective_delta_abs": 5.012135999971079e-05,
     "level": "level_1_b8_q30",
     "parent_run": {
-      "adjoint_iterations": 742,
+      "adjoint_iterations": 743,
       "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/runs/parent_a2e20bae9df3/case",
-      "downforce_coefficient": 3.82622378522,
-      "primal_iterations": 88,
+      "downforce_coefficient": 3.82622386287,
+      "primal_iterations": 87,
       "reused": false,
       "solver_status": "converged",
       "source_rho_sha256": "de2b3f6cb885ba9cf441dc8a15a61083dde737c6233b4c37889da4a1f573249a",
       "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/runs/parent_a2e20bae9df3/case/fixed_grid_primal_summary.json",
-      "summary_sha256": "6099e78654578de4f8eb35a3896734fb46f90766f2f072499cb7c1fb0ba8f700"
+      "summary_sha256": "bcb93a6cb1f43d31c89cf1b0e61d343f5e4cb99cde407c1e6174c9e6083f023e"
     },
     "pass": true,
     "repeat_run": {
@@ -69,7 +69,7 @@
       "solver_status": "converged",
       "source_rho_sha256": "de2b3f6cb885ba9cf441dc8a15a61083dde737c6233b4c37889da4a1f573249a",
       "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/repeat_runs/trial_a2e20bae9df3/case/fixed_grid_primal_summary.json",
-      "summary_sha256": "cf9895f0216d31a8bfb51fca1cef06d89e0347bc8dc0e656a1d96b4c3ca3350d"
+      "summary_sha256": "16628c5f3e81053ca40cf3367e3f07ea2f3cfde32a9757105e9a98d9fffdc95a"
     },
     "reproducible": true
   },
@@ -85,7 +85,7 @@
       "solver_status": "converged",
       "source_rho_sha256": "880ef7699e7dac993162d4ac5674dffc65e3a7abc9a2dd7060f18238419c5cf7",
       "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/parent_44d1ec27cecf/case/fixed_grid_primal_summary.json",
-      "summary_sha256": "e5516de2c25cc1cccd9e11c121c75bc40f5544ad2a3271360c80d2f2b501feb3"
+      "summary_sha256": "8dbb88f4855573587fa6c41508d4e88f3bf0c919dc8a61ca108dc88ec7fd9c1e"
     },
     "pass": true,
     "phase2": {
@@ -167,7 +167,7 @@
             "solver_status": "converged",
             "source_rho_sha256": "d48926f4ff4c0cf33819207729a6e6ac38566eb6f5eb7dce973a732d7702910c",
             "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/trial_82b2a3c7d237/case/fixed_grid_primal_summary.json",
-            "summary_sha256": "f187ab34f87ffe10a984510220d78381e5b5ca7a2b4c412fc0f64f86b1091010"
+            "summary_sha256": "039fad0613880bc6fa9365331694c116f2f4c2d6bcafb926927f5e97a15d6d9c"
           },
           "volume_cap_correction_applied": false,
           "volume_cap_kappa": null
