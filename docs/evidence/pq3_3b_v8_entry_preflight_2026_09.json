@@ -1,0 +1,196 @@
+{
+  "claims_not_supported": [
+    "the exit is a registered stopping rule, not a convergence certificate",
+    "the long v8 campaign is not started by this artifact"
+  ],
+  "claims_supported": [
+    "the pre-registered cap-stationarity exit was qualified with an independent repeat at the v7 final checkpoint",
+    "the b=16 transition and one cap-corrected step were qualified"
+  ],
+  "kind": "pq3_3b_v8_entry_preflight",
+  "manifest": {
+    "path": "docs/evidence/pq3_3b_campaign_manifest_v8_2026_09.json",
+    "sha256": "42d0dee1e4988b1156d6818b43e87ab493cb3b7949fc1a91e0c4653516107d8c"
+  },
+  "schema_version": 1,
+  "stage_a_cap_stationarity": {
+    "attempt_candidates": [
+      {
+        "alpha": 1.0,
+        "inf_norm": 2.7755575615628914e-17,
+        "reason": "machine_scale_update_rejected"
+      },
+      {
+        "alpha": 0.5,
+        "inf_norm": 5.551115123125783e-17,
+        "reason": "machine_scale_update_rejected"
+      },
+      {
+        "alpha": 0.25,
+        "inf_norm": 2.7755575615628914e-17,
+        "reason": "machine_scale_update_rejected"
+      },
+      {
+        "alpha": 0.125,
+        "inf_norm": 2.7755575615628914e-17,
+        "reason": "machine_scale_update_rejected"
+      },
+      {
+        "alpha": 0.0625,
+        "inf_norm": 2.7755575615628914e-17,
+        "reason": "machine_scale_update_rejected"
+      }
+    ],
+    "attempt_reasons": [
+      "machine_scale_update_rejected"
+    ],
+    "cumulative_accepted": 36,
+    "exit_allowed": true,
+    "last_accepted_objective_delta_abs": 5.012135999971079e-05,
+    "level": "level_1_b8_q30",
+    "parent_run": {
+      "adjoint_iterations": 742,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/runs/parent_a2e20bae9df3/case",
+      "downforce_coefficient": 3.82622378522,
+      "primal_iterations": 88,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "de2b3f6cb885ba9cf441dc8a15a61083dde737c6233b4c37889da4a1f573249a",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/runs/parent_a2e20bae9df3/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "6099e78654578de4f8eb35a3896734fb46f90766f2f072499cb7c1fb0ba8f700"
+    },
+    "pass": true,
+    "repeat_run": {
+      "adjoint_iterations": null,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/repeat_runs/trial_a2e20bae9df3/case",
+      "downforce_coefficient": 3.82622378522,
+      "primal_iterations": 88,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "de2b3f6cb885ba9cf441dc8a15a61083dde737c6233b4c37889da4a1f573249a",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_a/repeat_runs/trial_a2e20bae9df3/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "cf9895f0216d31a8bfb51fca1cef06d89e0347bc8dc0e656a1d96b4c3ca3350d"
+    },
+    "reproducible": true
+  },
+  "stage_b_b16_transition": {
+    "accepted_rho_sha256": "066dc481950427dd198da78ad910e58d4dd9ef05fb474a40085847bb29966a11",
+    "level": "level_2_b16_q100",
+    "parent_run": {
+      "adjoint_iterations": 685,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/parent_44d1ec27cecf/case",
+      "downforce_coefficient": 1.56506697208,
+      "primal_iterations": 95,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "880ef7699e7dac993162d4ac5674dffc65e3a7abc9a2dd7060f18238419c5cf7",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/parent_44d1ec27cecf/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "e5516de2c25cc1cccd9e11c121c75bc40f5544ad2a3271360c80d2f2b501feb3"
+    },
+    "pass": true,
+    "phase2": {
+      "accepted_alpha": 1.0,
+      "all_failed": false,
+      "candidates": [
+        {
+          "accepted": true,
+          "alpha": 1.0,
+          "bracket": {
+            "d_adj": -18.365200400754276,
+            "d_fd": -15.380243787500024,
+            "details": {
+              "difference": 0.02460839006000004,
+              "noise_floor_abs": 1e-06
+            },
+            "direction_inf_norm": 0.010000000000000009,
+            "epsilon": 0.0008,
+            "minus_objective": -1.55283236413,
+            "minus_rho_sha256": "9c34843e22a651923d710acb7f653044412a8f19db8d039083a01b9551aab2b2",
+            "ok": true,
+            "plus_objective": -1.57744075419,
+            "plus_rho_sha256": "beec9d3dd63e77e33f7a85acecb487267d75863d6b7cf4504b2fe67620dc51b7",
+            "reason": "descent_sign_match"
+          },
+          "bracket_ok": true,
+          "corrected_rho_sha256": "066dc481950427dd198da78ad910e58d4dd9ef05fb474a40085847bb29966a11",
+          "corrected_update_inf_norm": 0.010000000000000009,
+          "frozen_box_face_cells": 11154,
+          "gates": {
+            "canonical_objective_improved": true,
+            "corrected_update_above_machine_scale": true,
+            "d_adj_negative": true,
+            "d_fd_below_negative_noise_floor": true,
+            "extractability_guard": true,
+            "mask_invariance": true,
+            "move_box_respected": true,
+            "projected_volume_within_v_max": true,
+            "raw_downforce_improved": true,
+            "sign_match": true,
+            "trial_primal_converged": true
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 1070,
+            "cells_gt_0.4": 1003,
+            "cells_gt_0.5": 917,
+            "cells_gt_0.6": 858,
+            "fraction_gt_0.3": 0.05572916666666667,
+            "fraction_gt_0.4": 0.05223958333333333,
+            "fraction_gt_0.5": 0.047760416666666666,
+            "fraction_gt_0.6": 0.0446875,
+            "total_active": 19200
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 1038,
+            "cells_gt_0.4": 960,
+            "cells_gt_0.5": 890,
+            "cells_gt_0.6": 827,
+            "fraction_gt_0.3": 0.0540625,
+            "fraction_gt_0.4": 0.05,
+            "fraction_gt_0.5": 0.04635416666666667,
+            "fraction_gt_0.6": 0.04307291666666667,
+            "total_active": 19200
+          },
+          "phi_after": 0.05428231018524866,
+          "projected_volume_delta": 0.002985837753218437,
+          "reason": "accepted",
+          "trial_downforce": 1.72999570785,
+          "trial_objective": -1.72999570785,
+          "trial_primal_converged": true,
+          "trial_run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/trial_82b2a3c7d237/case",
+            "downforce_coefficient": 1.72999570785,
+            "primal_iterations": 94,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "d48926f4ff4c0cf33819207729a6e6ac38566eb6f5eb7dce973a732d7702910c",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v8_entry_preflight/stage_b/runs/trial_82b2a3c7d237/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "f187ab34f87ffe10a984510220d78381e5b5ca7a2b4c412fc0f64f86b1091010"
+          },
+          "volume_cap_correction_applied": false,
+          "volume_cap_kappa": null
+        }
+      ],
+      "corrected_rho_sha256": "066dc481950427dd198da78ad910e58d4dd9ef05fb474a40085847bb29966a11",
+      "ladder": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+      ],
+      "policy_id": "objective-oc-inequality-v1",
+      "successful": true
+    },
+    "phi_before_restoration": 0.05129647243203022,
+    "restoration": null
+  },
+  "summary": {
+    "entry_preflight_pass": true,
+    "long_campaign_started": false,
+    "stage_a_pass": true,
+    "stage_b_pass": true
+  }
+}
