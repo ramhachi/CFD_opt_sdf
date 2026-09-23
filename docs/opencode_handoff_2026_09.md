@@ -795,3 +795,23 @@ Git:
 contains the PowerShell form `scripts/build_porous_force_objective.ps1`. Verify
 the intended platform command before using it; this handoff does not silently
 repair that unrelated documentation mismatch.
+
+## 2026-09-23: post-v5 D0-D3 status (bounded diagnosis executed)
+
+- D0 `docs/evidence/pq3_3b_stopped_state_diagnosis_2026_09.json`: no new
+  solver run; stopped parent reconstructed through the oracle cache and every
+  registered kappa reproduced exactly. Mechanisms: 9495 active cells frozen at
+  exact 0/1; uniform volume correction cancels the sign step at machine scale
+  for alphas <= 0.5; alpha=1 leaves a 2.67e-5 step with -3.1e-7 objective dot.
+- D1 `docs/evidence/pq3_3b_d1_discriminant_outcome_2026_09.json`: bounded
+  discriminant, 10 fresh primals, parent spread 0.0. Verdicts: d1
+  below_threshold (+2.71e-7), d2 objective-only detectable (+0.13399), d3
+  exchange detectable (+0.02789), d4 one-sided inward detectable (+8.06e-5).
+- D2 `docs/evidence/pq3_3b_d2_change_manifest_2026_09.json`: minimal change
+  `objective-oc-inequality-v1` (no equality correction in Phase 2, V<=Vmax,
+  1e-8 machine-scale gate, extractability guard).
+- v6 manifest `docs/evidence/pq3_3b_campaign_manifest_v6_2026_09.json`
+  registered (`registered_preflight_pending`); entry preflight
+  `docs/evidence/pq3_3b_v6_entry_preflight_2026_09.json` passed both stages.
+- Next: an explicit user go plus a v6 campaign runner (not implemented).
+  Stage S remains blocked; do not claim convergence or readiness.

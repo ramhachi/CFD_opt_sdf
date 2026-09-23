@@ -1,0 +1,293 @@
+{
+  "campaign_manifest_v6": {
+    "path": "docs/evidence/pq3_3b_campaign_manifest_v6_2026_09.json",
+    "sha256": "aedd3592e9dc64097c708a141c01e559d4510a0959329aaf3e187f9f4f5a6fd7"
+  },
+  "change_manifest_d2": {
+    "path": "docs/evidence/pq3_3b_d2_change_manifest_2026_09.json",
+    "sha256": "7cc2933a39c26ce1c1f89c1b8f0d0f029122fa622cdecb35c07f598dcdc2bebd"
+  },
+  "claims_not_supported": [
+    "the long v6 campaign is not started and no terminal or Stage S qualification is included"
+  ],
+  "claims_supported": [
+    "one inequality-policy step was qualified at the v5 stopped b=8 parent with fresh real primals",
+    "the b=16 transition and formation-target restoration were measured under the registered rules"
+  ],
+  "discriminant_outcome_d1": {
+    "path": "docs/evidence/pq3_3b_d1_discriminant_outcome_2026_09.json",
+    "sha256": "0e954ca79b5ffbff0d9c576061c3e072d18c45d571bf8d799c995e5f9b0e66c9"
+  },
+  "kind": "pq3_3b_v6_entry_preflight",
+  "schema_version": 1,
+  "stage_a_b8_stop_point": {
+    "accepted_rho_sha256": "332dde199385aaf73b00ae6168c7b2c913f6bcf017eb5c487bdaffaf3f86d808",
+    "level": "level_1_b8_q30",
+    "parent_run": {
+      "adjoint_iterations": 597,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_a/runs/parent_64292d87c501/case",
+      "downforce_coefficient": 0.579818003757,
+      "primal_iterations": 88,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "b196cd5e32847c16733cd354beee1ed6c708a2b270d1627f76894facd1342e5b",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_a/runs/parent_64292d87c501/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "9b3973874ddbff18942721ef7863cb1161ee0acc3e81d15c92786a9cf4fbf4d7"
+    },
+    "pass": true,
+    "phase2": {
+      "accepted_alpha": 1.0,
+      "all_failed": false,
+      "candidates": [
+        {
+          "accepted": true,
+          "alpha": 1.0,
+          "bracket": {
+            "d_adj": -4.03703753954856,
+            "d_fd": -3.899281860000048,
+            "details": {
+              "difference": 0.0062388509760000765,
+              "noise_floor_abs": 1e-06
+            },
+            "direction_inf_norm": 0.030000000000000027,
+            "epsilon": 0.0008,
+            "minus_objective": -0.576709025427,
+            "minus_rho_sha256": "c0ee6c07caf8202f7136edee0c34e213e0be3fb9892fb3cbc9a8af93429c14c6",
+            "ok": true,
+            "plus_objective": -0.582947876403,
+            "plus_rho_sha256": "437d41314a9b87a74f220714007f98b3f9d6187082cf55b83ebae88b9256f8c6",
+            "reason": "descent_sign_match"
+          },
+          "bracket_ok": true,
+          "corrected_rho_sha256": "332dde199385aaf73b00ae6168c7b2c913f6bcf017eb5c487bdaffaf3f86d808",
+          "corrected_update_inf_norm": 0.030000000000000027,
+          "frozen_box_face_cells": 9495,
+          "gates": {
+            "canonical_objective_improved": true,
+            "corrected_update_above_machine_scale": true,
+            "d_adj_negative": true,
+            "d_fd_below_negative_noise_floor": true,
+            "extractability_guard": true,
+            "mask_invariance": true,
+            "move_box_respected": true,
+            "projected_volume_within_v_max": true,
+            "raw_downforce_improved": true,
+            "sign_match": true,
+            "trial_primal_converged": true
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 495,
+            "cells_gt_0.4": 433,
+            "cells_gt_0.5": 334,
+            "cells_gt_0.6": 251,
+            "fraction_gt_0.3": 0.02578125,
+            "fraction_gt_0.4": 0.022552083333333334,
+            "fraction_gt_0.5": 0.017395833333333333,
+            "fraction_gt_0.6": 0.013072916666666667,
+            "total_active": 19200
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 439,
+            "cells_gt_0.4": 350,
+            "cells_gt_0.5": 281,
+            "cells_gt_0.6": 209,
+            "fraction_gt_0.3": 0.022864583333333334,
+            "fraction_gt_0.4": 0.018229166666666668,
+            "fraction_gt_0.5": 0.014635416666666666,
+            "fraction_gt_0.6": 0.010885416666666667,
+            "total_active": 19200
+          },
+          "phi_after": 0.021344143527187814,
+          "projected_volume_delta": 0.003344143527187815,
+          "reason": "accepted",
+          "trial_downforce": 0.713809320905,
+          "trial_objective": -0.713809320905,
+          "trial_primal_converged": true,
+          "trial_run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_a/runs/trial_1efbbe2ebfc2/case",
+            "downforce_coefficient": 0.713809320905,
+            "primal_iterations": 89,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "89ec703fe00c32ad411063cf79659fdefc7dddf7aea5b835ddb4acd2304d6346",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_a/runs/trial_1efbbe2ebfc2/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "9a7a2073be6613f1c2a52f53a699368a92383cd4ce0863a5490b02abc2e5409c"
+          }
+        }
+      ],
+      "corrected_rho_sha256": "332dde199385aaf73b00ae6168c7b2c913f6bcf017eb5c487bdaffaf3f86d808",
+      "ladder": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+      ],
+      "policy_id": "objective-oc-inequality-v1",
+      "successful": true
+    }
+  },
+  "stage_b_b16_transition": {
+    "accepted_rho_sha256": "38683099e131e64f4954fc59711ac8340c58b647cbe1df96d36ca2b33c5d4998",
+    "level": "level_2_b16_q100",
+    "parent_run": {
+      "adjoint_iterations": 573,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/parent_8bf7e7d34a57/case",
+      "downforce_coefficient": 0.417297645077,
+      "primal_iterations": 89,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "0152536c75301219540b526c7a0e5ff586acf2d5d5e87e0a5f672ea264d2ff79",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/parent_8bf7e7d34a57/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "53f12752d056082f5537e8913b54d549a89669457fc1c3f3cdd0660a7ff280f4"
+    },
+    "pass": true,
+    "phase2": {
+      "accepted_alpha": 1.0,
+      "all_failed": false,
+      "candidates": [
+        {
+          "accepted": true,
+          "alpha": 1.0,
+          "bracket": {
+            "d_adj": -2.22848416694199,
+            "d_fd": -2.545218197500011,
+            "details": {
+              "difference": 0.004072349116000018,
+              "noise_floor_abs": 1e-06
+            },
+            "direction_inf_norm": 0.010000000000000009,
+            "epsilon": 0.0008,
+            "minus_objective": -0.415263255329,
+            "minus_rho_sha256": "465905c58b0749040b7659bc8ca370d527dee48b589476cda4175378ce1c0a99",
+            "ok": true,
+            "plus_objective": -0.419335604445,
+            "plus_rho_sha256": "ced1599cd397b41f016f76dff1aa6996abddd3d19fd3e3da261b8b5b34170f01",
+            "reason": "descent_sign_match"
+          },
+          "bracket_ok": true,
+          "corrected_rho_sha256": "38683099e131e64f4954fc59711ac8340c58b647cbe1df96d36ca2b33c5d4998",
+          "corrected_update_inf_norm": 0.010000000000000009,
+          "frozen_box_face_cells": 9498,
+          "gates": {
+            "canonical_objective_improved": true,
+            "corrected_update_above_machine_scale": true,
+            "d_adj_negative": true,
+            "d_fd_below_negative_noise_floor": true,
+            "extractability_guard": true,
+            "mask_invariance": true,
+            "move_box_respected": true,
+            "projected_volume_within_v_max": true,
+            "raw_downforce_improved": true,
+            "sign_match": true,
+            "trial_primal_converged": true
+          },
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy": {
+            "cells_gt_0.3": 451,
+            "cells_gt_0.4": 392,
+            "cells_gt_0.5": 352,
+            "cells_gt_0.6": 314,
+            "fraction_gt_0.3": 0.023489583333333335,
+            "fraction_gt_0.4": 0.020416666666666666,
+            "fraction_gt_0.5": 0.018333333333333333,
+            "fraction_gt_0.6": 0.016354166666666666,
+            "total_active": 19200
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 438,
+            "cells_gt_0.4": 371,
+            "cells_gt_0.5": 334,
+            "cells_gt_0.6": 296,
+            "fraction_gt_0.3": 0.0228125,
+            "fraction_gt_0.4": 0.019322916666666665,
+            "fraction_gt_0.5": 0.017395833333333333,
+            "fraction_gt_0.6": 0.015416666666666667,
+            "total_active": 19200
+          },
+          "phi_after": 0.01891619082926092,
+          "projected_volume_delta": 0.0009172510975772319,
+          "reason": "accepted",
+          "trial_downforce": 0.442857484312,
+          "trial_objective": -0.442857484312,
+          "trial_primal_converged": true,
+          "trial_run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/trial_3ada76088a99/case",
+            "downforce_coefficient": 0.442857484312,
+            "primal_iterations": 90,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "0e138b0012ef307bce2510dffb65d74f35a38758afcb0afa156a72c3d39a837e",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/trial_3ada76088a99/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "d911caa8cd1df76ac5e2f72f9a12a5a9a03f1926ef649aca13d920cf02024fb9"
+          }
+        }
+      ],
+      "corrected_rho_sha256": "38683099e131e64f4954fc59711ac8340c58b647cbe1df96d36ca2b33c5d4998",
+      "ladder": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+      ],
+      "policy_id": "objective-oc-inequality-v1",
+      "successful": true
+    },
+    "phi_before_restoration": 0.017998939731683688,
+    "phi_drop_vs_formation_target": 1.0602683163107862e-06,
+    "restoration": {
+      "accepted_rho_sha256": "332dde199385aaf73b00ae6168c7b2c913f6bcf017eb5c487bdaffaf3f86d808",
+      "max_mask_drift": 0.0,
+      "max_move_box_violation": 0.0,
+      "phase": "level_2_b16_q100",
+      "phi_design_start": 0.017998939731683688,
+      "phi_final": 0.017998939731683688,
+      "reached_target": true,
+      "steps": [
+        {
+          "accepted": true,
+          "bracketed": true,
+          "frontier_step": false,
+          "kappa": 0.0,
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "phi_after": 0.017998939731683688,
+          "phi_before": 0.017998939731683688,
+          "primal_converged": true,
+          "residual": 1.0602683163107862e-06,
+          "run": {
+            "adjoint_iterations": null,
+            "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/trial_8bf7e7d34a57/case",
+            "downforce_coefficient": 0.417297645077,
+            "primal_iterations": 89,
+            "reused": false,
+            "solver_status": "converged",
+            "source_rho_sha256": "0152536c75301219540b526c7a0e5ff586acf2d5d5e87e0a5f672ea264d2ff79",
+            "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v6_entry_preflight/stage_b/runs/trial_8bf7e7d34a57/case/fixed_grid_primal_summary.json",
+            "summary_sha256": "19303c55a71d409bb9d2a513f0379799a59792700405320b02f1f64e8441938e",
+            "transform_sha256": "92d0444ab7e4cf95c058f1fff5fbfca89f02dd448590ca6c6971dcef7553942d"
+          },
+          "status": "restoration_feasible",
+          "step": 1,
+          "target_not_overshot": true,
+          "v_max_ok": true
+        }
+      ],
+      "steps_taken": 1,
+      "target": 0.018,
+      "v_max_ok": true
+    }
+  },
+  "summary": {
+    "entry_preflight_pass": true,
+    "long_campaign_started": false,
+    "stage_a_pass": true,
+    "stage_b_pass": true
+  }
+}

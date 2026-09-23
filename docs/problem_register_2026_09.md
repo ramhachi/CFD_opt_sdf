@@ -122,6 +122,20 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
 
+> **2026-09-23 D0-D3 post-v5 update:** the equality volume target 0.018 was
+> measured as the objective blocker at the stopped b=8 parent: the registered
+> corrected step improved only 2.71e-7 while the objective-only proposal
+> improved +0.13399 under the original `V<=Vmax` inequality (D1 bounded
+> discriminant, 10 fresh primals). The minimal change
+> (`objective-oc-inequality-v1`, D2 manifest) replaces the equality correction
+> in Phase 2, keeps 0.018 as the Phase 1 formation target, rejects
+> machine-scale corrected updates and guards extractability. The v6 entry
+> preflight passed at b=8 and b=16 (one step each). P19 is NARROWED but remains
+> open: the projected-volume semantics are now consistent across target,
+> backend and geometry basis, while the extraction-coherence qualification
+> still depends on the terminal candidate and the PQ4.1 composite gate. No
+> Stage S-ready claim, and the long v6 campaign has not started.
+
 > **2026-09-23 preflight v5 current status:** The v4 b=8 failure reason was not
 > auditable because its per-alpha ledger was dropped on exception, and b=8
 > inherited the b=4 restoration rho instead of the objective-accepted rho.

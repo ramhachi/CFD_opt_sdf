@@ -687,6 +687,37 @@ Execute in this order:
    iteration counts and objective/field stability. A terminal b=16 candidate
    needs level convergence and an independent feasible evaluation under the
    original upper-bound problem.
+
+   **Current status (2026-09-23, D0--D3 executed):** D0
+   ([`evidence/pq3_3b_stopped_state_diagnosis_2026_09.json`](evidence/pq3_3b_stopped_state_diagnosis_2026_09.json))
+   reconstructed the stopped parent from verified saved artifacts with no new
+   solver run and reproduced every registered alpha kappa exactly: 9495 active
+   cells are frozen at exact 0/1 box faces (9263 at zero), and the uniform
+   volume correction cancels the objective sign step at machine scale for
+   alphas <= 0.5; only alpha=1 leaves a 2.67e-5 inf-norm corrected update whose
+   objective dot is -3.1e-7. D1
+   ([`evidence/pq3_3b_d1_discriminant_outcome_2026_09.json`](evidence/pq3_3b_d1_discriminant_outcome_2026_09.json))
+   ran the pre-registered bounded discriminant (10 fresh primals, budget
+   respected, parent spread 0.0): the registered corrected step improved only
+   +2.71e-7 (below threshold), while the objective-only direction without the
+   equality volume pullback improved +0.13399 and the orthogonal
+   volume-exchange direction +0.02789 with the projected volume held near
+   0.018. D2 registered the minimal change
+   ([`evidence/pq3_3b_d2_change_manifest_2026_09.json`](evidence/pq3_3b_d2_change_manifest_2026_09.json)):
+   policy `objective-oc-inequality-v1` drops the equality volume correction,
+   enforces the original `V<=Vmax`, rejects machine-scale corrected updates
+   (1e-8 inf-norm gate) and adds an extractability guard against the recorded
+   stop-state occupancy (explicitly not a PQ4.1 substitute). The immutable v6
+   campaign manifest
+   ([`evidence/pq3_3b_campaign_manifest_v6_2026_09.json`](evidence/pq3_3b_campaign_manifest_v6_2026_09.json))
+   is registered as `registered_preflight_pending`. The two-stage entry
+   preflight passed
+   ([`evidence/pq3_3b_v6_entry_preflight_2026_09.json`](evidence/pq3_3b_v6_entry_preflight_2026_09.json)):
+   one inequality step at the b=8 stop point accepted +0.13399 downforce; the
+   b=16 transition lowered the projected volume by only 1.06e-6, the formation
+   target was maintained, and one b=16 inequality step accepted +0.02556. The
+   long v6 campaign is NOT started; a campaign runner is not implemented and an
+   explicit user go is required. Stage S remains blocked.
 5. **PQ4.1 — complete T-to-S handoff.** Extract `rho_projection`, retain
    `beta_solver` as solver audit state, and require the full composite gate.
    Only `ready_for_stage_s=true` may register a Stage S baseline.
