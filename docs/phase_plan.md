@@ -679,6 +679,8 @@ Execute in this order:
 4. **PQ3.3b stopped-state diagnosis, then bounded continuation if justified.**
    Preserve v4/v5 artifacts. Measure why the volume-corrected Phase 2 update
    collapses at the v5 b=8 checkpoint and verify objective repeatability.
+   The bounded diagnostic and decision rules are specified in
+   [`pq3_3b_post_v5_plan_2026_09.md`](pq3_3b_post_v5_plan_2026_09.md).
    Only a new immutable manifest with a justified stopping/proposal rule may
    resume the campaign. Each b/q level must recompute its parent and pass
    Path B brackets, real trial primals, projected-volume feasibility, minimum

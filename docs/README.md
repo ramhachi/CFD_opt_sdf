@@ -80,6 +80,11 @@ Start here in a new terminal, after reading the repository root
   separates `rho_projection` geometry from RAMP `beta_solver`, and defines the
   gated order for semantic re-materialization, projected-volume reoptimization,
   PQ4.1 and the first Stage S step. It is subordinate to `phase_plan.md`.
+- [`pq3_3b_post_v5_plan_2026_09.md`](pq3_3b_post_v5_plan_2026_09.md)
+  — bounded diagnosis and decision rules after the v5 b=8 stop. It separates
+  the continuation target from the original projected-volume upper bound and
+  requires a new registered preflight before any v6 campaign. It is
+  subordinate to `phase_plan.md`.
 - [`glm_downforce_assessment_2026_09.md`](glm_downforce_assessment_2026_09.md)
   — the GLM-session downforce-focused investigation and plan (WP4–WP6 results,
   literature refinement, and the recommended WP7/B-ladder route), subordinate
