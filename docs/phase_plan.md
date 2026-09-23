@@ -658,14 +658,33 @@ Execute in this order:
    the b=4 and b=8 histories. It is locally qualified at the stopped b=8
    parent only; all future proposals retain fail-closed brackets. The user's
    2026-09-23 instruction authorizes starting this bounded optimization.
+   The v5 run accepted three more b=8 steps (11 in total), raising same-level
+   downforce from the v4 stop value `0.579504694421` to `0.579818003757`.
+   Attempt 12 then rejected every alpha. At alpha=1, the centered bracket
+   passed, but the trial improvement was `2.7124e-7`, below the registered
+   `1e-6` improvement threshold. Smaller corrected updates collapsed to
+   machine-scale or zero. The last three accepted objective changes were
+   `1.0881e-4`, `1.0734e-4`, and `9.7168e-5`, so the registered requirement
+   that all three be at most `1e-4` was **not met**. The immutable result is
+   [`evidence/pq3_3b_campaign_v5_outcome_2026_09.json`](evidence/pq3_3b_campaign_v5_outcome_2026_09.json).
+   Stop the current campaign here. Before registering any v6 run, diagnose
+   box-face saturation, volume-correction cancellation, actual corrected-step
+   norms, and independent objective repeatability at this checkpoint. A
+   normalized FD direction built from a machine-scale corrected step must
+   not be treated as evidence of an effective optimizer update. Define an
+   explicit measurable-stationarity rule or a justified proposal change in a
+   new manifest before another long run; do not retroactively relax v5.
    Stage S remains blocked until campaign convergence, terminal evaluation
    and PQ4.1 pass.
-4. **PQ3.3b bounded real-OpenFOAM continuation.** Register a new immutable
-   manifest. Recompute the parent at each b/q level; require Path B brackets,
-   real trial primals, projected-volume feasibility, minimum iteration counts
-   and objective/field stability. A terminal b=16 candidate requires at least
-   one accepted step and a final feasible evaluation under the original upper-
-   bound problem.
+4. **PQ3.3b stopped-state diagnosis, then bounded continuation if justified.**
+   Preserve v4/v5 artifacts. Measure why the volume-corrected Phase 2 update
+   collapses at the v5 b=8 checkpoint and verify objective repeatability.
+   Only a new immutable manifest with a justified stopping/proposal rule may
+   resume the campaign. Each b/q level must recompute its parent and pass
+   Path B brackets, real trial primals, projected-volume feasibility, minimum
+   iteration counts and objective/field stability. A terminal b=16 candidate
+   needs level convergence and an independent feasible evaluation under the
+   original upper-bound problem.
 5. **PQ4.1 — complete T-to-S handoff.** Extract `rho_projection`, retain
    `beta_solver` as solver audit state, and require the full composite gate.
    Only `ready_for_stage_s=true` may register a Stage S baseline.

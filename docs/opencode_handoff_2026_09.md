@@ -51,6 +51,11 @@ checkpoint in a new output directory. Its input snapshot and the v4 campaign
 output are retained under ignored `work/`, so a fresh checkout cannot resume
 without those host-local artifacts. Follow the latest `phase_plan.md` and
 immutable v4 outcome/recovery evidence rather than the older snapshot below.
+The v5 run subsequently accepted three more b=8 objective steps (11 total)
+and stopped at attempt 12: its improvement was below the registered noise
+threshold, while the three-step convergence window had not passed. The current
+status and next diagnostic are recorded in `phase_plan.md` and
+`evidence/pq3_3b_campaign_v5_outcome_2026_09.json`; b=16 was not run.
 
 ## Snapshot and Git
 

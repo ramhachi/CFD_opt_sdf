@@ -1,0 +1,140 @@
+{
+  "kind": "pq3_3b_campaign_v5_outcome",
+  "schema_version": 1,
+  "manifest_sha256": "38dbd9a476ebe72de1f49b51928b6b4c9bb6570d135df4db47c00107eb7a786d",
+  "source_campaign_outcome_sha256": "436813fb21b0dbfc558af52ff747a9192c31d2178284ac592e33d13b4558f6f0",
+  "output_directory": "work/pq3_3b_campaign_v5",
+  "output_hashes": {
+    "campaign_meta_json": "af77307dc4ed0196ac5c13f00682456fb0ad0fffd5e2ae3b3233d9480aaeac14",
+    "events_jsonl": "2fb08315486abecbe1f5696c6420fd8251c9cb82cb3855e7ecca2228c03a8953",
+    "latest_json": "f5d150914f225ad9c31a4f8135431bea3cad5ed50545fdd7981b23eef87196b5"
+  },
+  "status": {
+    "manifest_sha256": "38dbd9a476ebe72de1f49b51928b6b4c9bb6570d135df4db47c00107eb7a786d",
+    "status": "blocked",
+    "reason": "objective_rejected",
+    "level": "level_1_b8_q30"
+  },
+  "source_b8_accepted_count": 8,
+  "new_objective_attempts": 4,
+  "new_objective_accepted": 3,
+  "total_b8_accepted": 11,
+  "checkpoint": {
+    "index": 3,
+    "level_index": 1,
+    "accepted_count": 11,
+    "rho_sha256": "ffb594427f56670068aeacc6742b0075c1fbd418f834f83033d079b014cecfcd",
+    "verified_chain": true,
+    "last_metrics": [
+      {
+        "objective_delta_abs": 0.00010880590799999812,
+        "projected_field_mean_abs_delta": 5.857068362487953e-06,
+        "volume_residual": 0.0
+      },
+      {
+        "objective_delta_abs": 0.00010733522999994971,
+        "projected_field_mean_abs_delta": 5.796894236204507e-06,
+        "volume_residual": 3.469446951953614e-18
+      },
+      {
+        "objective_delta_abs": 9.71681979999861e-05,
+        "projected_field_mean_abs_delta": 5.2647809455661075e-06,
+        "volume_residual": 0.0
+      }
+    ],
+    "last_accepted_downforce_coefficient": 0.579818003757
+  },
+  "registered_convergence": {
+    "min_accepted_iterations_met": true,
+    "window_accepted": 3,
+    "objective_delta_abs_max": 0.0001,
+    "last_window_objective_condition_met": false,
+    "level_converged": false
+  },
+  "stopping_attempt": {
+    "level": "level_1_b8_q30",
+    "attempt": 12,
+    "parent_downforce_coefficient": 0.579818003757,
+    "candidates": [
+      {
+        "alpha": 1.0,
+        "accepted": false,
+        "reason": "gates_failed",
+        "bracket_ok": true,
+        "bracket_reason": "descent_sign_match",
+        "direction_inf_norm": 2.6710116959205443e-05,
+        "trial_downforce_coefficient": 0.579818274997,
+        "objective_improvement_gate": false,
+        "downforce_improvement_gate": false,
+        "projected_volume": 0.018000000000000002,
+        "mask_drift_max": 0.0
+      },
+      {
+        "alpha": 0.5,
+        "accepted": false,
+        "reason": "gates_failed",
+        "bracket_ok": true,
+        "bracket_reason": "descent_sign_match",
+        "direction_inf_norm": 2.7755575615628914e-17,
+        "trial_downforce_coefficient": 0.579818003757,
+        "objective_improvement_gate": false,
+        "downforce_improvement_gate": false,
+        "projected_volume": 0.018,
+        "mask_drift_max": 0.0
+      },
+      {
+        "alpha": 0.25,
+        "accepted": false,
+        "reason": "gates_failed",
+        "bracket_ok": false,
+        "bracket_reason": "not_a_descent_direction",
+        "direction_inf_norm": 1.734723475976807e-18,
+        "trial_downforce_coefficient": 0.579818003757,
+        "objective_improvement_gate": false,
+        "downforce_improvement_gate": false,
+        "projected_volume": 0.018,
+        "mask_drift_max": 0.0
+      },
+      {
+        "alpha": 0.125,
+        "accepted": false,
+        "reason": "gates_failed",
+        "bracket_ok": false,
+        "bracket_reason": "zero_direction",
+        "direction_inf_norm": 0.0,
+        "trial_downforce_coefficient": 0.579818003757,
+        "objective_improvement_gate": false,
+        "downforce_improvement_gate": false,
+        "projected_volume": 0.018,
+        "mask_drift_max": 0.0
+      },
+      {
+        "alpha": 0.0625,
+        "accepted": false,
+        "reason": "gates_failed",
+        "bracket_ok": false,
+        "bracket_reason": "not_a_descent_direction",
+        "direction_inf_norm": 2.7755575615628914e-17,
+        "trial_downforce_coefficient": 0.579818003757,
+        "objective_improvement_gate": false,
+        "downforce_improvement_gate": false,
+        "projected_volume": 0.018,
+        "mask_drift_max": 0.0
+      }
+    ]
+  },
+  "direct_solver_summary_refs_checked": 12,
+  "direct_solver_summary_hash_failures": 0,
+  "claims_supported": [
+    "three more b8 objective steps were accepted under v5",
+    "total b8 accepted count reached eleven",
+    "attempt 12 failed the registered objective improvement gate",
+    "b8 convergence window was not met"
+  ],
+  "claims_not_supported": [
+    "no b16 campaign result",
+    "no terminal independent evaluation",
+    "no proof of KKT stationarity",
+    "no Stage S readiness or grid-independent downforce claim"
+  ]
+}

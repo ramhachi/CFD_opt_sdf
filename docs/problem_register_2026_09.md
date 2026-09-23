@@ -148,6 +148,14 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 > terminal qualification and Stage S readiness remain unmeasured. See
 > `docs/evidence/pq3_3b_campaign_v4_outcome_2026_09.json` and
 > `docs/evidence/pq3_3b_bracket_recovery_v1_2026_09.json`.
+> The v5 continuation then accepted three additional b=8 steps (11 total)
+> before all alphas failed the registered improvement gate. Its three-step
+> objective stability window did not pass; b=16 and terminal evaluation were
+> not reached. The alpha=1 trial improvement was only `2.7124e-7` against
+> `1e-6`; smaller corrected updates were essentially zero. This may indicate
+> constrained stagnation or proposal cancellation, but it is not a KKT or
+> Stage S qualification. See
+> `docs/evidence/pq3_3b_campaign_v5_outcome_2026_09.json`.
 
 
 ### 症状
