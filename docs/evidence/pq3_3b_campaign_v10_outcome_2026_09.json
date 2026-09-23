@@ -1,0 +1,83 @@
+{
+  "checkpoint": {
+    "accepted_count": 150,
+    "index": 150,
+    "level_index": 0,
+    "rho_file_sha256": "15418a860996c10f4fa3276800743f870f9a2866e5331e52a19d2aff1bbd18fe",
+    "rho_sha256": "c4475f25e3db002c18310e031bf3b65010bb66fe9991a8d759b0dd05e98486d3",
+    "verified_chain": true
+  },
+  "claims_not_supported": [
+    "no convergence or stationarity certificate; the registered window governs",
+    "no terminal independent evaluation and no Stage S readiness"
+  ],
+  "claims_supported": [
+    "the accepted steps and the stopping attempt are recorded with their gate verdicts and projections",
+    "the final rho and the checkpoint chain are hash-verified"
+  ],
+  "convergence": {
+    "level_converged": false,
+    "min_accepted_iterations": 10,
+    "objective_delta_abs_max": 0.0001,
+    "reason": "the registered convergence window was not met before the policy stop",
+    "window_accepted": 3
+  },
+  "kind": "pq3_3b_campaign_v10_outcome",
+  "level_records": {
+    "level_3_b128_margin": {
+      "accepted_steps": 150,
+      "final_rho_sha256": "c4475f25e3db002c18310e031bf3b65010bb66fe9991a8d759b0dd05e98486d3",
+      "last_metrics": [
+        {
+          "objective_delta_abs": 0.0001787391099998814,
+          "projected_field_mean_abs_delta": 1.267962943117199e-05,
+          "projected_volume_delta_abs": 4.85722573273506e-16
+        },
+        {
+          "objective_delta_abs": 0.00011935063999990447,
+          "projected_field_mean_abs_delta": 8.554819408877132e-06,
+          "projected_volume_delta_abs": 5.551115123125783e-17
+        },
+        {
+          "objective_delta_abs": 0.00011834260999998847,
+          "projected_field_mean_abs_delta": 8.484515696059258e-06,
+          "projected_volume_delta_abs": 3.469446951953614e-16
+        }
+      ],
+      "last_trial_downforce": 3.29806896692,
+      "last_trial_objective": -3.29806896692,
+      "projected_volume_final": 0.07632566813424878,
+      "projected_volume_fraction_of_v_max": 0.9999999999999972,
+      "start_rho_sha256": "86a3f46db72eebdc64f3d9edcae4d0934c5ab441892615106da38940916496a8",
+      "stopping_attempt": {
+        "attempt": 150,
+        "candidates": [
+          {
+            "alpha": 1.0,
+            "corrected_update_inf_norm": 0.010000000000000009,
+            "phi_after": 0.07632566813424878,
+            "projected_volume_within_v_max": true,
+            "reason": "accepted",
+            "volume_cap_correction_applied": true,
+            "volume_cap_kappa": -0.9998732146510009
+          }
+        ],
+        "parent_downforce_coefficient": 3.29795062431
+      }
+    }
+  },
+  "manifest_sha256": "c32e1a6d7cd7495789c2cba97eb4cfa6a197d2ac5aeb82efeb9a5e95b7c1300b",
+  "output_directory": "work/pq3_3b_campaign_v10",
+  "output_hashes": {
+    "campaign_meta_json": "cf44b67a031690179a240864fa05fdf77e3c051ec342cd43a8511227c8584ed6",
+    "events_jsonl": "cd0a72ec7ffcbdef1eb2cfb5d1cf38e0861528bb8104a305e1a2b5aedd28fe52",
+    "latest_json": "12455c61941389c0d9ccfb4a6f99cb1360c31873eb9fb8ad98d5feb9db2f18a9"
+  },
+  "schema_version": 1,
+  "status": {
+    "level": "level_3_b128_margin",
+    "reason": "level_not_converged",
+    "status": "blocked"
+  },
+  "terminal": null
+}

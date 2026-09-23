@@ -58,7 +58,7 @@ def verify_preconditions(*, resume: bool = False, manifest_path: Path | None = N
     if ca.sha256_file(manifest_path) != sidecar:
         raise ValueError("campaign manifest sidecar mismatch")
     manifest = ca.load_json(manifest_path)
-    if manifest.get("schema_version") not in (5, 6, 7, 8, 9):
+    if manifest.get("schema_version") not in (5, 6, 7, 8, 9, 10):
         raise ValueError("campaign manifest schema mismatch")
     if "change_manifest_d2" in manifest and ca.sha256_file(D2_MANIFEST) != manifest["change_manifest_d2"]["sha256"]:
         raise ValueError("D2 change manifest hash mismatch")
