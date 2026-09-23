@@ -1,0 +1,147 @@
+{
+  "checkpoint": {
+    "accepted_count": 6,
+    "index": 1,
+    "level_index": 0,
+    "rho_file_sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b",
+    "rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+    "state_path": "checkpoints/state_0001.json",
+    "state_sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00",
+    "verified_chain": true
+  },
+  "claims_not_supported": [
+    "no convergence or stationarity certificate; the registered window governs",
+    "no terminal independent evaluation and no Stage S readiness"
+  ],
+  "claims_supported": [
+    "the accepted steps and the stopping attempt are recorded with their gate verdicts and projections",
+    "the final rho and the checkpoint chain are hash-verified"
+  ],
+  "convergence": {
+    "level_converged": false,
+    "min_accepted_iterations": 10,
+    "objective_delta_abs_max": 0.0001,
+    "reason": "the registered convergence window was not met before the policy stop",
+    "window_accepted": 3
+  },
+  "kind": "pq3_3b_campaign_v12_outcome",
+  "level_records": {
+    "level_3_b128_margin": {
+      "accepted_steps": 1,
+      "discreteness_field": "rho_projection",
+      "discreteness_mean_nd_final": 0.009736849917835135,
+      "discreteness_mean_nd_max": 0.01,
+      "discreteness_scope": "active",
+      "discreteness_within_limit": true,
+      "final_rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+      "last_metrics": [
+        {
+          "objective_delta_abs": 0.04601317799999993,
+          "projected_field_mean_abs_delta": 0.0005665540116682221,
+          "projected_volume_delta_abs": 0.0004987516851570756
+        }
+      ],
+      "last_trial_downforce": 2.32152697653,
+      "last_trial_objective": -2.32152697653,
+      "projected_volume_final": 0.0684122930544652,
+      "projected_volume_fraction_of_v_max": 0.8963209196431143,
+      "start_rho_sha256": "2347aff4d1d84a2463b974491836e19db910e72a98a302ec87173ab08c6c0630",
+      "stopping_attempt": {
+        "attempt": 2,
+        "candidates": [
+          {
+            "alpha": 1.0,
+            "corrected_update_inf_norm": 0.010000000000000009,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.031331786683283576,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009736849917835135,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.07632566813424897,
+            "projected_discreteness_within_limit": false,
+            "projected_volume_within_v_max": true,
+            "reason": "discreteness_limit_exceeded",
+            "volume_cap_correction_applied": true,
+            "volume_cap_kappa": -0.17429301088800753
+          },
+          {
+            "alpha": 0.5,
+            "corrected_update_inf_norm": 0.0050000000000000044,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.019189090835908806,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009736849917835135,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.07187149863342138,
+            "projected_discreteness_within_limit": false,
+            "projected_volume_within_v_max": true,
+            "reason": "discreteness_limit_exceeded",
+            "volume_cap_correction_applied": false,
+            "volume_cap_kappa": null
+          },
+          {
+            "alpha": 0.25,
+            "corrected_update_inf_norm": 0.0025000000000000022,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.013296856712714756,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009736849917835135,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.06977161265659206,
+            "projected_discreteness_within_limit": false,
+            "projected_volume_within_v_max": true,
+            "reason": "discreteness_limit_exceeded",
+            "volume_cap_correction_applied": false,
+            "volume_cap_kappa": null
+          },
+          {
+            "alpha": 0.125,
+            "corrected_update_inf_norm": 0.0012500000000000011,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.011281326496827724,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009736849917835135,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.06902136977928693,
+            "projected_discreteness_within_limit": false,
+            "projected_volume_within_v_max": true,
+            "reason": "discreteness_limit_exceeded",
+            "volume_cap_correction_applied": false,
+            "volume_cap_kappa": null
+          },
+          {
+            "alpha": 0.0625,
+            "corrected_update_inf_norm": 0.0006250000000000006,
+            "discreteness_field": "rho_projection",
+            "discreteness_mean_nd_candidate": 0.010456924486625437,
+            "discreteness_mean_nd_max": 0.01,
+            "discreteness_mean_nd_parent": 0.009736849917835135,
+            "discreteness_scope": "transform.active",
+            "phi_after": 0.06870145699061937,
+            "projected_discreteness_within_limit": false,
+            "projected_volume_within_v_max": true,
+            "reason": "discreteness_limit_exceeded",
+            "volume_cap_correction_applied": false,
+            "volume_cap_kappa": null
+          }
+        ],
+        "parent_downforce_coefficient": 2.32152697653
+      }
+    }
+  },
+  "manifest_sha256": "acf62c6f13f7346cf6022e0b215cdcef3c40880fccb1ca15b57bd7f757d5157f",
+  "output_directory": "work/pq3_3b_campaign_v12",
+  "output_hashes": {
+    "campaign_meta_json": "04c3b0b0fb74084586794529fe5e7e34307bdf692db5182b6d8c283d68cf7291",
+    "events_jsonl": "d95c654402ad8bfe71e69a019c0f62daed4ce15591b4c4059ef14e2f87049f30",
+    "latest_json": "4e97616e8b49f3ae5c09f0c289a987c9a7e810ee6e9c5532bc6c5ac64ed5f9d6"
+  },
+  "schema_version": 1,
+  "status": {
+    "level": "level_3_b128_margin",
+    "measured_stop_cause": "no_discreteness_feasible_registered_alpha",
+    "reason": "objective_rejected",
+    "status": "blocked"
+  },
+  "terminal": null
+}

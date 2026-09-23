@@ -1,0 +1,171 @@
+{
+  "alpha_ladder": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625
+  ],
+  "change": {
+    "does_not_relax": [
+      "mean_nd <= 0.01",
+      "projected volume <= Vmax",
+      "Path B, real-primal response, occupancy, mask, or move-box gates"
+    ],
+    "id": "raw-gradient-projected-to-discreteness-tangent",
+    "reason": "v12 checkpoint 1 remains inside mean_nd <= 0.01, but every registered sign-step alpha increases mean_nd above the bound"
+  },
+  "claims_not_supported": [
+    "registration and transform feasibility do not establish a real-primal improvement",
+    "v13 does not register or start a long campaign",
+    "one preflight step cannot establish convergence or Stage S readiness",
+    "the result is not grid-independent or target-physics evidence"
+  ],
+  "direction_audit": {
+    "path": "docs/evidence/pq3_3b_v13_direction_audit_2026_09.json",
+    "sha256": "b2338298ad263fb5d9f02ffa3c1173ea59667777a1588cf250ea4378e9bfa2e1"
+  },
+  "direction_policy": {
+    "discreteness_gradient": "gD = pullback_from_projected(4*(1-2*rho_projection)/Nactive)",
+    "freeze_exact_box_faces": true,
+    "id": "objective-gradient-discreteness-projected-v1",
+    "module": "src/cfd_sdf/phase2_discreteness_direction.py",
+    "normalization": "d = d / ||d||_inf after mask and box-face freeze",
+    "objective_direction": "d0 = -gJ on free active cells",
+    "projection": "if gD dot d0 > 0: d = d0 - (gD dot d0 / ||gD_free||^2) gD_free"
+  },
+  "entry_preflight": {
+    "artifact_path": "docs/evidence/pq3_3b_v13_entry_preflight_2026_09.json",
+    "bounded_calls": "reuse one cached parent/adjoint; first transform-feasible candidate only: one centered Path B pair and at most one fresh candidate primal",
+    "output_directory": "work/pq3_3b_v13_entry_preflight",
+    "script_path": "scripts/pq3_3b_v13_entry_preflight_2026_09.py",
+    "script_sha256": "47624286a314c400cd21d48890f23ff8a265d53c570ec239f364291d762fb25e"
+  },
+  "filter_radius_m": 0.15,
+  "gates": {
+    "discreteness_field": "rho_projection",
+    "discreteness_mean_nd_max": 0.01,
+    "discreteness_metric": "mean(4*rho*(1-rho))",
+    "discreteness_scope": "active",
+    "extractability_fraction": 0.5,
+    "extractability_thresholds": [
+      0.4,
+      0.5
+    ],
+    "min_corrected_update_inf_norm": 1e-08,
+    "v_max_projected": 0.07632566813424899
+  },
+  "immutable": true,
+  "input_stop_state": {
+    "accepted_count": 6,
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b",
+    "rho_path": "work/pq3_3b_campaign_v12/checkpoints/rho_0001.npy",
+    "rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+    "source": "v12 accepted checkpoint 1 immediately before objective_rejected",
+    "state_path": "work/pq3_3b_campaign_v12/checkpoints/state_0001.json",
+    "state_sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00"
+  },
+  "kind": "pq3_3b_v13_discriminant_manifest",
+  "level": {
+    "b": 128.0,
+    "move_limit": 0.01,
+    "name": "level_3_b128_margin",
+    "q": 100.0
+  },
+  "long_campaign_registered": false,
+  "margin_mask": {
+    "density_vti": "work/pq3_3b_margin_masks/density.vti",
+    "density_vti_sha256": "8ec38505a742a136c992f145b38fdfae1a83bb90f745c7dde8843a687160a589",
+    "profile_margin_m": 0.25,
+    "rule": "allowed_mask = original allowed_mask AND |y_center| <= 0.475",
+    "state": "work/pq3_3b_margin_masks/topology_state.json",
+    "state_sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444",
+    "surface_reach_bound_m": 0.5
+  },
+  "noise_thresholds": {
+    "downforce": 1e-06,
+    "objective": 1e-06
+  },
+  "objective": {
+    "canonical": "J = -downforce",
+    "sense": "maximize",
+    "sense_sign": -1
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "path_b": {
+    "epsilon": 0.0008,
+    "noise_floor_abs": 1e-06,
+    "requires_centered_pair": true
+  },
+  "pinned_inputs": {
+    "v12_cached_parent_summary": {
+      "path": "work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case/fixed_grid_primal_summary.json",
+      "sha256": "4b1b6a1848ec3d8026aac4988dee22432c882647d91a87f446f8bd345f648617"
+    },
+    "v12_campaign_meta": {
+      "path": "work/pq3_3b_campaign_v12/campaign_meta.json",
+      "sha256": "04c3b0b0fb74084586794529fe5e7e34307bdf692db5182b6d8c283d68cf7291"
+    },
+    "v12_checkpoint_rho": {
+      "path": "work/pq3_3b_campaign_v12/checkpoints/rho_0001.npy",
+      "sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b"
+    },
+    "v12_checkpoint_state": {
+      "path": "work/pq3_3b_campaign_v12/checkpoints/state_0001.json",
+      "sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00"
+    },
+    "v12_events": {
+      "path": "work/pq3_3b_campaign_v12/events.jsonl",
+      "sha256": "d95c654402ad8bfe71e69a019c0f62daed4ce15591b4c4059ef14e2f87049f30"
+    },
+    "v12_manifest": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v12_2026_09.json",
+      "sha256": "acf62c6f13f7346cf6022e0b215cdcef3c40880fccb1ca15b57bd7f757d5157f"
+    },
+    "v12_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v12_outcome_2026_09.json",
+      "sha256": "6475a8e12d8ea0fb1ca1357fbd3119a0eb252f4e36cadf72026015ec0525ef85"
+    },
+    "v13_direction_audit_script": {
+      "path": "scripts/pq3_3b_v13_direction_audit_2026_09.py",
+      "sha256": "cc1cfff1ec231aa1df4d5887f66812c852200c43e114af164e2418e10b1eedfb"
+    }
+  },
+  "projection_eta": 0.5,
+  "registered_inputs": {
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "noise_calibration": {
+      "path": "docs/evidence/pq3_3b_noise_calibration_v3_2026_09.json",
+      "sha256": "3439b291a261ca0086fc259fe9703bd52c8525d032aa53b7cbffc9441374ab3b"
+    },
+    "problem_spec": {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "solver_controls": {
+      "path": "work/df2_fd_refresh/template_frozen/system",
+      "sha256": "ab9a1979361ac26058c9da190e94aa85500f8ff8b48770dd67aad26e3ae63b9b"
+    },
+    "source_grid": {
+      "path": "work/df2_fd_refresh/source_state/provenance.json",
+      "sha256": "04ab53dbce816fbac6794285c09a70dced56a137a5e695315fb2018ec565a9e4"
+    },
+    "template_parent": {
+      "path": "work/df2_fd_refresh/template_frozen",
+      "sha256": "4cd0431d38f985ddc79a3afd45c60f379ff89fc8f30977e6c8b86b53d0448f46"
+    },
+    "template_trial": {
+      "path": "work/pq0_2_smoke/template_trial",
+      "sha256": "87a501c077ed33d9d23bc2b7a1c05314a6b99297b5d47c929a924334d8e45cdf"
+    }
+  },
+  "schema_version": 1,
+  "scope": "one_step_preflight_only",
+  "source_tree_python_sha256": "0535ba8d9dbf45436c0ad14946814e6527db666db2f2aac0826cdbc713560a97",
+  "status": "registered_preflight_pending"
+}

@@ -798,6 +798,25 @@ Execute in this order:
    registered v12 campaign without relaxing the bound; then rerun the full
    PQ4.1 threshold sweep on its independent terminal candidate. Stage S may
    start only if that new composite gate returns `ready_for_stage_s=true`.
+
+   **V12 result and v13 direction discriminant (2026-09-23):** v12 accepted
+   one new sign step (`DF 2.27551379853 -> 2.32152697653`) while preserving
+   `mean_nd=0.00973685`, then stopped fail-closed because every registered
+   sign-step alpha exceeded 0.01
+   ([`evidence/pq3_3b_campaign_v12_outcome_2026_09.json`](evidence/pq3_3b_campaign_v12_outcome_2026_09.json)).
+   This is neither convergence nor proof that all feasible directions are
+   exhausted. A bounded v13 discriminant instead projects the raw objective
+   gradient onto the linearized active discreteness tangent in design space.
+   Its solver-free audit selected alpha 1.0 at `mean_nd=0.00975157` and
+   projected volume 0.0689811; the registered one-step OpenFOAM preflight then
+   passed Path B (`d_adj=-13.4884`, `d_fd=-13.4887`) and improved downforce to
+   2.45647595951
+   ([`evidence/pq3_3b_v13_entry_preflight_2026_09.json`](evidence/pq3_3b_v13_entry_preflight_2026_09.json)).
+   The next step is a short immutable learning campaign using this direction,
+   capped at ten new accepted attempts. If projected volume reaches Vmax, a
+   separate volume-tangent change must be registered; the discreteness bound
+   must not be relaxed. A passing short campaign still requires a fresh PQ4.1
+   composite gate before Stage S.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

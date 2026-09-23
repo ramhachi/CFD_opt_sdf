@@ -881,3 +881,22 @@ repair that unrelated documentation mismatch.
 - Next execution order: run the immutable v12 campaign unchanged, perform its
   independent terminal repeat, then run a new PQ4.1 composite threshold sweep.
   Stage S remains blocked unless that sweep returns `ready_for_stage_s=true`.
+
+## 2026-09-23: v12 stop and v13 constrained-direction pass
+
+- V12 accepted one alpha=0.125 sign step, reaching downforce 2.32152697653,
+  projected volume 0.0684122931 and `mean_nd 0.0097368499`. The next attempt
+  rejected every registered alpha before CFD because all exceeded 0.01. The
+  sealed outcome records one new step, cumulative accepted count 6, no
+  convergence and no terminal repeat.
+- V13 uses `gD = pullback_from_projected(4*(1-2*rho_projection)/Nactive)` and
+  projects the raw objective descent direction onto the free-cell linearized
+  D tangent. The solver-free candidate at alpha 1.0 has `mean_nd 0.0097515674`,
+  volume 0.0689810584 and predicted `delta J=-0.13488385`.
+- The bounded OpenFOAM discriminant passes: `d_adj=-13.4883853`,
+  `d_fd=-13.4886897`, fresh candidate downforce 2.45647595951, and all
+  transform/response gates true. It starts no campaign.
+- Next execution order: integrate the v13-qualified direction into a short
+  immutable campaign capped at ten new accepted attempts. Stop and register a
+  separate constraint change if volume becomes active. Then run PQ4.1 on a
+  terminal candidate; Stage S remains blocked until its full composite pass.

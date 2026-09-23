@@ -47,6 +47,15 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > alpha 0.125 passes at `mean_nd 0.00973685`. P2 remains open until a complete
 > v12 terminal candidate also passes PQ4.1; one feasible step is not evidence
 > of extractable geometry or Stage S readiness.
+>
+> **2026-09-23 v12/v13 result:** v12 preserved the new bound for one accepted
+> step, then every registered sign-step alpha violated it; this was a direction
+> and ladder failure, not convergence. A projected raw-gradient direction on
+> the local discreteness tangent passed the v13 real-OpenFOAM one-step
+> discriminant, improving downforce from `2.32152697653` to `2.45647595951`
+> while keeping `mean_nd=0.00975157`. P2 remains open until this behavior is
+> sustained and the resulting terminal geometry passes the complete PQ4.1
+> extraction/handoff gate.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |

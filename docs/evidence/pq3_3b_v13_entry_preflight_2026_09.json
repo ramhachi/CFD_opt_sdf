@@ -1,0 +1,216 @@
+{
+  "claims_not_supported": [
+    "one preflight step does not establish convergence or Stage S readiness",
+    "the v13 discriminant does not register or start a long campaign",
+    "the result is not grid-independent or target-physics evidence"
+  ],
+  "claims_supported": [
+    "the v12 parent and adjoint were reused for the exact checkpoint-1 design",
+    "only the first transform-feasible direction may consume Path B and one candidate primal"
+  ],
+  "direction": {
+    "active_cells": 14400,
+    "direction_inf_norm": 1.0,
+    "direction_sha256": "ccb66f43c5bcef64c9b734703c5e5b268b01c30bca5fbea0e451b76910739cf0",
+    "discreteness_gradient_sha256": "d1604f7a17bb49429933e3bc5ff8d7f48eb5fab0216dd9bf2a632523880da553",
+    "free_cells": 4558,
+    "frozen_box_face_cells": 9842,
+    "g_discreteness_dot_d0": 0.016564361675213808,
+    "g_discreteness_dot_direction": -5.637851296924623e-18,
+    "g_objective_dot_direction": -13.488385284830994,
+    "objective_gradient_sha256": "d57bf4523aec665beee71160112f0bcd8c75c243d5dbda078048ad68e26f5f8f",
+    "policy_id": "objective-gradient-discreteness-projected-v1",
+    "projection_applied": true,
+    "projection_coefficient": 15.23433206635282
+  },
+  "direction_audit": {
+    "path": "docs/evidence/pq3_3b_v13_direction_audit_2026_09.json",
+    "sha256": "b2338298ad263fb5d9f02ffa3c1173ea59667777a1588cf250ea4378e9bfa2e1"
+  },
+  "input_stop_state": {
+    "accepted_count": 6,
+    "level": "level_3_b128_margin",
+    "rho_file_sha256": "f07854a725d528bc9bef0025ce7d2a6f4a02a46e6f5fef8884286183679e668b",
+    "rho_path": "work/pq3_3b_campaign_v12/checkpoints/rho_0001.npy",
+    "rho_sha256": "c0441ff5551c7e4cb95ee1d34040f4c3e04f885c5f317a80f79408867ba4a7ac",
+    "source": "v12 accepted checkpoint 1 immediately before objective_rejected",
+    "state_path": "work/pq3_3b_campaign_v12/checkpoints/state_0001.json",
+    "state_sha256": "76d73e8e13b0d667f590de2869c68ee11a58aa362518589ca5de87af800c3f00"
+  },
+  "kind": "pq3_3b_v13_entry_preflight",
+  "manifest": {
+    "path": "docs/evidence/pq3_3b_v13_discriminant_manifest_2026_09.json",
+    "sha256": "2f7214b0c679651d53412e24443846c3dc940a80ef9ee7504051c6b77cf26735"
+  },
+  "parent_run": {
+    "adjoint_iterations": 797,
+    "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case",
+    "downforce_coefficient": 2.32152697653,
+    "primal_iterations": 105,
+    "reused": true,
+    "solver_status": "converged",
+    "source_rho_sha256": "d4dfdd7b3833635a7defd9d982dafcd6c43d18c707e4495eaa6b63ebb484b003",
+    "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case/fixed_grid_primal_summary.json",
+    "summary_sha256": "4b1b6a1848ec3d8026aac4988dee22432c882647d91a87f446f8bd345f648617"
+  },
+  "schema_version": 1,
+  "stage": {
+    "parent_run": {
+      "adjoint_iterations": 797,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case",
+      "downforce_coefficient": 2.32152697653,
+      "primal_iterations": 105,
+      "reused": true,
+      "solver_status": "converged",
+      "source_rho_sha256": "d4dfdd7b3833635a7defd9d982dafcd6c43d18c707e4495eaa6b63ebb484b003",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_campaign_v12/runs/parent_3603a5b04721/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "4b1b6a1848ec3d8026aac4988dee22432c882647d91a87f446f8bd345f648617"
+    },
+    "pass": true,
+    "path_b": {
+      "d_adj": -13.488385284830983,
+      "d_fd": -13.488689725000002,
+      "details": {
+        "difference": 0.021581903560000004,
+        "noise_floor_abs": 1e-06
+      },
+      "direction_inf_norm": 0.010000000000000009,
+      "epsilon": 0.0008,
+      "minus_objective": -2.31081828519,
+      "minus_rho_sha256": "4f7c4ab9fa794970104f2b6658d25e9e45790024450072fa142f3124e7b5654c",
+      "ok": true,
+      "plus_objective": -2.33240018875,
+      "plus_rho_sha256": "801eca90f1ce4d05bb57985e2cb46ff9625217f96ba69a004b8bfabd84f51c40",
+      "reason": "descent_sign_match"
+    },
+    "response_gates": {
+      "canonical_objective_improved": true,
+      "path_b_pass": true,
+      "raw_downforce_improved": true,
+      "trial_primal_converged": true
+    },
+    "selected_alpha": 1.0,
+    "selected_rho_sha256": "9f6043f54a0c400eb45ca0929a6d38c63049796faf4b719fa7dcab3af816e66a",
+    "solver_call_counts": {
+      "cached_parent_reused": 1,
+      "candidate_primal": 1,
+      "fresh_parent_or_adjoint": 0,
+      "path_b_primal": 2
+    },
+    "transform_candidates": [
+      {
+        "alpha": 1.0,
+        "gates": {
+          "corrected_update_above_machine_scale": true,
+          "extractability_guard": true,
+          "mask_invariance": true,
+          "move_box_respected": true,
+          "projected_discreteness_within_limit": true,
+          "projected_volume_within_v_max": true
+        },
+        "metrics": {
+          "corrected_update_inf_norm": 0.010000000000000009,
+          "discreteness_mean_nd_candidate": 0.00975156741154786,
+          "discreteness_mean_nd_parent": 0.009736849917835135,
+          "mask_drift_max": 0.0,
+          "move_box_violation_max": 0.0,
+          "occupancy_candidate": {
+            "cells_gt_0.3": 986,
+            "cells_gt_0.4": 980,
+            "cells_gt_0.5": 974,
+            "cells_gt_0.6": 972,
+            "fraction_gt_0.3": 0.06847222222222223,
+            "fraction_gt_0.4": 0.06805555555555555,
+            "fraction_gt_0.5": 0.06763888888888889,
+            "fraction_gt_0.6": 0.0675,
+            "total_active": 14400
+          },
+          "occupancy_parent": {
+            "cells_gt_0.3": 980,
+            "cells_gt_0.4": 976,
+            "cells_gt_0.5": 968,
+            "cells_gt_0.6": 960,
+            "fraction_gt_0.3": 0.06805555555555555,
+            "fraction_gt_0.4": 0.06777777777777778,
+            "fraction_gt_0.5": 0.06722222222222222,
+            "fraction_gt_0.6": 0.06666666666666667,
+            "total_active": 14400
+          },
+          "projected_field_max_abs_delta": 0.32441930608325587,
+          "projected_field_mean_abs_delta": 0.0007122095907717875,
+          "projected_volume_candidate": 0.06898105838510744,
+          "projected_volume_parent": 0.0684122930544652
+        },
+        "rho_sha256": "9f6043f54a0c400eb45ca0929a6d38c63049796faf4b719fa7dcab3af816e66a",
+        "transform_feasible": true
+      }
+    ],
+    "trial_downforce": 2.45647595951,
+    "trial_objective": -2.45647595951,
+    "trial_run": {
+      "adjoint_iterations": null,
+      "case_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v13_entry_preflight/runs/trial_0306c915ce00/case",
+      "downforce_coefficient": 2.45647595951,
+      "primal_iterations": 106,
+      "reused": false,
+      "solver_status": "converged",
+      "source_rho_sha256": "1f06c7efdbc515e0b6b52b64edf294aa05916ebe3e5cf3fb08082926f748804e",
+      "summary_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq3_3b_v13_entry_preflight/runs/trial_0306c915ce00/case/fixed_grid_primal_summary.json",
+      "summary_sha256": "935a573ac4bd58ecc06bc59107d591ec48d22aba9dc86c48b13ba76ce06a44b3"
+    }
+  },
+  "summary": {
+    "cached_parent_reused": true,
+    "entry_preflight_pass": true,
+    "long_campaign_registered": false,
+    "long_campaign_started": false
+  },
+  "transform_candidates": [
+    {
+      "alpha": 1.0,
+      "gates": {
+        "corrected_update_above_machine_scale": true,
+        "extractability_guard": true,
+        "mask_invariance": true,
+        "move_box_respected": true,
+        "projected_discreteness_within_limit": true,
+        "projected_volume_within_v_max": true
+      },
+      "metrics": {
+        "corrected_update_inf_norm": 0.010000000000000009,
+        "discreteness_mean_nd_candidate": 0.00975156741154786,
+        "discreteness_mean_nd_parent": 0.009736849917835135,
+        "mask_drift_max": 0.0,
+        "move_box_violation_max": 0.0,
+        "occupancy_candidate": {
+          "cells_gt_0.3": 986,
+          "cells_gt_0.4": 980,
+          "cells_gt_0.5": 974,
+          "cells_gt_0.6": 972,
+          "fraction_gt_0.3": 0.06847222222222223,
+          "fraction_gt_0.4": 0.06805555555555555,
+          "fraction_gt_0.5": 0.06763888888888889,
+          "fraction_gt_0.6": 0.0675,
+          "total_active": 14400
+        },
+        "occupancy_parent": {
+          "cells_gt_0.3": 980,
+          "cells_gt_0.4": 976,
+          "cells_gt_0.5": 968,
+          "cells_gt_0.6": 960,
+          "fraction_gt_0.3": 0.06805555555555555,
+          "fraction_gt_0.4": 0.06777777777777778,
+          "fraction_gt_0.5": 0.06722222222222222,
+          "fraction_gt_0.6": 0.06666666666666667,
+          "total_active": 14400
+        },
+        "projected_field_max_abs_delta": 0.32441930608325587,
+        "projected_field_mean_abs_delta": 0.0007122095907717875,
+        "projected_volume_candidate": 0.06898105838510744,
+        "projected_volume_parent": 0.0684122930544652
+      },
+      "rho_sha256": "9f6043f54a0c400eb45ca0929a6d38c63049796faf4b719fa7dcab3af816e66a",
+      "transform_feasible": true
+    }
+  ]
+}
