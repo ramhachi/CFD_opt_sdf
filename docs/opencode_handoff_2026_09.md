@@ -1296,3 +1296,24 @@ repair that unrelated documentation mismatch.
   control-point displacement with inf-norm epsilon, `moveMesh`, moved-mesh
   hash, geometry/clearance/checkMesh qualification, no `simpleFoam`) and all
   32 pair-side preflights.
+
+## 2026-09-25: Slice B — morpher perturbation sides (32/32 pass)
+
+- `volumetricBSplinesMotionSolver` applies a control-point *movement*
+  (`setControlPointsMovement`) that plain `moveMesh` never sets; the repository
+  now carries `openfoam_utils/moveControlPoints` (compiled once into
+  `work/stage_s_work_f_v1/tools/moveControlPoints`, binary SHA-256
+  `976677902709c315ee5edaefa6a382e0f050a56f10ba19c0683edd1bd2d5b39e`) which
+  applies the prescribed movement through the registered morpher and writes the
+  moved mesh at time 0.
+- `docs/evidence/stage_s_work_f_perturbation_sides_2026_09.json` (SHA-256
+  `01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db`):
+  all 32 direction/epsilon/sign sides pass — exact inf-norm movement, moved
+  surface watertight/manifold/non-self-intersecting, volume change
+  `<= 0.14%`, minimum solid width `0.05 m`, clearance preflight pass,
+  registered checkMesh profile pass (concave `0.06101..0.06128`), outer-patch
+  displacement exactly `0.0`, 39,848 cells on every side.
+- `all_sides_pass=true`, `primal_campaign_allowed=true`, `solver_started=false`.
+- Next: Slice C — run the 32 perturbation primals sequentially (both responses
+  per run), verify residual and stationarity gates per side, and compute the
+  centered FD `(R(+eps) - R(-eps)) / (2 eps)` per response.

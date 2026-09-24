@@ -1096,10 +1096,29 @@ Execute in this order:
    unit-infinity-norm vectors with hashes in
    [`evidence/stage_s_work_f_adjoint_qualification_2026_09.json`](evidence/stage_s_work_f_adjoint_qualification_2026_09.json)
    (SHA-256 `f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606`).
-   `perturbation_allowed=true`, `shape_update_allowed=false`. Next slice
-   (Slice B): the morpher-only perturbation runner and the 32 pair-side
-   geometry/mesh preflights; the shared centered-FD primal catalog (Slice C)
-   starts only after all 32 sides pass.
+   `perturbation_allowed=true`, `shape_update_allowed=false`.
+
+   **Work F perturbation sides (Slice B, 2026-09-25):** the registered
+   B-spline movement path is implemented and verified. Because
+   ``volumetricBSplinesMotionSolver`` consumes a *control-point movement*
+   (``setControlPointsMovement``) that plain ``moveMesh`` never sets, the
+   repository now carries a small OpenFOAM utility
+   ([`openfoam_utils/moveControlPoints`](../openfoam_utils/moveControlPoints))
+   that applies the prescribed movement through the registered morpher and
+   writes the moved mesh. For every registered direction/epsilon/sign pair the
+   runner copies the qualified V1 baseline, writes the exact inf-norm
+   `epsilon` control-point movement, applies the morpher, and runs
+   `checkMesh`: all **32 sides pass** the pair-side gates (moved surface
+   watertight/manifold/non-self-intersecting, volume change `<= 0.14%`,
+   minimum solid width `0.05 m`, clearance preflight, registered checkMesh
+   profile `concave <= 0.06128`, outer-patch displacement exactly `0.0`).
+   Evidence
+   ([`evidence/stage_s_work_f_perturbation_sides_2026_09.json`](evidence/stage_s_work_f_perturbation_sides_2026_09.json),
+   SHA-256 `01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db`)
+   records `all_sides_pass=true`, `primal_campaign_allowed=true`,
+   `solver_started=false`. Next slice (Slice C): run the 32 shared perturbation
+   primals sequentially, read both `Cd` and downforce from each run, and
+   compute the centered FD per response.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
