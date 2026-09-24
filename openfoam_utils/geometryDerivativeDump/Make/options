@@ -1,0 +1,14 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(LIB_SRC)/sampling/lnInclude \
+    -I$(WM_PROJECT_DIR)/src/optimisation/adjointOptimisation/adjoint/lnInclude
+
+EXE_LIBS = \
+    -ladjointOptimisation \
+    -lfiniteVolume \
+    -lmeshTools \
+    -ldynamicMesh \
+    -lsampling \
+    -lOpenFOAM

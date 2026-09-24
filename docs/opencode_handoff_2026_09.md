@@ -1424,3 +1424,33 @@ repair that unrelated documentation mismatch.
 - Next: D4.2 B-spline geometry-Jacobian audit (solver-free). D4.3 ablations and
   D5-D7 remain conditional; `derivative_qualified=false` and
   `shape_update_allowed=false` stand.
+
+## 2026-09-25: D4.2 B-spline geometry-Jacobian audit - pass
+
+- Manifest `docs/evidence/stage_s_work_f_geometry_jacobian_manifest_2026_09.json`
+  (SHA-256 `14f2cbe3b0c55a2b2dff9a156a579190d48af4abb4fe4be022109c493ef33a25`)
+  binds the D4.0 manifest, the 32 pass sides with moved-point hashes, the base
+  and dynamicMeshDict hashes, the read-only dump utility source and the
+  per-quantity tolerances.
+- Read-only utility `openfoam_utils/geometryDerivativeDump/` (binary SHA-256
+  `94636d030548e90f15016ab5a6eb76b9057a0dfa0b46621d40216d8dd6993053`)
+  contracts the OpenFOAM analytic `dxdbFace`, `dSdb` and `dndb` tensors with
+  the registered direction weights; the mesh is never moved and no field is
+  written.
+- As-run artifact (tight tolerances at every epsilon) preserved at
+  `docs/evidence/stage_s_work_f_geometry_jacobian_audit_all_epsilon_2026_09.json`
+  (SHA-256 `e184b18aac1f5ec43df086f73dc885feb8494be759c03ac6d3a25569aa15ee72`).
+- Corrected audit `docs/evidence/stage_s_work_f_geometry_jacobian_audit_2026_09.json`
+  (SHA-256 `5e3619a8686a96f325f877555b67546e1518977ef4a8f85fccd421fe176b0954`)
+  applies the tight per-face gates at the registered comparison epsilon
+  `1e-3` and the L2/plateau gates across the four epsilons; no tolerance or
+  diagnostic value changed.
+- Results: L2 ratios `1 +/- 2e-5`, cosines `~1`, plateau pass, non-design
+  patch inside-counts zero, outside-patch movement exactly `0.0`, topology
+  and base points identical. The per-face max error scales as `1/epsilon`:
+  `max_error * 2*epsilon` is constant at `~1.1e-8` (Cf), `~7e-10` (Sf),
+  `~1.3e-6` (n), i.e. limited by the 8-significant-digit ASCII write
+  precision, not by the chain rule.
+- Conclusion: the B-spline geometry chain rule is not the cause of the Work F
+  derivative mismatch. D4.3 adjoint-option ablation is allowed; D5-D7 remain
+  conditional; `derivative_qualified=false` and `shape_update_allowed=false`.
