@@ -1363,3 +1363,29 @@ repair that unrelated documentation mismatch.
   cause. Next: D3 bounded discretization diagnostic (`linearUpwind` factor,
   one registered middle epsilon, 3 directions, 6 primals plus base/adjoint
   lineage). The original verdict and thresholds are unchanged.
+
+## 2026-09-25: D3 bounded discretization diagnostic — mixed, not the sole cause
+
+- Manifest `docs/evidence/stage_s_work_f_discretization_diagnostic_manifest_2026_09.json`
+  (SA-256 `5bd182f3...`), preflight
+  `docs/evidence/stage_s_work_f_discretization_diagnostic_preflight_2026_09.json`
+  (only `div(phi,U)` changed to `bounded Gauss linearUpwind grad(U)`), evidence
+  `docs/evidence/stage_s_work_f_discretization_diagnostic_2026_09.json`
+  (SHA-256 `f3a85709817aa67d4fee8123d84d524784b403fd944702211c1677af878e67b6`).
+- Base primal, both adjoints and all six sides pass. The scheme shifts the
+  baseline strongly: Cd `2.5234 -> 2.2333`, downforce `1.6908 -> 1.6659`.
+- Ratios at epsilon `5e-4` (upwind -> linearUpwind): downforce
+  `downforce_gradient_aligned` `1.0409 -> 1.0418`; downforce `random_seed_11`
+  `1.0857 -> 1.0432` (fail -> pass); downforce `random_seed_2026`
+  `0.8796 -> 1.0336` (fail -> pass); drag `downforce_gradient_aligned`
+  `1.0266 -> 1.0070`; drag `random_seed_11` `1.0376 -> 0.8521` (pass -> fail);
+  drag `random_seed_2026` `1.4592 -> 1.2608` (still fail).
+- The plan's condition "failing directions approach one and controls do not
+  worsen" is not met (`n_improved_across_the_gate=2`, `n_worsened_controls=1`),
+  so `supports_discretization_cause=false`: discretization is a contributing
+  factor, not the sole cause. The direction-dependent residual points to the
+  continuous-adjoint formulation / surface weighting / morpher chain-rule
+  terms.
+- No D4 requalification and no D5 shape step; the derivative remains
+  unqualified and `shape_update_allowed=false`. The original verdict and
+  thresholds are unchanged.

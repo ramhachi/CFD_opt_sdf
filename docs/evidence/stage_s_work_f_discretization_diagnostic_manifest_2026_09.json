@@ -1,0 +1,50 @@
+{
+  "claims_not_supported": [
+    "this bounded diagnostic does not qualify the surface derivative"
+  ],
+  "diagnostic_only": true,
+  "directions": [
+    "downforce_gradient_aligned",
+    "random_seed_11",
+    "random_seed_2026"
+  ],
+  "epsilon_m": 0.0005,
+  "factor": {
+    "baseline": "div(phi,U) bounded Gauss upwind;",
+    "name": "div(phi,U)",
+    "treatment": "div(phi,U) bounded Gauss linearUpwind grad(U);"
+  },
+  "gates": {
+    "adjoint": "both adjoint solvers converge and write their derivative files",
+    "base_primal": "registered residualControl and force-stationarity profile",
+    "isolation": "only the primal div(phi,U) scheme differs from the original lineage",
+    "sides": "six perturbation sides pass geometry, clearance, checkMesh and primal gates"
+  },
+  "hypothesis": "the first-order upwind primal discretization behind the continuous adjoint carries direction-dependent error; a second-order primal scheme moves the failing ratio toward one without degrading the controls",
+  "inputs": {
+    "catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "qualification": {
+      "path": "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json",
+      "sha256": "f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606"
+    },
+    "result": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json",
+      "sha256": "048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee"
+    },
+    "work_f_manifest": {
+      "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+      "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+    }
+  },
+  "kind": "stage_s_work_f_discretization_diagnostic_manifest",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "stop_conditions": [
+    "a failed base or adjoint gate stops the diagnostic; the scheme is not adopted",
+    "one result never qualifies the derivative or authorizes a shape update",
+    "no epsilon, direction or tolerance change after the result"
+  ]
+}

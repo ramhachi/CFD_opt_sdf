@@ -1,0 +1,60 @@
+{
+  "adjoint_structural": {
+    "checks": {
+      "adjoint_fv_schemes": true,
+      "adjoint_fv_solution": true,
+      "adjoint_ras_laminar": true,
+      "adjoint_solver_type": true,
+      "boundary_control_points_confined": true,
+      "control_points_axis_aligned": true,
+      "downforce_direction": true,
+      "downforce_patches": true,
+      "downforce_reference": true,
+      "downforce_solver_block": true,
+      "drag_direction": true,
+      "drag_patches": true,
+      "drag_reference": true,
+      "drag_solver_block": true,
+      "mesh_morpher": true,
+      "optimisation_manager_single_run": true,
+      "pa_inflow_zero_gradient": true,
+      "pa_outflow_far_field": true,
+      "pa_walls_zero_gradient": true,
+      "primal_solver_simple": true,
+      "shape_parameterization": true,
+      "symmetry_patches": true,
+      "ua_inflow_adjoint_inlet": true,
+      "ua_outflow_adjoint_outlet": true,
+      "ua_walls_adjoint_wall": true
+    },
+    "failed_checks": [],
+    "pass": true
+  },
+  "baseline_fv_schemes_sha256": "aaf8a02b7e65dae5e7a009509546cebd472caeebf65aff4f69e3b6cef96f3a2e",
+  "claims_not_supported": [
+    "no solver has run; this is a structural preflight only"
+  ],
+  "kind": "stage_s_work_f_discretization_diagnostic_preflight",
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_discretization_diagnostic_manifest_2026_09.json",
+    "sha256": "5bd182f37080d44be77f7347b33a17d5f94922d26afc65b7497538437fa15d2e"
+  },
+  "schema_version": 1,
+  "scheme": {
+    "baseline": "div(phi,U) bounded Gauss upwind;",
+    "changed_lines": [
+      "    div(phi,U) bounded Gauss linearUpwind grad(U);"
+    ],
+    "only_div_phi_U_changed": true,
+    "removed_lines": [
+      "    div(phi,U) bounded Gauss upwind;"
+    ],
+    "treatment": "div(phi,U) bounded Gauss linearUpwind grad(U);"
+  },
+  "summary": {
+    "diagnostic_allowed": true,
+    "preflight_pass": true,
+    "solver_started": false
+  },
+  "treatment_fv_schemes_sha256": "cb39da89e7d14dda4847e2d9ec4365b0a8d26687847d2f5b7a19b16715a98a09"
+}

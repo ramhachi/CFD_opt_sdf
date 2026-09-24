@@ -1155,8 +1155,22 @@ Execute in this order:
    reproduces the eight analytic directional derivatives at `1e-9` relative.
    No mapping or semantics defect was found, so the plan's conditional **D3
    bounded discretization diagnostic** (one registered middle epsilon, three
-   directions, `linearUpwind` factor, 6 primals plus base/adjoint lineage) is
-   the next step; the original FD verdict and thresholds are unchanged.
+   directions, `linearUpwind` factor, 6 primals plus base/adjoint lineage) was
+   registered and run
+   ([`evidence/stage_s_work_f_discretization_diagnostic_2026_09.json`](evidence/stage_s_work_f_discretization_diagnostic_2026_09.json),
+   SHA-256 `f3a85709817aa67d4fee8123d84d524784b403fd944702211c1677af878e67b6`):
+   the `linearUpwind` base primal, both adjoints and all six sides pass, but the
+   scheme shifts the baseline responses strongly (Cd `2.5234 -> 2.2333`,
+   downforce `1.6908 -> 1.6659`). The mixed result — two previously failing rows
+   cross the 5% gate (downforce `random_seed_11` `1.0857 -> 1.0432`, downforce
+   `random_seed_2026` `0.8796 -> 1.0336`) while one control regresses (drag
+   `random_seed_11` `1.0376 -> 0.8521`) and drag `random_seed_2026` remains
+   `1.2608` — does not satisfy the plan's "controls do not worsen" condition:
+   `supports_discretization_cause=false`. Discretization is a contributing
+   factor, not the sole cause; the direction-dependent residual points to the
+   continuous-adjoint formulation / surface-weighting / morpher chain-rule
+   terms. No D4 full requalification and no D5 shape step are registered; the
+   derivative remains unqualified and `shape_update_allowed=false`.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

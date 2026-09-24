@@ -141,3 +141,46 @@ def test_registered_d2_audit_reverifies():
     assert artifact["summary"]["original_verdict_unchanged"] is True
     for row in artifact["independent_recomputation"].values():
         assert row["relative_difference"] <= 1e-9
+
+
+D3_MANIFEST = ROOT / "docs/evidence/stage_s_work_f_discretization_diagnostic_manifest_2026_09.json"
+D3_PREFLIGHT = ROOT / "docs/evidence/stage_s_work_f_discretization_diagnostic_preflight_2026_09.json"
+D3_EVIDENCE = ROOT / "docs/evidence/stage_s_work_f_discretization_diagnostic_2026_09.json"
+
+
+def test_registered_d3_diagnostic_reverifies():
+    manifest = json.loads(D3_MANIFEST.read_text())
+    preflight = json.loads(D3_PREFLIGHT.read_text())
+    evidence = json.loads(D3_EVIDENCE.read_text())
+    assert evidence["manifest"]["sha256"] == ca.sha256_file(D3_MANIFEST)
+    assert evidence["preflight"]["sha256"] == ca.sha256_file(D3_PREFLIGHT)
+    assert preflight["summary"]["diagnostic_allowed"] is True
+    assert preflight["scheme"]["only_div_phi_U_changed"] is True
+    assert manifest["epsilon_m"] == 5e-4
+    assert list(manifest["directions"]) == [
+        "downforce_gradient_aligned",
+        "random_seed_11",
+        "random_seed_2026",
+    ]
+    assert evidence["base_primal"]["qualified"] is True
+    assert evidence["base_primal"]["returncode"] == 0
+    assert evidence["adjoint"]["converged"] is True
+    for side in evidence["sides"].values():
+        assert side["pass"] is True
+        assert side["geometry_pass"] is True
+        assert side["immobility_pass"] is True
+        assert side["check_mesh_qualified"] is True
+    for record in evidence["diagnostic"].values():
+        assert record["status"] == "ok"
+        assert record["ratio_upwind"] == pytest.approx(
+            record["fd_upwind"] / record["analytic_upwind"], rel=1e-9
+        )
+        assert record["ratio_linearUpwind"] == pytest.approx(
+            record["fd_linearUpwind"] / record["analytic_linearUpwind"], rel=1e-9
+        )
+    assert evidence["interpretation"]["n_improved_across_the_gate"] == 2
+    assert evidence["interpretation"]["n_worsened_controls"] == 1
+    assert evidence["interpretation"]["supports_discretization_cause"] is False
+    assert evidence["summary"]["derivative_qualified"] is False
+    assert evidence["summary"]["shape_update_allowed"] is False
+    assert evidence["summary"]["original_verdict_unchanged"] is True
