@@ -1122,3 +1122,30 @@ repair that unrelated documentation mismatch.
   response qualification, then the surface FD, then at most one shape step) is
   the next slice. P17's solver-execution reconfirmation is part of Work F, and
   P2's stricter terminal-state closure rule remains open.
+
+## 2026-09-24: P20 re-audit repair, surface-nets extraction, PQ4.1 v2 and baseline v2
+
+- An independent audit found two reproducible false-negative classes in the
+  direct self-intersection detector: coplanar area overlap and shared-vertex
+  crossings away from the shared vertex. The topology-aware repair (commit
+  `17e80f4`) detects both, permits contact only on the shared simplex, and
+  rejects degenerate triangles fail-closed.
+- The repaired gate rejected the registered iso-0.5 surface: marching cubes
+  emitted 4-8 collinear sliver triangles (area <= 1e-10 m^2, aspect > 1e7)
+  that point merging could not remove; edge collapse created new crossings.
+  The handoff now extracts the binary cell material with VTK surface nets
+  (`contour_labels`, no smoothing): no degenerate triangles, watertight,
+  manifold, cell volume reproduced exactly (absolute difference 1.5e-9 m^3 on
+  the v16 candidate). `SURFACE_SMOOTHING_ITERATIONS = 0` records the choice.
+- PQ4.1 v2 on the v16 checkpoint selects iso 0.5 and returns
+  `ready_for_stage_s=true`
+  (`docs/evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`, SHA-256
+  `db61de5cec6a6058f1880549ad553bc4c2d793d5f569b4d0c6c02f003f0a709c`); iso 0.4
+  fails feature shrink, iso 0.6 passes but is not selected.
+- Stage S baseline v2
+  (`docs/evidence/stage_s_baseline_v16_v2_2026_09.json`, SHA-256
+  `a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6`)
+  re-binds the baseline to the v2 judgment and supersedes the v1 record
+  append-only. Next slice: Work F0 baseline registration preflight and one V1
+  body-fitted baseline qualification (mesh-only first; no adjoint, FD or shape
+  update).

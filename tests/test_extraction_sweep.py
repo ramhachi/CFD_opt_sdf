@@ -15,8 +15,8 @@ from cfd_sdf.fixed_grid_contract import CartesianCellGrid, _write_cell_vti
 # the unit fixture uses 1 m voxels; distances are scaled accordingly
 TEST_EXTRACTION_PROFILE = dict(
     EXTRACTION_QUALIFICATION_PROFILE_V1,
-    surface_distance_max_m=1.5,
-    surface_distance_rms_max_m=1.5,
+    surface_distance_max_m=2.0,
+    surface_distance_rms_max_m=1.25,
 )
 
 

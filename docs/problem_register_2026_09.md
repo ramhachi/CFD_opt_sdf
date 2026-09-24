@@ -305,6 +305,27 @@ Work A/C/Dに従う。
 
 ## P20 — Stage S entryの幾何測定不備（高・closed 2026-09-24）
 
+> **2026-09-24 re-audit and repair:** an independent audit found two
+> reproducible false-negative classes in the direct self-intersection detector:
+> coplanar area overlap and shared-vertex crossings away from the shared
+> vertex. The topology-aware repair (`_triangle_intersection_contacts` /
+> `_contacts_confined_to_shared_simplex`, commit `17e80f4`) detects both,
+> permits contact only on the shared simplex, and rejects degenerate triangles
+> fail-closed. The repaired gate then rejected the registered iso-0.5 surface:
+> marching cubes emitted 4-8 collinear sliver triangles (area <= 1e-10 m^2,
+> aspect ratio > 1e7) that point merging could not remove and edge collapse
+> turned into new crossings. The handoff now extracts the binary cell material
+> with VTK surface nets (`contour_labels`, no smoothing), which emits no
+> degenerate triangles and reproduces the cell volume exactly (measured
+> absolute difference 1.5e-9 m^3 on the v16 candidate). The PQ4.1 v2 judgment
+> on the v16 checkpoint passes at iso 0.5
+> (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`) and the Stage S
+> baseline is re-bound
+> (`evidence/stage_s_baseline_v16_v2_2026_09.json`, superseding the v1
+> record). The volume-fidelity and feature-survival sub-gates pass by
+> construction for this extractor and are retained as guards against future
+> extractor changes.
+>
 > **2026-09-24 closure:** the remaining scope is implemented and tested.
 > `component_boundary_gap_m` replaces the center-to-center EDT with the exact
 > axis-aligned cube face distance (`sqrt(sum(max(0, |delta_i| - spacing)^2))`),
@@ -365,6 +386,15 @@ PQ4.0は`ready_for_stage_s`を全sub-gateの論理積に戻し、local extractio
 5. clean/defect/unavailable-dependencyの回帰testを追加する。
    → 2026-09-24: clean primitives、crossing pair、triangle cap、gap/width校正を
    `tests/test_stage_s_entry.py` / `tests/test_extraction_qualification.py`に追加。
+6. 共面area overlapと共有頂点外交差のfalse negativeを除去する。
+   → 2026-09-24 re-audit: `_triangle_intersection_contacts` /
+   `_contacts_confined_to_shared_simplex`で両クラスを検出。回帰fixtureは
+   `tests/test_extraction_qualification.py`。
+7. degenerate triangleをfail-closedで扱い、抽出側で発生させない。
+   → 2026-09-24: detectorは`not_evaluated_degenerate_triangle`を返し、
+   handoffはbinary cell materialのsurface nets（`contour_labels`、smoothingなし）
+   で抽出する。marching cubesのsliverはpoint mergeでもedge collapseでも除去できず、
+   collapseは新たな交差を生むことを測定済み。
 
 P20 closure後の新candidateだけをPQ4.1の`ready_for_stage_s`判定に使う。
 

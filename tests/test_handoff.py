@@ -129,16 +129,13 @@ def test_handoff_records_explicit_rho_variant_and_iso_value(tmp_path: Path) -> N
     assert artifacts.manifest["rho"]["iso_value_source"] == "function_argument"
 
 
-def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) -> None:
-    # A 2x2x2 solid box (the smallest fully-enclosed block) interpolates to a single
-    # near-threshold point under cell-to-point averaging; its raw marching-cubes surface is a
-    # pure numerical artifact (triangle areas down to ~1e-12) that the surface-cleaning step in
-    # build_density_to_sdf_handoff now correctly discards outright (see
-    # test_surface_cleaning_rejects_a_fully_degenerate_iso_surface). A 4x4x4 box still shrinks
-    # sharply under interpolation (only its innermost 2x2x2 sub-lattice of points reaches the
-    # solid threshold), demonstrating the same source-vs-revoxelized geometry loss, but the
-    # shrunk surface is a genuine (if small) cube rather than a degenerate point, so it survives
-    # cleaning and this test still exercises the intended assertions.
+def test_handoff_reports_faithful_revoxelization_for_a_near_threshold_body(
+    tmp_path: Path,
+) -> None:
+    # The surface is now extracted from the binary cell material (surface nets), so a
+    # near-threshold body revoxelizes to exactly its source cells instead of shrinking under
+    # cell-to-point interpolation. The source and revoxelized checks are still reported
+    # separately and both must pass for this fixture.
     state_path = _write_state(
         tmp_path / "candidate",
         cell_shape=(6, 6, 6),
@@ -160,24 +157,26 @@ def test_handoff_reports_revoxelized_geometry_loss_separately(tmp_path: Path) ->
     report = artifacts.fidelity_report
 
     assert report["checks"]["source_component_validation"] is True
-    assert report["checks"]["revoxelized_component_validation"] is False
-    assert report["volume"]["revoxelized_cell_volume_m3"] < report["volume"]["cell_threshold_volume_m3"]
+    assert report["checks"]["revoxelized_component_validation"] is True
+    assert report["volume"]["revoxelized_cell_volume_m3"] == pytest.approx(
+        report["volume"]["cell_threshold_volume_m3"]
+    )
+    assert report["volume"]["absolute_difference_m3"] == pytest.approx(0.0, abs=1e-6)
     assert (
         report["source_material_checks"]["components"]["root_connectivity"]["status"]
         == "pass"
     )
     assert (
         report["revoxelized_geometry_checks"]["components"]["root_connectivity"]["status"]
-        == "fail"
+        == "pass"
     )
-    assert "revoxelized_component_validation_failed" in report["qualification_reasons"]
+    assert "revoxelized_component_validation_failed" not in report["qualification_reasons"]
 
 
-def test_surface_cleaning_rejects_a_fully_degenerate_iso_surface(tmp_path: Path) -> None:
-    # A 2x2x2 solid box is the smallest fully-enclosed block: under cell-to-point averaging only
-    # its single interior corner clears the 0.5 threshold, so the raw marching-cubes surface is a
-    # near-zero-size numerical artifact (triangle areas ~1e-12) rather than a real feature.
-    # Cleaning must reject this outright instead of silently handing Stage S a fake sliver body.
+def test_surface_nets_extracts_a_small_near_threshold_body(tmp_path: Path) -> None:
+    # A 2x2x2 near-threshold box is the smallest fully-enclosed block. Marching cubes on the
+    # interpolated field produced a degenerate point artifact here; the binary surface-nets
+    # extraction must instead hand Stage S the real, non-degenerate small cube.
     state_path = _write_state(
         tmp_path / "candidate",
         cell_shape=(6, 6, 6),
@@ -192,14 +191,20 @@ def test_surface_cleaning_rejects_a_fully_degenerate_iso_surface(tmp_path: Path)
         density_grid.cell_data[name] = values
     density_grid.save(density_path)
 
-    with pytest.raises(ValueError, match="Surface cleaning removed the entire iso-surface"):
-        build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+    artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
+    quality = artifacts.fidelity_report["surface_quality"]["after_cleaning"]
+    assert quality["face_count"] == 48
+    assert quality["min_area_m2"] > 0.0
+    assert quality["count_aspect_ratio_above_100"] == 0
+    mesh = trimesh.load_mesh(artifacts.surface_stl)
+    assert mesh.is_watertight
+    assert mesh.volume == pytest.approx(8.0, abs=1e-6)
 
 
-def test_handoff_reports_surface_quality_before_and_after_cleaning(tmp_path: Path) -> None:
-    # Same near-threshold perturbation as the geometry-loss test above, on a box big enough
-    # (4x4x4) that the shrunk surface is a real cube rather than a degenerate point: this is the
-    # sliver-producing scenario the cleaning step in build_density_to_sdf_handoff targets.
+def test_handoff_reports_the_surface_nets_quality(tmp_path: Path) -> None:
+    # The registered extractor is the binary surface-nets contour with no smoothing, so the
+    # quality block must record it and the written STL must contain no degenerate or
+    # high-aspect faces.
     state_path = _write_state(
         tmp_path / "candidate",
         cell_shape=(6, 6, 6),
@@ -217,12 +222,12 @@ def test_handoff_reports_surface_quality_before_and_after_cleaning(tmp_path: Pat
     artifacts = build_density_to_sdf_handoff(state_path, output_dir=tmp_path / "handoff")
     quality = artifacts.fidelity_report["surface_quality"]
 
+    assert quality["extractor"] == "vtkSurfaceNets3D.contour_labels"
+    assert quality["smoothing_iterations"] == 0
     assert quality["clean_tolerance_m"] == pytest.approx(SURFACE_CLEAN_TOLERANCE_FRACTION * 1.0)
-    assert quality["before_cleaning"]["count_aspect_ratio_above_100"] > 0
+    assert quality["after_cleaning"]["min_area_m2"] > 0.0
     assert quality["after_cleaning"]["count_aspect_ratio_above_100"] == 0
-    assert quality["after_cleaning"]["max_aspect_ratio"] < quality["before_cleaning"]["max_aspect_ratio"]
-    assert quality["faces_removed_by_cleaning"] > 0
-    # The written STL is the cleaned one: no leftover slivers make it into the artifact.
+    assert quality["after_cleaning"]["max_aspect_ratio"] < 10.0
     mesh = trimesh.load_mesh(artifacts.surface_stl, process=False)
     assert len(mesh.faces) == quality["after_cleaning"]["face_count"]
 

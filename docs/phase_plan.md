@@ -978,6 +978,29 @@ Execute in this order:
    (`V=0.0719735015 <= Vmax`), and a re-run `stage_v_clearance_v1` preflight
    pass. Work F profiles are pinned (`stage_v_qualification_v1`,
    `fd_gradient_v1`). Registration is not a Stage S qualification.
+
+   **P20 re-audit repair, PQ4.1 v2 and baseline v2 (2026-09-24):** an
+   independent audit found two reproducible false-negative classes in the
+   direct self-intersection detector (coplanar area overlap; shared-vertex
+   crossings away from the shared vertex). The topology-aware repair (commit
+   `17e80f4`) detects both, permits contact only on the shared simplex, and
+   rejects degenerate triangles fail-closed. The repaired gate rejected the
+   registered iso-0.5 surface: marching cubes emitted 4-8 collinear sliver
+   triangles (area <= 1e-10 m^2, aspect > 1e7) that point merging could not
+   remove. The handoff now extracts the binary cell material with VTK surface
+   nets (`contour_labels`, no smoothing): no degenerate triangles, watertight,
+   manifold, and the cell volume is reproduced exactly (measured absolute
+   difference 1.5e-9 m^3 on the v16 candidate). The PQ4.1 v2 judgment
+   ([`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`](evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json))
+   selects iso 0.5 and returns `ready_for_stage_s=true`; the Stage S baseline
+   v2
+   ([`evidence/stage_s_baseline_v16_v2_2026_09.json`](evidence/stage_s_baseline_v16_v2_2026_09.json),
+   SHA-256 `a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6`)
+   re-binds the baseline to that judgment and supersedes the v1 record. The
+   volume-fidelity and feature-survival sub-gates pass by construction for the
+   exact extractor; they remain guards against future extractor changes. Next
+   slice: Work F0 baseline registration preflight and one V1 body-fitted
+   baseline qualification (mesh-only first; no adjoint, FD or shape update).
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

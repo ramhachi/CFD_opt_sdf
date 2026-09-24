@@ -64,8 +64,8 @@ def _handoff(tmp_path: Path, **state_kwargs):
 # the unit fixture uses 1 m voxels; scale the registered distances accordingly
 TEST_PROFILE = dict(
     EXTRACTION_QUALIFICATION_PROFILE_V1,
-    surface_distance_max_m=1.5,
-    surface_distance_rms_max_m=1.5,
+    surface_distance_max_m=2.0,
+    surface_distance_rms_max_m=1.25,
 )
 
 

@@ -62,10 +62,23 @@ DISCRETENESS_MIN_MAX_RHO = 0.9
 # to ~1e-8 m and face areas down to ~1e-15 m^2 (measured on the three ramp_interp export
 # candidates). snappyHexMesh then reproduces these as small-determinant volume cells, which the
 # Stage V qualification profile does not waive. A point-merge tolerance of 2% of the smallest
-# source cell dimension collapses these degenerate edges before the STL is written, without
+# source cell dimension collapses most of these edges before the STL is written, without
 # visibly perturbing the surface: measured volume shift stayed under 0.03% on all three
 # candidates while the count of triangles with aspect ratio > 100 dropped by 90-100%.
+#
+# Point merging is not sufficient: on the near-binary projected fields marching cubes still
+# emits collinear triples (measured 4-8 faces with area <= 1e-10 m^2 and aspect ratio > 1e7 on
+# the v16 checkpoint-87 surface, unaffected by clean tolerances from 0.1% to 20% of the
+# spacing and by isovalue tie-breaks). Those faces are genuine defects that the direct
+# self-intersection gate rejects fail-closed, and edge-collapsing them creates new crossings.
+# The surface is therefore extracted from the binary cell material with VTK surface nets
+# (contour_labels), which emits only non-degenerate triangles, with no smoothing: the result is
+# the exact voxel-boundary geometry of the material occupancy (measured volume error 0 against
+# the cell-threshold volume on the v16 candidate). The volume-fidelity and feature-survival
+# checks therefore pass by construction; they are retained as guards against future extractor
+# changes, not as evidence about this extractor.
 SURFACE_CLEAN_TOLERANCE_FRACTION = 0.02
+SURFACE_SMOOTHING_ITERATIONS = 0
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _RHO_VARIANTS = frozenset({"rho", "rho_filtered", "rho_projected", "rho_projection"})
 _MASK_NAMES = (
@@ -218,10 +231,27 @@ def build_density_to_sdf_handoff(
             "iso_value must lie strictly inside the interpolated density range; "
             f"iso_value={threshold:g}, range=[{point_min:g}, {point_max:g}]"
         )
-    surface = point_image.contour(
-        isosurfaces=[threshold],
-        scalars=selected_variant,
-    ).triangulate()
+    surface_material = (surface_density >= threshold).astype(np.int32)
+    if not surface_material.any():
+        raise ValueError(
+            f"Density field produced an empty iso-surface at iso_value={threshold:g}"
+        )
+    cell_image = pv.ImageData(
+        dimensions=source_grid.point_dimensions,
+        spacing=source_grid.spacing,
+        origin=source_grid.origin,
+    )
+    cell_image.cell_data["material"] = surface_material
+    surface = cell_image.contour_labels(
+        boundary_style="external",
+        background_value=0,
+        select_inputs=[1],
+        output_mesh_type="triangles",
+        scalars="material",
+        pad_background=True,
+        smoothing=SURFACE_SMOOTHING_ITERATIONS > 0,
+        smoothing_iterations=max(int(SURFACE_SMOOTHING_ITERATIONS), 1),
+    )
     if surface.n_points == 0 or surface.n_cells == 0:
         raise ValueError(
             f"Density field produced an empty iso-surface at iso_value={threshold:g}"
@@ -235,6 +265,8 @@ def build_density_to_sdf_handoff(
         raise ValueError("Surface cleaning removed the entire iso-surface")
     quality_after = _surface_quality_metrics(surface)
     surface_quality = {
+        "extractor": "vtkSurfaceNets3D.contour_labels",
+        "smoothing_iterations": int(SURFACE_SMOOTHING_ITERATIONS),
         "clean_tolerance_m": clean_tolerance,
         "before_cleaning": quality_before,
         "after_cleaning": quality_after,
@@ -1351,6 +1383,7 @@ __all__ = [
     "SDF_KIND",
     "SDF_SIGN_CONVENTION",
     "SURFACE_CLEAN_TOLERANCE_FRACTION",
+    "SURFACE_SMOOTHING_ITERATIONS",
     "DensityToSdfHandoffArtifacts",
     "build_density_to_sdf_handoff",
     "handoff_density_to_sdf",

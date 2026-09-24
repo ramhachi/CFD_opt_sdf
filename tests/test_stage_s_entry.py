@@ -143,8 +143,8 @@ def _write_spec(
 _TEST_PROFILES = {
     "extraction_profile": {
         "profile_id": "extraction_test",
-        "surface_distance_max_m": 1.5,
-        "surface_distance_rms_max_m": 1.5,
+        "surface_distance_max_m": 2.0,
+        "surface_distance_rms_max_m": 1.25,
         "feature_shrink_max_voxels": 1.0,
         "require_watertight": True,
         "require_winding_consistent": True,
