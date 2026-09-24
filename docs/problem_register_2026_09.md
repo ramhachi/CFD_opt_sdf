@@ -89,6 +89,24 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > Stage S baseline is registered by this record. The v15 checkpoint's composite
 > readiness gate is passed; P2 remains open under its stricter terminal-state
 > closure rule, and Stage S baseline registration remains pending.
+>
+> **2026-09-24 v16 update:** the v16 b=128 continuation (registered from the
+> unchanged v15 checkpoint 10, carryover accepted count 10 and the last three
+> metrics, cap-stationarity exit and independent terminal repeat enabled)
+> accepted 87 steps (cumulative 97) and stopped fail-closed at attempt 88:
+> the alpha-1.0 Path B bracket failed as `not_a_descent_direction`
+> (`d_adj=-0.04161669`, `d_fd=+0.01716448`). Final accepted state: raw
+> downforce `2.65056396128`, projected volume `0.0719735014` (94.30% of Vmax),
+> active projected discreteness `mean_nd=0.0025088808`, zero support
+> violations; last three objective deltas `5.52e-4/1.53e-4/7.33e-4`, so the
+> registered window was not met and no independent terminal repeat ran. P20 is
+> closed (calibrated gap/width metrics, volume-calibration correction and
+> detector audit), and PQ4.1 on the v16 checkpoint with the repaired gate
+> selects iso 0.5 and returns `ready_for_stage_s=true`
+> (`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`). This is a bounded
+> response/gradient stop, not a converged terminal; P2's stricter
+> terminal-state closure rule and P17's solver-execution reconfirmation remain
+> open, and the Stage S baseline registration is the next authorized decision.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
@@ -1245,6 +1263,10 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
   `stage_v_clearance_v1` preflightに合格した（iso 0.4はfeature shrink、iso 0.6は
   volume fidelityで除外）。ただしsolver実行での再確認は未実施のため、この合格は
   P17自体を閉じない（`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`）。
+- v16終端（checkpoint 87、blocked stop）のPQ4.1でも、`rho_projection` iso 0.5の
+  抽出面が修理後gateで`stage_v_clearance_v1` preflightに合格した。P17のclosure条件は
+  変わらず、body-fitted mesh/solver実行での再確認まで閉じない
+  （`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`）。
 
 ---
 

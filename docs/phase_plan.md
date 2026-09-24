@@ -938,8 +938,35 @@ Execute in this order:
    `0.0640656740`, support violations 0; alpha 1.0 was accepted
    (`DF 2.10035503533 -> 2.11252824711`, Path B `d_adj=-1.29080394`,
    `d_fd=-1.41661536`, candidate `mean_nd=0.0031861835`, projected volume
-   `0.0643333567`). The campaign has not run in this record; no convergence,
-   terminal or Stage S-readiness claim.
+   `0.0643333567`).
+
+   **V16 campaign result (2026-09-24):** the registered 90-attempt
+   continuation accepted 87 steps (cumulative accepted count 97) and stopped
+   fail-closed at attempt 88 with `objective_rejected`: the alpha-1.0 Path B
+   bracket failed as `not_a_descent_direction` (`d_adj=-0.04161669`,
+   `d_fd=+0.01716448`), which stops the attempt by the registered policy. The
+   final accepted state has raw downforce `2.65056396128`, projected volume
+   `0.0719735014` (94.30% of Vmax), active projected discreteness
+   `mean_nd=0.0025088808` and zero support violations; the last three
+   objective deltas are `5.52e-4/1.53e-4/7.33e-4`, so the registered
+   convergence window was not met and no independent terminal repeat ran
+   ([`evidence/pq3_3b_campaign_v16_outcome_2026_09.json`](evidence/pq3_3b_campaign_v16_outcome_2026_09.json)).
+   This is a bounded response/gradient stop, not convergence, stationarity or
+   Stage S readiness by itself.
+
+   **PQ4.1 on the v16 state with the repaired gate (2026-09-24):** the
+   registered iso sweep (0.4/0.5/0.6) selects iso 0.5 and the composite
+   `stage_s_entry_v1` gate returns **`ready_for_stage_s=true`**
+   ([`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v16_state_stage_s_entry_2026_09.json)):
+   discreteness `mean_nd=0.0025088807`, extraction profile (watertight,
+   manifold, non-self-intersecting), volume fidelity (relative 0.0736,
+   revoxelized 0.0783, absolute 0.00951 m3), volume constraint
+   (`V=0.0719735015 <= 0.0763256681`), width/gap (measured true minimum solid
+   width 0.05 m; the policy declares no minimum), lineage hashes and the
+   `stage_v_clearance_v1` preflight all pass. Iso 0.4 fails feature shrink;
+   iso 0.6 fails volume fidelity. The candidate is a blocked-stop checkpoint,
+   not a converged terminal; a Stage S baseline registration is the next
+   authorized decision.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

@@ -1080,3 +1080,25 @@ repair that unrelated documentation mismatch.
   record.
 - Contract test `tests/test_pq3_3b_campaign_v16.py` covers the sidecar,
   pinned start state, carryover, enabled exits, budget and inherited inputs.
+
+## 2026-09-24: v16 campaign result and PQ4.1 on the repaired gate
+
+- The v16 continuation accepted 87 steps (cumulative accepted count 97) and
+  stopped fail-closed at attempt 88 (`objective_rejected`): the alpha-1.0
+  Path B bracket failed as `not_a_descent_direction` (`d_adj=-0.04161669`,
+  `d_fd=+0.01716448`), which stops the attempt by the registered policy.
+- Final accepted state: raw downforce `2.65056396128`, projected volume
+  `0.0719735014` (94.30% of Vmax), active projected discreteness
+  `mean_nd=0.0025088808`, zero support violations. Last three objective deltas
+  `5.52e-4/1.53e-4/7.33e-4`; the convergence window was not met and no
+  independent terminal repeat ran. This is a bounded response/gradient stop,
+  not convergence or stationarity.
+- Outcome `docs/evidence/pq3_3b_campaign_v16_outcome_2026_09.json` (SHA-256
+  `864084348e3c3fae5d2b592eb484d931dccd60502ed0d72e61bfc3881ab5a671`).
+- PQ4.1 on the v16 checkpoint with the repaired gate selects iso 0.5 and
+  returns **`ready_for_stage_s=true`**:
+  `docs/evidence/pq4_1_v16_state_stage_s_entry_2026_09.json` (SHA-256
+  `ae6a30c45503a40ddc31c61039c7da1e6670b4bd065b2a4fcbd2e84595cc0663`).
+  Iso 0.4 fails feature shrink; iso 0.6 fails volume fidelity. The pass is on
+  a blocked-stop checkpoint, not a converged terminal; the Stage S baseline
+  registration is the next authorized decision.
