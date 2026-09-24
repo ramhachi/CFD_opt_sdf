@@ -276,6 +276,27 @@ def _write_two_component_state(directory: Path, *, with_root: bool, gap: int = 1
     return path
 
 
+def test_component_boundary_gap_matches_analytic_fixtures():
+    from cfd_sdf.shape_feature_metrics import component_boundary_gap_m
+
+    # axis-aligned separation: two cells with `gap` empty columns between them
+    # measure exactly gap * spacing (the old center-to-center EDT returned
+    # (gap + 1) * spacing)
+    for gap in (1, 2, 3):
+        components = np.zeros((10, 3, 3), dtype=np.int64)
+        components[1, 1, 1] = 1
+        components[2 + gap, 1, 1] = 2
+        assert component_boundary_gap_m(components, 1.0) == pytest.approx(float(gap))
+
+    # corner touch: the cube surfaces meet, so the gap is 0
+    corner = np.zeros((5, 5, 3), dtype=np.int64)
+    corner[1, 1, 1] = 1
+    corner[2, 2, 1] = 2
+    assert component_boundary_gap_m(corner, 1.0) == pytest.approx(0.0)
+
+    assert component_boundary_gap_m(np.zeros((4, 4, 4), dtype=np.int64), 1.0) is None
+
+
 def test_component_boundary_gap_is_measured(tmp_path: Path):
     state = _write_two_component_state(tmp_path / "candidate", with_root=False, gap=2)
     artifacts = _handoff(tmp_path, state)
@@ -287,7 +308,77 @@ def test_component_boundary_gap_is_measured(tmp_path: Path):
         **_TEST_PROFILES,
     )
     measured = verdict.sub_verdicts["width_gap"]["measured"].get("component_boundary_gap_m")
-    assert measured is not None and measured > 0.0, verdict.sub_verdicts["width_gap"]
+    assert measured == pytest.approx(2.0), verdict.sub_verdicts["width_gap"]
+
+
+def _declared_policy_spec(tmp_path: Path, **policy: float) -> Path:
+    import yaml as _yaml
+
+    spec_path = _write_spec(tmp_path / "spec.yaml")
+    data = _yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+    data["topology_policy"].update(policy)
+    spec_path.write_text(_yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return spec_path
+
+
+def _write_plate_state(directory: Path) -> Path:
+    from test_handoff import _cell_index, _state_dict
+
+    directory.mkdir(parents=True, exist_ok=True)
+    grid = CartesianCellGrid(
+        origin=(0.0, 0.0, 0.0), spacing=(1.0, 1.0, 1.0), cell_shape=(12, 12, 12)
+    )
+    count = grid.cell_count
+    density = np.zeros(count, dtype=np.float32)
+    for x in range(3, 9):
+        for y in range(3, 9):
+            for z in range(3, 5):
+                density[_cell_index((x, y, z), (12, 12, 12))] = 1.0
+    arrays = {
+        "rho": density,
+        "rho_filtered": density.copy(),
+        "rho_projected": density.copy(),
+        "alpha": (density * 2500.0).astype(np.float32),
+        "allowed_mask": np.ones(count, dtype=np.uint8),
+        "forbidden_mask": np.zeros(count, dtype=np.uint8),
+        "fixed_solid_mask": np.zeros(count, dtype=np.uint8),
+        "root_mask": np.zeros(count, dtype=np.uint8),
+        "active_design_mask": np.ones(count, dtype=np.uint8),
+    }
+    _write_cell_vti(grid, arrays, directory / "density.vti", kind="fixed_grid_density")
+    path = directory / "topology_state.json"
+    path.write_text(json.dumps(_state_dict(grid, "density.vti"), indent=2), encoding="utf-8")
+    return path
+
+
+def test_declared_minimum_solid_width_uses_the_true_minimum(tmp_path: Path):
+    # a 2-cell-thick plate revoxelizes to exactly two voxels, so the true
+    # minimum width is exactly 2 * spacing (the p5 quantile agrees here; the
+    # contract point is that the declared minimum is compared against the
+    # minimum, not against the quantile)
+    state = _write_plate_state(tmp_path / "candidate")
+    artifacts = _handoff(tmp_path, state)
+    spec = _declared_policy_spec(tmp_path, minimum_solid_width_m=1.5)
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=spec,
+        **_TEST_PROFILES,
+    )
+    width = verdict.sub_verdicts["width_gap"]
+    assert width["measured"]["minimum_solid_width_m"] == pytest.approx(2.0)
+    assert width["measured"]["ridge_width_p5_m"] == pytest.approx(2.0)
+    assert width["pass"] is True, width
+
+    spec = _declared_policy_spec(tmp_path, minimum_solid_width_m=3.0)
+    verdict = qualify_stage_s_entry(
+        artifacts.manifest_json,
+        mesh_path=artifacts.surface_stl,
+        problem_spec_yaml=spec,
+        **_TEST_PROFILES,
+    )
+    assert verdict.ready_for_stage_s is False
+    assert any("minimum solid width" in reason for reason in verdict.reasons)
 
 
 def test_declared_minimum_gap_above_measurement_fails(tmp_path: Path):

@@ -37,7 +37,7 @@ from .extraction_qualification import (
 )
 from .fixed_grid_contract import _read_cell_vti
 from .problem_spec import load_problem_spec
-from .shape_feature_metrics import occupancy_metrics
+from .shape_feature_metrics import component_boundary_gap_m, occupancy_metrics
 from .stage_v_domain_preflight import (
     STAGE_V_CLEARANCE_PROFILE_V1,
     evaluate_stage_v_domain_preflight,
@@ -49,6 +49,9 @@ VOLUME_FIDELITY_PROFILE_V1: dict[str, Any] = {
     "revoxelized_relative_max": 0.20,
     "absolute_max_m3": 0.02,
     "calibration": "docs/evidence/pq4_volume_fidelity_calibration_2026_09.json",
+    "calibration_correction": (
+        "docs/evidence/pq4_volume_fidelity_calibration_correction_2026_09.json"
+    ),
     "note": "tolernces sit above the analytic binary ground-truth floor "
     "(relative 0.093-0.181, revoxelized 0.023-0.161, absolute 0.0046-0.0109 m3)",
 }
@@ -214,51 +217,48 @@ def qualify_stage_s_entry(
         _fail(reasons, "width_gap", "no material to measure")
     else:
         material_metrics = occupancy_metrics(material, spacing)
-        measured_solid = material_metrics["thickness_ridge_m_p5"]
-        width["measured"]["ridge_width_p5_m"] = measured_solid
+        width["measured"]["ridge_width_p5_m"] = material_metrics["thickness_ridge_m_p5"]
+        width["measured"]["minimum_solid_width_m"] = material_metrics[
+            "thickness_ridge_m_min"
+        ]
+        width["quantization_tolerance_m"] = spacing / 2
         width["note"] = (
-            "ridge_width_p5_m is the p5 of the local-thickness ridge on the "
-            "canonical grid, a quantization-aware lower-bound estimate; it is "
-            "not the strict minimum-surface distance and is never silently "
-            "substituted for a declared minimum"
+            "minimum_solid_width_m is the minimum medial-axis (ridge) thickness "
+            "of the supersampled occupancy, calibrated on analytic fixtures; "
+            "ridge_width_p5_m is a separate quantile recorded for information "
+            "and is never substituted for a declared minimum"
         )
         if policy.minimum_solid_width_m is not None:
             width["declared"]["minimum_solid_width_m"] = policy.minimum_solid_width_m
-            if measured_solid < policy.minimum_solid_width_m - spacing / 2:
+            if (
+                material_metrics["thickness_ridge_m_min"]
+                < policy.minimum_solid_width_m - spacing / 2
+            ):
                 width["pass"] = False
-                _fail(reasons, "width_gap", "ridge width p5 below the declared minimum")
+                _fail(reasons, "width_gap", "minimum solid width below the declared minimum")
         complement = ~material
         if complement.any():
             void_metrics = occupancy_metrics(complement, spacing)
             width["measured"]["void_ridge_width_p5_m"] = void_metrics[
                 "thickness_ridge_m_p5"
             ]
+            width["measured"]["minimum_void_width_m"] = void_metrics[
+                "thickness_ridge_m_min"
+            ]
             if policy.minimum_void_width_m is not None:
                 width["declared"]["minimum_void_width_m"] = policy.minimum_void_width_m
                 if (
-                    void_metrics["thickness_ridge_m_p5"]
+                    void_metrics["thickness_ridge_m_min"]
                     < policy.minimum_void_width_m - spacing / 2
                 ):
                     width["pass"] = False
                     _fail(reasons, "width_gap", "minimum void width below the declared policy")
         components, count = ndimage.label(material, structure=np.ones((3, 3, 3), dtype=bool))
+        width["measured"]["component_count"] = int(count)
         if count > 1:
-            # component-to-component gap: the shortest distance between the
-            # centers of one component's cells and the centers of the other
-            # component's cells, computed per pair with an EDT whose zero set
-            # is exactly that pair's first component (the previous formula
-            # computed the EDT of the complement of the *union* of components
-            # and sampled it on material, which always returned 0)
-            gaps = []
-            for label in range(1, count + 1):
-                blob = components == label
-                for other_label in range(label + 1, count + 1):
-                    other = components == other_label
-                    distance = ndimage.distance_transform_edt(
-                        ~blob, sampling=spacing
-                    )
-                    gaps.append(float(distance[other].min()))
-            measured_gap = min(gaps) if gaps else None
+            # calibrated face-to-face gap: the old formula read a
+            # center-to-center EDT and overestimated by one voxel
+            measured_gap = component_boundary_gap_m(components, spacing)
             width["measured"]["component_boundary_gap_m"] = measured_gap
             if policy.minimum_gap_m is not None:
                 width["declared"]["minimum_gap_m"] = policy.minimum_gap_m

@@ -1031,3 +1031,30 @@ repair that unrelated documentation mismatch.
   and a solver-execution reconfirmation (P17 closure condition) stay open.
 - No Stage S baseline is registered by this record — registration is a
   separate authorized decision. No new OpenFOAM campaign and no v16.
+
+## 2026-09-24: P20 closure and the adopted v16 sequence
+
+- P20 remaining scope is implemented and tested (no solver run):
+  `component_boundary_gap_m` (exact axis-aligned cube face distance, calibrated
+  on analytic fixtures in `tests/test_stage_s_entry.py`); the declared
+  `minimum_solid_width_m` / `minimum_void_width_m` now compare the true
+  minimum medial-axis thickness (`thickness_ridge_m_min`) while
+  `ridge_width_p5_m` remains a separately named quantile; the volume
+  calibration's shape labels are corrected by the append-only
+  `docs/evidence/pq4_volume_fidelity_calibration_correction_2026_09.json`
+  (original SHA-256 `1e1fc748…` referenced, measurements unchanged, profile
+  references the correction); and the direct self-intersection detector has a
+  false-positive/true-positive/over-cap audit with a memory-safe AABB stage.
+- The v15 checkpoint-10 PQ4.1 pass is a pre-repair record. The next PQ4.1
+  judgment (on the v16 terminal) uses the repaired gate.
+- Adopted execution order (user-approved 2026-09-24): P20 repairs → v16
+  continuation registration and bounded campaign → fresh PQ4.1 on the v16
+  terminal → Stage S baseline registration → Stage S Work F. v15 stopped at
+  its registered budget while still improving (objective deltas
+  `0.0125/0.0133/0.0154`; projected volume `0.0641` of `Vmax 0.0763`), and each
+  Stage T attempt is ~20 s on the 8192-cell case versus hours-to-days for
+  body-fitted Stage S work.
+- Stage S baseline conditions are recorded in `phase_plan.md` (Exit Gate E
+  hash binding, `stage_v_clearance_v1` pass, `V <= Vmax`, then Work F
+  qualification under `stage_v_qualification_v1` and the `fd_gradient_v1`
+  surface-FD profile, at most one shape step).

@@ -283,6 +283,39 @@ def measure_shape_registry(
     }
 
 
+def component_boundary_gap_m(components: np.ndarray, spacing_m: float) -> float | None:
+    """Minimum face-to-face gap between labelled components (meters).
+
+    The plain center-to-center EDT overestimates a gap by up to one voxel
+    (each cell contributes half its extent). For each pair, the distance
+    transform of the first component returns the nearest cell of the second;
+    the exact axis-aligned cube surface distance of that pair is then
+    ``sqrt(sum(max(0, |delta_i| - spacing)^2))`` per axis, so an axis-aligned
+    separation returns its exact face gap and an edge/corner touch returns 0.
+    Returns ``None`` when fewer than two labelled components exist.
+    """
+
+    labels = [int(value) for value in np.unique(np.asarray(components)) if value != 0]
+    if len(labels) < 2:
+        return None
+    spacing = float(spacing_m)
+    best: float | None = None
+    for index, label in enumerate(labels):
+        blob = np.asarray(components) == label
+        for other_label in labels[index + 1 :]:
+            other = np.asarray(components) == other_label
+            _, indices = ndimage.distance_transform_edt(
+                ~blob, sampling=spacing, return_indices=True
+            )
+            cells = np.argwhere(other)
+            nearest = indices[:, cells[:, 0], cells[:, 1], cells[:, 2]].T
+            delta = np.abs(cells - nearest).astype(np.float64) * spacing
+            face = np.sqrt(np.sum(np.maximum(delta - spacing, 0.0) ** 2, axis=1))
+            candidate = float(face.min())
+            best = candidate if best is None else min(best, candidate)
+    return best
+
+
 def policy_exclusion_report(
     feature_table: dict[str, Any], policy_widths_m: list[float]
 ) -> dict[str, Any]:
@@ -323,6 +356,7 @@ def policy_exclusion_report(
 
 __all__ = [
     "as_canonical_3d",
+    "component_boundary_gap_m",
     "declared_min_dimension_m",
     "measure_shape_definition",
     "measure_shape_definitions",

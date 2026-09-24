@@ -294,11 +294,13 @@ def _triangles_self_intersect(mesh) -> str:
     tri_min = tri.min(axis=1)
     tri_max = tri.max(axis=1)
 
-    overlap_min = np.maximum(tri_min[:, None, :], tri_min[None, :, :])
-    overlap_max = np.minimum(tri_max[:, None, :], tri_max[None, :, :])
-    candidate_pairs = np.all(overlap_min <= overlap_max, axis=2)
-    iu = np.triu_indices(n, k=1)
-    pair_i, pair_j = iu[0][candidate_pairs[iu]], iu[1][candidate_pairs[iu]]
+    # per-axis boolean AABB overlap: the old float64 (n, n, 3) broadcast
+    # allocated ~7 GiB at the 12k-triangle cap
+    overlap = np.ones((n, n), dtype=bool)
+    for axis in range(3):
+        overlap &= tri_min[:, None, axis] <= tri_max[None, :, axis]
+        overlap &= tri_max[:, None, axis] >= tri_min[None, :, axis]
+    pair_i, pair_j = np.nonzero(np.triu(overlap, k=1))
     if pair_i.size == 0:
         return "none"
 
@@ -332,10 +334,10 @@ def _edges_pierce_triangles(frm: np.ndarray, to: np.ndarray) -> np.ndarray:
         denom = np.where(np.abs(denom) < 1e-30, np.nan, denom)
         d0 = np.einsum("ij,ij->i", p0 - to[:, 0, :], normal)
         d1 = np.einsum("ij,ij->i", p1 - to[:, 0, :], normal)
-        with np.errstate(invalid="ignore", divide="ignore"):
+        with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
             t = d0 / (d0 - d1)
-        crossing = (d0 * d1 < 0) & np.isfinite(t)
-        point = p0 + np.nan_to_num(t)[:, None] * (p1 - p0)
+            crossing = (d0 * d1 < 0) & np.isfinite(t)
+            point = p0 + np.nan_to_num(t)[:, None] * (p1 - p0)
         v0 = to[:, 1, :] - to[:, 0, :]
         v1 = to[:, 2, :] - to[:, 0, :]
         v2 = point - to[:, 0, :]
@@ -346,9 +348,10 @@ def _edges_pierce_triangles(frm: np.ndarray, to: np.ndarray) -> np.ndarray:
         d21 = np.einsum("ij,ij->i", v2, v1)
         denom_b = d00 * d11 - d01 * d01
         denom_b = np.where(np.abs(denom_b) < 1e-30, np.nan, denom_b)
-        v = (d11 * d20 - d01 * d21) / denom_b
-        w = (d00 * d21 - d01 * d20) / denom_b
-        inside = (v >= -1e-12) & (w >= -1e-12) & (v + w <= 1 + 1e-12)
+        with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+            v = (d11 * d20 - d01 * d21) / denom_b
+            w = (d00 * d21 - d01 * d20) / denom_b
+            inside = (v >= -1e-12) & (w >= -1e-12) & (v + w <= 1 + 1e-12)
         hit |= crossing & inside & ~np.isnan(v) & ~np.isnan(w)
     return hit
 

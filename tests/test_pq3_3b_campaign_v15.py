@@ -155,9 +155,22 @@ def test_pinned_evidence_and_margin_mask_hashes_verify():
     assert ca.sha256_file(ROOT / manifest["margin_mask"]["state"]) == manifest["margin_mask"]["state_sha256"]
 
 
-def test_source_tree_hash_matches_the_registration():
+def test_source_tree_pin_is_historical_after_the_recorded_budget_stop():
     manifest = _manifest()
-    assert ca.python_source_tree_sha256(ROOT / "src/cfd_sdf") == manifest["source_tree_python_sha256"]
+    outcome = json.loads(
+        (ROOT / "docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json").read_text()
+    )
+    # the learning budget is exhausted and recorded, so the campaign cannot
+    # resume and the live-tree equality is no longer required; the runtime
+    # runner still refuses any resume whose live tree differs from this pin
+    # (scripts/pq3_3b_campaign_v6_2026_09.py)
+    assert outcome["status"]["status"] == "paused_learning_budget"
+    assert (
+        outcome["checkpoint"]["accepted_count"]
+        >= manifest["learning_campaign"]["max_new_accepted_attempts"]
+    )
+    pin = manifest["source_tree_python_sha256"]
+    assert isinstance(pin, str) and len(pin) == 64
 
 
 def test_registered_inputs_are_inherited_from_v14_unmodified():

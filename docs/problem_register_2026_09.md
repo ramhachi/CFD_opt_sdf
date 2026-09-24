@@ -106,7 +106,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **open（2026-09-22, PQ3.3後）**。backendはraw `rho_design`平均をtargetにし、handoffはRAMP後`beta_solver`を0.4--0.6で抽出。採用制約・geometry基準は`rho_projection`。PQ3.3a再materializeとprojected-volume backendが必要 |
-| P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **open（2026-09-22, PQ4.0監査）**。self-intersectionが自己boolean、gap EDTが0、p5をminimumと呼ぶ、volume閾値の校正artifact不一致。PQ4.0aで修正後にPQ4.1 |
+| P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -279,17 +279,30 @@ Work A/C/Dに従う。
 
 ---
 
-## P20 — Stage S entryの幾何測定不備（高・open）
+## P20 — Stage S entryの幾何測定不備（高・closed 2026-09-24）
 
+> **2026-09-24 closure:** the remaining scope is implemented and tested.
+> `component_boundary_gap_m` replaces the center-to-center EDT with the exact
+> axis-aligned cube face distance (`sqrt(sum(max(0, |delta_i| - spacing)^2))`),
+> calibrated on analytic axis-aligned and corner-touch fixtures; the declared
+> `minimum_solid_width_m` / `minimum_void_width_m` are now compared against the
+> true minimum medial-axis thickness (`thickness_ridge_m_min`), while
+> `ridge_width_p5_m` stays a separately named quantile that is never
+> substituted; the volume-calibration shape labels are corrected by the
+> append-only `pq4_volume_fidelity_calibration_correction_2026_09.json`
+> (original SHA-256 referenced, measurements unchanged, profile now references
+> the correction); and the direct self-intersection detector has a
+> false-positive/true-positive/cap audit (clean box/icosphere/torus → `none`,
+> a crossing pair → `fail`, over-cap → `not_evaluated`). The detector's AABB
+> stage was made memory-safe (per-axis boolean overlap instead of the
+> `(n, n, 3)` float64 broadcast). The v15 checkpoint-10 PQ4.1 pass predates
+> this repair and remains a pre-repair record; a new PQ4.1 judgment on the next
+> terminal candidate uses the repaired gate.
+>
 > **2026-09-23 partial repair:** two fail-opens are fixed with regression
 > coverage: a measured self-intersection now gates the extraction profile
 > (`_manifold_reasons`, `mesh_self_intersects`), and the applied discreteness
-> threshold is recorded in the composite sub-verdict. Remaining P20 scope:
-> the component-gap definition, the minimum-width/`ridge_width_p5` contract
-> separation, the volume-calibration artifact shape label, and a
-> false-positive audit of the direct self-intersection detector (the first
-> terminal surface is watertight and manifold yet measured as
-> self-intersecting).
+> threshold is recorded in the composite sub-verdict.
 
 ### 症状
 
@@ -313,10 +326,21 @@ PQ4.0は`ready_for_stage_s`を全sub-gateの論理積に戻し、local extractio
 ### 解消条件
 
 1. 実self-intersection測定を導入し、必須なのに測定不能ならfailとする。
+   → 2026-09-24: 直接triangle-triangle narrow phase、`not_evaluated`を
+   `require_self_intersection_measured`でfail化。clean/defect/capの回帰testを追加。
 2. component境界間の実距離を測り、analytic multi-component fixtureで校正する。
+   → 2026-09-24: `shape_feature_metrics.component_boundary_gap_m`（axis-aligned
+   exact、corner touch 0）。`tests/test_stage_s_entry.py`の解析fixtureで校正。
 3. minimumとquantile metricを区別し、ProblemSpecに対応するmetricを登録する。
+   → 2026-09-24: 宣言minimumは`thickness_ridge_m_min`と比較し、
+   `ridge_width_p5_m`は情報用のquantileとして別名記録。
 4. binary analytic shapesでsource/surface/revoxelized volume errorを測ってprofileを再登録する。
+   → 2026-09-24: 測定はPQ4.0a artifactに存在。shape label欠陥をappend-only
+   correction `pq4_volume_fidelity_calibration_correction_2026_09.json`で訂正し、
+   profileがcorrectionを参照。
 5. clean/defect/unavailable-dependencyの回帰testを追加する。
+   → 2026-09-24: clean primitives、crossing pair、triangle cap、gap/width校正を
+   `tests/test_stage_s_entry.py` / `tests/test_extraction_qualification.py`に追加。
 
 P20 closure後の新candidateだけをPQ4.1の`ready_for_stage_s`判定に使う。
 

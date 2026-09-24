@@ -79,7 +79,51 @@ def test_clean_block_passes_the_quantitative_gates(tmp_path: Path):
     assert checks["surface_distance"]["status"] == "measured"
     assert checks["mesh_manifold"]["watertight"] is True
     assert checks["mesh_manifold"]["duplicate_face_count"] == 0
+    assert checks["mesh_manifold"]["self_intersection"] == "none"
     assert checks["root_connectivity"]["status"] == "pass"
+
+
+def test_self_intersection_detector_has_no_false_positives_on_clean_meshes():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    clean = {
+        "box": trimesh.creation.box(extents=(1.0, 1.0, 1.0)),
+        "icosphere": trimesh.creation.icosphere(subdivisions=2),
+        "torus": trimesh.creation.torus(major_radius=1.0, minor_radius=0.3),
+    }
+    for name, mesh in clean.items():
+        assert _triangles_self_intersect(mesh) == "none", name
+
+
+def test_self_intersection_detector_flags_a_crossing_pair():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    vertices = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.2, 0.2, -0.5],
+            [0.2, 0.2, 0.5],
+            [0.8, 0.5, 0.0],
+        ]
+    )
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2], [3, 4, 5]], process=False)
+    assert _triangles_self_intersect(mesh) == "fail"
+
+
+def test_self_intersection_detector_reports_the_triangle_cap():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    mesh = trimesh.creation.icosphere(subdivisions=5)
+    assert mesh.faces.shape[0] > 12_000
+    assert _triangles_self_intersect(mesh) == "not_evaluated_too_many_triangles"
 
 
 def test_impossible_surface_distance_profile_fails(tmp_path: Path):

@@ -889,6 +889,39 @@ Execute in this order:
     shape label, strict minimum width) remains open. No Stage S baseline is
     registered by this record; registration remains a separate authorized
     decision.
+
+   **Adopted execution order (2026-09-24, user-approved):** P20 remaining
+   repairs → a v16 continuation registration and bounded campaign → a fresh
+   PQ4.1 judgment on the v16 terminal with the repaired gate → Stage S baseline
+   registration → Stage S Work F (surface FD, at most one shape step). The
+   order is chosen because v15 stopped at its registered budget while still
+   improving (last objective deltas `0.0125/0.0133/0.0154`, projected volume
+   `0.0641` of `Vmax 0.0763`) and each Stage T attempt costs ~20 s on the
+   8192-cell case, while Stage S Work F is hours-to-days of body-fitted solver
+   work; the v15 PQ4.1 pass does not expire, so the Stage S baseline is bound
+   to the final v16 terminal instead of the paused checkpoint.
+
+   **P20 closure (2026-09-24):** the remaining Stage S entry measurement scope
+   is implemented: calibrated `component_boundary_gap_m`, true-minimum width
+   compared against the declared policy (`thickness_ridge_m_min`) with
+   `ridge_width_p5_m` kept as a separate quantile, the append-only
+   `evidence/pq4_volume_fidelity_calibration_correction_2026_09.json` shape
+   label correction, and a false-positive/true-positive/cap audit of the
+   self-intersection detector with a memory-safe AABB stage. The v15 PQ4.1
+   artifact is a pre-repair record; the next PQ4.1 runs on the repaired gate.
+
+   **Stage S baseline conditions (2026-09-24, adopted):** registration
+   requires a `ready_for_stage_s=true` candidate judged by the repaired gate
+   (Exit Gate E: selected threshold, source field, transform, candidate,
+   surface and revoxelized-volume hashes bound in one handoff manifest, and the
+   `beta_solver` vs `rho_projection` difference traceable by name and formula),
+   the `stage_v_clearance_v1` preflight pass, and `V(rho_projection) <= Vmax`.
+   Work F then qualifies the body-fitted baseline against
+   `stage_v_qualification_v1` (mesh, explicit `residualControl`, force
+   stationarity), fixes the response identity, and qualifies drag and
+   downforce surface derivatives separately with centered FD under the
+   registered `fd_gradient_v1` profile; only if both pass is one small shape
+   step accepted and every geometry/mesh/solver gate re-run.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
