@@ -1328,13 +1328,17 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 
 ## 現在の未解決の問い（重要度順、2026-09-25）
 
-1. Work F surface FD: matched-Re laminar V1 caseの32-primal campaignは完了し、
-   gradient-aligned方向は5%以内（plateauあり）だがrandom seed方向が5%を超え、
-   完全なderivative qualificationはfalseのまま（`shape_update_allowed=false`）。
-   D1（realized direction）とD2（sensitivity semantics）は欠陥なしでpass、D3
-   （`linearUpwind`）はmixedで`supports_discretization_cause=false`。現在の問いは、
-   残差がB-spline geometry chain rule（D4.2、solver-free）にあるのか、
-   continuous-adjoint surface term（D4.3 ablation、条件付き）にあるのかである。
+1. Work F surface FD（fail-closedで確定）: matched-Re laminar V1 caseの32-primal
+   campaignはgradient-alignedが5%以内、random seed方向が5%超で完全な
+   derivative qualificationはfalse（`shape_update_allowed=false`）。D1/D2は欠陥
+   なし、D3（`linearUpwind`）はmixed、D4.1 component監査はclosure完全一致で
+   単一項・単一scalarでは説明不能、D4.2 geometry Jacobianはpass（残差はASCII
+   書き出し丸め由来で1/epsilon則）。D4.3 ablationは`includeSurfaceArea false`が
+   derivative fileをbit同一のまま変えず（`faceSensNormal*`のみ変化）、
+   `includeMeshMovement false`は値を変えるがpass controlを悪化させた。D4.4の
+   判定表に従い、OpenFOAM continuous-adjoint routeはこのWork F profileでは
+   **未資格（fail-closed）**としてD5 holdout・D6/D7へ進まない。次の問いは
+   アーキテクチャ判断（別定式化・別sensitivity経路・別parameterization）である。
 2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
    extractableだがblocked stopであり、strict terminal criterion上はopen。
 3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
@@ -1376,23 +1380,30 @@ raw logs、hashは変更しない。
    方向ごとにcontractし、closure・cancellation index・FD residual・
    drop-one/single-scalar仮説を記録する。closureはfile precision内で、
    単一項削除・単一scalarでは全方向を説明できない。
-3. D4.2 B-spline geometry-Jacobian audit（solver-free）: 既存plus/minus meshの
-   centered differenceとOpenFOAM analytic `dxdbFace`・`dSdb`・`dndb`を
-   face-by-faceで比較する。failならmorpher/parameterization chain ruleを
-   一因子修正してside preflightから再実行し、pass時のみD4.3へ進む。
-4. D4.3 adjoint-option ablation（条件付き、adjoint-only）: `includeSurfaceArea`
-   を先に、sole-cause条件を満たさない場合のみ`includeMeshMovement`を変更する。
-   複数optionの同時変更・結果を見た後のfactor追加は禁止である。
-5. D4.4 factor judgment: sole-cause ruleを満たすfactorのみD5 holdoutへ進める。
-   部分改善のみ・説明不能ならcontinuous adjoint routeをfail-closedで保留し、
-   D6/D7へ進まない。
-6. D5/D6/D7は条件付きである。holdout（manifest hashから導出した新random 2方向＋
-   gradient-aligned control、6 primals）が通らなければfull requalificationへ
-   進まず、48-primal requalificationが完全passした場合のみone-step manifestを
-   別checkpointで登録する。shape updateは最大一回で、multi-step最適化へ自動移行しない。
+3. D4.2 B-spline geometry-Jacobian audit（solver-free、実行済み・pass）:
+   既存plus/minus meshのcentered differenceとOpenFOAM analytic
+   `dxdbFace`・`dSdb`・`dndb`をface-by-faceで比較し、L2比`1 +/- 2e-5`、
+   cosine `~1`、plateau、非設計patchのderivativeゼロを確認した。per-face
+   残差は`1/epsilon`則でASCII書き出し丸め（`max_error * 2*epsilon`一定）に
+   由来し、geometry chain ruleは原因から除外された。
+4. D4.3 adjoint-option ablation（adjoint-only、実行済み）: `includeSurfaceArea
+   false`はderivative fileをbit同一のまま変えず（`faceSensNormal*`のみ変化）、
+   `includeMeshMovement false`はderivativeを変えるがpass controlを悪化させた
+   （drag `random_seed_2026` `1.4592 -> 3.8317`）。単一optionのsole-cause ruleは
+   不成立である。
+5. D4.4 factor judgment（fail-closed）: 説明可能な単一factorがないため、
+   OpenFOAM continuous-adjoint routeはこのWork F profileでは未資格とし、
+   D5 holdout・D6 full requalification・D7 one-step shape stepへ進まない。
+   `derivative_qualified=false`、`shape_update_allowed=false`を維持し、
+   architecture decision（別定式化・別sensitivity経路・別parameterizationの
+   いずれかを一因子ずつ検討）へ戻る。
+6. D5/D6/D7はD4.4でsole-cause factorが成立した場合のみの条件付き段階であり、
+   今回は未実行である。将来採用する場合もholdout（manifest hashから導出した新
+   random 2方向＋gradient-aligned control、6 primals）と48-primal
+   requalificationを経なければshape updateへ進まない。
 7. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
    独立検証・target-physics ladderとして維持する。
 
-直近の判定点は、**D4.2がpassするか（geometry chain ruleの欠陥の有無）、
-およびD4.3のablationがsole-cause ruleを満たすか**である。これを確定する前に
-形状更新を開始しない。
+直近の判定は完了した: **Work F surface derivativeは現行continuous-adjoint
+profileでは資格化できない**。形状更新は引き続き禁止であり、次の行動は
+architecture decisionである。

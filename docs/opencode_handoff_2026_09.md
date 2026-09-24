@@ -1454,3 +1454,36 @@ repair that unrelated documentation mismatch.
 - Conclusion: the B-spline geometry chain rule is not the cause of the Work F
   derivative mismatch. D4.3 adjoint-option ablation is allowed; D5-D7 remain
   conditional; `derivative_qualified=false` and `shape_update_allowed=false`.
+
+## 2026-09-25: D4.3 adjoint-option ablation and D4.4 fail-closed judgment
+
+- Manifest `docs/evidence/stage_s_work_f_adjoint_option_diagnostic_manifest_2026_09.json`
+  (SHA-256 `1c5e197244248808683d5fc24b8357b5597a7f823019b6427c36534cca3653ee`)
+  registers the factor order, the fixed settings, the pre-registered 32-row
+  baseline classification and the sole-cause rule.
+- D4.3a `includeSurfaceArea true -> false`
+  (`docs/evidence/stage_s_work_f_adjoint_option_diagnostic_surface_area_2026_09.json`,
+  SHA-256 `110ff2a6ae0a82d48da2a8e37ba88ea2d2832d790731d893a1325e6bd49cc14f`):
+  both adjoints converge in the same iterations, the primal lineage is
+  bit-identical, and the design-variable derivative files are **bit-identical**
+  (the option changes only `562/faceSensNormaladjDragESI`, sha
+  `77ef69bc...` -> `cd772a6a...`). The surface-area hypothesis is inert for the
+  qualified quantity, so the factor cannot explain the residual.
+- D4.3b `includeMeshMovement true -> false`
+  (`docs/evidence/stage_s_work_f_adjoint_option_diagnostic_mesh_movement_2026_09.json`,
+  SHA-256 `53ba943d03123361561aea96a674f1c7cedd9120b3021b1b57bfffa2e9c7a427`):
+  the option is consumed from the `optimisation.designVariables` subdict and
+  changes every row. It removes the mesh-movement part of `dxdbSurf` (downforce
+  `random_seed_2026` `-0.24243 -> -0.15813`, `dSdb` unchanged), worsens the
+  failing rows (drag `random_seed_2026` ratio `1.4592 -> 3.8317`) and breaks
+  previously passing controls (drag `random_seed_11` `1.0376 -> 1.2299`,
+  downforce gradient-aligned `1.0408 -> 1.3256`). The whole 32-row table
+  changes sign-consistently but no row-level agreement improves.
+- D4.4 judgment: no single option satisfies the pre-registered sole-cause rule
+  (`original_failing_rows_all_within=false`, `original_passing_rows_none_worsened=false`).
+  Per the post-D3 plan the OpenFOAM continuous-adjoint route is fail-closed and
+  unqualified for this Work F profile: no D5 holdout, no D6/D7, no shape update.
+  `derivative_qualified=false`, `shape_update_allowed=false`.
+- Next action is an architecture decision (different formulation, different
+  sensitivity path, or different parameterization), to be one-factor diagnosed
+  under a new registered plan.
