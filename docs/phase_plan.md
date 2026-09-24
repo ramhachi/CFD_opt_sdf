@@ -1171,6 +1171,26 @@ Execute in this order:
    continuous-adjoint formulation / surface-weighting / morpher chain-rule
    terms. No D4 full requalification and no D5 shape step are registered; the
    derivative remains unqualified and `shape_update_allowed=false`.
+
+   **Work F post-D4.4 architecture decision (2026-09-25):** D4.1 component
+   closure and D4.2 geometry Jacobian passed, while both D4.3 option ablations
+   failed the sole-cause rule. The current detailed order is now
+   [`stage_s_work_f_post_d3_plan_2026_09_25.md` §21](stage_s_work_f_post_d3_plan_2026_09_25.md#21-d44-後の-architecture-decision).
+   Preserve the primal, mesh, objective, `volumetricBSplines` parameterization,
+   registered directions/epsilons and FD evidence. First register a solver-free
+   A0 comparison contract, then run at most one fixed base/primal lineage and
+   the two A1 adjoints that change only
+   `sensitivityType surface` (E-SI) to the native `sensitivityType shapeFI`
+   formulation. `surfacePoints` is not an independent architecture candidate
+   because it inherits the same E-SI formulation; a parameterization change is
+   deferred because the current B-spline geometry Jacobian passed. A1 is only
+   a diagnostic against the existing FD rows: only a complete no-regression
+   pass may enter the existing D5 holdout, then D6 requalification. A mixed or
+   failed A1 stops this branch and requires a zero-run architecture memo before
+   selecting a discrete-consistent sensitivity path or a new low-dimensional
+   FD parameterization. `derivative_qualified=false` and
+   `shape_update_allowed=false` remain authoritative throughout A0/A1 and until
+   D5/D6 pass plus a separate D7 manifest.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

@@ -1487,3 +1487,26 @@ repair that unrelated documentation mismatch.
 - Next action is an architecture decision (different formulation, different
   sensitivity path, or different parameterization), to be one-factor diagnosed
   under a new registered plan.
+
+## 2026-09-25: post-D4.4 architecture-decision order
+
+- The generic three-way architecture stop was correct but not actionable: it
+  lacked factor priority, a bounded run budget and promotion/stop gates.
+- `docs/stage_s_work_f_post_d3_plan_2026_09_25.md` §21 now fixes the first
+  discriminant. Keep the primal, mesh, objectives, `volumetricBSplines`, the
+  four directions, epsilon ladder, FD evidence and gates unchanged; register
+  A0 solver-free, then change only `sensitivityType surface` (E-SI) to native
+  `sensitivityType shapeFI` (FI) for at most one fixed base/primal lineage and
+  the drag/downforce A1 adjoints; no perturbation primal is allowed.
+- Source inspection in the pinned OpenFOAM v2512 image confirms `shapeFI` is a
+  runtime-selected Field Integral formulation with internal `dx/db` assembly.
+  `surfacePoints` inherits the same E-SI formulation and is not counted as an
+  independent architecture path. A parameterization change is deferred because
+  the current B-spline geometry Jacobian passed.
+- Only a complete pass on all original failing rows with no passing-control
+  regression may enter D5 holdout. Mixed/fail stops the FI branch and requires
+  a zero-run memo comparing a concrete discrete-consistent sensitivity route
+  with a new low-dimensional FD parameterization before any further solver run.
+- A1 is diagnostic, not qualification. `derivative_qualified=false` and
+  `shape_update_allowed=false` remain until D5/D6 fully pass and a separate D7
+  manifest is registered.

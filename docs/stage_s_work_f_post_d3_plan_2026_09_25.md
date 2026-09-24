@@ -4,7 +4,9 @@
 
 対象スナップショット: `feat/p0-openfoam-closed-loop` / `3f067970a867e97fce78b5c4253d62398c702aea`
 
-状態: D0〜D3 実行後の current plan
+状態: D4.4 まで実行済み。§8〜§13 は as-run、§14〜§19 は未実行の条件付き gate、§21 が現在の後続計画
+
+完了スナップショット: `feat/p0-openfoam-closed-loop` / `a37870cbfa2d6b8ccd801ef1d09a3206f34b742f`
 
 この文書は、[`stage_s_work_f_fd_diagnosis_plan_2026_09_25.md`](stage_s_work_f_fd_diagnosis_plan_2026_09_25.md)
 で定めた D0〜D3 の実行結果を受けた後続計画である。ロードマップ、状態、実行順序の正本は
@@ -431,6 +433,19 @@ treatment: includeMeshMovement false
 
 複数 option の組合せを既存 4 directions に合わせ込む探索は行わない。
 
+### 13.1 適用結果（2026-09-25）
+
+D4.1 の component closure と D4.2 の geometry Jacobian は pass した。D4.3 では
+`includeSurfaceArea false` が design-variable derivative file を変えず、
+`includeMeshMovement false` は元の failing rows を改善せず passing controls も悪化させた。
+したがって、上表の「どの factor も説明しない」を適用し、D5〜D7 へは進まない。
+
+```text
+derivative_qualified=false
+shape_update_allowed=false
+next=section_21_architecture_decision
+```
+
 ## 14. D5 — independent holdout directions
 
 ### 必要性
@@ -527,6 +542,9 @@ surface term なのかを分離することである。
 - original data を使って選んだ factor を holdout なしで資格化しない。
 - continuous adjoint を合理的な一因子診断で説明できなければ、shape update を保留したまま architecture decision へ戻る。
 
+この停止条件は D4.4 で成立した。ここでいう architecture decision は無制限な三択探索ではない。
+以後は §21 の順序、予算、判定条件に従い、同時に複数軸を変更しない。
+
 ## 20. 非目標
 
 本計画だけでは次を主張しない。
@@ -540,3 +558,118 @@ surface term なのかを分離することである。
 - optimizer-generated shapes の一般的な cross-fidelity ranking
 
 これらには別の登録済み gate と独立 evidence が必要である。
+
+## 21. D4.4 後の architecture decision
+
+### 21.1 判断
+
+元の「別定式化・別 sensitivity 経路・別 parameterization のいずれかへ戻る」という記述は停止先としては正しいが、
+そのままでは優先順位、比較対象、計算予算、採用条件が不足している。次の一因子は、同じ primal、B-spline
+parameterization、方向、epsilon、FD evidence を固定したまま、shape sensitivity formulation だけを変更する。
+
+第一候補は OpenFOAM v2512 に既存の Field Integral formulation である。
+
+```text
+baseline:  sensitivityType surface   # E-SI
+treatment: sensitivityType shapeFI   # FI
+fixed:     primal, mesh, objective, volumetricBSplines, directions, epsilon, gates
+```
+
+これは FI が正しいと事前に仮定するものではない。現在の E-SI surface term から独立した一因子 discriminant を、
+追加実装を最小にして得るための優先順位である。
+
+### 21.2 この順序を選ぶ根拠
+
+- D1/D2 により movement mapping と response/sensitivity semantics は pass している。
+- D4.2 により `volumetricBSplines` の analytic geometry Jacobian は centered difference と一致している。
+- D4.3 により E-SI の二つの option は単独原因ではない。
+- v2512 source の `shapeFI` は runtime-selected な既存 formulation で、internal `dx/db` を使う。
+- `surfacePoints` は同じ E-SI formulation を継承するため、独立した architecture 候補には数えない。特定の
+  point/face assembly 仮説を事前登録する場合だけ診断用途で扱う。
+- geometry Jacobian が pass した状態で parameterization だけを先に変えると、原因切り分けよりも新しい交絡を増やす。
+
+### 21.3 A0 — solver-free registration
+
+solver を流す前に、新しい immutable manifest を登録する。
+
+- D4.0〜D4.4 evidence の path と SHA-256
+- OpenFOAM image ID と `shapeFI` / `surface` / `shapeDesignVariables` source SHA-256
+- baseline/treatment の dictionary 差分
+- 固定する primal、mesh、objective、B-spline basis、active 648 `varID`
+- 元の 4 directions、4 epsilon、5%・sign・plateau・near-zero rule
+- base lineage、adjoint convergence、derivative schema の gate
+- A1 の最大 run 数と停止条件
+
+A0 は source capability と比較契約の登録であり、FI derivative の正しさを示す evidence ではない。
+
+### 21.4 A1 — bounded FI formulation discriminant
+
+A0 の review 後、変更を `sensitivityType surface -> shapeFI` の一つに限定する。固定base/primal lineageの再実行と
+drag/downforce の二つの adjoint までを許可し、新しい perturbation primal は流さず、登録済み32 primalのFD結果を
+再利用する。
+
+必須条件は次のとおり。
+
+1. base primal field、response、mesh lineage が baseline と一致する。
+2. 両 adjoint が既存の residual/termination gate を通る。
+3. derivative file が同じ active 648 `varID` を一意に持ち、NaN/Infや欠損を含まない。
+4. 元の4 directionsへcontractし、両response・全4 epsilonの既存FD rowsと比較する。
+5. post-hoc scale、方向別補正、option併用、epsilon/tolerance変更を行わない。
+
+A1 は次をすべて満たす場合だけ「candidate formulation supported」とする。
+
+- original failing rows がすべて5%以内へ入る。
+- original passing rows が一つも5%外へ悪化しない。
+- 全方向でsign agreementを保つ。
+- epsilon plateauとnear-zero ruleを保つ。
+- baseline response/field lineageを変えない。
+
+元データを見て選んだ formulation なので、A1 pass は derivative qualification ではない。
+
+### 21.5 A1 後の分岐
+
+| A1 結果 | 次の処置 |
+| --- | --- |
+| 全条件 pass | candidate formulation として D5 の未使用 holdout 6 primalsへ進む。D5/D6/D7の既存条件は変更しない。 |
+| mixed / fail | FI と E-SI の混合、option組合せ、fitted scaleを試さず、この formulation branch を停止する。 |
+| 実行不能 / schema不一致 | capability failureとして停止する。値を解釈せず、必要なら辞書・出力bindingだけを別計画で修正する。 |
+
+A1 が pass しても `shape_update_allowed=false` を維持する。D5 holdout と D6 full requalification が完全に
+passし、別の D7 manifest が登録されるまで形状更新を許可しない。
+
+### 21.6 A1 が支持されない場合の architecture fork
+
+A1 が mixed/fail の場合、次の solver campaign を自動選択しない。0-run の architecture memo を先に登録し、
+次の二案だけを比較する。
+
+1. **別 sensitivity 経路**: 同じ discrete primal residual/response に整合する sensitivity 実装を、利用可能な
+   solver/toolchain、baseline再現、gradient取得コスト、FD資格化可能性まで具体化する。名称だけの「discrete adjoint」
+   は候補登録にならない。
+2. **別 parameterization を伴うFD経路**: 低次元で事前登録した設計空間なら centered FD を更新方向生成へ使えるか、
+   必要primal数、形状表現力、minimum-width/clearance/mesh gateを見積もる。これは原因修正ではなく新architectureであり、
+   現行648変数B-spline結果をそのまま継承しない。
+
+parameterization-only の変更は第一選択にしない。採用する場合は、旧B-splineとの優劣ではなく、新しい design-space
+contract、geometry preflight、FD cost、holdout、one-step gateを最初から登録する。
+
+### 21.7 計算予算と停止条件
+
+| 段階 | 最大の新規 solver run | shape update |
+| --- | ---: | --- |
+| A0 source/contract registration | 0 | 禁止 |
+| A1 FI discriminant | 固定base/primal lineage 1 + 2 adjoints。perturbation primal 0 | 禁止 |
+| D5 holdout（A1 pass時のみ） | 6 primals | 禁止 |
+| D6 full requalification（D5 pass時のみ） | 48 primals + 必要な固定lineage | 禁止 |
+| D7 separate manifest（D6 complete pass時のみ） | 最大1 shape step | 条件付き |
+
+次のいずれかで即時停止する。
+
+- baseline lineageが変わる。
+- adjoint convergenceまたはschema gateが落ちる。
+- original passing controlが一つでも悪化する。
+- original failing rowが一つでも5%外に残る。
+- 複数因子を同時に変えないと説明できない。
+- A1後に候補を追加するための独立した事前登録がない。
+
+この計画は現行continuous-adjoint E-SI routeを復活させるためのtuning計画ではない。最小のnative FI discriminantで
+定式化差を判定し、支持されなければ新しいsensitivity/parameterization architectureを別契約として選ぶための計画である。

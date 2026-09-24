@@ -1367,43 +1367,31 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-25, D3後）
+## 次の一手（2026-09-25, D4.4後）
 
 実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は
 `stage_s_work_f_post_d3_plan_2026_09_25.md`に従う。過去のmanifest、evidence、
 raw logs、hashは変更しない。
 
-1. D4.0 diagnostic registration: component合算式、derivative file hash、image ID、
-   v2512 source hash、ablation順序、sole-cause rule、holdout seed規則を
-   `stage_s_work_f_component_diagnosis_manifest_2026_09.json`に固定する（登録済み）。
-2. D4.1 derivative-component audit（solver-free、実行済み）: 全component columnを
-   方向ごとにcontractし、closure・cancellation index・FD residual・
-   drop-one/single-scalar仮説を記録する。closureはfile precision内で、
-   単一項削除・単一scalarでは全方向を説明できない。
-3. D4.2 B-spline geometry-Jacobian audit（solver-free、実行済み・pass）:
-   既存plus/minus meshのcentered differenceとOpenFOAM analytic
-   `dxdbFace`・`dSdb`・`dndb`をface-by-faceで比較し、L2比`1 +/- 2e-5`、
-   cosine `~1`、plateau、非設計patchのderivativeゼロを確認した。per-face
-   残差は`1/epsilon`則でASCII書き出し丸め（`max_error * 2*epsilon`一定）に
-   由来し、geometry chain ruleは原因から除外された。
-4. D4.3 adjoint-option ablation（adjoint-only、実行済み）: `includeSurfaceArea
-   false`はderivative fileをbit同一のまま変えず（`faceSensNormal*`のみ変化）、
-   `includeMeshMovement false`はderivativeを変えるがpass controlを悪化させた
-   （drag `random_seed_2026` `1.4592 -> 3.8317`）。単一optionのsole-cause ruleは
-   不成立である。
-5. D4.4 factor judgment（fail-closed）: 説明可能な単一factorがないため、
-   OpenFOAM continuous-adjoint routeはこのWork F profileでは未資格とし、
-   D5 holdout・D6 full requalification・D7 one-step shape stepへ進まない。
-   `derivative_qualified=false`、`shape_update_allowed=false`を維持し、
-   architecture decision（別定式化・別sensitivity経路・別parameterizationの
-   いずれかを一因子ずつ検討）へ戻る。
-6. D5/D6/D7はD4.4でsole-cause factorが成立した場合のみの条件付き段階であり、
-   今回は未実行である。将来採用する場合もholdout（manifest hashから導出した新
-   random 2方向＋gradient-aligned control、6 primals）と48-primal
-   requalificationを経なければshape updateへ進まない。
+1. 完了済みD4.0〜D4.4 evidence、元の32-primal FD、OpenFOAM image/source、
+   baseline/treatment差分、run上限、停止条件をA0 manifestへsolver-freeで登録する。
+2. primal、mesh、objective、`volumetricBSplines`、方向、epsilon、gateを固定し、
+   `sensitivityType surface`（E-SI）からnative `sensitivityType shapeFI`（FI）だけを
+   変更したA1 discriminantを行う。最大runは固定base/primal lineage 1とdrag/downforceの
+   2 adjointsで、perturbation primalは0。
+3. A1は、元のfailing rowsがすべて5%以内、元のpassing rowsが無悪化、全sign・plateau・
+   near-zero・lineage・schema gateを満たす場合だけcandidate formulationとする。A1 passは
+   元データ依存の診断でありqualificationではない。
+4. A1 complete pass時だけ既存D5 holdout（6 primals）へ進み、その後もD6 full
+   requalification（48 primals）を完全passするまでshape updateを許可しない。
+5. A1がmixed/failならFI/E-SI混合、option組合せ、fitted scaleを試さず停止する。次のsolver
+   campaignの前に、discrete primalへ整合する別sensitivity経路と、低次元FD parameterizationの
+   二案を0-run architecture memoで比較する。`surfacePoints`は同じE-SI系なので独立候補に数えない。
+6. parameterization-only変更は、現B-spline geometry Jacobianがpassしているため第一選択にしない。
+   採用時は新しいdesign-space contract、geometry preflight、FD cost、holdoutを最初から登録する。
 7. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
    独立検証・target-physics ladderとして維持する。
 
 直近の判定は完了した: **Work F surface derivativeは現行continuous-adjoint
 profileでは資格化できない**。形状更新は引き続き禁止であり、次の行動は
-architecture decisionである。
+architecture decisionの最初のbounded sliceはA0登録とA1 FI discriminantである。
