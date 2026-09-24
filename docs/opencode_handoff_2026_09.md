@@ -498,25 +498,30 @@ control the immediate work are:
 
 ## Issue-Driven Next Implementation Plan
 
-The latest `phase_plan.md` order controls. The complete post-PQ3.3 criteria are
-in [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md).
+The latest `phase_plan.md` order controls. The post-PQ3.3 bridge criteria are in
+[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md);
+the PQ3.3a/PQ4.0a/PQ3.3b/PQ4.1 items below are complete and retained as
+history.
 
-1. PQ3.3a: reconstruct and hash all four fields; re-extract from
-   `rho_projection`; add an immutable PQ3.3 correction artifact.
-2. PQ4.0a: repair and calibrate self-intersection, gap, minimum-width and volume
-   measurements.
-3. Projected-volume target preflight: implement the correct measure, prove
-   move-box reachability at each planned continuation level, and preregister
-   targets and stopping criteria.
-4. PQ3.3b: run level-local real-OpenFOAM reoptimization only after the preceding
-   exit gates pass.
-5. PQ4.1: require the full composite gate on the terminal candidate.
-6. Only then qualify drag/downforce Stage S surface FD and accept at most one
-   shape step.
-7. PQ2 may run independently; PQ5/PQ6 remain after the Stage S bridge.
+1. Work F surface-FD contract: implement the matched-Re laminar body-fitted base
+   adjoint (separate drag and downforce solvers, `faceSensNormal<response>` for
+   both, `require_drag=True`), response-specific immutable manifests, the
+   solver-free perturbation preflight, and regression tests. Do not start the
+   campaign yet.
+2. Register the epsilon ladder, directions, surface basis, displacement cap and
+   noise floor before any response value is seen; then run the two base
+   adjoints and the shared perturbation catalog (at most 4 directions x 4
+   epsilons x 2 signs = 32 primals) and compute centered FD.
+3. Judge drag and downforce separately. Only if both pass, register a separate
+   one-step manifest; after the small step re-run every geometry, clearance,
+   mesh, solver and response gate. On any fail/unresolved keep
+   `shape_update_allowed=false` and do not enter HJ evolution or multi-step.
+4. PQ2 may run independently, but not concurrently with Work F on the same
+   machine; PQ5/PQ6 remain the post-Stage-S independent verification and
+   target-physics ladder.
 
-Do not start the long PQ3.3b campaign or Stage S from the current
-`ready_for_stage_s=false` artifact.
+Do not start the FD campaign or a shape update before the contract and
+solver-free preflight are registered.
 
 ## 2026-09-23: PQ3.3b preflight v4 / manifest v3 current status
 

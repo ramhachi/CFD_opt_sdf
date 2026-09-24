@@ -37,7 +37,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | # | 問題 | 重大度 | 状態 |
 | --- | --- | --- | --- |
 | P1 | 代理モデルの順位が body-fitted へ転写しない | 最重大 | **条件付き肯定観測、一般資格は未成立（2026-09-20, WP6+WP6-2）**: WP6 の厚さ軸ではdownforce反転。WP6-2の8形状ではV1/V2とも解像可能な反転ゼロ、tau=1.000。一方、17形状合成poolのmachine verdictは両応答とも`unresolved`。reachable-set/min-widthへの一般化はP18を閉じてから判定する |
-| P2 | 設計が二値化しない | 最重大 | **solver fieldの登録済み離散指標は達成、抽出可能性は未成立（2026-09-22, PQ3.3）**。`beta_solver` mean_nd 0.00388 / max 0.94395。ただしglobal指標は空領域で希釈され、最終b=16は0 accepted。P19/P20を閉じて再判定 |
+| P2 | 設計が二値化しない | 最重大 | **open（strict terminal criterion）**。v16 checkpoint 87は`mean_nd=0.0025089`、抽出可能（PQ4.1 v2で`ready_for_stage_s=true`、P19/P20はclosed）。ただしv16はattempt 88のPath B符号不一致によるblocked stopで、登録済み収束窓を満たすterminalではない。P2のclosureは登録済みterminal convergenceを満たすcandidateを要求する |
 
 > **2026-09-23 quantification:** both terminal candidates re-grey during the campaign: the v9 (b=16) terminal measures `mean_nd 0.109` and the v11 (b=128, margin mask) terminal `0.0555` against the 0.01 bound although the b=128 continuation started at 0.0058. The extractability guard only prevents occupancy collapse; the acceptance policy has no discreteness criterion. Clearing P2 requires a registered discreteness gate in the Phase 2 acceptance (or a penalty), not a threshold change. The PQ4.1 self-intersection reason from v1 was a detector barycentric bug (fixed, P20); the corrected v2 keeps discreteness and clearance as the real failures, and clearance is structurally addressed by the v10/v11 margin mask.
 >
@@ -195,7 +195,7 @@ claimはPQ1/PQ3/PQ5の新しいevidenceから作る。
 
 ---
 
-## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・open）
+## P19 — volume targetとStage S geometry fieldの意味論不一致（最重大・closed 2026-09-23）
 
 > **2026-09-23 closure:** PQ4.1 ran the complete composite gate on the first
 > converged terminal candidate with the registered semantics: the optimizer
@@ -565,7 +565,7 @@ manifestの幅定義、複合partの局所寸法、候補固有grid drift、未�
 
 ---
 
-## P2 — 設計が二値化しない（最重大・修正着手中）
+## P2 — 設計が二値化しない（最重大・open: strict terminal criterion）
 
 ### 症状
 
@@ -1326,17 +1326,17 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 | Stage V | v2 specから直接駆動。3解像度、候補Bの2成分とも欠落なくメッシュ化、Cd単調収束。**ただしP12により参照として未資格** |
 | 目的関数の健全性 | 空領域（ρ≡0）で drag = downforce = 0.0 ちょうど。幾何非依存のオフセットなし |
 
-## 現在の未解決の問い（重要度順）
+## 現在の未解決の問い（重要度順、2026-09-24）
 
-1. P19を修正して`rho_projection`を抽出したとき、PQ3.3のgeometry failureはどこまで
-   field semanticの取り違えで説明されるか。
-2. projected-volume targetとlevel内収束を使うPQ3.3bで、b=16のaccepted/converged/
-   extractable candidateを作れるか。
-3. P20の測定をfail-closedに直した完全Gateで、実candidateが`ready_for_stage_s=true`になるか。
-4. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
+1. Work F surface FD: matched-Re laminar V1 case上でdrag/downforceのbase adjointが
+   成立し、analytic directional derivativeがcentered FDと符号一致かつ5%以内に収まるか
+   （epsilon plateau、noise floor、near-zero規則、法線・面積重み規約を含む）。
+2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
+   extractableだがblocked stopであり、strict terminal criterion上はopen。
+3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
    Path Bに留まるか。
-5. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
-6. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか。
+4. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
+5. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか（PQ5）。
 
 ## 2026-09-12時点の主張境界（歴史的記録）
 
@@ -1359,19 +1359,25 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-22, PQ3.3後）
+## 次の一手（2026-09-24, Work F V1 baseline後）
 
-実行順は`phase_plan.md` §11、詳細は
-[`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
-に従う。
+実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は直近の監査計画に従う。
+PQ3.3a/PQ4.0a/PQ3.3b/PQ4.1は実行済みで、以下が現在の順序である。
 
-1. PQ3.3a: 保存済みcandidateを四場へ再構成し、`rho_projection`で安価に再抽出する。
-2. PQ4.0a: self-intersection、gap、minimum-width、volume calibrationをfail-closedに直す。
-3. PQ3.3b preflight: projected-volume target backend、到達可能性、manifestを固定する。
-4. PQ3.3b: b/q levelごとに再評価・再最適化し、最終levelのaccepted/converged stateを得る。
-5. PQ4.1: 正しいgeometry fieldで完全なcomposite Gateを実行する。
-6. Gate合格後のみ、drag/downforce surface FDと最大一つのStage S updateへ進む。
-7. PQ2は並行実行可能。PQ5/PQ6はStage S後の独立検証・target-physics ladderとして維持する。
+1. 権威文書の要約整合（本更新）。過去の失敗記録とevidenceは変更しない。
+2. Work F surface-FD contract: matched-Re laminar用のbody-fitted base adjoint
+   （drag/downforceを別solverで宣言、`faceSensNormal<response>`を両方取得、
+   dragは`require_drag=True`）、response別immutable manifest、solver-free
+   perturbation preflight、回帰テストを実装する。campaignはまだ開始しない。
+3. epsilon ladder・方向・surface basis・変位上限・noise floorを応答結果を見る前に固定し、
+   immutable manifestとsidecar hashを作る。
+4. base adjoint 2本と共有perturbation catalog（最大 4 directions × 4 epsilons × 2 signs
+   = 32 primal）を実行し、centered FDを計算する。pair片側の失敗から片側差分を作らない。
+5. drag/downforceを別々に判定する。両方pass時のみone-step manifestを別途登録し、
+   小変位step後にgeometry/clearance/mesh/solver/responseを全再実行する。fail/unresolved
+   なら`shape_update_allowed=false`を維持し、HJ evolution・複数stepへ進まない。
+6. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
+   独立検証・target-physics ladderとして維持する。
 
-直近の判定点は、**PQ3.3の抽出失敗が`beta_solver`と`rho_projection`の取り違えでどこまで
-説明されるか**である。これを確定する前に長時間PQ3.3bを開始しない。
+直近の判定点は、**base adjointがmatched-Re laminar V1 caseで成立し、analytic derivative
+とcentered FDが符号一致・5%以内に収まるか**である。これを確定する前に形状更新を開始しない。
