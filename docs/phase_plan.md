@@ -840,9 +840,16 @@ Execute in this order:
    Each attempt may evaluate smaller transform-feasible alphas only after Path
    B passes and the full trial response fails; a Path B failure stops the
    attempt. The immutable budget is at most ten fresh attempts/accepted steps
-   and at most 16 evaluator requests per attempt. V15 remains
-   `registered_preflight_pending`; its entry preflight and campaign have not
-   run. Stage S remains blocked.
+   and at most 16 evaluator requests per attempt. The registered entry
+   preflight subsequently passed at alpha 1.0: parent/trial downforce
+   `2.00516803057 -> 2.01655864594`, Path B
+   `d_adj=-1.67506090`, `d_fd=-1.65081812`, candidate
+   `mean_nd=0.00348178008`, projected volume `0.06216404077`, and zero support
+   violations
+   ([`evidence/pq3_3b_v15_entry_preflight_2026_09.json`](evidence/pq3_3b_v15_entry_preflight_2026_09.json)).
+   Because the first alpha passed, this run did not exercise physical
+   response backtracking to a smaller alpha. The bounded v15 campaign remains
+   unrun at this point. Stage S remains blocked.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

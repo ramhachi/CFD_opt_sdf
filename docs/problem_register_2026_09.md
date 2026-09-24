@@ -65,8 +65,10 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > extraction profile and volume fidelity, but failing clearance. V15 is
 > registered from a deterministic support-box trim with a reset convergence
 > history, unchanged D/V thresholds and a bounded response-level alpha ladder;
-> neither its entry preflight nor campaign has run. P2 and Stage S readiness
-> therefore remain open.
+> its entry preflight passed at alpha 1.0 (`DF 2.00516803057 -> 2.01655864594`,
+> `mean_nd=0.00348178008`, projected volume `0.06216404077`, support violations
+> 0). The bounded campaign has not run, and the preflight did not need a
+> smaller response alpha. P2 and Stage S readiness therefore remain open.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
@@ -1188,7 +1190,9 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
   この操作後のprojected volumeは`0.06202391606`、`mean_nd=0.00365951599`、
   `rho_projection>0.5`のsupport違反は0である。これはclearance合格の証拠ではなく、
   PQ4.1を再実行する前のtransform-level予防条件である。
-- v15 entry preflightと実campaignは未実行である。support gateを通った最終候補でも、
+- v15 entry preflightはalpha 1.0で合格した。start/candidateともsupport違反0で、候補の
+  `mean_nd=0.00348178008`、projected volume `0.06216404077`、実trial downforce
+  `2.01655864594`である。実campaignは未実行であり、support gateを通った最終候補でも、
   抽出面に対する完全なclearance preflightが合格するまではP17を閉じない。
 
 ---

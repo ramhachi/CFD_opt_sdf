@@ -935,3 +935,18 @@ repair that unrelated documentation mismatch.
   run only its registered entry preflight, inspect the exact alpha/run evidence,
   and start the bounded campaign only if that preflight passes. Stage S remains
   blocked until a later PQ4.1 returns `ready_for_stage_s=true`.
+
+### V15 entry preflight result
+
+- `docs/evidence/pq3_3b_v15_entry_preflight_2026_09.json` passed. The trimmed
+  parent is a fresh converged primal/adjoint at downforce `2.00516803057`.
+- Alpha 1.0 was transform-feasible and accepted: downforce
+  `2.01655864594`, projected volume `0.0621640407738`,
+  `mean_nd=0.00348178008471`, support violations 0 and mask drift 0.
+- The centered Path B pair was fresh and consistent:
+  `d_adj=-1.67506090492`, `d_fd=-1.65081811875`. Two Path B primal requests
+  and one trial request were used, all recorded as non-reused with summary
+  hashes.
+- Since alpha 1.0 passed, no lower-alpha response evaluation was needed. The
+  code path is covered by tests, but physical response backtracking remains
+  unobserved. The preflight did not start the ten-attempt campaign.
