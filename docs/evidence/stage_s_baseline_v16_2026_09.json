@@ -1,0 +1,181 @@
+{
+  "baseline_id": "stage_s_baseline_v16_2026_09",
+  "candidate": {
+    "campaign_manifest": {
+      "path": "docs/evidence/pq3_3b_campaign_manifest_v16_2026_09.json",
+      "sha256": "28e8f7b5fa7a0fc0d67143f7b2f2fa55a8c7ca3c6a7d0cc50c766afb64630751"
+    },
+    "campaign_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v16_outcome_2026_09.json",
+      "sha256": "864084348e3c3fae5d2b592eb484d931dccd60502ed0d72e61bfc3881ab5a671"
+    },
+    "checkpoint_index": 87,
+    "checkpoint_state": {
+      "path": "checkpoints/state_0087.json",
+      "sha256": "9bb1e0430cddb18db1aa4fcc064a9274f8ada5e4461299361a36d0cfff2d2e79"
+    },
+    "final_downforce": 2.65056396128,
+    "label": "v16 final accepted checkpoint (checkpoint 87, blocked stop)",
+    "projected_volume": 0.07197350145206693,
+    "rho_file_sha256": "50baf8401a66422938f0a2867a670eeb26ad8ee9779689fc8294dafd7b5da663",
+    "rho_sha256": "e9a17b676d829d9886819ab026d7ebbc394b877f52df8515ab522a60b7f7117f",
+    "v_max_projected": 0.07632566813424899,
+    "volume_tolerance": 0.0001
+  },
+  "claims_not_supported": [
+    "this is a baseline registration, not a Stage S qualification or a shape step",
+    "no grid independence, target-physics or full-vehicle claim; the candidate is a blocked-stop checkpoint, not a converged terminal",
+    "the solver-execution clearance reconfirmation (P17) is not performed here"
+  ],
+  "claims_supported": [
+    "one candidate passed the repaired composite Stage S entry gate and is bound with its handoff, transform, field and clearance hashes",
+    "the selected iso-0.5 surface passes the registered stage_v_clearance_v1 preflight"
+  ],
+  "clearance": {
+    "minimum_clearance_m": 0.25,
+    "problem_spec": {
+      "path": "work/pq4_candidate/project.yaml",
+      "sha256": "b66c159f6217683161ab48a7aa96a3706c0415d84074312d327d5136385b0f27"
+    },
+    "profile_id": "stage_v_clearance_v1",
+    "qualified": true,
+    "reasons": [],
+    "surface_stl_sha256": "1c16b7536fbda45982d3129c08c136d6f110300300219fca0b6acbfbcd9f9274"
+  },
+  "fields": {
+    "beta_equals_ramp_of_projection_max_abs_difference": 3.0169688177705822e-06,
+    "beta_solver_array_sha256": "b16f67d1140a7ee0ec4d989c71e35be3bbd2d5e37118f7de6bf009efc7855cd2",
+    "bundle": {
+      "beta_solver": {
+        "path": "work/pq4_1_v16_state/beta_solver.vti",
+        "sha256": "b3f6e56fa1ea1e83383980d121454a26b6e2f6b75de56480a6d99a4a3e4d7fa4"
+      },
+      "rho_design": {
+        "path": "work/pq4_1_v16_state/rho_design.vti",
+        "sha256": "c9aadce302ac7ab89390d4470f576b02e6942e72e6e55c080fbc8dac5b6c2e17"
+      },
+      "rho_filtered": {
+        "path": "work/pq4_1_v16_state/rho_filtered.vti",
+        "sha256": "3bf05a20717efca9a67de2227c8e0a45de62e74379c07653d4bbb235be88246e"
+      },
+      "rho_projection": {
+        "path": "work/pq4_1_v16_state/rho_projection.vti",
+        "sha256": "f8af7f188dc38aa6851aa9367e012029fcd1c1e0924fc1bb6f8251660139d0f1"
+      }
+    },
+    "field_distinction": "Stage T solver response uses beta_solver = p / (1 + q(1 - p)) with p = rho_projection and q = 100; Stage S geometry uses rho_projection. The two arrays are never interchangeable.",
+    "geometry_basis": "rho_projection",
+    "rho_projection_array_sha256": "66c04336edf41332b3f0797407bc9b2d106ef72aa96e9b81646cbecc3b8c09ed",
+    "solver_audit_field": "beta_solver",
+    "transform": {
+      "filter_radius_m": 0.15,
+      "projection_b": 128.0,
+      "projection_eta": 0.5,
+      "ramp_q": 100.0
+    }
+  },
+  "gate": {
+    "pq4_1_artifact_sha256": "ae6a30c45503a40ddc31c61039c7da1e6670b4bd065b2a4fcbd2e84595cc0663",
+    "profile_id": "stage_s_entry_v1",
+    "ready_for_stage_s": true,
+    "sub_verdicts": {
+      "clearance": true,
+      "components_root": true,
+      "discreteness": true,
+      "extraction_profile": true,
+      "volume_constraint": true,
+      "volume_fidelity": true,
+      "width_gap": true
+    }
+  },
+  "handoff": {
+    "artifacts": {
+      "fidelity_report": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/fidelity_report.json",
+        "sha256": "51c8213c3fca8e35a5b8007d68f9362568ebe4d5c6838da54a21dd03785cfbe8"
+      },
+      "geometry_binding": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/geometry_binding.json",
+        "sha256": "c5a118bd3a80bff35f33964c0277c9a6f278426040ba10e2263dbcac593ca55c"
+      },
+      "revoxelized_density_vti": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/revoxelized_density.vti",
+        "sha256": "225e8cb1a6cb2cb96b2fe6edd541e9e996bc0b4829da0b1fa819ea765ef6ace3"
+      },
+      "sdf_vti": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/signed_distance.vti",
+        "sha256": "158b5b924df95c8f44134ea0386ce4ee3e3f0e1948c4dbdba2190df4b3c808e3"
+      },
+      "source_density_vti": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/source_density.vti",
+        "sha256": "8497ad175167d75385f8ea4757a7a068741bea4dd9a75685ab3fecf0592207bd"
+      },
+      "source_topology_state": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/source_topology_state.json",
+        "sha256": "c6269a982134e9a52f3a71a488359fec2447c8c1de3b9694c7c7d41ecfb9fd01"
+      },
+      "surface_stl": {
+        "path": "work/pq4_1_v16_state/sweep/threshold_0.5/iso_surface.stl",
+        "sha256": "1c16b7536fbda45982d3129c08c136d6f110300300219fca0b6acbfbcd9f9274"
+      }
+    },
+    "manifest": {
+      "path": "work/pq4_1_v16_state/sweep/threshold_0.5/handoff_manifest.json",
+      "sha256": "5890dc97b79a6e3629fb714fefe4dc463b11eb8652db30c83145e95ba288c0ca"
+    },
+    "pq4_1_artifact": {
+      "path": "docs/evidence/pq4_1_v16_state_stage_s_entry_2026_09.json",
+      "sha256": "ae6a30c45503a40ddc31c61039c7da1e6670b4bd065b2a4fcbd2e84595cc0663"
+    },
+    "selected_threshold": 0.5,
+    "selection_rule": {
+      "kind": "registered_range_first_that_passes",
+      "range": [
+        0.4,
+        0.6
+      ],
+      "require_ready_for_stage_s": true
+    }
+  },
+  "kind": "stage_s_baseline_v16",
+  "schema_version": 1,
+  "work_f_profiles": {
+    "clearance": {
+      "minimum_clearance_m": 0.25,
+      "profile_id": "stage_v_clearance_v1"
+    },
+    "mesh_and_solver": {
+      "check_mesh": {
+        "allowed_failed_check_markers": [
+          "Concave cells"
+        ],
+        "concave_cell_fraction_max": 0.08,
+        "concave_face_max_angle_deg_max": 170.0
+      },
+      "force_stationarity": {
+        "absolute_drift_max": 0.001,
+        "absolute_std_max": 0.001,
+        "relative_drift_max": 0.01,
+        "relative_std_max": 0.01,
+        "response_bound_kind": {
+          "Cd": "relative",
+          "downforce": "absolute"
+        },
+        "window_fraction": 0.25,
+        "window_min_rows": 20
+      },
+      "profile_id": "stage_v_qualification_v1"
+    },
+    "source_tree_python_sha256": "c1dec02a7a40a1b5f8b1665fcf9e7da55a50bed89f06cd9fc8e21370edc8dcac",
+    "surface_fd": {
+      "min_epsilons": 4,
+      "min_random_seeds": 2,
+      "near_zero_rule": "directions with a near-zero reference derivative are judged by a pre-registered absolute error from the response scale, never by a relative error",
+      "profile_id": "fd_gradient_v1",
+      "relative_error_max": 0.05,
+      "require_gradient_aligned_direction": true,
+      "require_sign_agreement": true,
+      "scope": "reduced laminar fixture; not a target-physics universal threshold"
+    }
+  }
+}

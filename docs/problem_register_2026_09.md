@@ -106,7 +106,13 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > (`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`). This is a bounded
 > response/gradient stop, not a converged terminal; P2's stricter
 > terminal-state closure rule and P17's solver-execution reconfirmation remain
-> open, and the Stage S baseline registration is the next authorized decision.
+> open. The Stage S baseline is now registered on this candidate
+> (`evidence/stage_s_baseline_v16_2026_09.json`): the selected iso-0.5
+> `rho_projection` handoff, the transform, the four-field bundle, the surface
+> and the `stage_v_clearance_v1` pass are hash-bound, and the Work F
+> qualification profiles (`stage_v_qualification_v1`, `fd_gradient_v1`) are
+> pinned. Stage S Work F is the next slice; the registration is not a Stage S
+> qualification.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |

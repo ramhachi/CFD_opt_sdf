@@ -1102,3 +1102,23 @@ repair that unrelated documentation mismatch.
   Iso 0.4 fails feature shrink; iso 0.6 fails volume fidelity. The pass is on
   a blocked-stop checkpoint, not a converged terminal; the Stage S baseline
   registration is the next authorized decision.
+
+## 2026-09-24: Stage S baseline registered on the v16 candidate
+
+- `docs/evidence/stage_s_baseline_v16_2026_09.json` (SHA-256
+  `db54601caa3acc02649b5b4b759d30c4e8668d530a614993b5f8c0dd4bef412f`) registers
+  the selected iso-0.5 `rho_projection` handoff of the v16 checkpoint 87 as the
+  Stage S baseline. The Exit Gate E binding is complete: candidate rho hashes,
+  campaign manifest/outcome, the selected handoff manifest and its artifacts
+  (surface STL, revoxelized/source density, fidelity report), the four-field
+  bundle file hashes plus the `rho_projection`/`beta_solver` array hashes, the
+  transform (`r=0.15`, `b=128`, `eta=0.5`, `q=100`) and
+  `V=0.0719735015 <= Vmax`.
+- The registered `stage_v_clearance_v1` preflight was re-run on the selected
+  surface and passes (margin 0.25 m). Work F profiles are pinned:
+  `stage_v_qualification_v1` for the body-fitted mesh/solver qualification and
+  `fd_gradient_v1` for the drag/downforce surface FD.
+- The registration is not a Stage S qualification; Work F (baseline mesh and
+  response qualification, then the surface FD, then at most one shape step) is
+  the next slice. P17's solver-execution reconfirmation is part of Work F, and
+  P2's stricter terminal-state closure rule remains open.

@@ -965,8 +965,19 @@ Execute in this order:
    width 0.05 m; the policy declares no minimum), lineage hashes and the
    `stage_v_clearance_v1` preflight all pass. Iso 0.4 fails feature shrink;
    iso 0.6 fails volume fidelity. The candidate is a blocked-stop checkpoint,
-   not a converged terminal; a Stage S baseline registration is the next
-   authorized decision.
+   not a converged terminal.
+
+   **Stage S baseline registration (2026-09-24):** the selected iso-0.5
+   `rho_projection` handoff is registered as the Stage S baseline
+   ([`evidence/stage_s_baseline_v16_2026_09.json`](evidence/stage_s_baseline_v16_2026_09.json),
+   SHA-256 `db54601caa3acc02649b5b4b759d30c4e8668d530a614993b5f8c0dd4bef412f`)
+   with the Exit Gate E binding: candidate rho hashes, campaign
+   manifest/outcome, handoff manifest, surface STL, revoxelized/source density,
+   four-field bundle file hashes plus the `rho_projection`/`beta_solver` array
+   hashes, transform (`r=0.15`, `b=128`, `eta=0.5`, `q=100`), volume
+   (`V=0.0719735015 <= Vmax`), and a re-run `stage_v_clearance_v1` preflight
+   pass. Work F profiles are pinned (`stage_v_qualification_v1`,
+   `fd_gradient_v1`). Registration is not a Stage S qualification.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
