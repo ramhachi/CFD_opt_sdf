@@ -1058,3 +1058,25 @@ repair that unrelated documentation mismatch.
   hash binding, `stage_v_clearance_v1` pass, `V <= Vmax`, then Work F
   qualification under `stage_v_qualification_v1` and the `fd_gradient_v1`
   surface-FD profile, at most one shape step).
+
+## 2026-09-24: v16 continuation registration and entry preflight
+
+- Manifest `docs/evidence/pq3_3b_campaign_manifest_v16_2026_09.json`
+  (SHA-256 `28e8f7b5fa7a0fc0d67143f7b2f2fa55a8c7ca3c6a7d0cc50c766afb64630751`)
+  continues the b=128 margin level from the v15 checkpoint 10 unchanged; no
+  bootstrap or state transformation. The cumulative accepted count (10) and
+  the last three accepted metrics are carried over, so the registered
+  convergence window is evaluated across the v15/v16 boundary. The
+  cap-stationarity exit is enabled for the projected-direction policy reasons
+  (`machine_scale_update_rejected`, `projected_volume_limit_exceeded`), the
+  independent terminal repeat is enabled, and the level budget is 90 attempts
+  with at least 10 cumulative accepted steps.
+- Entry preflight
+  `docs/evidence/pq3_3b_v16_entry_preflight_2026_09.json` passed: start state
+  `mean_nd=0.0032130442`, projected volume `0.0640656740`, support violations
+  0; alpha 1.0 accepted (`DF 2.10035503533 -> 2.11252824711`, Path B
+  `d_adj=-1.29080394` / `d_fd=-1.41661536`, candidate `mean_nd=0.0031861835`,
+  projected volume `0.0643333567`). The long campaign has not run in this
+  record.
+- Contract test `tests/test_pq3_3b_campaign_v16.py` covers the sidecar,
+  pinned start state, carryover, enabled exits, budget and inherited inputs.

@@ -922,6 +922,24 @@ Execute in this order:
    downforce surface derivatives separately with centered FD under the
    registered `fd_gradient_v1` profile; only if both pass is one small shape
    step accepted and every geometry/mesh/solver gate re-run.
+
+   **V16 registration and entry preflight (2026-09-24):** the continuation
+   manifest
+   [`evidence/pq3_3b_campaign_manifest_v16_2026_09.json`](evidence/pq3_3b_campaign_manifest_v16_2026_09.json)
+   (SHA-256 `28e8f7b5fa7a0fc0d67143f7b2f2fa55a8c7ca3c6a7d0cc50c766afb64630751`)
+   continues the same b=128 margin level from the v15 checkpoint 10 unchanged,
+   carries over the cumulative accepted count (10) and the last three accepted
+   metrics, enables the cap-stationarity exit (machine-scale /
+   projected-volume rejection reasons) and the independent terminal repeat,
+   and registers 90 attempts with at least 10 cumulative accepted steps. Its
+   entry preflight
+   ([`evidence/pq3_3b_v16_entry_preflight_2026_09.json`](evidence/pq3_3b_v16_entry_preflight_2026_09.json))
+   passed: start state `mean_nd=0.0032130442`, projected volume
+   `0.0640656740`, support violations 0; alpha 1.0 was accepted
+   (`DF 2.10035503533 -> 2.11252824711`, Path B `d_adj=-1.29080394`,
+   `d_fd=-1.41661536`, candidate `mean_nd=0.0031861835`, projected volume
+   `0.0643333567`). The campaign has not run in this record; no convergence,
+   terminal or Stage S-readiness claim.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
