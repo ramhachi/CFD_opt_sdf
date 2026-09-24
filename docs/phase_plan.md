@@ -1059,13 +1059,15 @@ Execute in this order:
    (`adjDownforce` direction `(0,0,-1)`, `adjDrag` direction `(1,0,0)`, both
    with the registered Aref `0.64` / UInf `1` / rhoInf `1` and the
    `design_candidate` patch), `shapeType volumetricBSplines` with
-   `sensitivityType shapeFI`, and the `volumetricBSplinesMotionSolver` with an
+   `sensitivityType surface` / `includeSurfaceArea true`, and the
+   `volumetricBSplinesMotionSolver` with an
    axis-aligned `8x8x8` control volume whose boundary control points are
    confined (the far-field stays fixed). The structural checks and OpenFOAM's
    own dictionary reader pass
    ([`evidence/stage_s_work_f_adjoint_preflight_2026_09.json`](evidence/stage_s_work_f_adjoint_preflight_2026_09.json),
-   SHA-256 `12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7`);
-   `adjoint_allowed=true`, no solver started.
+   SHA-256 `0f5f94fb50ac566952d384311bd6da91f91d008c0465b8bbfe05a264239e45b4`);
+   `adjoint_allowed=true`, no solver started. (The earlier `12fb6985...` record
+   is a superseded diagnostic from the first render and is not retained.)
 
    **Work F base adjoint run (2026-09-24):** the base adjoint case ran to
    completion (`returncode=0`; primal 292 iterations, `adjDownforce` 425,
@@ -1079,10 +1081,25 @@ Execute in this order:
    records `adjoint_converged=true`, `analytic_derivatives_ready=true`,
    `perturbation_allowed=false`. The analytic directional derivative for a
    registered direction is the derivative-file inner product
-   `sum_i total_i * direction_i` over the active control-point variables. Next
-   slice: implement the morpher-based perturbation runner (prescribed
-   control-point displacement, `moveMesh`, primal) and the centered-FD
-   evaluation; no shape update runs before both responses pass.
+   `sum_i total_i * direction_i` over the active control-point variables.
+
+   **Work F base-adjoint qualification and directions (Slice A, 2026-09-25):**
+   the derivative contract is now authoritative, not row-order inferred:
+   `NURBS3DVolume::getCPID = k*nCPUs*nCPVs + j*nCPUs + i`, `varID = 3*cp_id +
+   component`, and `confineBoundaryControlPoints true` leaves exactly the
+   interior `6x6x6` control points (648 components) active; the qualifier
+   verified the derivative files' `varID` set equals that active set exactly.
+   Both adjoint final-residual maxima are `<= 9.3e-9` (primal `6.2e-8`) and the
+   three solvers bind their convergence iterations. The four registered
+   directions (`drag_gradient_aligned`, `downforce_gradient_aligned`,
+   `random_seed_11`, `random_seed_2026`) are materialized as committed
+   unit-infinity-norm vectors with hashes in
+   [`evidence/stage_s_work_f_adjoint_qualification_2026_09.json`](evidence/stage_s_work_f_adjoint_qualification_2026_09.json)
+   (SHA-256 `f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606`).
+   `perturbation_allowed=true`, `shape_update_allowed=false`. Next slice
+   (Slice B): the morpher-only perturbation runner and the 32 pair-side
+   geometry/mesh preflights; the shared centered-FD primal catalog (Slice C)
+   starts only after all 32 sides pass.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

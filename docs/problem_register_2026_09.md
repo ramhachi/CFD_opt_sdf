@@ -129,7 +129,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P16 | Stage Vが解像できる最小差 | — | **scheme因子まで更新（2026-09-21）**。`linearUpwind`でdrag drift 0.364%は2% bound内。downforce driftは0.010374で0.005未達、三格子非単調でGCIなし。次は登録済みdomain/boundary因子 |
 | P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **closed（2026-09-24、bounded）**。fail-closed gate実装（2026-09-20）に加え、Work F V1 baseline（登録v16 iso-0.5 surface）がbody-fitted caseでmesh/solverを完走し、`stage_v_qualification_v1`の全gateに合格（solver実行での再確認、`evidence/stage_s_work_f_v1_solver_2026_09.json`）。closureはこのcandidate/levelに限られ、新candidate・新levelでは再確認が必要 |
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
-| P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **open（2026-09-22, PQ3.3後）**。backendはraw `rho_design`平均をtargetにし、handoffはRAMP後`beta_solver`を0.4--0.6で抽出。採用制約・geometry基準は`rho_projection`。PQ3.3a再materializeとprojected-volume backendが必要 |
+| P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、

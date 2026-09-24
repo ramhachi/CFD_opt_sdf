@@ -1232,11 +1232,12 @@ repair that unrelated documentation mismatch.
   `system/optimisationDict` with two adjoint solvers (`adjDownforce` direction
   `(0,0,-1)`, `adjDrag` direction `(1,0,0)`, Aref `0.64`, UInf `1`, rhoInf `1`,
   patch `design_candidate`), `shapeType volumetricBSplines` /
-  `sensitivityType shapeFI`; `constant/dynamicMeshDict` with the
+  `sensitivityType surface` / `includeSurfaceArea true`;
+  `constant/dynamicMeshDict` with the
   `volumetricBSplinesMotionSolver`, an axis-aligned `8x8x8` control volume and
   `confineBoundaryControlPoints true`.
 - Preflight `docs/evidence/stage_s_work_f_adjoint_preflight_2026_09.json`
-  (SHA-256 `12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7`):
+  (SHA-256 `0f5f94fb50ac566952d384311bd6da91f91d008c0465b8bbfe05a264239e45b4`):
   all structural checks pass and OpenFOAM's own `foamDictionary` reader parses
   both dictionaries (`optimisationManager singleRun;`,
   `solver volumetricBSplinesMotionSolver;`); `adjoint_allowed=true`, no solver
@@ -1271,3 +1272,27 @@ repair that unrelated documentation mismatch.
   control-point displacement, `moveMesh`, primal, response hash/identity) and
   the centered-FD evaluation per response; then the per-pair mesh/solver
   preflight. No shape update before both responses pass.
+
+## 2026-09-25: Slice A — base derivative qualification and directions
+
+- `docs/current_state_and_next_plan_2026_09_25.md` is Codex's adopted plan; its
+  Slice A is implemented and passed.
+- The active-variable contract is authoritative:
+  `NURBS3DVolume::getCPID(i,j,k) = k*nCPUs*nCPVs + j*nCPUs + i`,
+  `varID = 3*cp_id + component`, and `confineBoundaryControlPoints true` leaves
+  the interior `6x6x6` control points (648 components) active. The qualifier
+  verifies the derivative files' `varID` set equals that active set exactly.
+- `docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json` (SHA-256
+  `f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606`):
+  per-solver convergence and final residuals (primal `6.2e-8`, `adjDownforce`
+  `8.5e-9`, `adjDrag` `9.2e-9`), both derivative schemas (648 rows, sign
+  conventions), the committed 648-component unit-infinity-norm direction
+  vectors (`drag_gradient_aligned`, `downforce_gradient_aligned`,
+  `random_seed_11`, `random_seed_2026`) with hashes, and
+  `perturbation_allowed=true`, `shape_update_allowed=false`.
+- Doc drift fixed: the phase plan/handoff adjoint-preflight SHA now points at
+  the live `0f5f94fb...` artifact and the register P19 summary row is closed.
+- Next: Slice B — the morpher-only perturbation runner (prescribed
+  control-point displacement with inf-norm epsilon, `moveMesh`, moved-mesh
+  hash, geometry/clearance/checkMesh qualification, no `simpleFoam`) and all
+  32 pair-side preflights.
