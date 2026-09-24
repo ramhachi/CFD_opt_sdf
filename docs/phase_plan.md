@@ -1029,9 +1029,32 @@ Execute in this order:
    mean `1.69084`, window drift `-6.305e-5`), and the solver-execution clearance
    reconfirmation for the exact registered surface, which meets P17's closure
    condition (bounded to this candidate and level). `surface_fd_allowed=true`.
-   Next slice: the drag/downforce surface FD campaign under `fd_gradient_v1`,
-   registered before running; a shape update remains unauthorized until both
-   responses pass.
+
+   **Work F surface-FD registration and solver-free preflight (2026-09-24):**
+   two response-specific immutable FD manifests (drag, downforce) share one
+   perturbation catalog
+   ([`evidence/stage_s_work_f_surface_fd_catalog_2026_09.json`](evidence/stage_s_work_f_surface_fd_catalog_2026_09.json),
+   SHA-256 `e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8`;
+   drag manifest hash `3f8f8e5973f300dd4b27892024486ced4e064bbd3c2682ed66f1279cd77c7f79`,
+   downforce `9c19160d078bbc283bc96f9e1a6a7d9a806b3e6bc030348189917602de0c4701`):
+   epsilons are registered as dimensionless ratios (0.002/0.005/0.01/0.02 of
+   the 0.05 m voxel -> `1e-4/2.5e-4/5e-4/1e-3 m`), the four directions are
+   downforce- and drag-gradient-aligned plus random seeds 11/2026, and the
+   fixture binds the `volumetricBSplines` surface basis, the fixed outer
+   patches, the `1e-3 m` displacement cap, the response identity/sign contract
+   and the near-zero rules. The solver-free preflight
+   ([`evidence/stage_s_work_f_surface_fd_preflight_2026_09.json`](evidence/stage_s_work_f_surface_fd_preflight_2026_09.json),
+   SHA-256 `93c6c6b5007f6ff6741a3bedc4fa2d87ce85d48c5bf8be0b2a0297bff9588efc`)
+   checked the conservative uniform normal offset at every epsilon in both
+   signs: watertight, winding-consistent, no self-intersection, minimum solid
+   width `0.05 m`, volume change `<= 2.1%`, clearance pass;
+   `campaign_allowed=true`, no solver started. The v2 FD evaluator's
+   below-noise silent pass is fixed: a gradient-aligned derivative below the
+   noise floor is unresolved and fails closed, and non-aligned near-zero
+   directions use the registered absolute rule. Next slice: the body-fitted
+   base adjoint case (separate drag and downforce solvers with
+   `faceSensNormal` export) before any perturbation run; a shape update
+   remains unauthorized until both responses pass.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

@@ -351,15 +351,52 @@ def test_v2_evaluation_enforces_noise_floor_and_plateau():
     assert verdict["passed"] is False
     assert any(item["reason"] == "relative_error" for item in verdict["failures"])
 
-    # a direction whose analytic is inside the noise floor is recorded, not passed
+    # a non-aligned direction inside the noise floor is judged by the registered
+    # absolute rule, never silently skipped
     near_zero = dict(base_analytic, random_seed_11=1e-6)
+    near_zero_rows = _v2_rows(
+        {"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0}
+    )
+    for row in near_zero_rows:
+        if row["direction"] == "random_seed_11":
+            row["fd"] = 2e-5
     verdict = evaluate_fd_campaign_v2(
         manifest,
         base_gates=manifest.base_gates,
         base_analytic=near_zero,
-        rows=_v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0}),
+        rows=near_zero_rows,
     )
     assert "random_seed_11" in verdict["below_noise_floor_directions"]
+    assert verdict["passed"] is True
+    assert any(check.get("status") == "absolute_rule" for check in verdict["checks"])
+
+    # the same direction with an absolute error above the registered floor fails
+    rows = _v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0})
+    for row in rows:
+        if row["direction"] == "random_seed_11":
+            row["fd"] = 1e-2
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=near_zero,
+        rows=rows,
+    )
+    assert verdict["passed"] is False
+    assert any(item["reason"] == "absolute_error" for item in verdict["failures"])
+
+    # a gradient-aligned direction below the noise floor is unresolved, fail-closed
+    near_zero_aligned = dict(base_analytic, gradient_aligned=1e-6)
+    verdict = evaluate_fd_campaign_v2(
+        manifest,
+        base_gates=manifest.base_gates,
+        base_analytic=near_zero_aligned,
+        rows=_v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0}),
+    )
+    assert verdict["passed"] is False
+    assert any(
+        item["reason"] == "near_zero_gradient_aligned_unresolved"
+        for item in verdict["failures"]
+    )
 
     # a non-plateau direction fails even if each row is close
     rows = _v2_rows({"gradient_aligned": 1.0, "random_seed_11": 1.0, "random_seed_2026": 1.0})

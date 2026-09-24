@@ -1197,3 +1197,30 @@ repair that unrelated documentation mismatch.
 - `surface_fd_allowed=true`; `shape_update_allowed=false`. Next slice: register
   and run the drag/downforce surface FD campaign under `fd_gradient_v1`; at
   most one shape step only if both responses pass.
+
+## 2026-09-24: Work F surface-FD contract, manifests and solver-free preflight
+
+- Contract module `src/cfd_sdf/stage_s_surface_fd.py` owns the response
+  identity (drag = `Cd` relative; downforce absolute with objective sign `-1`
+  and the `liftDir = -downforce` relation), the `volumetricBSplines` surface
+  basis, the fixed outer patches with a `1e-3 m` displacement cap, the
+  dimensionless epsilon ladder and the two response-specific FD manifests.
+- Registration `docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json`
+  (SHA-256 `e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8`):
+  drag and downforce manifests share one perturbation catalog; epsilons
+  `1e-4/2.5e-4/5e-4/1e-3 m` from ratios `0.002/0.005/0.01/0.02` of the 0.05 m
+  voxel; directions `downforce_gradient_aligned`, `drag_gradient_aligned`,
+  `random_seed_11`, `random_seed_2026`.
+- Solver-free preflight
+  `docs/evidence/stage_s_work_f_surface_fd_preflight_2026_09.json` (SHA-256
+  `93c6c6b5007f6ff6741a3bedc4fa2d87ce85d48c5bf8be0b2a0297bff9588efc`): the
+  conservative uniform normal offset at every epsilon and both signs is
+  watertight, winding-consistent, non-self-intersecting, keeps the `0.05 m`
+  minimum solid width and passes clearance (volume change <= 2.1%);
+  `campaign_allowed=true`, no solver started.
+- `evaluate_fd_campaign_v2` no longer silently passes a below-noise direction:
+  gradient-aligned below-noise is `near_zero_gradient_aligned_unresolved`, and
+  non-aligned near-zero directions are judged by the registered absolute rule.
+- Next: implement and preflight the body-fitted base adjoint case (separate
+  drag and downforce solvers, `faceSensNormal` export); no perturbation or
+  shape update runs before that passes.

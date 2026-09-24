@@ -510,14 +510,61 @@ def evaluate_fd_campaign_v2(
         ]
         if abs(analytic) < noise_floor:
             below_noise.append(direction.name)
-            checks.append(
-                {
-                    "direction": direction.name,
-                    "status": "below_noise_floor",
-                    "analytic": analytic,
-                    "noise_floor": noise_floor,
-                }
-            )
+            if direction.role == "gradient_aligned":
+                # a gradient-aligned direction that the base adjoint cannot resolve
+                # above the registered noise floor is unresolved, never a pass
+                failures.append(
+                    {
+                        "direction": direction.name,
+                        "reason": "near_zero_gradient_aligned_unresolved",
+                    }
+                )
+                checks.append(
+                    {
+                        "direction": direction.name,
+                        "status": "near_zero_unresolved",
+                        "analytic": analytic,
+                        "noise_floor": noise_floor,
+                        "passed": False,
+                    }
+                )
+                continue
+            for row in direction_rows:
+                gate_failures = [
+                    gate
+                    for gate, passed in (row.get("gates") or {}).items()
+                    if not bool(passed)
+                ]
+                if not bool(row.get("converged")) or gate_failures:
+                    failures.append(
+                        {
+                            "direction": direction.name,
+                            "epsilon": float(row["epsilon"]),
+                            "reason": "gate_failure",
+                            "gate_failures": gate_failures,
+                        }
+                    )
+                    continue
+                error = abs(float(row["fd"]) - analytic)
+                checks.append(
+                    {
+                        "direction": direction.name,
+                        "epsilon": float(row["epsilon"]),
+                        "status": "absolute_rule",
+                        "absolute_error": error,
+                        "absolute_floor": noise_floor,
+                        "passed": error <= noise_floor,
+                    }
+                )
+                if error > noise_floor:
+                    failures.append(
+                        {
+                            "direction": direction.name,
+                            "epsilon": float(row["epsilon"]),
+                            "reason": "absolute_error",
+                            "absolute_error": error,
+                        }
+                    )
             continue
         ratios: list[float] = []
         for row in direction_rows:
