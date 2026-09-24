@@ -1317,3 +1317,24 @@ repair that unrelated documentation mismatch.
 - Next: Slice C — run the 32 perturbation primals sequentially (both responses
   per run), verify residual and stationarity gates per side, and compute the
   centered FD `(R(+eps) - R(-eps)) / (2 eps)` per response.
+
+## 2026-09-25: Slice C/D — 32-primal centered-FD campaign and judgment
+
+- `docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json` (SHA-256
+  `048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee`): all 32
+  perturbation sides ran `simpleFoam`, converged and passed the registered
+  solver, stationarity and checkMesh gates; both responses were read from each
+  run.
+- Gradient-aligned directional derivatives are within the 5% profile with tight
+  plateaus (spread <= 3e-4): downforce response ratios `1.0408`
+  (`downforce_gradient_aligned`) and `1.0279` (`drag_gradient_aligned`); drag
+  response ratios `1.0266` and `0.9595`. Every sign agrees.
+- Registered random-seed directions exceed the 5% relative rule on both
+  responses (downforce: `1.0858`, `0.8796`; drag: `1.0376`, `1.4593`), so the
+  complete FD qualification is false: `both_responses_pass=false`,
+  `shape_update_allowed=false`.
+- Fail branch per the plan: keep the shape update blocked and diagnose one
+  factor at a time. Candidate factors: morphed movement bounding,
+  surface-area weighting (`includeSurfaceArea`) convention, and the
+  first-order `upwind` primal discretization behind the continuous adjoint.
+  No epsilon/direction/tolerance change is allowed from the observed result.

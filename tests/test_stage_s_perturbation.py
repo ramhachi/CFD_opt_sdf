@@ -159,3 +159,42 @@ def test_registered_side_evidence_reverifies():
         assert record["immobility"]["boundary_max_displacement_m"] == 0.0
         assert record["check_mesh"]["qualified"] is True
         assert record["check_mesh"]["total_cells"] == 39848
+
+
+RESULT = ROOT / "docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json"
+
+
+def test_registered_surface_fd_result_reverifies():
+    result = json.loads(RESULT.read_text())
+    sides = json.loads(EVIDENCE.read_text())
+    assert result["sides_evidence"]["sha256"] == ca.sha256_file(EVIDENCE)
+    assert sides["summary"]["primal_campaign_allowed"] is True
+    assert result["summary"]["n_runs"] == 32
+    assert result["summary"]["n_runs_pass"] == 32
+    assert result["summary"]["both_responses_pass"] is False
+    assert result["summary"]["shape_update_allowed"] is False
+    for side_id, record in result["runs"].items():
+        assert record["pass"] is True, side_id
+        assert record["qualification"]["solver_converged"] is True
+        assert record["qualification"]["force_stationarity"] is True
+        assert record["qualification"]["check_mesh_qualified"] is True
+        qualification = ROOT / record["qualification_path"]
+        assert ca.sha256_file(qualification) == record["qualification_sha256"]
+        assert ca.sha256_file(ROOT / record["case_dir"] / "log.simpleFoam") == ca.sha256_file(
+            ROOT / record["case_dir"] / "log.simpleFoam"
+        )
+    for response, verdict in result["response_verdicts"].items():
+        assert verdict["primary_gradient_aligned_resolved"] is True
+        assert verdict["passed"] is False
+        assert any(failure["reason"] == "relative_error" for failure in verdict["failures"])
+        for check in verdict["checks"]:
+            if check["direction"].endswith("_gradient_aligned"):
+                assert check["passed"] is True, (response, check)
+                assert check["relative_error"] <= 0.05
+            if check["direction"].endswith("_gradient_aligned") and check["status"] == "epsilon_plateau":
+                assert check["plateau_ok"] is True
+    # the random-direction failures are the registered relative-rule rows
+    assert any(
+        failure["direction"].startswith("random_seed_")
+        for failure in result["response_verdicts"]["drag"]["failures"]
+    )

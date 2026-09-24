@@ -1116,9 +1116,27 @@ Execute in this order:
    ([`evidence/stage_s_work_f_perturbation_sides_2026_09.json`](evidence/stage_s_work_f_perturbation_sides_2026_09.json),
    SHA-256 `01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db`)
    records `all_sides_pass=true`, `primal_campaign_allowed=true`,
-   `solver_started=false`. Next slice (Slice C): run the 32 shared perturbation
-   primals sequentially, read both `Cd` and downforce from each run, and
-   compute the centered FD per response.
+   `solver_started=false`.
+
+   **Work F centered-FD campaign and judgment (Slice C/D, 2026-09-25):** all
+   **32 perturbation primals** ran sequentially and every side converged to the
+   registered solver/stationarity/checkMesh profile
+   ([`evidence/stage_s_work_f_surface_fd_result_2026_09.json`](evidence/stage_s_work_f_surface_fd_result_2026_09.json),
+   SHA-256 `048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee`).
+   The gradient-aligned directional derivatives are qualified within the 5%
+   profile with tight epsilon plateaus: downforce response
+   `downforce_gradient_aligned` ratio `1.0408`, `drag_gradient_aligned` `1.0279`;
+   drag response `downforce_gradient_aligned` `1.0266`,
+   `drag_gradient_aligned` `0.9595` (plateau spread `<= 3e-4`). Every sign
+   agrees. However, the registered random-seed directions exceed the 5%
+   relative rule on both responses (downforce: seed 11 `1.0858`, seed 2026
+   `0.8796`; drag: seed 11 `1.0376`, seed 2026 `1.4593`), so the complete
+   registered FD qualification is **false**: `both_responses_pass=false`,
+   `shape_update_allowed=false`. This is a bounded fail-closed verdict, not a
+   threshold change; the plan's fail branch applies: keep the shape update
+   blocked and diagnose one factor at a time (candidate factors: the morphed
+   movement bounding, the surface-area weighting convention, and the
+   first-order `upwind` primal discretization behind the continuous adjoint).
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
