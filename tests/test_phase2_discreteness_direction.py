@@ -16,6 +16,7 @@ from cfd_sdf.phase2_discreteness_direction import (
     evaluate_phase2_discreteness_direction,
     projected_raw_gradient_direction,
     transform_candidate,
+    _campaign_record,
 )
 
 
@@ -297,3 +298,249 @@ def test_full_evaluator_skips_trial_when_path_b_fails():
     assert payload["successful"] is False
     assert payload["candidates"][0]["reason"] == "path_b_failed"
     assert calls == {"values": 2, "trial": 0}
+
+
+def test_response_ladder_continues_to_a_smaller_alpha_after_a_response_failure():
+    transform, rho, gradient, _active = _arena()
+    parent = _Result(-1.0, gradient)
+    trials = {"count": 0}
+
+    def evaluate_values(candidate):
+        # a consistently descending bracket about the parent
+        return _Result(-1.0 + float(np.dot(gradient, candidate - rho)))
+
+    def evaluate_trial(_candidate):
+        trials["count"] += 1
+        if trials["count"] == 1:
+            # the boldest step overshoots: worse in canonical and raw response
+            return _Result(-0.9), {"downforce_coefficient": 0.9}
+        return _Result(-2.0), {"downforce_coefficient": 1.5}
+
+    payload, accepted = evaluate_phase2_discreteness_direction(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=1.0,
+        move_limit=0.01,
+        ladder=(1.0, 0.5),
+        v_max=1.0,
+        discreteness_mean_nd_max=1.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        return_rho=True,
+    )
+
+    assert payload["successful"] is True
+    assert payload["accepted_alpha"] == 0.5
+    assert payload["candidates"][0]["reason"] == "response_gates_failed"
+    assert payload["candidates"][0]["accepted"] is False
+    assert payload["candidates"][1]["accepted"] is True
+    assert trials["count"] == 2
+    assert payload["evaluator_calls"]["trial_evaluator_requests"] == 2
+    assert accepted is not None
+
+
+def test_support_clearance_gate_is_transform_level_and_fail_closed():
+    transform, rho, gradient, active = _arena()
+    direction = projected_raw_gradient_direction(
+        transform=transform,
+        rho=rho,
+        objective_gradient=gradient,
+    )
+    allowed_all = np.ones_like(active, dtype=bool)
+    candidate_ok = transform_candidate(
+        transform=transform,
+        rho=rho,
+        direction=direction.values,
+        alpha=1.0,
+        move_limit=0.01,
+        discreteness_mean_nd_max=1.0,
+        v_max=1.0,
+        support_allowed_cells=allowed_all,
+    )
+    assert candidate_ok.gates["support_clearance"] is True
+    assert candidate_ok.metrics["support_violations"] == 0
+
+    allowed_none = np.zeros_like(active, dtype=bool)
+    candidate_bad = transform_candidate(
+        transform=transform,
+        rho=rho,
+        direction=direction.values,
+        alpha=1.0,
+        move_limit=0.01,
+        discreteness_mean_nd_max=1.0,
+        v_max=1.0,
+        support_allowed_cells=allowed_none,
+    )
+    projected = np.asarray(transform.forward(candidate_bad.rho).rho_projected, dtype=np.float64)
+    expected = int(np.count_nonzero(projected > 0.5))
+    assert expected > 0
+    assert candidate_bad.metrics["support_violations"] == expected
+    assert candidate_bad.gates["support_clearance"] is False
+    assert candidate_bad.feasible is False
+
+
+def test_two_tried_alphas_record_per_candidate_requests_and_cumulative_totals():
+    transform, rho, gradient, _active = _arena()
+    parent = _Result(-1.0, gradient)
+    trials = {"count": 0}
+
+    def evaluate_values(candidate):
+        return _Result(-1.0 + float(np.dot(gradient, candidate - rho)))
+
+    def evaluate_trial(_candidate):
+        trials["count"] += 1
+        if trials["count"] == 1:
+            return _Result(-0.9), {"downforce_coefficient": 0.9}
+        return _Result(-2.0), {"downforce_coefficient": 1.5}
+
+    payload, _accepted = evaluate_phase2_discreteness_direction(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=1.0,
+        move_limit=0.01,
+        ladder=(1.0, 0.5),
+        v_max=1.0,
+        discreteness_mean_nd_max=1.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        return_rho=True,
+    )
+
+    for record in payload["candidates"]:
+        assert record["evaluator_calls"]["path_b_evaluator_requests"] == 2
+        assert record["evaluator_calls"]["trial_evaluator_requests"] == 1
+        assert len(record["evaluator_calls"]["path_b_requests"]) == 2
+        assert [r["request_index"] for r in record["evaluator_calls"]["path_b_requests"]] == [1, 2]
+        # per-candidate evidence lists must be independent objects
+        assert (
+            record["evaluator_calls"]["path_b_requests"]
+            is not payload["evaluator_calls"]["path_b_requests"]
+        )
+        assert (
+            payload["candidates"][0]["evaluator_calls"]["path_b_requests"]
+            is not payload["candidates"][1]["evaluator_calls"]["path_b_requests"]
+        )
+    cumulative = payload["evaluator_calls"]
+    assert cumulative["path_b_evaluator_requests"] == 4
+    assert cumulative["trial_evaluator_requests"] == 2
+    assert len(cumulative["path_b_requests"]) == 4
+    assert [r["request_index"] for r in cumulative["path_b_requests"]] == [1, 2, 3, 4]
+
+
+def test_path_b_failure_stops_the_response_ladder_fail_closed():
+    transform, rho, gradient, _active = _arena()
+    parent = _Result(-1.0, gradient)
+    calls = {"values": 0, "trial": 0}
+
+    def flat_values(_candidate):
+        calls["values"] += 1
+        return _Result(-1.0)
+
+    def evaluate_trial(_candidate):
+        calls["trial"] += 1
+        return _Result(-2.0), {"downforce_coefficient": 2.0}
+
+    payload = evaluate_phase2_discreteness_direction(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=1.0,
+        move_limit=0.01,
+        ladder=(1.0, 0.5),
+        v_max=1.0,
+        discreteness_mean_nd_max=1.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=flat_values,
+        evaluate_trial=evaluate_trial,
+    )
+
+    records = payload["candidates"]
+    assert payload["successful"] is False
+    assert records[0]["reason"] == "path_b_failed"
+    assert records[0]["bracket_ok"] is False
+    assert records[0]["evaluator_calls"]["path_b_evaluator_requests"] == 2
+    assert records[0]["evaluator_calls"]["trial_evaluator_requests"] == 0
+    # backtracking must not continue past a Path B failure
+    assert records[1]["bracket"] is None
+    assert records[1].get("evaluator_calls") is None
+    assert calls == {"values": 2, "trial": 0}
+    assert payload["evaluator_calls"]["path_b_evaluator_requests"] == 2
+    assert payload["evaluator_calls"]["trial_evaluator_requests"] == 0
+
+
+def test_transform_infeasible_alphas_consume_no_solver_calls():
+    transform, rho, gradient, _active = _arena()
+    parent = _Result(-1.0, gradient)
+    values_calls = {"count": 0}
+    trial_calls = {"count": 0}
+
+    def evaluate_values(candidate):
+        values_calls["count"] += 1
+        return _Result(-2.0)
+
+    def evaluate_trial(_candidate):
+        trial_calls["count"] += 1
+        return _Result(-2.0), {"downforce_coefficient": 1.5}
+
+    payload = evaluate_phase2_discreteness_direction(
+        transform=transform,
+        parent_result=parent,
+        rho_parent=rho,
+        parent_downforce=1.0,
+        move_limit=1e6,
+        ladder=(1.0, 0.5),
+        v_max=0.01,
+        discreteness_mean_nd_max=1.0,
+        objective_noise_threshold=1e-6,
+        downforce_noise_threshold=1e-6,
+        bracket_spec=BracketSpec(epsilon=1e-4, noise_floor_abs=1e-6),
+        evaluate_values=evaluate_values,
+        evaluate_trial=evaluate_trial,
+        return_rho=True,
+    )
+    payload, accepted = payload
+
+    assert payload["successful"] is False
+    assert values_calls["count"] == 0
+    assert trial_calls is not None
+    assert trial_calls["count"] == 0
+    assert accepted is None
+    for record in payload["candidates"]:
+        assert record["bracket_ok"] is False
+        assert record["reason"] == "projected_volume_limit_exceeded"
+        assert record.get("evaluator_calls") is None
+        assert record["trial_run"] is None
+        assert record["bracket"] is None
+
+
+def test_support_clearance_failure_reason_is_recorded():
+    transform, rho, gradient, _active = _arena()
+    direction = projected_raw_gradient_direction(
+        transform=transform,
+        rho=rho,
+        objective_gradient=gradient,
+    )
+    allowed_none = np.zeros_like(rho, dtype=bool)
+    candidate = transform_candidate(
+        transform=transform,
+        rho=rho,
+        direction=direction.values,
+        alpha=1.0,
+        move_limit=0.01,
+        discreteness_mean_nd_max=1.0,
+        v_max=1.0,
+        support_allowed_cells=allowed_none,
+    )
+    record = _campaign_record(candidate)
+    assert "support_clearance_violated" in record["reason"]
+    assert record["failed_transform_gates"] == ["support_clearance"]

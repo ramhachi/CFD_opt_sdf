@@ -900,3 +900,38 @@ repair that unrelated documentation mismatch.
   immutable campaign capped at ten new accepted attempts. Stop and register a
   separate constraint change if volume becomes active. Then run PQ4.1 on a
   terminal candidate; Stage S remains blocked until its full composite pass.
+
+## 2026-09-24: v14 bounded result, PQ4.1 and v15 registration
+
+- V14 accepted five new tangent steps. The last accepted checkpoint has
+  downforce `2.61268983854`, projected volume `0.07052783246092366` and
+  active projected discreteness `0.009945312188186787`. The sixth attempt
+  remained transform-feasible and passed the Path B sign/noise checks
+  (`d_adj=-21.1719101`, `d_fd=-0.0884468`) but its trial downforce fell by
+  `0.00029093771`; the campaign stopped `objective_rejected`. This is a
+  response/nonlinearity stop, not convergence or stationarity.
+- PQ4.1 was run on the last accepted v14 checkpoint. No threshold is ready for
+  Stage S. Iso 0.5 passes discreteness, extraction profile and volume fidelity
+  and fails only the registered clearance gate. Iso 0.4 also fails feature
+  shrink; iso 0.6 also fails volume fidelity. The committed artifact's first
+  `claims_supported` sentence mistakenly says `v9 terminal candidate`; its
+  kind, input checkpoint hashes, fields and numerical rows are the v14-state
+  evaluation. Do not use that copied label as lineage evidence.
+- The unrun v15 registration starts from a deterministic trim of v14 checkpoint
+  5 to the registered support box x `[-0.675,1.675]`, y `[-0.475,0.475]`, z
+  `[-0.275,0.275]`. The resulting start measures projected volume
+  `0.0620239160551`, `mean_nd=0.0036595159924` and zero projected-solid support
+  violations. Because this is a materially changed state, v15 resets accepted
+  count and the convergence window; v14 metrics remain provenance only.
+- V15 keeps `D<=0.01`, `V<=0.07632566813424899`, the 0.25 m clearance profile,
+  response thresholds and all extraction gates. After transform screening it
+  may backtrack across alpha `1, 0.5, 0.25, 0.125, 0.0625` only when Path B
+  passes and the full trial response fails. A Path B failure stops fail-closed.
+  Each fresh attempt is bounded to one parent/adjoint plus at most five
+  Path-B-pair/trial groups, 16 evaluator requests total; request freshness is
+  recorded separately. The learning run is capped at ten fresh attempts and
+  ten accepted steps.
+- Current next action: commit the v15 implementation and immutable registration,
+  run only its registered entry preflight, inspect the exact alpha/run evidence,
+  and start the bounded campaign only if that preflight passes. Stage S remains
+  blocked until a later PQ4.1 returns `ready_for_stage_s=true`.

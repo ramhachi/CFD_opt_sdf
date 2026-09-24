@@ -56,6 +56,17 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > while keeping `mean_nd=0.00975157`. P2 remains open until this behavior is
 > sustained and the resulting terminal geometry passes the complete PQ4.1
 > extraction/handoff gate.
+>
+> **2026-09-24 v14/v15 update:** v14 sustained the tangent policy for five
+> additional accepted steps (`DF=2.61268983854`, `mean_nd=0.00994531219`,
+> projected volume `0.07052783246`) and then stopped when a transform-feasible,
+> Path-B-positive alpha 1.0 trial worsened downforce by `2.9093771e-4`.
+> PQ4.1 on the last accepted state shows iso 0.5 passing discreteness,
+> extraction profile and volume fidelity, but failing clearance. V15 is
+> registered from a deterministic support-box trim with a reset convergence
+> history, unchanged D/V thresholds and a bounded response-level alpha ladder;
+> neither its entry preflight nor campaign has run. P2 and Stage S readiness
+> therefore remain open.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
@@ -1165,6 +1176,20 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
   `tests/test_stage_v_domain_preflight.py`、両記録候補のskip付きfixtureを含む）。
   これは契約・capability証拠であり、mesh品質・solver収束・target physicsの主張には
   用いてはならない。
+
+### V14候補での再測定とV15対策（2026-09-24）
+
+- v14の最終受理checkpointを`rho_projection`から0.4/0.5/0.6で再抽出したPQ4.1では、
+  iso 0.5がdiscreteness、extraction profile、volume fidelityを通過した一方、
+  `stage_v_clearance_v1`だけで不合格になった。したがって現時点のStage S blockerは、
+  少なくともこの閾値ではclearanceへ局在する。
+- v15は宣言domainの各面から設計セル中心を0.30 m内側へ制限するsupport boxを登録し、
+  v14 checkpointのbox外design値を決定論的に0へしたbootstrapから開始する。
+  この操作後のprojected volumeは`0.06202391606`、`mean_nd=0.00365951599`、
+  `rho_projection>0.5`のsupport違反は0である。これはclearance合格の証拠ではなく、
+  PQ4.1を再実行する前のtransform-level予防条件である。
+- v15 entry preflightと実campaignは未実行である。support gateを通った最終候補でも、
+  抽出面に対する完全なclearance preflightが合格するまではP17を閉じない。
 
 ---
 

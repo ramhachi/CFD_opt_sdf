@@ -159,6 +159,7 @@ def transform_candidate(
     freeze_box_faces: bool = True,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
+    support_allowed_cells: np.ndarray | None = None,
 ) -> TransformCandidate:
     """Build one move-box candidate and apply solver-free registered gates."""
 
@@ -185,6 +186,13 @@ def transform_candidate(
 
     parent_projected = np.asarray(transform.forward(values).rho_projected, dtype=np.float64)
     candidate_projected = np.asarray(transform.forward(proposal).rho_projected, dtype=np.float64)
+    if support_allowed_cells is not None:
+        allowed_cells = np.asarray(support_allowed_cells, dtype=bool)
+        if allowed_cells.shape != values.shape:
+            raise ValueError("support_allowed_cells must share the design shape")
+        support_violations = int(np.count_nonzero((candidate_projected > 0.5) & ~allowed_cells))
+    else:
+        support_violations = 0
     parent_occupancy = _occupancy(parent_projected, active)
     candidate_occupancy = _occupancy(candidate_projected, active)
     delta = proposal - values
@@ -206,6 +214,7 @@ def transform_candidate(
         "move_box_violation_max": float(max(0.0, np.max(violation))),
         "occupancy_parent": parent_occupancy,
         "occupancy_candidate": candidate_occupancy,
+        "support_violations": support_violations,
     }
     extractability_ok = all(
         candidate_occupancy[f"cells_gt_{threshold}"]
@@ -227,6 +236,7 @@ def transform_candidate(
         "move_box_respected": bool(
             metrics["move_box_violation_max"] <= BOX_TOLERANCE
         ),
+        "support_clearance": bool(support_violations == 0),
     }
     return TransformCandidate(
         float(alpha),
@@ -273,6 +283,40 @@ def backtrack_transform_candidates(
     return ledger, None
 
 
+def transform_candidates_full(
+    *,
+    transform,
+    rho: np.ndarray,
+    direction: np.ndarray,
+    ladder: tuple[float, ...],
+    move_limit: float,
+    discreteness_mean_nd_max: float,
+    v_max: float,
+    freeze_box_faces: bool = True,
+    min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
+    extractability_fraction: float = EXTRACTABILITY_FRACTION,
+    support_allowed_cells: np.ndarray | None = None,
+) -> list[TransformCandidate]:
+    """Evaluate every registered ladder alpha at the transform level."""
+
+    return [
+        transform_candidate(
+            transform=transform,
+            rho=rho,
+            direction=direction,
+            alpha=alpha,
+            move_limit=move_limit,
+            discreteness_mean_nd_max=discreteness_mean_nd_max,
+            v_max=v_max,
+            freeze_box_faces=freeze_box_faces,
+            min_update_inf_norm=min_update_inf_norm,
+            extractability_fraction=extractability_fraction,
+            support_allowed_cells=support_allowed_cells,
+        )
+        for alpha in ladder
+    ]
+
+
 def _campaign_record(candidate: TransformCandidate) -> dict[str, Any]:
     """Flatten one transform candidate into the shared campaign ledger shape."""
 
@@ -286,6 +330,7 @@ def _campaign_record(candidate: TransformCandidate) -> dict[str, Any]:
         "extractability_guard": "extractability_guard_failed",
         "mask_invariance": "mask_invariance_failed",
         "move_box_respected": "move_box_violation",
+        "support_clearance": "support_clearance_violated",
     }
     failure_reasons = [reason_by_gate[name] for name in failed_gates]
     payload.update(
@@ -327,6 +372,39 @@ def _campaign_record(candidate: TransformCandidate) -> dict[str, Any]:
         }
     )
     return payload
+
+
+def _new_evaluator_calls() -> dict[str, Any]:
+    return {
+        "path_b_evaluator_requests": 0,
+        "trial_evaluator_requests": 0,
+        "path_b_proven_fresh_solver_runs": 0,
+        "trial_proven_fresh_solver_runs": 0,
+        "path_b_freshness_unknown": 0,
+        "trial_freshness_unknown": 0,
+        "path_b_requests": [],
+    }
+
+
+def _record_path_b(counter: dict[str, Any], evidence: dict[str, Any]) -> None:
+    counter["path_b_evaluator_requests"] += 1
+    counter["path_b_requests"].append(
+        {"request_index": counter["path_b_evaluator_requests"], **evidence}
+    )
+    reused = evidence.get("reused")
+    if reused is False and evidence.get("summary_sha256"):
+        counter["path_b_proven_fresh_solver_runs"] += 1
+    elif reused is None:
+        counter["path_b_freshness_unknown"] += 1
+
+
+def _record_trial(counter: dict[str, Any], trial_run: Any) -> None:
+    counter["trial_evaluator_requests"] += 1
+    if isinstance(trial_run, dict) and "reused" in trial_run:
+        if trial_run["reused"] is False:
+            counter["trial_proven_fresh_solver_runs"] += 1
+    else:
+        counter["trial_freshness_unknown"] += 1
 
 
 def _run_evidence(result: Any) -> dict[str, Any]:
@@ -373,25 +451,33 @@ def evaluate_phase2_discreteness_direction(
     freeze_box_faces: bool = True,
     min_update_inf_norm: float = MIN_CORRECTED_UPDATE_INF_NORM,
     extractability_fraction: float = EXTRACTABILITY_FRACTION,
+    support_allowed_cells: np.ndarray | None = None,
 ) -> dict | tuple[dict, np.ndarray | None]:
-    """Evaluate the projected raw-gradient policy with solver-free backtracking.
+    """Evaluate the projected raw-gradient policy with a response-level ladder.
 
-    Every ladder entry is first checked by deterministic transform gates.  Only
-    the first transform-feasible candidate can consume the centered Path B pair
-    and a trial primal.  This keeps the v13 discriminant's solver-call contract
-    while producing the candidate ledger expected by the shared campaign.
+    Every ladder entry is first checked by deterministic transform gates
+    (machine-scale update, discreteness bound, volume cap, extractability,
+    support clearance, masks and the move box).  The transform-feasible
+    candidates are then evaluated in registered ladder order — centered Path B
+    pair plus trial primal — until one passes the full gate set.  Backtracking
+    continues to the next smaller transform-feasible alpha only after Path B
+    passes and the trial response gates fail; a Path B failure stops
+    fail-closed, because the policy is diagnosing nonlinear response, not
+    bypassing gradient qualification.  Transform-infeasible alphas never
+    consume solver calls.
     """
 
     parent_objective, objective_gradient = canonical_objective_from(parent_result)
+    rho_array = np.asarray(rho_parent, dtype=np.float64)
     direction = projected_raw_gradient_direction(
         transform=transform,
-        rho=rho_parent,
+        rho=rho_array,
         objective_gradient=np.asarray(objective_gradient, dtype=np.float64),
         freeze_box_faces=freeze_box_faces,
     )
-    ledger, selected = backtrack_transform_candidates(
+    ledger = transform_candidates_full(
         transform=transform,
-        rho=rho_parent,
+        rho=rho_array,
         direction=direction.values,
         ladder=ladder,
         move_limit=move_limit,
@@ -400,42 +486,34 @@ def evaluate_phase2_discreteness_direction(
         freeze_box_faces=freeze_box_faces,
         min_update_inf_norm=min_update_inf_norm,
         extractability_fraction=extractability_fraction,
+        support_allowed_cells=support_allowed_cells,
     )
     records = [_campaign_record(candidate) for candidate in ledger]
     accepted_rho = None
-    evaluator_calls = {
-        "path_b_evaluator_requests": 0,
-        "trial_evaluator_requests": 0,
-        "path_b_proven_fresh_solver_runs": 0,
-        "trial_proven_fresh_solver_runs": 0,
-        "path_b_freshness_unknown": 0,
-        "trial_freshness_unknown": 0,
-        "path_b_requests": [],
-    }
+    accepted_alpha = None
+    cumulative_calls = _new_evaluator_calls()
 
-    if selected is not None:
-        record = records[-1]
-        delta = selected.rho - np.asarray(rho_parent, dtype=np.float64)
+    # Response-level ladder: every transform-feasible candidate is evaluated in
+    # registered ladder order until one passes the full gate set. Transform-
+    # infeasible alphas never consume solver calls. A Path B failure stops the
+    # ladder fail-closed; backtracking continues only after Path B passes and
+    # the trial response gates fail.
+    for candidate, record in zip(ledger, records, strict=True):
+        if not candidate.feasible:
+            continue
+        candidate_calls = _new_evaluator_calls()
+
         def counted_values(candidate_rho: np.ndarray):
-            evaluator_calls["path_b_evaluator_requests"] += 1
             result = evaluate_values(candidate_rho)
             evidence = _run_evidence(result)
-            evaluator_calls["path_b_requests"].append(
-                {
-                    "request_index": evaluator_calls["path_b_evaluator_requests"],
-                    **evidence,
-                }
-            )
-            reused = evidence.get("reused")
-            if reused is False and evidence.get("summary_sha256"):
-                evaluator_calls["path_b_proven_fresh_solver_runs"] += 1
-            elif reused is None:
-                evaluator_calls["path_b_freshness_unknown"] += 1
+            for counter in (cumulative_calls, candidate_calls):
+                _record_path_b(counter, evidence)
             return result
 
+        delta = candidate.rho - rho_array
         bracket = evaluate_path_b_bracket(
             spec=bracket_spec,
-            parent_rho=np.asarray(rho_parent, dtype=np.float64),
+            parent_rho=rho_array,
             parent_gradient=np.asarray(objective_gradient, dtype=np.float64),
             proposal_delta=delta,
             active=np.asarray(transform.active, dtype=bool),
@@ -458,13 +536,9 @@ def evaluate_phase2_discreteness_direction(
             ),
         }
         if bracket.ok:
-            evaluator_calls["trial_evaluator_requests"] += 1
-            trial_result, trial_run = evaluate_trial(selected.rho)
-            if isinstance(trial_run, dict) and "reused" in trial_run:
-                if trial_run["reused"] is False:
-                    evaluator_calls["trial_proven_fresh_solver_runs"] += 1
-            else:
-                evaluator_calls["trial_freshness_unknown"] += 1
+            trial_result, trial_run = evaluate_trial(candidate.rho)
+            for counter in (cumulative_calls, candidate_calls):
+                _record_trial(counter, trial_run)
             record["trial_objective"] = float(trial_result.objective)
             record["trial_primal_converged"] = bool(trial_result.primal_converged)
             record["trial_run"] = trial_run
@@ -498,29 +572,32 @@ def evaluate_phase2_discreteness_direction(
                 }
             )
         record["gates"].update(response_gates)
-        record["evaluator_calls"] = dict(evaluator_calls)
+        record["evaluator_calls"] = candidate_calls
         record["accepted"] = bool(all(record["gates"].values()))
         if record["accepted"]:
             record["reason"] = "accepted"
-            accepted_rho = selected.rho.copy()
-        elif not bracket.ok:
-            record["reason"] = "path_b_failed"
-        else:
-            record["reason"] = "response_gates_failed"
+            accepted_rho = candidate.rho.copy()
+            accepted_alpha = float(candidate.alpha)
+            break
+        record["reason"] = "path_b_failed" if not bracket.ok else "response_gates_failed"
+        if not bracket.ok:
+            # fail-closed: a Path B failure ends the attempt; v15 diagnoses
+            # nonlinear response rather than bypassing gradient qualification
+            break
 
     payload: dict[str, Any] = {
         "policy_id": POLICY_ID,
         "direction": direction.diagnostics,
         "ladder": [float(alpha) for alpha in ladder],
         "candidates": records,
-        "evaluator_calls": evaluator_calls,
+        "evaluator_calls": cumulative_calls,
         "accepted_alpha": None,
         "all_failed": accepted_rho is None,
         "successful": accepted_rho is not None,
         "corrected_rho_sha256": None,
     }
     if accepted_rho is not None:
-        payload["accepted_alpha"] = float(selected.alpha)
+        payload["accepted_alpha"] = accepted_alpha
         payload["corrected_rho_sha256"] = _array_sha256(accepted_rho)
     else:
         payload["error"] = (
@@ -537,4 +614,5 @@ __all__ = [
     "evaluate_phase2_discreteness_direction",
     "projected_raw_gradient_direction",
     "transform_candidate",
+    "transform_candidates_full",
 ]

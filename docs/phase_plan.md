@@ -817,6 +817,32 @@ Execute in this order:
    separate volume-tangent change must be registered; the discreteness bound
    must not be relaxed. A passing short campaign still requires a fresh PQ4.1
    composite gate before Stage S.
+
+   **V14 result and v15 registration (2026-09-24):** the bounded v14 campaign
+   accepted five further tangent steps and increased downforce from the v13
+   entry state to `2.61268983854`, while the final accepted state remained
+   inside the registered bounds (`mean_nd=0.00994531219`, projected volume
+   `0.07052783246`). Attempt 6 passed the transform gates and the sign/noise
+   Path B checks, but its full trial reduced downforce by `0.00029093771`;
+   v14 therefore stopped fail-closed and did not establish convergence
+   ([`evidence/pq3_3b_campaign_v14_outcome_2026_09.json`](evidence/pq3_3b_campaign_v14_outcome_2026_09.json)).
+   PQ4.1 on the last accepted v14 checkpoint found that iso 0.5 passes the
+   discreteness, extraction-profile and volume-fidelity sub-gates but still
+   fails the registered 0.25 m clearance gate; iso 0.4 and 0.6 have additional
+   extraction/fidelity failures
+   ([`evidence/pq4_1_v14_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v14_state_stage_s_entry_2026_09.json)).
+
+   V15 is registered as a bounded learning experiment from a deterministic
+   clearance-support trim of the v14 checkpoint. Because that trim changes the
+   state materially, accepted counts and convergence metrics are reset rather
+   than carried over. The unchanged hard gates are `mean_nd<=0.01`, projected
+   `V<=Vmax`, the existing response thresholds and the PQ4.1 clearance profile.
+   Each attempt may evaluate smaller transform-feasible alphas only after Path
+   B passes and the full trial response fails; a Path B failure stops the
+   attempt. The immutable budget is at most ten fresh attempts/accepted steps
+   and at most 16 evaluator requests per attempt. V15 remains
+   `registered_preflight_pending`; its entry preflight and campaign have not
+   run. Stage S remains blocked.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

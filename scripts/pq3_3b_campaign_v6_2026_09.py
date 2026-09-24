@@ -258,11 +258,35 @@ def _pause_learning(
     return result
 
 
+def support_allowed_cells_from_manifest(manifest: dict) -> np.ndarray | None:
+    """Build the permitted solid-support mask from the registered support box."""
+
+    box = (manifest.get("phase2_policy") or {}).get("support_box")
+    if not box:
+        return None
+    state = ca.load_json(_path(manifest["registered_inputs"]["canonical_grid"]))
+    meta = state["grid"]
+    origin = np.asarray(meta["origin"], dtype=np.float64)
+    spacing = np.asarray(meta["spacing"], dtype=np.float64)
+    shape = tuple(int(v) for v in meta["cell_shape"])
+    centers = [origin[i] + spacing[i] * (np.arange(shape[i]) + 0.5) for i in range(3)]
+    x = np.broadcast_to(centers[0].reshape(-1, 1, 1), shape)
+    y = np.broadcast_to(centers[1].reshape(1, -1, 1), shape)
+    z = np.broadcast_to(centers[2].reshape(1, 1, -1), shape)
+    allowed = (
+        (x >= float(box["x"][0]) - 1e-9) & (x <= float(box["x"][1]) + 1e-9)
+        & (y >= float(box["y"][0]) - 1e-9) & (y <= float(box["y"][1]) + 1e-9)
+        & (z >= float(box["z"][0]) - 1e-9) & (z <= float(box["z"][1]) + 1e-9)
+    )
+    return np.asarray(allowed).ravel(order="F")
+
+
 def evaluate_registered_phase2(*, manifest: dict, **kwargs):
     """Dispatch one Phase 2 attempt without changing registered v1/v2 behavior."""
 
     policy = manifest["phase2_policy"]
     policy_id = policy["id"]
+    support_cells = kwargs.pop("support_allowed_cells", None)
     common = {
         **kwargs,
         "ladder": tuple(policy["alpha_ladder"]),
@@ -278,6 +302,7 @@ def evaluate_registered_phase2(*, manifest: dict, **kwargs):
             **common,
             discreteness_mean_nd_max=policy["discreteness_mean_nd_max"],
             freeze_box_faces=bool(policy.get("freeze_exact_box_faces", True)),
+            support_allowed_cells=support_cells,
         )
     if policy_id in (INEQUALITY_POLICY_ID, DISCRETENESS_POLICY_ID):
         return evaluate_phase2_inequality(
@@ -356,6 +381,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 rho = restored
                 state = {**state, "phase1_done": True}
                 _checkpoint(output, {**state, "checkpoint_index": state["checkpoint_index"] + 1}, rho)
+        support_cells = support_allowed_cells_from_manifest(manifest)
         session_attempts = 0
         for attempt in range(state.get("attempts_this_cycle", 0), level["max_attempts"]):
             learning_campaign = manifest.get("learning_campaign") or {}
@@ -415,6 +441,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                 bracket_spec=bracket,
                 evaluate_values=oracle.evaluate_values,
                 evaluate_trial=trial,
+                support_allowed_cells=support_cells,
                 return_rho=True,
             )
             evaluator_calls = payload.get("evaluator_calls") or {}
