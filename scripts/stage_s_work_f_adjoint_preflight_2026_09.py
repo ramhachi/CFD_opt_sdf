@@ -23,6 +23,7 @@ from cfd_sdf.fd_preregistration import read_fd_campaign_manifest  # noqa: E402
 from cfd_sdf.stage_s_adjoint_case import (  # noqa: E402
     ADJOINT_SOLVER_NAMES,
     AdjointObjective,
+    AdjointPatchRoles,
     render_adjoint_case,
     verify_adjoint_case,
     verify_adjoint_case_with_openfoam,
@@ -77,11 +78,19 @@ def run_preflight() -> dict:
         raise SystemExit("the V1 baseline did not allow surface FD")
     metadata = ca.load_json(SOURCE_CASE / "case_metadata.json")
     objectives = _objectives(catalog, metadata)
+    patch_roles = AdjointPatchRoles(
+        inflow=("inlet",),
+        outflow=("outlet",),
+        symmetry=("sideMin", "sideMax", "top"),
+        walls=("bottom",),
+        design=catalog["shared_catalog"]["fixed_regions"]["free_patch"],
+    )
     basis = catalog["shared_catalog"]["surface_basis"]
     render = render_adjoint_case(
         source_case=SOURCE_CASE,
         target_case=ADJOINT_CASE,
         objectives=objectives,
+        patch_roles=patch_roles,
         box_min=tuple(float(value) for value in basis["box_m"]["min"]),
         box_max=tuple(float(value) for value in basis["box_m"]["max"]),
         n_cps=tuple(int(value) for value in basis["control_points"]),
@@ -91,7 +100,7 @@ def run_preflight() -> dict:
         adjoint_iterations=3000,
         adjoint_residual=1.0e-6,
     )
-    structural = verify_adjoint_case(ADJOINT_CASE, objectives=objectives)
+    structural = verify_adjoint_case(ADJOINT_CASE, objectives=objectives, patch_roles=patch_roles)
     openfoam = verify_adjoint_case_with_openfoam(
         ADJOINT_CASE, docker_image=work_f["openfoam_image"]
     )
@@ -116,6 +125,7 @@ def run_preflight() -> dict:
             "optimisation_dict_sha256": _sha256(ADJOINT_CASE / "system" / "optimisationDict"),
             "dynamic_mesh_dict_sha256": _sha256(ADJOINT_CASE / "constant" / "dynamicMeshDict"),
             "objectives": [objective.to_dict() for objective in objectives],
+            "patch_roles": patch_roles.to_dict(),
             "box_m": basis["box_m"],
             "control_points": basis["control_points"],
         },

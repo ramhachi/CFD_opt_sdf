@@ -50,7 +50,24 @@
         "u_inf": 1.0
       }
     ],
-    "optimisation_dict_sha256": "980fb538f9464ff11c2dc875d99609cc09d6390e54afb94721731af1010d39fd",
+    "optimisation_dict_sha256": "cfa507619821a0e5288826073f1b4254e9322ae8e611eeb093e99fe62b21116c",
+    "patch_roles": {
+      "design": "design_candidate",
+      "inflow": [
+        "inlet"
+      ],
+      "outflow": [
+        "outlet"
+      ],
+      "symmetry": [
+        "sideMin",
+        "sideMax",
+        "top"
+      ],
+      "walls": [
+        "bottom"
+      ]
+    },
     "path": "work/stage_s_work_f_v1/adjoint/base"
   },
   "catalog": {
@@ -81,6 +98,9 @@
   },
   "structural_checks": {
     "checks": {
+      "adjoint_fv_schemes": true,
+      "adjoint_fv_solution": true,
+      "adjoint_ras_laminar": true,
       "adjoint_solver_type": true,
       "boundary_control_points_confined": true,
       "control_points_axis_aligned": true,
@@ -94,8 +114,15 @@
       "drag_solver_block": true,
       "mesh_morpher": true,
       "optimisation_manager_single_run": true,
+      "pa_inflow_zero_gradient": true,
+      "pa_outflow_far_field": true,
+      "pa_walls_zero_gradient": true,
       "primal_solver_simple": true,
-      "shape_parameterization": true
+      "shape_parameterization": true,
+      "symmetry_patches": true,
+      "ua_inflow_adjoint_inlet": true,
+      "ua_outflow_adjoint_outlet": true,
+      "ua_walls_adjoint_wall": true
     },
     "failed_checks": [],
     "pass": true

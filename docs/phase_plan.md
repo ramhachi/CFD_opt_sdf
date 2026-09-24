@@ -1065,10 +1065,24 @@ Execute in this order:
    own dictionary reader pass
    ([`evidence/stage_s_work_f_adjoint_preflight_2026_09.json`](evidence/stage_s_work_f_adjoint_preflight_2026_09.json),
    SHA-256 `12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7`);
-   `adjoint_allowed=true`, no solver started. Next slice: run the base
-   adjoints and export `faceSensNormal<adjDownforce>` /
-   `faceSensNormal<adjDrag>`; no perturbation or shape update runs before
-   that passes.
+   `adjoint_allowed=true`, no solver started.
+
+   **Work F base adjoint run (2026-09-24):** the base adjoint case ran to
+   completion (`returncode=0`; primal 292 iterations, `adjDownforce` 425,
+   `adjDrag` 562; three convergence markers). Both solvers wrote their
+   design-variable derivative files
+   (`optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425`,
+   `...adjDragadjDragESI562`); the `sensitivityType surface` variant also wrote
+   `562/faceSensNormaladjDragESI`. The evidence
+   ([`evidence/stage_s_work_f_adjoint_run_2026_09.json`](evidence/stage_s_work_f_adjoint_run_2026_09.json),
+   SHA-256 `5034dc01b508a4e8e6f6628de7fab67776cdbd23f5640d6b59865c811cc8aeb7`)
+   records `adjoint_converged=true`, `analytic_derivatives_ready=true`,
+   `perturbation_allowed=false`. The analytic directional derivative for a
+   registered direction is the derivative-file inner product
+   `sum_i total_i * direction_i` over the active control-point variables. Next
+   slice: implement the morpher-based perturbation runner (prescribed
+   control-point displacement, `moveMesh`, primal) and the centered-FD
+   evaluation; no shape update runs before both responses pass.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

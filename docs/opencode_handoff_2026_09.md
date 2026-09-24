@@ -1246,3 +1246,28 @@ repair that unrelated documentation mismatch.
   `faceSensNormal<adjDownforce>` / `faceSensNormal<adjDrag>`; then compute the
   analytic directional derivatives and run the per-direction perturbation
   preflight before any perturbation primal.
+
+## 2026-09-24: Work F base adjoints converged; analytic derivatives recorded
+
+- `docs/evidence/stage_s_work_f_adjoint_run_2026_09.json` (SHA-256
+  `5034dc01b508a4e8e6f6628de7fab67776cdbd23f5640d6b59865c811cc8aeb7`): the base
+  adjoint case ran with `returncode=0`; the primal converged in 292
+  iterations, `adjDownforce` in 425 and `adjDrag` in 562 (three convergence
+  markers). Both solvers wrote design-variable derivative files
+  (`optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425`
+  and `...adjDragadjDragESI562`); the `sensitivityType surface` variant also
+  wrote `562/faceSensNormaladjDragESI`.
+- The renderer now emits `0/pa`, `0/Ua`, `constant/adjointRASProperties`
+  (`adjointLaminar`), the suffixed `div(-phi,Ua<adjS>)` fvSchemes entries, the
+  regex fvSolution solver entries `(p|pa).*`, `(U|Ua).*`, `(m|ma).*`,
+  `(d|da).*` and the adjoint relaxation factors. Diagnostic failure records for
+  the four setup defects are retained as
+  `docs/evidence/stage_s_work_f_adjoint_{preflight,run}_missing_*_2026_09.json`.
+- `adjoint_converged=true`, `analytic_derivatives_ready=true`,
+  `perturbation_allowed=false`. The analytic directional derivative for a
+  registered direction is `sum_i total_i * direction_i` over the active
+  control-point variables.
+- Next: implement the morpher-based perturbation runner (prescribed
+  control-point displacement, `moveMesh`, primal, response hash/identity) and
+  the centered-FD evaluation per response; then the per-pair mesh/solver
+  preflight. No shape update before both responses pass.
