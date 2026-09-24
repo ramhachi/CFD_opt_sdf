@@ -278,11 +278,12 @@ def qualify_extraction(
 
 
 def _triangles_self_intersect(mesh) -> str:
-    """Direct triangle-triangle self-intersection test (edge/plane narrow phase).
+    """Direct, topology-aware triangle self-intersection test.
 
-    Vectorized over the AABB-overlap candidate pairs; pairs sharing a vertex
-    are excluded. Returns "none", "fail", or a "not_evaluated_*" status that a
-    required profile turns into a failure.
+    AABB overlap supplies the broad phase.  The narrow phase permits contact
+    only on the simplex shared by the two faces: an ordinary common vertex or
+    common edge is valid, while coplanar overlap and a crossing away from that
+    shared simplex are self-intersections.
     """
 
     vertices = np.asarray(mesh.vertices, dtype=np.float64)
@@ -291,6 +292,16 @@ def _triangles_self_intersect(mesh) -> str:
     if n > 12_000:
         return "not_evaluated_too_many_triangles"
     tri = vertices[faces]  # (n, 3, 3)
+    extent = float(np.max(np.ptp(vertices, axis=0))) if vertices.size else 0.0
+    magnitude = float(np.max(np.abs(vertices))) if vertices.size else 0.0
+    tolerance = max(
+        extent * 1e-10,
+        np.finfo(np.float64).eps * max(extent, magnitude) * 64.0,
+        np.finfo(np.float64).tiny,
+    )
+    normals = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    if np.any(np.linalg.norm(normals, axis=1) <= tolerance * max(extent, tolerance)):
+        return "not_evaluated_degenerate_triangle"
     tri_min = tri.min(axis=1)
     tri_max = tri.max(axis=1)
 
@@ -298,28 +309,211 @@ def _triangles_self_intersect(mesh) -> str:
     # allocated ~7 GiB at the 12k-triangle cap
     overlap = np.ones((n, n), dtype=bool)
     for axis in range(3):
-        overlap &= tri_min[:, None, axis] <= tri_max[None, :, axis]
-        overlap &= tri_max[:, None, axis] >= tri_min[None, :, axis]
+        overlap &= tri_min[:, None, axis] <= tri_max[None, :, axis] + tolerance
+        overlap &= tri_max[:, None, axis] + tolerance >= tri_min[None, :, axis]
     pair_i, pair_j = np.nonzero(np.triu(overlap, k=1))
     if pair_i.size == 0:
         return "none"
 
-    # exclude pairs sharing a vertex via sorted-vertex label overlap
-    labels = np.sort(faces, axis=1)  # (n, 3) sorted vertex ids per triangle
-    labels_pairs_a = labels[pair_i]
-    labels_pairs_b = labels[pair_j]
-    column_a = np.repeat(labels_pairs_a, 3, axis=1)  # (p, 9)
-    column_b = np.tile(labels_pairs_b, (1, 3))       # (p, 9)
-    shared = (column_a == column_b).any(axis=1)
-    keep = ~shared
-    pair_i, pair_j = pair_i[keep], pair_j[keep]
-    if pair_i.size == 0:
-        return "none"
+    for index_a, index_b in zip(pair_i, pair_j, strict=True):
+        shared_ids = np.intersect1d(faces[index_a], faces[index_b])
+        if shared_ids.size == 3:
+            return "fail"
+        allowed = vertices[shared_ids]
+        contacts = _triangle_intersection_contacts(
+            tri[index_a], tri[index_b], tolerance
+        )
+        if contacts and not _contacts_confined_to_shared_simplex(
+            contacts, allowed, tolerance
+        ):
+            return "fail"
+    return "none"
 
-    A = tri[pair_i]
-    B = tri[pair_j]
-    hits = _edges_pierce_triangles(A, B) | _edges_pierce_triangles(B, A)
-    return "fail" if bool(np.any(hits)) else "none"
+
+def _contacts_confined_to_shared_simplex(
+    contacts: list[np.ndarray], allowed: np.ndarray, tolerance: float
+) -> bool:
+    """Whether every geometric contact lies on the shared mesh simplex."""
+
+    if allowed.shape[0] == 0:
+        return False
+    if allowed.shape[0] == 1:
+        return all(np.linalg.norm(point - allowed[0]) <= tolerance for point in contacts)
+    if allowed.shape[0] == 2:
+        edge = allowed[1] - allowed[0]
+        length_squared = float(np.dot(edge, edge))
+        for point in contacts:
+            parameter = float(np.dot(point - allowed[0], edge) / length_squared)
+            closest = allowed[0] + np.clip(parameter, 0.0, 1.0) * edge
+            if np.linalg.norm(point - closest) > tolerance:
+                return False
+        return True
+    return False
+
+
+def _triangle_intersection_contacts(
+    a: np.ndarray, b: np.ndarray, tolerance: float
+) -> list[np.ndarray]:
+    """Return representative points of the intersection of two triangles."""
+
+    normal_a = np.cross(a[1] - a[0], a[2] - a[0])
+    normal_b = np.cross(b[1] - b[0], b[2] - b[0])
+    unit_a = normal_a / np.linalg.norm(normal_a)
+    unit_b = normal_b / np.linalg.norm(normal_b)
+    parallel = np.linalg.norm(np.cross(unit_a, unit_b)) <= 1e-10
+    coplanar = parallel and max(
+        float(np.max(np.abs((b - a[0]) @ unit_a))),
+        float(np.max(np.abs((a - b[0]) @ unit_b))),
+    ) <= tolerance
+    if coplanar:
+        drop_axis = int(np.argmax(np.abs(unit_a)))
+        keep_axes = [axis for axis in range(3) if axis != drop_axis]
+        return _coplanar_triangle_contacts(
+            a, b, a[:, keep_axes], b[:, keep_axes], tolerance
+        )
+
+    contacts: list[np.ndarray] = []
+    for source, target, target_normal in ((a, b, unit_b), (b, a, unit_a)):
+        signed = (source - target[0]) @ target_normal
+        for edge_index in range(3):
+            p0 = source[edge_index]
+            p1 = source[(edge_index + 1) % 3]
+            d0 = float(signed[edge_index])
+            d1 = float(signed[(edge_index + 1) % 3])
+            if abs(d0) <= tolerance and _point_in_triangle_3d(
+                p0, target, tolerance
+            ):
+                _append_unique(contacts, p0, tolerance)
+            if abs(d1) <= tolerance and _point_in_triangle_3d(
+                p1, target, tolerance
+            ):
+                _append_unique(contacts, p1, tolerance)
+            if (d0 < -tolerance and d1 > tolerance) or (
+                d0 > tolerance and d1 < -tolerance
+            ):
+                point = p0 + (d0 / (d0 - d1)) * (p1 - p0)
+                if _point_in_triangle_3d(point, target, tolerance):
+                    _append_unique(contacts, point, tolerance)
+    return contacts
+
+
+def _point_in_triangle_3d(
+    point: np.ndarray, triangle: np.ndarray, tolerance: float
+) -> bool:
+    """Inclusive barycentric point-in-triangle test."""
+
+    v0 = triangle[1] - triangle[0]
+    v1 = triangle[2] - triangle[0]
+    v2 = point - triangle[0]
+    d00 = float(np.dot(v0, v0))
+    d01 = float(np.dot(v0, v1))
+    d11 = float(np.dot(v1, v1))
+    denominator = d00 * d11 - d01 * d01
+    v = (d11 * float(np.dot(v2, v0)) - d01 * float(np.dot(v2, v1))) / denominator
+    w = (d00 * float(np.dot(v2, v1)) - d01 * float(np.dot(v2, v0))) / denominator
+    barycentric_tolerance = tolerance / max(
+        np.linalg.norm(v0), np.linalg.norm(v1), tolerance
+    )
+    return (
+        v >= -barycentric_tolerance
+        and w >= -barycentric_tolerance
+        and v + w <= 1.0 + barycentric_tolerance
+    )
+
+
+def _coplanar_triangle_contacts(
+    a3: np.ndarray,
+    b3: np.ndarray,
+    a2: np.ndarray,
+    b2: np.ndarray,
+    tolerance: float,
+) -> list[np.ndarray]:
+    """Collect coplanar containment and boundary-intersection contacts."""
+
+    contacts: list[np.ndarray] = []
+    scale_2d = max(float(np.max(np.ptp(a2, axis=0))), float(np.max(np.ptp(b2, axis=0))))
+    area_tolerance = tolerance * max(scale_2d, tolerance)
+    for point3, point2 in zip(a3, a2, strict=True):
+        if _point_in_triangle_2d(point2, b2, area_tolerance):
+            _append_unique(contacts, point3, tolerance)
+    for point3, point2 in zip(b3, b2, strict=True):
+        if _point_in_triangle_2d(point2, a2, area_tolerance):
+            _append_unique(contacts, point3, tolerance)
+    for edge_a in range(3):
+        for edge_b in range(3):
+            for parameter in _segment_intersection_parameters_2d(
+                a2[edge_a],
+                a2[(edge_a + 1) % 3],
+                b2[edge_b],
+                b2[(edge_b + 1) % 3],
+                area_tolerance,
+            ):
+                point = a3[edge_a] + parameter * (
+                    a3[(edge_a + 1) % 3] - a3[edge_a]
+                )
+                _append_unique(contacts, point, tolerance)
+    return contacts
+
+
+def _cross_2d(a: np.ndarray, b: np.ndarray) -> float:
+    return float(a[0] * b[1] - a[1] * b[0])
+
+
+def _point_in_triangle_2d(
+    point: np.ndarray, triangle: np.ndarray, area_tolerance: float
+) -> bool:
+    signs = [
+        _cross_2d(
+            triangle[(index + 1) % 3] - triangle[index],
+            point - triangle[index],
+        )
+        for index in range(3)
+    ]
+    return min(signs) >= -area_tolerance or max(signs) <= area_tolerance
+
+
+def _segment_intersection_parameters_2d(
+    p0: np.ndarray,
+    p1: np.ndarray,
+    q0: np.ndarray,
+    q1: np.ndarray,
+    area_tolerance: float,
+) -> list[float]:
+    """Parameters on P for a 2-D segment intersection, including overlap."""
+
+    r = p1 - p0
+    s = q1 - q0
+    denominator = _cross_2d(r, s)
+    offset = q0 - p0
+    if abs(denominator) > area_tolerance:
+        t = _cross_2d(offset, s) / denominator
+        u = _cross_2d(offset, r) / denominator
+        parameter_tolerance = area_tolerance / max(
+            float(np.dot(r, r)), float(np.dot(s, s)), area_tolerance
+        )
+        if (
+            -parameter_tolerance <= t <= 1.0 + parameter_tolerance
+            and -parameter_tolerance <= u <= 1.0 + parameter_tolerance
+        ):
+            return [float(np.clip(t, 0.0, 1.0))]
+        return []
+    if abs(_cross_2d(offset, r)) > area_tolerance:
+        return []
+    length_squared = float(np.dot(r, r))
+    t0 = float(np.dot(q0 - p0, r) / length_squared)
+    t1 = float(np.dot(q1 - p0, r) / length_squared)
+    lower = max(0.0, min(t0, t1))
+    upper = min(1.0, max(t0, t1))
+    if lower > upper + area_tolerance / length_squared:
+        return []
+    return [float(np.clip(lower, 0.0, 1.0)), float(np.clip(upper, 0.0, 1.0))]
+
+
+def _append_unique(
+    contacts: list[np.ndarray], point: np.ndarray, tolerance: float
+) -> None:
+    if not any(np.linalg.norm(point - existing) <= tolerance for existing in contacts):
+        contacts.append(np.asarray(point, dtype=np.float64))
 
 
 def _edges_pierce_triangles(frm: np.ndarray, to: np.ndarray) -> np.ndarray:

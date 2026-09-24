@@ -116,6 +116,140 @@ def test_self_intersection_detector_flags_a_crossing_pair():
     assert _triangles_self_intersect(mesh) == "fail"
 
 
+def test_self_intersection_detector_flags_coplanar_area_overlap():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    vertices = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.25, 0.25, 0.0],
+            [1.25, 0.25, 0.0],
+            [0.25, 1.25, 0.0],
+        ]
+    )
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2], [3, 4, 5]], process=False)
+    assert _triangles_self_intersect(mesh) == "fail"
+
+
+def test_self_intersection_detector_flags_crossing_away_from_shared_vertex():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    vertices = np.array(
+        [
+            [0.0, 0.0, 0.0],  # shared vertex
+            [2.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.5, 0.5, -1.0],
+            [0.5, 0.5, 1.0],
+        ]
+    )
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2], [0, 3, 4]], process=False)
+    assert _triangles_self_intersect(mesh) == "fail"
+
+
+def test_self_intersection_detector_allows_only_the_shared_simplex_contact():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    shared_vertex = trimesh.Trimesh(
+        vertices=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [-1.0, 0.0, 0.0],
+            ]
+        ),
+        faces=[[0, 1, 2], [0, 3, 4]],
+        process=False,
+    )
+    shared_edge = trimesh.Trimesh(
+        vertices=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ]
+        ),
+        faces=[[0, 1, 2], [1, 0, 3]],
+        process=False,
+    )
+    assert _triangles_self_intersect(shared_vertex) == "none"
+    assert _triangles_self_intersect(shared_edge) == "none"
+
+
+def test_self_intersection_detector_flags_shared_edge_same_side_overlap():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    vertices = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.25, 0.5, 0.0],
+        ]
+    )
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2], [0, 1, 3]], process=False)
+    assert _triangles_self_intersect(mesh) == "fail"
+
+
+def test_self_intersection_detector_fails_closed_for_degenerate_and_duplicate_faces():
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    degenerate = trimesh.Trimesh(
+        vertices=np.array(
+            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]
+        ),
+        faces=[[0, 1, 2]],
+        process=False,
+    )
+    duplicate = trimesh.Trimesh(
+        vertices=np.array(
+            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+        ),
+        faces=[[0, 1, 2], [2, 1, 0]],
+        process=False,
+    )
+    assert (
+        _triangles_self_intersect(degenerate)
+        == "not_evaluated_degenerate_triangle"
+    )
+    assert _triangles_self_intersect(duplicate) == "fail"
+
+
+@pytest.mark.parametrize("scale", [1e-6, 1e6])
+def test_self_intersection_detector_tolerance_scales_with_geometry(scale: float):
+    import trimesh
+
+    from cfd_sdf.extraction_qualification import _triangles_self_intersect
+
+    vertices = scale * np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.25, 0.25, 0.0],
+            [1.25, 0.25, 0.0],
+            [0.25, 1.25, 0.0],
+        ]
+    )
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2], [3, 4, 5]], process=False)
+    assert _triangles_self_intersect(mesh) == "fail"
+
+
 def test_self_intersection_detector_reports_the_triangle_cap():
     import trimesh
 
