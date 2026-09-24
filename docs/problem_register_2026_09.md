@@ -57,18 +57,38 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 > sustained and the resulting terminal geometry passes the complete PQ4.1
 > extraction/handoff gate.
 >
-> **2026-09-24 v14/v15 update:** v14 sustained the tangent policy for five
-> additional accepted steps (`DF=2.61268983854`, `mean_nd=0.00994531219`,
-> projected volume `0.07052783246`) and then stopped when a transform-feasible,
-> Path-B-positive alpha 1.0 trial worsened downforce by `2.9093771e-4`.
-> PQ4.1 on the last accepted state shows iso 0.5 passing discreteness,
-> extraction profile and volume fidelity, but failing clearance. V15 is
-> registered from a deterministic support-box trim with a reset convergence
+> **2026-09-24 v14/v15 and v15 campaign update:** v14 sustained the tangent
+> policy for five additional accepted steps (`DF=2.61268983854`,
+> `mean_nd=0.00994531219`, projected volume `0.07052783246`) and then stopped
+> when a transform-feasible, Path-B-positive alpha 1.0 trial worsened downforce
+> by `2.9093771e-4`. PQ4.1 on the last accepted state shows iso 0.5 passing
+> discreteness, extraction profile and volume fidelity, but failing clearance.
+> V15 runs from a deterministic support-box trim with a reset convergence
 > history, unchanged D/V thresholds and a bounded response-level alpha ladder;
-> its entry preflight passed at alpha 1.0 (`DF 2.00516803057 -> 2.01655864594`,
-> `mean_nd=0.00348178008`, projected volume `0.06216404077`, support violations
-> 0). The bounded campaign has not run, and the preflight did not need a
-> smaller response alpha. P2 and Stage S readiness therefore remain open.
+> its entry preflight passed at alpha 1.0 (`DF 2.00516803057 ->
+> 2.01655864594`, `mean_nd=0.00348178008`, projected volume
+> `0.06216404077`, support violations 0). The bounded v15 learning campaign
+> then accepted 10/10 fresh attempts (all at alpha 1.0, so the alpha-below-1
+> response backtracking path was not exercised) and stopped at
+> `paused_learning_budget` with raw downforce `2.10035503533`, projected
+> volume `0.06406567400358908`, active projected discreteness
+> `0.003213044195919047` and zero support violations; the registered
+> convergence window was not observed. This is a budget stop — not terminal or
+> converged — and the campaign evidence alone does not establish Stage S readiness.
+> PQ4.1 on the v15 final accepted checkpoint
+> (`docs/evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`) then selects
+> `rho_projection` iso 0.5 (range 0.4/0.5/0.6, first-that-passes) and the
+> complete composite `stage_s_entry_v1` gate returns `ready_for_stage_s=true`:
+> discreteness, extraction profile (measured watertight, manifold,
+> non-self-intersecting), volume fidelity, volume constraint, width/gap,
+> lineage hashes and the `stage_v_clearance_v1` clearance preflight all pass;
+> iso 0.4 fails feature shrink, iso 0.6 fails volume fidelity. This measured
+> pass is at a paused-budget checkpoint (not a converged terminal state); it
+> removes the clearance blocker isolated on v14 but does not close P2, P17
+> (no solver-execution reconfirmation) or the remaining P20 scope, and no
+> Stage S baseline is registered by this record. The v15 checkpoint's composite
+> readiness gate is passed; P2 remains open under its stricter terminal-state
+> closure rule, and Stage S baseline registration remains pending.
 | P3 | Stage Tの格子が対象を解像していない可能性 | 高 | 未検証 |
 | P4 | 「宣言された問題」と「解かれている問題」の乖離 | 高 | **bounded reduced problemでは解消（2026-09-22, PQ0.1/PQ0.2/PQ3）**。downforce-only + projected-volumeのsolved set、実oracle、bracket、trialを統合。target physics、robust constraints、production backendへの一般化は未資格 |
 | P5 | native ISQPが降下方向を与えない | 中 | 診断済・Python移管で回避 |
@@ -1192,8 +1212,15 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
   PQ4.1を再実行する前のtransform-level予防条件である。
 - v15 entry preflightはalpha 1.0で合格した。start/candidateともsupport違反0で、候補の
   `mean_nd=0.00348178008`、projected volume `0.06216404077`、実trial downforce
-  `2.01655864594`である。実campaignは未実行であり、support gateを通った最終候補でも、
+  `2.01655864594`である。実bounded learning campaignは `paused_learning_budget`
+  で停止した（10新規attempt・10受理、同一stateでのsupport違反0最終候補:
+  downforce `2.10035503533`、projected volume `0.06406567400358908`、
+  `mean_nd=0.003213044195919047`、収束window未成立）。support gateを通った最終候補でも、
   抽出面に対する完全なclearance preflightが合格するまではP17を閉じない。
+- v15 checkpoint 10のPQ4.1では、`rho_projection` iso 0.5の抽出面が
+  `stage_v_clearance_v1` preflightに合格した（iso 0.4はfeature shrink、iso 0.6は
+  volume fidelityで除外）。ただしsolver実行での再確認は未実施のため、この合格は
+  P17自体を閉じない（`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`）。
 
 ---
 

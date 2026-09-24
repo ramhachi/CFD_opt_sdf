@@ -969,3 +969,65 @@ repair that unrelated documentation mismatch.
 - The runner now requires exactly one row with `accepted=true` and selects that
   row independently of ladder position. Restart v15 from a clean output
   directory after committing this repair; do not resume the failed directory.
+
+## 2026-09-24: v15 bounded learning result
+
+- The clean restart ran `work/pq3_3b_campaign_v15` under the immutable manifest
+  (SHA-256 `4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda`)
+  and stopped `paused_learning_budget` at the registered budget:
+  **10 fresh attempts, 10 accepted** (all at alpha 1.0, so the alpha-below-1
+  physical response backtracking path was not exercised).
+- Final accepted state: raw downforce `2.10035503533`, projected volume
+  `0.06406567400358908` (83.94% of `Vmax`), active projected discreteness
+  `mean_nd=0.003213044195919047`, zero support violations. The registered
+  convergence window was not observed (`window_accepted=3`,
+  `level_converged=false`).
+- This is a bounded-budget stop: **not terminal or converged**, and the campaign
+  outcome alone does not establish Stage S readiness. Final rho array hash
+  `00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31`.
+- Outcome
+  `docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json` was verified
+  against `work/pq3_3b_campaign_v15` (manifest hash, output hashes
+  `campaign_meta_json 71299dbd…`, `events_jsonl dc674955…`,
+  `latest_json cdc017ee…`, rho file `52e791d5…`, state `b9b0f10e…`, and the
+  41-event chain) and the manifest hash file. No v16 is registered.
+
+## 2026-09-24: PQ4.1 on the v15 checkpoint 10 — verdict
+
+- Command: `scripts/pq4_1_terminal_stage_s_entry_2026_09.py` (fit for
+  purpose after two minimal parametrizations: a `--candidate-label` so the
+  claims sentences describe their actual input lineage, and the
+  `correction`/`supersedes` block made conditional to its own
+  `pq4_1_terminal_stage_s_entry_v2` kind; plus a selection-row lookup fix
+  because the sweep record communicates the selected threshold as
+  `selected_threshold` and the row, not a `selected` key — the first
+  invocation could mis-record a passing sweep as `selected=None`).
+- Inputs: `--campaign work/pq3_3b_campaign_v15`,
+  `--outcome docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json`,
+  `--canonical-state work/pq3_3b_margin_masks/topology_state.json`,
+  `--projection-b 128`, `--iso-thresholds 0.4,0.5,0.6`.
+- No solver run; the checkpoint rho is re-materialized into the four fields,
+  `beta_solver` retained as the solver audit field, extraction from
+  `rho_projection`, then the complete fail-closed composite gate.
+- Verdict
+  (`docs/evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`):
+  the range-first rule selects **iso 0.5** and the registered
+  `stage_s_entry_v1` composite gate returns **`ready_for_stage_s=true`**.
+  Iso 0.4 fails `extraction_profile:feature_shrink_exceeds_profile`; iso 0.6
+  fails `volume_fidelity`.
+- Iso 0.5 sub-verdicts (all pass): discreteness `mean_nd=0.003213044113334087`
+  (bound 0.01); extraction profile with a measured watertight, manifold,
+  non-self-intersecting surface (``self_intersection="none"``) and positive
+  volume; volume fidelity (`volume_fidelity_v1`); volume constraint
+  (V `0.0640656740267299` <= `0.07632566813424899`); width/gap measured;
+  lineage artifact hashes; and the `stage_v_clearance_v1` preflight (the
+  support-box trim cleared the v14-era failure point).
+- Meaning and limits: this is the measured verdict of the registered gate on
+  the **paused v15 checkpoint** (10 accepted steps at alpha 1.0, convergence
+  window unobserved). It is not a converged-terminal claim, not a claim that
+  later optimization states will also pass, not grid independence, and not a
+  target-physics or full-vehicle claim (laminar reduced case). The remaining
+  P20 scope (volume-calibration artifact shape label, strict minimum width)
+  and a solver-execution reconfirmation (P17 closure condition) stay open.
+- No Stage S baseline is registered by this record — registration is a
+  separate authorized decision. No new OpenFOAM campaign and no v16.

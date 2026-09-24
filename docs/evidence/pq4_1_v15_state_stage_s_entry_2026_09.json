@@ -1,0 +1,701 @@
+{
+  "campaign_status": {
+    "learning_budget_stop": {
+      "accepted_count": 10,
+      "accepted_this_learning_campaign": 10,
+      "does_not_claim_convergence": true,
+      "fresh_attempts": 10,
+      "level": "level_3_b128_margin",
+      "registered_convergence_window_observed": false,
+      "rho_sha256": "00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31",
+      "status": "paused_learning_budget"
+    },
+    "level": "level_3_b128_margin",
+    "measured_stop_cause": null,
+    "reason": null,
+    "status": "paused_learning_budget"
+  },
+  "claims_not_supported": [
+    "a passing gate would qualify the Stage T numerical candidate only; it is not a grid-independent or target-physics claim"
+  ],
+  "claims_supported": [
+    "the v15 final accepted checkpoint (checkpoint 10, paused_learning_budget) was extracted from rho_projection and judged by the complete composite Stage S entry gate"
+  ],
+  "extraction_sweep": {
+    "claims": {
+      "extraction_sensitivity_measured": true,
+      "quantitative_qualification_evaluated": false,
+      "selection_is_registered_not_observed_best": true,
+      "stage_s_entry_gate_evaluated": true
+    },
+    "kind": "density_extraction_threshold_sweep",
+    "n_ready_for_stage_s": 1,
+    "notes": [
+      "every failed threshold remains an explicit row; the selection rule operates only inside the pre-registered range"
+    ],
+    "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep",
+    "rows": [
+      {
+        "checks": {
+          "cell_data_contract": true,
+          "discreteness_within_limit": true,
+          "input_hashes": true,
+          "revoxelized_component_validation": true,
+          "revoxelized_mask_validation": true,
+          "sdf_sign": true,
+          "source_component_validation": true,
+          "source_mask_validation": true,
+          "surface_geometry": true
+        },
+        "component_count": 1,
+        "error": null,
+        "extraction_profile_pass": false,
+        "geometry_metrics": {
+          "component_cells": [
+            932
+          ],
+          "empty": false,
+          "fraction_ridge_below_threshold": null,
+          "local_thickness_threshold_m": null,
+          "max_inscribed_diameter_m": 0.16770509831248426,
+          "n_cells": 932,
+          "n_components_26": 1,
+          "ridge_cells_m": 2584,
+          "supersample_factor": 4,
+          "thickness_ridge_m_max": 0.16770509831248426,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.10307764064044153,
+          "volume_m3": 0.11650000000000003
+        },
+        "geometry_metrics_status": "measured",
+        "manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.4/handoff_manifest.json",
+        "manifest_sha256": "98f643ca2b82003b3ecb499e37540756208cdee9797c803e46b289d84697ef11",
+        "ok": true,
+        "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.4",
+        "positive_volume": true,
+        "qualification": null,
+        "ready_for_stage_s": false,
+        "revoxelized_relative_difference": 0.006479481641468687,
+        "stage_s_entry": {
+          "profile_id": "stage_s_entry_v1",
+          "ready_for_stage_s": false,
+          "reasons": [
+            "extraction_profile:feature_shrink_exceeds_profile"
+          ],
+          "sub_verdicts": {
+            "clearance": {
+              "pass": true,
+              "profile_id": "stage_v_clearance_v1",
+              "reasons": []
+            },
+            "components_root": {
+              "component_count": 0,
+              "max_components": null,
+              "mode": "disabled",
+              "pass": true,
+              "root_mask_cells": 0,
+              "root_required": false
+            },
+            "discreteness": {
+              "max_rho_threshold": null,
+              "mean_nd": 0.003213044113334087,
+              "mean_nd_max": 0.01,
+              "pass": true,
+              "reasons": null,
+              "status": "pass"
+            },
+            "extraction_profile": {
+              "checks": {
+                "feature_survival": {
+                  "revoxelized_min_feature_m": 0.16770509831248426,
+                  "shrink_voxels": 1.6458980337503148,
+                  "source_min_feature_m": 0.25,
+                  "status": "measured"
+                },
+                "mesh_manifold": {
+                  "duplicate_face_count": 0,
+                  "non_manifold_edge_count": 0,
+                  "positive_volume": true,
+                  "self_intersection": "none",
+                  "watertight": true,
+                  "winding_consistent": true
+                },
+                "reverse_surface_distance": {
+                  "max_m": 0.07192455910029177,
+                  "rms_m": 0.038897573972778106,
+                  "sample_count": 900,
+                  "status": "measured"
+                },
+                "root_connectivity": {
+                  "reason": "source root mask is empty",
+                  "status": "not_applicable"
+                },
+                "surface_distance": {
+                  "max_m": 0.07071067811865477,
+                  "rms_m": 0.04295402103788054,
+                  "status": "measured"
+                }
+              },
+              "pass": false,
+              "reasons": [
+                "feature_shrink_exceeds_profile"
+              ]
+            },
+            "lineage": {
+              "artifacts": {
+                "revoxelized_density_vti": {
+                  "sha256_match": true
+                },
+                "source_density_vti": {
+                  "sha256_match": true
+                },
+                "surface_stl": {
+                  "sha256_match": true
+                }
+              },
+              "status": "pass"
+            },
+            "volume_constraint": {
+              "absolute_tolerance": 0.0001,
+              "limit": 0.07632566813424899,
+              "pass": true,
+              "projected_volume": 0.0640656740267299,
+              "violation": -0.012259994107519087
+            },
+            "volume_fidelity": {
+              "absolute_m3": 0.010703402181595809,
+              "pass": true,
+              "profile": "volume_fidelity_v1",
+              "relative": 0.09246999724920782,
+              "revoxelized_relative": 0.006479481641468687
+            },
+            "width_gap": {
+              "declared": {},
+              "measured": {
+                "ridge_width_p5_m": 0.05,
+                "void_ridge_width_p5_m": 0.7000000000000001
+              },
+              "note": "ridge_width_p5_m is the p5 of the local-thickness ridge on the canonical grid, a quantization-aware lower-bound estimate; it is not the strict minimum-surface distance and is never silently substituted for a declared minimum",
+              "pass": true,
+              "status": "measured"
+            }
+          }
+        },
+        "status": "ok",
+        "threshold": 0.4,
+        "volume_relative_difference": 0.09246999724920782,
+        "watertight": true
+      },
+      {
+        "checks": {
+          "cell_data_contract": true,
+          "discreteness_within_limit": true,
+          "input_hashes": true,
+          "revoxelized_component_validation": true,
+          "revoxelized_mask_validation": true,
+          "sdf_sign": true,
+          "source_component_validation": true,
+          "source_mask_validation": true,
+          "surface_geometry": true
+        },
+        "component_count": 1,
+        "error": null,
+        "extraction_profile_pass": true,
+        "geometry_metrics": {
+          "component_cells": [
+            830
+          ],
+          "empty": false,
+          "fraction_ridge_below_threshold": null,
+          "local_thickness_threshold_m": null,
+          "max_inscribed_diameter_m": 0.158113883008419,
+          "n_cells": 830,
+          "n_components_26": 1,
+          "ridge_cells_m": 2669,
+          "supersample_factor": 4,
+          "thickness_ridge_m_max": 0.158113883008419,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.1,
+          "volume_m3": 0.10375000000000002
+        },
+        "geometry_metrics_status": "measured",
+        "manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.5/handoff_manifest.json",
+        "manifest_sha256": "05a37908f62ab986d895f7a42fc79c112fbbffd54f7ffca8e52fd4da4150f1d2",
+        "ok": true,
+        "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.5",
+        "positive_volume": true,
+        "qualification": null,
+        "ready_for_stage_s": true,
+        "revoxelized_relative_difference": 0.09880564603691645,
+        "stage_s_entry": {
+          "profile_id": "stage_s_entry_v1",
+          "ready_for_stage_s": true,
+          "reasons": [],
+          "sub_verdicts": {
+            "clearance": {
+              "pass": true,
+              "profile_id": "stage_v_clearance_v1",
+              "reasons": []
+            },
+            "components_root": {
+              "component_count": 0,
+              "max_components": null,
+              "mode": "disabled",
+              "pass": true,
+              "root_mask_cells": 0,
+              "root_required": false
+            },
+            "discreteness": {
+              "max_rho_threshold": null,
+              "mean_nd": 0.003213044113334087,
+              "mean_nd_max": 0.01,
+              "pass": true,
+              "reasons": null,
+              "status": "pass"
+            },
+            "extraction_profile": {
+              "checks": {
+                "feature_survival": {
+                  "revoxelized_min_feature_m": 0.158113883008419,
+                  "shrink_voxels": 0.4432736152956096,
+                  "source_min_feature_m": 0.18027756377319948,
+                  "status": "measured"
+                },
+                "mesh_manifold": {
+                  "duplicate_face_count": 0,
+                  "non_manifold_edge_count": 0,
+                  "positive_volume": true,
+                  "self_intersection": "none",
+                  "watertight": true,
+                  "winding_consistent": true
+                },
+                "reverse_surface_distance": {
+                  "max_m": 0.07499998807907109,
+                  "rms_m": 0.033987489743825525,
+                  "sample_count": 814,
+                  "status": "measured"
+                },
+                "root_connectivity": {
+                  "reason": "source root mask is empty",
+                  "status": "not_applicable"
+                },
+                "surface_distance": {
+                  "max_m": 0.08660254037844388,
+                  "rms_m": 0.04044338507174282,
+                  "status": "measured"
+                }
+              },
+              "pass": true,
+              "reasons": []
+            },
+            "lineage": {
+              "artifacts": {
+                "revoxelized_density_vti": {
+                  "sha256_match": true
+                },
+                "source_density_vti": {
+                  "sha256_match": true
+                },
+                "surface_stl": {
+                  "sha256_match": true
+                }
+              },
+              "status": "pass"
+            },
+            "volume_constraint": {
+              "absolute_tolerance": 0.0001,
+              "limit": 0.07632566813424899,
+              "pass": true,
+              "projected_volume": 0.0640656740267299,
+              "violation": -0.012259994107519087
+            },
+            "volume_fidelity": {
+              "absolute_m3": 0.01050179669725422,
+              "pass": true,
+              "profile": "volume_fidelity_v1",
+              "relative": 0.0912208182171919,
+              "revoxelized_relative": 0.09880564603691645
+            },
+            "width_gap": {
+              "declared": {},
+              "measured": {
+                "ridge_width_p5_m": 0.05,
+                "void_ridge_width_p5_m": 0.7000000000000001
+              },
+              "note": "ridge_width_p5_m is the p5 of the local-thickness ridge on the canonical grid, a quantization-aware lower-bound estimate; it is not the strict minimum-surface distance and is never silently substituted for a declared minimum",
+              "pass": true,
+              "status": "measured"
+            }
+          }
+        },
+        "status": "ok",
+        "threshold": 0.5,
+        "volume_relative_difference": 0.0912208182171919,
+        "watertight": true
+      },
+      {
+        "checks": {
+          "cell_data_contract": true,
+          "discreteness_within_limit": true,
+          "input_hashes": true,
+          "revoxelized_component_validation": true,
+          "revoxelized_mask_validation": true,
+          "sdf_sign": true,
+          "source_component_validation": true,
+          "source_mask_validation": true,
+          "surface_geometry": true
+        },
+        "component_count": 1,
+        "error": null,
+        "extraction_profile_pass": true,
+        "geometry_metrics": {
+          "component_cells": [
+            772
+          ],
+          "empty": false,
+          "fraction_ridge_below_threshold": null,
+          "local_thickness_threshold_m": null,
+          "max_inscribed_diameter_m": 0.15000000000000002,
+          "n_cells": 772,
+          "n_components_26": 1,
+          "ridge_cells_m": 2799,
+          "supersample_factor": 4,
+          "thickness_ridge_m_max": 0.15000000000000002,
+          "thickness_ridge_m_min": 0.05,
+          "thickness_ridge_m_p5": 0.05,
+          "thickness_ridge_m_p50": 0.1,
+          "volume_m3": 0.09650000000000002
+        },
+        "geometry_metrics_status": "measured",
+        "manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.6/handoff_manifest.json",
+        "manifest_sha256": "daf733d744f5ad67a86ff75e37a5078d6ff5d92a9b8adf7e843e0528bc0b97e4",
+        "ok": true,
+        "output_dir": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.6",
+        "positive_volume": true,
+        "qualification": null,
+        "ready_for_stage_s": false,
+        "revoxelized_relative_difference": 0.1608695652173914,
+        "stage_s_entry": {
+          "profile_id": "stage_s_entry_v1",
+          "ready_for_stage_s": false,
+          "reasons": [
+            "volume_fidelity:volume difference exceeds the registered profile"
+          ],
+          "sub_verdicts": {
+            "clearance": {
+              "pass": true,
+              "profile_id": "stage_v_clearance_v1",
+              "reasons": []
+            },
+            "components_root": {
+              "component_count": 0,
+              "max_components": null,
+              "mode": "disabled",
+              "pass": true,
+              "root_mask_cells": 0,
+              "root_required": false
+            },
+            "discreteness": {
+              "max_rho_threshold": null,
+              "mean_nd": 0.003213044113334087,
+              "mean_nd_max": 0.01,
+              "pass": true,
+              "reasons": null,
+              "status": "pass"
+            },
+            "extraction_profile": {
+              "checks": {
+                "feature_survival": {
+                  "revoxelized_min_feature_m": 0.15000000000000002,
+                  "shrink_voxels": -0.5000000000000004,
+                  "source_min_feature_m": 0.125,
+                  "status": "measured"
+                },
+                "mesh_manifold": {
+                  "duplicate_face_count": 0,
+                  "non_manifold_edge_count": 0,
+                  "positive_volume": true,
+                  "self_intersection": "none",
+                  "watertight": true,
+                  "winding_consistent": true
+                },
+                "reverse_surface_distance": {
+                  "max_m": 0.06499999761581426,
+                  "rms_m": 0.028391739704919868,
+                  "sample_count": 764,
+                  "status": "measured"
+                },
+                "root_connectivity": {
+                  "reason": "source root mask is empty",
+                  "status": "not_applicable"
+                },
+                "surface_distance": {
+                  "max_m": 0.08660254037844388,
+                  "rms_m": 0.03625694575805414,
+                  "status": "measured"
+                }
+              },
+              "pass": true,
+              "reasons": []
+            },
+            "lineage": {
+              "artifacts": {
+                "revoxelized_density_vti": {
+                  "sha256_match": true
+                },
+                "source_density_vti": {
+                  "sha256_match": true
+                },
+                "surface_stl": {
+                  "sha256_match": true
+                }
+              },
+              "status": "pass"
+            },
+            "volume_constraint": {
+              "absolute_tolerance": 0.0001,
+              "limit": 0.07632566813424899,
+              "pass": true,
+              "projected_volume": 0.0640656740267299,
+              "violation": -0.012259994107519087
+            },
+            "volume_fidelity": {
+              "absolute_m3": 0.027932899353418472,
+              "pass": false,
+              "profile": "volume_fidelity_v1",
+              "relative": 0.2428947769862475,
+              "revoxelized_relative": 0.1608695652173914
+            },
+            "width_gap": {
+              "declared": {},
+              "measured": {
+                "ridge_width_p5_m": 0.05,
+                "void_ridge_width_p5_m": 0.7000000000000001
+              },
+              "note": "ridge_width_p5_m is the p5 of the local-thickness ridge on the canonical grid, a quantization-aware lower-bound estimate; it is not the strict minimum-surface distance and is never silently substituted for a declared minimum",
+              "pass": true,
+              "status": "measured"
+            }
+          }
+        },
+        "status": "ok",
+        "threshold": 0.6,
+        "volume_relative_difference": 0.2428947769862475,
+        "watertight": true
+      }
+    ],
+    "schema_version": 1,
+    "selected_manifest_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/sweep/threshold_0.5/handoff_manifest.json",
+    "selected_threshold": 0.5,
+    "selection_reason": "first gate-passing threshold inside the registered range",
+    "selection_rule": {
+      "kind": "registered_range_first_that_passes",
+      "range": [
+        0.4,
+        0.6
+      ],
+      "require_ready_for_stage_s": true
+    },
+    "thresholds": [
+      0.4,
+      0.5,
+      0.6
+    ],
+    "topology_state_json": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v15_state/candidate/topology_state.json"
+  },
+  "fields": {
+    "beta_equals_ramp_of_projection_max_abs_difference": 3.002445559951994e-06,
+    "beta_solver_retained_as": "solver audit field",
+    "beta_solver_sha256": "e088bc7ca51e7f190c23c9f124479105db4fd6959a2b8b18d24716ccc743cdab",
+    "bundle": {
+      "beta_solver": "work/pq4_1_v15_state/beta_solver.vti",
+      "rho_design": "work/pq4_1_v15_state/rho_design.vti",
+      "rho_filtered": "work/pq4_1_v15_state/rho_filtered.vti",
+      "rho_projection": "work/pq4_1_v15_state/rho_projection.vti"
+    },
+    "rho_projection_sha256": "4fb060b3b9111657dd8f533140b1bf04840c73ad591e475286bb193326655463"
+  },
+  "geometry_basis": "rho_projection",
+  "handoff": {
+    "mode": "registered_threshold_sweep",
+    "thresholds": [
+      0.4,
+      0.5,
+      0.6
+    ]
+  },
+  "input": {
+    "campaign_manifest_sha256": "4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda",
+    "campaign_outcome": {
+      "path": "docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json",
+      "sha256": "6c4496c5925233aa1060651346ca3b5a0e9ef0aec07b3ecb0fbda21d5b184e0d"
+    },
+    "candidate_rho_file_sha256": "52e791d520f7dff1df1d347e78ba3d875c0b9addf9366311fc027be1b07d118f",
+    "candidate_rho_sha256": "00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31",
+    "canonical_grid": {
+      "path": "work/pq3_3b_margin_masks/topology_state.json",
+      "sha256": "146bc2f77178456784f2806fb7807be21a7886cea7962639bd768ac37fd01444"
+    },
+    "checkpoint_index": 10,
+    "checkpoint_state_sha256": "b9b0f10e07a2528f94386c99419a50205265f040fa20132ca58d3c531904926e",
+    "problem_spec": {
+      "path": "work/pq4_candidate/project.yaml",
+      "sha256": "b66c159f6217683161ab48a7aa96a3706c0415d84074312d327d5136385b0f27"
+    }
+  },
+  "kind": "pq4_1_v15_state_stage_s_entry",
+  "projected_volume": 0.0640656740267299,
+  "registered_iso_thresholds": [
+    0.4,
+    0.5,
+    0.6
+  ],
+  "schema_version": 1,
+  "selection_rule": {
+    "kind": "registered_range_first_that_passes",
+    "range": [
+      0.4,
+      0.6
+    ],
+    "require_ready_for_stage_s": true
+  },
+  "stage_s_entry_verdict": {
+    "profile_id": "stage_s_entry_v1",
+    "ready_for_stage_s": true,
+    "reasons": [],
+    "selected_threshold": 0.5,
+    "sub_verdicts": {
+      "clearance": {
+        "pass": true,
+        "profile_id": "stage_v_clearance_v1",
+        "reasons": []
+      },
+      "components_root": {
+        "component_count": 0,
+        "max_components": null,
+        "mode": "disabled",
+        "pass": true,
+        "root_mask_cells": 0,
+        "root_required": false
+      },
+      "discreteness": {
+        "max_rho_threshold": null,
+        "mean_nd": 0.003213044113334087,
+        "mean_nd_max": 0.01,
+        "pass": true,
+        "reasons": null,
+        "status": "pass"
+      },
+      "extraction_profile": {
+        "checks": {
+          "feature_survival": {
+            "revoxelized_min_feature_m": 0.158113883008419,
+            "shrink_voxels": 0.4432736152956096,
+            "source_min_feature_m": 0.18027756377319948,
+            "status": "measured"
+          },
+          "mesh_manifold": {
+            "duplicate_face_count": 0,
+            "non_manifold_edge_count": 0,
+            "positive_volume": true,
+            "self_intersection": "none",
+            "watertight": true,
+            "winding_consistent": true
+          },
+          "reverse_surface_distance": {
+            "max_m": 0.07499998807907109,
+            "rms_m": 0.033987489743825525,
+            "sample_count": 814,
+            "status": "measured"
+          },
+          "root_connectivity": {
+            "reason": "source root mask is empty",
+            "status": "not_applicable"
+          },
+          "surface_distance": {
+            "max_m": 0.08660254037844388,
+            "rms_m": 0.04044338507174282,
+            "status": "measured"
+          }
+        },
+        "pass": true,
+        "reasons": []
+      },
+      "lineage": {
+        "artifacts": {
+          "revoxelized_density_vti": {
+            "sha256_match": true
+          },
+          "source_density_vti": {
+            "sha256_match": true
+          },
+          "surface_stl": {
+            "sha256_match": true
+          }
+        },
+        "status": "pass"
+      },
+      "volume_constraint": {
+        "absolute_tolerance": 0.0001,
+        "limit": 0.07632566813424899,
+        "pass": true,
+        "projected_volume": 0.0640656740267299,
+        "violation": -0.012259994107519087
+      },
+      "volume_fidelity": {
+        "absolute_m3": 0.01050179669725422,
+        "pass": true,
+        "profile": "volume_fidelity_v1",
+        "relative": 0.0912208182171919,
+        "revoxelized_relative": 0.09880564603691645
+      },
+      "width_gap": {
+        "declared": {},
+        "measured": {
+          "ridge_width_p5_m": 0.05,
+          "void_ridge_width_p5_m": 0.7000000000000001
+        },
+        "note": "ridge_width_p5_m is the p5 of the local-thickness ridge on the canonical grid, a quantization-aware lower-bound estimate; it is not the strict minimum-surface distance and is never silently substituted for a declared minimum",
+        "pass": true,
+        "status": "measured"
+      }
+    },
+    "sweep_rows": [
+      {
+        "ready_for_stage_s": false,
+        "reasons": [
+          "extraction_profile:feature_shrink_exceeds_profile"
+        ],
+        "status": "ok",
+        "threshold": 0.4
+      },
+      {
+        "ready_for_stage_s": true,
+        "reasons": [],
+        "status": "ok",
+        "threshold": 0.5
+      },
+      {
+        "ready_for_stage_s": false,
+        "reasons": [
+          "volume_fidelity:volume difference exceeds the registered profile"
+        ],
+        "status": "ok",
+        "threshold": 0.6
+      }
+    ]
+  },
+  "transform": {
+    "filter_radius_m": 0.15,
+    "projection_b": 128.0,
+    "projection_eta": 0.5,
+    "ramp_q": 100.0
+  },
+  "volume_constraint": {
+    "absolute_tolerance": 0.0001,
+    "limit": 0.07632566813424899,
+    "within_limit": true
+  }
+}

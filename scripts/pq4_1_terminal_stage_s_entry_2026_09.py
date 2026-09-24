@@ -1,10 +1,10 @@
-"""PQ4.1: run the composite Stage S entry gate on the v9 terminal candidate.
+"""PQ4.1: run the composite Stage S entry gate on a campaign checkpoint.
 
-No solver run. The v9 terminal rho (b=16 convergence window, independent
-terminal repeat) is re-materialized into the four registered fields, handed
-off to a ``rho_projection`` iso-0.5 surface (``beta_solver`` retained as the
-solver audit field), and judged by the complete composite gate. The verdict
-is recorded append-only; a failure is recorded as such, never overridden.
+No solver run. The selected campaign rho is re-materialized into the four
+registered fields, handed off through a registered ``rho_projection``
+threshold sweep (``beta_solver`` retained as the solver audit field), and
+judged by the complete composite gate. The verdict is recorded append-only; a
+failure is recorded as such, never overridden.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ from cfd_sdf.extraction_sweep import run_extraction_threshold_sweep  # noqa: E40
 from cfd_sdf.handoff import build_density_to_sdf_handoff  # noqa: E402
 from cfd_sdf.stage_s_entry import qualify_stage_s_entry  # noqa: E402
 
-V9_OUTCOME = ROOT / "docs/evidence/pq3_3b_campaign_v9_outcome_2026_09.json"
+CAMPAIGN_OUTCOME = ROOT / "docs/evidence/pq3_3b_campaign_v9_outcome_2026_09.json"
 CAMPAIGN = ROOT / "work/pq3_3b_campaign_v9"
 CANONICAL = ROOT / "work/df2_fd_refresh/topology_state.json"
 PROBLEM_SPEC = ROOT / "work/pq4_candidate/project.yaml"
@@ -50,24 +50,58 @@ def _array_sha256(values: np.ndarray) -> str:
     return hashlib.sha256(raw.tobytes()).hexdigest()
 
 
+def _stage_s_verdict_from_sweep(sweep: dict) -> dict:
+    selected_threshold = sweep.get("selected_threshold")
+    selected_row = next(
+        (
+            row
+            for row in sweep["rows"]
+            if selected_threshold is not None and row["threshold"] == selected_threshold
+        ),
+        None,
+    )
+    if selected_threshold is not None and selected_row is None:
+        raise ValueError("selected threshold has no matching sweep row")
+    selected_entry = (selected_row or {}).get("stage_s_entry") or {}
+    return {
+        "ready_for_stage_s": bool((selected_row or {}).get("ready_for_stage_s")),
+        "selected_threshold": selected_threshold,
+        "profile_id": "stage_s_entry_v1",
+        "reasons": list(selected_entry.get("reasons", [])),
+        "sub_verdicts": selected_entry.get("sub_verdicts", {}),
+        "sweep_rows": [
+            {
+                "threshold": row["threshold"],
+                "status": row["status"],
+                "ready_for_stage_s": row.get("ready_for_stage_s"),
+                "reasons": list((row.get("stage_s_entry") or {}).get("reasons", []))[:6],
+            }
+            for row in sweep["rows"]
+        ],
+    }
+
+
 def main() -> None:
-    global CAMPAIGN, V9_OUTCOME, CANONICAL, PROJECTION_B, EVIDENCE, OUT, iso_thresholds
+    global CAMPAIGN, CAMPAIGN_OUTCOME, CANONICAL, PROJECTION_B, EVIDENCE, OUT, iso_thresholds
     import argparse
 
     parser = argparse.ArgumentParser(description="PQ4.1 composite Stage S entry judgment")
     parser.add_argument("--campaign", default=str(CAMPAIGN))
-    parser.add_argument("--outcome", default=str(V9_OUTCOME))
+    parser.add_argument("--outcome", default=str(CAMPAIGN_OUTCOME))
     parser.add_argument("--canonical-state", default=str(CANONICAL))
     parser.add_argument("--projection-b", type=float, default=PROJECTION_B)
     parser.add_argument("--evidence", default=str(EVIDENCE))
     parser.add_argument("--kind", default="pq4_1_terminal_stage_s_entry_v2")
     parser.add_argument("--out-dir", default=str(OUT))
+    parser.add_argument("--candidate-label", default="the v9 terminal candidate",
+                        help="correct lineage label used in the claims sentences; "
+                             "append-only evidence must never mislabel its input")
     parser.add_argument("--iso-thresholds", default="0.5",
                         help="comma-separated registered iso thresholds; the registered "
                              "range-first-that-passes selection rule requires ready_for_stage_s")
     args = parser.parse_args()
     CAMPAIGN = Path(args.campaign).resolve()
-    V9_OUTCOME = Path(args.outcome).resolve()
+    CAMPAIGN_OUTCOME = Path(args.outcome).resolve()
     CANONICAL = Path(args.canonical_state).resolve()
     PROJECTION_B = float(args.projection_b)
     EVIDENCE = Path(args.evidence).resolve()
@@ -77,7 +111,7 @@ def main() -> None:
     iso_thresholds = args.iso_thresholds
     if OUT.exists() or EVIDENCE.exists():
         raise SystemExit("PQ4.1 artifacts already exist; the evidence is append-only")
-    outcome = ca.load_json(V9_OUTCOME)
+    outcome = ca.load_json(CAMPAIGN_OUTCOME)
     if outcome.get("terminal"):
         rho_sha = outcome["terminal"]["rho_sha256"]
     else:
@@ -86,13 +120,13 @@ def main() -> None:
     latest = ca.load_json(CAMPAIGN / "latest.json")
     state = ca.load_json(CAMPAIGN / latest["state_path"])
     if state["rho_sha256"] != rho_sha:
-        raise SystemExit("latest checkpoint does not hold the terminal rho")
+        raise SystemExit("latest checkpoint does not hold the selected candidate rho")
     rho_path = CAMPAIGN / state["rho_path"]
     if ca.sha256_file(rho_path) != state["rho_file_sha256"]:
-        raise SystemExit("terminal rho file hash mismatch")
+        raise SystemExit("candidate rho file hash mismatch")
     rho = np.load(rho_path, allow_pickle=False)
     if _array_sha256(rho) != rho_sha:
-        raise SystemExit("terminal rho array hash mismatch")
+        raise SystemExit("candidate rho array hash mismatch")
 
     reference_grid, reference_arrays = _read_cell_vti(
         CANONICAL.parent / "density.vti", expected_kind="fixed_grid_density"
@@ -159,7 +193,7 @@ def main() -> None:
         "grid": grid.to_dict(),
         "density_vti": "density.vti",
         "density_array": "rho_projection",
-        "source_solver": {"backend": "pq4_1_terminal_candidate"},
+        "source_solver": {"backend": "pq4_1_campaign_checkpoint_candidate"},
     }
     (candidate / "topology_state.json").write_text(json.dumps(topology_state, indent=2), encoding="utf-8")
 
@@ -186,23 +220,7 @@ def main() -> None:
             },
         )
         sweep_record = sweep
-        selected = sweep.get("selected") or {}
-        verdict_record = {
-            "ready_for_stage_s": bool(selected.get("ready_for_stage_s")),
-            "selected_threshold": selected.get("threshold"),
-            "profile_id": "stage_s_entry_v1",
-            "reasons": list((selected.get("stage_s_entry") or {}).get("reasons", [])),
-            "sub_verdicts": (selected.get("stage_s_entry") or {}).get("sub_verdicts", {}),
-            "sweep_rows": [
-                {
-                    "threshold": row["threshold"],
-                    "status": row["status"],
-                    "ready_for_stage_s": row.get("ready_for_stage_s"),
-                    "reasons": list((row.get("stage_s_entry") or {}).get("reasons", []))[:6],
-                }
-                for row in sweep["rows"]
-            ],
-        }
+        verdict_record = _stage_s_verdict_from_sweep(sweep)
     except Exception as exc:  # fail-closed: an extraction failure is the verdict
         sweep_record = {"error": f"{type(exc).__name__}:{exc}"}
         verdict_record = {
@@ -215,7 +233,59 @@ def main() -> None:
 
     evidence = {
         "kind": kind,
-        "correction": {
+        "schema_version": 1,
+        "input": {
+            "campaign_outcome": {
+                "path": str(CAMPAIGN_OUTCOME.relative_to(ROOT)),
+                "sha256": ca.sha256_file(CAMPAIGN_OUTCOME),
+            },
+            "campaign_manifest_sha256": outcome.get("manifest_sha256"),
+            "checkpoint_index": state["checkpoint_index"],
+            "checkpoint_state_sha256": ca.sha256_file(CAMPAIGN / latest["state_path"]),
+            "candidate_rho_sha256": rho_sha,
+            "candidate_rho_file_sha256": state["rho_file_sha256"],
+            "canonical_grid": {"path": str(CANONICAL.relative_to(ROOT)), "sha256": ca.sha256_file(CANONICAL)},
+            "problem_spec": {"path": str(PROBLEM_SPEC.relative_to(ROOT)), "sha256": ca.sha256_file(PROBLEM_SPEC)},
+        },
+        "campaign_status": outcome.get("status"),
+        "transform": {
+            "filter_radius_m": FILTER_RADIUS_M,
+            "projection_b": PROJECTION_B,
+            "projection_eta": 0.5,
+            "ramp_q": RAMP_Q,
+        },
+        "fields": {
+            "bundle": bundle_paths,
+            "beta_equals_ramp_of_projection_max_abs_difference": beta_identity,
+            "rho_projection_sha256": _array_sha256(fields["rho_projection"]),
+            "beta_solver_sha256": _array_sha256(fields["beta_solver"]),
+            "beta_solver_retained_as": "solver audit field",
+        },
+        "geometry_basis": "rho_projection",
+        "registered_iso_thresholds": list(thresholds),
+        "selection_rule": {
+            "kind": "registered_range_first_that_passes",
+            "range": [min(thresholds), max(thresholds)],
+            "require_ready_for_stage_s": True,
+        },
+        "projected_volume": projected_volume,
+        "volume_constraint": {
+            "limit": V_MAX,
+            "absolute_tolerance": VOLUME_TOLERANCE,
+            "within_limit": bool(projected_volume <= V_MAX + VOLUME_TOLERANCE),
+        },
+        "handoff": handoff_record,
+        "extraction_sweep": sweep_record,
+        "stage_s_entry_verdict": verdict_record,
+        "claims_supported": [
+            f"{args.candidate_label} was extracted from rho_projection and judged by the complete composite Stage S entry gate",
+        ],
+        "claims_not_supported": [
+            "a passing gate would qualify the Stage T numerical candidate only; it is not a grid-independent or target-physics claim",
+        ],
+    }
+    if kind == "pq4_1_terminal_stage_s_entry_v2":
+        evidence["correction"] = {
             "supersedes": {
                 "path": "docs/evidence/pq4_1_terminal_stage_s_entry_2026_09.json",
                 "sha256": "206434c51bcc90b54608f7419c5157078692e3e71e3a8d5c0bcf22618c17ed84",
@@ -228,40 +298,7 @@ def main() -> None:
                 "near-parallel non-crossing triangle pairs; verified against an exact "
                 "Moeller-Trumbore reference (property test)"
             ),
-        },
-        "schema_version": 1,
-        "input": {
-            "v9_outcome": {"path": str(V9_OUTCOME.relative_to(ROOT)), "sha256": ca.sha256_file(V9_OUTCOME)},
-            "terminal_rho_sha256": rho_sha,
-            "terminal_rho_file_sha256": state["rho_file_sha256"],
-            "canonical_grid": {"path": str(CANONICAL.relative_to(ROOT)), "sha256": ca.sha256_file(CANONICAL)},
-            "problem_spec": {"path": str(PROBLEM_SPEC.relative_to(ROOT)), "sha256": ca.sha256_file(PROBLEM_SPEC)},
-        },
-        "fields": {
-            "bundle": bundle_paths,
-            "beta_equals_ramp_of_projection_max_abs_difference": beta_identity,
-            "rho_projection_sha256": _array_sha256(fields["rho_projection"]),
-            "beta_solver_sha256": _array_sha256(fields["beta_solver"]),
-            "beta_solver_retained_as": "solver audit field",
-        },
-        "geometry_basis": "rho_projection",
-        "iso_value": ISO_VALUE,
-        "projected_volume": projected_volume,
-        "volume_constraint": {
-            "limit": V_MAX,
-            "absolute_tolerance": VOLUME_TOLERANCE,
-            "within_limit": bool(projected_volume <= V_MAX + VOLUME_TOLERANCE),
-        },
-        "handoff": handoff_record,
-        "extraction_sweep": sweep_record,
-        "stage_s_entry_verdict": verdict_record,
-        "claims_supported": [
-            "the v9 terminal candidate was extracted from rho_projection and judged by the complete composite Stage S entry gate",
-        ],
-        "claims_not_supported": [
-            "a passing gate would qualify the Stage T numerical candidate only; it is not a grid-independent or target-physics claim",
-        ],
-    }
+        }
     EVIDENCE.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(

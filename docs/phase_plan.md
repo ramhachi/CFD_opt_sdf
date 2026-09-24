@@ -848,15 +848,47 @@ Execute in this order:
    violations
    ([`evidence/pq3_3b_v15_entry_preflight_2026_09.json`](evidence/pq3_3b_v15_entry_preflight_2026_09.json)).
    Because the first alpha passed, this run did not exercise physical
-   response backtracking to a smaller alpha. The bounded v15 campaign remains
-   unrun at this point. Its first runner invocation reproduced the same
+   response backtracking to a smaller alpha. At that point the bounded v15
+   campaign had not started. Its first runner invocation reproduced the same
    successful alpha-1 physics evaluation but stopped before checkpointing due
    to an implementation error: the runner selected the last ledger row rather
    than the row marked `accepted`. The failed output is hash-recorded in
    [`evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json`](evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json),
    archived, and is not counted as a campaign step. The runner now selects the
-   sole accepted row explicitly; a clean campaign restart is required. Stage S
-   remains blocked.
+   sole accepted row explicitly; the clean campaign restart below was required.
+
+   **V15 bounded learning result (2026-09-24):** the clean campaign restart ran
+    under the immutable manifest (SHA-256
+    `4a46c740dd4fd2f350326b82bab90a67c64e8bb2de1334bc3bb563b2d2e5ceda`) and
+    stopped at `paused_learning_budget`: 10 fresh attempts, 10 accepted steps,
+    all at alpha 1.0, so the alpha-below-1 physical response backtracking path
+    was not exercised. The final accepted state has raw downforce
+    `2.10035503533`, projected volume `0.06406567400358908` (83.94% of Vmax),
+    active projected discreteness `0.003213044195919047` and zero support
+    violations. The registered convergence window was not observed
+    (`window_accepted=3`, `level_converged=false`); this is a bounded budget
+    stop, not terminal or converged; the campaign evidence alone does not
+    establish Stage S readiness. The final rho
+    array hash is `00efe715f32c46f8d55a7ace599936ce61613cdfcaa2b8ff35270db8dd711f31`
+    and the outcome records verified checkpoint-chain and output hashes in
+    [`evidence/pq3_3b_campaign_v15_outcome_2026_09.json`](evidence/pq3_3b_campaign_v15_outcome_2026_09.json)
+    (verified against `work/pq3_3b_campaign_v15` and the manifest). No v16 is
+    registered. PQ4.1 was then run on this checkpoint
+    ([`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`](evidence/pq4_1_v15_state_stage_s_entry_2026_09.json)):
+    the registered iso sweep (0.4/0.5/0.6) selects iso 0.5 and the complete
+    composite `stage_s_entry_v1` gate returns **`ready_for_stage_s=true`** at
+    `rho_projection` iso 0.5 (discreteness, extraction profile with a measured
+    watertight manifold non-self-intersecting surface, volume fidelity, volume
+    constraint, width/gap, lineage-hash and the `stage_v_clearance_v1`
+    preflight all pass). Iso 0.4 fails feature shrink; iso 0.6 fails volume
+    fidelity. This measured gate pass is at the paused v15 checkpoint, not a
+    converged terminal candidate: it closes this diagnostic's open clearance
+    blocker (P2's v14 failure mode) but proves neither sustained optimization
+    behavior, a Stage S-qualified geometry after later states, nor grid-
+    independence, and the P20 measurement scope (volume-calibration artifact
+    shape label, strict minimum width) remains open. No Stage S baseline is
+    registered by this record; registration remains a separate authorized
+    decision.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
