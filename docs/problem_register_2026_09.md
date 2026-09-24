@@ -1326,11 +1326,15 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 | Stage V | v2 specから直接駆動。3解像度、候補Bの2成分とも欠落なくメッシュ化、Cd単調収束。**ただしP12により参照として未資格** |
 | 目的関数の健全性 | 空領域（ρ≡0）で drag = downforce = 0.0 ちょうど。幾何非依存のオフセットなし |
 
-## 現在の未解決の問い（重要度順、2026-09-24）
+## 現在の未解決の問い（重要度順、2026-09-25）
 
-1. Work F surface FD: matched-Re laminar V1 case上でdrag/downforceのbase adjointが
-   成立し、analytic directional derivativeがcentered FDと符号一致かつ5%以内に収まるか
-   （epsilon plateau、noise floor、near-zero規則、法線・面積重み規約を含む）。
+1. Work F surface FD: matched-Re laminar V1 caseの32-primal campaignは完了し、
+   gradient-aligned方向は5%以内（plateauあり）だがrandom seed方向が5%を超え、
+   完全なderivative qualificationはfalseのまま（`shape_update_allowed=false`）。
+   D1（realized direction）とD2（sensitivity semantics）は欠陥なしでpass、D3
+   （`linearUpwind`）はmixedで`supports_discretization_cause=false`。現在の問いは、
+   残差がB-spline geometry chain rule（D4.2、solver-free）にあるのか、
+   continuous-adjoint surface term（D4.3 ablation、条件付き）にあるのかである。
 2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
    extractableだがblocked stopであり、strict terminal criterion上はopen。
 3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
@@ -1359,25 +1363,36 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-24, Work F V1 baseline後）
+## 次の一手（2026-09-25, D3後）
 
-実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は直近の監査計画に従う。
-PQ3.3a/PQ4.0a/PQ3.3b/PQ4.1は実行済みで、以下が現在の順序である。
+実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は
+`stage_s_work_f_post_d3_plan_2026_09_25.md`に従う。過去のmanifest、evidence、
+raw logs、hashは変更しない。
 
-1. 権威文書の要約整合（本更新）。過去の失敗記録とevidenceは変更しない。
-2. Work F surface-FD contract: matched-Re laminar用のbody-fitted base adjoint
-   （drag/downforceを別solverで宣言、`faceSensNormal<response>`を両方取得、
-   dragは`require_drag=True`）、response別immutable manifest、solver-free
-   perturbation preflight、回帰テストを実装する。campaignはまだ開始しない。
-3. epsilon ladder・方向・surface basis・変位上限・noise floorを応答結果を見る前に固定し、
-   immutable manifestとsidecar hashを作る。
-4. base adjoint 2本と共有perturbation catalog（最大 4 directions × 4 epsilons × 2 signs
-   = 32 primal）を実行し、centered FDを計算する。pair片側の失敗から片側差分を作らない。
-5. drag/downforceを別々に判定する。両方pass時のみone-step manifestを別途登録し、
-   小変位step後にgeometry/clearance/mesh/solver/responseを全再実行する。fail/unresolved
-   なら`shape_update_allowed=false`を維持し、HJ evolution・複数stepへ進まない。
-6. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
+1. D4.0 diagnostic registration: component合算式、derivative file hash、image ID、
+   v2512 source hash、ablation順序、sole-cause rule、holdout seed規則を
+   `stage_s_work_f_component_diagnosis_manifest_2026_09.json`に固定する（登録済み）。
+2. D4.1 derivative-component audit（solver-free、実行済み）: 全component columnを
+   方向ごとにcontractし、closure・cancellation index・FD residual・
+   drop-one/single-scalar仮説を記録する。closureはfile precision内で、
+   単一項削除・単一scalarでは全方向を説明できない。
+3. D4.2 B-spline geometry-Jacobian audit（solver-free）: 既存plus/minus meshの
+   centered differenceとOpenFOAM analytic `dxdbFace`・`dSdb`・`dndb`を
+   face-by-faceで比較する。failならmorpher/parameterization chain ruleを
+   一因子修正してside preflightから再実行し、pass時のみD4.3へ進む。
+4. D4.3 adjoint-option ablation（条件付き、adjoint-only）: `includeSurfaceArea`
+   を先に、sole-cause条件を満たさない場合のみ`includeMeshMovement`を変更する。
+   複数optionの同時変更・結果を見た後のfactor追加は禁止である。
+5. D4.4 factor judgment: sole-cause ruleを満たすfactorのみD5 holdoutへ進める。
+   部分改善のみ・説明不能ならcontinuous adjoint routeをfail-closedで保留し、
+   D6/D7へ進まない。
+6. D5/D6/D7は条件付きである。holdout（manifest hashから導出した新random 2方向＋
+   gradient-aligned control、6 primals）が通らなければfull requalificationへ
+   進まず、48-primal requalificationが完全passした場合のみone-step manifestを
+   別checkpointで登録する。shape updateは最大一回で、multi-step最適化へ自動移行しない。
+7. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
    独立検証・target-physics ladderとして維持する。
 
-直近の判定点は、**base adjointがmatched-Re laminar V1 caseで成立し、analytic derivative
-とcentered FDが符号一致・5%以内に収まるか**である。これを確定する前に形状更新を開始しない。
+直近の判定点は、**D4.2がpassするか（geometry chain ruleの欠陥の有無）、
+およびD4.3のablationがsole-cause ruleを満たすか**である。これを確定する前に
+形状更新を開始しない。

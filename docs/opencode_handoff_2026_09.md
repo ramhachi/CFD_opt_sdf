@@ -1389,3 +1389,38 @@ repair that unrelated documentation mismatch.
 - No D4 requalification and no D5 shape step; the derivative remains
   unqualified and `shape_update_allowed=false`. The original verdict and
   thresholds are unchanged.
+
+## 2026-09-25: D4.0 registration and D4.1 derivative-component audit
+
+- D4.0 manifest
+  `docs/evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json`
+  (SHA-256 `21dd18d6084258b4dc1f5cf02bc9d91049fb6e8f8aef82ae438bf0cd484a8e52`)
+  binds the post-D3 plan, all input evidence hashes, the four direction vector
+  hashes, the upwind and linearUpwind derivative-file hashes, the OpenFOAM
+  image ID and ten v2512 source-file SHA-256s, the component formula, the
+  ablation order, the sole-cause rule and the manifest-hash-derived holdout
+  seed rule.
+- D4.1 audit
+  `docs/evidence/stage_s_work_f_derivative_component_audit_2026_09.json`
+  (SHA-256 `2cd3f9f102fe49ff80b5d8499416ff61450d245a2c16468850693d8c5b32476c`)
+  contracts every derivative column for 32 upwind rows (4 directions x 4
+  epsilons x 2 responses) and 6 linearUpwind rows (3 directions at `5e-4`).
+  Component closure is exact (max `1.63e-8`, within the file-precision
+  tolerance) and the raw contraction reproduces every registered analytic
+  exactly (deviation `0.0`).
+- No single component drop and no common scalar explains all directions in
+  either scheme. Dropping `dxdbVol`, `dndb`, `dxdbDirect` or `dVdb` (all zero
+  in the contraction) changes nothing; dropping `dxdbSurf` or `dSdb` destroys
+  the signal. The residual is in the values of the two surface terms, with
+  cancellation amplification: drag `random_seed_2026` has `dxdbSurf=-0.20195`,
+  `dSdb=+0.06770` (cancellation index `2.01`, FD residual `-0.06165`), and
+  downforce `random_seed_11` `+0.02465/-0.17737` (index `1.32`). The
+  least-squares common scales (`1.0134` upwind, `1.0295` linearUpwind) leave
+  max relative errors of `0.44` / `0.22`.
+- Docs reconciled: phase_plan Stage S summary now records D0-D3 and the D4.0
+  registration; the old Slice C/D paragraph now states that drag
+  `random_seed_11` passes at 3.8%; problem_register questions and next action
+  are rewritten for the post-D3 sequence.
+- Next: D4.2 B-spline geometry-Jacobian audit (solver-free). D4.3 ablations and
+  D5-D7 remain conditional; `derivative_qualified=false` and
+  `shape_update_allowed=false` stand.
