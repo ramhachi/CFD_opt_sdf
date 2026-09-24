@@ -1510,3 +1510,32 @@ repair that unrelated documentation mismatch.
 - A1 is diagnostic, not qualification. `derivative_qualified=false` and
   `shape_update_allowed=false` remain until D5/D6 fully pass and a separate D7
   manifest is registered.
+
+## 2026-09-25: A0 registration and A1 native-FI discriminant - fail-closed
+
+- A0 manifest
+  `docs/evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`
+  (SHA-256 `e78d2fb8f40044910b9a80e672c5b0111c22a4741f7f319327a8a52c5ca357ce`)
+  binds the D4.x hashes, the image and 12 v2512 sensitivity source hashes, the
+  single `sensitivityType surface -> shapeFI` treatment, the fixed contract, the
+  pre-registered 32-row classification, the run budget (1 fixed lineage + 2
+  adjoints, 0 new primals) and the stop conditions.
+- A1 evidence
+  `docs/evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`
+  (SHA-256 `de814a57de1a55f8cc1e4cee7039874d80af0f58e24d76692cd76bf914f0ed92`):
+  `adjointSensitivity type : shapeFI` was selected, both adjoints converged,
+  the time-500 `U`/`p`/`phi` hashes and the 648-`varID` schema are unchanged,
+  and sign/plateau/near-zero all hold. But the pass controls worsen (downforce
+  gradient-aligned `1.0409 -> 1.1333`, drag downforce-gradient-aligned
+  `1.0266 -> 1.0861`) and the failing rows remain (downforce seed2026 `0.9094`,
+  drag seed2026 `1.5798`), so `candidate_formulation_supported=false`.
+- Component observation: FI moves the signal from `dxdbSurf` (now exactly
+  zero) into `dxdbVol`; `dSdb` is bit-equal to E-SI. Neither total explains the
+  FD residual.
+- `docs/stage_s_work_f_architecture_decision_2026_09_25.md` is the 0-run memo
+  required by plan section 21.6: it registers exactly two options (an
+  alternative sensitivity path consistent with the same discrete primal, or a
+  reduced-parameterization centered-FD path) with their required contracts,
+  costs and risks. Neither is selected; no new solver campaign is running.
+- `derivative_qualified=false` and `shape_update_allowed=false` remain the
+  authoritative state.

@@ -1337,8 +1337,18 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
    derivative fileをbit同一のまま変えず（`faceSensNormal*`のみ変化）、
    `includeMeshMovement false`は値を変えるがpass controlを悪化させた。D4.4の
    判定表に従い、OpenFOAM continuous-adjoint routeはこのWork F profileでは
-   **未資格（fail-closed）**としてD5 holdout・D6/D7へ進まない。次の問いは
-   アーキテクチャ判断（別定式化・別sensitivity経路・別parameterization）である。
+   **未資格（fail-closed）**としてD5 holdout・D6/D7へ進まない。その後§21に従い
+   A0登録とA1 native-FI判別を実行した: `sensitivityType surface -> shapeFI` は
+   lineage・schema・convergenceをpassしたが、pass controlの悪化（downforce
+   gradient-aligned `1.0409 -> 1.1333`、drag downforce-aligned `1.0266 ->
+   1.0861`）とfailing rowの残存（downforce seed2026 `0.9094`、drag seed2026
+   `1.5798`）により`candidate_formulation_supported=false`
+   （`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`
+   および`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`）。
+   次の問いはarchitecture decisionであり、0-run memo
+   `stage_s_work_f_architecture_decision_2026_09_25.md` が比較する二案
+   （別sensitivity経路 / 低次元parameterization + centered FD）のいずれかを
+   新しい契約として登録するまで新しいsolver campaignを開始しない。
 2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
    extractableだがblocked stopであり、strict terminal criterion上はopen。
 3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
@@ -1367,31 +1377,36 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-25, D4.4後）
+## 次の一手（2026-09-25, A1後）
 
 実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は
-`stage_s_work_f_post_d3_plan_2026_09_25.md`に従う。過去のmanifest、evidence、
-raw logs、hashは変更しない。
+`stage_s_work_f_post_d3_plan_2026_09_25.md` §21 と
+`stage_s_work_f_architecture_decision_2026_09_25.md` に従う。過去のmanifest、
+evidence、raw logs、hashは変更しない。
 
-1. 完了済みD4.0〜D4.4 evidence、元の32-primal FD、OpenFOAM image/source、
-   baseline/treatment差分、run上限、停止条件をA0 manifestへsolver-freeで登録する。
-2. primal、mesh、objective、`volumetricBSplines`、方向、epsilon、gateを固定し、
-   `sensitivityType surface`（E-SI）からnative `sensitivityType shapeFI`（FI）だけを
-   変更したA1 discriminantを行う。最大runは固定base/primal lineage 1とdrag/downforceの
-   2 adjointsで、perturbation primalは0。
-3. A1は、元のfailing rowsがすべて5%以内、元のpassing rowsが無悪化、全sign・plateau・
-   near-zero・lineage・schema gateを満たす場合だけcandidate formulationとする。A1 passは
-   元データ依存の診断でありqualificationではない。
-4. A1 complete pass時だけ既存D5 holdout（6 primals）へ進み、その後もD6 full
-   requalification（48 primals）を完全passするまでshape updateを許可しない。
-5. A1がmixed/failならFI/E-SI混合、option組合せ、fitted scaleを試さず停止する。次のsolver
-   campaignの前に、discrete primalへ整合する別sensitivity経路と、低次元FD parameterizationの
-   二案を0-run architecture memoで比較する。`surfacePoints`は同じE-SI系なので独立候補に数えない。
-6. parameterization-only変更は、現B-spline geometry Jacobianがpassしているため第一選択にしない。
-   採用時は新しいdesign-space contract、geometry preflight、FD cost、holdoutを最初から登録する。
-7. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
+1. A0（完了）: FI比較契約をsolver-freeで登録した
+   （`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`、
+   SHA-256 `e78d2fb8...`）。
+2. A1（完了・mixed/fail）: `sensitivityType shapeFI` はlineage・schema・
+   convergence・sign・plateau・near-zeroをpassしたが、pass controlの悪化と
+   failing rowの残存により`candidate_formulation_supported=false`
+   （`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`、
+   SHA-256 `de814a57...`）。
+3. 停止: FI/E-SI混合、option組合せ、fitted scale、方向別補正、parameterization-only
+   変更を試さない。0-run architecture memo
+   `stage_s_work_f_architecture_decision_2026_09_25.md` が二案を比較する:
+   (1) 同じdiscrete primal residual/responseに整合する別sensitivity経路、
+   (2) 低次元parameterization + centered FD経路。`surfacePoints`は同じE-SI系なので
+   独立候補に数えない。
+4. 次の行動: いずれか一案を新しいimmutable contract（design space、preflight、
+   epsilon ladder、holdout、one-step gate）として登録するまで、新しいsolver
+   campaignを開始しない。案(2)を選ぶ場合も旧648-var結果を継承しない。
+5. D5/D6/D7はD4.4/A1で成立しなかった条件付き段階であり、未実行のまま維持する。
+   shape updateは、選択したarchitectureの下でholdoutとrequalificationが完全passし、
+   別のone-step manifestが登録されるまで禁止する。
+6. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
    独立検証・target-physics ladderとして維持する。
 
-直近の判定は完了した: **Work F surface derivativeは現行continuous-adjoint
-profileでは資格化できない**。形状更新は引き続き禁止であり、次の行動は
-architecture decisionの最初のbounded sliceはA0登録とA1 FI discriminantである。
+直近の判定は完了した: **E-SIとnative FIのいずれもWork F profileの
+qualificationを説明できない**。形状更新は引き続き禁止であり、次の行動は
+architecture memoの二案からの選択である。
