@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from scripts.pq3_3b_campaign_v6_2026_09 import (  # noqa: E402
+    _accepted_phase2_candidate,
     cap_stationarity_exit_allowed,
     level_converged,
     parent_discreteness_guard,
@@ -161,6 +162,22 @@ def test_phase2_dispatch_preserves_inequality_and_selects_projected_direction(mo
     projected_manifest["phase2_policy"]["volume_cap_correction"] = True
     with pytest.raises(ValueError, match="does not permit volume correction"):
         campaign.evaluate_registered_phase2(manifest=projected_manifest, marker=3)
+
+
+def test_accepted_candidate_can_precede_untried_ladder_entries():
+    first = {"alpha": 1.0, "accepted": True, "reason": "accepted"}
+    payload = {
+        "candidates": [
+            first,
+            {
+                "alpha": 0.5,
+                "accepted": False,
+                "reason": "transform_feasible_response_pending",
+            },
+        ]
+    }
+
+    assert _accepted_phase2_candidate(payload) is first
 
 
 def test_v14_is_a_bounded_nonconvergence_learning_campaign():

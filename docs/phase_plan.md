@@ -849,7 +849,14 @@ Execute in this order:
    ([`evidence/pq3_3b_v15_entry_preflight_2026_09.json`](evidence/pq3_3b_v15_entry_preflight_2026_09.json)).
    Because the first alpha passed, this run did not exercise physical
    response backtracking to a smaller alpha. The bounded v15 campaign remains
-   unrun at this point. Stage S remains blocked.
+   unrun at this point. Its first runner invocation reproduced the same
+   successful alpha-1 physics evaluation but stopped before checkpointing due
+   to an implementation error: the runner selected the last ledger row rather
+   than the row marked `accepted`. The failed output is hash-recorded in
+   [`evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json`](evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json),
+   archived, and is not counted as a campaign step. The runner now selects the
+   sole accepted row explicitly; a clean campaign restart is required. Stage S
+   remains blocked.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

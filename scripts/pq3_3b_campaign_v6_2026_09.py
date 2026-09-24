@@ -313,6 +313,15 @@ def evaluate_registered_phase2(*, manifest: dict, **kwargs):
     raise ValueError(f"unsupported Phase 2 policy id: {policy_id}")
 
 
+def _accepted_phase2_candidate(payload: dict) -> dict:
+    """Return the sole accepted candidate, independent of ladder position."""
+
+    accepted = [candidate for candidate in payload["candidates"] if candidate.get("accepted")]
+    if len(accepted) != 1:
+        raise ValueError(f"expected exactly one accepted Phase 2 candidate, got {len(accepted)}")
+    return accepted[0]
+
+
 def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max_new_attempts: int | None = None) -> dict:
     manifest_path = Path(manifest_path) if manifest_path is not None else MANIFEST
     manifest, output = verify_preconditions(resume=resume, manifest_path=manifest_path)
@@ -520,7 +529,7 @@ def run_campaign(*, resume: bool = False, manifest_path: Path | None = None, max
                     _checkpoint(output, state, rho)
                     break
                 return _stop(output, "objective_rejected", level["name"])
-            candidate = payload["candidates"][-1]
+            candidate = _accepted_phase2_candidate(payload)
             if not candidate["accepted"] or payload["corrected_rho_sha256"] != sha256_array(accepted):
                 raise ValueError("inequality acceptance or rho lineage mismatch")
             after = np.asarray(transform.forward(accepted).rho_projected, dtype=np.float64)

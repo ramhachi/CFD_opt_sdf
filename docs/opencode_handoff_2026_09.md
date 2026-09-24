@@ -950,3 +950,22 @@ repair that unrelated documentation mismatch.
 - Since alpha 1.0 passed, no lower-alpha response evaluation was needed. The
   code path is covered by tests, but physical response backtracking remains
   unobserved. The preflight did not start the ten-attempt campaign.
+
+### First campaign invocation: runner selection defect
+
+- The first clean v15 campaign invocation reproduced the preflight's accepted
+  alpha-1 candidate and fresh solver evidence, then raised
+  `inequality acceptance or rho lineage mismatch` before writing checkpoint 1.
+- Root cause: the response-level ledger retains smaller transform-feasible,
+  unevaluated rows after an earlier alpha is accepted, while the shared runner
+  still selected `candidates[-1]`. The accepted row was index 0 and the final
+  row was an untried alpha 0.0625 row. The accepted and payload rho hashes both
+  equal `2dc165bd84f45aadf3f3086fa2e9b14814e65146a0978366792c945d606bd163`;
+  this was control-flow selection, not a field-lineage mismatch.
+- `docs/evidence/pq3_3b_v15_runner_lineage_failure_2026_09.json` records the
+  error, request evidence and pre-archive hashes. The failed work directory is
+  preserved as `work/pq3_3b_campaign_v15_failed_lineage_2026_09_24` and does
+  not count as an accepted step.
+- The runner now requires exactly one row with `accepted=true` and selects that
+  row independently of ladder position. Restart v15 from a clean output
+  directory after committing this repair; do not resume the failed directory.
