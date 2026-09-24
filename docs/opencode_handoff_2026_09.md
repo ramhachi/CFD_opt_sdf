@@ -1149,3 +1149,29 @@ repair that unrelated documentation mismatch.
   append-only. Next slice: Work F0 baseline registration preflight and one V1
   body-fitted baseline qualification (mesh-only first; no adjoint, FD or shape
   update).
+
+## 2026-09-24: Work F0 baseline preparation (registration, preflight, mesh gate)
+
+- Work F manifest `docs/evidence/stage_s_work_f_manifest_2026_09.json`
+  (SHA-256 `03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd`)
+  binds the baseline v2, the matched-Re laminar spec
+  (`work/stage_sv_laminar/project_matched_re_laminar.yaml`), the V1 voxel size
+  `0.05 m`, the case path `work/stage_s_work_f_v1/baseline/V1`, the clearance
+  and mesh profiles, the drag/downforce response identities, the mesh-only
+  commands and the fail-closed stop rules.
+- Solver-free preflight
+  `docs/evidence/stage_s_work_f_v1_preflight_2026_09.json` (SHA-256
+  `3f850e20dfff91bef91fb676cc84bdcd55710912fa4cfa899fcaf6d46c350f06`): the V1
+  case renders from the registered v16 iso-0.5 surface; metadata matches the
+  registered operating point (`U=1`, `rho=1`, `mu=1e-2`, laminar, Aref 0.64,
+  lRef 0.8, CofR `(0.25,0,0)`, drag `(1,0,0)`, lift `(0,0,1)`, force patch
+  `design_candidate`, fixed domain bounds, voxel 0.05); clearance preflight
+  passes.
+- Mesh-only run `docs/evidence/stage_s_work_f_v1_mesh_2026_09.json` (SHA-256
+  `4a257ac608c022479a918e2adb0e2ebba2fe1bb6f3680c7f38ba6efd961d2577`): 39,848
+  cells; one failed check line `Concave cells (using face planes) found,
+  number of cells: 2441` (fraction 0.06126 <= 0.08); mesh profile qualified;
+  `solver_allowed=true`; `simpleFoam` not started.
+- Next: the primal baseline run (simpleFoam + `write_stage_v_qualification` +
+  the registered profile qualification), which also reconfirms clearance under
+  solver execution and closes P17; no adjoint, FD or shape update yet.

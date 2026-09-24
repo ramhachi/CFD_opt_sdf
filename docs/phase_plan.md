@@ -998,9 +998,29 @@ Execute in this order:
    SHA-256 `a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6`)
    re-binds the baseline to that judgment and supersedes the v1 record. The
    volume-fidelity and feature-survival sub-gates pass by construction for the
-   exact extractor; they remain guards against future extractor changes. Next
-   slice: Work F0 baseline registration preflight and one V1 body-fitted
-   baseline qualification (mesh-only first; no adjoint, FD or shape update).
+   exact extractor; they remain guards against future extractor changes.
+
+   **Work F0 baseline preparation (2026-09-24):** the immutable Work F manifest
+   ([`evidence/stage_s_work_f_manifest_2026_09.json`](evidence/stage_s_work_f_manifest_2026_09.json),
+   SHA-256 `03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd`)
+   binds the baseline v2, the matched-Re laminar problem spec, the V1 voxel size
+   (`0.05 m`), the case path, the clearance/mesh profiles, the drag/downforce
+   response identities, the mesh-only commands and the fail-closed stop rules.
+   The solver-free preflight
+   ([`evidence/stage_s_work_f_v1_preflight_2026_09.json`](evidence/stage_s_work_f_v1_preflight_2026_09.json),
+   SHA-256 `3f850e20dfff91bef91fb676cc84bdcd55710912fa4cfa899fcaf6d46c350f06`)
+   rendered the V1 case from the registered v16 iso-0.5 surface and verified
+   the metadata (flow case `matched_re_laminar`, laminar, `U=1`, `rho=1`,
+   `mu=1e-2`, Aref `0.64`, lRef `0.8`, CofR `(0.25,0,0)`, drag `(1,0,0)`, lift
+   `(0,0,1)`, force patch `design_candidate`, fixed domain bounds, voxel size)
+   and the clearance preflight pass. The mesh-only run
+   ([`evidence/stage_s_work_f_v1_mesh_2026_09.json`](evidence/stage_s_work_f_v1_mesh_2026_09.json),
+   SHA-256 `4a257ac608c022479a918e2adb0e2ebba2fe1bb6f3680c7f38ba6efd961d2577`)
+   passed the registered `stage_v_qualification_v1` mesh gate: `39848` cells,
+   one failed check line (`Concave cells ... 2441`, fraction `0.06126` below
+   the registered `0.08`), `solver_allowed=true`; no solver was started. Next
+   slice: the primal baseline run and response/stationarity qualification
+   (then the solver-execution clearance reconfirmation closes P17).
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
