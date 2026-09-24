@@ -1175,3 +1175,20 @@ repair that unrelated documentation mismatch.
 - Next: the primal baseline run (simpleFoam + `write_stage_v_qualification` +
   the registered profile qualification), which also reconfirms clearance under
   solver execution and closes P17; no adjoint, FD or shape update yet.
+
+## 2026-09-24: Work F V1 primal baseline qualified (P17 reconfirmed)
+
+- `docs/evidence/stage_s_work_f_v1_solver_2026_09.json` (SHA-256
+  `3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f`): the V1
+  body-fitted baseline solved to the registered `stage_v_qualification_v1`
+  profile. checkMesh profile pass (39,848 cells, concave fraction 0.06126);
+  `residualControl` convergence (final `Ux/Uy/Uz/p`
+  `4.91e-7/8.18e-7/9.80e-7/3.11e-6`); force stationarity pass (Cd mean
+  `2.52344`, window drift `-1.106e-4`; downforce mean `1.69084`, window drift
+  `-6.305e-5`).
+- This is the solver-execution clearance reconfirmation for the exact
+  registered v16 iso-0.5 surface, so P17's closure condition is met (bounded
+  to this candidate and level; new candidates/levels need their own run).
+- `surface_fd_allowed=true`; `shape_update_allowed=false`. Next slice: register
+  and run the drag/downforce surface FD campaign under `fd_gradient_v1`; at
+  most one shape step only if both responses pass.

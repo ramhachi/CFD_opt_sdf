@@ -127,7 +127,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
 | P16 | Stage Vが解像できる最小差 | — | **scheme因子まで更新（2026-09-21）**。`linearUpwind`でdrag drift 0.364%は2% bound内。downforce driftは0.010374で0.005未達、三格子非単調でGCIなし。次は登録済みdomain/boundary因子 |
-| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **fail-closed gate実装済み（2026-09-20）**。固定domain束縛+宣言margin preflightで誤候補がmesh前に棄却される。実際のsolver実行での再確認は未実施 |
+| P17 | 候補面とStage V外周境界のclearanceが未検査 | 最重大 | **closed（2026-09-24、bounded）**。fail-closed gate実装（2026-09-20）に加え、Work F V1 baseline（登録v16 iso-0.5 surface）がbody-fitted caseでmesh/solverを完走し、`stage_v_qualification_v1`の全gateに合格（solver実行での再確認、`evidence/stage_s_work_f_v1_solver_2026_09.json`）。closureはこのcandidate/levelに限られ、新candidate・新levelでは再確認が必要 |
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **open（2026-09-22, PQ3.3後）**。backendはraw `rho_design`平均をtargetにし、handoffはRAMP後`beta_solver`を0.4--0.6で抽出。採用制約・geometry基準は`rho_projection`。PQ3.3a再materializeとprojected-volume backendが必要 |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
@@ -1300,9 +1300,14 @@ far-field domainへ束縛する。P15の正しいV3についてはmesh passとso
   volume fidelityで除外）。ただしsolver実行での再確認は未実施のため、この合格は
   P17自体を閉じない（`evidence/pq4_1_v15_state_stage_s_entry_2026_09.json`）。
 - v16終端（checkpoint 87、blocked stop）のPQ4.1でも、`rho_projection` iso 0.5の
-  抽出面が修理後gateで`stage_v_clearance_v1` preflightに合格した。P17のclosure条件は
-  変わらず、body-fitted mesh/solver実行での再確認まで閉じない
-  （`evidence/pq4_1_v16_state_stage_s_entry_2026_09.json`）。
+  抽出面が修理後gateで`stage_v_clearance_v1` preflightに合格した
+  （`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`）。
+- 2026-09-24 closure: Work F V1 baseline（登録v16 iso-0.5 surface、V1=0.05 m）が
+  body-fitted case（39,848 cells）でmesh/solverを完走し、`stage_v_qualification_v1`の
+  全gate（checkMesh profile、`residualControl`収束、force stationarity）に合格した。
+  これがsolver実行でのclearance再確認であり、P17のclosure条件を満たす
+  （`evidence/stage_s_work_f_v1_solver_2026_09.json`）。closureはこのcandidate/levelに
+  限られ、新candidate・新levelでは同じ実行確認を繰り返す。
 
 ---
 

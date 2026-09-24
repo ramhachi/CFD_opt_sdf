@@ -78,3 +78,25 @@ def test_mesh_evidence_passed_without_starting_the_solver():
     assert evidence["check_mesh"]["concave_cell_fraction"] <= 0.08
     assert evidence["summary"]["solver_allowed"] is True
     assert evidence["summary"]["solver_started"] is False
+
+
+SOLVER = ROOT / "docs/evidence/stage_s_work_f_v1_solver_2026_09.json"
+
+
+def test_solver_evidence_qualified_and_reconfirmed_clearance():
+    evidence = json.loads(SOLVER.read_text())
+    assert evidence["manifest"]["sha256"] == ca.sha256_file(MANIFEST)
+    assert evidence["mesh_evidence"]["sha256"] == ca.sha256_file(MESH)
+    assert evidence["openfoam_run"]["returncode"] == 0
+    assert evidence["openfoam_run"]["timed_out"] is False
+    qualification = evidence["qualification"]
+    assert qualification["qualified"] is True
+    assert qualification["reasons"] == []
+    assert qualification["check_mesh"]["qualified"] is True
+    assert qualification["solver"]["qualified"] is True
+    assert qualification["force_stationarity"]["qualified"] is True
+    assert evidence["summary"]["p17_solver_execution_reconfirmed"] is True
+    assert evidence["summary"]["surface_fd_allowed"] is True
+    assert evidence["summary"]["shape_update_allowed"] is False
+    for key, record in evidence["artifacts"].items():
+        assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], key

@@ -1018,9 +1018,19 @@ Execute in this order:
    SHA-256 `4a257ac608c022479a918e2adb0e2ebba2fe1bb6f3680c7f38ba6efd961d2577`)
    passed the registered `stage_v_qualification_v1` mesh gate: `39848` cells,
    one failed check line (`Concave cells ... 2441`, fraction `0.06126` below
-   the registered `0.08`), `solver_allowed=true`; no solver was started. Next
-   slice: the primal baseline run and response/stationarity qualification
-   (then the solver-execution clearance reconfirmation closes P17).
+   the registered `0.08`), `solver_allowed=true`; no solver was started.
+
+   **Work F V1 baseline qualification (2026-09-24):** the primal baseline ran
+   ([`evidence/stage_s_work_f_v1_solver_2026_09.json`](evidence/stage_s_work_f_v1_solver_2026_09.json),
+   SHA-256 `3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f`):
+   `residualControl` convergence (final `Ux/Uy/Uz/p` `4.91e-7/8.18e-7/9.80e-7/3.11e-6`),
+   force stationarity pass (Cd mean `2.52344`, window drift `-1.106e-4`; downforce
+   mean `1.69084`, window drift `-6.305e-5`), and the solver-execution clearance
+   reconfirmation for the exact registered surface, which meets P17's closure
+   condition (bounded to this candidate and level). `surface_fd_allowed=true`.
+   Next slice: the drag/downforce surface FD campaign under `fd_gradient_v1`,
+   registered before running; a shape update remains unauthorized until both
+   responses pass.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.
