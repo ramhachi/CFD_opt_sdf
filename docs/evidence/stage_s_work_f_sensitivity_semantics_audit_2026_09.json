@@ -1,0 +1,88 @@
+{
+  "claims_not_supported": [
+    "a passing semantics audit does not qualify the derivative or authorize a shape update"
+  ],
+  "claims_supported": [
+    "the adjoint objectives, the primal forceCoeffs identities and the manifest response identities agree",
+    "the eight analytic directional derivatives reproduce from the raw files by a varID join"
+  ],
+  "contraction_checks": {
+    "active_set_recorded": true,
+    "boundary_excluded": true,
+    "header_columns": true
+  },
+  "convention": {
+    "analytic_source": "design-variable derivative file 'total' column (library dJ/dvar)",
+    "include_surface_area": true,
+    "sensitivity_type": "surface",
+    "surface_field_role": "faceSensNormal is recorded as the solver-side audit field and is not used for the analytic contraction"
+  },
+  "independent_recomputation": {
+    "downforce__downforce_gradient_aligned": {
+      "recomputed": 4.20593691997711,
+      "recorded": 4.205936919977109,
+      "relative_difference": 2.1117254885148377e-16
+    },
+    "downforce__drag_gradient_aligned": {
+      "recomputed": 3.098003506416902,
+      "recorded": 3.0980035064169025,
+      "relative_difference": 1.433469035558609e-16
+    },
+    "downforce__random_seed_11": {
+      "recomputed": -0.1527208929134076,
+      "recorded": -0.1527208929134076,
+      "relative_difference": 0.0
+    },
+    "downforce__random_seed_2026": {
+      "recomputed": -0.38400837192991605,
+      "recorded": -0.384008371929916,
+      "relative_difference": 1.4455713804434703e-16
+    },
+    "drag__downforce_gradient_aligned": {
+      "recomputed": 3.1234937705528645,
+      "recorded": 3.123493770552864,
+      "relative_difference": 1.4217707556735676e-16
+    },
+    "drag__drag_gradient_aligned": {
+      "recomputed": 3.722899963030343,
+      "recorded": 3.7228999630303434,
+      "relative_difference": 1.192858293964433e-16
+    },
+    "drag__random_seed_11": {
+      "recomputed": -0.16790433095834392,
+      "recorded": -0.167904330958344,
+      "relative_difference": 4.959176834309573e-16
+    },
+    "drag__random_seed_2026": {
+      "recomputed": -0.13424889438124166,
+      "recorded": -0.13424889438124163,
+      "relative_difference": 2.067471448726296e-16
+    }
+  },
+  "kind": "stage_s_work_f_sensitivity_semantics_audit",
+  "manifest": {
+    "path": "docs/evidence/stage_s_work_f_sensitivity_semantics_audit_manifest_2026_09.json",
+    "sha256": "493c6aa9c5d2eae37712e32c6d26b8ec5525a71ed989a2de71a2875fade22a1c"
+  },
+  "response_identity_checks": {
+    "downforce_is_negative_cl": true,
+    "downforce_manifest_direction": true,
+    "downforce_objective_direction": true,
+    "drag_manifest_direction": true,
+    "drag_objective_direction": true,
+    "primal_drag_dir": true,
+    "primal_lift_dir": true,
+    "reference_area": true,
+    "reference_rhoinf": true,
+    "reference_uinf": true
+  },
+  "schema_version": 1,
+  "summary": {
+    "contraction_pass": true,
+    "independent_recomputation_pass": true,
+    "original_verdict_unchanged": true,
+    "response_identity_pass": true,
+    "semantics_audit_pass": true,
+    "solver_started": false
+  }
+}

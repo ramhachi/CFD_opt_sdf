@@ -1,0 +1,47 @@
+{
+  "claims_not_supported": [
+    "this audit reads no flow response and changes no registered threshold or evidence"
+  ],
+  "inputs": {
+    "base_control_point_catalog": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv",
+      "sha256": "29ddf189dcbca972734c4303d568d5290e1417e53e5fa485dba6fa4317c60f47"
+    },
+    "catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "derivative_volumetricBSplinesadjDownforceadjDownforceESI425": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425",
+      "sha256": "322158918cb57ca3b419eeac170bdb01070a173e55fd65671eade58eebae0889"
+    },
+    "derivative_volumetricBSplinesadjDragadjDragESI562": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDragadjDragESI562",
+      "sha256": "67760e8098afe5df51352e2fbc362b78ff8f4b8f368c269af2abea2dfbaf2ffb"
+    },
+    "qualification": {
+      "path": "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json",
+      "sha256": "f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606"
+    },
+    "result": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json",
+      "sha256": "048a2f9307d36a645e76dee7fac26c6325568888cfaa28063cf5685a4acbc9ee"
+    },
+    "sides": {
+      "path": "docs/evidence/stage_s_work_f_perturbation_sides_2026_09.json",
+      "sha256": "01aeda492f43e76e9dad173599f339ba48f9adb8dc5744de062de7ce47cbc9db"
+    }
+  },
+  "kind": "stage_s_work_f_realized_direction_audit_manifest",
+  "rules": {
+    "analytic_recomputation": "d = sum_i total_i * direction_i over the active varID set, joined by varID; realized contraction uses the odd difference of the realized control-point states",
+    "boundary_movement_abs_tolerance_m": 1e-09,
+    "cosine_similarity_min": 0.999999,
+    "direction_cp_abs_tolerance_m": 1e-06,
+    "even_component_abs_tolerance_m": 1e-06,
+    "note": "tolerances are registered before the realized control-point data is read and are not adjusted afterwards",
+    "odd_symmetry_abs_tolerance_m": 1e-06,
+    "realized_equals_prescribed_abs_tolerance_m": 1e-07
+  },
+  "schema_version": 1
+}

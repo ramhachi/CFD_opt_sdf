@@ -1330,11 +1330,36 @@ repair that unrelated documentation mismatch.
   (`downforce_gradient_aligned`) and `1.0279` (`drag_gradient_aligned`); drag
   response ratios `1.0266` and `0.9595`. Every sign agrees.
 - Registered random-seed directions exceed the 5% relative rule on both
-  responses (downforce: `1.0858`, `0.8796`; drag: `1.0376`, `1.4593`), so the
-  complete FD qualification is false: `both_responses_pass=false`,
-  `shape_update_allowed=false`.
+  responses, except drag `random_seed_11`, which passes at `3.76%` (downforce:
+  seed 11 `1.0858` fails, seed 2026 `0.8796` fails; drag: seed 11 `1.0376`
+  passes, seed 2026 `1.4593` fails). The complete FD qualification is false:
+  `both_responses_pass=false`, `shape_update_allowed=false`.
 - Fail branch per the plan: keep the shape update blocked and diagnose one
   factor at a time. Candidate factors: morphed movement bounding,
   surface-area weighting (`includeSurfaceArea`) convention, and the
   first-order `upwind` primal discretization behind the continuous adjoint.
   No epsilon/direction/tolerance change is allowed from the observed result.
+
+## 2026-09-25: FD diagnosis D0-D2 — no mapping or semantics defect
+
+- D0: the phase_plan Stage S summary now matches the machine-readable
+  pass/fail matrix (gradient-aligned pass; drag `random_seed_11` passes at
+  3.76%), and `current_state_and_next_plan_2026_09_25.md` is marked as a
+  pre-campaign historical snapshot.
+- D1 `docs/evidence/stage_s_work_f_realized_direction_audit_manifest_2026_09.json`
+  (SHA-256 `490790f1...`) + audit
+  `docs/evidence/stage_s_work_f_realized_direction_audit_2026_09.json`
+  (SHA-256 `79da4532...`): 32/32 sides reproduce the prescribed movement
+  (max `9.7e-9 m`), boundary fixed, 16/16 pairs pass (cosine `>= 0.99999999`,
+  movement difference `<= 4.7e-9 m`, odd symmetry `1e-8 m`, even component
+  `5e-9 m`); prescribed vs realized analytic contractions agree to `~4e-6`.
+- D2 `docs/evidence/stage_s_work_f_sensitivity_semantics_audit_manifest_2026_09.json`
+  (SHA-256 `493c6aa9...`) + audit
+  `docs/evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json`:
+  response identity, surface-convention record and varID contraction pass; an
+  independent minimal parser reproduces the eight analytic derivatives at
+  `1e-9` relative.
+- Conclusion: the morpher mapping and the sensitivity semantics are not the
+  cause. Next: D3 bounded discretization diagnostic (`linearUpwind` factor,
+  one registered middle epsilon, 3 directions, 6 primals plus base/adjoint
+  lineage). The original verdict and thresholds are unchanged.

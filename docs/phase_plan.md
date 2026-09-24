@@ -122,7 +122,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Stage T canonical backend | Path B bounded exception on the refined source grid | The 64x32x32 source-grid campaign with perturbation residual `5e-9` gives FD/adjoint ratios `1.1504 / 1.1134 / 1.1441`; all registered directions are epsilon-stable and keep their sign, but all fail the 5% production gate. The refined-source `checkMesh` gate is measured pass. Canonical-only refinement gives `1.1172 / 2.2454 / 1.8916`, showing design/source-grid coupling; the registered third source-grid level is unrun, so there is no grid-convergence claim. |
 | Stage T canonical closed loop | Bounded real-OpenFOAM path implemented | PQ0.1 connected the compiled projected-volume value/gradient, separated parent adjoint from trial primal, reused accepted primal artifacts and integrated the Path B centered-FD bracket. PQ0.2 exercised the real parent/trial/bracket/rollback/resume path. PQ3 then accepted three real OpenFOAM improvement steps. This is capability and bounded Path B evidence, not production-gradient or target-physics qualification. |
 | Stage T production optimizer | Bounded 97-step candidate reached; not converged and not qualified | The early PQ3.1–PQ3.3 history is retained in the register: solver-field discreteness without extraction coherence, and an upper volume bound that did not fill the material budget. The later v12–v16 line runs the b=128 margin-mask level with the Phase 2 discreteness gate: v15 accepted 10/10 at its budget and v16 accepted 87 further steps (cumulative 97), reaching raw downforce `2.65056`, projected volume `0.0719735` (94.30% of Vmax) and `mean_nd=0.0025089`, then stopped fail-closed at attempt 88 when the alpha-1.0 Path B bracket was not a descent direction. The registered convergence window was not met and no independent terminal repeat ran, so this is not a converged terminal. Projected-gradient and volume-target OC remain proposal rules; MMA/GCMMA is deferred. |
-| Stage S | Entry gate passes on the v16 candidate; baseline qualified through the V1 primal; surface-derivative qualification pending | PQ4.1 v2 on the v16 checkpoint 87 selects `rho_projection` iso 0.5 and returns `ready_for_stage_s=true` with the topology-aware self-intersection detector and the surface-nets extraction (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`). Baseline v2 is registered (`evidence/stage_s_baseline_v16_v2_2026_09.json`), and the Work F V1 body-fitted baseline passed the registered mesh and primal `stage_v_qualification_v1` gates (`evidence/stage_s_work_f_v1_solver_2026_09.json`), which closes P17 for this candidate and level only. Drag/downforce surface-derivative qualification and one accepted body-fitted update remain missing; `shape_update_allowed=false`. |
+| Stage S | Entry gate passes on the v16 candidate; baseline qualified through the V1 primal; centered-FD campaign ran and the complete derivative qualification failed | PQ4.1 v2 on the v16 checkpoint 87 selects `rho_projection` iso 0.5 and returns `ready_for_stage_s=true` with the topology-aware self-intersection detector and the surface-nets extraction (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`). Baseline v2 is registered (`evidence/stage_s_baseline_v16_v2_2026_09.json`), and the Work F V1 body-fitted baseline passed the registered mesh and primal `stage_v_qualification_v1` gates (`evidence/stage_s_work_f_v1_solver_2026_09.json`), which closes P17 for this candidate and level only. The Work F centered-FD campaign then ran all 32 perturbation primals: the gradient-aligned directional derivatives pass within the 5% profile (downforce response `1.0408`/`1.0279`; drag response `1.0266`/`0.9595`) with tight epsilon plateaus, but the registered random-seed directions exceed the relative rule (downforce: `1.0858`/`0.8796`; drag: `1.0376` passes, `1.4593` fails), so the complete derivative qualification is **false** and one accepted body-fitted update remains unauthorized (`evidence/stage_s_work_f_surface_fd_result_2026_09.json`; `shape_update_allowed=false`). The fail branch diagnosis (D0-D2 solver-free audits) is the current work. |
 | Stage V | Drag bounded; downforce reference unresolved | With `linearUpwind`, drag finest-transition drift is 0.364% and passes its 2% bound. Downforce remains non-monotone with 0.010374 drift against the 0.005 absolute bound. The preregistered domain/boundary V2 factor campaign is not run; there is no downforce GCI or grid-independent claim. |
 
 The 2026-09-10 effectiveness spike proves only local numerical control inside
@@ -1137,6 +1137,26 @@ Execute in this order:
    blocked and diagnose one factor at a time (candidate factors: the morphed
    movement bounding, the surface-area weighting convention, and the
    first-order `upwind` primal discretization behind the continuous adjoint).
+
+   **Work F derivative diagnosis D0--D2 (2026-09-25, solver-free):** the
+   diagnosis plan
+   ([`stage_s_work_f_fd_diagnosis_plan_2026_09_25.md`](stage_s_work_f_fd_diagnosis_plan_2026_09_25.md))
+   was executed through its first checkpoint. **D1 realized-direction audit**
+   ([`evidence/stage_s_work_f_realized_direction_audit_2026_09.json`](evidence/stage_s_work_f_realized_direction_audit_2026_09.json))
+   passes: all 32 sides reproduce the prescribed movement exactly (max
+   `<= 9.7e-9 m`), the boundary control points stay fixed, and all 16 pairs
+   show unit cosine similarity with movement difference, odd-symmetry error and
+   even component all `<= 1e-8 m`; the prescribed and realized analytic
+   contractions agree to `~4e-6` absolute. **D2 semantics audit**
+   ([`evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json`](evidence/stage_s_work_f_sensitivity_semantics_audit_2026_09.json))
+   passes: the adjoint objectives, the manifest response identities and the
+   primal forceCoeffs identities agree, the contraction joins by `varID` with
+   the boundary variables excluded, and an independent minimal parser
+   reproduces the eight analytic directional derivatives at `1e-9` relative.
+   No mapping or semantics defect was found, so the plan's conditional **D3
+   bounded discretization diagnostic** (one registered middle epsilon, three
+   directions, `linearUpwind` factor, 6 primals plus base/adjoint lineage) is
+   the next step; the original FD verdict and thresholds are unchanged.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

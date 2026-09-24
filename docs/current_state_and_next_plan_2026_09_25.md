@@ -1,6 +1,10 @@
 # 現状整理と次の実行計画 — 2026-09-25
 
-状態: 現在の証拠を読み直したキャッチアップ結果と、次の実行計画案
+状態: **pre-campaign historical snapshot**。これは centered-FD campaign 実行前
+（`d08dc99` 時点）のキャッチアップと計画であり、campaign の verdict は
+[`stage_s_work_f_fd_diagnosis_plan_2026_09_25.md`](stage_s_work_f_fd_diagnosis_plan_2026_09_25.md)
+と [`evidence/stage_s_work_f_surface_fd_result_2026_09.json`](evidence/stage_s_work_f_surface_fd_result_2026_09.json)
+を優先する。
 対象スナップショット: `feat/p0-openfoam-closed-loop` / `830758d0e57e6319dc4ed3c693c3c2156615e072`
 
 この文書は、現時点のリポジトリと登録済み証拠を基にしたスナップショットである。
