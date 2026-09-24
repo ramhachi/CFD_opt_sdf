@@ -1051,10 +1051,24 @@ Execute in this order:
    `campaign_allowed=true`, no solver started. The v2 FD evaluator's
    below-noise silent pass is fixed: a gradient-aligned derivative below the
    noise floor is unresolved and fails closed, and non-aligned near-zero
-   directions use the registered absolute rule. Next slice: the body-fitted
-   base adjoint case (separate drag and downforce solvers with
-   `faceSensNormal` export) before any perturbation run; a shape update
-   remains unauthorized until both responses pass.
+   directions use the registered absolute rule.
+
+   **Work F base adjoint case (2026-09-24):** the qualified V1 case was copied
+   to `work/stage_s_work_f_v1/adjoint/base` and the OpenFOAM v2512
+   `adjointOptimisationFoam` dictionaries were rendered: two adjoint solvers
+   (`adjDownforce` direction `(0,0,-1)`, `adjDrag` direction `(1,0,0)`, both
+   with the registered Aref `0.64` / UInf `1` / rhoInf `1` and the
+   `design_candidate` patch), `shapeType volumetricBSplines` with
+   `sensitivityType shapeFI`, and the `volumetricBSplinesMotionSolver` with an
+   axis-aligned `8x8x8` control volume whose boundary control points are
+   confined (the far-field stays fixed). The structural checks and OpenFOAM's
+   own dictionary reader pass
+   ([`evidence/stage_s_work_f_adjoint_preflight_2026_09.json`](evidence/stage_s_work_f_adjoint_preflight_2026_09.json),
+   SHA-256 `12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7`);
+   `adjoint_allowed=true`, no solver started. Next slice: run the base
+   adjoints and export `faceSensNormal<adjDownforce>` /
+   `faceSensNormal<adjDrag>`; no perturbation or shape update runs before
+   that passes.
 6. **Stage S first step.** Qualify drag and downforce surface derivatives by
    centered FD, then accept at most one body-fitted shape step and re-run every
    geometry, mesh and solver gate.

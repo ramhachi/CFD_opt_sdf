@@ -1224,3 +1224,25 @@ repair that unrelated documentation mismatch.
 - Next: implement and preflight the body-fitted base adjoint case (separate
   drag and downforce solvers, `faceSensNormal` export); no perturbation or
   shape update runs before that passes.
+
+## 2026-09-24: Work F base adjoint case rendered and preflighted
+
+- `src/cfd_sdf/stage_s_adjoint_case.py` renders the v2512
+  `adjointOptimisationFoam` dictionaries on a copy of the qualified V1 case:
+  `system/optimisationDict` with two adjoint solvers (`adjDownforce` direction
+  `(0,0,-1)`, `adjDrag` direction `(1,0,0)`, Aref `0.64`, UInf `1`, rhoInf `1`,
+  patch `design_candidate`), `shapeType volumetricBSplines` /
+  `sensitivityType shapeFI`; `constant/dynamicMeshDict` with the
+  `volumetricBSplinesMotionSolver`, an axis-aligned `8x8x8` control volume and
+  `confineBoundaryControlPoints true`.
+- Preflight `docs/evidence/stage_s_work_f_adjoint_preflight_2026_09.json`
+  (SHA-256 `12fb698568441aaf288265df80ec06afe81b04acc1b586cf011a1a58564132b7`):
+  all structural checks pass and OpenFOAM's own `foamDictionary` reader parses
+  both dictionaries (`optimisationManager singleRun;`,
+  `solver volumetricBSplinesMotionSolver;`); `adjoint_allowed=true`, no solver
+  started.
+- Next: run the two base adjoints on `work/stage_s_work_f_v1/adjoint/base`,
+  verify their residuals and final-time binding, and export
+  `faceSensNormal<adjDownforce>` / `faceSensNormal<adjDrag>`; then compute the
+  analytic directional derivatives and run the per-direction perturbation
+  preflight before any perturbation primal.

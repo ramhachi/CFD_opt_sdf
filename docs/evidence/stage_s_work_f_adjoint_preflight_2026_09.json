@@ -1,0 +1,112 @@
+{
+  "adjoint_case": {
+    "box_m": {
+      "max": [
+        0.6650000154972077,
+        0.5399999856948853,
+        0.3
+      ],
+      "min": [
+        -0.7150000274181366,
+        -0.5399999856948853,
+        -0.3
+      ]
+    },
+    "control_points": [
+      8,
+      8,
+      8
+    ],
+    "dynamic_mesh_dict_sha256": "14d273302f568b9a9f2db308378c6ba3a2296fd5b3a33fda1feb410ec772c815",
+    "objectives": [
+      {
+        "area_m2": 0.64,
+        "direction": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "patches": [
+          "design_candidate"
+        ],
+        "response": "downforce",
+        "rho_inf": 1.0,
+        "solver_name": "adjDownforce",
+        "u_inf": 1.0
+      },
+      {
+        "area_m2": 0.64,
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "patches": [
+          "design_candidate"
+        ],
+        "response": "drag",
+        "rho_inf": 1.0,
+        "solver_name": "adjDrag",
+        "u_inf": 1.0
+      }
+    ],
+    "optimisation_dict_sha256": "980fb538f9464ff11c2dc875d99609cc09d6390e54afb94721731af1010d39fd",
+    "path": "work/stage_s_work_f_v1/adjoint/base"
+  },
+  "catalog": {
+    "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+    "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+  },
+  "claims_not_supported": [
+    "no adjoint was solved and no faceSensNormal was exported"
+  ],
+  "claims_supported": [
+    "the base adjoint dictionaries parse in OpenFOAM and declare the registered drag and downforce solvers with the registered directions, references and B-spline morpher"
+  ],
+  "kind": "stage_s_work_f_adjoint_preflight",
+  "openfoam_dictionary_check": {
+    "pass": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "optimisationManager singleRun;\nsolver          volumetricBSplinesMotionSolver;"
+  },
+  "schema_version": 1,
+  "solver_evidence": {
+    "path": "docs/evidence/stage_s_work_f_v1_solver_2026_09.json",
+    "sha256": "3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f"
+  },
+  "source_case": {
+    "case_metadata_sha256": "ade1343d88ed48824126b5b7ccee5efbc9746dbaa18cdf7656a69fd4a9efdff1",
+    "path": "work/stage_s_work_f_v1/baseline/V1"
+  },
+  "structural_checks": {
+    "checks": {
+      "adjoint_solver_type": true,
+      "boundary_control_points_confined": true,
+      "control_points_axis_aligned": true,
+      "downforce_direction": true,
+      "downforce_patches": true,
+      "downforce_reference": true,
+      "downforce_solver_block": true,
+      "drag_direction": true,
+      "drag_patches": true,
+      "drag_reference": true,
+      "drag_solver_block": true,
+      "mesh_morpher": true,
+      "optimisation_manager_single_run": true,
+      "primal_solver_simple": true,
+      "shape_parameterization": true
+    },
+    "failed_checks": [],
+    "pass": true
+  },
+  "summary": {
+    "adjoint_allowed": true,
+    "preflight_pass": true,
+    "solver_started": false
+  },
+  "work_f_manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  }
+}
