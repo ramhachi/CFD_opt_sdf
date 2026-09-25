@@ -1355,13 +1355,16 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
    drag report-only、K=16）とS1 solver-free preflight
    （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、16 mode、
    全geometry/mesh/realized gate pass）を完了した。flow solverは未実行で
-   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false`。次の
-   重い段階は登録済みPQ2 Stage V domain/boundary factorである。
+   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false`。PQ2 V2 factor
+   campaignは完了したがNo-Goであり、S2へは進めない。
 2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
    extractableだがblocked stopであり、strict terminal criterion上はopen。
 3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
    Path Bに留まるか。
-4. Stage V downforceの非単調driftは登録済みdomain/boundary因子で説明・縮小できるか。
+4. Stage V downforce reference is unresolved after PQ2: both registered V2
+   factors moved the response beyond the bound. The next question is which
+   factor-resolved domain/boundary contract and case-construction check can
+   make the reference reproducible before S2.
 5. baseline→T→Sの改善は、候補別numerical+extraction uncertaintyを超えるか（PQ5）。
 
 ## 2026-09-12時点の主張境界（歴史的記録）
@@ -1404,11 +1407,13 @@ manifest、evidence、raw logs、hashは変更しない。
    geometry/mesh/realized preflightを行い、16 modeを確定した
    （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、
    SHA-256 `1942993f...`）。flow solverは未実行。
-4. 次の重い段階は登録済みPQ2 Stage V domain/boundary factorである。PQ2で
-   baseline/solver条件が維持される場合のみS2 epsilon calibration（3 modes ×
-   4 eps × 2 signs、最大24 primals）へ進む。条件が変わる場合はStage S baselineを
-   再登録してからS2へ進む。PQ2とreduced-basis campaignを同じ計算資源で
-   同時に流さない。
+4. PQ2 V2 factor campaign（完了・No-Go）: far-field extension and top
+   pressure-outlet treatments both passed mesh/solver qualification but moved
+   downforce beyond the registered absolute 0.005 bound. Do not start S2.
+   Register a replacement factor-resolved Stage V contract, audit domain
+   placement, boundary formulation, and case-construction semantics, then run
+   only the minimum required treatment family. Re-register the Stage S baseline
+   after that contract passes.
 5. S3/S4/S5はS2のprimary epsilon選択に依存する条件付き段階である。16-mode FDは
    Bのspan内でのみqualificationし、S4 holdout（manifest hash由来の2 random
    mode方向 + downforce projected-gradient 1方向、6 primals）が完全passするまで
@@ -1418,5 +1423,12 @@ manifest、evidence、raw logs、hashは変更しない。
    D5/D6/D7（旧648-var route）は未実行のままである。
 7. PQ5/PQ6はStage S後の独立検証・target-physics ladderとして維持する。
 
-直近の判定は完了した: **reduced-basis mode basisはgeometry-only preflightを
-完全passした**。形状更新は引き続き禁止であり、次の行動はPQ2の実行判断である。
+直近の判定（2026-09-25）: **reduced-basis mode basisはgeometry-only
+preflightを完全passしたが、PQ2 V2 factor campaignはNo-Go**。固定domain baseline
+(187,942 cells, Cd 1.6800880804, downforce 0.5092669766)に対し、far-field
+extension (214,900 cells) は downforce 0.2146501052、top pressure outlet
+(187,942 cells) は 0.0307615051となり、差分はそれぞれ -0.2946168715 と
+-0.4785054715である。両方とも登録bound 0.005を超え、Cdの相対変化も0.02を
+超えた。全treatmentはqualifiedだが、これはStage Vの参照資格やgrid-independent
+downforceを意味しない。S2 epsilon calibrationと形状更新は引き続き禁止し、
+factor-resolved Stage V contractの再登録・診断を次の行動とする。

@@ -20,10 +20,12 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
 
+import numpy as np
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,9 +40,10 @@ from cfd_sdf.cfd import (  # noqa: E402
     write_stage_v_qualification,
 )
 from cfd_sdf.execution import run_openfoam_case  # noqa: E402
+from cfd_sdf.grid import UniformGrid  # noqa: E402
 from cfd_sdf.openfoam import generate_openfoam_case, problem_spec_to_project_config  # noqa: E402
 from cfd_sdf.problem_spec import load_problem_spec  # noqa: E402
-from cfd_sdf.sdf import build_fields  # noqa: E402
+from cfd_sdf.sdf import FieldBundle  # noqa: E402
 from cfd_sdf.stage_v_domain_preflight import (  # noqa: E402
     evaluate_stage_v_domain_preflight,
     write_stage_v_domain_preflight_report,
@@ -68,6 +71,7 @@ ROOT_OUT = ROOT / "work/stage_v_domain_boundary_factor_2026_09"
 EXT_SPEC = ROOT_OUT / "specs/project_matched_re_laminar_domain_extended_v1.yaml"
 T1_CASE = ROOT_OUT / "far_field_domain_extension/V2"
 T2_CASE = ROOT_OUT / "top_pressure_outlet/V2"
+BASELINE_SNAPPY = BASELINE_CASE / "system/snappyHexMeshDict"
 RUN_MANIFEST = ROOT / "docs/evidence/stage_v_domain_boundary_factor_run_manifest_2026_09.json"
 EVIDENCE = ROOT / "docs/evidence/stage_v_domain_boundary_factor_2026_09.json"
 V2_VOXEL_M = 0.025
@@ -224,6 +228,71 @@ def _verify(manifest: dict) -> None:
         raise SystemExit("the baseline V2 qualification changed")
 
 
+def _location_in_mesh(case_dir: Path) -> tuple[float, float, float]:
+    """Read the already-qualified interior point from the baseline case."""
+    text = (case_dir / "system" / "snappyHexMeshDict").read_text(encoding="utf-8")
+    match = re.search(r"locationInMesh\s*\(\s*([^\)]+)\);", text)
+    if match is None:
+        raise SystemExit(f"no locationInMesh entry in {case_dir}")
+    values = tuple(float(value) for value in match.group(1).split())
+    if len(values) != 3:
+        raise SystemExit(f"locationInMesh must have three coordinates in {case_dir}")
+    return values
+
+
+def _reuse_baseline_location_in_mesh(case_dir: Path) -> dict:
+    """Keep the extended-domain fluid seed inside the qualified design region.
+
+    The generic case compiler chooses a fractional point from the new box. That
+    point can land outside the closed allowed-design-domain surface after a
+    domain extension, even though the box preflight passed. Reusing the point
+    from the qualified baseline changes no treatment definition or physics; it
+    only makes the snappyHexMesh seed a valid interior point for this same
+    candidate.
+    """
+    baseline_location = _location_in_mesh(BASELINE_CASE)
+    path = case_dir / "system" / "snappyHexMeshDict"
+    text = path.read_text(encoding="utf-8")
+    pattern = r"locationInMesh\s*\(\s*[^\)]+\);"
+    replacement = "locationInMesh (" + " ".join(f"{value:g}" for value in baseline_location) + ");"
+    patched, count = re.subn(pattern, replacement, text, count=1)
+    if count != 1:
+        raise SystemExit(f"could not patch locationInMesh in {path}")
+    path.write_text(patched, encoding="utf-8", newline="\n")
+    return {
+        "source_case": str(BASELINE_CASE.relative_to(ROOT)),
+        "source_path": str(BASELINE_SNAPPY.relative_to(ROOT)),
+        "location_in_mesh": list(baseline_location),
+        "generated_case": str(case_dir.relative_to(ROOT)),
+        "reason": "the extended-box fractional seed was outside the retained fluid region",
+    }
+
+
+def _declared_domain_bundle(config) -> FieldBundle:
+    """Build only the grid metadata required by the body-fitted case writer.
+
+    ``generate_openfoam_case`` consumes the ``FieldBundle`` for its domain,
+    block-mesh, and snappy metadata.  It does not consume any SDF arrays.  The
+    extended PQ2 treatment can therefore avoid recomputing a multi-million
+    point SDF field; the STL remains the sole geometry input to snappyHexMesh.
+    Keeping this construction local to the factor script preserves the generic
+    SDF pipeline while making the registered V2 factor run tractable.
+    """
+    domain = config.grid.domain_bounds_m
+    if domain is None or config.grid.voxel_size_m is None:
+        raise SystemExit("the extended PQ2 case requires a declared domain and voxel size")
+    lower = np.asarray(domain[0], dtype=float)
+    upper = np.asarray(domain[1], dtype=float)
+    spacing = float(config.grid.voxel_size_m)
+    cells = (upper - lower) / spacing
+    rounded = np.round(cells)
+    if not np.allclose(cells, rounded, rtol=0.0, atol=1.0e-9):
+        raise SystemExit("the extended PQ2 domain is not aligned to the registered voxel size")
+    shape = tuple((rounded.astype(int) + 1).tolist())
+    grid = UniformGrid(origin=lower, spacing=spacing, shape=shape)
+    return FieldBundle(grid=grid, arrays={}, component_labels={})
+
+
 def _responses(qualification: dict) -> dict:
     responses = qualification["force_stationarity"]["responses"]
     return {
@@ -258,7 +327,11 @@ def _run_domain_extension(manifest: dict, timeout: int, image: str) -> dict:
             if not preflight.qualified:
                 raise SystemExit(f"extended-domain preflight failed: {preflight.reasons}")
             write_stage_v_domain_preflight_report(case_dir, preflight)
-            generate_openfoam_case(config, build_fields(config), case_dir)
+            generate_openfoam_case(config, _declared_domain_bundle(config), case_dir)
+            location_patch = _reuse_baseline_location_in_mesh(case_dir)
+            (case_dir / "location_in_mesh_patch.json").write_text(
+                json.dumps(location_patch, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
             (case_dir / "Allrun").write_text(MESH_ONLY_ALLRUN, encoding="utf-8", newline="\n")
             run = run_openfoam_case(
                 case_dir, backend="docker", dry_run=False, timeout_seconds=7200, docker_image=image

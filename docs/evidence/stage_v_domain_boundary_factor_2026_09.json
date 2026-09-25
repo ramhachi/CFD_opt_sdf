@@ -1,0 +1,80 @@
+{
+  "baseline": {
+    "Cd": 1.6800880803804348,
+    "case_dir": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2",
+    "cells": 187942,
+    "downforce": 0.5092669766413043,
+    "iterations": 737,
+    "qualification_path": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/stage_v_qualification.json",
+    "qualification_sha256": "7d8753ec7eec92b33753fab4ccac7907a9ea0377db87853417f0daa9f8a5af8c",
+    "qualified": true
+  },
+  "claims_not_supported": [
+    "no grid-independent downforce reference and no V3 run",
+    "the decision is a bounded factor registration, not a qualification of the Stage V reference"
+  ],
+  "claims_supported": [
+    "two V2 treatments were run against the qualified fixed-domain V2 baseline and compared to the registered bounds"
+  ],
+  "decision": "register the moving factor(s) and rerun the family: far_field_domain_extension, top_pressure_outlet",
+  "kind": "stage_v_domain_boundary_factor",
+  "registered_factors_moving_downforce": [
+    "far_field_domain_extension",
+    "top_pressure_outlet"
+  ],
+  "rows": {
+    "far_field_domain_extension": {
+      "baseline": {
+        "Cd": 1.6800880803804348,
+        "cells": 187942,
+        "downforce": 0.5092669766413043
+      },
+      "delta_downforce": -0.29461687145797094,
+      "downforce_beyond_bound": true,
+      "drag_beyond_bound": true,
+      "factor": "far-field domain size",
+      "relative_Cd_change": -0.30529363819482447,
+      "stationarity_qualified": true,
+      "treatment": {
+        "Cd": 1.1671678778333332,
+        "cells": 214900,
+        "downforce": 0.21465010518333333,
+        "iterations": 962,
+        "qualified": true,
+        "reasons": []
+      }
+    },
+    "top_pressure_outlet": {
+      "baseline": {
+        "Cd": 1.6800880803804348,
+        "cells": 187942,
+        "downforce": 0.5092669766413043
+      },
+      "delta_downforce": -0.4785054715284929,
+      "downforce_beyond_bound": true,
+      "drag_beyond_bound": true,
+      "factor": "far-field boundary treatment",
+      "relative_Cd_change": -0.330551166669899,
+      "stationarity_qualified": true,
+      "treatment": {
+        "Cd": 1.124733005302491,
+        "cells": 187942,
+        "downforce": 0.03076150511281139,
+        "iterations": 1123,
+        "qualified": true,
+        "reasons": []
+      }
+    }
+  },
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_domain_boundary_factor_run_manifest_2026_09.json",
+    "sha256": "c492c2016014fb3b360ddd4b0ebd7db4f140d0226ca229e9c73fe11c4f6a957b"
+  },
+  "schema_version": 1,
+  "summary": {
+    "all_treatments_qualified": true,
+    "any_downforce_moves_beyond_bound": true,
+    "n_treatments": 2,
+    "v3_runs": 0
+  }
+}

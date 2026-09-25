@@ -1576,3 +1576,13 @@ repair that unrelated documentation mismatch.
   registered PQ2 Stage V domain/boundary factor is the next heavy step before
   the S2 epsilon calibration; PQ2 and the reduced-basis FD campaign must not
   run on the same resources at the same time.
+
+## 2026-09-25: PQ2 V2 domain/boundary factor campaign — qualified treatments, No-Go reference
+
+- The registered run manifest `docs/evidence/stage_v_domain_boundary_factor_run_manifest_2026_09.json` was preserved unchanged (SHA-256 `c492c2016014fb3b360ddd4b0ebd7db4f140d0226ca229e9c73fe11c4f6a957b`). Both V2 treatments ran against the fixed-domain qualified baseline; no V3 run was started.
+- The far-field extension treatment completed with `qualified=true`, 214,900 cells, Cd `1.1671678778`, and downforce `0.2146501052`. The top pressure-outlet treatment completed with `qualified=true`, 187,942 cells, Cd `1.1247330053`, and downforce `0.0307615051`.
+- The fixed-domain baseline is 187,942 cells, Cd `1.6800880804`, and downforce `0.5092669766`. Downforce deltas are `-0.2946168715` and `-0.4785054715`, both beyond the registered absolute bound `0.005`; relative Cd changes are `-0.3052936382` and `-0.3305511667`, both beyond `0.02`.
+- Immutable evidence is `docs/evidence/stage_v_domain_boundary_factor_2026_09.json` (SHA-256 `946d9d90e2f1a852fb3f3f95cc37c6966c887821c28880f0b12fe93269f53e99`). The judgment is `register the moving factor(s) and rerun the family: far_field_domain_extension, top_pressure_outlet`.
+- The first extended-domain attempt failed at snappyHexMesh because the generic fractional `locationInMesh` seed was outside the retained fluid region. The retry records the baseline qualified seed `(-0.7, 0, 0.18)` in `work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2/location_in_mesh_patch.json` and completed qualification. The factor definition, STL, domain, boundary treatment, and V2 mesh resolution were not changed.
+- The factor script now constructs only the declared-domain `FieldBundle` metadata for body-fitted case generation; it does not recompute unused multi-million-point SDF arrays. STL geometry remains the snappyHexMesh input. Focused contract tests pass (`5 passed`).
+- Stage S S2 is blocked. Before any reduced-basis flow campaign, register a replacement factor-resolved Stage V contract, audit domain placement, boundary formulation, and case-construction semantics, then rerun the minimum family. Preserve `reduced_basis_fd_qualified=pending` and `shape_update_allowed=false`.
