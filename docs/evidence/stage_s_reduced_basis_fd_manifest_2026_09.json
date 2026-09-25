@@ -1,0 +1,188 @@
+{
+  "architecture": {
+    "class": "bounded reduced-basis one-step architecture",
+    "id": "stage_s_reduced_basis_fd_v1",
+    "not": [
+      "production optimizer",
+      "qualified Stage S optimizer",
+      "multi-step optimizer"
+    ]
+  },
+  "budget": {
+    "s0_solver_runs": 0,
+    "s1_flow_runs": 0,
+    "s1_morpher_runs_max": 64,
+    "s2_primals_max": 24,
+    "s3_primals_max": 32,
+    "s4_primals": 6,
+    "s5_shape_steps_max": 1
+  },
+  "claims_not_supported": [
+    "this registration is a design/problem contract and contains no flow evidence",
+    "a qualified Stage S derivative or shape improvement is not claimed"
+  ],
+  "design_space": {
+    "k_modes": 16,
+    "map": "delta_cp = B q, B in R^(648 x 16)",
+    "normalization": "each mode is scaled so that the maximum absolute normal displacement of the design surface per unit mode coefficient is 1 m",
+    "parameterization": "the registered volumetricBSplines morpher is reused unchanged",
+    "q_change_policy": "K is fixed at 16; changing K requires a new contract"
+  },
+  "epsilon_ladder_m": [
+    0.0001,
+    0.00025,
+    0.0005,
+    0.001
+  ],
+  "flags": {
+    "original_adjoint_derivative_qualified": false,
+    "reduced_basis_fd_qualified": "pending",
+    "shape_update_allowed": false
+  },
+  "inputs": {
+    "a0_manifest": {
+      "path": "docs/evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json",
+      "sha256": "e78d2fb8f40044910b9a80e672c5b0111c22a4741f7f319327a8a52c5ca357ce"
+    },
+    "a1_evidence": {
+      "path": "docs/evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json",
+      "sha256": "de814a57de1a55f8cc1e4cee7039874d80af0f58e24d76692cd76bf914f0ed92"
+    },
+    "architecture_memo": {
+      "path": "docs/stage_s_work_f_architecture_decision_2026_09_25.md",
+      "sha256": "7f7191334cd11e24a4062fa8813a2c05a3ac0c1e9144eaaed50f6ebffeaeb261"
+    },
+    "base_control_point_catalog": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv",
+      "sha256": "29ddf189dcbca972734c4303d568d5290e1417e53e5fa485dba6fa4317c60f47"
+    },
+    "baseline_case": {
+      "path": "work/stage_s_work_f_v1/baseline/V1"
+    },
+    "catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "morpher_utility": {
+      "path": "work/stage_s_work_f_v1/tools/moveControlPoints",
+      "sha256": "976677902709c315ee5edaefa6a382e0f050a56f10ba19c0683edd1bd2d5b39e"
+    },
+    "original_problem_spec": {
+      "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+      "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+    },
+    "qualification": {
+      "path": "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json",
+      "sha256": "f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606"
+    },
+    "reduced_basis_problem_spec": {
+      "diff_keys": [
+        "objectives",
+        "problem_id"
+      ],
+      "path": "work/stage_sv_laminar/project_matched_re_laminar_reduced_basis_v1.yaml",
+      "sha256": "e4b31ad3399ed6934b98192e5d941c871be81b84d28b5bca56bb499a6f771f79"
+    },
+    "work_f_manifest": {
+      "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+      "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+    }
+  },
+  "kind": "stage_s_reduced_basis_fd_manifest",
+  "mode_generation": {
+    "boundary": "zero on the boundary control points",
+    "candidate_count": 32,
+    "min_normal_efficiency": 0.01,
+    "ordering": "frequency a^2+b^2+c^2 then (a,b,c) then axis x,y,z",
+    "reference_amplitude_m": 0.001,
+    "replacement_rule": "no replacement after any flow response is read; fewer than 16 surviving modes stops the campaign and requires a new generator version",
+    "selection_rule": "iterate candidates in order; exclude a candidate if its normal-displacement efficiency is below 0.01 or if either side of its plus/minus max-epsilon preflight fails; the final modes are the first 16 survivors",
+    "sign_rule": "the largest-magnitude active component is positive (deterministic)",
+    "source": "geometry-only low-frequency discrete sine modes on the active 6x6x6 lattice",
+    "symmetry_rule": "y-mirror preserving only: x/z components need b odd, y component needs b even"
+  },
+  "objective_contract": {
+    "canonical_J": "J = -downforce",
+    "constraints": [],
+    "declared": "maximize downforce",
+    "declared_equals_evaluated": {
+      "declared": "maximize downforce: coefficient +1 on the declared downforce response",
+      "evaluated": "centered FD of the downforce response in mode space; the canonical step direction maximizes downforce, i.e. minimizes J = -downforce; drag is recorded but never optimized",
+      "response_identity": "the primal forceCoeffs downforce response (-Cl) used by the FD side"
+    },
+    "drag": "report_only",
+    "post_hoc_rule": "adding a drag constraint or changing the objective requires a new contract",
+    "response_id": "downforce",
+    "sense": "maximize"
+  },
+  "openfoam_image": "opencfd/openfoam-default:2512",
+  "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+  "registered_before_computation": true,
+  "s2_calibration": {
+    "design": "3 modes x 4 epsilons x 2 signs, at most 24 primals",
+    "modes": "lowest, middle and highest frequency of the selected 16 (deterministic)",
+    "primary_epsilon_rule": "the largest ladder epsilon for which all three calibration modes satisfy every requirement; if none does, stop without a gradient",
+    "requirements": [
+      "every side passes the geometry/mesh/solver/stationarity gates",
+      "sign consistency across epsilons",
+      "epsilon plateau within the registered tolerance",
+      "response change above the registered noise floor",
+      "plus/minus odd component dominates the even component",
+      "near-zero rule applied to both responses"
+    ]
+  },
+  "s3_gradient": {
+    "claims": "gradient qualified in the span of B only",
+    "claims_not_supported": [
+      "the original 648-dimensional adjoint gradient is qualified",
+      "the B-spline adjoint is repaired",
+      "arbitrary shape directions are qualified",
+      "a production or multi-step Stage S optimizer exists"
+    ],
+    "design": "all 16 modes at the selected primary epsilon, plus/minus, reusing S2 runs",
+    "max_primals": 32,
+    "outputs": [
+      "downforce gradient in mode space (canonical)",
+      "drag gradient (report-only)"
+    ]
+  },
+  "s4_holdout": {
+    "directions": "2 random mode directions from the manifest hash + 1 downforce projected-gradient direction",
+    "primals": 6,
+    "requirements": [
+      "relative error <= 5% for both responses",
+      "sign agreement",
+      "near-zero rule",
+      "all side geometry/mesh/solver/stationarity gates pass",
+      "the calibration plateau rule holds"
+    ],
+    "seed_rule": "seed_i = first 8 bytes (big-endian) of sha256(manifest_sha256 + ':holdout:mode:' + i), i >= 1",
+    "sides": "plus and minus",
+    "stop": "any fail or unresolved direction stops the shape step"
+  },
+  "s5_one_step": {
+    "acceptance": "the actual new-shape primal, never the predicted value",
+    "manifest": "a separate one-step manifest must be registered after a complete S4 pass",
+    "multi_step": "a successful step never starts a multi-step optimization",
+    "registers": [
+      "objective and canonical sign",
+      "mode-space direction",
+      "trust radius",
+      "maximum control-point and surface displacement",
+      "predicted downforce and drag change",
+      "volume, width, clearance, connectivity",
+      "mesh gate",
+      "primal residual and stationarity",
+      "actual-response acceptance rule",
+      "rollback rule"
+    ]
+  },
+  "schema_version": 1,
+  "stop_conditions": [
+    "fewer than 16 modes survive the S1 preflight",
+    "any baseline lineage, geometry, mesh, convergence or stationarity gate fails",
+    "the S2 calibration selects no primary epsilon",
+    "the S4 holdout fails or remains unresolved",
+    "adding a factor, constraint, scale or direction after seeing a response"
+  ]
+}

@@ -1349,6 +1349,14 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
    `stage_s_work_f_architecture_decision_2026_09_25.md` が比較する二案
    （別sensitivity経路 / 低次元parameterization + centered FD）のいずれかを
    新しい契約として登録するまで新しいsolver campaignを開始しない。
+   その後、案2（低次元parameterization + centered FD）を採用し、S0契約
+   （`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`、versioned
+   reduced-basis ProblemSpecは`maximize downforce / J = -downforce`、
+   drag report-only、K=16）とS1 solver-free preflight
+   （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、16 mode、
+   全geometry/mesh/realized gate pass）を完了した。flow solverは未実行で
+   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false`。次の
+   重い段階は登録済みPQ2 Stage V domain/boundary factorである。
 2. P2: Stage Tの登録済みterminal convergenceを満たすcandidateを作れるか。v16は
    extractableだがblocked stopであり、strict terminal criterion上はopen。
 3. P6はjoint canonical/source refinementまたは追加source gridで5% gateへ収束するか、
@@ -1377,36 +1385,38 @@ P18はその後のevidenceで更新された。現在の判断には冒頭一覧
 - Stage V downforceが格子収束した
 - この縮約問題の結果がFSAE全車の高Re空力へ外挿できる
 
-## 次の一手（2026-09-25, A1後）
+## 次の一手（2026-09-25, S0/S1後）
 
-実行順は`phase_plan.md` §11を正本とし、Work Fの詳細は
-`stage_s_work_f_post_d3_plan_2026_09_25.md` §21 と
-`stage_s_work_f_architecture_decision_2026_09_25.md` に従う。過去のmanifest、
-evidence、raw logs、hashは変更しない。
+実行順は`phase_plan.md` §11を正本とし、reduced-basisの契約は
+`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json` に従う。過去の
+manifest、evidence、raw logs、hashは変更しない。
 
-1. A0（完了）: FI比較契約をsolver-freeで登録した
-   （`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`、
-   SHA-256 `e78d2fb8...`）。
-2. A1（完了・mixed/fail）: `sensitivityType shapeFI` はlineage・schema・
-   convergence・sign・plateau・near-zeroをpassしたが、pass controlの悪化と
-   failing rowの残存により`candidate_formulation_supported=false`
-   （`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`、
-   SHA-256 `de814a57...`）。
-3. 停止: FI/E-SI混合、option組合せ、fitted scale、方向別補正、parameterization-only
-   変更を試さない。0-run architecture memo
-   `stage_s_work_f_architecture_decision_2026_09_25.md` が二案を比較する:
-   (1) 同じdiscrete primal residual/responseに整合する別sensitivity経路、
-   (2) 低次元parameterization + centered FD経路。`surfacePoints`は同じE-SI系なので
-   独立候補に数えない。
-4. 次の行動: いずれか一案を新しいimmutable contract（design space、preflight、
-   epsilon ladder、holdout、one-step gate）として登録するまで、新しいsolver
-   campaignを開始しない。案(2)を選ぶ場合も旧648-var結果を継承しない。
-5. D5/D6/D7はD4.4/A1で成立しなかった条件付き段階であり、未実行のまま維持する。
-   shape updateは、選択したarchitectureの下でholdoutとrequalificationが完全passし、
-   別のone-step manifestが登録されるまで禁止する。
-6. PQ2は並行実行可能だが、同じ計算資源でWork Fと同時に流さない。PQ5/PQ6はStage S後の
-   独立検証・target-physics ladderとして維持する。
+1. 案2を採用（完了）: architecture memoの二案のうち、低次元parameterization +
+   centered FD経路を選択した。案1（discrete-consistent sensitivity）は
+   production/high-dimensional候補として保留する。
+2. S0（完了・solver-free）: versioned reduced-basis ProblemSpec
+   （`work/stage_sv_laminar/project_matched_re_laminar_reduced_basis_v1.yaml`）で
+   objectiveを`maximize downforce / J = -downforce`、dragをreport-only、制約なしに
+   固定した。design spaceは既存`volumetricBSplines` morpher上のK=16 mode
+   （`delta_cp = B q`）、epsilon ladderは物理変位`1e-4..1e-3 m`である。
+3. S1（完了・solver-free）: geometry-only sine mode候補をfrequency順に生成し、
+   正規化（最大法線変位=1 m per unit coefficient）と±最大epsilonの
+   geometry/mesh/realized preflightを行い、16 modeを確定した
+   （`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`、
+   SHA-256 `1942993f...`）。flow solverは未実行。
+4. 次の重い段階は登録済みPQ2 Stage V domain/boundary factorである。PQ2で
+   baseline/solver条件が維持される場合のみS2 epsilon calibration（3 modes ×
+   4 eps × 2 signs、最大24 primals）へ進む。条件が変わる場合はStage S baselineを
+   再登録してからS2へ進む。PQ2とreduced-basis campaignを同じ計算資源で
+   同時に流さない。
+5. S3/S4/S5はS2のprimary epsilon選択に依存する条件付き段階である。16-mode FDは
+   Bのspan内でのみqualificationし、S4 holdout（manifest hash由来の2 random
+   mode方向 + downforce projected-gradient 1方向、6 primals）が完全passするまで
+   一歩のshape stepを登録しない。
+6. `original_adjoint_derivative_qualified=false`、
+   `reduced_basis_fd_qualified=pending`、`shape_update_allowed=false` を維持する。
+   D5/D6/D7（旧648-var route）は未実行のままである。
+7. PQ5/PQ6はStage S後の独立検証・target-physics ladderとして維持する。
 
-直近の判定は完了した: **E-SIとnative FIのいずれもWork F profileの
-qualificationを説明できない**。形状更新は引き続き禁止であり、次の行動は
-architecture memoの二案からの選択である。
+直近の判定は完了した: **reduced-basis mode basisはgeometry-only preflightを
+完全passした**。形状更新は引き続き禁止であり、次の行動はPQ2の実行判断である。

@@ -1539,3 +1539,40 @@ repair that unrelated documentation mismatch.
   costs and risks. Neither is selected; no new solver campaign is running.
 - `derivative_qualified=false` and `shape_update_allowed=false` remain the
   authoritative state.
+
+## 2026-09-25: reduced-basis architecture S0 contract and S1 mode preflight
+
+- Option 2 (reduced-parameterization + centered FD) was selected from the
+  post-A1 architecture memo. S0 registered
+  `docs/evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`
+  (SHA-256 `261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1`):
+  the versioned reduced-basis ProblemSpec
+  (`work/stage_sv_laminar/project_matched_re_laminar_reduced_basis_v1.yaml`,
+  SHA-256 `e4b31ad3399ed6934b98192e5d941c871be81b84d28b5bca56bb499a6f771f79`,
+  differing from the original only in `problem_id` and `objectives`) declares
+  `maximize downforce / J = -downforce` with drag report-only, no constraints;
+  the design space is K=16 modes over the unchanged `volumetricBSplines`
+  morpher (`delta_cp = B q`), the epsilon ladder is `1e-4..1e-3 m` of maximum
+  normal displacement, and S2/S3/S4/S5 rules, budgets and stop conditions are
+  fixed.
+- S1 generated the frequency-ordered y-symmetry-preserving sine modes,
+  measured each candidate's normal-displacement efficiency with the morpher,
+  normalized the survivors to unit maximum normal displacement, and passed the
+  plus/minus max-epsilon preflight for all 16 selected modes
+  (`docs/evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`,
+  SHA-256 `1942993fbaf306f14932361ec85c71e48230aee8270af10b936c7d92ee1226f9`).
+  Modes span frequencies 3--11, efficiencies `0.45--0.95`, realized direction
+  cosines `~1`, and realized `+/-1e-3 m` normal displacement; every
+  watertight/manifold/self-intersection/width/clearance/checkMesh/immobility
+  gate passes.
+- Two invalid preflight attempts were preserved and corrected, transparently
+  referenced by the final artifact: (1)
+  `..._scratch_reuse_error_2026_09.json` (scratch-case reuse compounded modes
+  and the sine generator omitted the candidate frequency factors); (2)
+  `..._rate_gate_error_2026_09.json` (the rate-space `difference_ok` was used
+  as a pass gate instead of the registered physical-length D1 criteria).
+- No flow solver has run: `original_adjoint_derivative_qualified=false`,
+  `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`. The
+  registered PQ2 Stage V domain/boundary factor is the next heavy step before
+  the S2 epsilon calibration; PQ2 and the reduced-basis FD campaign must not
+  run on the same resources at the same time.
