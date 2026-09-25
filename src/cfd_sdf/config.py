@@ -95,6 +95,11 @@ class ProjectConfig:
     problem_spec: ProblemSpec | None = None
     flow_case_id: str | None = None
     turbulence_model: str = "kOmegaSST"
+    # Gauge free-stream pressure used by explicit Stage V far-field profiles.
+    # ProblemSpec v2 currently fixes this benchmark value at zero; keeping it
+    # on ProjectConfig makes the rendered profile and its hash explicit for
+    # direct ProjectConfig callers as well.
+    freestream_pressure_pa: float = 0.0
     # Stage V body-fitted cases may opt into an explicit physical boundary
     # contract.  ``None`` preserves the historical renderer defaults for
     # legacy ProjectConfig callers.

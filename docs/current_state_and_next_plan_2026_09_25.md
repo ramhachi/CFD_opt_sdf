@@ -449,9 +449,10 @@ The body-fitted Stage V adapter now honors an explicit normalized boundary
 contract and translation motion profiles. Existing specs that declare only
 the legacy inlet/outlet pair retain the old stationary-ground/symmetry
 defaults. An explicit `far_field` profile renders
-`freestreamVelocity`/`freestreamPressure`, while an explicit `moving_wall`
-bottom renders `movingWallVelocity`. Case metadata records the normalized
-contract, derived `ground_model`, and a physical-profile SHA-256.
+`freestreamVelocity`/`freestreamPressure`, while the v1 explicit `moving_wall`
+bottom rendered `movingWallVelocity`; that immutable registration is superseded
+by the v2 correction below. Case metadata records the normalized contract,
+derived `ground_model`, and a physical-profile SHA-256.
 
 The proposed v16 correction is registered, without running OpenFOAM, in
 `evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`.
@@ -463,3 +464,28 @@ its immutable run manifest records `solver_started=false` and
 this derived case. Keep the domain-only No-Go, reduced-basis qualification,
 and all shape-update gates unchanged until that audit and a single controlled
 profile run pass their registered criteria.
+
+## Current addendum 5 — 2026-09-25 physical-profile contract v2 correction
+
+The prior physical-profile registration is retained as immutable historical
+evidence but is superseded before solver execution.  Its moving-ground field
+used `movingWallVelocity`; the fixed-mesh rolling-road contract now emits
+`translatingWallVelocity` with an explicit `U (1 0 0)` and fixed wall value.
+
+The corrected solver-free registration is
+`docs/evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json`.
+Its physical-profile hash is
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca` and its
+run manifest records `solver_started=false`, `mesh_generation_started=false`,
+and `optimization_campaign_started=false`.  The canonical ProblemSpec, design
+domain, and v16 candidate snapshot are tracked in
+`docs/evidence/assets/stage_v_v16_physical_profile_v2`; the source lineage is
+in `docs/evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`.
+
+The physical-profile hash now includes the boundary implementation, free-stream
+velocity and pressure, translation profile, and turbulence model.  The metric
+has been separated into (1) physical-profile qualification and (2)
+same-profile domain convergence.  The old stationary-ground result is not a
+pass/fail reference for the first new-profile run.  Keep the domain-only
+No-Go, `reduced_basis_fd_qualified=pending`, and `shape_update_allowed=false`
+unchanged until the physical-profile gates pass.

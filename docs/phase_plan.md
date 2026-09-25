@@ -1388,3 +1388,36 @@ or grid-independent downforce value, Stage S finite differences, or high-Re
 FSAE physics.  Keep `reduced_basis_fd_qualified=pending`,
 `shape_update_allowed=false`, and perform the solver-free construction audit
 before authorizing one physical-profile solver run.
+
+## 2026-09-25 physical-profile contract v2 (solver-free correction)
+
+The first physical-profile registration is retained as immutable historical
+evidence but is superseded before any solver run.  Its renderer used
+`movingWallVelocity`, which is a mesh-motion semantic and does not express the
+fixed-mesh translating-ground contract required here.  The renderer now emits
+`translatingWallVelocity` with an explicit `U (1 0 0)` and fixed `value` on the
+bottom patch.
+
+The corrected v2 contract is registered in
+[`evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json)
+with run-manifest SHA-256
+`de7068b1719fa9ecf854733e778ae69d7af8d34227b5927e071923b7431952cd` and
+physical-profile SHA-256
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+The canonical ProblemSpec, design-domain STL, and v16 candidate snapshot are
+tracked under
+[`evidence/assets/stage_v_v16_physical_profile_v2`](evidence/assets/stage_v_v16_physical_profile_v2),
+and the candidate lineage is recorded in
+[`evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json).
+
+The physical-profile hash now includes the normalized boundary contract, the
+OpenFOAM boundary-condition implementation, free-stream velocity and pressure,
+motion profiles, and turbulence model.  The metric is split into two gates:
+first qualify the new physical profile itself; only then compare at least two
+domains with the same physical-profile hash and unchanged physics.  The old
+stationary-ground result is not a pass/fail reference for the first run.
+
+Registration and materialization remain solver-free.  Keep
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
+start Stage S or a domain-convergence campaign until the v2 profile passes the
+registered physical-profile gates.

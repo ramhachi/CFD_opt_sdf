@@ -1626,3 +1626,29 @@ is `registered_not_run`; `solver_started`, `mesh_generation_started`, and
 `optimization_campaign_started` are all false.  This is a reduced laminar
 diagnostic contract only.  It does not authorize S2, reduced-basis FD, a
 shape update, or a grid-independent downforce claim.
+
+### 2026-09-25 physical-profile contract v2 correction
+
+The previous registration is preserved as immutable evidence and is superseded
+by `evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json`.
+Before a solver run, the renderer was corrected from
+`movingWallVelocity` to `translatingWallVelocity` with an explicit wall
+velocity vector.  The v2 registration also records free-stream velocity,
+free-stream pressure, turbulence model, and boundary-condition implementation
+in `physical_profile`; the resulting hash is
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+The v2 metric no longer compares the new moving-ground/far-field problem to the
+old stationary-ground result.  It first requires physical-profile gates
+(convergence, stationarity, mass conservation, moving-ground flux, outer-field
+behavior, clearance, and mesh qualification).  Only after that pass may a
+same-profile domain convergence test use the `0.005` downforce and `0.02`
+relative-drag bounds, with at least two domains sharing the same physical
+profile hash and physics.
+
+The v2 canonical ProblemSpec, candidate snapshot, and design-domain snapshot
+are tracked under `evidence/assets/stage_v_v16_physical_profile_v2`; the
+source-to-snapshot mapping is recorded in
+`evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`.
+The v2 status is `registered_not_run`; no solver, mesh generation, optimization
+campaign, S2 calibration, or shape update is authorized by this contract.

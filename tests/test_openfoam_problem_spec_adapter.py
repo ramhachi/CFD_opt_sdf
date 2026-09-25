@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 from pathlib import Path
 
@@ -189,12 +190,16 @@ def test_stage_v_moving_ground_uses_translation_profile_and_aliases(tmp_path: Pa
     case_dir = tmp_path / "case"
     generate_openfoam_case(config, bundle, case_dir)
     velocity = (case_dir / "0" / "U").read_text(encoding="utf-8")
-    assert "bottom { type movingWallVelocity; value uniform (30 0 0);" in velocity
+    assert "bottom { type translatingWallVelocity; U (30 0 0); value uniform (30 0 0);" in velocity
     metadata = json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
     assert metadata["boundary_contract"]["patches"]["bottom"] == "moving_wall"
     assert metadata["boundary_contract"]["ground_model"] == "moving_ground"
     assert metadata["boundary_contract"]["motion_profiles"]["moving_ground"]["boundary_ids"] == ["bottom"]
     assert metadata["physical_profile"]["ground_model"] == "moving_ground"
+    assert metadata["physical_profile"]["boundary_implementation"]["moving_wall"] == "translatingWallVelocity"
+    assert metadata["physical_profile"]["outer_boundary_semantics"]["freestream_velocity_mps"] == [30.0, 0.0, 0.0]
+    assert metadata["physical_profile"]["outer_boundary_semantics"]["freestream_pressure_pa"] == 0.0
+    assert metadata["physical_profile"]["turbulence_model"] == "kOmegaSST"
 
 
 def test_stage_v_far_field_profile_matches_mesh_and_fields(tmp_path: Path) -> None:
@@ -222,6 +227,41 @@ def test_stage_v_far_field_profile_matches_mesh_and_fields(tmp_path: Path) -> No
         assert f"{patch} {{ type freestreamPressure;" in pressure
     assert "bottom { type wall;" in mesh
     assert "bottom { type noSlip;" in velocity
+
+
+def test_physical_profile_hash_includes_operating_point_and_turbulence(tmp_path: Path) -> None:
+    data = _spec_dict()
+    data["flow_cases"][0]["boundary_conditions"] = {
+        "inlet": "far_field",
+        "outlet": "far_field",
+        "ground": "moving_wall",
+    }
+    data["flow_cases"][0]["motion_profiles"] = {
+        "moving_ground": {
+            "kind": "translation",
+            "boundary_ids": ["ground"],
+            "velocity_mps": [30.0, 0.0, 0.0],
+        }
+    }
+    first = _write_custom_spec(tmp_path / "first", data)
+    second_data = deepcopy(data)
+    second_data["flow_cases"][0]["freestream_velocity_mps"] = [31.0, 0.0, 0.0]
+    second = _write_custom_spec(tmp_path / "second", second_data)
+
+    metadata = []
+    for index, path in enumerate((first, second)):
+        spec = load_problem_spec(path)
+        config = problem_spec_to_project_config(spec)
+        bundle = build_fields(config)
+        case_dir = tmp_path / f"case_{index}"
+        generate_openfoam_case(config, bundle, case_dir)
+        metadata.append(json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8")))
+
+    first_profile = metadata[0]["physical_profile"]
+    second_profile = metadata[1]["physical_profile"]
+    assert first_profile["outer_boundary_semantics"]["freestream_velocity_mps"] == [30.0, 0.0, 0.0]
+    assert second_profile["outer_boundary_semantics"]["freestream_velocity_mps"] == [31.0, 0.0, 0.0]
+    assert first_profile["sha256"] != second_profile["sha256"]
 
 
 @pytest.mark.parametrize(

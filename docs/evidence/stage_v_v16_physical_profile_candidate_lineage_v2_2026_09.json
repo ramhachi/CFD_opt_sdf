@@ -1,0 +1,44 @@
+{
+  "canonical_snapshot": {
+    "candidate": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "design_domain": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "profile_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+      "sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3"
+    }
+  },
+  "immutable": true,
+  "kind": "stage_v_v16_physical_profile_candidate_lineage",
+  "reconstruction": {
+    "candidate": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+    "generator": "scripts/register_stage_v16_physical_profile_contract_v2_2026_09.py",
+    "profile_spec": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+    "renderer": "src/cfd_sdf/openfoam.py",
+    "solver_invoked": false
+  },
+  "schema_version": 1,
+  "source_lineage": {
+    "candidate": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "profile_base": {
+      "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+      "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+    },
+    "profile_v1": {
+      "path": "work/stage_v_v16_physical_profile_2026_09/specs/project_matched_re_laminar_moving_ground_far_field_v1.yaml",
+      "sha256": "3051b089de1642b93525a4d3f7ce89c5755f61fc6931101aa0eec177f2b2f278"
+    },
+    "stage_s_handoff_manifest": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/handoff_manifest.json",
+      "sha256": "a79135e33b9869b356050984f04e209a3210e4dc4b11d160e45fc82d839952c7"
+    }
+  }
+}

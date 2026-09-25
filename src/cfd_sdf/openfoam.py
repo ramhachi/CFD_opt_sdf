@@ -102,7 +102,9 @@ def generate_openfoam_case(
         "constant/transportProperties": _transport_properties(config),
         "constant/turbulenceProperties": _turbulence_properties(config.turbulence_model),
         "0/U": _field_u(config),
-        "0/p": _scalar_field("p", "0", boundary_contract),
+        "0/p": _scalar_field(
+            "p", "0", boundary_contract, freestream_pressure=config.freestream_pressure_pa
+        ),
         **(
             {
                 "0/k": _scalar_field("k", "1e-4", boundary_contract),
@@ -195,6 +197,7 @@ def problem_spec_to_project_config(
         problem_spec=spec,
         flow_case_id=flow_case.id,
         turbulence_model=turbulence_model,
+        freestream_pressure_pa=0.0,
         boundary_conditions=boundary_conditions,
         motion_profiles=motion_profiles,
     )
@@ -418,6 +421,16 @@ def _metadata(
     physical_profile = {
         "boundary_contract": dict(boundary_contract),
         "ground_model": _ground_model(boundary_contract),
+        "boundary_implementation": {
+            "moving_wall": "translatingWallVelocity",
+            "far_field_velocity": "freestreamVelocity",
+            "far_field_pressure": "freestreamPressure",
+        },
+        "outer_boundary_semantics": {
+            "freestream_velocity_mps": [config.operating_point.velocity_mps, 0.0, 0.0],
+            "freestream_pressure_pa": config.freestream_pressure_pa,
+        },
+        "turbulence_model": config.turbulence_model,
         "motion_profiles": {
             str(profile_id): {
                 "kind": profile.get("kind"),
@@ -900,7 +913,8 @@ def _field_u(config: ProjectConfig) -> str:
         elif kind == "moving_wall":
             wall_velocity = _moving_wall_velocity(config, patch)
             spec = (
-                "type movingWallVelocity; "
+                "type translatingWallVelocity; "
+                f"U ({wall_velocity[0]:g} {wall_velocity[1]:g} {wall_velocity[2]:g}); "
                 f"value uniform ({wall_velocity[0]:g} {wall_velocity[1]:g} {wall_velocity[2]:g});"
             )
         else:
@@ -921,6 +935,8 @@ def _scalar_field(
     name: str,
     value: str,
     boundary_contract: Mapping[str, str] | None = None,
+    *,
+    freestream_pressure: float = 0.0,
 ) -> str:
     dimensions = _scalar_dimensions(name)
     contract = dict(_STAGE_V_DEFAULT_BOUNDARIES if boundary_contract is None else boundary_contract)
@@ -935,9 +951,12 @@ def _scalar_field(
         kind = contract[patch]
         if name == "p":
             if kind == "far_field":
-                spec = "type freestreamPressure; freestreamValue uniform 0; U U;"
+                spec = (
+                    "type freestreamPressure; "
+                    f"freestreamValue uniform {freestream_pressure:g}; U U;"
+                )
             elif kind == "pressure_outlet":
-                spec = "type fixedValue; value uniform 0;"
+                spec = f"type fixedValue; value uniform {freestream_pressure:g};"
             elif kind == "symmetry":
                 spec = "type symmetryPlane;"
             else:

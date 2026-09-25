@@ -1,0 +1,105 @@
+{
+  "candidate_lineage": {
+    "path": "docs/evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json",
+    "sha256": "8071ad02d7e1c5c936fa03729dc857deaea6c1f27f009eda38365a1bb1a08f9d"
+  },
+  "canonical_inputs": {
+    "candidate": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "design_domain": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "profile_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+      "sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3"
+    }
+  },
+  "claims_not_supported": [
+    "agreement with the old stationary-ground result",
+    "solver qualification or grid-independent downforce",
+    "same-profile domain convergence before a physical-profile pass",
+    "Stage S reduced-basis FD qualification",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "immutable": true,
+  "kind": "stage_v_v16_physical_profile_contract_v2",
+  "metric": {
+    "physical_profile_qualification": {
+      "comparison": "new profile only; the old stationary-ground result is not a pass/fail reference",
+      "gates": [
+        "solver_convergence",
+        "force_stationarity",
+        "global_mass_conservation",
+        "moving_ground_velocity_and_zero_normal_flux",
+        "near_candidate_upstream_velocity",
+        "outer_patch_backflow_and_pressure_disturbance",
+        "candidate_clearance",
+        "mesh_qualification"
+      ],
+      "required_before_domain_convergence": true
+    },
+    "same_profile_domain_convergence": {
+      "bounds": {
+        "downforce_absolute": 0.005,
+        "drag_relative": 0.02
+      },
+      "comparison": "compare only cases with identical physical_profile_sha256 and physics, varying domain extent",
+      "minimum_treatments": 2
+    }
+  },
+  "physical_profile": {
+    "boundary_contract": {
+      "bottom": "moving_wall",
+      "inlet": "far_field",
+      "outlet": "far_field",
+      "sideMax": "far_field",
+      "sideMin": "far_field",
+      "top": "far_field"
+    },
+    "boundary_implementation": {
+      "far_field_pressure": "freestreamPressure",
+      "far_field_velocity": "freestreamVelocity",
+      "moving_wall": "translatingWallVelocity"
+    },
+    "ground_model": "moving_ground",
+    "motion_profiles": {
+      "moving_ground": {
+        "boundary_ids": [
+          "bottom"
+        ],
+        "kind": "translation",
+        "velocity_mps": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "outer_boundary_semantics": {
+      "freestream_pressure_pa": 0.0,
+      "freestream_velocity_mps": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "turbulence_model": "laminar"
+  },
+  "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+  "problem_spec_sha256": "2335325e12a4ede46e0d49adc718557f9c9a6e697636ea4a014d5415278f6e2c",
+  "question": "Does the same v16 candidate become physically interpretable when the original V1 box uses translatingWallVelocity moving-ground and freestream outer-boundary semantics?",
+  "registered_before_computation": true,
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_physical_profile_run_manifest_v2_2026_09.json",
+    "sha256": "de7068b1719fa9ecf854733e778ae69d7af8d34227b5927e071923b7431952cd"
+  },
+  "schema_version": 2,
+  "status": "registered_not_run",
+  "supersedes": {
+    "manifest": "docs/evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json",
+    "reason": "v1 used movingWallVelocity and conflated physical-profile qualification with domain convergence"
+  }
+}
