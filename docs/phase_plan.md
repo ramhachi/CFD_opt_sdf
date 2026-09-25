@@ -123,7 +123,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Stage T canonical closed loop | Bounded real-OpenFOAM path implemented | PQ0.1 connected the compiled projected-volume value/gradient, separated parent adjoint from trial primal, reused accepted primal artifacts and integrated the Path B centered-FD bracket. PQ0.2 exercised the real parent/trial/bracket/rollback/resume path. PQ3 then accepted three real OpenFOAM improvement steps. This is capability and bounded Path B evidence, not production-gradient or target-physics qualification. |
 | Stage T production optimizer | Bounded 97-step candidate reached; not converged and not qualified | The early PQ3.1–PQ3.3 history is retained in the register: solver-field discreteness without extraction coherence, and an upper volume bound that did not fill the material budget. The later v12–v16 line runs the b=128 margin-mask level with the Phase 2 discreteness gate: v15 accepted 10/10 at its budget and v16 accepted 87 further steps (cumulative 97), reaching raw downforce `2.65056`, projected volume `0.0719735` (94.30% of Vmax) and `mean_nd=0.0025089`, then stopped fail-closed at attempt 88 when the alpha-1.0 Path B bracket was not a descent direction. The registered convergence window was not met and no independent terminal repeat ran, so this is not a converged terminal. Projected-gradient and volume-target OC remain proposal rules; MMA/GCMMA is deferred. |
 | Stage S | Entry gate passes on the v16 candidate; baseline qualified through the V1 primal; centered-FD campaign ran and the complete derivative qualification failed | PQ4.1 v2 on the v16 checkpoint 87 selects `rho_projection` iso 0.5 and returns `ready_for_stage_s=true` with the topology-aware self-intersection detector and the surface-nets extraction (`evidence/pq4_1_v16_state_stage_s_entry_v2_2026_09.json`). Baseline v2 is registered (`evidence/stage_s_baseline_v16_v2_2026_09.json`), and the Work F V1 body-fitted baseline passed the registered mesh and primal `stage_v_qualification_v1` gates (`evidence/stage_s_work_f_v1_solver_2026_09.json`), which closes P17 for this candidate and level only. The Work F centered-FD campaign then ran all 32 perturbation primals: the gradient-aligned directional derivatives pass within the 5% profile (downforce response `1.0408`/`1.0279`; drag response `1.0266`/`0.9595`) with tight epsilon plateaus, but the registered random-seed directions exceed the relative rule (downforce: `1.0858`/`0.8796`; drag: `1.0376` passes, `1.4593` fails), so the complete derivative qualification is **false** and one accepted body-fitted update remains unauthorized (`evidence/stage_s_work_f_surface_fd_result_2026_09.json`; `shape_update_allowed=false`). The fail branch diagnosis D0-D3 has run: D1 (realized directions) and D2 (sensitivity semantics) passed, and the D3 bounded `linearUpwind` diagnostic was mixed with `supports_discretization_cause=false`. The post-D3 plan ([`stage_s_work_f_post_d3_plan_2026_09_25.md`](stage_s_work_f_post_d3_plan_2026_09_25.md)) is registered through its D4.0 manifest ([`evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json`](evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json), SHA-256 `21dd18d6084258b4dc1f5cf02bc9d91049fb6e8f8aef82ae438bf0cd484a8e52`) and the solver-free D4.1 component audit ([`evidence/stage_s_work_f_derivative_component_audit_2026_09.json`](evidence/stage_s_work_f_derivative_component_audit_2026_09.json), SHA-256 `2cd3f9f102fe49ff80b5d8499416ff61450d245a2c16468850693d8c5b32476c`): component closure is exact and no single term drop or common scale explains the residual. The D4.2 B-spline geometry-Jacobian audit then **passes** ([`evidence/stage_s_work_f_geometry_jacobian_audit_2026_09.json`](evidence/stage_s_work_f_geometry_jacobian_audit_2026_09.json), SHA-256 `5e3619a8686a96f325f877555b67546e1518977ef4a8f85fccd421fe176b0954`; as-run all-epsilon application preserved at [`evidence/stage_s_work_f_geometry_jacobian_audit_all_epsilon_2026_09.json`](evidence/stage_s_work_f_geometry_jacobian_audit_all_epsilon_2026_09.json), SHA-256 `e184b18aac1f5ec43df086f73dc885feb8494be759c03ac6d3a25569aa15ee72`): the read-only analytic `dxdbFace`/`dSdb`/`dndb` contraction matches the centered differences of the registered moved meshes with L2 ratios `1 +/- 2e-5`, cosines `~1`, an epsilon plateau, zero derivative on every non-design patch, and a per-face residual that scales exactly as `1/epsilon` at the ASCII write precision (`max_error * 2*epsilon` constant at `~1.1e-8`/`~7e-10`/`~1.3e-6` for `Cf`/`Sf`/`n`). The geometry chain rule is therefore not the cause, so the D4.3 adjoint-option ablations were run ([`evidence/stage_s_work_f_adjoint_option_diagnostic_surface_area_2026_09.json`](evidence/stage_s_work_f_adjoint_option_diagnostic_surface_area_2026_09.json), SHA-256 `110ff2a6ae0a82d48da2a8e37ba88ea2d2832d790731d893a1325e6bd49cc14f`; [`evidence/stage_s_work_f_adjoint_option_diagnostic_mesh_movement_2026_09.json`](evidence/stage_s_work_f_adjoint_option_diagnostic_mesh_movement_2026_09.json), SHA-256 `53ba943d03123361561aea96a674f1c7cedd9120b3021b1b57bfffa2e9c7a427`): `includeSurfaceArea false` leaves the design-variable derivative files bit-identical (the option only changes the `faceSensNormal*` output), and `includeMeshMovement false` changes the derivatives but breaks passing controls (drag `random_seed_2026` ratio `1.4592 -> 3.8317`, drag `random_seed_11` `1.0376 -> 1.2299`). No single option satisfies the pre-registered sole-cause rule, so per the post-D3 plan's D4.4 table the OpenFOAM continuous-adjoint route is **fail-closed and unqualified for this Work F profile**: no D5 holdout and no D6/D7 requalification ran, and `derivative_qualified=false` with `shape_update_allowed=false` stand pending an architecture decision. The post-D4.4 plan's §21 then ran the A0 registration ([`evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json`](evidence/stage_s_work_f_fi_formulation_diagnostic_manifest_2026_09.json), SHA-256 `e78d2fb8f40044910b9a80e672c5b0111c22a4741f7f319327a8a52c5ca357ce`) and the bounded A1 native-FI discriminant ([`evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json`](evidence/stage_s_work_f_fi_formulation_diagnostic_2026_09.json), SHA-256 `de814a57de1a55f8cc1e4cee7039874d80af0f58e24d76692cd76bf914f0ed92`): `sensitivityType surface -> shapeFI` converges with identical primal lineage and derivative schema, but it does not satisfy the registered conditions either (pass controls worsen: downforce gradient-aligned `1.0409 -> 1.1333`, drag downforce-gradient-aligned `1.0266 -> 1.0861`; failing rows remain: downforce seed2026 `0.9094`, drag seed2026 `1.5798`), so `candidate_formulation_supported=false`. Per §21.5/§21.6 the formulation branch is stopped and the 0-run architecture memo ([`stage_s_work_f_architecture_decision_2026_09_25.md`](stage_s_work_f_architecture_decision_2026_09_25.md)) registers exactly two options for a new contract: an alternative sensitivity path, or a reduced-parameterization centered-FD path. Option 2 was then selected: the solver-free S0 contract ([`evidence/stage_s_reduced_basis_fd_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_manifest_2026_09.json), SHA-256 `261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1`) fixes the versioned reduced-basis ProblemSpec (`maximize downforce / J = -downforce`, drag report-only, no constraints) and the K=16 mode-space design map over the registered `volumetricBSplines` morpher, and the S1 geometry-only preflight ([`evidence/stage_s_reduced_basis_mode_preflight_2026_09.json`](evidence/stage_s_reduced_basis_mode_preflight_2026_09.json), SHA-256 `1942993fbaf306f14932361ec85c71e48230aee8270af10b936c7d92ee1226f9`) selects 16 frequency-ordered y-symmetry-preserving modes (frequencies 3--11) with all plus/minus max-epsilon geometry/mesh/realized-motion gates passing; two invalid preflight attempts were preserved and corrected. No flow solver has run: `original_adjoint_derivative_qualified=false`, `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`. The registered PQ2 Stage V domain/boundary factor has run and returned No-Go: both treatments moved downforce beyond the registered bound. S2 epsilon calibration remains blocked: the +1.6 m continuation also exceeded the adjacent bound, so the replacement factor-resolved Stage V contract is still pending. |
-| Stage V | PQ2 V2 factor campaign and first continuation are qualified per treatment but No-Go for a stable downforce reference | The fixed-domain V2 baseline is qualified, but both registered factors move the responses beyond the preregistered bounds. Far-field extension: 214,900 cells, Cd 1.16716788, downforce 0.21465011; top pressure outlet: 187,942 cells, Cd 1.12473301, downforce 0.03076151. The +1.6 m continuation is also qualified at 279,993 cells, Cd 1.02540605, downforce 0.17416948; its adjacent downforce shift from +0.8 m is -0.04048063 and still exceeds 0.005, while relative Cd change is -0.12146. There is no grid-independent reference; Stage S S2 is blocked until the factor-resolved Stage V domain/boundary contract is repaired.
+| Stage V | PQ2 V2 factor campaign and first continuation are qualified per treatment but No-Go for transfer to the v16 candidate | The PQ2 treatments use candidate STL `613637…`, whereas Stage S v16 uses `5e6d…`; both registered factors move the PQ2 response beyond the preregistered bounds and the +1.6 m continuation also exceeds the adjacent bound. There is no grid-independent reference for PQ2 and no v16 absolute reference yet; S2 remains blocked until the v16-specific factor-resolved domain/boundary contract is audited and registered. |
 
 
 ### PQ2 domain and boundary factor result (2026-09-25)
@@ -146,6 +146,30 @@ the fixed-grid Brinkman model. It does not prove constrained optimization or
 the Stage T -> Stage S -> Stage V architecture end to end. The canonical start
 is infeasible for the recorded efficiency and active-cell mean-`rho` limits,
 and the current T5 output cannot be passed as the same candidate to Stage S/V.
+
+### v16 lineage correction and immediate execution order (2026-09-25)
+
+The registered Stage S v16 candidate and the registered PQ2 continuation candidate
+are different objects. The v16 surface is SHA-256
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`; the PQ2
+continuation surface is `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`.
+The PQ2 factor and +1.6 m continuation therefore remain candidate-specific
+diagnostic evidence and are not a Stage S v16 absolute-reference judgment.
+
+The authoritative next slice is the solver-free, immutable v16 contract audit
+described in [`stage_s_v16_contract_and_execution_plan_2026_09_25.md`](stage_s_v16_contract_and_execution_plan_2026_09_25.md)
+and registered at
+[`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`](evidence/stage_s_v16_contract_audit_manifest_2026_09.json).
+It binds the v16 STL, Work F V1 case, reduced-basis ProblemSpec, six-patch
+realized boundary/field contract, domain/mesh inputs, and raw checkMesh semantics;
+it starts no solver. A v16-specific factor-resolved Stage V domain/boundary
+contract must be registered after this audit. Until that contract passes, keep
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
+start S2, a full optimization campaign, or a shape update. The local reduced-basis
+FD path and the absolute Stage V reference path are separate: the former can only
+be considered as local Work F evidence, while the latter requires a same-candidate
+domain/grid/boundary family. No PQ2 result may be transferred across the candidate
+hash mismatch.
 
 ### Stage T has never produced a design — 2026-09-12
 
@@ -1247,16 +1271,23 @@ Execute in this order:
    registered PQ2 factor and +1.6 m continuation are both No-Go for S2; the
    next heavy step is a newly registered domain or far-field boundary contract.
 6. **Stage S first step (blocked).** Keep the reduced-basis S2 epsilon
-   calibration and every shape update blocked until the Stage V domain/boundary
-   response is reconciled. After PQ2 passes a replacement contract, qualify
-   drag and downforce by centered FD, then accept at most one body-fitted shape
-   step and rerun every geometry, mesh, and solver gate.
-7. **PQ2 — Stage V downforce reference (No-Go).** The registered V2
-   treatments and the +1.6 m domain continuation are qualified, but the
-   adjacent +0.8 m -> +1.6 m transition still exceeds the registered bounds.
-   Register the next domain continuation or a physically justified far-field
-   boundary contract, keep the one-factor budget explicit, and do not start S2
-   in parallel.
+   calibration, all shape updates, and full optimization blocked until the
+   solver-free v16 lineage audit and a v16-specific factor-resolved Stage V
+   domain/boundary contract pass. The audit is registered in
+   [`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`](evidence/stage_s_v16_contract_audit_manifest_2026_09.json)
+   and is contract evidence only. After the applicable contract passes, the
+   local Work F path may qualify drag and downforce by centered FD; it does not
+   establish an absolute or grid-independent downforce reference. Only a full
+   S4 holdout pass may authorize at most one body-fitted shape step, followed by
+   every geometry, mesh, and solver gate.
+7. **PQ2 — candidate-specific Stage V diagnostic (No-Go for transfer).** The
+   registered V2 treatments and the +1.6 m continuation are qualified per
+   treatment but belong to the PQ2 candidate with STL SHA-256
+   `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`.
+   The Stage S v16 candidate is `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+   Keep the PQ2 No-Go as diagnostic evidence, do not transfer its response to
+   v16, and register a same-candidate v16 domain/boundary family before any
+   absolute Stage V claim. Do not start S2 in parallel with that contract work.
 8. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
    Stage S candidates on at least three qualified grids. Preregister
    baseline-to-T and T-to-S required pairs and candidate-specific uncertainty.

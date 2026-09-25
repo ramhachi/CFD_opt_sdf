@@ -80,6 +80,10 @@ Start here in a new terminal, after reading the repository root
   separates `rho_projection` geometry from RAMP `beta_solver`, and defines the
   gated order for semantic re-materialization, projected-volume reoptimization,
   PQ4.1 and the first Stage S step. It is subordinate to `phase_plan.md`.
+- [`stage_s_v16_contract_and_execution_plan_2026_09_25.md`](stage_s_v16_contract_and_execution_plan_2026_09_25.md)
+  — v16-specific candidate-lineage, boundary/mesh contract, and staged execution
+  plan after the PQ2 candidate mismatch audit. It is subordinate to
+  `phase_plan.md` and does not authorize a solver campaign by itself.
 - [`pq3_3b_post_v5_plan_2026_09.md`](pq3_3b_post_v5_plan_2026_09.md)
   — bounded diagnosis and decision rules after the v5 b=8 stop. It separates
   the continuation target from the original projected-volume upper bound and

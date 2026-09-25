@@ -1434,3 +1434,50 @@ No-Go**。固定domain baseline (187,942 cells, Cd 1.6800880804, downforce
 grid-independent downforceを意味しない。S2 epsilon calibrationと形状更新は
 引き続き禁止し、次のdomain continuationまたは物理的に正当化したfar-field
 boundary contractを登録する。
+
+## 2026-09-25: v16 lineage audit and revised execution order
+
+The previous PQ2 conclusion was re-audited against the live artifacts. The
+Stage S v16 candidate is the STL with SHA-256
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`, bound by
+`stage_s_baseline_v16_v2_2026_09.json` and the Work F V1 case. The PQ2
+continuation candidate is the STL with SHA-256
+`613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`. The
+identities differ, so PQ2 factor/domain results are diagnostic evidence for the
+PQ2 candidate only. They cannot reject or qualify the v16 Stage S candidate's
+absolute downforce reference.
+
+The fixed-domain PQ2 grid study also remains candidate-specific and reports no
+grid-independent downforce reference. The Work F V1 case is a separate v16
+lineage at 0.05 m spacing and 39,848 cells. Its registered profile is qualified,
+but the raw `checkMesh` record has `mesh_ok=false` because the allowed concave
+cell marker is retained; this is not a clean mesh claim. The compiler-generated
+case realizes inlet/outlet, sideMin/sideMax, top, bottom, and candidate patches,
+but the ProblemSpec explicitly declares only inlet/outlet roles. A versioned
+six-patch boundary contract is therefore still required before a v16 absolute
+reference campaign.
+
+The solver-free audit is registered in
+`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`. It binds the v16
+surface, Work F case, reduced-basis ProblemSpec, case boundary/field files,
+domain/mesh metadata, and raw qualification semantics. It records
+`solver_started=false`, `mesh_generation_started=false`, and
+`optimization_campaign_started=false`. The audit is contract evidence only.
+
+The revised execution order is:
+
+1. Register and audit a v16-specific factor-resolved Stage V domain/boundary
+   contract using the v16 STL; preserve all PQ2 artifacts unchanged.
+2. Decide whether the reduced-basis S2 calibration may run as local Work F
+   centered-FD evidence under the unchanged S0/S1 contract. It must not be
+   described as an absolute or grid-independent downforce result.
+3. Run the smallest pre-registered same-candidate Stage V family only after its
+   contract passes. Keep full optimization, S4-dependent shape updates, and PQ5
+   ranking stopped until their own gates pass.
+
+The authoritative plan is
+`docs/stage_s_v16_contract_and_execution_plan_2026_09_25.md`; the roadmap and
+status remain controlled by `docs/phase_plan.md`. Until the v16-specific contract
+passes, keep `reduced_basis_fd_qualified=pending`,
+`shape_update_allowed=false`, and do not transfer PQ2 results across the
+candidate hash mismatch.

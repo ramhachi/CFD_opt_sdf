@@ -1594,3 +1594,29 @@ repair that unrelated documentation mismatch.
 - The adjacent transition is downforce `-0.0404806281` and relative Cd `-0.1214579551`, both beyond the registered bounds (`0.005` and `0.02`). Immutable evidence is `docs/evidence/stage_v_domain_continuation_2026_09.json` (SHA-256 `fd8bec5a7aa743a2a22f0e759bd4be76304d6b013031d051aa3cf518455d4c6e`). The decision is to register the next domain continuation and keep S2 blocked.
 - The first execution attempt exposed a relative-geometry staging defect before OpenFOAM. The corrected runner stages `work/stage_sv_laminar/geometry/design_domain.stl` byte-identically beside the copied continuation spec and records the source/staged hash through the contract test. No solver result from the failed attempt was used.
 - The continuation contract tests pass (`10 passed` together with the PQ2 factor tests). No Stage S flow campaign or shape update was started.
+
+## 2026-09-25: v16 lineage audit correction and solver-free contract
+
+The PQ2 continuation evidence was rechecked against the live artifacts. The
+Stage S v16 candidate STL SHA-256 is
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`; the PQ2
+continuation candidate is
+`613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`. They are
+different candidates. Do not use the PQ2 downforce values, factor sensitivity,
+or continuation No-Go as a v16 absolute-reference judgment.
+
+The revised subordinate plan is
+`docs/stage_s_v16_contract_and_execution_plan_2026_09_25.md`, and its first
+solver-free execution is registered at
+`docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json`. The audit
+hash-binds the v16 STL, Work F V1 case, original/reduced ProblemSpecs, realized
+six-patch boundary and U/p field contract, domain/mesh metadata, and raw
+`checkMesh` semantics. It records no mesh generation, solver, or optimization
+campaign. The Work F profile-qualified status and raw `mesh_ok=false` state are
+both retained.
+
+Next work must register a same-candidate v16 factor-resolved Stage V
+domain/boundary contract. Until it passes, keep
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
+start S2 or a full optimization campaign. The local reduced-basis FD path and
+the absolute Stage V reference path remain separate evidence tracks.
