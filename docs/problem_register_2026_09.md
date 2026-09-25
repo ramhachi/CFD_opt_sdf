@@ -122,7 +122,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
 | P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
 | P11 | Brinkman浸透層が格子で解像されていない | — | **P2の症状として閉じた**（測定済） |
-| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。他候補・target physicsは未資格 |
+| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。v16 v2 physical-profile run は mesh/solver/force/mass gates を通過したが、外周 pressure-disturbance gate が No-Go のため target-profile reference は未資格（2026-09-26） |
 | P13 | 最適化ループの随伴・primal実行契約 | 最重大 | **bounded pathでは解消（2026-09-22, PQ0.1/PQ0.2）**。accepted primal再利用、parent adjoint fail-closed、trial primal-only、real bracket/rollback/resumeを実測。勾配精度そのものはP6としてopen |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
@@ -131,6 +131,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
+| P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **open（2026-09-26）**。v2 の moving-ground/freestream V1 run は residualControl、force stationarity、mass conservation、壁面 zero-normal-flux、clearance、mesh を通過したが、登録済み outer pressure-disturbance `max |p|/U∞² <= 0.05` に対し inlet `0.29055`、top `0.05192` で fail。閾値は変更せず、同じ profile/physics のまま domain を拡大する |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -138,6 +139,61 @@ P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）�
 
 修正済み: 力の単位・参照量の不一致、Stage Vがv2 specから駆動できない問題、
 勾配の符号規約の曖昧さ、勾配と宣言応答の非束縛。
+
+## P21 — v16 physical profile の外周 disturbance（最重大・open 2026-09-26）
+
+### 登録した判定
+
+v2 の moving-ground/freestream profile に対して、solver を起動する前に次の数値 gate を
+immutable manifest として登録した。
+
+- `stage_v_qualification_v1` の checkMesh、residualControl、force-stationarity profile を再利用し、
+  最終 initial residual は `p <= 1e-5`、`Ux/Uy/Uz <= 1e-6` とした。
+- 全 boundary face の `phi` から `abs(sum(phi))/[0.5 sum(abs(phi))] <= 1e-4` を判定する。
+- `bottom` の速度を `(1,0,0) m/s`、ground/candidate の最大法線 flux を `1e-8` 以下とする。
+- upstream outer boundary の face-mean velocity の相対 L2 誤差を `0.05` 以下とする。
+- outer patch の backflow ratio と kinematic-pressure disturbance `max |p|/U_inf^2` を `0.05` 以下とする。
+- v16 candidate の pre-mesh clearance は `0.25 m` 以上とする。
+
+契約は
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json)
+（SHA-256 `c556b75f9b37ec674b6c8b04f12e8df43e0025857e03a72f98c7cb918c41353f`）で登録し、
+Docker image ID と v2 profile/candidate/spec の hash を固定した。登録時点で solver と mesh は未起動である。
+
+### controlled run の実測
+
+1 本だけ、元の V1 box と同じ v16 candidate に対して実行した。OpenFOAM image は
+`opencfd/openfoam-default:2512`、image ID は
+`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319` である。
+実行は return code 0、`simpleFoam` は residualControl により 546 iteration で終了した。
+
+結果は
+[`evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json)
+（SHA-256 `de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002`）に保存した。
+
+| gate | 実測 | 判定 |
+| --- | --- | --- |
+| mesh qualification | 39,848 cells、concave fraction `0.06126`、profile 上限 `0.08` | pass（raw `checkMesh` の concave failed line は記録を保持） |
+| solver | `p=5.19e-6`、`Ux=5.36e-7`、`Uy=9.86e-7`、`Uz=8.92e-7` | pass |
+| force stationarity | mean `Cd=1.44033`、mean downforce `0.886829`、両応答の drift/std が profile 内 | pass |
+| global mass | normalized imbalance `4.84e-9` | pass |
+| moving ground/candidate flux | ground velocity error `0`、ground/candidate max normal flux `0` | pass |
+| upstream velocity | inlet face mean `(1,0,0)`、relative L2 `0` | pass |
+| outer backflow | side `0.03559/0.03568`、top `0.00832`、outlet `0` | pass |
+| outer pressure | inlet max `0.29055`、top max `0.05192`、registered max `0.05` | **fail** |
+
+従ってこの run は solver failure ではなく、**外周場が候補から十分に離れていないための
+physical-profile No-Go** である。旧 stationary-ground result との比較、absolute/grid-independent
+downforce、Stage S FD、shape update、optimization campaign はこの結果から支持されない。
+
+### 次の扱い
+
+P21 を閉じるため、閾値や profile の実装を後付けで変更せず、同じ candidate、Re、laminar model、
+moving-ground/freestream semantics、force normalization、physical-profile hash を保ったまま、
+domain bounds だけを広げた新しい immutable contract を登録する。まず upstream/top/side の
+pressure disturbance を再測定し、その contract が pass した後にだけ同一 profile の二領域以上の
+domain convergence（downforce absolute `0.005`、Cd relative `0.02`）を計画する。Stage S、reduced-basis
+FD、PQ5、形状更新は引き続き停止する。
 
 ---
 

@@ -1421,3 +1421,45 @@ Registration and materialization remain solver-free.  Keep
 `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
 start Stage S or a domain-convergence campaign until the v2 profile passes the
 registered physical-profile gates.
+
+## 2026-09-26 physical-profile qualification: V1 No-Go and next contract
+
+The numeric physical-profile gates were registered before computation in
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json)
+and its run manifest
+[`evidence/stage_v_v16_physical_profile_qualification_run_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_run_manifest_v1_2026_09.json).
+The manifest pins the v2 ProblemSpec, candidate, design-domain surface,
+physical-profile hash `a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`,
+the Docker image ID, the existing `stage_v_qualification_v1` mesh/solver/force
+profile, and explicit mass, wall-flux, upstream-velocity, outer-backflow and
+pressure-disturbance thresholds.  Registration recorded no solver or mesh
+execution.
+
+Exactly one controlled OpenFOAM run then used the original V1 box and the
+registered v16 candidate.  The run completed normally: `simpleFoam` stopped at
+the declared residualControl criterion after 546 iterations.  Mesh
+qualification, final residuals, force stationarity, normalized mass imbalance,
+moving-ground velocity and zero-normal-flux, candidate flux, clearance, and
+upstream velocity all passed.  The raw `checkMesh` output still contains its
+allowed concave-cell failed line; the measured concave fraction is `0.06126`
+against the registered `0.08` limit.
+
+The physical-profile result is
+[`evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json)
+(SHA-256 `de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002`).
+The outer backflow ratios passed, but the outer kinematic-pressure gate failed:
+the inlet maximum was `0.29055 U_inf^2` and the top maximum was `0.05192
+U_inf^2`, above the pre-registered `0.05 U_inf^2` limit.  This is a physical
+profile/far-field adequacy No-Go, not a solver-convergence failure.  The old
+stationary-ground result is not a reference comparison.
+
+The next slice is a new immutable contract with the same candidate, operating
+point, laminar model, moving-ground/freestream semantics, force normalization,
+and physical-profile hash, changing only the domain bounds to increase
+upstream/top/side clearance.  Re-measure the same gates before any
+same-profile domain-convergence comparison.  Do not loosen the recorded
+pressure threshold after seeing this run.  Stage S, reduced-basis FD,
+optimization, PQ5 ranking, and shape updates remain blocked until the
+physical-profile gate passes; only then may at least two same-profile domains
+be compared using the registered `0.005` downforce and `0.02` relative-Cd
+bounds.
