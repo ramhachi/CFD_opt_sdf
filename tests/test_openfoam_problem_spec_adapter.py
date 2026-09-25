@@ -118,6 +118,17 @@ def _write_spec(tmp_path: Path, **kwargs) -> Path:
     return project_yaml
 
 
+def _write_custom_spec(tmp_path: Path, data: dict) -> Path:
+    _box(tmp_path / "geometry" / "chassis.stl", (-0.5, 0.0, 0.0), (0.4, 0.3, 0.2))
+    _box(tmp_path / "geometry" / "wing_initial.stl", (0.25, 0.0, -0.2), (0.5, 0.6, 0.05))
+    _box(tmp_path / "geometry" / "design_domain.stl", (0.25, 0.0, -0.2), (0.7, 0.7, 0.15))
+    _box(tmp_path / "geometry" / "keepout.stl", (1.0, 0.0, 0.0), (0.2, 0.2, 0.2))
+    _box(tmp_path / "geometry" / "mount.stl", (0.25, 0.0, -0.4), (0.1, 0.1, 0.1))
+    project_yaml = tmp_path / "project.yaml"
+    project_yaml.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return project_yaml
+
+
 def test_adapter_maps_geometry_roles_and_operating_point(tmp_path: Path) -> None:
     spec = load_problem_spec(_write_spec(tmp_path))
     config = problem_spec_to_project_config(spec)
@@ -133,6 +144,100 @@ def test_adapter_maps_geometry_roles_and_operating_point(tmp_path: Path) -> None
     assert config.operating_point.density == pytest.approx(1.225)
     assert config.operating_point.viscosity == pytest.approx(1.8e-05)
     assert config.problem_spec is spec
+
+
+def test_stage_v_legacy_boundary_defaults_are_preserved(tmp_path: Path) -> None:
+    spec = load_problem_spec(_write_spec(tmp_path))
+    config = problem_spec_to_project_config(spec)
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+    generate_openfoam_case(config, bundle, case_dir)
+
+    mesh = (case_dir / "system" / "blockMeshDict").read_text(encoding="utf-8")
+    velocity = (case_dir / "0" / "U").read_text(encoding="utf-8")
+    pressure = (case_dir / "0" / "p").read_text(encoding="utf-8")
+    assert "sideMin { type symmetryPlane;" in mesh
+    assert "bottom { type wall;" in mesh
+    assert "sideMin { type symmetryPlane;" in velocity
+    assert "bottom { type noSlip;" in velocity
+    assert "outlet { type fixedValue; value uniform 0;" in pressure
+    metadata = json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
+    assert metadata["boundary_contract"]["ground_model"] == "stationary_ground"
+    assert len(metadata["physical_profile"]["sha256"]) == 64
+
+
+def test_stage_v_moving_ground_uses_translation_profile_and_aliases(tmp_path: Path) -> None:
+    data = _spec_dict()
+    data["flow_cases"][0]["boundary_conditions"] = {
+        "inlet": "freestream",
+        "outlet": "pressure_outlet",
+        "ground": "moving_wall",
+    }
+    data["flow_cases"][0]["motion_profiles"] = {
+        "moving_ground": {
+            "kind": "translation",
+            "boundary_ids": ["ground"],
+            "velocity_mps": [30.0, 0.0, 0.0],
+        }
+    }
+    spec = load_problem_spec(_write_custom_spec(tmp_path, data))
+    config = problem_spec_to_project_config(spec)
+    assert config.boundary_conditions["bottom"] == "moving_wall"
+    assert config.motion_profiles["moving_ground"]["boundary_ids"] == ("bottom",)
+
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+    generate_openfoam_case(config, bundle, case_dir)
+    velocity = (case_dir / "0" / "U").read_text(encoding="utf-8")
+    assert "bottom { type movingWallVelocity; value uniform (30 0 0);" in velocity
+    metadata = json.loads((case_dir / "case_metadata.json").read_text(encoding="utf-8"))
+    assert metadata["boundary_contract"]["patches"]["bottom"] == "moving_wall"
+    assert metadata["boundary_contract"]["ground_model"] == "moving_ground"
+    assert metadata["boundary_contract"]["motion_profiles"]["moving_ground"]["boundary_ids"] == ["bottom"]
+    assert metadata["physical_profile"]["ground_model"] == "moving_ground"
+
+
+def test_stage_v_far_field_profile_matches_mesh_and_fields(tmp_path: Path) -> None:
+    data = _spec_dict()
+    data["flow_cases"][0]["boundary_conditions"] = {
+        "inlet": "far_field",
+        "outlet": "far_field",
+        "spanMin": "far_field",
+        "spanMax": "far_field",
+        "upper": "far_field",
+        "ground": "stationary_wall",
+    }
+    spec = load_problem_spec(_write_custom_spec(tmp_path, data))
+    config = problem_spec_to_project_config(spec)
+    bundle = build_fields(config)
+    case_dir = tmp_path / "case"
+    generate_openfoam_case(config, bundle, case_dir)
+
+    mesh = (case_dir / "system" / "blockMeshDict").read_text(encoding="utf-8")
+    velocity = (case_dir / "0" / "U").read_text(encoding="utf-8")
+    pressure = (case_dir / "0" / "p").read_text(encoding="utf-8")
+    for patch in ("inlet", "outlet", "sideMin", "sideMax", "top"):
+        assert f"{patch} {{ type patch;" in mesh
+        assert f"{patch} {{ type freestreamVelocity;" in velocity
+        assert f"{patch} {{ type freestreamPressure;" in pressure
+    assert "bottom { type wall;" in mesh
+    assert "bottom { type noSlip;" in velocity
+
+
+@pytest.mark.parametrize(
+    ("boundaries", "match"),
+    [
+        ({"unknown": "symmetry"}, "Unsupported Stage V boundary patch"),
+        ({"ground": "unsupported"}, "Unsupported Stage V boundary kind"),
+        ({"ground": "stationary_wall", "bottom": "moving_wall"}, "Duplicate Stage V boundary alias"),
+    ],
+)
+def test_stage_v_boundary_profile_fails_closed(tmp_path: Path, boundaries: dict, match: str) -> None:
+    data = _spec_dict()
+    data["flow_cases"][0]["boundary_conditions"] = boundaries
+    spec = load_problem_spec(_write_custom_spec(tmp_path, data))
+    with pytest.raises(ValueError, match=match):
+        problem_spec_to_project_config(spec)
 
 
 def test_candidate_stl_overrides_initial_design(tmp_path: Path) -> None:

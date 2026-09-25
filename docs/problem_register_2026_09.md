@@ -1606,3 +1606,23 @@ or reinterpret the already-recorded outer-condition No-Go as an optimization
 result. The continuation runner has been changed to fail before solver launch
 when this identity mismatch occurs. No new solver contract is permitted until
 the identity is corrected and registered.
+
+### 2026-09-25 physical-profile correction (registered, not run)
+
+The next correction targets the confound exposed by the domain ladder: the
+inlet moved while the bottom remained a stationary no-slip wall, so the
+upstream boundary-layer development changed with the box size.  The Stage V
+body-fitted generator now carries the selected flow case's normalized
+boundary contract and translation profiles.  It retains the legacy
+inlet/outlet-only defaults, and only an explicit `far_field` kind changes the
+outer fields to `freestreamVelocity`/`freestreamPressure`.  The generated
+metadata records the physical-profile hash and the derived ground model.
+
+The solver-free contract is
+`evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`, with
+the same v16 candidate, original V1 box, five `far_field` outer patches, and a
+`moving_wall` bottom driven by a `(1,0,0) m/s` translation profile.  Its status
+is `registered_not_run`; `solver_started`, `mesh_generation_started`, and
+`optimization_campaign_started` are all false.  This is a reduced laminar
+diagnostic contract only.  It does not authorize S2, reduced-basis FD, a
+shape update, or a grid-independent downforce claim.

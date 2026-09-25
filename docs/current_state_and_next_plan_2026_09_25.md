@@ -442,3 +442,24 @@ not a new physical result. The continuation runner now rejects this kind of
 identity mismatch before a future solver launch. No new OpenFOAM run, S2
 calibration, or shape update is allowed until a corrected contract is
 registered.
+
+## Current addendum 4 — 2026-09-25 physical boundary profile registered
+
+The body-fitted Stage V adapter now honors an explicit normalized boundary
+contract and translation motion profiles. Existing specs that declare only
+the legacy inlet/outlet pair retain the old stationary-ground/symmetry
+defaults. An explicit `far_field` profile renders
+`freestreamVelocity`/`freestreamPressure`, while an explicit `moving_wall`
+bottom renders `movingWallVelocity`. Case metadata records the normalized
+contract, derived `ground_model`, and a physical-profile SHA-256.
+
+The proposed v16 correction is registered, without running OpenFOAM, in
+`evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`.
+It keeps the original V1 box, sets all five outer faces to `far_field`, and
+sets the bottom to a `(1,0,0) m/s` translating ground. The registration
+script is `scripts/register_stage_v16_physical_profile_contract_2026_09.py`;
+its immutable run manifest records `solver_started=false` and
+`new_run_count=0`. The next action is a solver-free construction audit of
+this derived case. Keep the domain-only No-Go, reduced-basis qualification,
+and all shape-update gates unchanged until that audit and a single controlled
+profile run pass their registered criteria.

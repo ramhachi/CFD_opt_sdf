@@ -1,0 +1,71 @@
+{
+  "candidate": {
+    "same_candidate_as_stage_s": true,
+    "stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    }
+  },
+  "claims_not_supported": [
+    "solver qualification or grid-independent downforce",
+    "Stage S reduced-basis FD qualification",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "immutable": true,
+  "kind": "stage_v_v16_physical_profile_contract",
+  "metric": {
+    "comparison": "one profile at the original V1 box; no domain ladder claim",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02
+  },
+  "physical_profile": {
+    "boundary_contract": {
+      "bottom": "moving_wall",
+      "inlet": "far_field",
+      "outlet": "far_field",
+      "sideMax": "far_field",
+      "sideMin": "far_field",
+      "top": "far_field"
+    },
+    "ground_model": "moving_ground",
+    "motion_profiles": {
+      "moving_ground": {
+        "boundary_ids": [
+          "bottom"
+        ],
+        "kind": "translation",
+        "velocity_mps": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "outer_boundary_semantics": {
+      "U": "freestreamVelocity",
+      "freestream_pressure": 0.0,
+      "freestream_velocity_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "p": "freestreamPressure"
+    }
+  },
+  "profile_spec": {
+    "path": "work/stage_v_v16_physical_profile_2026_09/specs/project_matched_re_laminar_moving_ground_far_field_v1.yaml",
+    "sha256": "3051b089de1642b93525a4d3f7ce89c5755f61fc6931101aa0eec177f2b2f278",
+    "staged_design_domain": {
+      "path": "work/stage_v_v16_physical_profile_2026_09/specs/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    }
+  },
+  "question": "Does the same v16 candidate become physically interpretable when the original V1 box uses an explicit moving-ground and far-field outer-boundary profile?",
+  "registered_before_computation": true,
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_physical_profile_run_manifest_2026_09.json",
+    "sha256": "394378c5cd86684c3eebb3d54b3ac55af0dfe4951aca4a0038c62d6c6297a412"
+  },
+  "schema_version": 1,
+  "status": "registered_not_run"
+}

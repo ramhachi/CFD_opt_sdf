@@ -1358,3 +1358,33 @@ sharp-interface solver must not be used to bypass PQ0.1--PQ5.
 
 If another document conflicts with this roadmap, this file wins and the
 conflicting document must be corrected or removed.
+
+## 2026-09-25 physical-profile correction registered (solver-free)
+
+The v16 domain ladder exposed a physical confound: extending the inlet while
+leaving a no-slip stationary ground changes the upstream boundary-layer
+development.  The Stage V body-fitted adapter now consumes the existing
+`boundary_conditions`/`motion_profiles` vocabulary, preserves the historical
+default when only the legacy inlet/outlet pair is declared, and supports an
+explicit `far_field` profile (`freestreamVelocity`/`freestreamPressure`) plus
+an explicit translating ground.  Generated case metadata records the
+normalized boundary contract, derived ground model, and a `physical_profile`
+hash.
+
+The next v16 physical profile is registered in
+[`evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json`](evidence/stage_v_v16_physical_profile_contract_manifest_2026_09.json)
+with run-manifest SHA-256
+`394378c5cd86684c3eebb3d54b3ac55af0dfe4951aca4a0038c62d6c6297a412` and
+profile-spec SHA-256
+`3051b089de1642b93525a4d3f7ce89c5755f61fc6931101aa0eec177f2b2f278`.
+It keeps the original V1 box and v16 candidate, sets all five outer patches to
+`far_field`, and sets `bottom` to `moving_wall` with the `(1,0,0) m/s`
+translation profile.  The contract is `registered_not_run`; no mesh, solver,
+optimization, or Stage S update has started.  The registration script is
+[`scripts/register_stage_v16_physical_profile_contract_2026_09.py`](../scripts/register_stage_v16_physical_profile_contract_2026_09.py).
+
+The contract is a reduced laminar diagnostic and does not qualify an absolute
+or grid-independent downforce value, Stage S finite differences, or high-Re
+FSAE physics.  Keep `reduced_basis_fd_qualified=pending`,
+`shape_update_allowed=false`, and perform the solver-free construction audit
+before authorizing one physical-profile solver run.

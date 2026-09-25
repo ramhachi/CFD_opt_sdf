@@ -28,6 +28,31 @@ _GEOMETRY_ROLES_FOR_ADAPTER = (
     "root",
 )
 
+_STAGE_V_PATCHES = ("inlet", "outlet", "sideMin", "sideMax", "top", "bottom")
+_STAGE_V_BOUNDARY_KINDS = {
+    "far_field",
+    "freestream",
+    "pressure_outlet",
+    "symmetry",
+    "stationary_wall",
+    "moving_wall",
+}
+_STAGE_V_PATCH_ALIASES = {
+    "ground": "bottom",
+    "lower": "bottom",
+    "upper": "top",
+    "spanMin": "sideMin",
+    "spanMax": "sideMax",
+}
+_STAGE_V_DEFAULT_BOUNDARIES = {
+    "inlet": "freestream",
+    "outlet": "pressure_outlet",
+    "sideMin": "symmetry",
+    "sideMax": "symmetry",
+    "top": "symmetry",
+    "bottom": "stationary_wall",
+}
+
 
 @dataclass(frozen=True)
 class OpenFoamCaseSummary:
@@ -49,6 +74,7 @@ def generate_openfoam_case(
     extra_refinement_regions: Sequence[tuple[tuple[float, float, float], tuple[float, float, float], int]] | None = None,
 ) -> OpenFoamCaseSummary:
     case_dir.mkdir(parents=True, exist_ok=True)
+    boundary_contract = _boundary_contract(config)
     for relative in ("0", "constant", "constant/triSurface", "system", "postProcessing"):
         (case_dir / relative).mkdir(parents=True, exist_ok=True)
 
@@ -66,7 +92,7 @@ def generate_openfoam_case(
         ]
 
     files: dict[str, str] = {
-        "system/blockMeshDict": _block_mesh_dict(bundle),
+        "system/blockMeshDict": _block_mesh_dict(bundle, boundary_contract),
         "system/surfaceFeatureExtractDict": _surface_feature_extract_dict(copied),
         "system/snappyHexMeshDict": _snappy_hex_mesh_dict(config, bundle, copied, extra_refinement_regions),
         "system/controlDict": _control_dict(config, force_patches, reference),
@@ -76,12 +102,12 @@ def generate_openfoam_case(
         "constant/transportProperties": _transport_properties(config),
         "constant/turbulenceProperties": _turbulence_properties(config.turbulence_model),
         "0/U": _field_u(config),
-        "0/p": _scalar_field("p", "0"),
+        "0/p": _scalar_field("p", "0", boundary_contract),
         **(
             {
-                "0/k": _scalar_field("k", "1e-4"),
-                "0/omega": _scalar_field("omega", "10"),
-                "0/nut": _scalar_field("nut", "0"),
+                "0/k": _scalar_field("k", "1e-4", boundary_contract),
+                "0/omega": _scalar_field("omega", "10", boundary_contract),
+                "0/nut": _scalar_field("nut", "0", boundary_contract),
             }
             if config.turbulence_model == "kOmegaSST"
             else {}
@@ -145,6 +171,7 @@ def problem_spec_to_project_config(
     flow_case = _select_flow_case(spec, flow_case_id)
     operating_point = _operating_point_from_flow_case(spec, flow_case)
     turbulence_model = _resolve_turbulence_model(flow_case)
+    boundary_conditions, motion_profiles = _stage_v_boundary_contract(spec, flow_case)
     declared_domain = spec.grid.domain_bounds_m
     grid = _ProjectGridSpec(
         voxel_size_m=voxel_size_m if voxel_size_m is not None else spec.grid.voxel_size_m,
@@ -168,6 +195,8 @@ def problem_spec_to_project_config(
         problem_spec=spec,
         flow_case_id=flow_case.id,
         turbulence_model=turbulence_model,
+        boundary_conditions=boundary_conditions,
+        motion_profiles=motion_profiles,
     )
 
 
@@ -199,6 +228,130 @@ def _operating_point_from_flow_case(spec: ProblemSpec, flow_case: FlowCaseSpec) 
         density=flow_case.fluid.density_kg_m3,
         viscosity=flow_case.fluid.dynamic_viscosity_pa_s,
     )
+
+
+def _canonical_stage_v_patch(raw_patch: object) -> str:
+    if not isinstance(raw_patch, str):
+        raise ValueError("Stage V boundary patch names must be strings")
+    patch = _STAGE_V_PATCH_ALIASES.get(raw_patch, raw_patch)
+    if patch not in _STAGE_V_PATCHES:
+        raise ValueError(
+            f"Unsupported Stage V boundary patch {raw_patch!r}; expected one of "
+            f"{sorted(set(_STAGE_V_PATCHES) | set(_STAGE_V_PATCH_ALIASES))!r}"
+        )
+    return patch
+
+
+def _stage_v_boundary_contract(
+    spec: ProblemSpec, flow_case: FlowCaseSpec
+) -> tuple[dict[str, str], dict[str, dict[str, object]]]:
+    """Resolve the optional Stage V physical boundary profile.
+
+    Older body-fitted specs only declare inlet/outlet.  They retain the
+    historical symmetry-plane and stationary-ground defaults.  An explicit
+    ``far_field`` kind is intentionally local to this adapter so the generic
+    solver compiler's established ``freestream`` semantics do not change.
+    """
+
+    contract = dict(_STAGE_V_DEFAULT_BOUNDARIES)
+    raw_boundaries = flow_case.boundary_conditions or {}
+    seen: set[str] = set()
+    for raw_patch, raw_kind in raw_boundaries.items():
+        patch = _canonical_stage_v_patch(raw_patch)
+        if patch in seen:
+            raise ValueError(f"Duplicate Stage V boundary alias resolves to {patch!r}")
+        seen.add(patch)
+        if not isinstance(raw_kind, str) or raw_kind not in _STAGE_V_BOUNDARY_KINDS:
+            raise ValueError(
+                f"Unsupported Stage V boundary kind for {patch!r}: {raw_kind!r}"
+            )
+        contract[patch] = raw_kind
+
+    profiles: dict[str, dict[str, object]] = {}
+    coverage: dict[str, list[str]] = {}
+    for raw_profile_id, raw_profile in flow_case.motion_profiles.items():
+        profile_id = str(raw_profile_id)
+        profile = dict(raw_profile)
+        if profile.get("kind") != "translation":
+            raise ValueError(
+                f"Stage V motion profile {profile_id!r} must use kind='translation'"
+            )
+        raw_ids = profile.get("boundary_ids")
+        if not isinstance(raw_ids, (list, tuple)) or not raw_ids:
+            raise ValueError(
+                f"Stage V motion profile {profile_id!r} needs non-empty boundary_ids"
+            )
+        boundary_ids: list[str] = []
+        for raw_id in raw_ids:
+            patch = _canonical_stage_v_patch(raw_id)
+            if patch in boundary_ids:
+                raise ValueError(
+                    f"Stage V motion profile {profile_id!r} repeats boundary {patch!r}"
+                )
+            boundary_ids.append(patch)
+            coverage.setdefault(patch, []).append(profile_id)
+        velocity = profile.get("velocity_mps")
+        if not isinstance(velocity, (list, tuple)) or len(velocity) != 3:
+            raise ValueError(
+                f"Stage V motion profile {profile_id!r} needs a finite velocity_mps vector"
+            )
+        global_velocity = _to_global_vector(spec, tuple(float(value) for value in velocity))
+        if not all(isfinite(value) for value in global_velocity):
+            raise ValueError(f"Stage V motion profile {profile_id!r} has a non-finite velocity")
+        profiles[profile_id] = {
+            "kind": "translation",
+            "boundary_ids": tuple(boundary_ids),
+            "velocity_mps": global_velocity,
+        }
+
+    for patch, kind in contract.items():
+        matches = coverage.get(patch, [])
+        if kind == "moving_wall" and len(matches) != 1:
+            raise ValueError(
+                f"Stage V moving_wall boundary {patch!r} needs exactly one translation profile"
+            )
+        if kind != "moving_wall" and matches:
+            raise ValueError(
+                f"Stage V motion profile covers {patch!r}, but its boundary kind is {kind!r}"
+            )
+    return contract, profiles
+
+
+def _boundary_contract(config: ProjectConfig) -> dict[str, str]:
+    raw = config.boundary_conditions
+    if not raw:
+        return dict(_STAGE_V_DEFAULT_BOUNDARIES)
+    contract = dict(_STAGE_V_DEFAULT_BOUNDARIES)
+    for patch, kind in raw.items():
+        if patch not in _STAGE_V_PATCHES:
+            raise ValueError(f"Unknown normalized Stage V boundary patch: {patch!r}")
+        if kind not in _STAGE_V_BOUNDARY_KINDS:
+            raise ValueError(f"Unsupported normalized Stage V boundary kind: {kind!r}")
+        contract[patch] = kind
+    return contract
+
+
+def _ground_model(boundary_contract: Mapping[str, str]) -> str:
+    kind = boundary_contract["bottom"]
+    if kind == "moving_wall":
+        return "moving_ground"
+    if kind == "stationary_wall":
+        return "stationary_ground"
+    return "free_air"
+
+
+def _moving_wall_velocity(config: ProjectConfig, patch: str) -> tuple[float, float, float]:
+    matches = [
+        profile["velocity_mps"]
+        for profile in config.motion_profiles.values()
+        if patch in profile.get("boundary_ids", ())
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"Stage V moving_wall boundary {patch!r} has no unique velocity profile")
+    velocity = matches[0]
+    if not isinstance(velocity, tuple) or len(velocity) != 3:
+        raise ValueError(f"Stage V moving_wall boundary {patch!r} has an invalid velocity profile")
+    return velocity
 
 
 def _resolve_turbulence_model(flow_case: FlowCaseSpec) -> str:
@@ -261,6 +414,22 @@ def _metadata(
     force_patches: list[str],
     reference: Mapping[str, object],
 ) -> dict[str, object]:
+    boundary_contract = _boundary_contract(config)
+    physical_profile = {
+        "boundary_contract": dict(boundary_contract),
+        "ground_model": _ground_model(boundary_contract),
+        "motion_profiles": {
+            str(profile_id): {
+                "kind": profile.get("kind"),
+                "boundary_ids": list(profile.get("boundary_ids", ())),
+                "velocity_mps": list(profile.get("velocity_mps", ())),
+            }
+            for profile_id, profile in config.motion_profiles.items()
+        },
+    }
+    physical_profile_hash = hashlib.sha256(
+        json.dumps(physical_profile, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     metadata: dict[str, object] = {
         "source_project": str(config.path),
         "grid": {
@@ -289,6 +458,15 @@ def _metadata(
             "turbulence_model": config.turbulence_model,
         },
         "force_reference": dict(reference),
+        "boundary_contract": {
+            "patches": dict(boundary_contract),
+            "ground_model": _ground_model(boundary_contract),
+            "motion_profiles": physical_profile["motion_profiles"],
+        },
+        "physical_profile": {
+            **physical_profile,
+            "sha256": physical_profile_hash,
+        },
         "mesh_refinement": _mesh_refinement_metadata(bundle),
     }
     if config.problem_spec is not None:
@@ -397,7 +575,9 @@ def _root_metadata(root: RootSpec) -> dict[str, object]:
     }
 
 
-def _block_mesh_dict(bundle: FieldBundle) -> str:
+def _block_mesh_dict(
+    bundle: FieldBundle, boundary_contract: Mapping[str, str] | None = None
+) -> str:
     bounds = bundle.grid.bounds
     lo = bounds[0]
     hi = bounds[1]
@@ -413,6 +593,8 @@ def _block_mesh_dict(bundle: FieldBundle) -> str:
         (lo[0], hi[1], hi[2]),
     ]
     vertex_text = "\n".join(f"    ({x:g} {y:g} {z:g})" for x, y, z in vertices)
+    contract = dict(_STAGE_V_DEFAULT_BOUNDARIES if boundary_contract is None else boundary_contract)
+    mesh_types = {patch: _mesh_patch_type(kind) for patch, kind in contract.items()}
     return _foam_header("dictionary", "blockMeshDict") + f"""
 scale 1;
 
@@ -430,16 +612,26 @@ edges ();
 
 boundary
 (
-    inlet {{ type patch; faces ((0 4 7 3)); }}
-    outlet {{ type patch; faces ((1 2 6 5)); }}
-    sideMin {{ type symmetryPlane; faces ((0 1 5 4)); }}
-    sideMax {{ type symmetryPlane; faces ((3 7 6 2)); }}
-    top {{ type symmetryPlane; faces ((4 5 6 7)); }}
-    bottom {{ type wall; faces ((0 3 2 1)); }}
+    inlet {{ type {mesh_types["inlet"]}; faces ((0 4 7 3)); }}
+    outlet {{ type {mesh_types["outlet"]}; faces ((1 2 6 5)); }}
+    sideMin {{ type {mesh_types["sideMin"]}; faces ((0 1 5 4)); }}
+    sideMax {{ type {mesh_types["sideMax"]}; faces ((3 7 6 2)); }}
+    top {{ type {mesh_types["top"]}; faces ((4 5 6 7)); }}
+    bottom {{ type {mesh_types["bottom"]}; faces ((0 3 2 1)); }}
 );
 
 mergePatchPairs ();
 """
+
+
+def _mesh_patch_type(kind: str) -> str:
+    if kind == "symmetry":
+        return "symmetryPlane"
+    if kind in {"stationary_wall", "moving_wall"}:
+        return "wall"
+    if kind in {"far_field", "freestream", "pressure_outlet"}:
+        return "patch"
+    raise ValueError(f"Unsupported Stage V boundary kind: {kind!r}")
 
 
 def _surface_feature_extract_dict(copied: list[dict[str, str]]) -> str:
@@ -686,40 +878,88 @@ RAS
 
 def _field_u(config: ProjectConfig) -> str:
     velocity = config.operating_point.velocity_mps
+    boundary_contract = _boundary_contract(config)
+    vector = (velocity, 0.0, 0.0)
+    entries: list[str] = []
+    for patch in _STAGE_V_PATCHES:
+        kind = boundary_contract[patch]
+        if kind == "freestream":
+            spec = f"type fixedValue; value uniform ({velocity:g} 0 0);"
+        elif kind == "far_field":
+            spec = (
+                "type freestreamVelocity; "
+                f"freestreamValue uniform ({velocity:g} 0 0); "
+                f"value uniform ({velocity:g} 0 0);"
+            )
+        elif kind == "pressure_outlet":
+            spec = "type zeroGradient;"
+        elif kind == "symmetry":
+            spec = "type symmetryPlane;"
+        elif kind == "stationary_wall":
+            spec = "type noSlip;"
+        elif kind == "moving_wall":
+            wall_velocity = _moving_wall_velocity(config, patch)
+            spec = (
+                "type movingWallVelocity; "
+                f"value uniform ({wall_velocity[0]:g} {wall_velocity[1]:g} {wall_velocity[2]:g});"
+            )
+        else:
+            raise ValueError(f"Unsupported Stage V boundary kind: {kind!r}")
+        entries.append(f"    {patch} {{ {spec} }}")
     return _foam_header("volVectorField", "U", "0") + f"""
 dimensions      [0 1 -1 0 0 0 0];
-internalField   uniform ({velocity:g} 0 0);
+internalField   uniform ({vector[0]:g} {vector[1]:g} {vector[2]:g});
 boundaryField
 {{
-    inlet {{ type fixedValue; value uniform ({velocity:g} 0 0); }}
-    outlet {{ type zeroGradient; }}
-    sideMin {{ type symmetryPlane; }}
-    sideMax {{ type symmetryPlane; }}
-    top {{ type symmetryPlane; }}
-    bottom {{ type noSlip; }}
+{chr(10).join(entries)}
     ".*" {{ type noSlip; }}
 }}
 """
 
 
-def _scalar_field(name: str, value: str) -> str:
+def _scalar_field(
+    name: str,
+    value: str,
+    boundary_contract: Mapping[str, str] | None = None,
+) -> str:
     dimensions = _scalar_dimensions(name)
-    inlet = "zeroGradient" if name == "p" else f"fixedValue; value uniform {value}"
-    outlet = f"fixedValue; value uniform {value}" if name == "p" else "zeroGradient"
-    wall_type = _wall_scalar_boundary_type(name)
-    wall_value = f"; value uniform {value}" if wall_type != "zeroGradient" else ""
+    contract = dict(_STAGE_V_DEFAULT_BOUNDARIES if boundary_contract is None else boundary_contract)
+    if name == "p":
+        wildcard = "type zeroGradient;"
+    else:
+        wildcard_type = _wall_scalar_boundary_type(name)
+        wildcard_value = f" value uniform {value};" if wildcard_type != "zeroGradient" else ""
+        wildcard = f"type {wildcard_type};{wildcard_value}"
+    entries: list[str] = []
+    for patch in _STAGE_V_PATCHES:
+        kind = contract[patch]
+        if name == "p":
+            if kind == "far_field":
+                spec = "type freestreamPressure; freestreamValue uniform 0; U U;"
+            elif kind == "pressure_outlet":
+                spec = "type fixedValue; value uniform 0;"
+            elif kind == "symmetry":
+                spec = "type symmetryPlane;"
+            else:
+                spec = "type zeroGradient;"
+        elif kind in {"freestream", "far_field"}:
+            spec = f"type fixedValue; value uniform {value};"
+        elif kind == "pressure_outlet":
+            spec = "type zeroGradient;"
+        elif kind == "symmetry":
+            spec = "type symmetryPlane;"
+        else:
+            wall_type = _wall_scalar_boundary_type(name)
+            wall_value = f" value uniform {value};" if wall_type != "zeroGradient" else ""
+            spec = f"type {wall_type};{wall_value}"
+        entries.append(f"    {patch} {{ {spec} }}")
     return _foam_header("volScalarField", name, "0") + f"""
 dimensions      {dimensions};
 internalField   uniform {value};
 boundaryField
 {{
-    inlet {{ type {inlet}; }}
-    outlet {{ type {outlet}; }}
-    sideMin {{ type symmetryPlane; }}
-    sideMax {{ type symmetryPlane; }}
-    top {{ type symmetryPlane; }}
-    bottom {{ type {wall_type}{wall_value}; }}
-    ".*" {{ type {wall_type}{wall_value}; }}
+{chr(10).join(entries)}
+    ".*" {{ {wildcard} }}
 }}
 """
 
