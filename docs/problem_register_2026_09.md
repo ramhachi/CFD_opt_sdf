@@ -122,7 +122,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P9 | Stage Sが範囲ゼロ成分を除去しない | 低 | 未修正 |
 | P10 | Stage Sの形状更新（level-set/HJ）が存在しない | 設計上 | 未実装 |
 | P11 | Brinkman浸透層が格子で解像されていない | — | **P2の症状として閉じた**（測定済） |
-| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。v16 v2 physical-profile run は mesh/solver/force/mass gates を通過したが、外周 pressure-disturbance gate が No-Go のため target-profile reference は未資格（2026-09-26） |
+| P12 | Stage V参照が未資格（mesh失敗・solver未収束） | 最重大 | **P15の960-cell候補V0–V3は解消**。v16 moving-ground/freestream profile は physical-profile と同一-profile 2-domain convergence を通過したが、値はこの candidate/profile に限る（absolute/grid-independent reference ではない、2026-09-26） |
 | P13 | 最適化ループの随伴・primal実行契約 | 最重大 | **bounded pathでは解消（2026-09-22, PQ0.1/PQ0.2）**。accepted primal再利用、parent adjoint fail-closed、trial primal-only、real bracket/rollback/resumeを実測。勾配精度そのものはP6としてopen |
 | P14 | 射影がPythonとOpenFOAMで二重にかかる | 高 | **解消**（注入場との差 1.9e-09） |
 | P15 | 最適形状が2セル厚で格子が表現しきれない | 最重大 | **当初因果は反証**。V3でもdownforce grid gateは未達 |
@@ -131,7 +131,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P18 | WP6-2のminimum-width適用範囲と不確かさ登録が証拠内容と一致しない | 最重大 | **固定形状diagnosticとしてclosed（2026-09-21）**。候補別bandで8-shape downforceはV1/V2 pass、25組・反転0。17-shape poolは両応答`unresolved`。optimizer-generated shape、絶対値、grid-independent claimは範囲外 |
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
-| P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **open（2026-09-26）**。v2 の moving-ground/freestream V1 run は residualControl、force stationarity、mass conservation、壁面 zero-normal-flux、clearance、mesh を通過したが、登録済み outer pressure-disturbance `max |p|/U∞² <= 0.05` に対し inlet `0.29055`、top `0.05192` で fail。閾値は変更せず、同じ profile/physics のまま domain を拡大する |
+| P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **registered profile は解消（2026-09-26）**。元 V1 box と第1拡大は outer pressure gate のみ No-Go だったが、同じ moving-ground/freestream profile の v2 domain と downstream-expanded domain が全 physical-profile gate を通過し、2-domain convergence も `|Δdownforce|=0.0008034 <= 0.005`、relative-Cd `0.0008242 <= 0.02`。この candidate/profile の reduced-laminar qualification に限り、absolute/grid-independent/high-Re reference は未成立 |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -140,7 +140,7 @@ P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）�
 修正済み: 力の単位・参照量の不一致、Stage Vがv2 specから駆動できない問題、
 勾配の符号規約の曖昧さ、勾配と宣言応答の非束縛。
 
-## P21 — v16 physical profile の外周 disturbance（最重大・open 2026-09-26）
+## P21 — v16 physical profile の外周 disturbance（初回 No-Go、2026-09-26 に登録 profile で解消）
 
 ### 登録した判定
 
@@ -186,7 +186,7 @@ Docker image ID と v2 profile/candidate/spec の hash を固定した。登録�
 physical-profile No-Go** である。旧 stationary-ground result との比較、absolute/grid-independent
 downforce、Stage S FD、shape update、optimization campaign はこの結果から支持されない。
 
-### 次の扱い
+### 次の扱い（初回 No-Go 時点）
 
 P21 を閉じるため、閾値や profile の実装を後付けで変更せず、同じ candidate、Re、laminar model、
 moving-ground/freestream semantics、force normalization、physical-profile hash を保ったまま、
@@ -196,6 +196,37 @@ domain convergence（downforce absolute `0.005`、Cd relative `0.02`）を計画
 FD、PQ5、形状更新は引き続き停止する。
 
 ---
+
+### P21 closure for the registered v16 profile (2026-09-26)
+
+The first inlet-only correction preserved the immutable pressure threshold but
+still measured inlet pressure `0.077604551`; that outcome remains a diagnostic
+No-Go.  The next same-profile domain
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json)
+passed every physical-profile gate with `42,619` cells, mean `Cd=1.1693991`,
+mean downforce `0.7565515`, normalized mass imbalance `1.91e-8`, inlet
+pressure maximum `0.020346387`, and top pressure maximum `0.026347419`.
+
+A second qualified domain changed only the downstream bound from `2.5 m` to
+`3.5 m`.  Its outcome is
+[`evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json)
+(`43,204` cells, mean `Cd=1.1703630`, mean downforce `0.7573549`).  The pair
+result
+[`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json)
+is `pass`: absolute downforce change is `0.0008034` against the pre-registered
+`0.005` bound and relative Cd change is `0.0008242` against `0.02`.  Both
+cases share candidate SHA
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11` and
+physical-profile SHA
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+P21 is closed for this registered reduced-laminar v16 candidate/profile.  The
+result does not establish an absolute or grid-independent downforce reference,
+and the allowed concave-cell marker in raw `checkMesh` output remains visible.
+The next issue slice is to freeze the qualified Stage V profile and register
+the K=16 reduced-basis centered-FD preflight.  Shape updates, PQ5 ranking, and
+production optimization remain blocked until that downstream qualification is
+complete.
 
 ## P18 — WP6-2 evidence-applicability gap（固定形状diagnosticとして解消）
 

@@ -1463,3 +1463,49 @@ optimization, PQ5 ranking, and shape updates remain blocked until the
 physical-profile gate passes; only then may at least two same-profile domains
 be compared using the registered `0.005` downforce and `0.02` relative-Cd
 bounds.
+
+## 2026-09-26 physical-profile qualification and same-profile convergence
+
+The numeric physical-profile gates were registered before computation in
+[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json).
+The original V1 box returned a No-Go only for the outer pressure-disturbance
+gate: inlet `0.29055416` and top `0.051920264` in `U_inf^2`, against the
+immutable `0.05` limit.  Solver convergence, force stationarity, mass
+conservation, moving-ground/candidate flux, clearance, upstream velocity, and
+mesh qualification all passed.  This result is diagnostic evidence and was
+not compared with the old stationary-ground case.
+
+The first same-profile expansion changed only the inlet bound from `-1.5 m` to
+`-2.5 m`.  Its controlled outcome
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v1_2026_09.json)
+still failed only the inlet pressure gate (`0.077604551`), so it cannot count
+as a qualified domain.  The next case kept the same physical profile and
+passed the outer gate: its outcome is
+[`evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json),
+SHA-256 `8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66`.
+It measured inlet pressure maximum `0.020346387`, top maximum `0.026347419`,
+`42,619` cells, mean `Cd=1.1693991`, and mean downforce `0.7565515`.
+
+The same-profile convergence contract then changed only the downstream bound
+from `2.5 m` to `3.5 m`.  The child outcome
+[`evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_v1_2026_09.json)
+passed all physical-profile gates with `43,204` cells, mean `Cd=1.1703630`,
+and mean downforce `0.7573549`.  The immutable pair evaluation
+[`evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json),
+SHA-256 `13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf`,
+passes with `|delta downforce|=0.0008034 <= 0.005` and
+`|delta Cd|/|Cd_parent|=0.0008242 <= 0.02`.  Both cases share candidate SHA
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11` and
+physical-profile SHA
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`.
+
+This closes the registered reduced-laminar physical-profile and two-domain
+convergence gates for this v16 candidate.  It does not establish an absolute,
+grid-independent, high-Reynolds-number, or full-vehicle downforce reference;
+the raw `checkMesh` concave-cell marker remains visible under the allowed
+qualification profile.  The next authorized slice is to freeze this profile
+as the Stage V reference, register the K=16 reduced-basis centered-FD
+preflight, and run only its prescribed epsilon and holdout gates.  Keep
+`shape_update_allowed=false` until the complete S4 holdout and every geometry,
+mesh, solver, and clearance gate pass.  PQ5 ranking and production
+optimization remain downstream of that qualification.

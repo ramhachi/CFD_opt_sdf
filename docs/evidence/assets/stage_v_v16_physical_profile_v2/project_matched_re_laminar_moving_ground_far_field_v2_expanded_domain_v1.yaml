@@ -1,0 +1,116 @@
+schema_version: 2
+problem_id: stage_sv_v2_expanded_domain_v1
+units:
+  length: m
+  time: s
+  mass: kg
+coordinate_frame:
+  id: global_frame
+  origin_m:
+  - 0.0
+  - 0.0
+  - 0.0
+  basis:
+    x:
+    - 1.0
+    - 0.0
+    - 0.0
+    y:
+    - 0.0
+    - 1.0
+    - 0.0
+    z:
+    - 0.0
+    - 0.0
+    - 1.0
+grid:
+  kind: uniform_cartesian
+  voxel_size_m: 0.05
+  padding_m: 0.0
+  domain_bounds_m:
+    lower:
+    - -1.5
+    - -1.2
+    - -0.9
+    upper:
+    - 2.5
+    - 1.2
+    - 0.9
+reference_values:
+  area_m2: 0.64
+  length_m: 0.8
+  moment_center_m:
+  - 0.25
+  - 0.0
+  - 0.0
+geometry_regions:
+- id: design_domain
+  role: design_domain
+  file: geometry/design_domain.stl
+flow_cases:
+- id: matched_re_laminar
+  freestream_velocity_mps:
+  - 1.0
+  - 0.0
+  - 0.0
+  fluid:
+    model: incompressible_newtonian
+    density_kg_m3: 1.0
+    dynamic_viscosity_pa_s: 0.01
+  turbulence:
+    model: laminar
+  boundary_conditions:
+    inlet: far_field
+    outlet: far_field
+    sideMin: far_field
+    sideMax: far_field
+    top: far_field
+    bottom: moving_wall
+  motion_profiles:
+    moving_ground:
+      kind: translation
+      boundary_ids:
+      - bottom
+      velocity_mps:
+      - 1.0
+      - 0.0
+      - 0.0
+responses:
+- id: drag
+  kind: force
+  flow_case_id: matched_re_laminar
+  direction:
+  - 1.0
+  - 0.0
+  - 0.0
+- id: downforce
+  kind: force
+  flow_case_id: matched_re_laminar
+  direction:
+  - 0.0
+  - 0.0
+  - -1.0
+objectives:
+- id: minimize_drag
+  sense: minimize
+  terms:
+  - coefficient: 1.0
+    flow_case_id: matched_re_laminar
+    response_id: drag
+constraints: []
+topology_policy:
+  root_groups: []
+  solid_connectivity:
+    mode: disabled
+    required_root_group_ids: []
+    max_components: null
+    evaluate_eroded: false
+  void_connectivity:
+    mode: disabled
+    required_root_group_ids: []
+    max_components: null
+    evaluate_eroded: false
+  minimum_solid_width_m: null
+  minimum_void_width_m: null
+  minimum_gap_m: null
+  erosion_radius_m: null

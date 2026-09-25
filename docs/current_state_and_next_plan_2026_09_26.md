@@ -1,65 +1,74 @@
 # 現在地と次の計画 — 2026-09-26
 
-対象ブランチは `feat/p0-openfoam-closed-loop`。この文書の主張は、同じ
-commit で保存した immutable manifest と controlled-run outcome に限定する。
-ロードマップの正本は [`phase_plan.md`](phase_plan.md)、問題台帳の正本は
+対象ブランチは `feat/p0-openfoam-closed-loop`。ここでの主張は、immutable
+manifest と controlled-run outcome に保存した実測値に限定する。ロードマップの
+正本は [`phase_plan.md`](phase_plan.md)、問題台帳の正本は
 [`problem_register_2026_09.md`](problem_register_2026_09.md) である。
 
-## 今回終わったこと
+## 完了したこと
 
-v2 physical profile を solver 起動前に数値 qualification するため、次を実装した。
+v2 moving-ground/freestream physical profile の qualification を実装し、solver
+起動前に次を固定閾値で測るようにした。
 
-- 最終時刻の OpenFOAM `phi`、`U`、`p` boundary field を読み、全 boundary face の mass imbalance、
-  moving-ground/candidate normal flux、upstream velocity、outer backflow、outer pressure disturbance を
-  固定閾値で評価する fail-closed module。
-- 既存 `stage_v_qualification_v1` の checkMesh、residualControl、force-stationarity 条件を再利用し、
-  final initial residual の閾値も明示した。
-- v2 candidate/spec/profile hash、Docker image ID、clearance profile、全 gate の式と閾値を
-  immutable manifest に登録する script。
-- 登録 manifest を検証してから case を materialize し、OpenFOAM を1本だけ実行し、結果を outcome
-  artifact に保存する runner。
+- 最終時刻の OpenFOAM `phi`、`U`、`p` boundary field から、全 boundary face の
+  normalized mass imbalance、ground/candidate normal flux、upstream velocity、outer
+  backflow、outer kinematic-pressure disturbance を fail-closed に評価する。
+- 既存 `stage_v_qualification_v1` の checkMesh、residualControl、force-stationarity
+  条件を再利用し、final initial residual の閾値も登録する。
+- candidate/spec/profile hash、Docker image ID、clearance profile、gate の式と閾値を
+  immutable manifest に固定する。
+- manifest を検証してから case を materialize し、OpenFOAM を登録数だけ実行し、raw
+  qualification と境界計測を outcome に保存する。
+- physical profile が pass した後、同じ profile/candidate で domain bounds だけを変えた
+  二点を比較する immutable convergence result を追加した。
 
-登録 manifest は
-[`evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_manifest_v1_2026_09.json)
-（SHA-256 `c556b75f9b37ec674b6c8b04f12e8df43e0025857e03a72f98c7cb918c41353f`）、
-実行結果は
-[`evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json)
-（SHA-256 `de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002`）である。
+## 実測された経路
 
-## 実測結果
+最初の V1 box は、solver、mesh、force stationarity、mass、moving ground、candidate
+flux、clearance、upstream velocity、backflow を通過した。しかし outer pressure gate
+だけが fail し、inlet `0.29055416 U_inf^2`、top `0.051920264 U_inf^2` だった。これは
+solver failure ではなく、候補の影響が外周に残った physical-profile No-Go である。
 
-Docker image `opencfd/openfoam-default:2512` の image ID は
-`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`。
-元の V1 box、v16 candidate SHA `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`、
-physical-profile SHA `a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca` を使った。
+同じ profile と candidate のまま inlet を `-1.5 m` から `-2.5 m` へ移した最初の拡大も、
+inlet pressure `0.077604551 U_inf^2` で fail した。閾値は緩めず、この outcome は診断証拠として
+保持している。
 
-| gate | 実測 | 判定 |
-| --- | --- | --- |
-| mesh | 39,848 cells、concave fraction `0.06126`（上限 `0.08`） | pass（raw `checkMesh` の allowed failed line は保持） |
-| solver | residualControl、546 iterations、`p=5.19e-6`、`Ux=5.36e-7`、`Uy=9.86e-7`、`Uz=8.92e-7` | pass |
-| force stationarity | `Cd=1.440331`、downforce `0.886829`、drift/std は profile 内 | pass |
-| mass | normalized imbalance `4.84e-9` | pass |
-| moving ground/candidate | ground velocity error `0`、両 wall max normal flux `0` | pass |
-| upstream velocity | inlet face mean `(1,0,0)`、relative L2 `0` | pass |
-| outer backflow | side `0.03559/0.03568`、top `0.00832`、outlet `0` | pass |
-| outer pressure | inlet max `0.29055 U_inf^2`、top max `0.05192 U_inf^2`、上限 `0.05` | **fail** |
+次の拡大 domain は全 physical-profile gate を pass した。結果は
+[`stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json`](evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json)
+（SHA-256 `8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66`）である。
+`42,619` cells、mean `Cd=1.1693991`、mean downforce `0.7565515`、normalized mass
+imbalance `1.91e-8`、inlet pressure maximum `0.020346387`、top pressure maximum
+`0.026347419` を測った。raw `checkMesh` の allowed concave-cell marker は記録に残している。
 
-したがって現在地は **solver は動くが v2 physical profile は未資格** である。外周圧力の失敗は
-solver の未収束や mass leak ではなく、元の V1 box では candidate の影響が outer boundary から
-十分に離れていないことを示す。旧 stationary-ground run と比較して downforce を判断していない。
+その case から downstream bound だけを `2.5 m` から `3.5 m` へ広げた二つ目の qualified
+domain は、`43,204` cells、mean `Cd=1.1703630`、mean downforce `0.7573549` だった。
+pair result
+[`stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json`](evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json)
+（SHA-256 `13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf`）は、登録済みの
+`|Δdownforce| <= 0.005` と `|ΔCd|/|Cd_parent| <= 0.02` をともに pass した。実測値は
+`|Δdownforce|=0.0008034`、relative-Cd `0.0008242` である。両 domain は candidate SHA
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`、physical-profile SHA
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca` を共有する。
+
+## 現在の判定
+
+この v16 candidate に対する reduced-laminar moving-ground/freestream profile の
+physical-profile gate と二-domain convergence gate は pass した。これで、外周場が近すぎる
+問題は登録した profile の範囲で解消した。一方、これは absolute、grid-independent、high-Re
+FSAE、または full-vehicle downforce の資格ではない。旧 stationary-ground の値との比較も
+参照資格には使っていない。
 
 ## 次の計画
 
-1. 今回の manifest と outcome を immutable evidence として commit/push し、閾値を後から変更しない。
-2. 同じ candidate、Re、laminar model、moving-ground/freestream BC、force normalization、physical-profile
-   hash を保持し、domain bounds だけを upstream/top/side 方向へ拡大した新しい contract を登録する。
-3. 新 contract でも solver 前に hash、clearance、BC、mesh/solver/force、mass、wall flux、upstream、outer
-   backflow/pressure の全 gate を固定し、controlled run を必要最小限に限定する。
-4. physical-profile gate が pass してから、同じ profile/physics を持つ二つ以上の domain で
-   `|Δdownforce| <= 0.005`、`|ΔCd|/|Cd| <= 0.02` を比較する。これは domain convergence の判定であり、
-   旧 stationary-ground case との比較ではない。
-5. その後に初めて Stage S の reduced-basis FD を再評価する。Stage S、shape update、PQ5、production
-   optimization は、physical profile と domain convergence が閉じるまで開始しない。
+1. 今回の profile と二-domain convergence result を Stage V の候補 reference profile として
+   freeze し、hash と適用範囲を記録する。
+2. 既存 S0/S1 の K=16 reduced-basis centered-FD 経路を、この profile、candidate、domain
+   bounds、force normalization に再登録する。まず solver-free construction、epsilon、mesh、
+   clearance、lineage の preflight を通す。
+3. 登録した FD run で primal/perturbation の gate と S4 holdout（random mode 方向と projected
+   gradient 方向）を確認する。`reduced_basis_fd_qualified` はその全 pass まで `pending` のままにする。
+4. S4 holdout と geometry/mesh/solver/clearance が全て pass した後にだけ、shape update を一歩
+   登録する。PQ5 の三格子検証と production optimizer はさらに下流である。
 
-今回の No-Go は、moving-ground/freestream architecture 全体の否定ではない。solver、mass、壁面条件、
-force stationarity が実測で通ったため、残る課題は外周の物理的な距離とその同一 profile 下の収束である。
+したがって、今は「最適化 campaign を開始してよい」段階ではなく、「物理 profile と domain
+convergence を閉じ、次の K=16 FD qualification を登録できる」段階である。
