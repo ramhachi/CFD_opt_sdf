@@ -1,0 +1,46 @@
+{
+  "claims_not_supported": [
+    "no grid-independent downforce reference",
+    "no Stage S shape update authorization"
+  ],
+  "claims_supported": [
+    "one V2 domain continuation was compared with the qualified +0.8 m treatment"
+  ],
+  "decision": "domain remains moving beyond the registered bound; register the next domain continuation and keep S2 blocked",
+  "delta_from_previous": {
+    "downforce": -0.04048062814784947,
+    "downforce_beyond_bound": true,
+    "drag_beyond_bound": true,
+    "relative_Cd_change": -0.12145795507600993
+  },
+  "kind": "stage_v_domain_continuation",
+  "previous_extension": {
+    "Cd": 1.1671678778333332,
+    "case_dir": "work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2",
+    "cells": 214900,
+    "downforce": 0.21465010518333333,
+    "iterations": 962,
+    "name": "far_field_domain_extension_0p8",
+    "qualification_path": "work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2/stage_v_qualification.json",
+    "qualification_sha256": "8067279adeba162f8b50ba0272dcc1c41084a55a53693b29f25f21534a62c10d",
+    "qualified": true
+  },
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_domain_continuation_run_manifest_2026_09.json",
+    "sha256": "48e4c03757a90401e3557b6bc65b454ee5b70ddeec3f34e161e377c2257770dd"
+  },
+  "schema_version": 1,
+  "summary": {
+    "adjacent_transition_within_bound": false,
+    "qualified": true,
+    "v3_runs": 0
+  },
+  "treatment": {
+    "Cd": 1.0254060541612904,
+    "cells": 279993,
+    "downforce": 0.17416947703548386,
+    "iterations": 1240,
+    "qualified": true,
+    "reasons": []
+  }
+}

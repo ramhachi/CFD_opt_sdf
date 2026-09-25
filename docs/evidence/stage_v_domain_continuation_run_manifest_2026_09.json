@@ -1,0 +1,107 @@
+{
+  "base_spec": {
+    "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+    "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+  },
+  "baseline_fixed_domain": {
+    "Cd": 1.6800880803804348,
+    "case_dir": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2",
+    "cells": 187942,
+    "downforce": 0.5092669766413043,
+    "iterations": 737,
+    "qualification_path": "work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/stage_v_qualification.json",
+    "qualification_sha256": "7d8753ec7eec92b33753fab4ccac7907a9ea0377db87853417f0daa9f8a5af8c",
+    "qualified": true
+  },
+  "budget": {
+    "max_new_runs": 1,
+    "v3_runs": 0
+  },
+  "candidate": {
+    "case_id": "opt_q100_b0_step0_try0_block",
+    "stl": {
+      "path": "work/filtered_ramp/wmin_0.2/export/opt_q100_b0_step0_try0_block/iso_surface.stl",
+      "sha256": "613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e"
+    }
+  },
+  "claims_not_supported": [
+    "no grid-independent downforce reference",
+    "no full-vehicle or high-Re qualification",
+    "no Stage S shape update authorization"
+  ],
+  "kind": "stage_v_domain_continuation_run_manifest",
+  "metric": {
+    "comparison": "adjacent extension 0.8 m -> 1.6 m",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02
+  },
+  "parent_manifest": {
+    "path": "docs/evidence/stage_v_domain_continuation_manifest_2026_09.json",
+    "sha256": "34237346131adf63e888310822469eb82fa90498e778c6c661636fed1409eb0d"
+  },
+  "parent_pq2_evidence": {
+    "path": "docs/evidence/stage_v_domain_boundary_factor_2026_09.json",
+    "sha256": "946d9d90e2f1a852fb3f3f95cc37c6966c887821c28880f0b12fe93269f53e99"
+  },
+  "parent_run_manifest": {
+    "path": "docs/evidence/stage_v_domain_boundary_factor_run_manifest_2026_09.json",
+    "sha256": "c492c2016014fb3b360ddd4b0ebd7db4f140d0226ca229e9c73fe11c4f6a957b"
+  },
+  "previous_extension": {
+    "Cd": 1.1671678778333332,
+    "case_dir": "work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2",
+    "cells": 214900,
+    "downforce": 0.21465010518333333,
+    "iterations": 962,
+    "name": "far_field_domain_extension_0p8",
+    "qualification_path": "work/stage_v_domain_boundary_factor_2026_09/far_field_domain_extension/V2/stage_v_qualification.json",
+    "qualification_sha256": "8067279adeba162f8b50ba0272dcc1c41084a55a53693b29f25f21534a62c10d",
+    "qualified": true
+  },
+  "question": "Does a second far-field extension with the same V2 mesh and symmetry boundaries make the adjacent downforce transition smaller than the registered candidate-specific bound?",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "stop_conditions": [
+    "reject if the treatment is not qualified",
+    "if either adjacent metric exceeds its registered bound, do not start S2",
+    "a passing adjacent transition is not a grid-independent claim"
+  ],
+  "treatment": {
+    "boundary_contract": {
+      "bottom": "wall",
+      "inlet": "freestream",
+      "outlet": "pressure_outlet",
+      "sideMax": "symmetryPlane",
+      "sideMin": "symmetryPlane",
+      "top": "symmetryPlane"
+    },
+    "case_dir": "work/stage_v_domain_continuation_2026_09/far_field_domain_extension_1p6/V2",
+    "domain_change": "extend inlet, outlet, sideMin, sideMax, and top by 1.6 m from the original fixed-domain box; bottom remains z=-0.6 m",
+    "extended_spec": {
+      "extension_m": 1.6,
+      "lower_m": [
+        -2.6,
+        -2.4000000000000004,
+        -0.6
+      ],
+      "path": "work/stage_v_domain_continuation_2026_09/specs/project_matched_re_laminar_domain_extended_1p6_v1.yaml",
+      "sha256": "29c2a36cb7e7be43acf7ef38054dcde3538eff02420166a5f585aac2de324aee",
+      "upper_m": [
+        3.6,
+        2.4000000000000004,
+        2.2
+      ]
+    },
+    "factor": "far-field domain size",
+    "far_field_faces": [
+      "inlet",
+      "outlet",
+      "sideMin",
+      "sideMax",
+      "top"
+    ],
+    "ground_face": "bottom",
+    "name": "far_field_domain_extension_1p6",
+    "voxel_size_m": 0.025
+  }
+}
