@@ -124,3 +124,153 @@ v16の Stage S baseline は candidate lineage と Work F case の契約監査を
 `grid-independent downforce reference=unestablished` は維持する。次に実行してよいのは、
 この計画に従う v16-specific contract の登録・監査と、その後に承認された最小の検証 family
 だけである。長時間の full optimization campaign はまだ開始しない。
+
+## 2026-09-25: v16 factor screen and same-candidate continuation update
+
+The v16-specific factor contract was registered before computation in
+`evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json`
+(SHA-256 `b8eccba3c0bc26fcc5eb392e52287a8e92a44e9b0541e8f589383fe307c54b8a`).
+It binds the Stage S v16 STL
+(`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`) to the
+same Work F V1 baseline and tests exactly two one-factor treatments:
+`+0.8 m` far-field domain extension and top `symmetryPlane` to pressure-outlet
+replacement. Both treatments completed the registered V1 qualification
+profile, while the raw `checkMesh.mesh_ok=false` state remains recorded as an
+allowed concave-cell profile result rather than a clean mesh pass.
+
+The corrected factor evidence is
+`evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json` (SHA-256
+`e87558be5ee8efb24723603ff4c1bc9ace8a84efeaaec658e34a09db7e0f2ae8`):
+
+| case | cells | Cd | downforce coefficient | delta from Work F V1 |
+| --- | ---: | ---: | ---: | ---: |
+| Work F V1 baseline | 39,848 | 2.5234447 | 1.6908433 | — |
+| domain extension `+0.8 m` | 45,227 | 1.5083067 | 0.6498149 | `-1.0410284` |
+| top pressure outlet | 39,848 | 1.5756433 | 0.4379601 | `-1.2528832` |
+
+Both downforce changes exceed the registered absolute bound `0.005`, and both
+relative Cd changes exceed `0.02`. The top treatment is not the earlier
+preliminary zero-delta result: the copied `postProcessing` directory was
+removed before the rerun, the treatment produced a fresh canonical
+`coefficient.dat`, and the read source/hash lineage is independently recorded
+in `evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json` (SHA-256
+`c10d19bff2b47e4e7fd8864af969a1c98f378f1f816d5e09766aa99f3fb76071`). The
+preliminary reused-history manifest/evidence are preserved under the
+`*_preliminary_reused_postprocessing_2026_09.json` names and are diagnostic
+only.
+
+The result is a candidate-specific Stage V factor No-Go. It does not qualify
+the Work F V1 value as an absolute or grid-independent reference, and it does
+not authorize S2 or a shape update. A same-candidate continuation contract was
+therefore registered before the next solver run:
+
+- run manifest: `evidence/stage_v_v16_domain_continuation_run_manifest_2026_09.json`
+  (SHA-256 `8d28c55e0d2ab6d1ec3c09af4041e4ee035dfdeccafb736a19a621beb1c1337c`);
+- immutable parent manifest: `evidence/stage_v_v16_domain_continuation_manifest_2026_09.json`
+  (SHA-256 `663ca988c0580d543df8e16a84731a9c4c50f692ff606bef6a77a58b84baaf16`);
+- treatment: original v16 V1 domain extended by `+1.6 m`, with the same
+  symmetry/freestream/wall boundary semantics and the same v16 STL.
+
+The `+1.6 m` case also qualified its registered solver profile (48,564 cells,
+`Cd=1.2749976`, downforce `0.5052721`). Its adjacent transition from the
+corrected `+0.8 m` case is `-0.1445428` downforce and `-0.1546828` relative Cd,
+both outside the registered bounds. Immutable evidence is
+`evidence/stage_v_v16_domain_continuation_2026_09.json` (SHA-256
+`e5f02f9091faeab0809dbe80a2e68ed572c2456362ae682fc0ef316e4acf2cb0`).
+
+The revised execution order is now:
+
+1. Keep `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`,
+   and the Stage S absolute reference unestablished. Do not start S2, S4,
+   PQ5 ranking, or a production optimization campaign.
+2. Register one more same-candidate far-field continuation at `+3.2 m` from
+   the original box, retaining the already registered boundary semantics and
+   V1 cell scale. Run it only after the immutable contract and staging audit
+   pass. This is the last planned domain-only diagnostic in this ladder; it
+   tests whether the observed response is approaching a stable far-field
+   limit rather than adding an optimizer or changing the objective.
+3. If the `+1.6 -> +3.2 m` transition is within the bound, register the settled
+   v16 Stage V reference contract at the larger domain and separately decide
+   whether local S2 centered-FD evidence may proceed. Even then, S2 remains
+   local Work F derivative evidence, not a grid-independent downforce claim.
+4. If the `+3.2 m` transition remains outside the bound, stop extending the
+   box blindly. Register a physically justified far-field formulation and
+   audit the case-construction and pressure/velocity boundary semantics before
+   any further solver run. Do not reinterpret the moving response as an
+   optimizer signal.
+
+This continuation result changes the plan because the same candidate has now
+failed two independent outer-condition checks and one adjacent domain
+continuation. It does not change the reduced-basis objective, epsilon ladder,
+or mode manifest; those remain frozen until an absolute-reference contract is
+resolved.
+
+## 2026-09-25: domain ladder stopped and mixed far-field contract result
+
+The final planned domain-only continuation was registered before computation in
+`evidence/stage_v_v16_domain_continuation_3p2_run_manifest_2026_09.json`
+(SHA-256 `827d93314a8594a9205aa06ad98aa9c50343a6bb361f8e21d2c4d75f36e4aa22`).
+At the same v16 V1 boundary semantics, the `+3.2 m` case qualified at 82,907
+cells with `Cd=1.0260446` and downforce `0.4279677`.  The adjacent transition
+from `+1.6 m` was downforce `-0.0773044` and relative Cd `-0.1952577`, still
+outside the registered bounds.  Immutable evidence is
+`evidence/stage_v_v16_domain_continuation_3p2_2026_09.json` (SHA-256
+`a3c706c4d5c67580ec7f350dbf7f3a7a831a7bdd967caa5bdfb86905ce40bc44`).
+
+This closes the planned domain-only ladder.  A larger box would be a new
+unbounded numerical search without a physical stopping rule.  The next
+contract therefore fixed the `+3.2 m` domain and changed only the five outer
+faces to the OpenFOAM mixed free-stream formulation: mesh `patch`, `U`
+`freestreamVelocity` with `(1,0,0)`, and `p` `freestreamPressure` with
+free-stream pressure zero and `U U`; the ground and design candidate walls
+were unchanged.  The contract and run manifest were registered before the
+solver, and the first field-rewrite staging failure was preserved as a
+diagnostic without starting OpenFOAM.
+
+The corrected mixed-boundary evidence is
+`evidence/stage_v_v16_far_field_contract_v2_2026_09.json` (SHA-256
+`1d58f8651f23e57a78c1d5bf58db47914025e1db2681bcf41f2f6a4d12962dc6`).  On the
+same 82,907-cell mesh, the mixed case qualified with `Cd=0.9197727` and
+downforce `0.3500024`.  Relative to the `+3.2 m` symmetry/patch baseline, the
+change is downforce `-0.0779653` and relative Cd `-0.1035744`, again outside
+the bounds.  The read-only audit
+`evidence/stage_v_v16_far_field_contract_audit_2026_09.json` (SHA-256
+`2b8991ee6a09912fcafeb69121909e35142eb50a45ccc831e77ca10722de68ec`) confirms
+the candidate, non-boundary mesh files, patch face ranges, fresh canonical
+force histories, solver completion, and the exact registered U/p boundary
+types.  OpenFOAM's documented mixed conditions switch between free-stream and
+zero-gradient behavior according to the boundary flux; they were therefore
+treated as a physically defined diagnostic, not as an arbitrary top pressure
+outlet.
+
+The physical far-field contract is also a No-Go at this domain and operating
+point.  No further OpenFOAM solver run is authorized by this plan until the
+case-construction and boundary audit explains whether the response is caused
+by (a) the chosen mixed-condition implementation, (b) the reduced laminar
+domain/ground arrangement, or (c) an unresolved force-normalization or wake
+interaction issue.  The next work is solver-free: audit boundary-flux and
+force-patch semantics, compare the generated dictionaries with the declared
+ProblemSpec, and write a new contract only if that audit identifies a single
+physically justified correction.  Do not start S2, S4, PQ5 ranking, or shape
+updates during that audit.
+
+## Solver-free case-construction audit result
+
+The read-only audit is
+`evidence/stage_v_v16_case_construction_audit_2026_09.json` (SHA-256
+`9785bfa2e6dd9b8df3b171f765c7543c4f69a4e3e0012d0e55f2bdac3fa3ed27`). It
+checked the generated `boundary`, `U`, `p`, `transportProperties`,
+`turbulenceProperties`, `snappyHexMeshDict`, `controlDict`, force history, and
+latest `phi` boundary values for the +3.2 m symmetry baseline and mixed case.
+The boundary fluxes close to about `-4.44e-8` and `2.38e-7`; force-patch
+semantics, the laminar operating point, and the ground/domain arrangement
+match their registered contracts.
+
+The audit remains **No-Go for new execution** because both case metadata files
+carry the stale `...domain_1p6_v2` identity under a registered `+3.2 m`
+contract. This is a provenance guard failure; it does not turn the prior
+response comparison into a physical qualification. The continuation runner now
+rejects the mismatch before OpenFOAM is launched. The next action is to repair
+the contract identity in a new immutable registration, then reassess whether
+any single physical boundary correction is justified. Do not rerun the solver
+or start S2 during that repair.

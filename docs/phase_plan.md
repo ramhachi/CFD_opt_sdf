@@ -1268,26 +1268,66 @@ Execute in this order:
    corrected (scratch-case reuse plus missing sine frequency factors; rate-gate
    misuse). No flow solver has run: `original_adjoint_derivative_qualified=false`,
    `reduced_basis_fd_qualified=pending` and `shape_update_allowed=false`. The
-   registered PQ2 factor and +1.6 m continuation are both No-Go for S2; the
-   next heavy step is a newly registered domain or far-field boundary contract.
+   registered PQ2 factor and +1.6 m continuation are both No-Go for S2. The
+   same-candidate v16 factor screen and its corrected lineage audit are now
+   also complete; both v16 outer-condition factors move the response beyond
+   the registered band. A v16-specific +1.6 m continuation was registered and
+   executed, and its adjacent transition remains outside the band. The final
+   planned +3.2 m continuation and a same-domain mixed far-field contract also
+   remain outside the band. The next step is solver-free case-construction and
+   boundary audit; no further solver run is authorized until it identifies one
+   physically justified correction.
 6. **Stage S first step (blocked).** Keep the reduced-basis S2 epsilon
-   calibration, all shape updates, and full optimization blocked until the
-   solver-free v16 lineage audit and a v16-specific factor-resolved Stage V
-   domain/boundary contract pass. The audit is registered in
+   calibration, all shape updates, and full optimization blocked. The
+   solver-free v16 lineage audit has passed, but the same-candidate factor
+   screen, domain ladder, and mixed far-field contract are all No-Go against
+   the registered response bounds. The audit is registered in
    [`evidence/stage_s_v16_contract_audit_manifest_2026_09.json`](evidence/stage_s_v16_contract_audit_manifest_2026_09.json)
-   and is contract evidence only. After the applicable contract passes, the
+   and is contract evidence only. The next action is a solver-free
+   case-construction and boundary audit; no new solver campaign is authorized
+   until it identifies one physically justified correction and that correction
+   is registered as a new contract. After an applicable contract passes, the
    local Work F path may qualify drag and downforce by centered FD; it does not
    establish an absolute or grid-independent downforce reference. Only a full
    S4 holdout pass may authorize at most one body-fitted shape step, followed by
    every geometry, mesh, and solver gate.
-7. **PQ2 — candidate-specific Stage V diagnostic (No-Go for transfer).** The
-   registered V2 treatments and the +1.6 m continuation are qualified per
-   treatment but belong to the PQ2 candidate with STL SHA-256
-   `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e`.
-   The Stage S v16 candidate is `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
-   Keep the PQ2 No-Go as diagnostic evidence, do not transfer its response to
-   v16, and register a same-candidate v16 domain/boundary family before any
-   absolute Stage V claim. Do not start S2 in parallel with that contract work.
+7. **PQ2 and v16 outer-condition diagnostics — No-Go for transfer.** The
+   registered V2 treatments and the +1.6 m continuation belong to the PQ2
+   candidate with STL SHA-256
+   `613637cf0fac8bce8a124a479eb3f18417c06995bdbfbe1c99b792fe1db3686e` and
+   remain diagnostic only. The Stage S v16 candidate is
+   `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+   Its factor contract (`evidence/stage_v_v16_domain_boundary_contract_v2_2026_09.json`)
+   was executed against the same Work F V1 baseline: `+0.8 m` domain
+   extension gives downforce `0.6498148547` and top pressure-outlet gives
+   `0.4379600526`, versus baseline `1.6908432549`; both exceed the registered
+   bound, with all treatment-level qualification gates passing. The corrected
+   post-processing lineage is independently audited in
+   `evidence/stage_v_v16_domain_boundary_lineage_audit_2026_09.json`; the
+   earlier reused-history result is diagnostic and is not used.
+   The v16 `+1.6 m` continuation (`evidence/stage_v_v16_domain_continuation_2026_09.json`)
+   gives downforce `0.5052720696` and remains outside the adjacent bound
+   (`delta=-0.1445427850`, relative Cd `-0.1546827787`). Keep
+   `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do
+   not start S2 while the solver-free case-construction and boundary audit is
+   unresolved.
+   The final planned `+3.2 m` continuation is also a No-Go: the adjacent
+   transition from `+1.6 m` is downforce `-0.0773044` and relative Cd
+   `-0.1952577`. A mixed `freestreamVelocity`/`freestreamPressure` contract
+   at the same `+3.2 m` domain was then registered and executed; it changes
+   downforce by `-0.0779653` and relative Cd by `-0.1035744` against the
+   symmetry/patch baseline, also outside the bound. The candidate, non-boundary
+   mesh, patch face ranges, and fresh force-history lineage are audited in
+   `evidence/stage_v_v16_far_field_contract_audit_2026_09.json`. The
+   domain-only ladder is closed. The subsequent solver-free construction audit
+   found that the baseline and mixed case metadata still identify the generated
+   ProblemSpec as `...domain_1p6_v2` even though the registered contract is
+   `+3.2 m`; all other audited boundary, force-patch, operating-point,
+   ground/domain, and final-flux checks pass. This is a provenance blocker,
+   not evidence that the response is physical or transferable. The continuation
+   runner now fails closed on this identity mismatch. No further solver run is
+   authorized until a corrected contract is registered after the audit. Keep S2
+   and all shape updates blocked.
 8. **PQ5 — independent Stage V verification.** Evaluate baseline, Stage T and
    Stage S candidates on at least three qualified grids. Preregister
    baseline-to-T and T-to-S required pairs and candidate-specific uncertainty.

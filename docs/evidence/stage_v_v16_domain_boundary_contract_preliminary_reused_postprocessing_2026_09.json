@@ -1,0 +1,85 @@
+{
+  "baseline": {
+    "Cd": 2.5234447210958906,
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "cells": 39848,
+    "check_mesh_profile_qualified": true,
+    "downforce": 1.690843254931507,
+    "iterations": 292,
+    "qualification_path": "work/stage_s_work_f_v1/baseline/V1/stage_v_qualification.json",
+    "qualification_sha256": "f013f09b54c903b024384c7dcd35ec950e8e9daab3156f5fa53689266a21be47",
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false
+  },
+  "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "claims_supported": [
+    "two same-candidate V1 factor treatments were compared against the registered v16 Work F baseline"
+  ],
+  "decision": "v16 factor response remains outside the registered band; keep S2 blocked and register a revised contract",
+  "kind": "stage_v_v16_domain_boundary_contract",
+  "manifest": {
+    "path": "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_2026_09.json",
+    "sha256": "093326be74354428be6de4c126e4fb15d4e882c6af1ebb21367a7ddb932b4cf3"
+  },
+  "registered_factors_moving_downforce": [
+    "far_field_domain_extension_0p8"
+  ],
+  "rows": {
+    "far_field_domain_extension_0p8": {
+      "baseline": {
+        "Cd": 2.5234447210958906,
+        "cells": 39848,
+        "downforce": 1.690843254931507
+      },
+      "delta_downforce": -1.0410284002463217,
+      "downforce_beyond_bound": true,
+      "drag_beyond_bound": true,
+      "factor": "far-field domain size",
+      "relative_Cd_change": -0.4022826444557411,
+      "stationarity_qualified": true,
+      "treatment": {
+        "Cd": 1.5083067055555557,
+        "cells": 45227,
+        "downforce": 0.6498148546851852,
+        "iterations": 431,
+        "qualified": true,
+        "raw_check_mesh_mesh_ok": false,
+        "reasons": []
+      }
+    },
+    "top_pressure_outlet": {
+      "baseline": {
+        "Cd": 2.5234447210958906,
+        "cells": 39848,
+        "downforce": 1.690843254931507
+      },
+      "delta_downforce": 0.0,
+      "downforce_beyond_bound": false,
+      "drag_beyond_bound": false,
+      "factor": "far-field boundary treatment",
+      "relative_Cd_change": 0.0,
+      "stationarity_qualified": true,
+      "treatment": {
+        "Cd": 2.5234447210958906,
+        "cells": 39848,
+        "downforce": 1.690843254931507,
+        "iterations": 458,
+        "qualified": true,
+        "raw_check_mesh_mesh_ok": false,
+        "reasons": []
+      }
+    }
+  },
+  "schema_version": 1,
+  "summary": {
+    "all_treatments_qualified": true,
+    "any_downforce_moves_beyond_bound": true,
+    "n_treatments": 2,
+    "stage_s_s2_allowed": false
+  }
+}

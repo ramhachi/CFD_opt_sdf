@@ -1,0 +1,225 @@
+{
+  "artifacts": {
+    "docs/evidence/stage_s_baseline_v16_v2_2026_09.json": {
+      "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+      "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+    },
+    "docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json": {
+      "path": "docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json",
+      "sha256": "3783e4c12d9adf230fde4e648380589e94d83e8da1b144e6ee31fcc5c075b165"
+    },
+    "docs/evidence/stage_s_work_f_manifest_2026_09.json": {
+      "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+      "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+    },
+    "docs/evidence/stage_s_work_f_v1_solver_2026_09.json": {
+      "path": "docs/evidence/stage_s_work_f_v1_solver_2026_09.json",
+      "sha256": "3c1e5b437f5a9e425dee8b0e7f0b488365bf5c3ddd971c74fd7aaa2e1657fe4f"
+    },
+    "scripts/run_stage_v16_domain_boundary_contract_2026_09.py": {
+      "path": "scripts/run_stage_v16_domain_boundary_contract_2026_09.py",
+      "sha256": "8cad965dd171378fba22b8d7738bc6445adf976dead1f93a2e96924365e73c44"
+    },
+    "work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl": {
+      "path": "work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "work/stage_s_work_f_v1/baseline/V1/stage_v_qualification.json": {
+      "path": "work/stage_s_work_f_v1/baseline/V1/stage_v_qualification.json",
+      "sha256": "f013f09b54c903b024384c7dcd35ec950e8e9daab3156f5fa53689266a21be47"
+    },
+    "work/stage_sv_laminar/geometry/design_domain.stl": {
+      "path": "work/stage_sv_laminar/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "work/stage_sv_laminar/project_matched_re_laminar.yaml": {
+      "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+      "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+    },
+    "work/stage_v_v16_domain_boundary_2026_09/specs/geometry/design_domain.stl": {
+      "path": "work/stage_v_v16_domain_boundary_2026_09/specs/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "work/stage_v_v16_domain_boundary_2026_09/specs/project_matched_re_laminar_domain_extended_0p8_v1.yaml": {
+      "path": "work/stage_v_v16_domain_boundary_2026_09/specs/project_matched_re_laminar_domain_extended_0p8_v1.yaml",
+      "sha256": "1b63c80eec4c40118b74531f17a6ec0b120634a4c5d75fdd223de5fc99ac9e7e"
+    }
+  },
+  "base_spec": {
+    "canonical_sha256": "25bc379543c96946e7919a7506c312eaf1845781eb7d7bc6a6414072146c80a8",
+    "raw": {
+      "path": "work/stage_sv_laminar/project_matched_re_laminar.yaml",
+      "sha256": "dd704b42021334c4e25261c8a2bbc606c4268a5dcbc4e6df0baf8b48d87b7417"
+    }
+  },
+  "baseline": {
+    "Cd": 2.5234447210958906,
+    "case_dir": "work/stage_s_work_f_v1/baseline/V1",
+    "cells": 39848,
+    "check_mesh_profile_qualified": true,
+    "downforce": 1.690843254931507,
+    "iterations": 292,
+    "qualification_path": "work/stage_s_work_f_v1/baseline/V1/stage_v_qualification.json",
+    "qualification_sha256": "f013f09b54c903b024384c7dcd35ec950e8e9daab3156f5fa53689266a21be47",
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false
+  },
+  "baseline_manifest": {
+    "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+    "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+  },
+  "budget": {
+    "max_new_runs": 2,
+    "mesh_levels": [
+      "V1"
+    ],
+    "v2_runs": 0,
+    "v3_runs": 0
+  },
+  "candidate": {
+    "label": "v16 final accepted checkpoint (checkpoint 87, blocked stop)",
+    "same_candidate_as_stage_s": true,
+    "stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    }
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "reduced-basis FD qualification or shape update",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "common_conditions": {
+    "boundary_contract": {
+      "bottom": "wall / U noSlip / p zeroGradient",
+      "design_candidate": "wall / U noSlip / p zeroGradient",
+      "inlet": "patch / U fixedValue freestream / p zeroGradient",
+      "outlet": "patch / U zeroGradient / p fixedValue",
+      "sideMax": "symmetryPlane",
+      "sideMin": "symmetryPlane",
+      "top": "symmetryPlane"
+    },
+    "flow_case_id": "matched_re_laminar",
+    "force_patch": "design_candidate",
+    "force_reference": {
+      "area_m2": 0.64,
+      "length_m": 0.8,
+      "moment_center_m": [
+        0.25,
+        0.0,
+        0.0
+      ]
+    },
+    "one_factor_at_a_time": true,
+    "openfoam_image": "opencfd/openfoam-default:2512",
+    "openfoam_image_id": "sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319",
+    "operating_point": {
+      "density": 1.0,
+      "turbulence_model": "laminar",
+      "velocity_mps": 1.0,
+      "viscosity": 0.01
+    },
+    "qualification_profile": "stage_v_qualification_v1",
+    "voxel_size_m": 0.05
+  },
+  "evidence_class": "contract",
+  "execution": {
+    "mesh_generation_started": false,
+    "new_run_count": 0,
+    "optimization_campaign_started": false,
+    "solver_started": false
+  },
+  "immutable": true,
+  "kind": "stage_v_v16_domain_boundary_contract_manifest",
+  "metric": {
+    "comparison": "each treatment against the same v16 Work F V1 baseline",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02,
+    "source": "stage_v_qualification_v1 grid convergence bounds"
+  },
+  "parent_contract_audit": {
+    "path": "docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json",
+    "sha256": "3783e4c12d9adf230fde4e648380589e94d83e8da1b144e6ee31fcc5c075b165"
+  },
+  "question": "Does the v16 candidate's Stage V response remain within the registered numerical band under each single domain/boundary factor?",
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "status": "registered_not_run",
+  "stop_conditions": [
+    "any pinned hash mismatch or candidate identity mismatch",
+    "failed stage_v_clearance_v1 or stage_v_qualification_v1 mesh gate",
+    "failed solver convergence or force stationarity",
+    "either factor moves downforce or relative Cd beyond its registered bound; keep S2 blocked",
+    "no new factor or boundary change may be added after a treatment result",
+    "a passing factor screen does not establish grid-independent downforce or authorize S2/shape update"
+  ],
+  "treatments": [
+    {
+      "boundary_contract": {
+        "bottom": "wall / U noSlip / p zeroGradient",
+        "design_candidate": "wall / U noSlip / p zeroGradient",
+        "inlet": "patch / U fixedValue freestream / p zeroGradient",
+        "outlet": "patch / U zeroGradient / p fixedValue",
+        "sideMax": "symmetryPlane",
+        "sideMin": "symmetryPlane",
+        "top": "symmetryPlane"
+      },
+      "case_dir": "work/stage_v_v16_domain_boundary_2026_09/far_field_domain_extension_0p8/V1",
+      "change": "extend inlet, outlet, sideMin, sideMax, and top by 0.8 m; bottom remains at z=-0.6 m",
+      "extended_spec": {
+        "canonical_sha256": "8f9379fd2fad50c9061281fc0bcfe53433ac6b93689ef5c7ea8e29ac6f5b104b",
+        "diff_keys": [
+          "grid",
+          "problem_id"
+        ],
+        "extension_m": 0.8,
+        "file_sha256": "1b63c80eec4c40118b74531f17a6ec0b120634a4c5d75fdd223de5fc99ac9e7e",
+        "lower_m": [
+          -1.8,
+          -1.6,
+          -0.6
+        ],
+        "path": "work/stage_v_v16_domain_boundary_2026_09/specs/project_matched_re_laminar_domain_extended_0p8_v1.yaml",
+        "sha256": "1b63c80eec4c40118b74531f17a6ec0b120634a4c5d75fdd223de5fc99ac9e7e",
+        "staged_design_domain": {
+          "path": "work/stage_v_v16_domain_boundary_2026_09/specs/geometry/design_domain.stl",
+          "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+        },
+        "upper_m": [
+          2.8,
+          1.6,
+          1.4
+        ]
+      },
+      "factor": "far-field domain size",
+      "far_field_faces": [
+        "inlet",
+        "outlet",
+        "sideMin",
+        "sideMax",
+        "top"
+      ],
+      "ground_face": "bottom",
+      "name": "far_field_domain_extension_0p8"
+    },
+    {
+      "boundary_contract": {
+        "bottom": "wall / U noSlip / p zeroGradient",
+        "design_candidate": "wall / U noSlip / p zeroGradient",
+        "inlet": "patch / U fixedValue freestream / p zeroGradient",
+        "outlet": "patch / U zeroGradient / p fixedValue",
+        "sideMax": "symmetryPlane",
+        "sideMin": "symmetryPlane",
+        "top": "patch / U zeroGradient / p fixedValue uniform 0"
+      },
+      "case_dir": "work/stage_v_v16_domain_boundary_2026_09/top_pressure_outlet/V1",
+      "change": "replace only top symmetryPlane by patch with U zeroGradient and p fixedValue uniform 0 on the unchanged V1 domain",
+      "factor": "far-field boundary treatment",
+      "name": "top_pressure_outlet"
+    }
+  ],
+  "work_f_manifest": {
+    "path": "docs/evidence/stage_s_work_f_manifest_2026_09.json",
+    "sha256": "03b109f15e79036fe31a6ec76cd58831f8f834926aee2c0eaf654ea80b47dfdd"
+  }
+}

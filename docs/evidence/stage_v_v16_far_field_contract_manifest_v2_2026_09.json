@@ -1,0 +1,108 @@
+{
+  "baseline": {
+    "Cd": 1.0260445793714286,
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "cells": 82907,
+    "downforce": 0.42796766878857145,
+    "iterations": 700,
+    "qualified": true,
+    "raw_check_mesh_mesh_ok": false,
+    "reasons": []
+  },
+  "budget": {
+    "max_new_runs": 1,
+    "mesh_levels": [
+      "V1"
+    ],
+    "v2_runs": 0,
+    "v3_runs": 0
+  },
+  "candidate": {
+    "same_candidate_as_stage_s": true,
+    "stl": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    }
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "reduced-basis FD qualification or shape update",
+    "full-vehicle or high-Re FSAE qualification"
+  ],
+  "immutable": true,
+  "kind": "stage_v_v16_far_field_contract_manifest",
+  "metric": {
+    "comparison": "same +3.2 m domain baseline to mixed far-field treatment",
+    "downforce_absolute": 0.005,
+    "drag_relative": 0.02
+  },
+  "question": "At the largest registered v16 V1 domain, does a mixed freestreamVelocity/freestreamPressure outer boundary remove the response dependence on the symmetry/patch mixture without changing the candidate, mesh, or operating point?",
+  "registered_before_computation": true,
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_run_manifest_v2_2026_09.json",
+    "sha256": "2bbfc5b0ad4bee7959ac099c92424397d8431c7c99fa58203bbdca4450bb4665"
+  },
+  "schema_version": 1,
+  "status": "registered_not_run",
+  "treatment": {
+    "base_domain": "+3.2 m from the original v16 V1 box",
+    "boundary_contract": {
+      "bottom": {
+        "U": "noSlip",
+        "mesh": "wall",
+        "p": "zeroGradient"
+      },
+      "design_candidate": {
+        "U": "noSlip",
+        "mesh": "wall",
+        "p": "zeroGradient"
+      },
+      "inlet": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "outlet": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "sideMax": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "sideMin": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      },
+      "top": {
+        "U": "freestreamVelocity",
+        "mesh": "patch",
+        "p": "freestreamPressure"
+      }
+    },
+    "case_dir": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1",
+    "change": "convert inlet/outlet/sideMin/sideMax/top to patch; use freestreamVelocity for U and freestreamPressure for p",
+    "factor": "far-field boundary formulation",
+    "name": "mixed_freestream_outer",
+    "openfoam_reference": {
+      "U": "freestreamVelocity",
+      "freestream_value": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "p": "freestreamPressure",
+      "pressure_value": 0.0
+    },
+    "outer_patches": [
+      "inlet",
+      "outlet",
+      "sideMin",
+      "sideMax",
+      "top"
+    ]
+  }
+}

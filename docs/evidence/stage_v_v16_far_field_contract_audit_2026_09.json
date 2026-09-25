@@ -1,0 +1,152 @@
+{
+  "baseline": {
+    "Cd": 1.0260445793714286,
+    "case_dir": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1",
+    "cells": 82907,
+    "coefficient_dat": "work/stage_v_v16_domain_continuation_3p2_2026_09/far_field_domain_extension_3p2/V1/postProcessing/forceCoeffs/0/coefficient.dat",
+    "coefficient_dat_sha256": "af95adf7c5128fd7a758f037a643d0121ebbd5b74c37c2e8ec6ee7c3d02c7248",
+    "downforce": 0.42796766878857145,
+    "qualification_sha256": "17c63ef03b6aae73f064cc9818a97909b39bbd8d83b0b7487e99200f4a376e7a",
+    "qualified": true,
+    "raw_mesh_ok": false,
+    "row_count": 700
+  },
+  "boundary_identity": {
+    "baseline_outer_mesh": {
+      "inlet": "patch",
+      "outlet": "patch",
+      "sideMax": "symmetryPlane",
+      "sideMin": "symmetryPlane",
+      "top": "symmetryPlane"
+    },
+    "baseline_wall_mesh": {
+      "bottom": "wall",
+      "design_candidate": "wall"
+    },
+    "treatment_U": {
+      "bottom": "noSlip",
+      "design_candidate": "noSlip",
+      "inlet": "freestreamVelocity",
+      "outlet": "freestreamVelocity",
+      "sideMax": "freestreamVelocity",
+      "sideMin": "freestreamVelocity",
+      "top": "freestreamVelocity"
+    },
+    "treatment_outer_mesh": {
+      "inlet": "patch",
+      "outlet": "patch",
+      "sideMax": "patch",
+      "sideMin": "patch",
+      "top": "patch"
+    },
+    "treatment_p": {
+      "bottom": "zeroGradient",
+      "design_candidate": "zeroGradient",
+      "inlet": "freestreamPressure",
+      "outlet": "freestreamPressure",
+      "sideMax": "freestreamPressure",
+      "sideMin": "freestreamPressure",
+      "top": "freestreamPressure"
+    },
+    "treatment_wall_mesh": {
+      "bottom": "wall",
+      "design_candidate": "wall"
+    }
+  },
+  "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "checks": {
+    "fresh_canonical_force_histories": true,
+    "no_solver_started_during_registration": true,
+    "only_registered_boundary_types_changed": true,
+    "same_candidate": true,
+    "same_domain_and_mesh": true
+  },
+  "claims_not_supported": [
+    "grid-independent or absolute Stage V downforce",
+    "Stage S S2 qualification",
+    "shape update or optimization authorization"
+  ],
+  "convergence": {
+    "baseline": true,
+    "baseline_final_cumulative_continuity": -1.0506852e-05,
+    "treatment": true,
+    "treatment_final_cumulative_continuity": -4.9862312e-05
+  },
+  "factor_evidence": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_v2_2026_09.json",
+    "sha256": "1d58f8651f23e57a78c1d5bf58db47914025e1db2681bcf41f2f6a4d12962dc6"
+  },
+  "kind": "stage_v_v16_far_field_contract_audit",
+  "mesh_identity": {
+    "files": {
+      "cellLevel": {
+        "baseline": "1a43b1743ae7ba81f42889fb284bf4057b89d133897a2d33d512092132df47ab",
+        "treatment": "1a43b1743ae7ba81f42889fb284bf4057b89d133897a2d33d512092132df47ab"
+      },
+      "cellZones": {
+        "baseline": "7492c853093852aca1649ee727a9820a3d51d6b46af5e949c2b204e1f4528b9b",
+        "treatment": "7492c853093852aca1649ee727a9820a3d51d6b46af5e949c2b204e1f4528b9b"
+      },
+      "faceZones": {
+        "baseline": "cab5017850e5e8489a0ba951996b5b5f2da3abec0bf2a36dadb48978b7e0a657",
+        "treatment": "cab5017850e5e8489a0ba951996b5b5f2da3abec0bf2a36dadb48978b7e0a657"
+      },
+      "faces": {
+        "baseline": "3d1779d33d0e6ca36199df74b0062f39ec5006fa17ee1e90fbc60157f0b7dd8c",
+        "treatment": "3d1779d33d0e6ca36199df74b0062f39ec5006fa17ee1e90fbc60157f0b7dd8c"
+      },
+      "level0Edge": {
+        "baseline": "6909154bf6843cb7f26b6654979a8a1ae5fbac315b6f12c0505e3abffa58c904",
+        "treatment": "6909154bf6843cb7f26b6654979a8a1ae5fbac315b6f12c0505e3abffa58c904"
+      },
+      "neighbour": {
+        "baseline": "796577e97ce2d302d075aa4bd18622ad2d7dda107e2e32e4e722a5a77ecace48",
+        "treatment": "796577e97ce2d302d075aa4bd18622ad2d7dda107e2e32e4e722a5a77ecace48"
+      },
+      "owner": {
+        "baseline": "0e4879efbe9bbc24379b5addfca0ae0d40d45f63ea4c92237b50f8d5f7e2c90b",
+        "treatment": "0e4879efbe9bbc24379b5addfca0ae0d40d45f63ea4c92237b50f8d5f7e2c90b"
+      },
+      "pointLevel": {
+        "baseline": "0b799a3428ef0d09917456a9db6c2b471c6a03797b9df5fdc102d1aa5c94705a",
+        "treatment": "0b799a3428ef0d09917456a9db6c2b471c6a03797b9df5fdc102d1aa5c94705a"
+      },
+      "pointZones": {
+        "baseline": "59b8071215722a3582eafdcaa3e1d4c22b4bb320e8ddb370604e8e79bea8e557",
+        "treatment": "59b8071215722a3582eafdcaa3e1d4c22b4bb320e8ddb370604e8e79bea8e557"
+      },
+      "points": {
+        "baseline": "a670a94ec476c0155ee963bcb101f4df15919bd17343aff1a5eb0c608a6e91a2",
+        "treatment": "a670a94ec476c0155ee963bcb101f4df15919bd17343aff1a5eb0c608a6e91a2"
+      },
+      "surfaceIndex": {
+        "baseline": "16d35f390673685dd0e98961687c6c243828195e75ac5d29285cb84babafd301",
+        "treatment": "16d35f390673685dd0e98961687c6c243828195e75ac5d29285cb84babafd301"
+      }
+    },
+    "same_non_boundary_mesh_files": true,
+    "same_patch_face_ranges": true
+  },
+  "openfoam_references": {
+    "freestreamPressure": "https://doc.openfoam.com/2312/tools/processing/boundary-conditions/rtm/derived/inletOutlet/freestreamPressure/",
+    "freestreamVelocity": "https://doc.openfoam.com/2212/tools/processing/boundary-conditions/rtm/derived/inletOutlet/freestreamVelocity/"
+  },
+  "run_manifest": {
+    "path": "docs/evidence/stage_v_v16_far_field_contract_run_manifest_v2_2026_09.json",
+    "sha256": "2bbfc5b0ad4bee7959ac099c92424397d8431c7c99fa58203bbdca4450bb4665"
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "treatment": {
+    "Cd": 0.9197726722010583,
+    "case_dir": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1",
+    "cells": 82907,
+    "coefficient_dat": "work/stage_v_v16_far_field_contract_2026_09/mixed_outer/V1/postProcessing/forceCoeffs/0/coefficient.dat",
+    "coefficient_dat_sha256": "1f61be46460d938aa9e11d97334afafd812de44abc0fdbcd8188b3227d1ef6a0",
+    "downforce": 0.35000240196825394,
+    "qualification_sha256": "280054c0c836fd86a6fb491dde88e5c21da0232a754de9c168e752abe1da9478",
+    "qualified": true,
+    "raw_mesh_ok": false,
+    "row_count": 757
+  }
+}
