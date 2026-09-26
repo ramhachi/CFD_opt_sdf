@@ -1,0 +1,625 @@
+{
+  "amplitude_calibration": {
+    "calibrated_max_normal_displacement_target_m": 0.001,
+    "mode_selection_unchanged": true,
+    "per_mode_calibration_runs": 1,
+    "purpose": "preserve the historical mode direction while mapping unit-normalized coefficients to the v2 morpher",
+    "reference_coefficient_m": 0.001
+  },
+  "architecture": {
+    "class": "profile-aware bounded reduced-basis centered-FD architecture",
+    "id": "stage_s_reduced_basis_fd_v2",
+    "not": [
+      "production optimizer",
+      "qualified Stage S optimizer",
+      "multi-step optimizer"
+    ]
+  },
+  "base_case": {
+    "case_dir": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case",
+    "cell_count": 0,
+    "domain_bounds_m": {
+      "lower": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "upper": [
+        2.5,
+        1.2,
+        0.9
+      ]
+    },
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "problem_id": "stage_sv_v2_expanded_domain_v2",
+    "problem_spec_sha256": "f60b3ba14b4cf17fc9f0c55b8fa495fe26881aa6afe1b38ae3a1e0d7188b085f",
+    "source_files": [
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/case_metadata.json",
+        "sha256": "68b572a86bb7e400421665702c791dea2c86d9bd161f7b69f9058077932e2766"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/polyMesh/boundary",
+        "sha256": "42c5716ebaaab50d32b52206df19b3eb2ef8ba6e6750c743057b3682094e6acc"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/polyMesh/points",
+        "sha256": "9ebf130c8cc4dfd4d46cc48cd8a0863840de2d6cc854411c19b3c15cc756913e"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/polyMesh/faces",
+        "sha256": "a1d1e5726d968342e419069f290b20033d857cff0e64f9b0d91373b55cae0f6e"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/polyMesh/owner",
+        "sha256": "aaebe1c092507d0ea43c1b15b7816eb894d9a599e7fea769039eaf7f3724985a"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/polyMesh/neighbour",
+        "sha256": "945fcfd3199ff6318d1f3139b69ef440baf091bd31d82b412d464dd9090e8e08"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/0/U",
+        "sha256": "ac791673b04d347f0a8c3b93d04eed5e6cc47321f2c9c48c5cfd4e767bf116c1"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/0/p",
+        "sha256": "8372855fe3a2144838e945c723d3f6ce0b277730ab7868e35cba047bc937c987"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/triSurface/design_candidate.stl",
+        "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+      },
+      {
+        "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case/constant/triSurface/allowed_design_domain.stl",
+        "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+      }
+    ]
+  },
+  "budget": {
+    "s0r_solver_runs": 0,
+    "s1r_flow_runs": 0,
+    "s1r_morpher_runs_max": 48,
+    "s2_primals_max": 24,
+    "s3_primals_max": 32,
+    "s4_primals": 6,
+    "s5_shape_steps_max": 1
+  },
+  "candidate": {
+    "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+    "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "claims_not_supported": [
+    "S0R/S1R is solver-free geometry/morpher/checkMesh evidence only",
+    "reduced_basis_fd_qualified remains pending until S2-S4 pass",
+    "no absolute or grid-independent downforce claim",
+    "no shape update or optimization campaign is authorized"
+  ],
+  "domain": {
+    "convergence_witness_role": "v3 is retained only as the registered same-profile witness",
+    "working_bounds_m": {
+      "lower": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "upper": [
+        2.5,
+        1.2,
+        0.9
+      ]
+    },
+    "working_spec_role": "v2 qualified physical-profile domain"
+  },
+  "epsilon_ladder_m": [
+    0.0001,
+    0.00025,
+    0.0005,
+    0.001
+  ],
+  "execution": {
+    "optimization_campaign_started": false,
+    "preflight_started": false,
+    "solver_started": false
+  },
+  "flags": {
+    "original_adjoint_derivative_qualified": false,
+    "reduced_basis_fd_qualified": "pending",
+    "shape_update_allowed": false,
+    "solver_campaign_started": false
+  },
+  "force_normalization": {
+    "area_m2": 0.64,
+    "density_kg_m3": 1.0,
+    "downforce_direction": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "drag_direction": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "dynamic_pressure_pa": 0.5,
+    "freestream_speed_mps": 1.0,
+    "length_m": 0.8,
+    "moment_center_m": [
+      0.25,
+      0.0,
+      0.0
+    ]
+  },
+  "force_normalization_contract": {
+    "canonical_objective": "J = -CDF",
+    "drag": "report_only",
+    "no_constraints": true,
+    "response_id": "downforce",
+    "sense": "maximize"
+  },
+  "geometry_gates": {
+    "direction_cosine_min": 0.999999,
+    "direction_difference_max_m": 1e-06,
+    "even_component_max_m": 1e-06,
+    "max_epsilon_m": 0.001,
+    "minimum_clearance_m": 0.25,
+    "minimum_solid_width_m": 0.01,
+    "minimum_width_method": "baseline_v2_revoxelized_width_minus_two_times_max_surface_displacement",
+    "required": [
+      "morpher_success",
+      "fixed_boundary_control_points",
+      "inactive_control_points_zero",
+      "realized_equals_prescribed",
+      "realized_direction",
+      "watertight",
+      "winding_consistent",
+      "positive_volume",
+      "no_self_intersection",
+      "minimum_solid_width",
+      "clearance",
+      "checkMesh_profile"
+    ],
+    "volume_relative_difference_max": 0.02
+  },
+  "immutable": true,
+  "kind": "stage_s_reduced_basis_fd_v2_manifest",
+  "mode_basis": {
+    "active_var_ids_sha256": "d7b71e0affaaf40d92acb012c6459d3f9df9d8a7621f6df9839a46f74a1b2ab6",
+    "catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "control_point_catalog": {
+      "path": "work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv",
+      "sha256": "29ddf189dcbca972734c4303d568d5290e1417e53e5fa485dba6fa4317c60f47"
+    },
+    "control_points": [
+      8,
+      8,
+      8
+    ],
+    "k_modes": 16,
+    "modes": [
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 3,
+          "name": "mode_k03_a1b1c1_x"
+        },
+        "historical_normal_efficiency": 0.9418791938429935,
+        "normalization_factor": 1.0617072832024943,
+        "normalized_vector_sha256": "d40a4bcbaa8f6a408cebed1b01991394a272721aa7b2275769593831ca8c9308",
+        "order": 1,
+        "raw_vector_sha256": "5a34e4d369985c33beeed136c666326ceb6e26ff332e2fb0d13c91f27633087f",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 1,
+          "frequency": 3,
+          "name": "mode_k03_a1b1c1_z"
+        },
+        "historical_normal_efficiency": 0.9548570000000034,
+        "normalization_factor": 1.0472772362772609,
+        "normalized_vector_sha256": "ba929822c764c22b14d0b80a30d8d39b2bddda642436f0fef89218379f5fc4d5",
+        "order": 2,
+        "raw_vector_sha256": "c2ad8e3e877b68628e824bb0614b638b9523e996ceb3df63875fc37b99e27855",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 2,
+          "frequency": 6,
+          "name": "mode_k06_a1b1c2_x"
+        },
+        "historical_normal_efficiency": 0.6297462908171619,
+        "normalization_factor": 1.5879410717963818,
+        "normalized_vector_sha256": "b64706ce128efe009fbd570c96513c307ee8129d05e1198c065ace3258bb038b",
+        "order": 3,
+        "raw_vector_sha256": "c33ceae01f38aab90e6d8ce6ffcc7dff8bfd9eb326db22abc1c03e4f665d94e3",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 2,
+          "frequency": 6,
+          "name": "mode_k06_a1b1c2_z"
+        },
+        "historical_normal_efficiency": 0.6854400000000094,
+        "normalization_factor": 1.4589169000933506,
+        "normalized_vector_sha256": "aedb07b2ba2f1fe4ad75080b24399349e7d0c19376f38a266265a3fba36b050b",
+        "order": 4,
+        "raw_vector_sha256": "323eb699a4ec7dc649d66c99a1dd786f9c664ad487ba777d98e87391b5b488a1",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "y",
+          "b": 2,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a1b2c1_y"
+        },
+        "historical_normal_efficiency": 0.8350017198797022,
+        "normalization_factor": 1.197602323674338,
+        "normalized_vector_sha256": "4b024fee2b6b22d2289619fe5f8056f6db43ed2a116b60f303acb99004b316ae",
+        "order": 5,
+        "raw_vector_sha256": "f6093b41c76cee35b9e80369f4a8e8ccb4f85249ffe2d5df56023d0adb37354f",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 2,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a2b1c1_x"
+        },
+        "historical_normal_efficiency": 0.8473430323755143,
+        "normalization_factor": 1.1801595832994742,
+        "normalized_vector_sha256": "2dffce54f6eb08e4bdfd936fd34d8b8a1d94c5d924030dbe8794a5fe40d5a4fb",
+        "order": 6,
+        "raw_vector_sha256": "3078a076d57f8421d62323e26adb1e069e24e3f9bacb6108dc13ec0d2448aab3",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 2,
+          "axis": "z",
+          "b": 1,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a2b1c1_z"
+        },
+        "historical_normal_efficiency": 0.8728799999999926,
+        "normalization_factor": 1.1456328475850157,
+        "normalized_vector_sha256": "477199fee5e90d1ac59127d9471a3ac517c9d6cd4e93afd247262cce4f6f230b",
+        "order": 7,
+        "raw_vector_sha256": "6b1f2fb5b92a22f0242886c1f5208d1ff46497619cb332a07285255f9fbdc572",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "y",
+          "b": 2,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a1b2c2_y"
+        },
+        "historical_normal_efficiency": 0.45346263515760693,
+        "normalization_factor": 2.2052533604062807,
+        "normalized_vector_sha256": "030cda2f9cf4e5e71c34bc3167476ec5b67734157ed33612e1c2e6d66a3933ac",
+        "order": 8,
+        "raw_vector_sha256": "18be94c2fa7605e9632cd03c18e5919c5146adea111f2d9a8b0f9e67646fd400",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 2,
+          "axis": "x",
+          "b": 1,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a2b1c2_x"
+        },
+        "historical_normal_efficiency": 0.6612539109164489,
+        "normalization_factor": 1.5122783903297814,
+        "normalized_vector_sha256": "71cb508a679e20c87f8a26ed65dc683a6399be7cb478973e09a7e7adb359d80c",
+        "order": 9,
+        "raw_vector_sha256": "0ac0dc8faec59b41131015abe2cc91b5543a6560c9ebab342688aef240ff7791",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 2,
+          "axis": "z",
+          "b": 1,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a2b1c2_z"
+        },
+        "historical_normal_efficiency": 0.7854100000000003,
+        "normalization_factor": 1.2732203562470552,
+        "normalized_vector_sha256": "f3f577ce2143676c4e134637d6597125c1c6ae645f433ae368ff015995f78b74",
+        "order": 10,
+        "raw_vector_sha256": "65feec8212448dba7935d9c4f26824ec44149776285e3dfcd9a70f2f10c3fedc",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 2,
+          "axis": "y",
+          "b": 2,
+          "c": 1,
+          "frequency": 9,
+          "name": "mode_k09_a2b2c1_y"
+        },
+        "historical_normal_efficiency": 0.7580762321202136,
+        "normalization_factor": 1.3191285488573699,
+        "normalized_vector_sha256": "bf8d146cfa5381714dc9e51f5d33600fee77fb03e982074e3814cf2b0bb026fe",
+        "order": 11,
+        "raw_vector_sha256": "5a852207a4a8fd5b47ef8c696f43adacd0a57d8deb4602721155ad9584518da5",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 3,
+          "frequency": 11,
+          "name": "mode_k11_a1b1c3_x"
+        },
+        "historical_normal_efficiency": 0.6853684723096093,
+        "normalization_factor": 1.4590691582735347,
+        "normalized_vector_sha256": "6d22d21ddfbb814214d7b6e117ce3d299f1fc44145b7e7ed58e2062805f15da9",
+        "order": 12,
+        "raw_vector_sha256": "c54232c68637f56530c5f1a14511582deb237a8890a64c7143a5855a6f3cd4c6",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 3,
+          "frequency": 11,
+          "name": "mode_k11_a1b1c3_z"
+        },
+        "historical_normal_efficiency": 0.6872099999999937,
+        "normalization_factor": 1.4551592671818065,
+        "normalized_vector_sha256": "92f634e9db439a2ab9cc6a94e396d9b1aa9cf83fee632ff83b2d44bbf9df33f3",
+        "order": 13,
+        "raw_vector_sha256": "2be3b1277b92c385811605929e0438174f066bb4f268c79961899017111cf507",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 3,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a1b3c1_x"
+        },
+        "historical_normal_efficiency": 0.7028868885280374,
+        "normalization_factor": 1.4227040172767587,
+        "normalized_vector_sha256": "146a64d9859922d7e5372aa85ebebc9e03f8ceba1e0f7fdf25aeb4e1bdac9d3b",
+        "order": 14,
+        "raw_vector_sha256": "03ce88ebd3c1c356dd2ced40e14272d13b56afbd3bd28ae3ec1124e52e9074d9",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 3,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a1b3c1_z"
+        },
+        "historical_normal_efficiency": 0.7125899999999991,
+        "normalization_factor": 1.4033315090023735,
+        "normalized_vector_sha256": "9a08b3722c49db05ffcff207df552f0bea6009db989473a9f8356b005cecc48f",
+        "order": 15,
+        "raw_vector_sha256": "f2032eb83d7abbe8bf3c4f00c43337b034df7fce3e288c0c366dc1b5fb330644",
+        "sign_flipped": false
+      },
+      {
+        "candidate": {
+          "a": 3,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a3b1c1_x"
+        },
+        "historical_normal_efficiency": 0.683620732983957,
+        "normalization_factor": 1.4627994028722175,
+        "normalized_vector_sha256": "645ad4cdd552380081f23a5d0a82aabd2678f9b4ba0178c1e58ecbec4a3ecaff",
+        "order": 16,
+        "raw_vector_sha256": "e1c7b294449d328a405838f2f5b99a2a9e47aecad27ec63ec27240d177c32e70",
+        "sign_flipped": false
+      }
+    ],
+    "selection_policy": "reuse_exact_historical_s1_basis; no response-dependent reselection or reserve substitution"
+  },
+  "morpher": {
+    "box_m": {
+      "max": [
+        0.6650000154972077,
+        0.5399999856948853,
+        0.3
+      ],
+      "min": [
+        -0.7150000274181366,
+        -0.5399999856948853,
+        -0.3
+      ]
+    },
+    "control_points": [
+      8,
+      8,
+      8
+    ],
+    "degree": [
+      3,
+      3,
+      3
+    ],
+    "source_contract": "the historical volumetricBSplines utility is reused unchanged",
+    "utility": {
+      "path": "work/stage_s_work_f_v1/tools/moveControlPoints",
+      "sha256": "976677902709c315ee5edaefa6a382e0f050a56f10ba19c0683edd1bd2d5b39e"
+    }
+  },
+  "physical_profile": {
+    "scope": "registered reduced-laminar moving-ground/freestream profile only",
+    "sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "solver_gate_application": "required for every later S2-S5 primal; not evaluated by S0R/S1R"
+  },
+  "registered_before_computation": true,
+  "s0r_s1r": {
+    "cases": "all 16 historical modes x both signs at maximum epsilon, unless first hard failure stops the run",
+    "failure_policy": "fail_closed; no reserve mode substitution and no post-response reselection",
+    "flow_fields_not_evaluated": true,
+    "solver_runs": 0,
+    "solver_started": false
+  },
+  "s2_calibration": {
+    "epsilons_m": [
+      0.0001,
+      0.00025,
+      0.0005,
+      0.001
+    ],
+    "max_primals": 24,
+    "modes": "lowest, middle, highest frequency of the fixed 16-mode basis",
+    "primary_epsilon_rule": "largest ladder value passing all preregistered gates for all three calibration modes",
+    "sides": [
+      "plus",
+      "minus"
+    ]
+  },
+  "s3_gradient": {
+    "claim_scope": "span(B) only",
+    "max_primals": 32,
+    "reuses_s2": true
+  },
+  "s4_holdout": {
+    "directions": "two manifest-hash random mode directions plus one downforce projected-gradient direction",
+    "primals": 6,
+    "relative_error_max": 0.05
+  },
+  "s5_one_step": {
+    "max_shape_steps": 1,
+    "requires_complete_s4_pass": true,
+    "shape_update_allowed": false
+  },
+  "schema_version": 1,
+  "source_artifacts": {
+    "mode_generator": {
+      "path": "src/cfd_sdf/stage_s_reduced_basis.py",
+      "sha256": "8a2dc41d2ba6eacc04085d5f71b6432bd1498749dbd0778cb17d86f7c2e7894f"
+    },
+    "old_catalog": {
+      "path": "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json",
+      "sha256": "e4cdbe437eaa32dc752ad603a5d921aa94a4a47511e4a0403ead58ac49d5b4a8"
+    },
+    "old_qualification": {
+      "path": "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json",
+      "sha256": "f0bec416540d3faf7f78dba09bcd3b2cb647740cf90fb53b4038cf9b2dcea606"
+    },
+    "old_s0_manifest": {
+      "path": "docs/evidence/stage_s_reduced_basis_fd_manifest_2026_09.json",
+      "sha256": "261a20f1ad97c0feddc9641765d8ad3171dfd68d4051317a1b1f69b80e24a0d1"
+    },
+    "old_s1_evidence": {
+      "path": "docs/evidence/stage_s_reduced_basis_mode_preflight_2026_09.json",
+      "sha256": "1942993fbaf306f14932361ec85c71e48230aee8270af10b936c7d92ee1226f9"
+    },
+    "preflight_script": {
+      "path": "scripts/stage_s_reduced_basis_fd_v2_preflight_2026_09.py",
+      "sha256": "e3d68def375a27757f62aed9874d71e6cfcd61c9f14e611673f81496ef457b62"
+    },
+    "registration_script": {
+      "path": "scripts/register_stage_s_reduced_basis_fd_v2_2026_09.py",
+      "sha256": "e72c6540be5ce7d7b2c4c30306321bb3a631032b719a13d2ce130aaf93e03abd"
+    },
+    "stage_v_physical_profile_module": {
+      "path": "src/cfd_sdf/stage_v_physical_profile.py",
+      "sha256": "7ceb68ad63a2846c0a33ad9eea7c46dfc9172b49276a0947826a39fef261300d"
+    }
+  },
+  "stage_s_problem_spec": {
+    "diff_keys": [
+      "objectives",
+      "problem_id"
+    ],
+    "objective_audit": {
+      "canonical_J": "J = -CDF",
+      "drag": "report_only",
+      "only_problem_spec_difference": true,
+      "stage_s_objective": "maximize_downforce",
+      "stage_v_reference": "minimize_drag"
+    },
+    "stage_s": {
+      "path": "docs/evidence/assets/stage_s_reduced_basis_fd_v2/project_matched_re_laminar_moving_ground_far_field_v2_reduced_basis.yaml",
+      "sha256": "9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed"
+    },
+    "stage_v": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v2.yaml",
+      "sha256": "6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e"
+    }
+  },
+  "stage_v_reference": {
+    "candidate_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "canonical_problem_spec_sha256": "f60b3ba14b4cf17fc9f0c55b8fa495fe26881aa6afe1b38ae3a1e0d7188b085f",
+    "domain_convergence_witness": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json",
+      "sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf"
+    },
+    "outcome": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "physical_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "problem_spec": {
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v2.yaml",
+      "sha256": "6e41d2bbe9ac6a272f122f7e2556fe2ae9904b0572415eb548f438406885278e"
+    },
+    "run_manifest": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_run_manifest_v1_2026_09.json",
+      "sha256": "1e419a37c3c0ec51cfdcf8d2ca497faffe4cc0179560d54f927a29b06c76d4b0"
+    },
+    "v3_role": "domain-convergence witness only; v2 is the working domain",
+    "working_domain_bounds_m": {
+      "lower": [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      "upper": [
+        2.5,
+        1.2,
+        0.9
+      ]
+    }
+  },
+  "status": "registered_preflight_pending"
+}

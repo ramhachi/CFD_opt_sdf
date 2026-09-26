@@ -1730,3 +1730,45 @@ than a physical qualification or a reason to reinterpret the No-Go response.
 The continuation runner now fails closed on the identity mismatch. Keep
 `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`, and do not
 start another OpenFOAM case until a corrected contract is registered.
+
+## 2026-09-26: Stage S reduced-basis FD v2 contract and S0R/S1R pass
+
+- The v2 moving-ground/freestream physical profile is frozen as the Stage S
+  working reference. The new immutable contract
+  `docs/evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json` (SHA-256
+  `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`)
+  binds the v2 Stage V ProblemSpec, the Stage S working ProblemSpec
+  (`docs/evidence/assets/stage_s_reduced_basis_fd_v2/project_matched_re_laminar_moving_ground_far_field_v2_reduced_basis.yaml`,
+  SHA-256 `9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed`),
+  candidate `5e6d…`, physical profile `a846…`, Docker image ID
+  `sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`,
+  the working domain `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m (v3 retained only
+  as the same-profile domain-convergence witness), force normalization, the
+  `8x8x8` control-point catalog, all 16 historical mode vector hashes, and
+  the epsilon ladder `1e-4/2.5e-4/5e-4/1e-3 m`.
+- Objective audit: the Stage S spec differs from the Stage V reference in
+  `problem_id`/`objectives` only. Stage V stays `minimize_drag`; Stage S
+  declares `maximize_downforce` with canonical `J = -CDF`, drag report-only,
+  no constraints. The historical 16 modes are reused byte-for-byte; no
+  response-dependent reselection or reserve substitution.
+- S0R/S1R (`docs/evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json`,
+  SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`)
+  is solver-free and passes 16/16 modes at max epsilon both signs: base-case
+  construction audit pass on the 42,619-cell v2 case; immobility exactly
+  `0.0`; realized movement difference `<= 4.7e-9 m`; cosines
+  `>= 0.9999999999`; even component `<= 5.0e-9 m`; unit amplitude; watertight
+  non-self-intersecting surface; minimum solid width `>= 0.0466 m` against
+  the declared `0.01 m` policy; volume change `<= 0.31%`; clearance pass;
+  `checkMesh` profile pass with the raw concave marker recorded (fraction
+  `0.0692--0.0699`). `flow_campaign_allowed=true`, no solver started.
+- Registered implementation: `scripts/register_stage_s_reduced_basis_fd_v2_2026_09.py`
+  (`--register`/`--verify`, hash-bound in the manifest),
+  `scripts/stage_s_reduced_basis_fd_v2_preflight_2026_09.py` (moveControlPoints
+  and checkMesh only), and `tests/test_stage_s_reduced_basis_fd_v2.py`. The
+  S0R/S1R work directory is ignored `work/stage_s_reduced_basis_fd_v2_2026_09/`.
+- State: `reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`,
+  `original_adjoint_derivative_qualified=false`. Next slice is S2 epsilon
+  calibration (at most 24 primals for the lowest/middle/highest frequency
+  modes), re-applying the v2 physical-profile gates to every perturbed shape;
+  epsilon and thresholds must not be changed from the observed results. S4
+  failure or one failing mode keeps the shape update blocked.

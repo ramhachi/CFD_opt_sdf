@@ -72,3 +72,35 @@ FSAE、または full-vehicle downforce の資格ではない。旧 stationary-g
 
 したがって、今は「最適化 campaign を開始してよい」段階ではなく、「物理 profile と domain
 convergence を閉じ、次の K=16 FD qualification を登録できる」段階である。
+
+## 追記 — Stage S reduced-basis FD v2 契約登録と S0R/S1R 完了（2026-09-26）
+
+「次の計画」の 1 と 2 は完了した。v2 の working domain
+`[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9] m`（v3 は domain-convergence witness として
+のみ保持）を固定し、旧 S0/S1 の K=16 mode basis を byte 単位で再利用して、
+candidate `5e6d…`、physical-profile `a846…`、Docker image ID
+`sha256:33fb575a…`、force normalization、control-point catalog、epsilon ladder
+`1e-4/2.5e-4/5e-4/1e-3 m` を一つの immutable contract に束ねた。
+
+- manifest:
+  [`stage_s_reduced_basis_fd_v2_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json)
+  SHA-256 `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`
+- Stage S ProblemSpec SHA-256
+  `9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed`
+- objective 監査: Stage V reference（`minimize_drag`）との差は `problem_id` と
+  `objectives` に限定。Stage S は `maximize_downforce`、canonical `J = -CDF`、
+  drag report-only、constraint なし
+- S0R/S1R:
+  [`stage_s_reduced_basis_fd_v2_preflight_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json)
+  SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`。
+  base case 42,619 cells、16/16 mode の ±1e-3 m が morpher、boundary CP
+  immobility（exactly 0.0）、realized direction（cosine >= 0.9999999999、
+  movement difference <= 4.7e-9 m、even component <= 5.0e-9 m）、watertight、
+  self-intersection none、minimum width >= 0.0466 m、volume change <= 0.31%、
+  clearance、`checkMesh` profile をすべて pass。flow solver は未起動
+
+`flow_campaign_allowed=true`、`reduced_basis_fd_qualified=pending`、
+`shape_update_allowed=false` は維持する。次は「次の計画」3 の S2 epsilon
+calibration で、登録済み 3 mode × 4 epsilon × 2 sign（最大 24 primals）を実行し、
+各 perturbed shape に v2 physical-profile gate を毎回適用する。結果を見た後の
+epsilon・閾値変更はしない。

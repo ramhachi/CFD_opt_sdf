@@ -228,6 +228,46 @@ the K=16 reduced-basis centered-FD preflight.  Shape updates, PQ5 ranking, and
 production optimization remain blocked until that downstream qualification is
 complete.
 
+### Stage S reduced-basis FD v2 registration and S0R/S1R (2026-09-26)
+
+The frozen v2 profile was rebound to the exact historical K=16 mode basis
+without a flow solver.  The immutable contract is
+[`evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json)
+(SHA-256 `b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd`):
+working domain `[-2.5,-1.2,-0.9] -> [2.5,1.2,0.9]` m (v3 retained only as the
+domain-convergence witness), candidate
+`5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`,
+physical-profile
+`a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca`,
+Docker image ID
+`sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`,
+epsilon ladder `1e-4/2.5e-4/5e-4/1e-3 m`, and the Stage S ProblemSpec
+`9503400412509be755b7599d1e504b36519a1e33c5599347caf6f0c62e9318ed`.  The
+objective audit isolates the difference from the Stage V spec to
+`problem_id`/`objectives` only: Stage S declares `maximize_downforce` with
+canonical `J = -CDF`, drag report-only, no constraints.  The 16 historical
+mode vectors are reused byte-for-byte; no response-dependent reselection or
+reserve substitution is registered.
+
+S0R audited the base-case construction and S1R applied the registered maximum
+epsilon `1e-3 m` to both signs of all 16 modes.  The solver-free evidence
+[`evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json)
+(SHA-256 `3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50`)
+passes 16/16 modes: outer-patch immobility exactly `0.0`,
+realized-equals-prescribed movement difference `<= 4.7e-9 m`, cosines
+`>= 0.9999999999`, even component `<= 5.0e-9 m`, unit amplitude, watertight
+non-self-intersecting surface, minimum solid width `>= 0.0466 m` against the
+declared `0.01 m` policy, volume change `<= 0.31%`, clearance pass, and the
+registered `checkMesh` profile pass (concave fraction `0.0692--0.0699`;
+the raw concave marker is recorded, not a raw clean pass).  No flow solver
+and no flow field were involved: `flow_campaign_allowed=true`,
+`reduced_basis_fd_qualified=pending`, `shape_update_allowed=false`.
+
+The next slice is S2 epsilon calibration (at most 24 primals for the
+lowest/middle/highest-frequency modes), re-applying the v2 physical-profile
+gates to every perturbed shape; epsilon and thresholds must not be changed
+from the observed results.
+
 ## P18 — WP6-2 evidence-applicability gap（固定形状diagnosticとして解消）
 
 ### 症状

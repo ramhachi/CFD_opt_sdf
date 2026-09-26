@@ -1,0 +1,3005 @@
+{
+  "claims_not_supported": [
+    "no primal flow response, FD derivative, S2 epsilon calibration, S4 holdout, or shape update",
+    "no absolute or grid-independent downforce qualification"
+  ],
+  "claims_supported": [
+    "the exact historical K=16 mode basis was rebound to the v2 qualified profile/domain and checked without a flow solver",
+    "each evaluated side was judged by the registered morpher, geometry, clearance, direction, immobility, and checkMesh gates"
+  ],
+  "commands": [
+    "moveControlPoints",
+    "checkMesh -allGeometry -allTopology"
+  ],
+  "immutable": true,
+  "kind": "stage_s_reduced_basis_fd_v2_preflight",
+  "manifest": {
+    "path": "docs/evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json",
+    "sha256": "b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd"
+  },
+  "s0r": {
+    "base_case_construction": {
+      "checks": {
+        "candidate_sha256": true,
+        "domain_bounds": true,
+        "initial_fields_present": true,
+        "metadata_sha256": true,
+        "pass": true,
+        "physical_profile_sha256": true,
+        "poly_mesh_present": true,
+        "problem_id": true,
+        "problem_spec_sha256": true
+      },
+      "metadata": {
+        "boundary_contract": {
+          "ground_model": "moving_ground",
+          "motion_profiles": {
+            "moving_ground": {
+              "boundary_ids": [
+                "bottom"
+              ],
+              "kind": "translation",
+              "velocity_mps": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "patches": {
+            "bottom": "moving_wall",
+            "inlet": "far_field",
+            "outlet": "far_field",
+            "sideMax": "far_field",
+            "sideMin": "far_field",
+            "top": "far_field"
+          }
+        },
+        "component_labels": {
+          "1": "design:candidate",
+          "2": "allowed:design_domain"
+        },
+        "constraints": {
+          "min_thickness_mm": 10.0,
+          "require_eroded_connectivity": true,
+          "rule_margin_mm": 5.0
+        },
+        "flow_case_id": "matched_re_laminar",
+        "force_reference": {
+          "area_m2": 0.64,
+          "density_kg_m3": 1.0,
+          "drag_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "factor_N_per_coefficient": 0.32,
+          "freestream_speed_mps": 1.0,
+          "length_m": 0.8,
+          "lift_dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "moment_center_m": [
+            0.25,
+            0.0,
+            0.0
+          ]
+        },
+        "grid": {
+          "bounds": [
+            [
+              -2.5,
+              -1.2,
+              -0.9
+            ],
+            [
+              2.5,
+              1.2000000000000004,
+              0.9
+            ]
+          ],
+          "origin": [
+            -2.5,
+            -1.2,
+            -0.9
+          ],
+          "shape": [
+            101,
+            49,
+            37
+          ],
+          "spacing": 0.05
+        },
+        "mesh_refinement": {
+          "background_block_mesh_cells": {
+            "nx": 25,
+            "ny": 13,
+            "nz": 9,
+            "total": 2925
+          },
+          "voxel_size_m": 0.05
+        },
+        "objective": {
+          "efficiency_min": 3.0,
+          "force_patches": [
+            "design_candidate"
+          ],
+          "type": "maximize_downforce_with_efficiency_constraint"
+        },
+        "operating_point": {
+          "density": 1.0,
+          "turbulence_model": "laminar",
+          "velocity_mps": 1.0,
+          "viscosity": 0.01
+        },
+        "physical_profile": {
+          "boundary_contract": {
+            "bottom": "moving_wall",
+            "inlet": "far_field",
+            "outlet": "far_field",
+            "sideMax": "far_field",
+            "sideMin": "far_field",
+            "top": "far_field"
+          },
+          "boundary_implementation": {
+            "far_field_pressure": "freestreamPressure",
+            "far_field_velocity": "freestreamVelocity",
+            "moving_wall": "translatingWallVelocity"
+          },
+          "ground_model": "moving_ground",
+          "motion_profiles": {
+            "moving_ground": {
+              "boundary_ids": [
+                "bottom"
+              ],
+              "kind": "translation",
+              "velocity_mps": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "outer_boundary_semantics": {
+            "freestream_pressure_pa": 0.0,
+            "freestream_velocity_mps": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+          "turbulence_model": "laminar"
+        },
+        "problem_id": "stage_sv_v2_expanded_domain_v2",
+        "problem_spec_sha256": "f60b3ba14b4cf17fc9f0c55b8fa495fe26881aa6afe1b38ae3a1e0d7188b085f",
+        "roots": [],
+        "source_project": "/Users/sota/projects/FomulaTMU/CFD2026_09/docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2_expanded_domain_v2.yaml",
+        "tri_surface_files": [
+          {
+            "file": "design_candidate.stl",
+            "id": "candidate",
+            "patch": "candidate",
+            "role": "design",
+            "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+            "source_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl"
+          },
+          {
+            "file": "allowed_design_domain.stl",
+            "id": "design_domain",
+            "patch": "design_domain",
+            "role": "allowed",
+            "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+            "source_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl"
+          }
+        ]
+      }
+    },
+    "baseline_geometry": {
+      "baseline_volume_m3": 0.1288397743242179,
+      "clearance_qualified": true,
+      "clearance_reasons": [],
+      "minimum_solid_width_m": 0.05,
+      "minimum_width_grid": {
+        "cell_shape": [
+          27,
+          20,
+          12
+        ],
+        "origin": [
+          -0.7000000000000001,
+          -0.5,
+          -0.3
+        ],
+        "spacing_m": 0.05
+      },
+      "minimum_width_method": "tight_bbox_revoxelized_occupancy",
+      "pass": true,
+      "positive_volume": true,
+      "self_intersection": "none",
+      "volume_m3": 0.1288397743242179,
+      "volume_relative_difference": 0.0,
+      "watertight": true,
+      "winding_consistent": true
+    },
+    "flow_fields_evaluated": false,
+    "solver_started": false
+  },
+  "s1r": {
+    "basis_policy": "exact historical K=16 mode vectors; no response-dependent reselection",
+    "maximum_epsilon_m": 0.001,
+    "modes": [
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "40001b3216f45edfd7173c9c3d58ea4e0385ff13b052b67f9978c9c6c66d1a44",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9756668683044842,
+          "v2_normal_efficiency": 1.024940000000002
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 3,
+          "name": "mode_k03_a1b1c1_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "d40a4bcbaa8f6a408cebed1b01991394a272721aa7b2275769593831ca8c9308",
+        "order": 1,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999958437,
+          "difference_ok": false,
+          "max_abs_difference": 3.962296783788233e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 6.7371180187729385,
+          "realized_active_l2_norm": 6.737118719911468
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 3.962296783788233e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2961,
+              "concave_cell_fraction": 0.0694760552805087,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2961"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799917999999999,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010004100000000071,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288773028795055,
+              "volume_relative_difference": 0.0002912808213491908,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010004100000000071,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k03_a1b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.618785019010033e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "93d4ae011652e3bccefb7ae77e82622d359e5b3e5e297a637506842e5a93631d",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2959,
+              "concave_cell_fraction": 0.06942912785377414,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2959"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799917999999999,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010004100000000071,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288022457842173,
+              "volume_relative_difference": 0.0002912807026977749,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010004100000000071,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k03_a1b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.657760952601734e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "dc1eb9f59a79939d653f99d57a59a1ef26876d3a0781115ce355fe547f8837a1",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "3b50ee5fb6f66f30afba9062964f03a25b2558a2f65f8bf32abd5e902f58de7a",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0006504227748008,
+          "v2_normal_efficiency": 0.999350000000003
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 1,
+          "frequency": 3,
+          "name": "mode_k03_a1b1c1_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "ba929822c764c22b14d0b80a30d8d39b2bddda642436f0fef89218379f5fc4d5",
+        "order": 2,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999973004,
+          "difference_ok": false,
+          "max_abs_difference": 3.989335262410965e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 6.815721687325306,
+          "realized_active_l2_norm": 6.81572256822327
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 3.9893352624109645e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04797583800000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.001012080999999998,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288089998932608,
+              "volume_relative_difference": 0.0002388581563302391,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.001012080999999998,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k03_a1b1c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.989334998599219e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "256bd97e78cb9889764e5684ae2deca628a62d0f47b0b4a77d57f81ca850c7a7",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2975,
+              "concave_cell_fraction": 0.06980454726765058,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2975"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04797583800000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.001012080999999998,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288705487633894,
+              "volume_relative_difference": 0.00023885822008717426,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.001012080999999998,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k03_a1b1c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.393925999243933e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k03_a1b1c1_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "f7e820aec258adb8793f50a4dec92d238aae5303adb82ff28c3a19df26459e67",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "2b5d6caa2562fe1027b96b80e4f58a3adc8de163b3c3cfae3ccf52bf2fc34637",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9639696372750802,
+          "v2_normal_efficiency": 1.0373770721936526
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 2,
+          "frequency": 6,
+          "name": "mode_k06_a1b1c2_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "b64706ce128efe009fbd570c96513c307ee8129d05e1198c065ace3258bb038b",
+        "order": 3,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999978079,
+          "difference_ok": false,
+          "max_abs_difference": 4.117650131502115e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 9.298037473735018,
+          "realized_active_l2_norm": 9.29804295761635
+        },
+        "realized_even_component_m": 5.0000000112460086e-09,
+        "realized_movement_difference_m": 4.117650131502115e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2948,
+              "concave_cell_fraction": 0.06917102700673408,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2948"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.0473418,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0013290999999999997,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12874437313445722,
+              "volume_relative_difference": 0.0007404638067791297,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0013290999999999997,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0009999995318776013,
+            "mode": "mode_k06_a1b1c2_x",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999995318776013,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.117649968359842e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "907c118c3ec0db63aedec4dfac244f359b44630db9671315b3331a29694806be",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2961,
+              "concave_cell_fraction": 0.0694760552805087,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2961"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.0473418,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0013290999999999997,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.128935175526354,
+              "volume_relative_difference": 0.0007404639028320301,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0013290999999999997,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0009999995318776013,
+            "mode": "mode_k06_a1b1c2_x",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999995318776013,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.117649968359842e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "1b64e7a4a8a7894abdc2699b38999a082151566f7e19c2f449e1146bf4eb3c61",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "d6de6f0611b6ceaea5f8547c85c2077438c7bf5a7e4ac88208e0ee1085c18bc0",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0003801444548863,
+          "v2_normal_efficiency": 0.9996200000000066
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 2,
+          "frequency": 6,
+          "name": "mode_k06_a1b1c2_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "aedb07b2ba2f1fe4ad75080b24399349e7d0c19376f38a266265a3fba36b050b",
+        "order": 4,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999981679,
+          "difference_ok": false,
+          "max_abs_difference": 3.500736940775795e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 8.865212985869434,
+          "realized_active_l2_norm": 8.865211305994016
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 3.500736940775795e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2977,
+              "concave_cell_fraction": 0.06985147469438513,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2977"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04746554600000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0012672269999999958,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12922987744748668,
+              "volume_relative_difference": 0.0030278159467053605,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0012672269999999958,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k06_a1b1c2_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.500740000805251e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "70faa268b999cc6d147af0fee3543f414eed9e66c6493330a3fa1230e8856f5b",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2961,
+              "concave_cell_fraction": 0.0694760552805087,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2961"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047465546,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0012672270000000027,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1284496712079249,
+              "volume_relative_difference": 0.0030278158925622894,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0012672270000000027,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k06_a1b1c2_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 6.2296720282351e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b1c2_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "332bdc61c30d3584d097e4995d8474e52d2a20476391ef5b928689cb45d49cce",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__calibration/openfoam_run_summary.json",
+            "summary_sha256": "e016319b62c9c9084ccc78e4eac2820818c2ced04a7520967980762a0b85aee9",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0143590007925463,
+          "v2_normal_efficiency": 0.9858442614682501
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "y",
+          "b": 2,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a1b2c1_y"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "4b024fee2b6b22d2289619fe5f8056f6db43ed2a116b60f303acb99004b316ae",
+        "order": 5,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999963093,
+          "difference_ok": false,
+          "max_abs_difference": 4.64591672388881e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.379006156601263,
+          "realized_active_l2_norm": 7.379008236023872
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 4.6459167238888105e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__minus",
+            "check_mesh": {
+              "concave_cell_count": 2966,
+              "concave_cell_fraction": 0.06959337384734508,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2966"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047878640000000014,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010606799999999944,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12889580643622867,
+              "volume_relative_difference": 0.0004348976261769257,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010606799999999944,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000046301962449,
+            "mode": "mode_k06_a1b2c1_y",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000046301962449,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.64591700958195e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__minus/openfoam_run_summary.json",
+              "summary_sha256": "5c9087c53746065e62d5c7e40ffc40c312aada1e042c4a574904c10f5d2e207d",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__plus",
+            "check_mesh": {
+              "concave_cell_count": 2964,
+              "concave_cell_fraction": 0.06954644642061053,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2964"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047878640000000014,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010606799999999944,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12878374221339928,
+              "volume_relative_difference": 0.000434897616923902,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010606799999999944,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0009999998694482887,
+            "mode": "mode_k06_a1b2c1_y",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999998694482887,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.145286000711295e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a1b2c1_y__plus/openfoam_run_summary.json",
+              "summary_sha256": "e2e1d480d9f4e92eb90e7559bd21d05506566ae44bbe38d6887259386bfd0a76",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "08bada547adfcea0dfde210b952c4495d49fc21422c2ea3272dfdef579a5537d",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9868046620390996,
+          "v2_normal_efficiency": 1.013371783158821
+        },
+        "candidate": {
+          "a": 2,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a2b1c1_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "2dffce54f6eb08e4bdfd936fd34d8b8a1d94c5d924030dbe8794a5fe40d5a4fb",
+        "order": 6,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999968309,
+          "difference_ok": false,
+          "max_abs_difference": 3.7551133931224e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.074007003495743,
+          "realized_active_l2_norm": 7.074006816771825
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 3.7551133931224e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04796768,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.001016160000000002,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12890576689089797,
+              "volume_relative_difference": 0.0005122064752613754,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.001016160000000002,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.000999998449558993,
+            "mode": "mode_k06_a2b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999984495589931,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 6.31614700818961e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "c261ece5a449dfd0a989c268fc0027c96107a93296a0d0db57234d0c5058e935",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2960,
+              "concave_cell_fraction": 0.06945259156714141,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2960"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047967680000000026,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010161599999999882,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12877378174602258,
+              "volume_relative_difference": 0.0005122065646377598,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010161599999999882,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0009999984495589656,
+            "mode": "mode_k06_a2b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999984495589656,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 6.978749911290549e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "439e9f9dad50422efce8035e315ce6c4bd0260acd3599b28d6ae1a61f3d6b52d",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "a53c065e11e914b27a35e90af8be63093eac56df33e63f3285f2b29831cb1c77",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0003801444549,
+          "v2_normal_efficiency": 0.9996199999999927
+        },
+        "candidate": {
+          "a": 2,
+          "axis": "z",
+          "b": 1,
+          "c": 1,
+          "frequency": 6,
+          "name": "mode_k06_a2b1c1_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "477199fee5e90d1ac59127d9471a3ac517c9d6cd4e93afd247262cce4f6f230b",
+        "order": 7,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999965633,
+          "difference_ok": false,
+          "max_abs_difference": 3.773613640567497e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 6.961520013099812,
+          "realized_active_l2_norm": 6.961524647946099
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 3.773613640567497e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2970,
+              "concave_cell_fraction": 0.06968722870081419,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2970"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.048000004,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.000999998000000002,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12871952758164595,
+              "volume_relative_difference": 0.0009333045109916514,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.000999998000000002,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.000999998000000002,
+            "mode": "mode_k06_a2b1c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999980000000019,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.706148024728577e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "5b521b7b7f1605afb2b43e5896f13412389da730a76db4dae12dabcd530b4c39",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2969,
+              "concave_cell_fraction": 0.06966376498744692,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2969"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.048,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010000000000000009,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12896002105422213,
+              "volume_relative_difference": 0.0009333044134464877,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010000000000000009,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k06_a2b1c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.773614001977847e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k06_a2b1c1_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "8ce2c3c23fcfd10a4b106d39894c1331caea3b76ac2b2a0dd1b44cf699b2ca88",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__calibration/openfoam_run_summary.json",
+            "summary_sha256": "f8d94e269e48b303ae6ed90458a4e60d0dc1ca3e6b54002c23a12b6abfd7de55",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.987838704491539,
+          "v2_normal_efficiency": 1.012311013380186
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "y",
+          "b": 2,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a1b2c2_y"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "030cda2f9cf4e5e71c34bc3167476ec5b67734157ed33612e1c2e6d66a3933ac",
+        "order": 8,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999986559,
+          "difference_ok": false,
+          "max_abs_difference": 4.692666822458946e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 12.3584453251352,
+          "realized_active_l2_norm": 12.358443778719526
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 4.692666822458946e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__minus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.0465792,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0017104000000000008,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12884887653099045,
+              "volume_relative_difference": 7.06474908101684e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0017104000000000008,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.001000001962913447,
+            "mode": "mode_k09_a1b2c2_y",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000019629134471,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.692669999949999e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__minus/openfoam_run_summary.json",
+              "summary_sha256": "b4d112a01b41313c5c999a9342dd14d3f13198bd3f0e7be9f834ebf606d85924",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__plus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.0465792,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0017104000000000008,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12883067212340463,
+              "volume_relative_difference": 7.064744455668303e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0017104000000000008,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000019629134993,
+            "mode": "mode_k09_a1b2c2_y",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000019629134993,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.692669999949999e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a1b2c2_y__plus/openfoam_run_summary.json",
+              "summary_sha256": "d2e8e889f6bb801dba7750afc91898d9b4f60a5684473a053139b97b65f4f10e",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "f4a87643548abdc6f91ca2953d6c4104bc372a9a38fec7cc059b1842e99738bf",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9639696372750866,
+          "v2_normal_efficiency": 1.0373770721936457
+        },
+        "candidate": {
+          "a": 2,
+          "axis": "x",
+          "b": 1,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a2b1c2_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "71cb508a679e20c87f8a26ed65dc683a6399be7cb478973e09a7e7adb359d80c",
+        "order": 9,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999968538,
+          "difference_ok": false,
+          "max_abs_difference": 3.936966928019814e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 8.270169506985278,
+          "realized_active_l2_norm": 8.270169514726135
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 3.936966928019814e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2956,
+              "concave_cell_fraction": 0.0693587367136723,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2956"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047702339999999996,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0011488300000000035,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12893435817525487,
+              "volume_relative_difference": 0.000734119968255746,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0011488300000000035,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000005225097221,
+            "mode": "mode_k09_a2b1c2_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000005225097222,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.785509903435184e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "69122ff35f4b6dd46665834a2dba985408cdaead6ef297327b4cd20f91222129",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2956,
+              "concave_cell_fraction": 0.0693587367136723,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2956"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047702339999999996,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0011488300000000035,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12874519046174548,
+              "volume_relative_difference": 0.0007341200570127776,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0011488300000000035,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000005225097154,
+            "mode": "mode_k09_a2b1c2_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000005225097155,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.936966944261826e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "fd384f677a58c7f1fb9ed504a114b0ff3b367051735b768eca965e3f859eec6c",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "5d793bf2410eb16f40b0c2031b6d2e234a74c75e47c068d9db1fc2535464d55d",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.000371137692089,
+          "v2_normal_efficiency": 0.9996289999999949
+        },
+        "candidate": {
+          "a": 2,
+          "axis": "z",
+          "b": 1,
+          "c": 2,
+          "frequency": 9,
+          "name": "mode_k09_a2b1c2_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "f3f577ce2143676c4e134637d6597125c1c6ae645f433ae368ff015995f78b74",
+        "order": 10,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999978603,
+          "difference_ok": false,
+          "max_abs_difference": 3.3342784359069455e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.225768382781707,
+          "realized_active_l2_norm": 7.225771287281461
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 3.3342784359069456e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2968,
+              "concave_cell_fraction": 0.06964030127407964,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2968"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799250000000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010037499999999977,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12865848374016392,
+              "volume_relative_difference": 0.0014071010680115376,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010037499999999977,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k09_a2b1c2_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.602620005764393e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "84dbcad1217594934af16914f78e194c1ea690ddf99c4bb7f7129403e2dc0262",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2970,
+              "concave_cell_fraction": 0.06968722870081419,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2970"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799250000000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010037499999999977,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1290210649280771,
+              "volume_relative_difference": 0.0014071012217314652,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010037499999999977,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k09_a2b1c2_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.602620005764393e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b1c2_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "cff9130742ac6d7d6734537f0359cc0b6a8c06e39fa5122d8f390c5b7720b1b1",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__calibration/openfoam_run_summary.json",
+            "summary_sha256": "4b33294a88fee6fa0362fa77232de4e6fc56c6404c3b06422940c1330a9b4692",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0077296219745502,
+          "v2_normal_efficiency": 0.992329666801493
+        },
+        "candidate": {
+          "a": 2,
+          "axis": "y",
+          "b": 2,
+          "c": 1,
+          "frequency": 9,
+          "name": "mode_k09_a2b2c1_y"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "bf8d146cfa5381714dc9e51f5d33600fee77fb03e982074e3814cf2b0bb026fe",
+        "order": 11,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999949357,
+          "difference_ok": false,
+          "max_abs_difference": 4.431151528649924e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.541373561039683,
+          "realized_active_l2_norm": 7.541378058274691
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 4.431151528649924e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__minus",
+            "check_mesh": {
+              "concave_cell_count": 2966,
+              "concave_cell_fraction": 0.06959337384734508,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2966"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04789506,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010524699999999998,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12881873229742977,
+              "volume_relative_difference": 0.00016331933906663882,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010524699999999998,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000004733914207,
+            "mode": "mode_k09_a2b2c1_y",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000004733914207,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.431152026007084e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__minus/openfoam_run_summary.json",
+              "summary_sha256": "e48cc850c260826aed7586c16b3f11b6a909588a30db5a5951bf3eb2347b8457",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__plus",
+            "check_mesh": {
+              "concave_cell_count": 2966,
+              "concave_cell_fraction": 0.06959337384734508,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2966"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04789506,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010524699999999998,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288608163472743,
+              "volume_relative_difference": 0.0001633193101026841,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010524699999999998,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000042821335059,
+            "mode": "mode_k09_a2b2c1_y",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000042821335058,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.431152026007084e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k09_a2b2c1_y__plus/openfoam_run_summary.json",
+              "summary_sha256": "71b0d87c0b59dc8e12a238cf66ef7bca9a08d99a7d0b3a4a967f0609c7b6fc5a",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "84606ef67a99ad24a6d6e759cf878a02b08c252e54c10e38530e1e507e77cb1d",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9582123590230318,
+          "v2_normal_efficiency": 1.0436099999999726
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 1,
+          "c": 3,
+          "frequency": 11,
+          "name": "mode_k11_a1b1c3_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "6d22d21ddfbb814214d7b6e117ce3d299f1fc44145b7e7ed58e2062805f15da9",
+        "order": 12,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999975147,
+          "difference_ok": false,
+          "max_abs_difference": 3.2448376509619514e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.978216963528782,
+          "realized_active_l2_norm": 7.9782200152305
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 3.2448376509619513e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2959,
+              "concave_cell_fraction": 0.06942912785377414,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2959"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799315999999999,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010034200000000049,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12884675837133278,
+              "volume_relative_difference": 5.4207228718889495e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010034200000000049,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b1c3_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.334716001228259e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "e6cc4fd70d08dc4e8fa2c8424088524bc4f5d85c46303867cfa52ae269c3c230",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2949,
+              "concave_cell_fraction": 0.06919449072010136,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2949"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799316000000005,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.001003419999999977,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12883279027785507,
+              "volume_relative_difference": 5.4207222881677495e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.001003419999999977,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b1c3_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.624849973630887e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "8a266b228a874de0b9d737270cc2bd8208ff4f61ab6c930e17ac60ab7a29be7f",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "0a7605d3d9f04006ec0951d5edd9512b8ea6c815f0ee0f50488e066f013281f5",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0062184298967696,
+          "v2_normal_efficiency": 0.9938199999999925
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 1,
+          "c": 3,
+          "frequency": 11,
+          "name": "mode_k11_a1b1c3_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "92f634e9db439a2ab9cc6a94e396d9b1aa9cf83fee632ff83b2d44bbf9df33f3",
+        "order": 13,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.999999999999258,
+          "difference_ok": false,
+          "max_abs_difference": 3.451044771785039e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 8.355472112914436,
+          "realized_active_l2_norm": 8.355478515739328
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 3.451044771785039e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04789826599999998,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010508670000000109,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12886190827044766,
+              "volume_relative_difference": 0.00017179435733929427,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010508670000000109,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0009999950000000035,
+            "mode": "mode_k11_a1b1c3_z",
+            "morpher_success": true,
+            "normalized_displacement": 0.9999950000000035,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 6.293129989343171e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "5b3b09b212804190b839738cbcc855c29c022ddc780f359202db370c91003a4c",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2973,
+              "concave_cell_fraction": 0.06975761984091602,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2973"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04789826600000001,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.001050866999999997,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12881764038447266,
+              "volume_relative_difference": 0.00017179430700906695,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.001050866999999997,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b1c3_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.451045002688673e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b1c3_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "2d30ffafb2b6cbf38d5fccface34b9e3894d9a5b6a8185e642d1a5a27371c2a7",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "9eaa1718299dde2b6ec12a09fe8b2d774744f5dbe7436f50ac046673b00a2f1c",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9782247177821717,
+          "v2_normal_efficiency": 1.022259999999997
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "x",
+          "b": 3,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a1b3c1_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "146a64d9859922d7e5372aa85ebebc9e03f8ceba1e0f7fdf25aeb4e1bdac9d3b",
+        "order": 14,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999972977,
+          "difference_ok": false,
+          "max_abs_difference": 3.8174873766561035e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 7.941844642740038,
+          "realized_active_l2_norm": 7.941846510000226
+        },
+        "realized_even_component_m": 5.000000025123796e-09,
+        "realized_movement_difference_m": 3.817487376656104e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2965,
+              "concave_cell_fraction": 0.0695699101339778,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2965"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047999079999999986,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010004600000000086,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288410759259833,
+              "volume_relative_difference": 1.0102484052177975e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010004600000000086,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b3c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.424276970979804e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "919169d25bf7bf784a6e12ef146af4808232c2105f36071c38c30afe150e9f95",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2963,
+              "concave_cell_fraction": 0.06952298270724325,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2963"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04799908000000004,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010004599999999808,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12883847272358842,
+              "volume_relative_difference": 1.0102475235609538e-05,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010004599999999808,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b3c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.022208037277267e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "cd80bec84e842cb714fc5199b8285f1911befd869324d230d78c41ef0d2ec46b",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__calibration/openfoam_run_summary.json",
+            "summary_sha256": "e4c1d282eeab5b7b290e4ad79e911ee96ce9080084284ecd5b1bc7a518e3c134",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 1.0034226747435513,
+          "v2_normal_efficiency": 0.9965889999999991
+        },
+        "candidate": {
+          "a": 1,
+          "axis": "z",
+          "b": 3,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a1b3c1_z"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "9a08b3722c49db05ffcff207df552f0bea6009db989473a9f8356b005cecc48f",
+        "order": 15,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999979415,
+          "difference_ok": false,
+          "max_abs_difference": 4.101953222479526e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 8.035490357167966,
+          "realized_active_l2_norm": 8.035489990269141
+        },
+        "realized_even_component_m": 4.999999997368221e-09,
+        "realized_movement_difference_m": 4.1019532224795266e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__minus",
+            "check_mesh": {
+              "concave_cell_count": 2967,
+              "concave_cell_fraction": 0.06961683756071235,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2967"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047975478,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010122610000000004,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12883891715066512,
+              "volume_relative_difference": 6.6530196693703454e-06,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010122610000000004,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b3c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 7.2160400155230064e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__minus/openfoam_run_summary.json",
+              "summary_sha256": "bf4f532c2e92d15860eaff84e5bb0cd104799a41298478e543abb0df7e9939e3",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__plus",
+            "check_mesh": {
+              "concave_cell_count": 2966,
+              "concave_cell_fraction": 0.06959337384734508,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2966"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.047975478,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010122610000000004,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.1288406314837455,
+              "volume_relative_difference": 6.652910811915511e-06,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010122610000000004,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a1b3c1_z",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 9.101952996859453e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a1b3c1_z__plus/openfoam_run_summary.json",
+              "summary_sha256": "ba772e00045e728f88e5bb4b9b65e6cc9f0cdb6d35d37540d44336e4fa2b4204",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      },
+      {
+        "calibration": {
+          "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__calibration",
+          "physical_basis_direction_unchanged": true,
+          "run": {
+            "error": null,
+            "returncode": 0,
+            "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__calibration/openfoam_run_summary.json",
+            "summary_sha256": "5c9239df769a8f96757249b760736e4ffebc081a478166bd52eaeae6f9dc6ea7",
+            "timed_out": false
+          },
+          "v2_amplitude_scale": 0.9756763876557619,
+          "v2_normal_efficiency": 1.0249299999999795
+        },
+        "candidate": {
+          "a": 3,
+          "axis": "x",
+          "b": 1,
+          "c": 1,
+          "frequency": 11,
+          "name": "mode_k11_a3b1c1_x"
+        },
+        "case_dirs": {
+          "minus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__minus",
+          "plus": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__plus"
+        },
+        "direction_pass": true,
+        "normalized_vector_sha256": "645ad4cdd552380081f23a5d0a82aabd2678f9b4ba0178c1e58ecbec4a3ecaff",
+        "order": 16,
+        "pass": true,
+        "realized_direction": {
+          "cosine_ok": true,
+          "cosine_similarity": 0.9999999999976337,
+          "difference_ok": false,
+          "max_abs_difference": 3.505595809527584e-06,
+          "max_relative_difference": 1.0,
+          "prescribed_active_l2_norm": 8.144393828341466,
+          "realized_active_l2_norm": 8.144392442872375
+        },
+        "realized_even_component_m": 4.999999969612645e-09,
+        "realized_movement_difference_m": 3.505595809527584e-09,
+        "sides": {
+          "minus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__minus",
+            "check_mesh": {
+              "concave_cell_count": 2960,
+              "concave_cell_fraction": 0.06945259156714141,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2960"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04797042000000003,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010147899999999876,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12877924821964315,
+              "volume_relative_difference": 0.0004697781014613739,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010147899999999876,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a3b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.173931975719029e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__minus/openfoam_run_summary.json",
+              "summary_sha256": "665e27703bb0bf206f4f03482af4b2a237f60e880f33b92d49664c39cc968edd",
+              "timed_out": false
+            },
+            "sign": "minus"
+          },
+          "plus": {
+            "case_dir": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__plus",
+            "check_mesh": {
+              "concave_cell_count": 2960,
+              "concave_cell_fraction": 0.06945259156714141,
+              "concave_face_max_angle_deg": null,
+              "failed_check_lines": [
+                "Concave cells (using face planes) found, number of cells: 2960"
+              ],
+              "mesh_ok": false,
+              "qualified": true,
+              "ran_to_completion": true,
+              "reasons": [],
+              "reported_failed_check_count": 1,
+              "status": "pass",
+              "total_cells": 42619
+            },
+            "geometry": {
+              "baseline_volume_m3": 0.1288397743242179,
+              "clearance_qualified": true,
+              "clearance_reasons": [],
+              "minimum_solid_width_m": 0.04797041999999997,
+              "minimum_solid_width_pass": true,
+              "minimum_solid_width_threshold_m": 0.01,
+              "minimum_width_max_surface_displacement_m": 0.0010147900000000154,
+              "minimum_width_method": "baseline_width_minus_two_sup_norm_displacement",
+              "minimum_width_reference_m": 0.05,
+              "pass": true,
+              "positive_volume": true,
+              "self_intersection": "none",
+              "volume_m3": 0.12890030044652587,
+              "volume_relative_difference": 0.0004697782390992395,
+              "volume_relative_difference_pass": true,
+              "volume_relative_difference_threshold": 0.02,
+              "watertight": true,
+              "winding_consistent": true
+            },
+            "immobility": {
+              "boundary_max_displacement_m": 0.0,
+              "boundary_point_count": 1336,
+              "interior_max_displacement_m": 0.0010147900000000154,
+              "pass": true
+            },
+            "max_abs_normal_displacement_m": 0.0010000000000000009,
+            "mode": "mode_k11_a3b1c1_x",
+            "morpher_success": true,
+            "normalized_displacement": 1.0000000000000009,
+            "normalized_displacement_pass": true,
+            "pass": true,
+            "realized": {
+              "boundary_fixed": true,
+              "inactive_zero": true,
+              "max_abs_difference": 8.50559600529266e-09,
+              "realized_equals_prescribed": true
+            },
+            "run": {
+              "error": null,
+              "returncode": 0,
+              "summary_path": "work/stage_s_reduced_basis_fd_v2_2026_09/s0r_s1r/modes/mode_k11_a3b1c1_x__plus/openfoam_run_summary.json",
+              "summary_sha256": "578777e65c5698d5ae1dfd879be41a2b4f34eb08f5d0b8d4d9dc2cf71ade41de",
+              "timed_out": false
+            },
+            "sign": "plus"
+          }
+        }
+      }
+    ],
+    "modes_evaluated": 16,
+    "modes_requested": 16,
+    "stopped_on_first_failure": false
+  },
+  "schema_version": 1,
+  "source_case": {
+    "metadata_sha256": "68b572a86bb7e400421665702c791dea2c86d9bd161f7b69f9058077932e2766",
+    "path": "work/stage_v_v16_physical_profile_expanded_domain_v2_2026_09/case"
+  },
+  "summary": {
+    "flow_campaign_allowed": true,
+    "n_modes_passed": 16,
+    "n_modes_requested": 16,
+    "preflight_pass": true,
+    "reduced_basis_fd_qualified": "pending",
+    "shape_update_allowed": false,
+    "solver_started": false
+  }
+}
