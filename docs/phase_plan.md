@@ -1938,3 +1938,29 @@ flags remain false.
   gates. The W0 CPU evidence is unmodified. Next: W2-T4a analytic sphere
   primal on this exact fixture, then W1g GPU GridSDF bridge, W2-T4b sampled
   sphere, W2b three flow grids. No solver step is qualified by W0b.
+
+## 2026-09-26 W2-T4a executed: analytic sphere primal on Colab T4
+
+- Registered criteria: `evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json`
+  SHA-256 `154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad`.
+  Identical W2a fixture (96x64x64, 16 cells/D, Re_D=100, Float32, t_end
+  60 tU/D, burn-in 40) with `mem=CuArray`; the criteria additionally register
+  the trapezoidal physical-time-weighted mean as a diagnostic
+  (`integral(F dt)/integral(dt)` over the window samples) next to the W2a
+  arithmetic mean used for the CPU/T4 historical comparison.
+- Result: `evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json` SHA-256
+  `70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754`;
+  9/9 registered gates (T0-T8). 2246 steps; wall 27.94 s on the T4 against
+  612 s on the 4-thread CPU; 12.45 ms/step with a 21.48 s warm-up excluded;
+  polled peak CUDA VRAM 53.8 MB of 15.6 GB. Window-mean drag 88.42577373 on
+  T4 versus 88.42577970 on CPU (relative difference 6.75e-8 against the
+  registered 1% bound); stationarity drift 1.20e-7; the identical T4 repeat
+  reproduces the statistics exactly (relative difference 0.0); the
+  time-weighted mean drag is 88.42577367 (diagnostic, nearly identical on
+  this steady fixture).
+- This qualifies the CUDA solver path for the analytic fixture only. The
+  GridSDF bridge on GPU (W1g), the sampled sphere on T4 (W2-T4b) and the
+  grid ladder (W2b) remain open; no v16, gradient or reverse-mode claim is
+  authorized. Job `scripts/waterlily_w2t4_job.jl` (analytic mode; the
+  `gridsdf` mode is reserved for W2-T4b), recorder
+  `scripts/register_sdf_native_w2t4a_analytic_sphere_2026_09.py`.

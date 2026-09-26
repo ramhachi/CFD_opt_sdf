@@ -2020,3 +2020,25 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
   `scripts/register_sdf_native_w0b_t4_cuda_env_2026_09.py`.
 - Next: W2-T4a (analytic sphere only, identical W2a fixture, `mem=CuArray`),
   then W1g, W2-T4b, W2b. No solver step is qualified by W0b.
+
+## 2026-09-26: W2-T4a done (analytic sphere primal on Colab T4)
+
+- Criteria `docs/evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json`
+  SHA-256 `154fec91...`; result
+  `docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json` SHA-256
+  `70f747e2...`; 9/9 gates (T0-T8). Job `scripts/waterlily_w2t4_job.jl`
+  (mode=analytic, mem=CuArray; mode=gridsdf is reserved for W2-T4b after
+  W1g), recorder `scripts/register_sdf_native_w2t4a_analytic_sphere_2026_09.py`.
+- Numbers: 2246 steps, 27.94 s wall (12.45 ms/step, warm-up excluded) on the
+  T4 versus 612 s on the 4-thread CPU; peak CUDA VRAM 53.8 MB of 15.6 GB;
+  window-mean drag 88.42577373 (T4) vs 88.42577970 (W2a CPU), relative
+  difference 6.75e-8 against the registered 1% bound; stationarity 1.20e-7;
+  T4 repeat statistics identical (relative difference 0.0); registered
+  trapezoidal time-weighted mean drag 88.42577367 (diagnostic).
+- The CUDA solver path is qualified for the analytic fixture only. Next:
+  W1g GPU GridSDF bridge (device phi derived from the canonical CPU phi with
+  recorded source sha; no host-array indexing or forced Float64 in the kernel
+  measurement path; W1 margin gate stays a CPU-side pre-launch gate; a
+  registered CUDA compile/execution fixture must compare CPU/GPU SDF
+  value+normal within preregistered Float32 tolerances), then W2-T4b, then
+  W2b 16/24/32 cells/D.
