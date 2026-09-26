@@ -163,6 +163,13 @@ master §10 (bounded horizons, checkpoint/recompute, custom rules) sized to the
 
 1. Colab MCP integration for the four controller verbs (or an explicit
    "paste-command" fallback for the first campaign).
+   **Update 2026-09-26:** `googlecolab/colab-mcp` (built at upstream commit
+   `b9ab3899e0f1fa493390b1fd6d54aa2e464ecdf1`) is registered in the operator's
+   global OpenCode config (`~/.config/opencode/opencode.json`, `uvx ... colab-mcp`)
+   and verified to launch. Residual gap: confirm its actual tool/toolset covers
+   the four controller verbs at first use; until then the paste-command fallback
+   remains the fallback path. This is operator-environment evidence, not
+   repository evidence.
 2. `scripts/run_waterlily_job.py` and the worker state machine do not exist
    yet; they arrive with PR-03 (primal) / PR-06 (FD).
 3. Julia pinning (from the audit: Julia is not installed locally; the T4
