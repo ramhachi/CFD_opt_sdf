@@ -15,8 +15,6 @@ using SHA
 include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWaterLily.jl"))
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
-using .CFDSDFWaterLily.Runtime
-using .CFDSDFWaterLily.Simulation
 using WaterLily
 
 length(ARGS) == 3 || error("usage: waterlily_w2a_job.jl <params.jl> <mode> <out_prefix>")
@@ -24,21 +22,21 @@ params_path, mode, out_prefix = ARGS
 include(params_path)
 
 function assert_registered(p)
-    @assert Tuple(p.flow_dims) == FLOW_DIMS "flow_dims drift"
-    @assert Tuple(Float64.(p.solver_center)) == SOLVER_CENTER "solver_center drift"
-    @assert Float64(p.solver_radius) == SOLVER_RADIUS "solver_radius drift"
-    @assert Float64(p.u_inf) == FREESTREAM "u_inf drift"
-    @assert Float64(p.reynolds) == REYNOLDS "reynolds drift"
-    @assert Float64(p.viscosity) == SOLVER_VISCOSITY "viscosity drift"
-    @assert Tuple(Float64.(p.phi_origin)) == SPHERE_PHI_ORIGIN "phi_origin drift"
-    @assert Float64(p.phi_spacing) == SPHERE_PHI_SPACING "phi_spacing drift"
-    @assert Tuple(p.phi_shape) == SPHERE_PHI_SHAPE "phi_shape drift"
-    @assert Tuple(Float64.(p.phi_center)) == SPHERE_CENTER_M "phi_center drift"
-    @assert Float64(p.phi_radius) == SPHERE_RADIUS_M "phi_radius drift"
-    @assert Float64(p.outside_value) == OUTSIDE_VALUE_M "outside_value drift"
-    @assert Float64(p.run_margin) == RUN_MARGIN_M "run_margin drift"
-    @assert Tuple(Float64.(p.world_origin)) == WORLD_ORIGIN_M "world_origin drift"
-    @assert Float64(p.world_per_solver) == WORLD_PER_SOLVER "world_per_solver drift"
+    @assert Tuple(p.flow_dims) == CFDSDFWaterLily.FLOW_DIMS "flow_dims drift"
+    @assert Tuple(Float64.(p.solver_center)) == CFDSDFWaterLily.SOLVER_CENTER "solver_center drift"
+    @assert Float64(p.solver_radius) == CFDSDFWaterLily.SOLVER_RADIUS "solver_radius drift"
+    @assert Float64(p.u_inf) == CFDSDFWaterLily.FREESTREAM "u_inf drift"
+    @assert Float64(p.reynolds) == CFDSDFWaterLily.REYNOLDS "reynolds drift"
+    @assert Float64(p.viscosity) == CFDSDFWaterLily.SOLVER_VISCOSITY "viscosity drift"
+    @assert Tuple(Float64.(p.phi_origin)) == CFDSDFWaterLily.SPHERE_PHI_ORIGIN "phi_origin drift"
+    @assert Float64(p.phi_spacing) == CFDSDFWaterLily.SPHERE_PHI_SPACING "phi_spacing drift"
+    @assert Tuple(p.phi_shape) == CFDSDFWaterLily.SPHERE_PHI_SHAPE "phi_shape drift"
+    @assert Tuple(Float64.(p.phi_center)) == CFDSDFWaterLily.SPHERE_CENTER_M "phi_center drift"
+    @assert Float64(p.phi_radius) == CFDSDFWaterLily.SPHERE_RADIUS_M "phi_radius drift"
+    @assert Float64(p.outside_value) == CFDSDFWaterLily.OUTSIDE_VALUE_M "outside_value drift"
+    @assert Float64(p.run_margin) == CFDSDFWaterLily.RUN_MARGIN_M "run_margin drift"
+    @assert Tuple(Float64.(p.world_origin)) == CFDSDFWaterLily.WORLD_ORIGIN_M "world_origin drift"
+    @assert Float64(p.world_per_solver) == CFDSDFWaterLily.WORLD_PER_SOLVER "world_per_solver drift"
     return nothing
 end
 assert_registered(W2A_PARAMS)
@@ -53,18 +51,22 @@ json_array(values) = "[" * join(json_number.(values), ",") * "]"
 phi_margin_m = NaN
 phi_sha256 = ""
 body = if mode == "analytic"
-    analytic_sphere_body()
+    CFDSDFWaterLily.analytic_sphere_body()
 elseif mode == "gridsdf"
-    grid = sphere_phi_fixture()
-    global phi_margin_m = zero_level_margin_m(grid.phi, grid.origin, grid.h)
-    global phi_sha256 = bytes2hex(sha256(reinterpret(UInt8, vec(grid.phi))))
-    GridSDFWaterLilyBody(grid, WORLD_ORIGIN_M, WORLD_PER_SOLVER)
+    grid = CFDSDFWaterLily.sphere_phi_fixture()
+    phi_margin_m = zero_level_margin_m(grid.phi, grid.origin, grid.h)
+    phi_sha256 = bytes2hex(sha256(reinterpret(UInt8, vec(grid.phi))))
+    CFDSDFWaterLily.GridSDFWaterLilyBody(
+        grid,
+        CFDSDFWaterLily.WORLD_ORIGIN_M,
+        CFDSDFWaterLily.WORLD_PER_SOLVER,
+    )
 else
     error("unknown mode $(mode)")
 end
 
-sim = build_sphere_sim(body)
-fingerprint = runtime_fingerprint()
+sim = CFDSDFWaterLily.build_sphere_sim(body)
+fingerprint = CFDSDFWaterLily.runtime_fingerprint()
 
 t_end = Float64(W2A_PARAMS.t_end)
 burn_in = Float64(W2A_PARAMS.burn_in)
@@ -77,8 +79,8 @@ while sim_time(sim) < t_end
     sim_step!(sim)
     step += 1
     if step % sample_every == 0
-        fp = pressure_force_on_body(sim)
-        fv = viscous_force_on_body(sim)
+        fp = CFDSDFWaterLily.pressure_force_on_body(sim)
+        fv = CFDSDFWaterLily.viscous_force_on_body(sim)
         push!(history, (
             Float64(step),
             Float64(sim_time(sim)),
@@ -113,11 +115,11 @@ second_half = [row for row in window if row[2] >= mid]
 mean_of(rows, i) = sum(row[i] for row in rows) / length(rows)
 finite_forces = all(row -> all(isfinite, row), history)
 
-area = sphere_reference_area()
+area = CFDSDFWaterLily.sphere_reference_area()
 mean_drag = mean_of(window, 3)
 mean_lift = mean_of(window, 4)
 mean_side = mean_of(window, 5)
-cd = mean_drag / (0.5 * FREESTREAM^2 * area)
+cd = mean_drag / (0.5 * CFDSDFWaterLily.FREESTREAM^2 * area)
 
 summary = string(
     "{",
@@ -138,8 +140,8 @@ summary = string(
     "\"finite_forces\":", finite_forces, ",",
     "\"phi_margin_m\":", json_number(phi_margin_m), ",",
     "\"phi_sha256\":\"", phi_sha256, "\",",
-    "\"world_origin_m\":", json_array(WORLD_ORIGIN_M), ",",
-    "\"world_per_solver\":", json_number(WORLD_PER_SOLVER), ",",
+    "\"world_origin_m\":", json_array(CFDSDFWaterLily.WORLD_ORIGIN_M), ",",
+    "\"world_per_solver\":", json_number(CFDSDFWaterLily.WORLD_PER_SOLVER), ",",
     "\"window_mean_drag\":", json_number(mean_drag), ",",
     "\"window_mean_lift\":", json_number(mean_lift), ",",
     "\"window_mean_side\":", json_number(mean_side), ",",
