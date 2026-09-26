@@ -1927,3 +1927,31 @@ GPU. Evidence: `docs/evidence/sdf_native_w0_julia_env_2026_09.json` (SHA-256
 `9689ed58dfda87414bc1a4be8fce49d86405c2619217540bfe08391b98b3e5e7`). Next:
 W1 GridSDFBody adapter qualification (outside-domain fluid extension,
 margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
+
+## 2026-09-26: W1 done (GridSDFBody adapter qualified, v16 margin gate accepted)
+
+- Registration `docs/evidence/sdf_native_w1_adapter_criteria_2026_09.json`
+  (SHA-256 `6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef`)
+  is used in correction round 4. The round-2/3 interface-band bound 1.0e-3 m
+  rested on a wrong Float32-rounding rationale; the deterministic fixture
+  failed fail-closed at 1.250e-3 m. The adapter is exonerated by the same run
+  (affine exactness 1.776e-15 m, round-trip 2.220e-16 m, exact outside
+  extension) and by an independent numpy sup (1.2520e-3 m, 200,000 probes).
+  Round 4 registers the analytic Kergin/tensor-Newton truncation bound
+  3.3e-3 m; all other bounds are unchanged. Failed value and correction
+  history are carried in the criteria and the evidence.
+- Implementation committed with W1: `julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl`,
+  `src/GridSDFBody.jl`, `test/test_grid_sdf_body.jl` (10/10 registered gates),
+  and the controller `scripts/register_sdf_native_w1_grid_sdf_body_2026_09.py`
+  (fail-closed: no evidence on any gate failure). Executed on CLI Julia 1.12.6
+  against the pinned Manifest.
+- v16 genesis margin: gate constructor accepted at the registered 0.15 m
+  margin with measured conservative clearance 0.34999999399 m; genesis-grid
+  round trip exact. The measured affine map (origin (-1.0,-0.8,-0.6) m,
+  h 0.05 m, scale 20 m^-1) must be advertised in every later run's runtime
+  fingerprint.
+- Evidence: `docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json` SHA-256
+  `d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567`. No
+  solver run, no force value, no CUDA/Enzyme or Manifest change; flags false.
+  Next: W2 analytic sphere primal (CPU first, then T4), W2b three-resolution
+  bug isolation, W3 v16 primal.

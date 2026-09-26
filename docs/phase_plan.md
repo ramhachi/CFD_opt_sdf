@@ -1833,3 +1833,41 @@ flags remain false.
   false. Next gate: W1 GridSDFBody adapter qualification under contract 1
   (outside-domain fluid extension, interface-to-boundary margin, world<->solver
   coordinate map), then W2 analytic sphere primal (CPU first, then T4).
+
+## 2026-09-26 W1 executed: GridSDFBody adapter qualified, v16 margin gate accepted
+
+- Registered criteria: `evidence/sdf_native_w1_adapter_criteria_2026_09.json`
+  SHA-256 `6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef`,
+  used in correction round 4. Rounds 2/3 had bounded the interface-band sdf
+  error at 1.0e-3 m from a Float32-rounding rationale; the deterministic
+  fixture then failed fail-closed at 1.250e-3 m. The controlling term is the
+  trilinear truncation error of the curved sphere SDF, not input rounding: the
+  same run passes affine exactness (1.776e-15 m), round-trip (2.220e-16 m) and
+  exact outside extension, and an independent numpy evaluation reproduces the
+  band sup (1.2520e-3 m over 200,000 probes). Round 4 registers the analytic
+  Kergin/tensor-Newton truncation bound 3.3e-3 m (surface cells cover
+  r >= R - band - sqrt(3)h/2 = 0.455699 m; pure-second-derivative 2.057e-3 +
+  mixed allowance 1.029e-3 + triple allowance 0.139e-3) and leaves every other
+  bound unchanged. This is a documented fail-closed correction, not a
+  post-measurement threshold fit; the failed value is carried in the criteria
+  history and the evidence.
+- Fixture suite: 10/10 registered gates pass under CLI Julia 1.12.6 with the
+  pinned Manifest (`65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c`):
+  world<->solver round-trip 2.220e-16 m, affine exactness 1.776e-15 m,
+  interface-band error 1.250e-3 m on 5000 explicit band probes (uniform-sampling
+  interior diagnostic 1.271e-2 m recorded, not gated), zero-level radius
+  1.826e-3 m, exact positive outside extension, margin-gate pass and refusal,
+  all-solid refusal.
+- Real-data diagnosis: the registered v16 genesis state (canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, phi SHA
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`) is
+  accepted by the gate constructor at the registered 0.15 m margin with
+  measured conservative clearance 0.34999999399 m, and the world<->solver
+  round trip on the genesis grid is exact. Every later registered run must
+  advertise the measured affine map (origin (-1.0,-0.8,-0.6) m, h 0.05 m,
+  scale 20 m^-1) in its runtime fingerprint.
+- Evidence: `evidence/sdf_native_w1_grid_sdf_body_2026_09.json` SHA-256
+  `d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567`. No
+  solver run, no force value, no CUDA/Enzyme or Manifest change; all flags
+  false. Next gate: W2 analytic sphere primal (CPU first, then T4), then W2b
+  three-resolution bug isolation, then W3 v16 primal.
