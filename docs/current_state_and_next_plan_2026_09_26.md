@@ -104,3 +104,25 @@ candidate `5e6d…`、physical-profile `a846…`、Docker image ID
 calibration で、登録済み 3 mode × 4 epsilon × 2 sign（最大 24 primals）を実行し、
 各 perturbed shape に v2 physical-profile gate を毎回適用する。結果を見た後の
 epsilon・閾値変更はしない。
+
+## 追記 — SDF-native architecture fork（2026-09-26）
+
+K=16 B-spline reduced-basis Stage S v2 経路は `superseded_reference` として
+freeze した（[`stage_s_reduced_basis_fd_v2_supersession_2026_09.json`](evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json)、SHA-256
+`1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d`）。
+**S2 は開始しない。** 既存の P21 / Stage V / domain-convergence / S0R/S1R の
+evidence は一切変更していない。
+
+新しい canonical design state は SDF field `phi`（`phi < 0` solid）とし、
+`docs/CFD_opt_sdf_SDF_native_handoff/` を subordinate plan として採用する。
+PR-01 は solver-free で、`design/sdf_state.py`、`oracles/base.py`、
+`gradients/base.py`、`runtime/fingerprint.py`、canonical semantics
+（`f=-CDF`、`g_R=R_min*CD-CDF<=0`、`g_V=V/V_max-1<=0`）、repo inventory
+（SHA-256 `00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559`）、
+architecture registration
+（SHA-256 `743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`）
+を追加する。WaterLily は candidate primal に限定し、PR #285 の CPU reverse
+PoC と GPU reverse Go/No-Go を分離して進める。次の gate 順は SDF genesis →
+WaterLily primal → SDF centered FD → CPU reverse → GPU reverse 判定 →
+one SDF update → topology birth → OpenFOAM PQ5。全 flagship flag は false の
+ままである。

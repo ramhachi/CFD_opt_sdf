@@ -1,0 +1,32 @@
+{
+  "claims_not_supported": [
+    "the S0R/S1R pass is geometry/morpher evidence only; no flow response was evaluated",
+    "a qualified reduced-basis FD gradient, shape update, or S2-S5 result does not exist",
+    "this supersession record changes no existing manifest or evidence"
+  ],
+  "existing_evidence_modified": false,
+  "immutable": true,
+  "kind": "stage_s_reduced_basis_fd_v2_supersession",
+  "preserved_artifacts": [
+    {
+      "path": "docs/evidence/stage_s_reduced_basis_fd_v2_manifest_2026_09.json",
+      "role": "v2_contract",
+      "sha256": "b96df520e6a359c206b9ded3c4cb1872220344ba9a46c7a7492d0e1ba47860dd"
+    },
+    {
+      "path": "docs/evidence/stage_s_reduced_basis_fd_v2_preflight_2026_09.json",
+      "role": "s0r_s1r_preflight",
+      "sha256": "3f6cb15eae5b7770640466c89f9c296a383dd152f9f1dc0fedbc95d69acdaf50"
+    }
+  ],
+  "preserved_flags": {
+    "original_adjoint_derivative_qualified": false,
+    "reduced_basis_fd_qualified": "pending",
+    "shape_update_allowed": false
+  },
+  "reason": "canonical design representation changes from B-spline control points to an SDF field",
+  "s2_campaign_started": false,
+  "schema_version": 1,
+  "status": "superseded_reference",
+  "superseded_by": "sdf_native_architecture_v1"
+}

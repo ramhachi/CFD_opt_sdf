@@ -105,10 +105,96 @@ def canonical_sense_sign(sense: str) -> int:
     raise ValueError(f"unsupported objective sense: {sense!r}")
 
 
+# --- SDF-native semantics (PR-01) -----------------------------------------
+# Pure functions/dataclasses in response space.  They do not touch historical
+# Phase 2 manifests; the Stage T/B-spline path keeps its own compiled algebra.
+
+DOWN_FORCE_RESPONSE = "downforce"
+DRAG_RESPONSE = "drag"
+
+
+def canonical_downforce_objective(c_downforce: float) -> float:
+    """Minimization objective ``f = -C_DF`` with the repository downforce sign."""
+
+    return -float(c_downforce)
+
+
+def canonical_downforce_objective_gradient(downforce_gradient: np.ndarray) -> np.ndarray:
+    """``df/dphi = -dC_DF/dphi``."""
+
+    return -np.asarray(downforce_gradient, dtype=np.float64)
+
+
+@dataclass(frozen=True)
+class EfficiencyConstraint:
+    """Division-free drag-efficiency requirement ``g_R = R_min*C_D - C_DF <= 0``.
+
+    For ``C_D > 0`` this is equivalent to ``C_DF/C_D >= R_min`` without the
+    singularity and denominator sensitivity of a ratio objective.
+    """
+
+    r_min: float
+    constraint_id: str = "drag_efficiency"
+
+    def __post_init__(self) -> None:
+        if not np.isfinite(self.r_min) or float(self.r_min) <= 0.0:
+            raise ValueError("r_min must be finite and positive")
+        if not str(self.constraint_id).strip():
+            raise ValueError("constraint_id must be non-empty")
+
+    def value(self, *, c_drag: float, c_downforce: float) -> float:
+        return float(self.r_min) * float(c_drag) - float(c_downforce)
+
+    def gradient(
+        self, *, drag_gradient: np.ndarray, downforce_gradient: np.ndarray
+    ) -> np.ndarray:
+        return float(self.r_min) * np.asarray(drag_gradient, dtype=np.float64) - np.asarray(
+            downforce_gradient, dtype=np.float64
+        )
+
+    def satisfied(self, *, c_drag: float, c_downforce: float, tolerance: float = 0.0) -> bool:
+        return self.value(c_drag=c_drag, c_downforce=c_downforce) <= float(tolerance)
+
+    def to_dict(self) -> dict[str, float | str]:
+        return {"constraint_id": self.constraint_id, "r_min": float(self.r_min)}
+
+
+@dataclass(frozen=True)
+class VolumeConstraint:
+    """Normalized volume budget ``g_V = V(phi)/V_max - 1 <= 0``."""
+
+    v_max: float
+    constraint_id: str = "volume"
+
+    def __post_init__(self) -> None:
+        if not np.isfinite(self.v_max) or float(self.v_max) <= 0.0:
+            raise ValueError("v_max must be finite and positive")
+        if not str(self.constraint_id).strip():
+            raise ValueError("constraint_id must be non-empty")
+
+    def value(self, volume: float) -> float:
+        return float(volume) / float(self.v_max) - 1.0
+
+    def gradient(self, volume_gradient: np.ndarray) -> np.ndarray:
+        return np.asarray(volume_gradient, dtype=np.float64) / float(self.v_max)
+
+    def satisfied(self, volume: float, tolerance: float = 0.0) -> bool:
+        return self.value(volume) <= float(tolerance)
+
+    def to_dict(self) -> dict[str, float | str]:
+        return {"constraint_id": self.constraint_id, "v_max": float(self.v_max)}
+
+
 __all__ = [
+    "DOWN_FORCE_RESPONSE",
+    "DRAG_RESPONSE",
     "CanonicalObjectiveRecord",
+    "EfficiencyConstraint",
     "RAW_GRADIENT_ERROR",
     "RAW_GRADIENT_USE",
+    "VolumeConstraint",
+    "canonical_downforce_objective",
+    "canonical_downforce_objective_gradient",
     "canonical_objective_from",
     "canonical_sense_sign",
     "record_from_parent_result",

@@ -1772,3 +1772,48 @@ start another OpenFOAM case until a corrected contract is registered.
   modes), re-applying the v2 physical-profile gates to every perturbed shape;
   epsilon and thresholds must not be changed from the observed results. S4
   failure or one failing mode keeps the shape update blocked.
+
+## 2026-09-26: SDF-native architecture fork and legacy Stage S freeze
+
+- The handoff bundle `docs/CFD_opt_sdf_SDF_native_handoff/` (checksum
+  verified) is the adopted subordinate plan for the next line. `phase_plan.md`
+  remains the sole roadmap authority; see its appended 2026-09-26 fork
+  section.
+- The canonical design state becomes an SDF field (`phi < 0` solid, `phi > 0`
+  fluid). The K=16 B-spline reduced-basis Stage S v2 contract is preserved
+  byte-identically and marked `superseded_reference`
+  (`docs/evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json`,
+  SHA-256 `1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d`);
+  **do not start S2**. No existing manifest or evidence was modified.
+- PR-01 (`Architect SDF-native optimization core and freeze legacy Stage S`,
+  solver-free) adds:
+  - `src/cfd_sdf/design/sdf_state.py` — immutable `SDFDesignState`, canonical
+    state hash over field/grid/masks/sign/topology/reinit policies;
+  - `src/cfd_sdf/oracles/base.py` — `ResponseOracle`, `ResponseRequest`,
+    `PrimalEvaluation`;
+  - `src/cfd_sdf/gradients/base.py` — `GradientEngine`, `GradientRequest`,
+    `GradientEvaluation` (`qualified=False` by default, fail-closed);
+  - `src/cfd_sdf/runtime/fingerprint.py` — deterministic backend identity and
+    `assert_resume_compatible`;
+  - canonical objective/constraint semantics in `canonical_objective.py`
+    (`f = -CDF`, `g_R = R_min*CD - CDF <= 0`, `g_V = V/V_max - 1 <= 0`);
+  - `docs/evidence/repo_inventory_sdf_native_v1.json` (SHA-256
+    `00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559`) and
+    `docs/evidence/sdf_native_architecture_registration_2026_09.json`
+    (SHA-256 `743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`);
+  - `scripts/inventory_sdf_native_repo.py` and
+    `scripts/register_sdf_native_architecture_2026_09.py` (both
+    `--register`/`--verify`).
+- Verified external facts (2026-09-26): WaterLily PR #285 open at
+  `feed49f480b52047b4e9b8bfacdf3e4f8201106b`; CPU reverse works through full
+  `sim_step!` with a custom implicit Poisson rule; GPU reverse blocked by a
+  missing `cuMemcpyHtoDAsync_v2` Enzyme rule; Poisson tolerance `1e-4` roughly
+  10% vs ForwardDiff and `1e-10` roughly `2.4e-5`; MIT Expat license; paper
+  CPC 315, 109748 (2025). PR #290 is an unrelated scalar-transport PR — the
+  deep-research document's #290 references are wrong; use #285.
+- Flags remain `shape_update_allowed=false`, `sdf_gradient_qualified=false`,
+  `waterlily_reverse_cpu_qualified=false`, `waterlily_reverse_cuda_qualified=false`,
+  `topology_birth_qualified=false`. No solver, no WaterLily run, no topology
+  birth. Next gate order: SDF genesis -> WaterLily primal -> SDF centered FD
+  -> CPU reverse PoC -> GPU reverse Go/No-Go -> one SDF update -> topology
+  birth -> OpenFOAM PQ5.

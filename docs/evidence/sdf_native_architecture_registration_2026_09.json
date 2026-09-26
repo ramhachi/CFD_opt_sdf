@@ -1,0 +1,112 @@
+{
+  "architecture_id": "sdf_native_v1",
+  "canonical_design_state": {
+    "module": "src/cfd_sdf/design/sdf_state.py",
+    "path": "src/cfd_sdf/design/sdf_state.py",
+    "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf",
+    "sign_convention": "phi < 0 solid"
+  },
+  "cdf_campaign_started": false,
+  "claims_not_supported": [
+    "no SDF gradient, WaterLily primal, reverse-AD, topology-birth, or optimizer qualification",
+    "the old K=16 reduced-basis S2 campaign is intentionally not started",
+    "no absolute, grid-independent, high-Re, or full-vehicle downforce claim"
+  ],
+  "contracts": {
+    "canonical_semantics": {
+      "efficiency": "g_R = R_min*CD - CDF <= 0",
+      "objective": "f = -CDF",
+      "path": "src/cfd_sdf/canonical_objective.py",
+      "sha256": "81dd3947bb6fcaa04a845b296e37ddb980d7329c1916a9400db511fea092679c",
+      "volume": "g_V = V/V_max - 1 <= 0"
+    },
+    "gradient": {
+      "path": "src/cfd_sdf/gradients/base.py",
+      "sha256": "9ddc6d2e29998e925ab615b220ddff5180704af3102e0d4428ac22c38434c2f7"
+    },
+    "oracle": {
+      "path": "src/cfd_sdf/oracles/base.py",
+      "sha256": "94b5d85c91cdb52cc7b6b8a2645e55f60035ad1bd298830d63746b8e8af395cc"
+    },
+    "runtime_fingerprint": {
+      "path": "src/cfd_sdf/runtime/fingerprint.py",
+      "sha256": "e7c4419c0a2ca111c34eebb1855a5885e162d6e1ae43c2aaa7ed9b29b0501553"
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_implemented": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "fork_base_branch": "feat/p0-openfoam-closed-loop",
+  "fork_base_commit": "ebdd01f293636b2fc736885a1032d466e6632e9a",
+  "handoff_bundle": {
+    "files": [
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/00_HANDOFF_MASTER.md",
+        "sha256": "6650bb2fc333ed9e241d4135267497cd46269dbfbf364fad096167295faaa31b"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/01_CURRENT_REPO_STATE.md",
+        "sha256": "b06f7f460e07b3aec0b420659f8fda336e9b5ad826d839448371021b3b454b82"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/02_DEEP_RESEARCH_REARCHITECTURE_PLAN.md",
+        "sha256": "6af02f7d8c8705c41280cd920d2b17730388722793398a9d5f0e8f85ab47c8cb"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/03_WATERLILY_DEEP_DIVE.md",
+        "sha256": "627e6dd45b2c7c466b3280b120b6042bad659553419d5208631306c1474bfc5f"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/04_FIRST_IMPLEMENTATION_TASK.md",
+        "sha256": "5897c3a241fb03dcc70f1051603ac34f0ede278968a87569fd5f9eab0936910e"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/05_KEY_SOURCES.md",
+        "sha256": "318003d490bf3c044644a8acb845adae57ef2cc1bd420a34a24d3cf0580897df"
+      },
+      {
+        "path": "docs/CFD_opt_sdf_SDF_native_handoff/README.md",
+        "sha256": "6c072294a655c6456fae0823d381317e0d7fa4a6f524468989cb33898d45f9b0"
+      }
+    ],
+    "path": "docs/CFD_opt_sdf_SDF_native_handoff",
+    "sha256sums_verified": true
+  },
+  "immutable": true,
+  "kind": "sdf_native_architecture_registration",
+  "legacy_stage_s": {
+    "existing_evidence_modified": false,
+    "s2_campaign_started": false,
+    "supersession": {
+      "path": "docs/evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json",
+      "sha256": "1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d"
+    }
+  },
+  "registration_script": {
+    "path": "scripts/register_sdf_native_architecture_2026_09.py",
+    "sha256": "8fd20bbdd4a88d82a7bfd4e6377b2d63e2344ca32806fadbb6f9fed1743e6155"
+  },
+  "repo_inventory": {
+    "path": "docs/evidence/repo_inventory_sdf_native_v1.json",
+    "sha256": "00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559"
+  },
+  "repository": "https://github.com/ramhachi/CFD_opt_sdf.git",
+  "schema_version": 1,
+  "solver_started": false,
+  "status": "registered",
+  "waterlily": {
+    "gpu_reverse_status": "blocked_missing_cuda_driver_rule_cuMemcpyHtoDAsync_v2",
+    "head_sha": "feed49f480b52047b4e9b8bfacdf3e4f8201106b",
+    "pull_request": 285,
+    "repository": "https://github.com/WaterLily-jl/WaterLily.jl",
+    "role": "experimental_cpu_reverse_ad_poc_only",
+    "state": "open",
+    "title": "Reverse AD via Enzyme extension",
+    "verified_on": "2026-09-26"
+  }
+}

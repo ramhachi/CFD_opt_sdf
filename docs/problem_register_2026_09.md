@@ -1779,3 +1779,41 @@ source-to-snapshot mapping is recorded in
 `evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json`.
 The v2 status is `registered_not_run`; no solver, mesh generation, optimization
 campaign, S2 calibration, or shape update is authorized by this contract.
+
+## 2026-09-26 SDF-native architecture fork and legacy Stage S freeze
+
+The checksum-verified handoff bundle `docs/CFD_opt_sdf_SDF_native_handoff/`
+is adopted as the subordinate plan for the next architecture line. The
+canonical design state becomes an SDF field (`phi < 0` solid / `phi > 0`
+fluid); STL, B-spline control points and body-fitted meshes become derived
+artifacts. The K=16 B-spline reduced-basis Stage S v2 path is frozen as
+`superseded_reference`
+(`evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json`, SHA-256
+`1eee51fdd03bc0402650d45b2d8174f969cbe2216c329c76b7275880f2c4a35d`), and
+**S2 is intentionally not started**. No existing manifest or evidence was
+modified.
+
+The architecture registration
+(`evidence/sdf_native_architecture_registration_2026_09.json`, SHA-256
+`743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`) binds
+the fork base `ebdd01f`, the bundle file hashes, the new contracts, the
+verified WaterLily PR #285 facts (open at
+`feed49f480b52047b4e9b8bfacdf3e4f8201106b`; CPU reverse works through full
+`sim_step!` with a custom implicit Poisson rule; GPU reverse blocked by a
+missing `cuMemcpyHtoDAsync_v2` rule; Poisson tolerance `1e-4` gives roughly
+10% disagreement versus ForwardDiff and `1e-10` gives roughly `2.4e-5`), and
+all conservative flags false.
+
+PR-01 (solver-free) adds `design/sdf_state.py`, `oracles/base.py`,
+`gradients/base.py`, `runtime/fingerprint.py`, the canonical `f = -CDF`,
+`g_R = R_min*CD - CDF <= 0` and `g_V = V/V_max - 1 <= 0` semantics in
+`canonical_objective.py`, and the repo inventory
+(`evidence/repo_inventory_sdf_native_v1.json`, SHA-256
+`00694da5b33b95893ca256bbd8cd5996686ee266c0e0291b8152ff6c562fa559`). No
+solver ran.
+
+P10 ("Stage S has no shape update") moves from unimplemented to planned on
+the SDF-native line, but remains unqualified until the registered FD/dot-test
+gradient gates pass; it is not closed by this architecture commit. P6/P16
+remain OpenFOAM-path findings and are not reinterpreted. OpenFOAM Stage V and
+PQ5 remain the independent verification gate.
