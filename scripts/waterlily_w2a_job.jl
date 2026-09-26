@@ -48,6 +48,62 @@ function json_number(x)
 end
 json_array(values) = "[" * join(json_number.(values), ",") * "]"
 
+mean_of(rows, i) = sum(row[i] for row in rows) / length(rows)
+
+function run_campaign(body; t_end, burn_in, sample_every)
+    sim = CFDSDFWaterLily.build_sphere_sim(body)
+    history = Vector{NTuple{7,Float64}}()
+    warm_started = time()
+    sim_step!(sim)  # compile kernels, excluded from the reported ms/step
+    first_step_seconds = time() - warm_started
+    step = 1
+    started = time()
+    while sim_time(sim) < t_end
+        sim_step!(sim)
+        step += 1
+        if step % sample_every == 0
+            fp = CFDSDFWaterLily.pressure_force_on_body(sim)
+            fv = CFDSDFWaterLily.viscous_force_on_body(sim)
+            push!(history, (
+                Float64(step),
+                Float64(sim_time(sim)),
+                fp[1] + fv[1],
+                fp[2] + fv[2],
+                fp[3] + fv[3],
+                fp[1],
+                fv[1],
+            ))
+        end
+    end
+    wall_seconds = time() - started
+    finite_u = all(isfinite, sim.flow.u)
+    finite_p = all(isfinite, sim.flow.p)
+    window = [row for row in history if row[2] >= burn_in && row[2] <= t_end]
+    isempty(window) && error("empty measurement window")
+    mid = 0.5 * (burn_in + t_end)
+    first_half = [row for row in window if row[2] < mid]
+    second_half = [row for row in window if row[2] >= mid]
+    (isempty(first_half) || isempty(second_half)) && error("empty stationarity half-window")
+    area = CFDSDFWaterLily.sphere_reference_area()
+    mean_drag = mean_of(window, 3)
+    return (
+        history = history,
+        steps = step,
+        wall_seconds = wall_seconds,
+        first_step_seconds = first_step_seconds,
+        t_end_reached = Float64(sim_time(sim)),
+        finite_u = finite_u,
+        finite_p = finite_p,
+        finite_forces = all(row -> all(isfinite, row), history),
+        window_mean_drag = mean_drag,
+        window_mean_lift = mean_of(window, 4),
+        window_mean_side = mean_of(window, 5),
+        first_half_mean_drag = mean_of(first_half, 3),
+        second_half_mean_drag = mean_of(second_half, 3),
+        cd = mean_drag / (0.5 * CFDSDFWaterLily.FREESTREAM^2 * area),
+    )
+end
+
 phi_margin_m = NaN
 phi_sha256 = ""
 body = if mode == "analytic"
@@ -65,61 +121,21 @@ else
     error("unknown mode $(mode)")
 end
 
-sim = CFDSDFWaterLily.build_sphere_sim(body)
 fingerprint = CFDSDFWaterLily.runtime_fingerprint()
-
-t_end = Float64(W2A_PARAMS.t_end)
-burn_in = Float64(W2A_PARAMS.burn_in)
-sample_every = Int(W2A_PARAMS.sample_every)
-
-history = Vector{NTuple{7,Float64}}()
-step = 0
-started = time()
-while sim_time(sim) < t_end
-    sim_step!(sim)
-    step += 1
-    if step % sample_every == 0
-        fp = CFDSDFWaterLily.pressure_force_on_body(sim)
-        fv = CFDSDFWaterLily.viscous_force_on_body(sim)
-        push!(history, (
-            Float64(step),
-            Float64(sim_time(sim)),
-            fp[1] + fv[1],
-            fp[2] + fv[2],
-            fp[3] + fv[3],
-            fp[1],
-            fv[1],
-        ))
-    end
-end
-wall_seconds = time() - started
-t_end_reached = Float64(sim_time(sim))
-
-finite_u = all(isfinite, sim.flow.u)
-finite_p = all(isfinite, sim.flow.p)
+result = run_campaign(
+    body;
+    t_end = Float64(W2A_PARAMS.t_end),
+    burn_in = Float64(W2A_PARAMS.burn_in),
+    sample_every = Int(W2A_PARAMS.sample_every),
+)
 
 csv_path = out_prefix * ".forces.csv"
 open(csv_path, "w") do io
     println(io, "step,t_ud,drag,lift,side,pressure_drag,viscous_drag")
-    for row in history
+    for row in result.history
         println(io, join(row, ","))
     end
 end
-
-window = [row for row in history if row[2] >= burn_in && row[2] <= t_end]
-isempty(window) && error("empty measurement window")
-mid = 0.5 * (burn_in + t_end)
-first_half = [row for row in window if row[2] < mid]
-second_half = [row for row in window if row[2] >= mid]
-(isempty(first_half) || isempty(second_half)) && error("empty stationarity half-window")
-mean_of(rows, i) = sum(row[i] for row in rows) / length(rows)
-finite_forces = all(row -> all(isfinite, row), history)
-
-area = CFDSDFWaterLily.sphere_reference_area()
-mean_drag = mean_of(window, 3)
-mean_lift = mean_of(window, 4)
-mean_side = mean_of(window, 5)
-cd = mean_drag / (0.5 * CFDSDFWaterLily.FREESTREAM^2 * area)
 
 summary = string(
     "{",
@@ -129,28 +145,29 @@ summary = string(
     "\"waterlily_version\":\"", fingerprint.waterlily_version, "\",",
     "\"waterlily_backend\":\"", fingerprint.waterlily_backend, "\",",
     "\"blas_threads\":", fingerprint.blas_threads, ",",
-    "\"t_end_target\":", json_number(t_end), ",",
-    "\"t_end_reached\":", json_number(t_end_reached), ",",
-    "\"steps\":", step, ",",
-    "\"wall_seconds\":", json_number(wall_seconds), ",",
-    "\"ms_per_step\":", json_number(1000 * wall_seconds / max(step, 1)), ",",
-    "\"force_samples\":", length(history), ",",
-    "\"finite_u\":", finite_u, ",",
-    "\"finite_p\":", finite_p, ",",
-    "\"finite_forces\":", finite_forces, ",",
+    "\"t_end_target\":", json_number(W2A_PARAMS.t_end), ",",
+    "\"t_end_reached\":", json_number(result.t_end_reached), ",",
+    "\"steps\":", result.steps, ",",
+    "\"wall_seconds\":", json_number(result.wall_seconds), ",",
+    "\"first_step_seconds\":", json_number(result.first_step_seconds), ",",
+    "\"ms_per_step\":", json_number(1000 * result.wall_seconds / max(result.steps - 1, 1)), ",",
+    "\"force_samples\":", length(result.history), ",",
+    "\"finite_u\":", result.finite_u, ",",
+    "\"finite_p\":", result.finite_p, ",",
+    "\"finite_forces\":", result.finite_forces, ",",
     "\"phi_margin_m\":", json_number(phi_margin_m), ",",
     "\"phi_sha256\":\"", phi_sha256, "\",",
     "\"world_origin_m\":", json_array(CFDSDFWaterLily.WORLD_ORIGIN_M), ",",
     "\"world_per_solver\":", json_number(CFDSDFWaterLily.WORLD_PER_SOLVER), ",",
-    "\"window_mean_drag\":", json_number(mean_drag), ",",
-    "\"window_mean_lift\":", json_number(mean_lift), ",",
-    "\"window_mean_side\":", json_number(mean_side), ",",
-    "\"first_half_mean_drag\":", json_number(mean_of(first_half, 3)), ",",
-    "\"second_half_mean_drag\":", json_number(mean_of(second_half, 3)), ",",
-    "\"cd\":", json_number(cd), ",",
+    "\"window_mean_drag\":", json_number(result.window_mean_drag), ",",
+    "\"window_mean_lift\":", json_number(result.window_mean_lift), ",",
+    "\"window_mean_side\":", json_number(result.window_mean_side), ",",
+    "\"first_half_mean_drag\":", json_number(result.first_half_mean_drag), ",",
+    "\"second_half_mean_drag\":", json_number(result.second_half_mean_drag), ",",
+    "\"cd\":", json_number(result.cd), ",",
     "\"final_force\":", json_array((
-        history[end][3], history[end][4], history[end][5],
-        history[end][6], history[end][7],
+        result.history[end][3], result.history[end][4], result.history[end][5],
+        result.history[end][6], result.history[end][7],
     )),
     "}",
 )
