@@ -1,0 +1,96 @@
+{
+  "claims_not_supported": [
+    "no GridSDF/GPU bridge qualification (analytic body only; that is W1g)",
+    "no sampled-sphere T4 run (that is W2-T4b)",
+    "no grid independence, absolute Cd, literature validation or W2b ladder",
+    "no v16 geometry behavior, gradient, topology or optimizer claim"
+  ],
+  "claims_supported": [
+    "the registered W2a analytic sphere fixture runs on the registered Colab T4 CUDA backend with mem=CuArray",
+    "the T4 analytic run reaches the registered horizon with finite fields and forces and a positive drag sign",
+    "the T4 analytic window-mean drag agrees with the CPU analytic fixture within the registered 1% bound",
+    "the T4 force evidence is repeatable and both arithmetic and physical-time-weighted means are recorded"
+  ],
+  "criteria_id": "sdf_native_w2t4a_analytic_sphere_2026_09",
+  "evidence_class": "capability_and_numerical",
+  "existing_evidence_modified": false,
+  "fixture": {
+    "affine_map": {
+      "note": "not used by the analytic fixture; recorded for the later W2-T4b sampled run",
+      "world_origin_m": [-1.75, -2.0, -2.0],
+      "world_per_solver": 0.0625
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0), no periodic direction, exitBC disabled",
+      "dims": [96, 64, 64],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "CuArray",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [32.0, 32.0, 32.0],
+      "solver_radius": 8.0,
+      "u_inf": 1.0
+    },
+    "geometry": "WaterLily AutoBody with the exact analytic sphere SDF in solver coordinates (identical to the W2a analytic fixture)",
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [40.0, 60.0],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0,
+      "time_weighted_mean": "diagnostic: trapezoidal integral of the window samples, integral(F dt)/integral(dt) using actual sim_time"
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2t4a_analytic_sphere_2026_09",
+  "gates_registered_before_measurement": {
+    "T0_environment": "the W0b environment pair (Project e4b56407, Manifest c537ae8e) and T4 device identity are the registered ones",
+    "T1_completion": "the T4 analytic run reaches t_end in tU/D units with steps > 0 and no exception",
+    "T2_finiteness": "all(isfinite, u) and all(isfinite, p) at the end of the run",
+    "T3_force_finite": "every sampled force component is finite",
+    "T4_drag_sign": "window-mean drag > 0",
+    "T5_stationarity": "|mean_drag(first half) - mean_drag(second half)| / mean_drag(window) <= 0.02",
+    "T6_cpu_t4_agreement": "|drag_T4 - drag_W2a_cpu| / |drag_W2a_cpu| <= 0.01 (fixed before the T4 measurement; bitwise equality not required)",
+    "T7_repeatability": "a second identical T4 run matches the first in window-mean drag within relative 1e-6",
+    "T8_runtime_and_vram": "wall seconds, steps, ms/step, Julia threads and the polled peak CUDA used_memory are recorded, with 0 < peak VRAM < total device memory",
+    "threshold_modification_rule": "no bound relaxation after seeing a measurement; a failure is a fail-closed stop with no evidence written"
+  },
+  "immutable": true,
+  "inputs": {
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "w0b_result_sha256": "4f822429656f36020410bcae6c375591d512ac3f4f58011e263346515f1237e6",
+    "w2a_result_sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+  },
+  "provenance": {
+    "evidence_path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json",
+    "job": "scripts/waterlily_w2t4_job.jl (mode=analytic, mem=CuArray)",
+    "recorder": "scripts/register_sdf_native_w2t4a_analytic_sphere_2026_09.py",
+    "run_media": "Colab T4 runtime driven through the colab-mcp browser connection; stdout captured into work/sdf_native_w2t4a_analytic_sphere_2026_09/"
+  },
+  "registered_before_implementation": true,
+  "registered_before_measurement": true,
+  "schema_version": 1,
+  "scope": {
+    "what_W2T4a_qualifies": [
+      "the WaterLily analytic sphere primal on the T4/CUDA backend",
+      "force sign and finite/traceable force history on the registered fixture",
+      "CPU/T4 agreement of the analytic fixture within the registered bound"
+    ],
+    "what_W2T4a_does_not_qualify": [
+      "the GridSDF bridge on GPU (W1g)",
+      "the sampled sphere on T4 (W2-T4b)",
+      "grid convergence or absolute aerodynamic values",
+      "any v16, gradient, reverse-mode or optimizer capability"
+    ]
+  },
+  "solver_started": true
+}
