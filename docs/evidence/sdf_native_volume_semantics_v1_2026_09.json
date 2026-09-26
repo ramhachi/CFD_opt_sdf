@@ -1,0 +1,78 @@
+{
+  "claims_not_supported": [
+    "this is a semantics registration, not an optimizer qualification or a shape update",
+    "no differentiable-volume or gradient claim",
+    "no absolute, grid-independent, high-Re or full-vehicle downforce claim"
+  ],
+  "claims_supported": [
+    "the SDF-native volume contract is registered with its limit equal to the re-measured genesis contract volume",
+    "the recorded handoff cell-material volume and the measured node-occupancy diagnostic are distinct samplings and were not conflated with the contract measure"
+  ],
+  "contract": {
+    "cell_material_to_contract_volume_ratio": 1.024777006937562,
+    "differentiability": "not claimed; a smoothed H_eps volume would be a separate later contract",
+    "discretization": "one sampled center per h-cube; zero-level values are not solid",
+    "first_sdf_volume_constraint": "V_phi <= V_phi_0",
+    "stage_t_density_volume": {
+      "carried_into_sdf_stage_s": false,
+      "role": "Stage T diagnostic and Stage S entry fidelity observable only; not an SDF-native constraint",
+      "stage_t_vmax_m3": 0.0763256681,
+      "v_rho_m3": 0.0719735015
+    },
+    "sub_voxel_sensitivity": "none",
+    "volume_definition": "V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3 (the sharp limit of integral H_eps(-phi) under center sampling)",
+    "volume_limit_m3": 0.12612500000000004,
+    "volume_limit_source": "re-measured voxel-equivalent sharp volume of the registered v16 genesis state (1009 sampled solid centers)"
+  },
+  "environment": {
+    "machine": "arm64",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13"
+  },
+  "evidence_class": "contract",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "immutable": true,
+  "input_lineage": {
+    "genesis_evidence": {
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    "genesis_state_npz": {
+      "path": "work/sdf_native_genesis_v16/sdf_design_state.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+    }
+  },
+  "kind": "sdf_native_volume_semantics",
+  "measured": {
+    "claims_not_supported": [
+      "voxel-equivalent volume is not a differentiable constraint until its H_eps gradient contract is registered",
+      "no sub-voxel geometry sensitivity; any sub-voxel volume change between states with equal sampled-center counts is invisible"
+    ],
+    "feasible": true,
+    "kind": "sdf_native_volume_semantics",
+    "node_occupancy_diagnostic": {
+      "role": "non-contracted diagnostic; never compare against V_phi limits",
+      "solid_nodes": 1420,
+      "volume_m3": 0.17750000000000005
+    },
+    "sampled_solid_centers": 1009,
+    "schema_version": 1,
+    "state_phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "state_spacing_m": 0.05,
+    "volume_definition": "V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3 (the sharp limit of integral H_eps(-phi) under center sampling)",
+    "volume_limit_m3": 0.12612500000000004,
+    "volume_m3": 0.12612500000000004,
+    "volume_violation_m3": 0.0
+  },
+  "registration_id": "sdf_native_volume_semantics_v1_2026_09",
+  "schema_version": 1,
+  "solver_started": false
+}

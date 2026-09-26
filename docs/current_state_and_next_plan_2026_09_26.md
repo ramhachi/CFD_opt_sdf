@@ -211,3 +211,39 @@ append-only 追加で verify が失敗する潜在欠陥が顕在化したため
 `repo_inventory_sdf_native_v2.json`（SHA-256
 `8e31d9e30feca97d112a7803d611f926e1e0d8a3f993367f24e043c75a3c5d27`）を発行した。
 次のゲートは WaterLily primal（Colab T4 primary）。
+
+## 追記 — plan correction v2.1（2026-09-26、ユーザー承認）
+
+genesis 実測（`V_sharp = 0.12925000000000003 m^3` vs Stage T `V_rho = 0.0719735015 / Vmax = 0.0763256681`）を受けて、
+WaterLily primal の前に三契約を正式化した（詳細は [`phase_plan.md`](phase_plan.md) の v2.1 section）:
+
+1. **design grid と flow grid の分離（恒久契約）**: canonical SDF grid
+   （61x33x25, h=0.05 m, x[-1,2] y[-0.8,0.8] z[-0.6,0.6]）は局部設計空間であり、
+   qualified OpenFOAM v2 flow domain（x[-2.5,2.5] y[-1.2,1.2] z[-0.9,0.9]）とは別格子。
+   WaterLily へは world-space adapter（`sdf_at_world(xyz_m)` trilinear）で埋め込み、
+   flow grid 解像度は独立変数（同一 phi に対する coarse/medium/fine）。
+2. **SDF sharp volume 契約（今登録、違う意味論への切替）**: SDF-native の
+   constraint volume は `V_phi = |{trilinear center 評価 < 0}| h^3`
+   （∫H_ε(-φ) の center sampling での h→0 極限）。最初の制約は
+   `V_phi <= V_phi_0 = 0.12612500000000004 m^3`（genesis 状態から再測定、
+   1009 centers）。三つの sampling を分離記録: 契約測度 0.126125（1009）、
+   mesh-exact revoxelized cell material 0.12925000000000003（1034 cells、
+   物理クロスチェック、比 1.0248）、node 占有 0.17750000000000005（1420、
+   非契約 diagnostic）。旧 Stage T `Vmax = 0.0763256681` を SDF Stage S
+   評価に持ち込まない。物理的に小さい体積を狙う場合は volume-calibrated
+   offset rebuild を伴う別の系統登録。
+   実装 `src/cfd_sdf/design/volume_semantics.py`（optimizer 側 enforcement
+   は one-step gate 前）、登録 evidence
+   [`sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
+   （SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`）。
+3. **SDFTopologyPolicy v1 = Birth-0 前の必須 gate**（登録は後回し可、
+   Birth-0 作業前に必ず登録する）: 今の v16 は root/fixed/forbidden 空、
+   root_connectivity not_applicable で root hard gate は何も制約していない。
+
+W 系ゲート列: W0 Julia env registration → W1 GridSDFBody adapter 資格 →
+W2 解析球 primal（CPU → T4）→ W2b 同一形状 3 解像度 → W3 v16 primal +
+physical-profile adapter → W4 grid/domain response qualification →
+SDF centered FD → CPU reverse PoC → GPU reverse Go/No-Go → one constrained
+SDF step → SDFTopologyPolicy v1 → topology birth → bounded loop →
+OpenFOAM PQ5。inventory v3 は WaterLily primal gate 通過時に mint。
+全 flagship flag false のまま。

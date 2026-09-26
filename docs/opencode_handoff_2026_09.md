@@ -1847,3 +1847,42 @@ start another OpenFOAM case until a corrected contract is registered.
   Next gates: WaterLily primal (Colab T4 primary; Julia env registration on
   Colab, then `julia/CFDSDFWaterLily/` pinned package skeleton and the
   stable primal bridge PR-03), then SDF directional centered FD.
+
+## 2026-09-26: plan correction v2.1 (three contracts before the WaterLily primal)
+
+- **Design grid / flow grid separation.** The canonical SDF grid
+  (61x33x25, h=0.05 m, origin (-1.0,-0.8,-0.6)) is a local design-space
+  representation; the qualified OpenFOAM v2 flow domain
+  (x[-2.5,2.5] y[-1.2,1.2] z[-0.9,0.9]) is independent. WaterLily embeds
+  canonical phi through a world-space trilinear adapter
+  (`GridSDFBody`/`sdf_at_world`), flow-grid resolution is an independent
+  variable. Never equate the two grids.
+- **SDF sharp volume semantics.** `V_phi = |{h-cubes with trilinear centre
+  sample < 0}| * h^3` measured on the genesis v16 state gives
+  `0.12612500000000004 m^3` (1009 centers), while the Stage T volume
+  lineage was `V_rho = 0.0719735015` at `Vmax = 0.0763256681`
+  (ratio ~1.65-1.69 vs the registered samplings; infeasible if carried).
+  The first SDF constraint is `V_phi <= V_phi_0 = 0.12612500000000004`
+  re-measured on the registered genesis state; the legacy Stage T `Vmax`
+  is not carried into SDF Stage S. Three samplings are separated in the
+  record: contract (0.12612500000000004, 1009 centers), mesh-exact
+  revoxelized cell material (0.12925000000000003, 1034 cells, cross-check
+  ratio 1.0248), node occupancy diagnostic (0.17750000000000005, 1420
+  nodes). Module: `src/cfd_sdf/design/volume_semantics.py` (contract
+  level; differentiable H_eps volume deferred until the one-step gate).
+  Registration evidence:
+  `docs/evidence/sdf_native_volume_semantics_v1_2026_09.json` (SHA-256
+  `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`).
+- **SDFTopologyPolicy v1 = hard prerequisite for Birth-0** (registration
+  may be later). v16 has empty root/fixed/forbidden masks and
+  `root_connectivity = not_applicable`, so the legacy root gate constrains
+  nothing today; the policy must fix disconnected-component allowance,
+  root-connectivity requirement, and the root region before Birth-0.
+- **Updated gate ladder:** W0 Julia env registration -> W1 GridSDFBody
+  adapter qualification -> W2 analytic sphere primal (CPU then T4) ->
+  W2b same geometry at three flow-grid resolutions -> W3 v16 primal +
+  physical-profile adapter -> W4 grid/domain response qualification ->
+  SDF centered FD -> CPU reverse PoC -> GPU reverse Go/No-Go -> one
+  constrained SDF step -> SDFTopologyPolicy v1 (before Birth-0) ->
+  topology birth -> bounded loop -> OpenFOAM PQ5. Inventory v3 mints at
+  the WaterLily primal gate. All flags stay false.

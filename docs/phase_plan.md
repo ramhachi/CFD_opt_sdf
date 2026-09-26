@@ -1677,3 +1677,116 @@ and capability work:
   physical-profile adapter (Colab T4 primary per the 2026-09-26 execution
   plan), preceded by the Julia/WaterLily environment registration on the
   Colab side and the pinned `julia/CFDSDFWaterLily/` package skeleton.
+
+## 2026-09-26 plan correction v2.1: design-grid/flow-grid separation, SDF volume semantics, topology-policy gate
+
+User-approved correction after the genesis slice.  The research direction
+and the SDF-native architecture are unchanged; three contracts and the
+WaterLily gate ladder are now explicit before the WaterLily primal gate.
+
+**Contract 1 — design grid and flow grid are separate (permanent).**  The
+canonical SDF grid (61x33x25 points, spacing `0.05 m`, origin
+`(-1.0, -0.8, -0.6)`, x in [-1, 2], y in [-0.8, 0.8], z in [-0.6, 0.6]) is
+a local design-space representation.  The qualified OpenFOAM v2 flow
+domain (x in [-2.5, 2.5], y in [-1.2, 1.2], z in [-0.9, 0.9]) is a
+different, independent solver box.  No run may claim a grid property by
+silently equating the two; `SDFDesignState` must never be used directly as
+a WaterLily flow grid.  The WaterLily side must embed the canonical phi
+through a world-space adapter (trilinear `sdf_at_world(xyz_m)` over the
+canonical grid, e.g. a `GridSDFBody`), with the solver flow grid
+(resolution and domain) as an independent variable so the same canonical
+phi can be run on coarse/medium/fine flow grids for grid studies.
+
+**Contract 2 — SDF sharp volume semantics (registered now; differentiable
+implementation deferred until the one-step gate).**  The Stage T density
+volume `V_rho` (`0.0719735015` at limit `Vmax = 0.0763256681`) and the
+handoff's measured binary sharp volume `V_sharp = 0.12925000000000003`
+are different quantities; the ratio `V_sharp/Vmax` is about `1.69`, so a
+sharp v16 start under the legacy Stage T `Vmax` would be grossly
+infeasible by construction.  In the SDF-native line the constraint volume
+is the voxel-equivalent sharp volume of the canonical state under the
+Registered center-sampling rule
+
+    V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3
+
+(the kept `h -> 0` limit of the differentiable volume
+`V_eps = integral H_eps(-phi) dOmega` under center sampling; the smoothed
+implementation arrives with the one-step gate).  The first SDF volume
+constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured** on the
+registered genesis state: 1009 sampled solid centers,
+`V_phi_0 = 0.12612500000000004 m^3`.  Three samplings are registered and
+explicitly separated in
+[`evidence/sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
+(SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`):
+the contract measure (`0.12612500000000004`, 1009 centers), the mesh-exact
+revoxelized cell material of the registered baseline surface
+(`0.12925000000000003`, 1034 cells, the handoff physical cross-check,
+ratio `1.0248`), and the non-contracted node-occupancy diagnostic
+(`0.17750000000000005`, 1420 nodes).  The legacy Stage T `Vmax` is not
+carried into SDF Stage S evaluation.  If a physically smaller target were
+wanted, it is a separate material-lineage decision requiring a
+volume-calibrated offset rebuild, not a contract reuse.  The measure
+`src/cfd_sdf/design/volume_semantics.py` (contract level; the
+optimizer-side enforcement arrives with the one-step gate).
+
+**Contract 3 — SDFTopologyPolicy v1 is a prerequisite gate for Birth-0
+(registration may be later; no Birth-0 work before it).**  The v16
+genesis state has empty `fixed_solid`, `forbidden` and `root` masks
+(`solid_design_fraction = 1.0`), and the Stage S entry evidence records
+`root_connectivity = not_applicable` for this candidate; the legacy
+root-connectivity hard gate therefore constrains nothing today, which is
+acceptable for the WaterLily primal but not for topology birth.  Before
+any Birth-0 work, an SDFTopologyPolicy v1 registration must fix: whether
+disconnected aero components are allowed; whether every component must
+connect to a designated root region; and which region is the root.
+
+**Updated gate order after genesis (W series).**  The gate ladder replaces
+any implication that the WaterLily primal starts directly on v16:
+
+```text
+DONE   architecture fork                       (5750da1)
+DONE   SDF genesis on the v16 lineage          (a35e687)
+REGD   sharp-SDF volume semantics contract     (registration in this slice; enforcement deferred)
+NEXT   W0  WaterLily environment registration  (Julia resolve/pin, Manifest, runtime fingerprint)
+W1     SDF->WaterLily geometry adapter qualification (GridSDFBody interpolation; analytic sphere vs grid-SDF sphere)
+W2     analytic WaterLily primal               (sphere fixture; CPU first, then T4)
+W2b    same geometry at three flow-grid resolutions (bug isolation: interpolation / solver / BC)
+W3     v16 WaterLily primal + physical-profile adapter
+W4     WaterLily grid/domain response qualification
+       SDF directional centered-FD qualification
+       CPU reverse-AD PoC (Pinned PR #285)
+       GPU reverse/custom-adjoint Go/No-Go
+       one constrained SDF step (volume contract + all hard gates enforced)
+REQD   SDFTopologyPolicy v1                    (registered before Birth-0)
+       topology birth (Birth-0 geometry fixture first)
+       bounded closed loop
+       OpenFOAM PQ5 verification
+```
+
+**WaterLily package layout for W0-W4** (per the Colab T4 worker plan):
+
+```text
+julia/CFDSDFWaterLily/
+  Project.toml
+  Manifest.toml
+  src/
+    GridSDFBody.jl
+    Simulation.jl
+    Forces.jl
+    Runtime.jl
+  test/
+    test_grid_sdf_body.jl
+    test_analytic_vs_grid_sdf.jl
+    test_force_sign.jl
+scripts/run_waterlily_job.py
+colab/worker.ipynb
+```
+
+Colab execution sequence: select T4 explicitly, record the runtime
+fingerprint, Julia instantiate, then analytic sphere CPU, analytic sphere
+T4, grid-SDF sphere T4, and only then the v16 geometry.  Repository
+inventory v3 mints at the WaterLily primal gate, not per commit.
+
+No qualified-gradient, shape-update or optimization-campaign claim is
+authorized by this correction, and no claim inherits it; all conservative
+flags remain false.
