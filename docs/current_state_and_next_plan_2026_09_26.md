@@ -1,6 +1,7 @@
 # 現在地と次の計画 — 2026-09-26
 
-対象ブランチは `feat/p0-openfoam-closed-loop`。ここでの主張は、immutable
+対象ブランチは `feat/sdf-native-rearchitecture`（権威 branch。旧
+`feat/p0-openfoam-closed-loop` は fork 前の base）。ここでの主張は、immutable
 manifest と controlled-run outcome に保存した実測値に限定する。ロードマップの
 正本は [`phase_plan.md`](phase_plan.md)、問題台帳の正本は
 [`problem_register_2026_09.md`](problem_register_2026_09.md) である。
@@ -227,7 +228,7 @@ WaterLily primal の前に三契約を正式化した（詳細は [`phase_plan.m
    （∫H_ε(-φ) の center sampling での h→0 極限）。最初の制約は
    `V_phi <= V_phi_0 = 0.12612500000000004 m^3`（genesis 状態から再測定、
    1009 centers）。三つの sampling を分離記録: 契約測度 0.126125（1009）、
-   mesh-exact revoxelized cell material 0.12925000000000003（1034 cells、
+   mesh-derived / revoxelized discrete volume 0.12925000000000003（1034 cells、
    物理クロスチェック、比 1.0248）、node 占有 0.17750000000000005（1420、
    非契約 diagnostic）。旧 Stage T `Vmax = 0.0763256681` を SDF Stage S
    評価に持ち込まない。物理的に小さい体積を狙う場合は volume-calibrated

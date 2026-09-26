@@ -11,15 +11,20 @@ quantities that the legacy Stage T/Stage S path kept implicitly mixed:
   Stage S evaluation.
 - **SDF sharp volume** ``V_phi``: the voxel-equivalent sharp volume of the
   canonical SDF state, evaluated by the registered center-sampling rule
-                        3
-      V_phi = N_center(phi) h ,
+                                             3
+      V_phi = N_center(phi) * h   ,
                                           3
   where ``N_center(phi) = | {c : phi~(c) < 0} |`` counts the h-cubes whose
   representative value is the trilinear mean of the eight surrounding
-  state nodes and ``h`` is the state spacing.  This is the h->0 limit of
-  the user-registered differentiable volume
-  ``V_eps = integral H_eps(-phi) dOmega`` under the center sampling; the
-  smoothed implementation itself is deferred until the one-step gate.
+  state nodes and ``h`` is the state spacing.  At fixed grid spacing this
+  is the ``epsilon -> 0`` limit of the differentiable volume
+          V_eps = integral H_eps(-phi, eps) dOmega
+  under the center sampling, i.e. the sharp midpoint occupancy rule on
+  the discrete grid.  The separate continuum limit ``h -> 0`` of that
+  discrete rule is what would converge toward the geometric solid volume
+  of the sharp set; the two limits are distinct and only the discrete
+  rule is registered.  The smoothed H_eps implementation is deferred
+  until the one-step gate.
 
 The first SDF volume constraint is `V_phi <= V_phi_0` with `V_phi_0`
 re-measured on the registered baseline state (v16 genesis: 1009 sampled
@@ -83,7 +88,13 @@ def sampled_solid_centers_count(state: SDFDesignState) -> int:
 
 
 def sharp_volume_m3(state: SDFDesignState) -> float:
-    """Contract volume ``V_phi`` under the registered center-sampling rule."""
+    """Contract volume ``V_phi`` under the registered center-sampling rule.
+
+    At fixed spacing this equals the ``epsilon -> 0`` occupancy limit of
+    ``V_eps = integral H_eps(-phi)`` under center sampling (the discrete
+    midpoint rule); continuum ``h -> 0`` convergence is a separate,
+    unclaimed limit.
+    """
 
     _validate_state(state)
     return float(sampled_solid_centers_count(state) * float(state.spacing_m) ** 3)
@@ -125,7 +136,7 @@ def volume_semantics_report(state: SDFDesignState, *, volume_limit_m3: float) ->
         "state_phi_sha256": state.phi_sha256(),
         "volume_definition": (
             "V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3 "
-            "(the sharp limit of integral H_eps(-phi) under center sampling)"
+            "(the epsilon->0 occupancy limit of integral H_eps(-phi) under center sampling)"
         ),
         "state_spacing_m": float(state.spacing_m),
         "sampled_solid_centers": centers,

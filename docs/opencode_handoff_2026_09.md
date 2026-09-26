@@ -1865,8 +1865,8 @@ start another OpenFOAM case until a corrected contract is registered.
   The first SDF constraint is `V_phi <= V_phi_0 = 0.12612500000000004`
   re-measured on the registered genesis state; the legacy Stage T `Vmax`
   is not carried into SDF Stage S. Three samplings are separated in the
-  record: contract (0.12612500000000004, 1009 centers), mesh-exact
-  revoxelized cell material (0.12925000000000003, 1034 cells, cross-check
+  record: contract (0.12612500000000004, 1009 centers), mesh-derived
+  revoxelized discrete volume (0.12925000000000003, 1034 cells, cross-check
   ratio 1.0248), node occupancy diagnostic (0.17750000000000005, 1420
   nodes). Module: `src/cfd_sdf/design/volume_semantics.py` (contract
   level; differentiable H_eps volume deferred until the one-step gate).
@@ -1886,3 +1886,32 @@ start another OpenFOAM case until a corrected contract is registered.
   constrained SDF step -> SDFTopologyPolicy v1 (before Birth-0) ->
   topology birth -> bounded loop -> OpenFOAM PQ5. Inventory v3 mints at
   the WaterLily primal gate. All flags stay false.
+
+## 2026-09-26: cleanup before W0 (volume discretization wording, adapter boundary contract, register P22/P23)
+
+- **epsilon/h correction (wording only).** `V_phi` is the
+  `epsilon -> 0` occupancy limit of `integral H_eps(-phi)` under center
+  sampling **at fixed grid spacing**; the continuum `h -> 0` convergence
+  of that discrete rule is a separate unclaimed limit. Applied to
+  `src/cfd_sdf/design/volume_semantics.py` docstrings and the phase-plan
+  v2.1 section; the immutable registration evidence is untouched.
+- **W1 adapter contract strengthened.** The `GridSDFBody`/`sdf_at_world`
+  qualification must register outside-domain semantics (guaranteed
+  positive fluid read-only extension outside the design box), a
+  zero-level-to-boundary margin hard gate, and the fail-closed
+  world<->solver coordinate scale/offset map advertised in the runtime
+  fingerprint.
+- **Volume-constraint implementation plan.** optimizer-side signed
+  residual `g_V = V_phi / V_phi_0 - 1` and
+  `smoothed_volume_and_gradient(...)` are deferred to the one-step gate;
+  the current `max(0, V - V_lim)` is reporting-only and is not a W0-W4
+  blocker.
+- **Ledger updates.** `problem_register_2026_09.md` appends P22 (SDF
+  volume semantics + design/flow grid identity; contract registered,
+  optimizer enforcement pending) and P23 (topology policy undefined;
+  hard prerequisite before Birth-0). No re-opened old issues.
+- `docs/current_state_and_next_plan_2026_09_26.md` branch header corrected
+  to `feat/sdf-native-rearchitecture`; "mesh-exact" wording softened to
+  "mesh-derived / revoxelized discrete volume" everywhere (the 0.12925
+  value is an excellent discrete cross-check, not a continuum exact
+  volume).

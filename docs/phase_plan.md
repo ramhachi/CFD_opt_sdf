@@ -1695,7 +1695,22 @@ a WaterLily flow grid.  The WaterLily side must embed the canonical phi
 through a world-space adapter (trilinear `sdf_at_world(xyz_m)` over the
 canonical grid, e.g. a `GridSDFBody`), with the solver flow grid
 (resolution and domain) as an independent variable so the same canonical
-phi can be run on coarse/medium/fine flow grids for grid studies.
+phi can be run on coarse/medium/fine flow grids for grid studies.  The W1
+adapter qualification must additionally fix, before any solver run:
+
+- **outside-domain semantics**: for world points outside the design box
+  the adapter returns a guaranteed positive read-only fluid extension
+  (zero-level surface can never exist there), not an extrapolated
+  negative value;
+- **interface-to-boundary margin hard gate**: the zero-level surface must
+  sit at least a registered margin away from the design-box boundary, so
+  the constant-exterior extension can never contaminate an interface
+  region;
+- **world<->solver coordinate contract**: WaterLily typically uses
+  solver/scaled coordinates, so the adapter registers the exact
+  `x_sol <-> x_world[m]` scale and offset (affine map) with a fail-closed
+  probe fixture, and every registered run advertises it in its
+  `runtime fingerprint`.
 
 **Contract 2 — SDF sharp volume semantics (registered now; differentiable
 implementation deferred until the one-step gate).**  The Stage T density
@@ -1705,29 +1720,38 @@ are different quantities; the ratio `V_sharp/Vmax` is about `1.69`, so a
 sharp v16 start under the legacy Stage T `Vmax` would be grossly
 infeasible by construction.  In the SDF-native line the constraint volume
 is the voxel-equivalent sharp volume of the canonical state under the
-Registered center-sampling rule
+registered center-sampling rule,
 
-    V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3
+    V_phi = |{h-cubes with trilinear centre sample < 0}| * h^3,
 
-(the kept `h -> 0` limit of the differentiable volume
-`V_eps = integral H_eps(-phi) dOmega` under center sampling; the smoothed
-implementation arrives with the one-step gate).  The first SDF volume
-constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured** on the
-registered genesis state: 1009 sampled solid centers,
+which is the `epsilon -> 0` limit of the differentiable volume
+`V_eps = integral H_eps(-phi) dOmega` under center sampling **at fixed
+grid spacing**: letting the indicator sharpen (`epsilon -> 0`) gives the
+sharp midpoint occupancy rule on the discrete grid, and the separate
+continuum limit `h -> 0` of that discrete measure is what would converge
+toward the geometric solid volume of the probability limit; these two
+limits are distinct and only the discrete rule is registered.  The
+smoothed H_eps implementation arrives with the one-step gate.  The first
+SDF volume constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured**
+on the registered genesis state: 1009 sampled solid centers,
 `V_phi_0 = 0.12612500000000004 m^3`.  Three samplings are registered and
 explicitly separated in
 [`evidence/sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
 (SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`):
-the contract measure (`0.12612500000000004`, 1009 centers), the mesh-exact
-revoxelized cell material of the registered baseline surface
-(`0.12925000000000003`, 1034 cells, the handoff physical cross-check,
-ratio `1.0248`), and the non-contracted node-occupancy diagnostic
+the contract measure (`0.12612500000000004`, 1009 centers), the
+mesh-derived / revoxelized discrete volume of the registered baseline
+surface (`0.12925000000000003`, 1034 cells, the handoff physical
+cross-check, ratio `1.0248`; a discrete volume, not a continuum exact
+volume), and the non-contracted node-occupancy diagnostic
 (`0.17750000000000005`, 1420 nodes).  The legacy Stage T `Vmax` is not
 carried into SDF Stage S evaluation.  If a physically smaller target were
 wanted, it is a separate material-lineage decision requiring a
-volume-calibrated offset rebuild, not a contract reuse.  The measure
-`src/cfd_sdf/design/volume_semantics.py` (contract level; the
-optimizer-side enforcement arrives with the one-step gate).
+volume-calibrated offset rebuild, not a contract reuse.  The module
+`src/cfd_sdf/design/volume_semantics.py` implements the sampled measure,
+the limit semantics and the reporting-only over-volume
+(`max(0, V - V_lim)`; contract level; the optimizer-side enforcement — a
+signed residual `g_V = V_phi / V_phi_0 - 1` plus
+`smoothed_volume_and_gradient(...)` — arrives with the one-step gate).
 
 **Contract 3 — SDFTopologyPolicy v1 is a prerequisite gate for Birth-0
 (registration may be later; no Birth-0 work before it).**  The v16

@@ -132,6 +132,8 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
 | P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **registered profile は解消（2026-09-26）**。元 V1 box と第1拡大は outer pressure gate のみ No-Go だったが、同じ moving-ground/freestream profile の v2 domain と downstream-expanded domain が全 physical-profile gate を通過し、2-domain convergence も `|Δdownforce|=0.0008034 <= 0.005`、relative-Cd `0.0008242 <= 0.02`。この candidate/profile の reduced-laminar qualification に限り、absolute/grid-independent/high-Re reference は未成立 |
+| P22 | SDF-native の volume 契約と design-grid/flow-grid 恒等性 | 最重大 | **契約登録済み（2026-09-26, plan v2.1）、enforcement 未実装**。sharp/revoxelized/density の体積が別測度（0.12925 / 0.126125 / 0.1775 m³ と Stage T `Vmax=0.0763256681`）であることが genesis 実測で確認され、SDF 契約は `V_phi = |{trilinear center sample < 0}| h^3 <= V_phi_0 = 0.12612500000000004`（`evidence/sdf_native_volume_semantics_v1_2026_09.json`）。旧 `Vmax` を SDF Stage S に持ち込まない。optimizer 側 signed residual `g_V` と平滑化 volume は one-step gate 前に実装 |
+| P23 | topology birth の topology policy（root/disconnected 成分許可）が未定義 | 高 | **open（Birth-0 前の必須 gate）**。genesis v16 状態は root/fixed/forbidden が全空で `root_connectivity = not_applicable` のため、旧 root hard gate は何も制約しない。SDFTopologyPolicy v1 として「非接続空力成分の許可」「root 接続の強制」「root領域の定義」を登録するまで Birth-0 作業を開始しない |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
 本台帳の作成者が実測で確認した。**P12とP13は、既存の最適化結果と順位検定結果を
@@ -1817,3 +1819,73 @@ the SDF-native line, but remains unqualified until the registered FD/dot-test
 gradient gates pass; it is not closed by this architecture commit. P6/P16
 remain OpenFOAM-path findings and are not reinterpreted. OpenFOAM Stage V and
 PQ5 remain the independent verification gate.
+
+## P22 — SDF-native volume 契約と design-grid/flow-grid 恒等性（2026-09-26, plan v2.1 で契約登録）
+
+### 発見経緯
+
+SDF genesis（`a35e687`）を実際に通したことで、v16 canonical SDF 状態（point grid
+61x33x25, h=0.05 m, origin (-1.0,-0.8,-0.6), x[-1,2] y[-0.8,0.8] z[-0.6,0.6]）の
+sharp 体積と、Stage T が制約していた密集体積が別物であることが初めて実測された
+（`evidence/sdf_native_genesis_v16_2026_09.json` の material diagnostic）:
+
+- mesh-derived / revoxelized discrete volume（handoff 測度、表面 mesh 体積と ~1e-8 相対差）:
+  `0.12925000000000003 m^3`（1034 cells）
+- 契約測度 `V_phi = |{h-cubes with trilinear centre sample < 0}| h^3`（∫H_eps(-φ) の
+  center sampling での sharp 極限）: `0.12612500000000004 m^3`（1009 centers）
+- node 占有 diagnostic（非契約）: `0.17750000000000005 m^3`（1420 nodes）
+- Stage T `V_rho = 0.0719735015`（限界 `Vmax = 0.0763256681`）
+
+`V_sharp/Vmax` ≈ 1.69（契約測度なら ≈1.65）であり、旧 `Vmax` を SDF Stage S に
+持ち込むと初期状態が構成的に大きく infeasible になる。
+
+### 登録した契約（2026-09-26, plan correction v2.1）
+
+- SDF-native の constraint volume は `V_phi`（trilinear center sampling の
+  sharp 極限）。最初の制約は `V_phi <= V_phi_0 = 0.12612500000000004 m^3`
+  （genesis 状態からの再測定値）。evidence:
+  [`evidence/sdf_native_volume_semantics_v1_2026_09.json`](evidence/sdf_native_volume_semantics_v1_2026_09.json)
+  （SHA-256 `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`）。
+  実装 module は `src/cfd_sdf/design/volume_semantics.py`。
+- 旧 Stage T `Vmax` は Stage T diagnostic と Stage S entry fidelity observable
+  専用。SDF Stage S 評価に持ち込まない。
+- 物理的に小さい体積を狙う場合は volume-calibrated offset rebuild を伴う別の系統
+  登録が必要（qualified v16 geometry の系統が変わるため）。
+- canonical SDF grid（design grid）と OpenFOAM/WaterLily flow domain は別格子。
+  WaterLily へは world-space trilinear adapter（`GridSDFBody` /
+  `sdf_at_world(xyz_m)`）で埋め込み、flow grid 解像度と domain は独立変数。
+  同一 canonical phi に対する coarse/medium/fine flow grid が可能なことまで契約。
+- 平滑化 volume `smoothed_volume_and_gradient(...)` と optimizer 側 signed residual
+  `g_V = V_phi / V_phi_0 - 1` は one constrained SDF step の前に実装する
+  （reporting 用 `max(0, V-V_lim)` は W0-W4 の blocker ではない）。
+
+### 状態
+
+**契約登録済み、optimizer 側 enforcement 未実装。** evidence 自体（immutable）の
+"sharp limit" 記述は当面の減点対象ではなく、source docstring と plan 文書の
+ε→0 / h→0 表現訂正を 2026-09-26 の correction で行う（v1 evidence は無変更）。
+P22 の closure は one constrained SDF step で volume 契約 + 全 hard gate が
+実際に presence referred された実測で行う（登録のみでの閉鎖禁止）。
+
+## P23 — topology birth 用 topology policy（root / disconnected 成分）が未定義（2026-09-26 登録）
+
+### 事実
+
+genesis v16 canonical 状態は `fixed_solid = 0`、`forbidden = 0`、`root = 0`、
+`active_design = 14400`、`solid_design_fraction = 1.0`。Stage S entry evidence も
+`root_connectivity: reason "source root mask is empty", status "not_applicable"`
+を記録している。つまり旧 Stream の root-connectivity hard gate は、この candidate
+については実質何も制約していない。
+
+### 必要な登録（Birth-0 前の必須 gate）
+
+SDFTopologyPolicy v1 として次を事前登録する:
+
+1. disconnected aero 成分を許可するのか（例: 端板/サスペンション分離要素）;
+2. すべての成分は designated root 領域に繋ぐのか;
+3. root 領域は具体的にどの領域なのか（候補生成と dry-run fixture を含めて定義）。
+
+### 状態
+
+**open（Birth-0 作業の前に必須）。** 登録は後回しでよいが、topology birth の
+コード作業を開始する前に必ず登録する。WaterLily primal（W0-W4）には影響しない。
