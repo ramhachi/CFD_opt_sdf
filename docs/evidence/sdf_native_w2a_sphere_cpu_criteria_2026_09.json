@@ -1,0 +1,99 @@
+{
+  "claims_not_supported": [
+    "no absolute or literature Cd validation; the compact domain and 16 cells/D rung are capability fixtures",
+    "no grid independence or flow-grid convergence (that is W2b)",
+    "no T4/CUDA backend qualification and no Manifest change",
+    "no v16 geometry behavior, gradient, FD, topology, optimizer or downforce claim",
+    "no target-physics, benchmark, full-vehicle or high-Re claim"
+  ],
+  "claims_supported": [
+    "WaterLily constructs and time-integrates the registered flow-past-sphere fixture in Float32 on the CLI CPU multi-threaded backend",
+    "the W1 GridSDF adapter is consumed by the solver through the GridSDFWaterLilyBody bridge (trilinear value and analytic normal)",
+    "the canonical force response is the force on the body in solver units, F_body = -total_force, and its drag sign is exercised on the fixture",
+    "the exact-sphere and sampled-sphere geometries produce finite, stationary, same-sign force histories on the same flow grid"
+  ],
+  "criteria_id": "sdf_native_w2a_sphere_cpu_2026_09",
+  "evidence_class": "capability_and_numerical",
+  "existing_evidence_modified": false,
+  "fixture": {
+    "affine_map": {
+      "world_origin_m": [-1.75, -2.0, -2.0],
+      "world_per_solver": 0.0625,
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units"
+    },
+    "canonical_phi": {
+      "center_m": [0.25, 0.0, 0.0],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [-1.0, -0.8, -0.7],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [61, 33, 29],
+      "spacing_m": [0.05, 0.05, 0.05]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0) Dirichlet normal / Neumann tangential, no periodic direction, exitBC disabled",
+      "dims": [96, 64, 64],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "Array",
+      "note": "solver length unit = one flow cell; 16 cells per diameter; sim_time is in tU/D units",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [32.0, 32.0, 32.0],
+      "solver_radius": 8.0,
+      "threads": "auto (recorded per run)",
+      "u_inf": 1.0
+    },
+    "geometries": {
+      "analytic": "WaterLily AutoBody with the exact sphere SDF in solver coordinates",
+      "sampled": "GridSDFWaterLilyBody over the canonical_phi fixture and the registered affine map"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [40.0, 60.0],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2a_sphere_cpu_2026_09",
+  "gates_registered_before_measurement": {
+    "G1_completion": "both fixtures reach t_end in tU/D units with steps > 0 and no exception",
+    "G2_finiteness": "all(isfinite, u) and all(isfinite, p) at the end of both runs",
+    "G3_force_finite": "every sampled force component is finite in both runs",
+    "G4_drag_sign": "window-mean drag > 0 for both fixtures (exercises F_body = -total_force)",
+    "G5_stationarity": "|mean_drag(first half) - mean_drag(second half)| / mean_drag(window) <= 0.02 for both fixtures",
+    "G6_cross_fixture": "|Cd_sampled - Cd_analytic| / Cd_analytic <= 0.10 with Cd = mean_drag / (0.5 * pi * R_solver^2)",
+    "G7_lift_bound": "|mean_lift| / mean_drag <= 0.10 for both fixtures",
+    "G8_reproducibility": "a second identical analytic run matches the first in window-mean drag within relative 1e-6",
+    "threshold_modification_rule": "no bound relaxation after seeing a measurement; a failure is a fail-closed stop with no evidence written, followed by a new registered threshold round"
+  },
+  "immutable": true,
+  "inputs": {
+    "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "w1_criteria_sha256": "6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef",
+    "w1_result_sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+  },
+  "provenance": {
+    "evidence_path": "docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json",
+    "job": "scripts/waterlily_w2a_job.jl",
+    "review_note": "runtime fingerprint (Julia, threads, WaterLily, backend) and child peak RSS are recorded per run",
+    "runner": "scripts/run_waterlily_w2a_cpu_2026_09.py"
+  },
+  "registered_before_implementation": false,
+  "registered_before_measurement": true,
+  "registration_note": "implementation pre-existed this registration (bridge modules and smoke validation were developed while the user-reviewed W2a plan was being executed); the registration fixes every fixture parameter and gate before the registered evidence run and the runner refuses to run on any criteria/implementation drift",
+  "schema_version": 1,
+  "solver_started": false
+}

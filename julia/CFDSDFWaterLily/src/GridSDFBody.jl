@@ -22,8 +22,8 @@ No solver, force, or physics semantics live in this module (W1 scope).
 
 module GridSDFBody
 
-export GridSDF, GridSDFError, sdf_at_world, world_to_solver, solver_to_world,
-    zero_level_margin_m
+export GridSDF, GridSDFError, sdf_at_world, sdf_value_gradient_at_world,
+    world_to_solver, solver_to_world, zero_level_margin_m
 
 struct GridSDFError <: Exception
     msg::String
@@ -194,6 +194,58 @@ function sdf_at_world(g::GridSDF{A,T}, x_world::NTuple{3,Float64})::Float64 wher
     front = (1 - tz) * bilinear_bot + tz * bilinear_top
     back = (1 - tz) * bilinear_bot_hi + tz * bilinear_top_hi
     return (1 - ty) * front + ty * back
+end
+
+"""
+    sdf_value_gradient_at_world(g, x_world) -> (value, gradient)
+
+World-space trilinear SDF value and its analytic gradient.  The value is
+defined as `sdf_at_world(g, x_world)` (bitwise identical by construction);
+the gradient is the exact gradient of the same trilinear polynomial with
+respect to the world coordinates.  Outside the closed design box the value
+is the extension constant and the gradient is exactly zero (the extension is
+constant).  This is the bridge geometry normal for the W2 WaterLily body; it
+is not a finite-difference stencil.
+"""
+function sdf_value_gradient_at_world(
+    g::GridSDF{A,T},
+    x_world::NTuple{3,Float64},
+)::Tuple{Float64,NTuple{3,Float64}} where {A,T}
+    value = sdf_at_world(g, x_world)
+    nx, ny, nz = g.shape
+    xs = (x_world[1] - g.origin[1]) / g.h[1]
+    ys = (x_world[2] - g.origin[2]) / g.h[2]
+    zs = (x_world[3] - g.origin[3]) / g.h[3]
+    if !(0.0 <= xs <= (nx - 1) && 0.0 <= ys <= (ny - 1) && 0.0 <= zs <= (nz - 1))
+        return (value, (0.0, 0.0, 0.0))
+    end
+    i0 = min(floor(Int, xs) + 1, nx - 1)
+    j0 = min(floor(Int, ys) + 1, ny - 1)
+    k0 = min(floor(Int, zs) + 1, nz - 1)
+    tx = xs - (i0 - 1)
+    ty = ys - (j0 - 1)
+    tz = zs - (k0 - 1)
+    phi = g.phi
+    v000 = Float64(phi[i0,     j0,     k0])
+    v100 = Float64(phi[i0 + 1, j0,     k0])
+    v010 = Float64(phi[i0,     j0 + 1, k0])
+    v110 = Float64(phi[i0 + 1, j0 + 1, k0])
+    v001 = Float64(phi[i0,     j0,     k0 + 1])
+    v101 = Float64(phi[i0 + 1, j0,     k0 + 1])
+    v011 = Float64(phi[i0,     j0 + 1, k0 + 1])
+    v111 = Float64(phi[i0 + 1, j0 + 1, k0 + 1])
+    dvdtx = (1 - ty) * (1 - tz) * (v100 - v000) +
+            ty * (1 - tz) * (v110 - v010) +
+            (1 - ty) * tz * (v101 - v001) +
+            ty * tz * (v111 - v011)
+    dvdtz = (1 - ty) * ((1 - tx) * v001 + tx * v101) +
+            ty * ((1 - tx) * v011 + tx * v111) -
+            ((1 - ty) * ((1 - tx) * v000 + tx * v100) +
+             ty * ((1 - tx) * v010 + tx * v110))
+    dvdtz_ty = (1 - tx) * (v011 - v001) + tx * (v111 - v101)
+    dvdtz_ty0 = (1 - tx) * (v010 - v000) + tx * (v110 - v100)
+    dvdty = dvdtz_ty0 + tz * (dvdtz_ty - dvdtz_ty0)
+    return (value, (dvdtx / g.h[1], dvdty / g.h[2], dvdtz / g.h[3]))
 end
 
 end # module
