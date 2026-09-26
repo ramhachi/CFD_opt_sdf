@@ -1817,3 +1817,33 @@ start another OpenFOAM case until a corrected contract is registered.
   birth. Next gate order: SDF genesis -> WaterLily primal -> SDF centered FD
   -> CPU reverse PoC -> GPU reverse Go/No-Go -> one SDF update -> topology
   birth -> OpenFOAM PQ5.
+
+
+## 2026-09-26: SDF genesis executed (v16 lineage) and inventory v2
+
+- `src/cfd_sdf/design/genesis.py` + `scripts/sdf_native_genesis_v16_2026_09.py`
+  build the canonical `SDFDesignState` from the registered v16 handoff with
+  fail-closed artifact-hash replay, the documented mask projection policy
+  `v16_handoff_mask_projection_v1` (design = strict all-eight-active interior;
+  fixed/forbidden/root = any-adjacent), and `source_sha256` bound to the
+  registered baseline surface STL `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+- Canonical state: `work/sdf_native_genesis_v16/sdf_design_state.npz`, state
+  SHA-256 `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`
+  (`phi_sha256` `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  point grid `61x33x25`, spacing `0.05 m`, narrow band `0.05 m`, generation 0).
+  Evidence: `docs/evidence/sdf_native_genesis_v16_2026_09.json` (SHA-256
+  `3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670`). All
+  nine handoff mask contract checks pass; material volume diagnostic
+  `0.129250 m^3` equals the handoff cell-threshold volume.
+- Freeze-mechanism correction: the registered v1 repo inventory verified a
+  live glob, so legitimate append-only additions failed `--verify`. v1
+  stays byte-frozen (file, sidecar, generator untouched); the fixed-set
+  successor `docs/evidence/repo_inventory_sdf_native_v2.json` (SHA-256
+  `8e31d9e30feca97d112a7803d611f926e1e0d8a3f993367f24e043c75a3c5d27`,
+  registered via `scripts/inventory_sdf_native_repo_v2.py --register`) is
+  now the live inventory; `tests/test_sdf_native_freeze.py` pins both
+  sidecars and runs the v2 fixed-set verify.
+- No solver run; no evidence rewrite; all conservative flags remain false.
+  Next gates: WaterLily primal (Colab T4 primary; Julia env registration on
+  Colab, then `julia/CFDSDFWaterLily/` pinned package skeleton and the
+  stable primal bridge PR-03), then SDF directional centered FD.

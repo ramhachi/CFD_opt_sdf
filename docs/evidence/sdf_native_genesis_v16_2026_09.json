@@ -1,0 +1,127 @@
+{
+  "claims_not_supported": [
+    "no WaterLily primal, SDF gradient, reverse-AD, topology-birth, optimizer or campaign qualification",
+    "no absolute, grid-independent, high-Re or full-vehicle downforce claim; the v16 candidate itself is a blocked-stop checkpoint",
+    "genesis proves no downstream consumer behavior"
+  ],
+  "claims_supported": [
+    "the canonical SDFDesignState is built hash-faithfully from the registered v16 handoff artifacts with all mask contract checks passing",
+    "the state binds the registered baseline surface STL sha256 as source_sha256"
+  ],
+  "environment": {
+    "machine": "arm64",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13"
+  },
+  "evidence_class": "contract_and_capability",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "genesis_id": "sdf_native_genesis_v16_2026_09",
+  "genesis_report": {
+    "sdf_vti": {
+      "path": "signed_distance.vti",
+      "sha256": "a3186e3c2be0d39931fcfaa837a1676d2ab72bc56a8470043d16350315d80e68",
+      "verdict": "hash_match"
+    },
+    "source_density_vti": {
+      "path": "source_density.vti",
+      "sha256": "8497ad175167d75385f8ea4757a7a068741bea4dd9a75685ab3fecf0592207bd",
+      "verdict": "hash_match"
+    },
+    "source_topology_state": {
+      "path": "source_topology_state.json",
+      "sha256": "c6269a982134e9a52f3a71a488359fec2447c8c1de3b9694c7c7d41ecfb9fd01",
+      "verdict": "hash_match"
+    },
+    "surface_stl": {
+      "path": "iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+      "verdict": "hash_match"
+    }
+  },
+  "grid_identity": {
+    "cell_shape": [
+      60,
+      32,
+      24
+    ],
+    "iso_value": 0.5,
+    "location": "point",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "sdf_grid_sha256": "dad559d4a69aa143ce4f48aad6293db8cb50f9103716495d25a6cd04229e51be",
+    "spacing_m": 0.05
+  },
+  "immutable": true,
+  "kind": "sdf_native_genesis_v16",
+  "lineage": {
+    "baseline_evidence": {
+      "path": "docs/evidence/stage_s_baseline_v16_v2_2026_09.json",
+      "sha256": "a6d40a5c25d9a4ca44aaf1c4d9a7b667d6d33fcfeed45d4b7e2b3cdb049abed6"
+    },
+    "handoff_manifest": {
+      "path": "work/pq4_1_v16_state_v2/sweep/threshold_0.5/handoff_manifest.json",
+      "sha256": "a79135e33b9869b356050984f04e209a3210e4dc4b11d160e45fc82d839952c7"
+    },
+    "surface_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "mask_cell_counts": {
+    "active_design": 14400,
+    "allowed": 14400,
+    "fixed_solid": 0,
+    "forbidden": 0,
+    "root": 0
+  },
+  "mask_checks": {
+    "active_subset_of_allowed": true,
+    "fixed_solid_disjoint_from_forbidden": true,
+    "fixed_solid_outside_active": true,
+    "fixed_solid_retained": true,
+    "forbidden_disjoint_from_allowed": true,
+    "material_inside_allowed_or_fixed": true,
+    "material_not_in_forbidden": true,
+    "root_outside_active": true,
+    "root_retained": true
+  },
+  "mask_point_counts": {
+    "design": 12495,
+    "fixed_solid": 0,
+    "forbidden": 0,
+    "root": 0,
+    "solid_design_fraction": 1.0
+  },
+  "mask_projection_policy": "v16_handoff_mask_projection_v1",
+  "material_diagnostics": {
+    "cell_material_count": 1034,
+    "material_volume_m3": 0.12925000000000003,
+    "phi_max_m": 1.713184118270874,
+    "phi_min_m": -0.05000000447034836,
+    "phi_negative_point_count": 1420,
+    "phi_positive_point_count": 48796,
+    "phi_zero_point_count": 109
+  },
+  "schema_version": 1,
+  "solver_started": false,
+  "state": {
+    "genesis_report_path": "work/sdf_native_genesis_v16/genesis_report.json",
+    "genesis_report_sha256": "c30b2676e3422f327ac67456c73f99b84f49a96f80edd62c3e6e61852f1b1f97",
+    "phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "state_file_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "state_path": "work/sdf_native_genesis_v16/sdf_design_state.npz",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  }
+}

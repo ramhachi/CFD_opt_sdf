@@ -8,7 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INVENTORY = ROOT / "docs/evidence/repo_inventory_sdf_native_v1.json"
+INVENTORY_V1 = ROOT / "docs/evidence/repo_inventory_sdf_native_v1.json"
+INVENTORY_V2 = ROOT / "docs/evidence/repo_inventory_sdf_native_v2.json"
 SUPERSESSION = ROOT / "docs/evidence/stage_s_reduced_basis_fd_v2_supersession_2026_09.json"
 REGISTRATION = ROOT / "docs/evidence/sdf_native_architecture_registration_2026_09.json"
 
@@ -28,8 +29,17 @@ def _run(script: str) -> dict:
     return payload
 
 
-def test_repo_inventory_is_reproducible():
-    _run("inventory_sdf_native_repo.py")
+def _sha256_path(path: Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_registered_inventories_are_byte_frozen_to_their_sidecars():
+    for inventory in (INVENTORY_V1, INVENTORY_V2):
+        assert inventory.is_file(), f"missing {inventory.name}"
+        sidecar = inventory.with_suffix(inventory.suffix + ".sha256")
+        assert sidecar.read_text(encoding="utf-8").strip() == _sha256_path(inventory)
 
 
 def test_architecture_registration_is_reproducible():

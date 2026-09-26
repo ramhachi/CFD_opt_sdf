@@ -174,4 +174,18 @@ master §10 (bounded horizons, checkpoint/recompute, custom rules) sized to the
    yet; they arrive with PR-03 (primal) / PR-06 (FD).
 3. Julia pinning (from the audit: Julia is not installed locally; the T4
    primary path makes local Julia a dev-only convenience).
+   **Update 2026-09-26:** the connected Colab runtime probe measured Julia
+   1.12.6 preinstalled on the managed CPU runtime (matching the plan's
+   assumption) with Drive mountable and git 2.43.0 available; the runtime
+   carried no GPU (`no nvidia-smi`), which is the secondary Colab-CPU role.
+   Operator-environment evidence only; not solver-qualified.
 4. No Docker assumption on Colab; no credentials cached in Drive.
+5. **Update 2026-09-26 (open item 1 residual):** the colab-mcp toolset was
+   confirmed live at first use: `open connection` returned true and
+   `get_cells`/`update_cell`/`run_code_cell` drove the connected notebook
+   (the runtime probe above was executed through MCP). This covers the four
+   controller verbs at the driven-notebook level (`run job` = write cell +
+   run, `show status`/`fetch result` = read Drive/result cells, `resume
+   campaign` = re-run of the worker cell). Residual: none for MCP wiring;
+   the remaining campaign-machinery dependency is open item 2
+   (`run_waterlily_job.py` arrives with PR-03/PR-06).

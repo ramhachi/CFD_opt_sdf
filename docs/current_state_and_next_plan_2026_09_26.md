@@ -189,3 +189,25 @@ Flag 変化なし: `shape_update_allowed=false`、`sdf_gradient_qualified=false`
   「runtime 変化は別 backend identity」の fingerprint 規律は維持。
 - gate 順・PR 構成・全 flagship flag（false）・qualification の証拠区分は不変。
   この変更だけで solver 起動・gradient qualification・shape update は許可されない。
+
+## 追記 — SDF genesis スライス完了（2026-09-26）
+
+ゲート順の最初「SDF genesis from the v16 candidate lineage」を solver-free で
+完了した。`src/cfd_sdf/design/genesis.py` が登録済み handoff（manifest
+`hash_match` 全検証）から point-grid SDF `phi` と値域 mask を取って不変の
+`SDFDesignState` を生成する。mask 投影は policy `v16_handoff_mask_projection_v1`
+（design = 8-cell 全 active の interior のみ、fixed/forbidden/root =
+any-adjacent）。状態は
+`work/sdf_native_genesis_v16/sdf_design_state.npz`、state SHA-256
+`44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`、
+evidence
+[`sdf_native_genesis_v16_2026_09.json`](evidence/sdf_native_genesis_v16_2026_09.json)
+（SHA-256 `3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670`）。
+mask 契約チェック 9/9 pass、material volume diagnostic `0.129250 m^3` は
+handoff の cell-threshold volume と一致。solver 未起動、flag 変更なし、
+既存 evidence 無変更。凍結機構の v1 inventory は live-glob 検証のため
+append-only 追加で verify が失敗する潜在欠陥が顕在化したため、v1
+（byte-frozen 維持）に代わる fixed-set 検証の
+`repo_inventory_sdf_native_v2.json`（SHA-256
+`8e31d9e30feca97d112a7803d611f926e1e0d8a3f993367f24e043c75a3c5d27`）を発行した。
+次のゲートは WaterLily primal（Colab T4 primary）。

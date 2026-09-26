@@ -1635,3 +1635,45 @@ reverse/custom-adjoint Go/No-Go -> one constrained SDF update -> topology
 birth -> OpenFOAM PQ5 verification. No optimization campaign before the
 production gradient backend decision, and no high-Re/FSAE claim is implied
 by the reduced-laminar physical profile.
+
+## 2026-09-26 SDF genesis slice (v16 lineage) executed; repo inventory v2
+
+The first gate of the SDF-native order is complete as solver-free contract
+and capability work:
+
+- `src/cfd_sdf/design/genesis.py` builds the canonical SDFDesignState from
+  a registered Stage S handoff directory. Every handoff artifact hash is
+  re-verified fail-closed; `phi` is the handoff's own point-grid SDF sample
+  (`phi < 0` solid); the geometry masks are the registered fixed-grid cell
+  masks under the recorded projection policy `v16_handoff_mask_projection_v1`
+  (design = strict all-eight-active interior projection; fixed/forbidden/root
+  = permissive any-adjacent projection).
+- The v16 genesis ran on the hash-frozen handoff manifest
+  (`work/pq4_1_v16_state_v2/sweep/threshold_0.5/handoff_manifest.json`).
+  All nine mask contract checks pass, the material volume diagnostic is
+  `0.12925000000000003 m^3` (equal to the handoff cell-threshold volume),
+  and the state binds `source_sha256` to the registered baseline surface
+  STL `5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11`.
+  Evidence:
+  [`evidence/sdf_native_genesis_v16_2026_09.json`](evidence/sdf_native_genesis_v16_2026_09.json)
+  SHA-256 `3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670`;
+  canonical state `sdf_design_state.npz`
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`
+  (`phi_sha256`
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  point grid `61x33x25`, spacing `0.05 m`).
+- A latent freeze-mechanism defect surfaced: the registered v1 repo
+  inventory verified a live glob, so any append-only downstream addition
+  failed its `--verify` even though no registered byte changed. The v1
+  artifact, generator and sidecar remain untouched and byte-frozen; the
+  fixed-set verifier
+  [`repo_inventory_sdf_native_v2.json`](evidence/repo_inventory_sdf_native_v2.json)
+  (SHA-256
+  `8e31d9e30feca97d112a7803d611f926e1e0d8a3f993367f24e043c75a3c5d27`)
+  records the same discovery globs with the live-tree defect corrected and
+  a recorded supersession reason, and new freeze tests pin both sidecars.
+- No solver started; all conservative flags stay false; no existing
+  evidence was modified. Next gate: WaterLily primal under the
+  physical-profile adapter (Colab T4 primary per the 2026-09-26 execution
+  plan), preceded by the Julia/WaterLily environment registration on the
+  Colab side and the pinned `julia/CFDSDFWaterLily/` package skeleton.

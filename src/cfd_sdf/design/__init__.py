@@ -1,5 +1,11 @@
 """SDF-native canonical design-state contracts."""
 
+from .genesis import (
+    GenesisError,
+    GenesisResult,
+    persist_genesis_report,
+    sdf_state_from_handoff,
+)
 from .sdf_state import (
     DEFAULT_REINITIALIZATION_POLICY_ID,
     DEFAULT_TOPOLOGY_POLICY_ID,
@@ -17,5 +23,9 @@ __all__ = [
     "SIGN_CONVENTION",
     "SDFDesignState",
     "SDFStateError",
+    "GenesisError",
+    "GenesisResult",
     "sdf_state_sha256",
+    "sdf_state_from_handoff",
+    "persist_genesis_report",
 ]
