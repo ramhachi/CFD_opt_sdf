@@ -1955,3 +1955,9 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
   solver run, no force value, no CUDA/Enzyme or Manifest change; flags false.
   Next: W2 analytic sphere primal (CPU first, then T4), W2b three-resolution
   bug isolation, W3 v16 primal.
+- Post-review prose corrections (append-only, user review of `10c940e`):
+  `docs/evidence/sdf_native_w1_prose_corrections_2026_09.json` SHA-256
+  `0557cff619be80e1a3057e5048c0047629bcd0ee03fda39ff9a61e4ce3ad3b42` fixes
+  the "ten cells deep" band description (it is 0.02 h) and the genesis margin
+  formula wording (`d_face - |phi|`). The immutable criteria and result files
+  are unchanged; no verdict changes.

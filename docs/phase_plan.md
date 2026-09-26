@@ -1871,3 +1871,9 @@ flags remain false.
   solver run, no force value, no CUDA/Enzyme or Manifest change; all flags
   false. Next gate: W2 analytic sphere primal (CPU first, then T4), then W2b
   three-resolution bug isolation, then W3 v16 primal.
+- 2026-09-26 user review of `10c940e`: two W1 prose statements are corrected
+  append-only in `evidence/sdf_native_w1_prose_corrections_2026_09.json`
+  (SHA-256 `0557cff619be80e1a3057e5048c0047629bcd0ee03fda39ff9a61e4ce3ad3b42`):
+  the 0.001 m interface band is 0.02 h, not "ten cells"; the genesis margin
+  measure is `d_face - |phi|`, not "gap plus |phi|". No immutable artifact,
+  threshold, gate or measured value changes; W1 remains closed.
