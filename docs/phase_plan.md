@@ -1905,3 +1905,13 @@ flags remain false.
   no gradient and no v16 physics. Next gates: W0b Colab T4 + CUDA environment,
   then the W2 T4 primal on the identical fixture, then W2b three flow-grid
   resolutions.
+- 2026-09-26 append-only semantic clarification:
+  `evidence/sdf_native_w2_semantic_clarification_2026_09.json` (SHA-256
+  `6a46e63fcf798797d9c7706ac6dcbb1712fd8578010f752d8c94d43ac13850e3`).
+  (1) The W2a arithmetic sample mean is a steady-fixture diagnostic only;
+  (2) future canonical time-averaged aerodynamic responses use physical
+  solver-time weighting `mean(F) = integral(F dt) / integral(dt)` with a
+  registered trapezoidal or equivalent rule; (3) the generic solver backend
+  returns the Cartesian `F_body = -total_force` and drag/lift/downforce are
+  ProblemSpec / physical-profile projections, not fixed components. W1 and
+  W2a evidence are unmodified and the W2a verdict stands.

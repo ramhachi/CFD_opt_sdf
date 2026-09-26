@@ -1981,3 +1981,17 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
 - Still capability/numerical only: no absolute Cd claim, no grid convergence,
   no T4/CUDA, no gradient, no v16 physics. Next: W0b Colab T4 + CUDA env,
   W2 T4 primal on the identical fixture, then W2b three flow grids.
+- Append-only semantic clarification (user review of `232bfe1`):
+  `docs/evidence/sdf_native_w2_semantic_clarification_2026_09.json` SHA-256
+  `6a46e63fcf798797d9c7706ac6dcbb1712fd8578010f752d8c94d43ac13850e3`.
+  W2a means are steady-fixture diagnostics; future canonical means use
+  physical time weighting; the backend returns the Cartesian
+  `F_body = -total_force` and drag/lift/downforce are ProblemSpec projections.
+  `Forces.jl` docstring updated accordingly; W1/W2a evidence unmodified.
+- T4 execution order (user review): W0b CUDA env -> W2-T4a analytic sphere
+  only -> W1g GPU GridSDF bridge qualification (device phi, T-generic
+  arithmetic, no host indexing in kernels; margin gate stays a CPU-side
+  pre-launch gate) -> W2-T4b sampled sphere -> W2b 16/24/32 cells/D. Do not
+  conflate CUDA-solver qualification with GridSDF GPU-port qualification;
+  analytic T4 must pass before GridSDF GPU work, and v16/FD/Enzyme/topology
+  remain closed.

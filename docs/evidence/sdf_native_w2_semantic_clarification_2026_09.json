@@ -1,0 +1,58 @@
+{
+  "claims_not_supported": [
+    "no W2a requalification; the W2a verdict and every measured value are unchanged",
+    "no time-weighted mean value is claimed for W2a",
+    "no drag/lift/downforce projection is qualified by this contract-only record",
+    "no T4/CUDA, gradient, topology or physics claim"
+  ],
+  "claims_supported": [
+    "the W2a arithmetic sample mean is scoped to the registered nearly-steady Re=100 capability fixture only",
+    "future canonical time-averaged aerodynamic responses use physical solver-time weighting",
+    "the generic solver backend exposes the Cartesian body-force vector; named aerodynamic directions are ProblemSpec/physical-profile projections"
+  ],
+  "clarifications": [
+    {
+      "affects_w2a_verdict": false,
+      "statement": "W2a's arithmetic mean of force samples taken every 4 solver steps is accepted only for the registered nearly-steady Re=100 capability fixture; it is a steady-fixture diagnostic, not the canonical time average.",
+      "topic": "force_window_mean"
+    },
+    {
+      "affects_w2a_verdict": false,
+      "statement": "Future canonical time-averaged aerodynamic responses must use physical solver time weighting, mean(F) = integral(F dt) / integral(dt), implemented with a registered trapezoidal or equivalent time-weighted rule over the measurement window.",
+      "topic": "canonical_time_weighted_mean"
+    },
+    {
+      "affects_w2a_verdict": false,
+      "statement": "The WaterLily backend returns the Cartesian body-force vector F_body = (Fx, Fy, Fz) = -total_force(sim). drag, lift and downforce are not fixed component numbers in the generic backend; they are projections onto registered ProblemSpec / physical-profile directions.",
+      "topic": "force_projection_semantics"
+    }
+  ],
+  "evidence_class": "contract",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "generated_on": {
+    "authority": "user review of HEAD 232bfe16f100eefef5d0237b59055038937cd2df (2026-09-26)",
+    "date": "2026-09-26",
+    "purpose": "append-only semantic clarification before any T4 evidence; no existing immutable evidence is modified"
+  },
+  "immutable": true,
+  "kind": "sdf_native_w2_semantic_clarification",
+  "references": {
+    "w2a_criteria": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+      "sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
+    },
+    "w2a_result": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json",
+      "sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+    }
+  },
+  "schema_version": 1,
+  "solver_started": false
+}
