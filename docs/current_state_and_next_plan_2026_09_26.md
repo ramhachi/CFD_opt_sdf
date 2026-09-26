@@ -126,3 +126,40 @@ PoC と GPU reverse Go/No-Go を分離して進める。次の gate 順は SDF g
 WaterLily primal → SDF centered FD → CPU reverse → GPU reverse 判定 →
 one SDF update → topology birth → OpenFOAM PQ5。全 flagship flag は false の
 ままである。
+
+## 追記 — 復元と Web 込み plan audit（2026-09-26）
+
+**復元。** 消失した内容は無かった。handoff bundle `00–05`、README、SHA256SUMS の
+SHA-256 は `5750da1` 時点の登録値全部と一致した。実壊れは「リンク集（06）作成時の
+README/SHA256SUMS のその場編集」のみで、`git restore` により登録状態へ復元し、06 は
+同ファイル自身の §D 推奨位置かつ凍結帯外の
+[`references/upstream_code_map.md`](references/upstream_code_map.md) へ移した。
+凍結帯の再編集は append-only 規則上しない。検証:
+`register_sdf_native_architecture_2026_09.py --verify` = pass
+（registration SHA-256 `743e90cb58dc46e93392ec3283a6d7f549f7ad8597b93c0d109220ecea637cbe`、
+登録値と一致）。Time Machine ローカルスナップショットは存在せず、要求された検索対象外。
+
+**Web監査（詳細と証拠は
+[`references/upstream_code_map.md`](references/upstream_code_map.md) §H/§I）。**
+GitHub REST API・raw・arXiv の当日ライブフェッチによる監査の要点:
+
+1. PR #285 は open・未merge、head `feed49f…` は登録値と一致。ただし最終更新 2026-09-20
+   で master（`aac3c43`）が先行、`mergeable_state=dirty`。PR-07 は pinned head を別
+   Manifest で再現し、master への取込み時のみ rebase と core `src/` 衝突を織り込む。
+2. **新契約**: reverse/adjoint cost は pressure-shift-invariant でなければならない
+   （`sum(p)` の逆勾配は厳密ゼロ＝Neumann nullspace；ForwardDiff の非ゼロは数値人為）。
+   PR-04 以降の cost は力積など。既登録の `f=-CDF` 設計はこの契約と整合する。
+3. upstream PR #327 で **Metal バックエンド**（Float32のみ、積算は `sumtype`）が merge済み。
+   PR-03 のオプションに MacBook Air Metal Float32 spike を追加できる（non-blocking）。
+4. upstream 公式 ext を優先: JLD2（checkpoint）、Meshing（表面抽出→STL handoff）、
+   Read/WriteVTK（restart）。自前実装より contract+検証つき採用。
+5. Enzyme 監視対象: issue #3195（gc-transition abort）、PR #3148（GPU linalg rules）。
+   PR-08 spike の事前登録予算は不変。
+6. DAFoam v5.0.0（GPL、OpenFOAM v2506+AD、2026-05-05）と TCLB（GPL-3、activity 2026-03）を
+   再検証。OpenLB/waLBerla/lbmpy は今回未検証。
+7. LICENSE.md 実物は MIT/Expat（GitHub の NOASSERTION は自動検出の見かけ）。
+8. 局所前提: この機械に Julia 未導入。Julia 導入＋Manifest pin は PR-02 の事前条件。
+
+Flag 変化なし: `shape_update_allowed=false`、`sdf_gradient_qualified=false`、
+`waterlily_reverse_cpu_qualified=false`、`waterlily_reverse_cuda_qualified=false`、
+`topology_birth_qualified=false`。solver 未起動。凍結帯・既存 evidence は無変更。
