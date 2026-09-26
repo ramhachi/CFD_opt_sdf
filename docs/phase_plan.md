@@ -1814,3 +1814,22 @@ inventory v3 mints at the WaterLily primal gate, not per commit.
 No qualified-gradient, shape-update or optimization-campaign claim is
 authorized by this correction, and no claim inherits it; all conservative
 flags remain false.
+
+## 2026-09-26 W0 executed: Julia environment registered and verified on Colab CPU
+
+- `julia/CFDSDFWaterLily/Project.toml` + `Manifest.toml` are committed as the
+  pinned solver environment: WaterLily `1.8.0` resolved under Julia `1.12.6`
+  (warning dato: the resolver-printed whole-graph versions are recorded in the
+  W0 evidence). The Manifest is the byte-exact resolver output whose every
+  uuid/tree-sha/version was cross-checked against the generating runtime;
+  SHA-256 `65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c`.
+- Verification on the Colab CPU runtime (clone of the committed branch, no
+  push from Colab): `Pkg.instantiate()` exit 0 with `[ed894a53] WaterLily
+  v1.8.0` and `using WaterLily` loads on a CPU-only runtime without a GPU.
+- Evidence: [`evidence/sdf_native_w0_julia_env_2026_09.json`](evidence/sdf_native_w0_julia_env_2026_09.json)
+  SHA-256 `9689ed58dfda87414bc1a4be8fce49d86405c2619217540bfe08391b98b3e5e7`.
+- No CUDA/Enzyme added yet; no CFDSDFWaterLily package source modules yet
+  (they arrive with W1/GridSDFBody); no solver, no force value; all flags
+  false. Next gate: W1 GridSDFBody adapter qualification under contract 1
+  (outside-domain fluid extension, interface-to-boundary margin, world<->solver
+  coordinate map), then W2 analytic sphere primal (CPU first, then T4).

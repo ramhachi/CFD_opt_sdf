@@ -1915,3 +1915,15 @@ start another OpenFOAM case until a corrected contract is registered.
   "mesh-derived / revoxelized discrete volume" everywhere (the 0.12925
   value is an excellent discrete cross-check, not a continuum exact
   volume).
+
+## 2026-09-26: W0 done (pinned Julia/WaterLily env, Colab CPU verified)
+
+Committed `julia/CFDSDFWaterLily/{Project,Manifest}.toml` (WaterLily 1.8.0
+under Julia 1.12.6; Manifest SHA-256 `65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c`
+— do not add a [compat] block or the manifest project_hash desynchronizes).
+The Colab CPU runtime cloned the committed branch, failed no project-hash
+warning, `Pkg.instantiate()` exit 0, and `using WaterLily` loads without a
+GPU. Evidence: `docs/evidence/sdf_native_w0_julia_env_2026_09.json` (SHA-256
+`9689ed58dfda87414bc1a4be8fce49d86405c2619217540bfe08391b98b3e5e7`). Next:
+W1 GridSDFBody adapter qualification (outside-domain fluid extension,
+margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
