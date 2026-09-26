@@ -8,8 +8,7 @@
 # sim_step!/mom_step! (registered gate G5).
 
 using CUDA
-using WaterLily
-using KernelAbstractions
+using WaterLily  # reexports @kernel, @index, get_backend
 using Pkg
 
 println("JULIA_VERSION ", VERSION)
@@ -50,7 +49,7 @@ cuarray_ok || error("CuArray smoke failed")
     I = @index(Global)
     x[I] = x[I] / 2
 end
-halve!(CUDABackend())(a; ndrange = length(a))
+halve!(get_backend(a))(a; ndrange = length(a))
 synchronize()
 ka_ok = Array(a) == Float32[0.5, 1.0, 1.5, 2.0]
 println("KA_SMOKE ", ka_ok)
