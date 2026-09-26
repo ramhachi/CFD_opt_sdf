@@ -1995,3 +1995,28 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
   conflate CUDA-solver qualification with GridSDF GPU-port qualification;
   analytic T4 must pass before GridSDF GPU work, and v16/FD/Enzyme/topology
   remain closed.
+
+## 2026-09-26: W0b done (Colab T4 CUDA environment registered)
+
+- New T4 environment directory `julia/CFDSDFWaterLilyT4` (deps-only Project:
+  CUDA + WaterLily; no compat block) keeps the W0 CPU environment
+  byte-frozen. Project SHA-256
+  `e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194`,
+  Manifest SHA-256
+  `c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707`
+  (846 lines; Julia 1.12.6, CUDA v6.3.1, WaterLily v1.8.0), resolved on the
+  explicitly selected Colab T4 runtime and verified again from a fresh clone
+  of commit `90e5518`.
+- Criteria `docs/evidence/sdf_native_w0b_t4_cuda_env_criteria_2026_09.json`
+  SHA-256 `9f68eb6f...`; result
+  `docs/evidence/sdf_native_w0b_t4_cuda_env_2026_09.json` SHA-256
+  `4f822429...`; 7/7 gates (T4 device, CUDA.functional, CuArray smoke,
+  KernelAbstractions smoke, WaterLilyCUDAExt, no solver step, identity).
+  GPU: Tesla T4 UUID `GPU-1fe89c69-4615-ad3d-88cb-2450c240208e`, 15360 MiB,
+  compute 7.5, driver 580.82.07, CUDA runtime 12.8.0.
+- The smoke uses WaterLily's reexported `@kernel`/`get_backend` so no extra
+  direct dependency was added. Colab outputs are captured under ignored
+  `work/sdf_native_w0b_t4_cuda_env_2026_09/`; the recorder is
+  `scripts/register_sdf_native_w0b_t4_cuda_env_2026_09.py`.
+- Next: W2-T4a (analytic sphere only, identical W2a fixture, `mem=CuArray`),
+  then W1g, W2-T4b, W2b. No solver step is qualified by W0b.

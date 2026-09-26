@@ -1915,3 +1915,26 @@ flags remain false.
   returns the Cartesian `F_body = -total_force` and drag/lift/downforce are
   ProblemSpec / physical-profile projections, not fixed components. W1 and
   W2a evidence are unmodified and the W2a verdict stands.
+
+## 2026-09-26 W0b executed: Colab T4 CUDA environment registered
+
+- Registered criteria: `evidence/sdf_native_w0b_t4_cuda_env_criteria_2026_09.json`
+  SHA-256 `9f68eb6fae9cf412b1ab9694045fd053b9b7298ba11d2b277394e8526f15d843`.
+  The T4 environment is a separate directory `julia/CFDSDFWaterLilyT4` (same
+  WaterLily 1.8.0 pin plus CUDA.jl, deps-only Project, no compat block) so
+  the W0 CPU environment stays byte-frozen.
+- Environment resolved on the explicitly selected Colab T4 runtime:
+  Project SHA-256 `e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194`,
+  Manifest SHA-256 `c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707`
+  (846 lines, resolved under Julia 1.12.6; CUDA v6.3.1 + WaterLily v1.8.0).
+- Measured: Tesla T4 (UUID `GPU-1fe89c69-4615-ad3d-88cb-2450c240208e`,
+  15360 MiB, compute capability 7.5), driver 580.82.07, CUDA runtime 12.8.0,
+  `CUDA.functional() == true`, CuArray and KernelAbstractions CUDA smoke pass,
+  `WaterLilyCUDAExt` loads; no `Simulation`/`sim_step!` was constructed
+  (registered gate G5). The KernelAbstractions smoke uses the names reexported
+  by WaterLily, so the T4 Project needs no additional direct dependency.
+- Evidence: `evidence/sdf_native_w0b_t4_cuda_env_2026_09.json` SHA-256
+  `4f822429656f36020410bcae6c375591d512ac3f4f58011e263346515f1237e6`; 7/7
+  gates. The W0 CPU evidence is unmodified. Next: W2-T4a analytic sphere
+  primal on this exact fixture, then W1g GPU GridSDF bridge, W2-T4b sampled
+  sphere, W2b three flow grids. No solver step is qualified by W0b.

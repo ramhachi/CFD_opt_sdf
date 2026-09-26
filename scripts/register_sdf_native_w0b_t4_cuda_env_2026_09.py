@@ -95,6 +95,18 @@ def main() -> None:
         if not passed:
             failures.append(name)
 
+    gpu_csv = None
+    for line in nvidia_smi.splitlines():
+        parts = [part.strip() for part in line.split(",")]
+        if len(parts) == 5 and parts[0].startswith("Tesla T4") and "MiB" in parts[2]:
+            gpu_csv = parts
+    gpu_uuid = gpu_csv[1] if gpu_csv else None
+    memory_mib = int(gpu_csv[2].split()[0]) if gpu_csv else None
+    memory_bytes = memory_mib * 1024 * 1024 if memory_mib else None
+    smoke_memory = _marker(smoke, "GPU_TOTAL_MEMORY_BYTES")
+    if memory_bytes is None and smoke_memory and smoke_memory.isdigit():
+        memory_bytes = int(smoke_memory)
+
     gpu_name = _marker(smoke, "GPU_NAME")
     record("G0_targeted_runtime", "Tesla T4" in nvidia_smi, f"nvidia-smi T4 match; GPU_NAME={gpu_name}")
     record("G1_cuda_functional", _marker(smoke, "CUDA_FUNCTIONAL") == "true",
@@ -113,13 +125,15 @@ def main() -> None:
         "cuda_jl_version": _marker(smoke, "CUDA_JL_VERSION"),
         "gpu_name": gpu_name,
         "gpu_compute_capability": _marker(smoke, "GPU_COMPUTE_CAPABILITY"),
-        "gpu_total_memory_bytes": _marker(smoke, "GPU_TOTAL_MEMORY_BYTES"),
+        "gpu_total_memory_bytes": str(memory_bytes) if memory_bytes else smoke_memory,
+        "gpu_uuid": gpu_uuid or "not exposed",
         "cuda_driver_version": _marker(smoke, "CUDA_DRIVER_VERSION"),
         "cuda_runtime_version": _marker(smoke, "CUDA_RUNTIME_VERSION"),
     }
     record(
         "G6_identity",
-        all(value for key, value in identity_fields.items() if key != "gpu_uuid"),
+        all(value for key, value in identity_fields.items() if key != "gpu_uuid")
+        and memory_bytes is not None,
         f"identity fields {identity_fields}",
     )
 
@@ -178,10 +192,11 @@ def main() -> None:
             "gpu": {
                 "name": gpu_name,
                 "compute_capability": identity_fields["gpu_compute_capability"],
-                "total_memory_bytes": identity_fields["gpu_total_memory_bytes"],
+                "memory_total_mib": memory_mib,
+                "total_memory_bytes": memory_bytes,
                 "driver_version": identity_fields["cuda_driver_version"],
                 "cuda_runtime_version": identity_fields["cuda_runtime_version"],
-                "uuid": None,
+                "uuid": gpu_uuid,
             },
             "runtime": {
                 "julia_version": identity_fields["julia_version"],
