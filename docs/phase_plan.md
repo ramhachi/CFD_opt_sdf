@@ -1877,3 +1877,31 @@ flags remain false.
   the 0.001 m interface band is 0.02 h, not "ten cells"; the genesis margin
   measure is `d_face - |phi|`, not "gap plus |phi|". No immutable artifact,
   threshold, gate or measured value changes; W1 remains closed.
+
+## 2026-09-26 W2a executed: first WaterLily primal (analytic vs sampled sphere, CPU)
+
+- Registered criteria: `evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json`
+  SHA-256 `aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f`.
+  Fixture: WaterLily 96x64x64 solver grid (16 cells per diameter), Re_D = 100
+  (U = 1, D = 16 solver units, ν = 0.16), Float32, CLI CPU multi-threaded;
+  the sampled geometry is the exact sphere on a 61x33x29 lattice (h = 0.05 m,
+  margin 0.2 m) fed through the W1 `GridSDFWaterLilyBody` bridge; t_end = 60
+  tU/D, burn-in 40, force on the body `F_body = -total_force`; gates G1-G8
+  (completion, finiteness, force finiteness, drag sign, stationarity, cross-
+  fixture Cd, lift bound, repeatability).
+- Outcome: `evidence/sdf_native_w2a_sphere_cpu_2026_09.json` SHA-256
+  `26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b`;
+  all 8 gates pass. 2246 steps analytic / 2242 sampled; wall 612 s / 820 s on
+  4 Julia threads (excludes kernel warm-up, reported separately); window-mean
+  drag 88.425780 vs 88.233538; Cd 0.879587 vs 0.877675 (relative difference
+  0.217% against the registered 10% bound); stationarity drift <= 1.9e-7
+  (bound 0.02); |lift|/drag <= 3.5e-5; the identical analytic repeat matches
+  with relative drag difference 0.0 (bound 1e-6); fields, forces and the
+  sampled phi gate (margin 0.199999988 m) all finite/pass; child peak RSS
+  580 MB.
+- This is capability/numerical evidence for the first solver run, not a Cd
+  validation: the compact domain and 16 cells/D rung are not qualified for
+  absolute values and blockage is about 5%. No T4/CUDA, no Manifest change,
+  no gradient and no v16 physics. Next gates: W0b Colab T4 + CUDA environment,
+  then the W2 T4 primal on the identical fixture, then W2b three flow-grid
+  resolutions.

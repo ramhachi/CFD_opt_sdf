@@ -1,0 +1,301 @@
+{
+  "claims_not_supported": [
+    "no absolute or literature Cd validation; the compact domain and 16 cells/D rung are capability fixtures",
+    "no grid independence or flow-grid convergence (that is W2b)",
+    "no T4/CUDA backend qualification and no Manifest change",
+    "no v16 geometry behavior, gradient, FD, topology, optimizer or downforce claim",
+    "no target-physics, benchmark, full-vehicle or high-Re claim"
+  ],
+  "claims_supported": [
+    "WaterLily constructs and time-integrates the registered flow-past-sphere fixture in Float32 on the CLI CPU multi-threaded backend",
+    "the W1 GridSDF adapter is consumed by the solver through the GridSDFWaterLilyBody bridge (trilinear value and analytic normal)",
+    "the canonical force response is the force on the body in solver units, F_body = -total_force, and its drag sign is exercised on the fixture",
+    "the exact-sphere and sampled-sphere geometries produce finite, stationary, same-sign force histories on the same flow grid"
+  ],
+  "evidence_class": "capability_and_numerical",
+  "existing_evidence_modified": false,
+  "fixture": {
+    "affine_map": {
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units",
+      "world_origin_m": [
+        -1.75,
+        -2.0,
+        -2.0
+      ],
+      "world_per_solver": 0.0625
+    },
+    "canonical_phi": {
+      "center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.7
+      ],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [
+        61,
+        33,
+        29
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0) Dirichlet normal / Neumann tangential, no periodic direction, exitBC disabled",
+      "dims": [
+        96,
+        64,
+        64
+      ],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "Array",
+      "note": "solver length unit = one flow cell; 16 cells per diameter; sim_time is in tU/D units",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [
+        32.0,
+        32.0,
+        32.0
+      ],
+      "solver_radius": 8.0,
+      "threads": "auto (recorded per run)",
+      "u_inf": 1.0
+    },
+    "geometries": {
+      "analytic": "WaterLily AutoBody with the exact sphere SDF in solver coordinates",
+      "sampled": "GridSDFWaterLilyBody over the canonical_phi fixture and the registered affine map"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [
+        40.0,
+        60.0
+      ],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gate_id": "sdf_native_w2a_sphere_cpu_2026_09",
+  "gates": {
+    "G1_completion": {
+      "detail": "t_end=60.0 reached for ['analytic', 'gridsdf', 'analytic_repeat']",
+      "pass": true
+    },
+    "G2_finiteness": {
+      "detail": "finite u/p for ['analytic', 'gridsdf', 'analytic_repeat']",
+      "pass": true
+    },
+    "G3_force_finite": {
+      "detail": "every sampled force component finite",
+      "pass": true
+    },
+    "G4_drag_sign": {
+      "detail": "window drag {'analytic': 88.42577970204097, 'gridsdf': 88.2335378441562, 'analytic_repeat': 88.42577970204097}",
+      "pass": true
+    },
+    "G5_stationarity": {
+      "detail": "half-window relative drifts {'analytic': 6.102291493931774e-08, 'gridsdf': 1.827648032212494e-07, 'analytic_repeat': 6.102291493931774e-08} <= 0.02",
+      "pass": true
+    },
+    "G6_cross_fixture": {
+      "detail": "|Cd_sampled-Cd_analytic|/Cd_analytic=2.174048e-03 <= 0.1",
+      "pass": true
+    },
+    "G7_lift_bound": {
+      "detail": "|lift|/drag {'analytic': 1.8267790687229525e-07, 'gridsdf': 3.437977429426912e-05, 'analytic_repeat': 1.8267790687229525e-07} <= 0.1",
+      "pass": true
+    },
+    "G8_reproducibility": {
+      "detail": "repeat relative drag difference 0.000000e+00 <= 1e-06",
+      "pass": true
+    }
+  },
+  "generated_on": {
+    "child_peak_rss_bytes": 579649536,
+    "julia": "1.12.6",
+    "julia_threads": 4,
+    "machine": "arm64",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "waterlily": "1.8.0",
+    "waterlily_backend": "KernelAbstractions"
+  },
+  "immutable": true,
+  "inputs": {
+    "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "w1_result": {
+      "path": "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json",
+      "sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+    }
+  },
+  "kind": "sdf_native_w2a_sphere_cpu",
+  "registered_criteria": {
+    "path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+    "sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
+  },
+  "runs": {
+    "analytic": {
+      "csv_sha256": "e16b26c0c34fb33ed96548cdda3b6d156545f12e64917c4f1d6e285c72f4df91",
+      "force_rows": 561,
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.8795874960209253,
+        "final_force": [
+          88.42578138997169,
+          -2.554982251012916e-05,
+          -1.5561710739575574e-05,
+          56.94868323496303,
+          31.47709815500866
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.42578238561265,
+        "first_step_seconds": 4.041531085968018,
+        "force_samples": 561,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mode": "analytic",
+        "ms_per_step": 272.80048283277483,
+        "phi_margin_m": NaN,
+        "phi_sha256": "",
+        "second_half_mean_drag": 88.42577698961365,
+        "steps": 2246,
+        "t_end_reached": 60.00004196166992,
+        "t_end_target": 60.0,
+        "wall_seconds": 612.4370839595795,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_mean_drag": 88.42577970204097,
+        "window_mean_lift": -1.6153436349519535e-05,
+        "window_mean_side": -1.1783014393643347e-06,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "3de1b9c4713b4006eaa92e6b09ec6a30f9e2895ecb18afd179cd11ad2f718bb4",
+      "transcript_sha256": "f4dedeb86ed767ee2e9867b1e32f6a619843394a709546e1a8667dd194a97432"
+    },
+    "analytic_repeat": {
+      "csv_sha256": "e16b26c0c34fb33ed96548cdda3b6d156545f12e64917c4f1d6e285c72f4df91",
+      "force_rows": 561,
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.8795874960209253,
+        "final_force": [
+          88.42578138997169,
+          -2.554982251012916e-05,
+          -1.5561710739575574e-05,
+          56.94868323496303,
+          31.47709815500866
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.42578238561265,
+        "first_step_seconds": 6.3548479080200195,
+        "force_samples": 561,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mode": "analytic",
+        "ms_per_step": 266.52331989432764,
+        "phi_margin_m": NaN,
+        "phi_sha256": "",
+        "second_half_mean_drag": 88.42577698961365,
+        "steps": 2246,
+        "t_end_reached": 60.00004196166992,
+        "t_end_target": 60.0,
+        "wall_seconds": 598.3448531627655,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_mean_drag": 88.42577970204097,
+        "window_mean_lift": -1.6153436349519535e-05,
+        "window_mean_side": -1.1783014393643347e-06,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "6ad7f62c4ba81d18b4baad9349b8d2a75fde158a5206aae21d201f5126a11e12",
+      "transcript_sha256": "f346b61ac056512e5d90ae01605f633ede1e0d9ac054af5d07a0eacd87c00d6a"
+    },
+    "gridsdf": {
+      "csv_sha256": "43e840ca7f68db9db26c89f3f2faed248c55840d732c5d94391635dd1db88fe8",
+      "force_rows": 560,
+      "summary": {
+        "blas_threads": 4,
+        "cd": 0.8776752308989546,
+        "final_force": [
+          88.23351705351755,
+          0.00303039404792127,
+          -0.0030554612489011035,
+          56.84239099566898,
+          31.391126057848567
+        ],
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_half_mean_drag": 88.2335458640319,
+        "first_step_seconds": 7.27888298034668,
+        "force_samples": 560,
+        "julia_threads": 4,
+        "julia_version": "1.12.6",
+        "mode": "gridsdf",
+        "ms_per_step": 365.72080730913154,
+        "phi_margin_m": 0.19999998807907104,
+        "phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+        "second_half_mean_drag": 88.23352973804525,
+        "steps": 2242,
+        "t_end_reached": 60.001312255859375,
+        "t_end_target": 60.0,
+        "wall_seconds": 819.5803291797638,
+        "waterlily_backend": "KernelAbstractions",
+        "waterlily_version": "1.8.0",
+        "window_mean_drag": 88.2335378441562,
+        "window_mean_lift": 0.0030334491162669432,
+        "window_mean_side": -0.0030449987628685107,
+        "world_origin_m": [
+          -1.75,
+          -2.0,
+          -2.0
+        ],
+        "world_per_solver": 0.0625
+      },
+      "summary_sha256": "3bcee03312da7eda39afac0421bb579aabff1b8a63acf958f602ae2950f45f08",
+      "transcript_sha256": "b3756f8ee1569b39260ab63b6a28e4cc0e387bf2fe5d9e63ef6e876a71355efb"
+    }
+  },
+  "schema_version": 1,
+  "solver_started": true,
+  "verdict": {
+    "fail_closed": false,
+    "w2a_qualified": true
+  }
+}

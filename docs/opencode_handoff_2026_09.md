@@ -1961,3 +1961,23 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
   the "ten cells deep" band description (it is 0.02 h) and the genesis margin
   formula wording (`d_face - |phi|`). The immutable criteria and result files
   are unchanged; no verdict changes.
+
+## 2026-09-26: W2a done (first WaterLily primal, analytic vs sampled sphere, CPU)
+
+- WaterLily package now has the registered bridge: `WaterLilyBody.jl`
+  (W1 `GridSDF` -> `AbstractBody`, analytic trilinear normal),
+  `Forces.jl` (`F_body = -total_force` canonical response), `Runtime.jl`
+  (fingerprint), `Simulation.jl` (registered 96x64x64, Re_D=100, Float32
+  sphere fixtures), plus `scripts/waterlily_w2a_job.jl` and
+  `scripts/run_waterlily_w2a_cpu_2026_09.py`.
+- Criteria `docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json`
+  SHA-256 `aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f`;
+  result `docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json` SHA-256
+  `26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b`.
+- All 8 registered gates pass: completion, finite u/p/forces, drag sign,
+  stationarity <= 1.9e-7, sampled-vs-analytic Cd difference 0.217% (bound
+  10%; Cd 0.8777 vs 0.8796), lift <= 3.5e-5 of drag, bit-identical analytic
+  repeat. 2246/2242 steps, ~10.2/13.7 min on 4 threads.
+- Still capability/numerical only: no absolute Cd claim, no grid convergence,
+  no T4/CUDA, no gradient, no v16 physics. Next: W0b Colab T4 + CUDA env,
+  W2 T4 primal on the identical fixture, then W2b three flow grids.
