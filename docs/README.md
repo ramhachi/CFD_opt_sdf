@@ -98,6 +98,12 @@ Start here in a new terminal, after reading the repository root
   Stage T downforce ranking failed on the thickness axis and which architecture
   tracks could address it. Subordinate to `phase_plan.md`; it adds no repository
   evidence and changes no gate.
+- [`colab_t4_batch_worker_plan_2026_09_26.md`](colab_t4_batch_worker_plan_2026_09_26.md)
+  — Colab T4 batch-worker execution design: fixed hardware roles (T4 primary,
+  4070 Ti as independent CUDA witness), thin-notebook bootstrap, job manifests,
+  controller verbs, Drive-persistent campaigns, and the flush-before-death
+  rule. Additive amendment to the frozen SDF-native handoff master; subordinate
+  to `phase_plan.md`.
 
 ## Compatibility policy
 

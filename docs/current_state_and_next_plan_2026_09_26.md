@@ -163,3 +163,29 @@ GitHub REST API・raw・arXiv の当日ライブフェッチによる監査の�
 Flag 変化なし: `shape_update_allowed=false`、`sdf_gradient_qualified=false`、
 `waterlily_reverse_cpu_qualified=false`、`waterlily_reverse_cuda_qualified=false`、
 `topology_birth_qualified=false`。solver 未起動。凍結帯・既存 evidence は無変更。
+
+## 追記 — Colab T4 primary 化（2026-09-26）
+
+実行設計を Colab 使用許可の下で固定した。詳細は
+[`colab_t4_batch_worker_plan_2026_09_26.md`](colab_t4_batch_worker_plan_2026_09_26.md)。
+要点:
+
+- **役割固定**: Primary = Colab T4（CUDA primal/FD/campaign 全ジョブ）、
+  Secondary = Colab CPU（env 検証・smoke）、Witness/開発 = RTX 4070 Ti
+  （**同一 manifest の再実行による independent CUDA witness** へ降格）、
+  Control plane = MacBook Air（manifest/テスト/review）。
+- notebook は研究ロジックを一切持たない薄い bootstrap
+  （Drive mount → clone/fetch → exact commit checkout → Julia instantiate →
+  runtime probe → `run_worker(job_manifest)` → artifact flush）。
+  実体は repo 側の `scripts/run_waterlily_job.py` と `julia/CFDSDFWaterLily/`。
+- FD qualification は `direction_NN_plus/minus` を 1 ジョブ 1 manifest entry
+  に展開し、Colab 側は「次の未完了 job を 1 個取って実行」。controller は
+  `run job / show status / fetch result / resume campaign` の 4 動詞のみ。
+- Drive に `campaign/{manifest.json, jobs/, results/}` を残し、セッション死後も
+  新しい T4 runtime が続行できる。標語「ログ吐ききってから死ね」を硬要件として明記
+  （全退出経路で partial log + fail-closed `result.json` を先に flush）。
+- frozen `00_HANDOFF_MASTER.md` §16/§17 の「GPU type 不特定 Colab / 4070 Ti primary」
+  の記述は、この plan doc により追加的に修正（凍結帯自体は編集しない）。
+  「runtime 変化は別 backend identity」の fingerprint 規律は維持。
+- gate 順・PR 構成・全 flagship flag（false）・qualification の証拠区分は不変。
+  この変更だけで solver 起動・gradient qualification・shape update は許可されない。
