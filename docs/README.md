@@ -104,6 +104,9 @@ Start here in a new terminal, after reading the repository root
   controller verbs, Drive-persistent campaigns, and the flush-before-death
   rule. Additive amendment to the frozen SDF-native handoff master; subordinate
   to `phase_plan.md`.
+- [`colab_mcp_runbook_2026_09.md`](colab_mcp_runbook_2026_09.md)
+  — Codex から Colab MCP を使う実務手順。接続の維持、T4 の事前確認、W1g の
+  実行と証拠回収、停止条件を記す。実行順と判定基準は変更しない。
 
 ## Compatibility policy
 

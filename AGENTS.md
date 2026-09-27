@@ -34,3 +34,8 @@ implementation or documentation task is complete and validated, commit and push
 only the intended files to the current feature branch. Explicit review-only,
 no-edit, or no-push instructions are exceptions. Never force-push, reset,
 checkout, or overwrite unrelated work.
+
+Before operating the Colab notebook through MCP, read
+[`docs/colab_mcp_runbook_2026_09.md`](docs/colab_mcp_runbook_2026_09.md).
+The Colab browser connection does not establish a T4 runtime; verify the
+runtime and registered backend identity before a GPU measurement.
