@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "criteria_id": "kaggle_w2t4b_sampled_sphere_cuda_2026_09",
+  "evidence_class": "sampled_sphere_cuda_primal_capability_and_numerical_agreement",
+  "claims_supported": [
+    "the registered Float32 sampled-sphere GridSDF body completes one WaterLily primal on the Kaggle T4 CUDA backend",
+    "the CUDA solver run returns finite fields and force history with positive drag and bounded stationarity",
+    "the sampled T4 drag is within the registered 1% bound of the existing CPU sampled-sphere fixture"
+  ],
+  "claims_not_supported": [
+    "no flow-grid convergence, absolute Cd validation, or literature validation",
+    "no gradient, reverse-mode, topology, v16 or optimizer qualification",
+    "no target-aerodynamics, full-vehicle or high-Re claim"
+  ],
+  "immutable": true,
+  "existing_evidence_modified": false,
+  "solver_started": false,
+  "source_commit": "99c013a089b196975c190d413e4b4103ccbe755e",
+  "registered_before_implementation": false,
+  "registered_before_measurement": true,
+  "registration_note": "The minimal gridsdf job path was committed and locally syntax-parsed first; all numerical and resource gates below are fixed before the first Kaggle sampled-sphere CUDA measurement.",
+  "fixture": {
+    "affine_map": {
+      "world_origin_m": [
+        -1.75,
+        -2.0,
+        -2.0
+      ],
+      "world_per_solver": 0.0625,
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units"
+    },
+    "canonical_phi": {
+      "center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.7
+      ],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [
+        61,
+        33,
+        29
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0), no periodic direction, exitBC disabled",
+      "dims": [
+        96,
+        64,
+        64
+      ],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "CuArray",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [
+        32.0,
+        32.0,
+        32.0
+      ],
+      "solver_radius": 8.0,
+      "u_inf": 1.0,
+      "threads": 1
+    },
+    "geometry": {
+      "mode": "gridsdf",
+      "description": "W1 GridSDFWaterLilyBody using the exact registered canonical Float32 sphere phi on Kaggle CUDA",
+      "device_copy": "CPU GridSDF constructor and margin gate, then CuArray copy and exact device round-trip SHA check before constructing the WaterLily body"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [
+        40.0,
+        60.0
+      ],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0,
+      "time_weighted_mean": "diagnostic: trapezoidal integral of the window samples, integral(F dt)/integral(dt) using actual sim_time"
+    }
+  },
+  "backend": {
+    "backend": "kaggle_background",
+    "accelerator": "NvidiaTeslaT4",
+    "gpu_count": 2,
+    "cuda_visible_devices": "0",
+    "julia_version": "1.12.6",
+    "cuda_jl_version": "6.3.1",
+    "waterlily_version": "1.8.0",
+    "driver_version": "580.159.04",
+    "cuda_runtime_version": "13.3.0",
+    "compute_capability": "7.5.0",
+    "uuid_policy": "Record the selected first inventory UUID and bind it to this run; do not compare ephemeral Kaggle UUIDs across versions."
+  },
+  "inputs": {
+    "kaggle_k0_result": {
+      "path": "docs/evidence/kaggle_k0_result_2026_09.json",
+      "sha256": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719"
+    },
+    "kaggle_w1g_round2_result": {
+      "path": "docs/evidence/kaggle_w1g_round2_result_2026_09.json",
+      "sha256": "bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8"
+    },
+    "w2a_cpu_result": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json",
+      "sha256": "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+    },
+    "w2a_cpu_criteria": {
+      "path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+      "sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
+    },
+    "w2t4a_analytic_result": {
+      "path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json",
+      "sha256": "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
+    },
+    "w2t4a_analytic_criteria": {
+      "path": "docs/evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json",
+      "sha256": "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
+    },
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "canonical_phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+    "w2t4_job_sha256": "c37d3fe7eea48b64bfe9db610a8264b77edd2708b62b1ce4d9efa494f3fe079b",
+    "device_grid_sdf_sha256": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "cpu_sampled_window_mean_drag": 88.2335378441562,
+    "cpu_sampled_cd": 0.8776752308989546,
+    "cpu_analytic_cd": 0.8795874960209253,
+    "t4_analytic_window_mean_drag": 88.42577373189188,
+    "t4_analytic_cd": 0.8795874366347541
+  },
+  "gates_registered_before_measurement": {
+    "T0_prerequisites": "K0 and W1g round 2 result hashes match; T4 Project/Manifest match the registered W0b pair.",
+    "T1_completion": "mode is gridsdf, steps > 0, and sim_time reaches at least 60 tU/D.",
+    "T2_finiteness": "finite_u and finite_p are true at the end of the run.",
+    "T3_force_finite": "every sampled force is finite, force_samples > 0, and the retrieved force CSV SHA matches the summary.",
+    "T4_drag_sign": "window-mean drag > 0.",
+    "T5_stationarity": "abs(first-half mean drag - second-half mean drag) / abs(window-mean drag) <= 0.02.",
+    "T6_cpu_kaggle_agreement": "abs(Kaggle sampled drag - registered W2a CPU sampled drag) / abs(CPU sampled drag) <= 0.01.",
+    "T7_sampled_analytic_agreement": "abs(Kaggle sampled Cd - registered W2-T4a analytic T4 Cd) / abs(analytic T4 Cd) <= 0.10.",
+    "T8_lift_bound": "abs(window-mean lift) / window-mean drag <= 0.10.",
+    "T9_canonical_grid": "phi SHA equals the registered CPU canonical phi SHA; device round-trip SHA is identical; margin is >= 0.15 m and within 1e-6 m of the registered 0.19999998807907104 m.",
+    "T10_runtime_vram": "wall_seconds and ms_per_step are positive; 0 < peak_vram_bytes < vram_total_bytes.",
+    "T11_backend_identity": "two Tesla T4s are listed; selected first UUID is recorded; driver, compute capability, CUDA runtime, Julia, CUDA.jl, WaterLily, Project and Manifest equal the registered values.",
+    "T12_artifact_retrieval": "version-specific Kaggle output has a DONE marker and every file in its SHA-256 manifest verifies locally."
+  },
+  "thresholds": {
+    "cpu_kaggle_sampled_relative_drag": 0.01,
+    "sampled_analytic_relative_cd": 0.1,
+    "stationarity_relative_drift": 0.02,
+    "relative_lift_to_drag": 0.1,
+    "phi_margin_min_m": 0.15,
+    "phi_margin_expected_m": 0.19999998807907104,
+    "phi_margin_abs_tolerance_m": 1e-06
+  },
+  "flags": {
+    "waterlily_sampled_sphere_t4_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "sdf_gradient_qualified": false,
+    "topology_birth_qualified": false,
+    "shape_update_allowed": false
+  },
+  "failure_policy": "Any failed gate is a diagnostic stop; preserve outputs and do not relax a bound after observing the GPU result. Register a new round before any retry with changed criteria.",
+  "scope_exclusions": [
+    "no W2b flow-grid convergence or 24/32 cells per diameter",
+    "no absolute or literature Cd validation",
+    "no gradient, reverse mode, topology, v16 or optimizer qualification",
+    "no two-GPU single-simulation claim"
+  ],
+  "reference_values": {
+    "w2a_cpu_sampled": {
+      "window_mean_drag": 88.2335378441562,
+      "cd": 0.8776752308989546,
+      "steps": 2242,
+      "phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
+    },
+    "w2t4a_t4_analytic": {
+      "window_mean_drag": 88.42577373189188,
+      "cd": 0.8795874366347541,
+      "steps": 2246
+    }
+  }
+}

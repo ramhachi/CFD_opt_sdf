@@ -2043,9 +2043,27 @@ source `f01462a44bf8b8cbefb0f5f7977916be94687b6c` on two Tesla T4s with driver
 WaterLily `1.8.0`; the selected ephemeral GPU UUID is recorded in the result.
 
 This qualifies only the GPU GridSDF geometry bridge. It does not qualify a
-WaterLily sampled-sphere CUDA step or force. The next slice is W2-T4b; before
-its GPU run, implement the smallest sampled-sphere CUDA entry point and
-register its numerical/force criteria. The current T4 job still enables only
-`analytic`, and no W2-T4b GPU criteria are registered yet. Continue to keep
+WaterLily sampled-sphere CUDA step or force. At this W1g completion checkpoint,
+the next slice is W2-T4b; before its GPU run, implement the smallest
+sampled-sphere CUDA entry point and register its numerical/force criteria. The
+current T4 job still enables only `analytic`, and no W2-T4b GPU criteria were
+registered yet. Continue to keep
 `shape_update_allowed=false`, `sdf_gradient_qualified=false`, and
 `waterlily_reverse_cuda_qualified=false`.
+
+### 2026-09-27 W2-T4b Kaggle sampled-sphere criteria registered
+
+Before the first sampled-sphere CUDA measurement, the W2-T4b criteria were
+registered at
+[`evidence/kaggle_w2t4b_criteria_2026_09.json`](evidence/kaggle_w2t4b_criteria_2026_09.json),
+SHA-256 `4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444`.
+They pin implementation source `99c013a089b196975c190d413e4b4103ccbe755e`,
+the existing W2a CPU sampled-sphere result, the W2-T4a analytic T4 result, the
+Kaggle K0 result, the W1g round-2 result, and the T4 Project/Manifest. The
+registered Kaggle sampled drag must agree with the W2a CPU sampled drag within
+1%; its Cd must remain within the existing 10% W2a cross-geometry bound of the
+T4 analytic reference. The sampled solver run has not started. Next: switch
+the private Kaggle runner from the W1g fixture to the registered single-T4
+W2-T4b job, add independent artifact verification, then submit a fresh
+version. All gradient, reverse-mode, topology, and shape-update flags remain
+false.
