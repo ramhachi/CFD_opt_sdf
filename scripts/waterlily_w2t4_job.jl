@@ -128,6 +128,7 @@ function run_campaign(body; t_end, burn_in, sample_every)
 end
 
 phi_margin_m = NaN
+phi_margin_gate_m = NaN
 phi_sha256 = ""
 device_roundtrip_sha256 = ""
 device_owner = nothing
@@ -138,7 +139,10 @@ elseif mode == "gridsdf"
         joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
     @eval using .CFDSDFWaterLily.DeviceGridSDF
     canonical = CFDSDFWaterLily.sphere_phi_fixture()  # CPU constructor enforces the margin gate
-    phi_margin_m = canonical.margin_m
+    # GridSDF.margin_m stores the configured hard-gate threshold, not the
+    # measured clearance. Emit both values with distinct names.
+    phi_margin_m = zero_level_margin_m(canonical.phi, canonical.origin, canonical.h)
+    phi_margin_gate_m = canonical.margin_m
     phi_sha256 = canonical_phi_sha256(canonical.phi)
     device_owner = device_copy(canonical)
     device_roundtrip_sha256 = device_roundtrip_sha(device_owner)
@@ -180,6 +184,7 @@ summary = string(
     "\"cuda_jl_version\":\"", string(pkgversion(CUDA)), "\",",
     "\"gpu_name\":\"", CUDA.name(CUDA.device()), "\",",
     "\"phi_margin_m\":", isfinite(phi_margin_m) ? json_number(phi_margin_m) : "null", ",",
+    "\"phi_margin_gate_m\":", isfinite(phi_margin_gate_m) ? json_number(phi_margin_gate_m) : "null", ",",
     "\"phi_sha256\":\"", phi_sha256, "\",",
     "\"device_roundtrip_sha256\":\"", device_roundtrip_sha256, "\",",
     "\"t_end_target\":", json_number(W2T4_PARAMS.t_end), ",",
