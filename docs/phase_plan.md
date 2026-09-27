@@ -2382,3 +2382,40 @@ These scratch findings do not qualify CPU or GPU reverse mode, SDF gradients,
 or an optimizer update. Keep `waterlily_reverse_cuda_qualified=false`,
 `sdf_gradient_qualified=false`, and `shape_update_allowed=false`. The existing
 W2b sphere resolution result remains PoC-only; W4 stays ahead of formal FD.
+
+### W4 v16 sensitivity design draft (not yet preregistered)
+
+Prepare the W4 matrix from the W3 profile while holding the canonical v16 phi,
+its hashes, Re=80, physical force definitions, and dimensionless measurement
+window fixed. Treat the canonical design lattice (`h=0.05 m`) and WaterLily
+flow grid as separate inputs. The baseline physical flow box is
+`[-1,2] x [-0.8,0.8] x [-0.6,0.6] m`; refine only the flow lattice using
+`world_per_solver_m = 0.8 / N_D`, with `N_D` the cells per 0.8 m reference
+length:
+
+| Cells per reference length | Flow spacing | WaterLily cells |
+| --- | --- | --- |
+| 16 (W3 baseline) | 0.0500 m | 60 x 32 x 24 |
+| 24 | 0.0333 m | 90 x 48 x 36 |
+| 32 | 0.0250 m | 120 x 64 x 48 |
+
+For every rung, set the solver reference length to `N_D` and recalculate
+`nu_solver = (mu_physical / rho) * (dx / U_physical) / dx^2`, preserving
+Re=80; this yields `nu_solver` 0.20, 0.30, and 0.40 for 16, 24, and 32 cells
+per reference length. Keep `tU/L=[80,120]`, physical force integration, and
+reference area fixed. The canonical SDF stays at 0.05 m spacing; only its
+world-to-solver scale and the flow lattice change.
+
+Add one independent domain case at 16 cells per reference length by extending
+the +x outlet 3.5 m while keeping the canonical v16 SDF, inlet, side/top
+bounds, ground, flow spacing, and native WaterLily boundary treatment fixed;
+this gives a 130 x 32 x 24 flow grid. The 3.5 m extension is a sensitivity
+perturbation in WaterLily's declared approximation, not an OpenFOAM-equivalence
+claim or a transferred acceptance result. This minimum matrix estimates the
+domain effect at the W3 resolution; if it is comparable to or larger than the
+resolution response, add an extended-domain fine-grid case before FD to check
+for a resolution/domain interaction. Reuse the passing W3 baseline only if
+its registered gates pass. Register every W4 case, thresholds, runtime/VRAM
+limits, and output contract before its first GPU measurement. Until those
+criteria exist and W4 is independently verified, centered-FD execution stays
+closed.
