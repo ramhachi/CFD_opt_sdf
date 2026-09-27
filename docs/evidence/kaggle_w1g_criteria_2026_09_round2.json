@@ -1,0 +1,52 @@
+{
+  "correction": "Static audit before round2 GPU measurement found round1 all_finite only checked x normals; round1 cannot establish the declared full-normal G3 even if its boolean is true. No threshold is relaxed.",
+  "criteria_id": "kaggle_w1g_gpu_gridsdf_2026_09_round2",
+  "evidence_class": "gpu_geometry_contract_and_numerical_agreement",
+  "failure_policy": "Any failed gate is a fail-closed W1g diagnostic. Never change the bound after observing its GPU result; register a new round first.",
+  "fixture": {
+    "bulk_band": 100000,
+    "bulk_box": 100000,
+    "cuda_visible_devices": "0",
+    "mode": "gpu",
+    "note": "The source additionally checks finiteness of all three CPU and GPU normal components on every probe; geometry arithmetic, thresholds and GPU cohort remain unchanged.",
+    "outside_probes": 6,
+    "probe_count": 200012,
+    "representatives": 12,
+    "script": "scripts/w1g_gpu_geometry_fixture.jl",
+    "script_sha256": "9f6bcfd51b15b48a9bc633f97f910eeae8b658f003b2bdcf62a279c222419435",
+    "seed": 202606
+  },
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "gates": {
+    "G1_device_copy": "source and device-roundtrip SHA-256 both equal the registered canonical CPU phi SHA-256",
+    "G2_kernel": "all 200012 probes return from the WaterLily body path inside the CUDA kernel",
+    "G3_finite": "Every CPU/GPU distance and all x/y/z normal components are finite for all 200012 probes.",
+    "G4_sign": "zero sign violations for inside-box probes with |phi_cpu_world| > 1e-5 m; gated probe count > 0",
+    "G5_value": "maximum inside-box world-distance error <= 1e-5 m",
+    "G6_normal": "maximum unit-normal L2 error <= 1e-3 on the registered fractional-cell subset; gated count > 0",
+    "G7_outside": "six registered outside probes have exact positive extension and zero normals",
+    "G8_no_scalar_fallback": "scalar_index_blocked is true; no CUDA.allowscalar(true) call",
+    "G9_kaggle_backend_identity": "two distinct Tesla T4s are present; selected GPU UUID is the first inventory UUID, compute capability 7.5.0, driver 580.159.04, CUDA runtime 13.3.0, Julia 1.12.6, CUDA.jl 6.3.1, WaterLily 1.8.0, and Project/Manifest SHA-256 equal the K0 pins"
+  },
+  "inputs": {
+    "canonical_cpu_phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+    "k0_result_sha256": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "original_colab_w1g_criteria_sha256": "d12943018d7d68e46d2395430e296692e03a2b4e459b5557b428d2223b184841",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "previous_criteria_sha256": "c5c51f84fb1574bede9f7396e0a75bb997aecfc7b5117f4b8cf0d814f59a70ef",
+  "registered_before_gpu_measurement": true,
+  "schema_version": 1,
+  "scope_exclusions": [
+    "no sampled-sphere CFD time step or force (W2-T4b)",
+    "no gradient, reverse-mode, topology, v16 physics or optimizer claim"
+  ],
+  "source_commit": "f01462a44bf8b8cbefb0f5f7977916be94687b6c",
+  "uuid_policy": "Record and bind the selected UUID to this run's nvidia-smi inventory. Do not require equality to the Colab W0b UUID or a previous ephemeral Kaggle session's UUID."
+}
