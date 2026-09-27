@@ -72,6 +72,9 @@ def verify(download):
                                                "pressure_drag", "viscous_drag"],
             "W2-T4b force CSV schema mismatch")
     require(len(rows_csv) - 1 == summary["force_samples"], "W2-T4b force sample count mismatch")
+    force_values = [[float(value) for value in row] for row in rows_csv[1:]]
+    require(all(len(row) == 7 and all(math.isfinite(value) for value in row)
+                for row in force_values), "W2-T4b force CSV contains non-finite values")
 
     ref = criteria["inputs"]
     threshold = criteria["thresholds"]
@@ -85,7 +88,9 @@ def verify(download):
         "T1_completion": summary["mode"] == "gridsdf" and summary["steps"] > 0
                          and summary["t_end_reached"] >= criteria["fixture"]["time"]["t_end_tu_d"],
         "T2_finiteness": summary["finite_u"] is True and summary["finite_p"] is True,
-        "T3_force_finite": summary["finite_forces"] is True and summary["force_samples"] > 0,
+        "T3_force_finite": summary["finite_forces"] is True and summary["force_samples"] > 0
+                           and all(len(row) == 7 and all(math.isfinite(value) for value in row)
+                                   for row in force_values),
         "T4_drag_sign": math.isfinite(drag) and drag > 0,
         "T5_stationarity": math.isfinite(drag) and drag != 0
                            and abs(summary["first_half_mean_drag"]
