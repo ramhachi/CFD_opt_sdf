@@ -15,9 +15,9 @@ import urllib.request
 from pathlib import Path
 
 
-STAGE = "w1g"
+STAGE = "w2t4b"
 OUT = Path("/kaggle/working") / STAGE
-SOURCE_COMMIT = "f01462a44bf8b8cbefb0f5f7977916be94687b6c"
+SOURCE_COMMIT = "99c013a089b196975c190d413e4b4103ccbe755e"
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -26,7 +26,26 @@ MANIFEST_SHA256 = "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4
 CRITERIA_SHA256 = "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
 COLAB_RESULT_SHA256 = "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
 W1G_CRITERIA_SHA256 = "717053a2e4cb32d16cbbc2e3de2007371c1046f365f76a404cb166322adaadcb"
+K0_RESULT_SHA256 = "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719"
+W1G_RESULT_SHA256 = "bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8"
+W2A_CPU_RESULT_SHA256 = "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e9192f920b"
+W2A_CPU_CRITERIA_SHA256 = "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
+W2T4A_RESULT_SHA256 = "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
+W2T4A_CRITERIA_SHA256 = "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
+W2T4B_CRITERIA_SHA256 = "4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444"
 CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
+W2T4_JOB_SHA256 = "c37d3fe7eea48b64bfe9db610a8264b77edd2708b62b1ce4d9efa494f3fe079b"
+DEVICE_GRID_SDF_SHA256 = "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
+W2A_CPU_SAMPLED_DRAG = 88.2335378441562
+W2T4A_ANALYTIC_CD = 0.8795874366347541
+SAMPLED_ANALYTIC_CD_TOL = 0.10
+CPU_KAGGLE_SAMPLED_DRAG_TOL = 0.01
+W2T4B_STATIONARITY_TOL = 0.02
+W2T4B_LIFT_RATIO_TOL = 0.10
+W2T4B_PHI_MARGIN_MIN_M = 0.15
+W2T4B_PHI_MARGIN_EXPECTED_M = 0.19999998807907104
+W2T4B_PHI_MARGIN_TOL_M = 1e-6
+W2T4B_T_END = 60.0
 
 
 def sha256(path):
@@ -84,6 +103,12 @@ def fetch_source(base):
                CRITERIA_SHA256)
     check_hash(source / "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json",
                COLAB_RESULT_SHA256)
+    for path, expected in (
+        ("docs/evidence/kaggle_k0_result_2026_09.json", K0_RESULT_SHA256),
+        ("docs/evidence/kaggle_w1g_round2_result_2026_09.json", W1G_RESULT_SHA256),
+        ("docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json", W2A_CPU_RESULT_SHA256),
+    ):
+        check_hash(source / path, expected)
     project = source / "julia/CFDSDFWaterLilyT4"
     check_hash(project / "Project.toml", PROJECT_SHA256)
     check_hash(project / "Manifest.toml", MANIFEST_SHA256)
@@ -166,10 +191,97 @@ def read_result(prefix):
     return summary
 
 
-def job_args(julia, project, source, params, prefix):
+def job_args(julia, project, source, params, prefix, mode="analytic"):
     return [str(julia), "--startup-file=no", f"--project={project}",
-            str(source / "scripts/waterlily_w2t4_job.jl"), str(params), "analytic",
+            str(source / "scripts/waterlily_w2t4_job.jl"), str(params), mode,
             str(OUT / prefix)]
+
+
+def w2t4b_gates(summary, rows, smoke, prerequisites_ok=True):
+    drag = float(summary["window_mean_drag"])
+    analytic_ref_cd = W2T4A_ANALYTIC_CD
+    selected_uuid = rows[0].split(", ")[2] if rows else ""
+    gates = {
+        "T0_prerequisites": prerequisites_ok,
+        "T1_completion": summary["mode"] == "gridsdf" and summary["steps"] > 0
+                         and summary["t_end_reached"] >= W2T4B_T_END,
+        "T2_finiteness": summary["finite_u"] is True and summary["finite_p"] is True,
+        "T3_force_finite": summary["finite_forces"] is True and summary["force_samples"] > 0,
+        "T4_drag_sign": drag > 0,
+        "T5_stationarity": drag != 0 and math.isfinite(drag)
+                            and abs(summary["first_half_mean_drag"]
+                                    - summary["second_half_mean_drag"]) / abs(drag)
+                            <= W2T4B_STATIONARITY_TOL,
+        "T6_cpu_kaggle_agreement": abs(drag - W2A_CPU_SAMPLED_DRAG)
+                                   / abs(W2A_CPU_SAMPLED_DRAG) <= CPU_KAGGLE_SAMPLED_DRAG_TOL,
+        "T7_sampled_analytic_agreement": abs(summary["cd"] - analytic_ref_cd)
+                                         / abs(analytic_ref_cd) <= SAMPLED_ANALYTIC_CD_TOL,
+        "T8_lift_bound": drag > 0 and math.isfinite(drag)
+                         and abs(summary["window_mean_lift"]) / drag <= W2T4B_LIFT_RATIO_TOL,
+        "T9_canonical_grid": summary["phi_sha256"] == CANONICAL_PHI_SHA256
+                             and summary["device_roundtrip_sha256"] == CANONICAL_PHI_SHA256
+                             and summary["phi_margin_m"] >= W2T4B_PHI_MARGIN_MIN_M
+                             and abs(summary["phi_margin_m"] - W2T4B_PHI_MARGIN_EXPECTED_M)
+                             <= W2T4B_PHI_MARGIN_TOL_M,
+        "T10_runtime_vram": summary["wall_seconds"] > 0 and summary["ms_per_step"] > 0
+                            and 0 < summary["peak_vram_bytes"] < summary["vram_total_bytes"],
+        "T11_backend_identity": len(rows) == 2 and len(set(row.split(", ")[2] for row in rows)) == 2
+                                and all("Tesla T4" in row and row.split(", ")[-1] == "580.159.04"
+                                        for row in rows)
+                                and summary["gpu_name"] == "Tesla T4"
+                                and summary["julia_version"] == "1.12.6"
+                                and summary["cuda_jl_version"] == "6.3.1"
+                                and summary["waterlily_version"] == "1.8.0"
+                                and "GPU_COMPUTE_CAPABILITY 7.5.0" in smoke
+                                and "CUDA_RUNTIME_VERSION 13.3.0" in smoke
+                                and selected_uuid.startswith("GPU-"),
+    }
+    return gates
+
+
+def verify_w2t4b_prerequisites(source, project):
+    if subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"],
+                               text=True).strip() != SOURCE_COMMIT:
+        raise RuntimeError("W2-T4b source commit drift")
+    check_hash(project / "Project.toml", PROJECT_SHA256)
+    check_hash(project / "Manifest.toml", MANIFEST_SHA256)
+    for path, expected in (
+        ("docs/evidence/kaggle_k0_result_2026_09.json", K0_RESULT_SHA256),
+        ("docs/evidence/kaggle_w1g_round2_result_2026_09.json", W1G_RESULT_SHA256),
+        ("docs/evidence/sdf_native_w2a_sphere_cpu_2026_09.json", W2A_CPU_RESULT_SHA256),
+        ("docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json", W2T4A_RESULT_SHA256),
+        ("docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+         W2A_CPU_CRITERIA_SHA256),
+        ("docs/evidence/sdf_native_w2t4a_analytic_sphere_criteria_2026_09.json",
+         W2T4A_CRITERIA_SHA256),
+        ("scripts/waterlily_w2t4_job.jl", W2T4_JOB_SHA256),
+        ("julia/CFDSDFWaterLily/src/DeviceGridSDF.jl", DEVICE_GRID_SDF_SHA256),
+    ):
+        check_hash(source / path, expected)
+
+
+def run_w2t4b(julia, project, source, params, env, rows, smoke):
+    if any(row.split(", ")[-1] != "580.159.04" for row in rows):
+        raise RuntimeError("Kaggle W2-T4b NVIDIA driver cohort drift")
+    verify_w2t4b_prerequisites(source, project)
+    prefix = "gridsdf"
+    command(job_args(julia, project, source, params, prefix, mode="gridsdf"),
+            OUT / "gridsdf.log", env=env, timeout=1800)
+    summary = read_result(prefix)
+    gates = w2t4b_gates(summary, rows, smoke)
+    write_json(OUT / "outcome.json", {
+        "criteria_sha256": W2T4B_CRITERIA_SHA256,
+        "source_commit": SOURCE_COMMIT,
+        "project_sha256": PROJECT_SHA256,
+        "manifest_sha256": MANIFEST_SHA256,
+        "gpu_inventory": rows,
+        "selected_gpu_uuid": rows[0].split(", ")[2],
+        "fixture_summary": summary,
+        "gates": gates,
+    })
+    if not all(gates.values()):
+        raise RuntimeError(f"W2-T4b failed: {gates}")
+    print("KAGGLE_W2T4B_DONE", json.dumps(gates, sort_keys=True), flush=True)
 
 
 def write_hash_manifest():
@@ -256,6 +368,12 @@ def main():
             run_w1g(julia, project, source, env, rows, smoke)
             write_hash_manifest()
             (OUT / "DONE").write_text("Kaggle W1g G1-G9 completed; verify retrieved SHA-256 files\n")
+            return
+        if STAGE == "w2t4b":
+            params = write_params(source)
+            run_w2t4b(julia, project, source, params, env, rows, smoke)
+            write_hash_manifest()
+            (OUT / "DONE").write_text("Kaggle W2-T4b sampled-sphere gates completed; verify retrieved SHA-256 files\n")
             return
         params = write_params(source)
         colab = json.loads((source / "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json").read_text())

@@ -122,3 +122,38 @@ manifest, registered criteria and prerequisite hashes, uploaded runner hash,
 source commit, fixture parameters, runtime/GPU identity, and recomputed G1–G9
 gates. A failed run is retained as diagnostic evidence. Only a fully verified
 round-2 pass opens the next planned slice, W2-T4b.
+
+## W2-T4b: sampled-sphere CUDA primal
+
+W2-T4b is registered in
+[`evidence/kaggle_w2t4b_criteria_2026_09.json`](evidence/kaggle_w2t4b_criteria_2026_09.json)
+(SHA-256 `4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444`)
+against implementation commit `99c013a089b196975c190d413e4b4103ccbe755e`.
+It runs the canonical sampled sphere on one visible T4 (`CUDA_VISIBLE_DEVICES=0`)
+and records the complete two-T4 inventory. The CPU-to-Kaggle sampled drag
+bound is 1%; the sampled-to-analytic T4 Cd bound is the existing 10% W2a
+cross-geometry bound. The other preregistered checks cover finite fields and
+forces, sign, stationarity, canonical phi/margin and round-trip hash, runtime,
+VRAM, backend identity, and artifact transport. No gradient, reverse mode,
+topology, grid convergence, or optimizer claim follows from this run.
+
+The current kernel directory runner targets W2-T4b; after W1g version 4, the
+expected Kaggle version is 5:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/5
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/5
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/5 -p work/kaggle_w2t4b_version5
+python3 scripts/verify_kaggle_w2t4b.py work/kaggle_w2t4b_version5
+```
+
+Use the actual version printed by `push` if it differs. The verifier requires
+the exact registered criteria hash, runner/source/Julia environment identity,
+version-specific output manifest, force CSV hash/schema/count, and independently
+recomputed T0–T12 gates. A missing `DONE`, `ERROR.txt`, or a failed gate remains
+diagnostic and does not qualify W2-T4b.

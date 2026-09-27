@@ -17,6 +17,7 @@ verifier = importlib.util.module_from_spec(VERIFY_SPEC)
 VERIFY_SPEC.loader.exec_module(verifier)
 sys.path.insert(0, str(ROOT / "scripts"))
 import verify_kaggle_w1g
+import verify_kaggle_w2t4b
 
 
 def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
@@ -41,6 +42,8 @@ def test_verifier_refuses_incomplete_download(tmp_path):
         verifier.verify(tmp_path)
     with pytest.raises(ValueError, match="completion marker"):
         verify_kaggle_w1g.verify(tmp_path)
+    with pytest.raises(ValueError, match="completion marker"):
+        verify_kaggle_w2t4b.verify(tmp_path)
 
 
 def test_w1g_gates_reject_geometry_and_identity_drift():
@@ -68,3 +71,49 @@ def test_w1g_gates_reject_geometry_and_identity_drift():
     assert not runner.w1g_gates(dict(summary, max_normal_error=0.002), rows, "")["G6_normal"]
     wrong = dict(summary, backend_identity=dict(summary["backend_identity"], gpu_uuid="GPU-b"))
     assert not runner.w1g_gates(wrong, rows, "")["G9_backend"]
+
+
+def test_w2t4b_gates_reject_force_and_grid_drift():
+    criteria_path = ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09.json"
+    criteria = json.loads(criteria_path.read_text())
+    assert runner.SOURCE_COMMIT == criteria["source_commit"]
+    assert runner.W2T4B_CRITERIA_SHA256 == verifier.sha256(criteria_path)
+    assert runner.W2A_CPU_SAMPLED_DRAG == criteria["reference_values"]["w2a_cpu_sampled"][
+        "window_mean_drag"]
+    assert runner.W2T4A_ANALYTIC_CD == criteria["reference_values"]["w2t4a_t4_analytic"]["cd"]
+    assert runner.CPU_KAGGLE_SAMPLED_DRAG_TOL == criteria["thresholds"][
+        "cpu_kaggle_sampled_relative_drag"]
+    assert runner.SAMPLED_ANALYTIC_CD_TOL == criteria["thresholds"]["sampled_analytic_relative_cd"]
+    assert runner.W2T4B_STATIONARITY_TOL == criteria["thresholds"]["stationarity_relative_drift"]
+    assert runner.W2T4B_LIFT_RATIO_TOL == criteria["thresholds"]["relative_lift_to_drag"]
+    assert runner.W2T4B_PHI_MARGIN_MIN_M == criteria["thresholds"]["phi_margin_min_m"]
+    assert runner.W2T4B_PHI_MARGIN_EXPECTED_M == criteria["thresholds"]["phi_margin_expected_m"]
+    assert runner.W2T4B_PHI_MARGIN_TOL_M == criteria["thresholds"]["phi_margin_abs_tolerance_m"]
+    assert runner.W2T4B_T_END == criteria["fixture"]["time"]["t_end_tu_d"]
+
+    rows = [
+        "0, Tesla T4, GPU-a, 15360 MiB, 580.159.04",
+        "1, Tesla T4, GPU-b, 15360 MiB, 580.159.04",
+    ]
+    smoke = "GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_RUNTIME_VERSION 13.3.0"
+    summary = {
+        "mode": "gridsdf", "steps": 2242, "t_end_reached": 60.001,
+        "finite_u": True, "finite_p": True, "finite_forces": True,
+        "force_samples": 560, "window_mean_drag": 88.2335,
+        "first_half_mean_drag": 88.2335, "second_half_mean_drag": 88.2335,
+        "cd": 0.8776, "window_mean_lift": 0.003,
+        "phi_sha256": runner.CANONICAL_PHI_SHA256,
+        "device_roundtrip_sha256": runner.CANONICAL_PHI_SHA256,
+        "phi_margin_m": 0.19999998807907104,
+        "wall_seconds": 28.0, "ms_per_step": 12.0,
+        "peak_vram_bytes": 100, "vram_total_bytes": 1000,
+        "gpu_name": "Tesla T4", "julia_version": "1.12.6",
+        "cuda_jl_version": "6.3.1", "waterlily_version": "1.8.0",
+    }
+    assert all(runner.w2t4b_gates(summary, rows, smoke).values())
+    changed = dict(summary, finite_forces=False)
+    assert not runner.w2t4b_gates(changed, rows, smoke)["T3_force_finite"]
+    changed = dict(summary, phi_sha256="0" * 64)
+    assert not runner.w2t4b_gates(changed, rows, smoke)["T9_canonical_grid"]
+    changed = dict(summary, window_mean_drag=89.5)
+    assert not runner.w2t4b_gates(changed, rows, smoke)["T6_cpu_kaggle_agreement"]
