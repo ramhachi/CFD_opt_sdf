@@ -4,6 +4,7 @@
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 import traceback
@@ -62,7 +63,12 @@ def install_julia(base):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    stage = "input_identity"
+    project_identity = None
     try:
+        registered_project_sha = sha256(PROJECT / "Project.toml")
+        registered_manifest_sha = sha256(PROJECT / "Manifest.toml")
+        stage = "gpu_inventory"
         gpu = subprocess.check_output(
             ["nvidia-smi", "--query-gpu=index,name,uuid,memory.total,driver_version",
              "--format=csv,noheader"], text=True)
@@ -70,20 +76,69 @@ def main():
         rows = [row.strip() for row in gpu.splitlines() if row.strip()]
         if not rows or any("Tesla T4" not in row for row in rows):
             raise RuntimeError("requested T4 worker was not present in GPU inventory")
-        with tempfile.TemporaryDirectory(prefix="enzyme-reverse-spike-") as temp:
+        with tempfile.TemporaryDirectory(
+                prefix="enzyme-reverse-spike-", dir="/kaggle/working") as temp:
             base = Path(temp)
+            writable_project = base / "julia-project"
+            project_identity = {
+                "registered_project_sha256": registered_project_sha,
+                "registered_manifest_sha256": registered_manifest_sha,
+                "writable_copy_pre_instantiate_project_sha256": None,
+                "writable_copy_pre_instantiate_manifest_sha256": None,
+                "writable_copy_post_instantiate_project_sha256": None,
+                "writable_copy_post_instantiate_manifest_sha256": None,
+                "writable_project_path": str(writable_project),
+                "copy_hashes_match_registered_inputs": False,
+                "instantiate_completed": False,
+                "reverse_script_completed": False,
+                "failure_stage": None,
+            }
+            write_json(OUT / "project_identity.json", project_identity)
+            stage = "writable_project_copy"
+            shutil.copytree(PROJECT, writable_project)
+            copied_project_sha = sha256(writable_project / "Project.toml")
+            copied_manifest_sha = sha256(writable_project / "Manifest.toml")
+            project_identity.update({
+                "writable_copy_pre_instantiate_project_sha256": copied_project_sha,
+                "writable_copy_pre_instantiate_manifest_sha256": copied_manifest_sha,
+                "copy_hashes_match_registered_inputs": (
+                    copied_project_sha == registered_project_sha
+                    and copied_manifest_sha == registered_manifest_sha),
+            })
+            write_json(OUT / "project_identity.json", project_identity)
+            if (copied_project_sha != registered_project_sha
+                    or copied_manifest_sha != registered_manifest_sha):
+                raise RuntimeError("writable Project/Manifest copy differs from registered scratch pins")
+            stage = "julia_installation"
             julia = install_julia(base)
             env = os.environ.copy()
             env["CUDA_VISIBLE_DEVICES"] = "0"
             env["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
             env["JULIA_NUM_THREADS"] = "1"
-            run([str(julia), f"--project={PROJECT}", "-e", "using Pkg; Pkg.instantiate()"],
+            stage = "dependency_resolution"
+            run([str(julia), f"--project={writable_project}", "-e", "using Pkg; Pkg.instantiate()"],
                 OUT / "instantiate.log", env, 3600)
-            run([str(julia), f"--project={PROJECT}", str(SCRIPT)],
+            project_identity.update({
+                "writable_copy_post_instantiate_project_sha256": sha256(writable_project / "Project.toml"),
+                "writable_copy_post_instantiate_manifest_sha256": sha256(writable_project / "Manifest.toml"),
+                "instantiate_completed": True,
+                "failure_stage": None,
+            })
+            write_json(OUT / "project_identity.json", project_identity)
+            stage = "cuda_and_reverse_diagnostics"
+            run([str(julia), f"--project={writable_project}",
+                 str(writable_project / SCRIPT.name)],
                 OUT / "reverse_spike.log", env, 7200)
+            project_identity["reverse_script_completed"] = True
+            project_identity["failure_stage"] = None
+            write_json(OUT / "project_identity.json", project_identity)
         (OUT / "DONE").write_text(
             "Diagnostic script completed; individual reverse stages are reported in reverse_spike.log.\n")
+        stage = "completed"
     except Exception:
+        if project_identity is not None:
+            project_identity["failure_stage"] = stage
+            write_json(OUT / "project_identity.json", project_identity)
         (OUT / "ERROR.txt").write_text(traceback.format_exc())
         print((OUT / "ERROR.txt").read_text(), flush=True)
     finally:

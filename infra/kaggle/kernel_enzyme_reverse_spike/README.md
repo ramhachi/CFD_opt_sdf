@@ -6,6 +6,17 @@ sphere-derived grid, and reverse differentiation through a two-step WaterLily
 sphere primal. It is a scratch experiment. `DONE` means the diagnostic script
 finished; it does not mean any reverse stage passed or is qualified.
 
+The runner hashes the submitted Julia `Project.toml` and `Manifest.toml`, copies
+that pinned project to a temporary writable directory under `/kaggle/working`,
+and verifies both copied hashes before `Pkg.instantiate()`. It writes those
+input/copy hashes to `enzyme_reverse_spike/project_identity.json`, then records
+post-instantiation hashes and whether instantiation completed. Both Julia
+commands use the writable project copy. On setup failure,
+`project_identity.json` records the failure stage; the command-specific log and
+`ERROR.txt` retain the exception. The CUDA.jl 6.2.1, Enzyme and PR #285 pins
+remain unchanged. This specifically avoids the v1 failure where Pkg tried to
+write into the read-only `/kaggle/src/julia` mount.
+
 The package manifest pins Julia 1.12.6 dependencies to Enzyme 0.13.205,
 CUDA.jl 6.2.1, and WaterLily PR #285 at
 `feed49f480b52047b4e9b8bfacdf3e4f8201106b` (WaterLily 1.6.1). CUDA.jl 6.2.1
@@ -27,7 +38,9 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
 ```
 
 Keep the Kaggle kernel log, output manifest and version-specific output
-folder together. Interpret each `*_STATUS` line independently. A missing
+folder together, including `project_identity.json`. Verify its input and
+pre-instantiation copy hashes match the Project/Manifest shipped with the
+submitted source. Interpret each `*_STATUS` line independently. A missing
 `DONE`, `ERROR.txt`, failed reverse stage, or runtime/package mismatch is
 scratch evidence only and never opens a qualification gate.
 
