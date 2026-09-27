@@ -2812,3 +2812,42 @@ were not used to choose round 3's threshold.
   its private dataset, then submit the next exact W3 kernel version. Collect
   its version-bound log/output and host-verify all T0-T10. W4 may freeze only
   after that exact PASS; reverse spike v2 is a parallel diagnostic only.
+
+### 2026-09-28 W3 expanded-domain round 3 submitted; exact run active
+
+This checkpoint supersedes the round-3 preparation status above. The W3 v3
+diagnostic, criteria, force sign, and measurement thresholds remain unchanged.
+
+- **Implemented:** expanded-domain W3 runner/job, independent host verifier,
+  round-3 contract tests, and the rebased mutable W4 shell are bound to source
+  commit `5e985fa3395a01228c18910d96e09ecbc5497628`.
+- **Registered:** immutable W3 round-3 criteria
+  `docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json` has SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`. The
+  corresponding private dataset is `ready`; its remote download has the same
+  five-file inventory and hashes as the staged dataset. The manifest SHA-256
+  is `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`.
+- **Submitted:** `ramhachi888/cfd-opt-sdf-w3-v16-primal/4` was pushed with a
+  T4 and 7200-second timeout. The latest exact-version status is
+  `KernelWorkerStatus.RUNNING`.
+- **Measured:** no round-3 force or solver result has been recovered. The
+  exact-version log retrieval is one newline byte (SHA-256
+  `01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b`), and
+  the output endpoint has not exposed an artifact. This is not evidence that
+  Julia or the solver has started.
+- **Verified:** round-3 registration check reproduces the criteria SHA;
+  W3/W4 focused pytest passes 19 tests; Python `compileall` passes; the W3
+  Julia adapter reports 16 checks passed without a solver step. The local
+  `.venv` is absent from this managed worktree, so Python validation used the
+  compatible interpreter at
+  `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python`. These are
+  contract/preflight checks, not primal measurement or host verification.
+- **Qualified:** W2 sphere primal/grid response remain qualified. W3 v3
+  remains a T7 diagnostic; W3 round 3, physical profile, stationarity, grid
+  response, gradient, CPU/GPU reverse, topology, optimizer, and shape update
+  remain unqualified. All W4 and formal FD gates remain closed.
+- **Open:** continue polling only exact W3 version 4, retrieve its exact logs
+  and output at terminal status, then run the registered host verifier. If any
+  criterion fails, preserve an append-only diagnostic and do not proceed to
+  W4. Diagnostic-only Enzyme reverse spike version 3 is independently
+  `RUNNING`; it does not affect the qualification sequence.

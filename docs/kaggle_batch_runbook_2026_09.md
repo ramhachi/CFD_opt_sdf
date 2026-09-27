@@ -868,3 +868,47 @@ git diff --check
 
 The four-case builder, Julia parser, JSON parser and focused W4 contract tests
 pass. These checks do not run a solver and do not qualify W4.
+
+### Exact execution checkpoint: W3 round 3, kernel version 4 (2026-09-28)
+
+The round-3 criteria and private dataset are now registered and remotely
+verified. Criteria SHA-256 is
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`; the
+registered source commit is `5e985fa3395a01228c18910d96e09ecbc5497628`. The
+remote dataset reports `ready`; its downloaded five-file inventory matches
+the staged files and hashes (including manifest SHA-256
+`17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`).
+
+The exact push returned version 4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 > work/kaggle_w3_version4/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 -p work/kaggle_w3_version4
+```
+
+At the latest check, exact version 4 is `KernelWorkerStatus.RUNNING`. The
+retrieved `kaggle.log` is 1 byte (newline only; SHA-256
+`01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b`) and no
+output artifact is exposed yet. Thus solver start, steps, and measurements
+remain unobserved. Repeat the exact-version status/log/output commands until
+terminal; use this same `work/kaggle_w3_version4` directory for collection.
+
+Preflight command results before submission: W3 round-3 registrar `--check`
+reproduced the criteria SHA; `tests/test_kaggle_w3.py` and
+`tests/test_kaggle_w4.py` passed (19 tests); Python `compileall` passed; and
+the W3 Julia adapter passed 16 checks without a solver step. On this host, the
+managed worktree has no `.venv`; those Python checks used
+`/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python` from the separate
+project checkout, with the working directory set to the managed worktree.
+The separate checkout's edits were left untouched.
+
+Do not register W4 or start W4/FD measurements unless exact version 4 passes
+the round-3 host verifier. Enzyme reverse spike version 3 is a separate
+diagnostic-only run and was `RUNNING` at this checkpoint; it is never gradient
+qualification evidence.
