@@ -208,13 +208,23 @@ agreement gates at 16 cells/D. The next slice is W2b; its separate
 16/24/32 cells/D flow-grid matrix and gates are registered below before the
 first ladder measurement.
 
-## W2b: registered three-resolution flow-grid ladder
+## W2b round 2: registered three-resolution flow-grid ladder
 
-W2b round 1 is registered at
+The six-case matrix and numerical bounds remain those registered in
 [`evidence/kaggle_w2b_criteria_2026_09_round1.json`](evidence/kaggle_w2b_criteria_2026_09_round1.json)
 (SHA-256 `eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`).
-It compares analytic and canonical GridSDF spheres at 16, 24, and 32 cells/D
-on identical dimensionless domains at Re_D=100. The registered bounds require
+Version 7 exposed that round 1's source commit was a mistyped, nonexistent SHA;
+that attempt failed at T0 before any solver case. The immutable diagnostic is
+[`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json`](evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json)
+(SHA-256 `5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`).
+Round 2 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round2.json`](evidence/kaggle_w2b_criteria_2026_09_round2.json)
+(SHA-256 `36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5`).
+It corrects only the source commit pin to the actual job commit
+`548231050fc6ca22bc1c0394272564f81571dbbc`; the fixture, input hashes, and
+all numeric bounds equal round 1. It compares analytic and canonical GridSDF
+spheres at 16, 24, and 32 cells/D on identical dimensionless domains at
+Re_D=100. The registered bounds require
 each per-rung geometry Cd pair within 1%, the 16-cells/D drag values within 1%
 of the W2-T4a/W2-T4b references, and the 24-to-32 cells/D Cd change within 3%
 for each geometry. The 3% value is a PoC candidate bound, not formal GCI or
@@ -222,15 +232,25 @@ absolute-accuracy evidence; all six cases must also pass the registered
 finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
 
 The solver job is pinned to source commit
-`5482310d9778229fe692cdc6799c2e1c31cc9982`. Its exact six-case parameters and
+`548231050fc6ca22bc1c0394272564f81571dbbc`. Its exact six-case parameters and
 input hashes are frozen in the criteria. W2b uses its own private Kaggle kernel,
 `ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`; it was first submitted as
-version 7. The Kaggle CLI resolves the kernel slug from the title, so the
-metadata ID now uses that same slug. Before submission, the focused W2b
-contract test passed (4 tests), the Julia parser,
-Python compilation, criteria/input hashes, and `git diff --check` passed. The
-full suite reported 1047 passed, 37 failed, and 4 skipped; each failure is a
-missing ignored `work/` fixture in the fresh managed worktree. After retrieval,
+version 7. That attempt failed at source fetch before any solver case began:
+the criteria's SHA was mistyped, so it was not a repository object. Its exact
+error and retrieval hashes are recorded in
+[`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json`](evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json)
+(SHA-256 `5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`).
+The runner fetches the advertised feature branch shallowly, then checks out the
+exact registered source commit and verifies it. This fetch-and-checkout path
+was locally tested against the pinned commit and all 20 registered source,
+Project, and Manifest hashes. The Kaggle CLI
+resolves the kernel slug from the title, so the metadata ID uses that same
+slug. Before version 7, the focused W2b contract test passed (4 tests), the Julia
+parser, Python compilation, criteria/input hashes, and `git diff --check` passed.
+After registering round 2, the focused tests and corrected branch-fetch probe
+passed. The full suite again reported 1047 passed, 37 failed, and 4 skipped;
+each failure is a missing ignored `work/` fixture in the fresh managed worktree.
+After retrieval,
 the host verifier checks every manifest hash and recomputes the force means,
 time-weighted coefficients, stationarity and all registered gates from the raw
 force CSVs.
@@ -240,17 +260,17 @@ PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
   -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7 -p work/kaggle_w2b_version7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8 -p work/kaggle_w2b_version8
 PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
-  work/kaggle_w2b_version7
+  work/kaggle_w2b_version8
 ```
 
 Use the version actually returned by `push` consistently in all four Kaggle
 commands and the retrieval path. A missing `DONE`, `ERROR.txt`, hash mismatch,
 or any failed gate remains diagnostic; do not change round-1 thresholds after
-seeing the solver result. No W2b solver measurement is recorded in this
+seeing the solver result. Round-2 thresholds equal round 1. No W2b solver measurement is recorded in this
 runbook until the exact version-specific output has passed host verification.

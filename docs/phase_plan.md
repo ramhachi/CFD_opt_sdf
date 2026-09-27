@@ -2148,8 +2148,9 @@ Before the first W2b solver measurement, the analytic/GridSDF matrix at 16,
 24, and 32 cells/D and all numerical bounds were registered in
 `evidence/kaggle_w2b_criteria_2026_09_round1.json` (SHA-256
 `eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`). The
-criteria pin the solver job at source commit
-`5482310d9778229fe692cdc6799c2e1c31cc9982`. The 3% 24-to-32 cells/D response
+round-1 criteria initially recorded the solver source as
+`5482310d9778229fe692cdc6799c2e1c31cc9982`; version 7 later confirmed that
+transcription was invalid, as recorded below. The 3% 24-to-32 cells/D response
 is only the explicitly proposed PoC bound from the WaterLily deep dive; this
 ladder is not registered as formal GCI or absolute-Cd qualification.
 
@@ -2166,7 +2167,23 @@ hash checks, and `git diff --check` pass. The full suite reports 1047 passed,
 37 failed, 4 skipped; all 37 failures are `FileNotFoundError` for pre-existing
 ignored `work/` CFD fixtures absent from this fresh managed worktree. W2b was
 submitted to its dedicated private Kaggle kernel
-`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`, version 7, which reported
-`RUNNING`; its exact version output is not yet retrieved or verified. T4
-selection, evidence scope limits, and `shape_update_allowed=false` remain
-unchanged.
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`, version 7, but failed in T0
+before source checkout or solver execution: Kaggle's Git server refused a fetch
+of the mistyped, nonexistent raw commit SHA. The immutable diagnostic is
+`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json` (SHA-256
+`5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`). The
+correct job commit is `548231050fc6ca22bc1c0394272564f81571dbbc`. Append-only
+round-2 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round2.json` (SHA-256
+`36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5`); only
+the source pin changed, with all fixture values, source-input hashes and
+numerical thresholds equal to round 1. A depth-8 fetch of the advertised
+feature branch followed by detached checkout of the corrected commit was
+verified locally, including the registered job hash. This infrastructure
+retry does not constitute a W2b solver measurement. After registering round 2,
+all 20 registered source, Project, and Manifest file hashes also verified at
+the pinned checkout. The 4 focused W2b tests, Python compile/syntax checks,
+Julia parser, criteria and diagnostic sidecars, and `git diff --check` pass; the full suite was rerun
+with the same 1047 passed, 37 missing-`work/` failures, and 4 skipped. The next
+submission uses the dedicated kernel's version 8. T4 selection, evidence scope
+limits, and `shape_update_allowed=false` remain unchanged.

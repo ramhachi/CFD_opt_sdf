@@ -10,7 +10,9 @@ from pathlib import Path
 from verify_kaggle_k0 import ROOT, require, sha256, verify_files
 
 
-CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round1.json"
+CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round2.json"
+ROUND1_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round1.json"
+ROUND1_DIAGNOSTIC = ROOT / "docs/evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json"
 RUNNER = ROOT / "infra/kaggle/kernel_w2b/runner.py"
 JOB = ROOT / "scripts/waterlily_w2b_grid_ladder_job.jl"
 CASE_IDS = [f"{mode}_{n}" for n in (16, 24, 32) for mode in ("analytic", "gridsdf")]
@@ -92,6 +94,18 @@ def verify(download):
     criteria = json.loads(CRITERIA.read_text())
     require(sha256(CRITERIA) == CRITERIA.with_suffix(CRITERIA.suffix + ".sha256").read_text().strip(),
             "W2b criteria hash mismatch")
+    previous = criteria["previous_round"]
+    require(previous["criteria_path"] == ROUND1_CRITERIA.relative_to(ROOT).as_posix()
+            and previous["criteria_sha256"] == sha256(ROUND1_CRITERIA),
+            "W2b previous criteria binding mismatch")
+    require(previous["diagnostic_path"] == ROUND1_DIAGNOSTIC.relative_to(ROOT).as_posix()
+            and previous["diagnostic_sha256"] == sha256(ROUND1_DIAGNOSTIC)
+            and sha256(ROUND1_DIAGNOSTIC)
+            == ROUND1_DIAGNOSTIC.with_suffix(ROUND1_DIAGNOSTIC.suffix + ".sha256").read_text().strip(),
+            "W2b round-1 diagnostic binding mismatch")
+    require(criteria["round"] == 2 and criteria["thresholds"]
+            == json.loads(ROUND1_CRITERIA.read_text())["thresholds"],
+            "W2b round-2 threshold drift")
     require(sha256(JOB) == criteria["inputs"]["job"]["sha256"], "W2b job source mismatch")
     for entry in criteria["inputs"].values():
         if isinstance(entry, dict) and "path" in entry:

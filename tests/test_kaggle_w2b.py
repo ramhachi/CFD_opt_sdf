@@ -64,9 +64,16 @@ def valid_summaries():
 
 def test_runner_matches_registered_w2b_matrix_and_thresholds():
     criteria = json.loads(verifier.CRITERIA.read_text())
+    round1 = json.loads(verifier.ROUND1_CRITERIA.read_text())
     fixture_cases = criteria["fixture"]["cases"]
     assert runner.CASE_IDS == [case["case_id"] for case in fixture_cases]
     assert runner.SOURCE_COMMIT == criteria["source_commit"]
+    assert runner.SOURCE_REF == "refs/heads/codex/kaggle-batch-migration"
+    assert runner.SOURCE_FETCH_DEPTH >= 4
+    assert criteria["round"] == 2
+    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND1_CRITERIA)
+    assert criteria["thresholds"] == round1["thresholds"]
+    assert criteria["fixture"] == round1["fixture"]
     assert runner.CRITERIA_SHA256 == verifier.sha256(verifier.CRITERIA)
     assert runner.CANONICAL_PHI_SHA256 == criteria["inputs"]["canonical_phi_sha256"]
 

@@ -18,12 +18,14 @@ from pathlib import Path
 STAGE = "w2b"
 OUT = Path("/kaggle/working") / STAGE
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
-SOURCE_COMMIT = "5482310d9778229fe692cdc6799c2e1c31cc9982"
+SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
+SOURCE_FETCH_DEPTH = 8
+SOURCE_COMMIT = "548231050fc6ca22bc1c0394272564f81571dbbc"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 PROJECT_SHA256 = "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
 MANIFEST_SHA256 = "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
-CRITERIA_SHA256 = "eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd"
+CRITERIA_SHA256 = "36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5"
 CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
 W2T4A_ANALYTIC_DRAG = 88.42577373189188
 W2T4B_GRID_SDF_DRAG = 88.23605899425723
@@ -133,9 +135,9 @@ def gpu_inventory():
 def fetch_source(base):
     source = base / "source"
     command(["git", "init", "-q", str(source)], OUT / "git_init.log")
-    command(["git", "-C", str(source), "fetch", "--depth", "1", SOURCE_URL,
-             SOURCE_COMMIT], OUT / "git_fetch.log", timeout=600)
-    command(["git", "-C", str(source), "checkout", "--detach", "FETCH_HEAD"],
+    command(["git", "-C", str(source), "fetch", "--depth", str(SOURCE_FETCH_DEPTH),
+             SOURCE_URL, SOURCE_REF], OUT / "git_fetch.log", timeout=600)
+    command(["git", "-C", str(source), "checkout", "--detach", SOURCE_COMMIT],
             OUT / "git_checkout.log")
     head = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"],
                                    text=True).strip()
