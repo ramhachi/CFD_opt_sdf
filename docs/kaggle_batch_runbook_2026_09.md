@@ -107,6 +107,15 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
 python3 scripts/verify_kaggle_w1g.py work/kaggle_w1g_version4
 ```
 
+Version 4 completed on 2026-09-27. The verifier checked all 11 files against
+the remote SHA-256 manifest and independently recomputed G1–G9. Maximum
+world-distance error was `3.5762787e-7 m` against `1e-5 m`; maximum unit-normal
+error was `2.4211522e-7` against `1e-3`; sign violations were zero over 199,321
+gated probes. The two-T4 inventory, selected UUID, driver/runtime cohort,
+source commit, runner hash, and Project/Manifest hashes matched. The
+append-only outcome is
+[`evidence/kaggle_w1g_round2_result_2026_09.json`](evidence/kaggle_w1g_round2_result_2026_09.json).
+
 Use the version printed by `push` if it is not 4, and change both the output
 reference and directory to match. The verifier checks the output file
 manifest, registered criteria and prerequisite hashes, uploaded runner hash,

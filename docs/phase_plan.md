@@ -2027,3 +2027,25 @@ The next authorized slice is a fresh private Kaggle W1g run pinned to source
 `f01462a44bf8b8cbefb0f5f7977916be94687b6c`; only a verified pass proceeds to
 W2-T4b. No bound was relaxed. `shape_update_allowed=false` and
 `sdf_gradient_qualified=false` remain in force.
+
+### 2026-09-27 Kaggle W1g round 2 passed
+
+The private Kaggle kernel version 4 passed the preregistered W1g round 2 and
+was independently verified after version-specific output retrieval. Evidence:
+[`evidence/kaggle_w1g_round2_result_2026_09.json`](evidence/kaggle_w1g_round2_result_2026_09.json),
+SHA-256 `bb233f72068b5c6681b9f3f9b4dba180b538f945f8283312fb521c24ac802eb8`.
+All 11 manifested files passed SHA-256 checks; all nine gates passed over
+200,012 probes. Maximum world-distance error was `3.5762787e-7 m` (bound
+`1e-5 m`), maximum unit-normal error was `2.4211522e-7` (bound `1e-3`), and
+there were zero sign violations among 199,321 gated probes. The kernel ran
+source `f01462a44bf8b8cbefb0f5f7977916be94687b6c` on two Tesla T4s with driver
+`580.159.04`, CUDA runtime `13.3.0`, Julia `1.12.6`, CUDA.jl `6.3.1`, and
+WaterLily `1.8.0`; the selected ephemeral GPU UUID is recorded in the result.
+
+This qualifies only the GPU GridSDF geometry bridge. It does not qualify a
+WaterLily sampled-sphere CUDA step or force. The next slice is W2-T4b; before
+its GPU run, implement the smallest sampled-sphere CUDA entry point and
+register its numerical/force criteria. The current T4 job still enables only
+`analytic`, and no W2-T4b GPU criteria are registered yet. Continue to keep
+`shape_update_allowed=false`, `sdf_gradient_qualified=false`, and
+`waterlily_reverse_cuda_qualified=false`.
