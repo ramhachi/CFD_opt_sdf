@@ -1964,3 +1964,11 @@ flags remain false.
   authorized. Job `scripts/waterlily_w2t4_job.jl` (analytic mode; the
   `gridsdf` mode is reserved for W2-T4b), recorder
   `scripts/register_sdf_native_w2t4a_analytic_sphere_2026_09.py`.
+- 2026-09-26 append-only hygiene before W1g:
+  `evidence/sdf_native_w0b_driver_metadata_clarification_2026_09.json`
+  (SHA-256 `801c5800ec1fe146991251217e2286d1f7975e0f5f779f04984f9a6330151505`)
+  separates the three W0b version fields (nvidia-smi NVIDIA driver 580.82.07,
+  `CUDA.driver_version()` 13.3.0, CUDA runtime 12.8.0); W0b verdict unchanged.
+  `scripts/t4_backend_identity.py` (with pytest coverage) now fail-closes any
+  future T4 job whose GPU/UUID/compute capability/versions or T4
+  Project/Manifest hashes drift from the W0b record.
