@@ -2473,3 +2473,182 @@ managed worktree. No package installation or GPU run was attempted. W2b's
 registered 32-grid GridSDF case took 327.4 s for its 60 tU/D window; this is
 planning context only, not a runtime prediction or acceptance result for the
 v16 W4 cases.
+
+### 2026-09-28 W3 v2 recheck and W4 execution-shell preparation
+
+Starting from branch `codex/kaggle-batch-migration` at
+`62f5150de2b0c8ebe1c5f920492999569f4e7639`, the remote feature ref was fetched
+and matched that commit. The exact-version Kaggle status recheck returned W3
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2` as `QUEUED`; its logs were empty.
+The reverse diagnostic
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` also remained `QUEUED`. No
+terminal output was available, so no W3 solver start/failure or reverse locus
+is inferred. A second version-bound recheck after harness validation returned
+the same statuses and empty logs. W3 v2 criteria, runner, and submitted source
+remain unchanged.
+All W3, physical-profile, gradient, reverse, topology, optimizer, and shape
+update qualification flags remain false.
+
+The W4 implementation shell is now present, still strictly unregistered:
+
+- `infra/kaggle/kernel_w4/runner.py` discovers the staged criteria by filename
+  under `/kaggle/input`, verifies the immutable criteria, dataset manifest,
+  source and input hashes, bound host-verified W3 PASS evidence, canonical
+  NPZ/raw phi identity and independently measured CPU SDF margin; it then
+  verifies T4 inventory/smoke, records execution stage and per-case solver-step
+  markers, and hashes the retrieved output inventory.
+- `scripts/verify_kaggle_w4_v16.py` independently recomputes the exact-window
+  force metrics, 3-axis pressure/viscous closure, drag/downforce projections,
+  physical N conversion, backend/source identity and T0-T9 integrity gates.
+  It also independently compares the domain and 24-to-32 resolution response
+  and emits the registered extended-domain fine-grid follow-up decision.
+- `scripts/waterlily_w4_v16_sensitivity_job.jl` now emits explicit solver
+  progress markers and captures a terminal force sample at or after tU/L=120.
+  Julia and host both linearly interpolate bracketing raw samples to exact 80
+  and 120 endpoints before trapezoidal physical-time integration. The CSV
+  retains pressure, viscous and total force components for x/y/z.
+- `tests/test_kaggle_w4.py` contains eight contract tests. The mutable W4
+  criteria draft now states the point shape, physical constants and endpoint
+  sampling semantics, but remains `immutable:false` and
+  `registered_before_computation:false`.
+- `infra/kaggle/kernel_w4/kernel-metadata.json` is private T4 metadata for the
+  future W4 dataset; it has not been submitted to Kaggle. No final W4 criteria
+  or private dataset has been registered, and no W4 CFD measurement has been
+  submitted.
+
+Before eventual registration, the W3 prerequisite must bind both the immutable
+W3 criteria and append-only PASS result. The result record must carry the exact
+criteria SHA, version, source commit, `host_verification_passed: true`, and
+observed backend identity including WaterLily's backend string. W4 criteria
+must copy that backend identity exactly; the selected GPU UUID is recorded per
+W4 run rather than assumed stable between Kaggle sessions.
+
+Checks completed: eight focused W4 tests passed; project `.venv` Python
+`compileall src tests`, Julia `Meta.parseall` for the W4 job, standalone W4
+case-builder output, criteria and kernel-metadata JSON parsing, and
+`git diff --check` passed. Full project pytest reported `1064 passed, 37
+failed, 4 skipped`; rerunning only the 37 failures reproduced missing ignored
+`work/` solver/evidence files (`FileNotFoundError`, with one missing-mesh-file
+`ValueError`). None of the failures is a W4 test; the seven W4 tests present in
+that full run passed. The current eight-test W4 suite also passes focused.
+These checks validate the harness and available repository slice only; they do
+not qualify or measure W4. After W3 reaches a terminal state,
+collect its exact version-bound logs/output first and run its existing host
+verifier before any W3 retry or W4 registration.
+
+### 2026-09-28 W3 version 2 terminal diagnostic and bounded retry correction
+
+The exact-version recheck and collection changed W3 version 2 from the
+previously recorded `QUEUED` state to `KernelWorkerStatus.ERROR`. The Kaggle
+2.2.4 command was bound to
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2`. Its traceback ends in
+`read_criteria()` with `registered W3 criteria missing from the attached
+private dataset`. The downloaded `w3_v16/ERROR.txt` SHA is
+`adb716bff1b5b48becb415440290c4be917d27e8509d35f68f42ad3644f821fb`; its
+output `sha256.json` SHA is
+`b42d39774c19a43c31d381c371956c944bc2b73b5d060d4d4a6070bed74c978e`, and the
+version-bound Kaggle log SHA is
+`2c669c91e88c0fbf1f53639c8270b0b4cbfaaa8823230edc0ab87a2f6c91e89a`. The
+append-only record is
+[`evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json).
+
+The Kaggle dataset API currently reports the registered private input dataset
+as `ready`, and its file listing includes `w3_v16_criteria.json` and its SHA
+sidecar. The v2 runner did not record `/kaggle/input` inventory, so evidence
+establishes a fixed-path lookup failure but cannot distinguish a differently
+named mount directory from a runtime attachment failure. The traceback occurs
+before GPU inventory, source fetch, Julia setup, CUDA smoke, and the Julia job;
+solver started is false, solver steps are zero, and no T4 identity or force
+measurement was captured. Version 2 therefore adds no W3 qualification.
+
+The minimal next-round source correction is prepared but not submitted:
+
+- W3 now discovers exactly one `w3_v16_criteria.json` under `/kaggle/input`,
+  verifies its bound dataset ID, and saves the top-level input-mount inventory
+  before lookup so a repeated infrastructure failure is attributable.
+- The W3 Julia job now explicitly imports the non-exported profile constants
+  and helper functions. This is a latent static risk found before the retry,
+  not the observed version 2 failure.
+- The W3 registrar can create append-only criteria rounds and accept the
+  canonical state NPZ path from the already staged round-1 dataset. Round 2
+  will bind the changed runner and job with the existing acceptance limits.
+- No round-2 criteria or Kaggle dataset version has been registered, and no
+  retry has been submitted yet.
+
+The reverse diagnostic remains
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` `QUEUED` with no new logs. W4
+remains an unregistered sensitivity shell; its final criteria and dataset stay
+gated on host-verified W3 PASS, and no W4 CFD measurement has been submitted.
+
+Current checks: the focused W3/W4 contract set passes (19 tests), Python
+`compileall src tests`, Julia parsing of both W3/W4 jobs, all four standalone
+W4 case mappings, draft/diagnostic/metadata JSON parsing, and `git diff
+--check`. The full repository run returned `1067 passed, 37 failed, 4
+skipped`; rerunning the 37 failures reproduced missing ignored `work/`
+artifacts (primarily `FileNotFoundError`, plus STL `ValueError`). The current
+focused W3/W4 set also passes after adding the latest W4 staged-dataset
+inventory check. These software checks do not constitute a GPU or physics
+qualification.
+
+### 2026-09-28 gated W3 retry and W4 registration tooling
+
+Following the version-2 diagnostic above, the smallest W3 retry source change
+is prepared on the local feature worktree. Criteria lookup now searches for
+the unique `w3_v16_criteria.json` under `/kaggle/input` and records top-level
+mount entries before lookup. The W3 Julia job explicitly imports the
+non-exported profile symbols identified in source review. The registrar can
+write a separate immutable criteria round and accept the already staged
+round-1 NPZ path. A builder probe confirmed that round 2 preserves the exact
+round-1 acceptance and measurement objects while binding the changed runner,
+Julia job and host verifier hashes. The round has not yet been written or
+submitted; no W3 threshold has changed.
+
+The W3 host verifier now emits a PASS result object with exact criteria path
+and SHA, source commit, kernel version, `host_verifier_sha256`, T0-T9 results,
+and an observed backend identity including the WaterLily backend string. This
+gives the future W4 registration a machine-checkable backend prerequisite.
+W4 tooling is also prepared: the immutable-criteria registrar refuses W3
+diagnostics or non-PASS output and binds the W3 criteria/result plus exact W4
+source inputs; the dataset stager accepts only immutable criteria, verifies
+canonical state and phi identities, and creates the registered private input
+inventory. The W4 private dataset is not staged or uploaded, its draft remains
+mutable, and no W4 run has been submitted.
+
+Latest exact-version Kaggle check: W3 v2 remains `ERROR`; reverse spike v1
+remains `QUEUED` and its logs are empty. Current focused W3/W4 contract tests
+pass (21 tests); project Python `compileall`, Julia parsing for both jobs, W3
+round-2 builder invariance probe, and `git diff --check` pass. The full suite
+run immediately before the last two focused-test additions reported `1067
+passed, 37 failed, 4 skipped`; the 37 failures were independently rerun and
+all refer to missing ignored `work/` CFD files. All 21 current task-focused
+tests pass. W3 round-2 criteria, the updated W3 dataset version, and kernel
+version 3 remain unregistered/unsubmitted until the current source changes are
+committed and pushed.
+
+### 2026-09-28 final source-preparation verification
+
+The W3 host verifier now independently requires the observed Julia archive
+SHA-256 and `CUDA_VISIBLE_DEVICES` value in `fingerprint.json` to match the
+immutable backend criteria before it can report T4 PASS. The result evidence
+exports those observed values for exact W4 backend binding. The test fixture
+uses the registered Julia archive identity. The W3/W4 focused contract set
+passes (21 tests), Python compilation passes, both Julia jobs parse, the four
+W4 case mappings match 60x32x24 / 90x48x36 / 120x64x48 / 130x32x24 with the
+registered spacing and viscosity, the W4 draft remains mutable, and
+`git diff --check` passes.
+
+The W3 round-2 builder probe binds the new runner (`e84b4a50...`), host
+verifier (`1e06142a...`), and Julia job (`c5da2f04...`) hashes while preserving
+the original round-1 `acceptance` and `measurement` objects exactly. The full
+repository suite completed with 1,070 passed, 37 failed, and 4 skipped; a
+failure-only rerun reproduced the same 37 missing ignored `work/` artifacts
+(including absent registered specs, checkpoints, meshes, and solver outputs).
+None is in the W3/W4 focused set. The private v16 state NPZ needed to stage the
+next W3 dataset is present under the worktree's ignored `work/` directory.
+
+The latest exact-version Kaggle checks still show W3 v2 `ERROR` and reverse
+spike v1 `QUEUED`; reverse v1 log retrieval and output download returned no
+artifacts. W3 v2 remains an infrastructure diagnostic with zero solver steps.
+No W3 round-2 criteria, dataset version, or retry kernel has been registered
+or submitted yet. W4 remains unregistered and unrun pending exact host-verified
+W3 PASS. OpenCode remains frozen; no OpenCode CLI or worker was used.

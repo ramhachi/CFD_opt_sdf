@@ -212,6 +212,28 @@ def force_components_close(rows: list[dict[str, float]], measurement: dict) -> b
     )
 
 
+def observed_backend_identity(criteria: dict, summary: dict,
+                             fingerprint: dict, gpu_rows: list[str]) -> dict:
+    backend = criteria["backend"]
+    return {
+        "accelerator": backend["accelerator"],
+        "machine_shape": backend["machine_shape"],
+        "gpu_count": len(gpu_rows),
+        "gpu_name": summary["gpu_name"],
+        "driver_version": gpu_rows[0].split(", ")[-1],
+        "cuda_visible_devices": fingerprint["cuda_visible_devices"],
+        "julia_archive_sha256": fingerprint["julia_archive_sha256"],
+        "compute_capability": backend["compute_capability"],
+        "cuda_driver_api_version": backend["cuda_driver_api_version"],
+        "cuda_runtime_version": backend["cuda_runtime_version"],
+        "cuda_jl_version": summary["cuda_jl_version"],
+        "julia_version": summary["julia_version"],
+        "julia_threads": summary["julia_threads"],
+        "waterlily_version": summary["waterlily_version"],
+        "waterlily_backend": summary["waterlily_backend"],
+    }
+
+
 def verify(download: Path, *, criteria_path: Path = CRITERIA,
            dataset_dir: Path = DATASET_DIR, kernel_version: int | None = None) -> dict:
     criteria, criteria_sha = load_criteria(criteria_path)
@@ -235,6 +257,10 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     require(fingerprint.get("runner_sha256") == criteria["inputs"]["kernel_runner"]["sha256"]
             and fingerprint.get("runner_sha256") == sha256(RUNNER),
             "W3 runner fingerprint mismatch")
+    require(fingerprint.get("julia_archive_sha256") == backend["julia_archive_sha256"],
+            "W3 Julia archive fingerprint mismatch")
+    require(fingerprint.get("cuda_visible_devices") == backend["cuda_visible_devices"],
+            "W3 CUDA visible-device fingerprint mismatch")
     require(outcome.get("source_commit") == criteria["source_commit"]
             and fingerprint.get("source_commit") == criteria["source_commit"],
             "W3 source commit mismatch")
@@ -314,6 +340,8 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
         ),
         "T4_backend_identity": (
             len(gpu_rows) == backend["gpu_count"] and smoke_ok
+            and fingerprint.get("julia_archive_sha256") == backend["julia_archive_sha256"]
+            and fingerprint.get("cuda_visible_devices") == backend["cuda_visible_devices"]
             and summary.get("gpu_uuid") == selected_uuid
             and summary.get("gpu_name") == backend["gpu_name"]
             and summary.get("julia_version") == backend["julia_version"]
@@ -350,11 +378,18 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     require(outcome.get("physical_profile_qualified") is False
             and outcome.get("shape_update_allowed") is False,
             "W3 run incorrectly promoted a qualification/update flag")
+    criteria_path = Path(criteria_path).resolve()
     return {
+        "verdict": "PASS",
+        "host_verification_passed": True,
         "kernel_version": kernel_version,
+        "criteria_path": criteria_path.relative_to(ROOT).as_posix(),
         "criteria_sha256": criteria_sha,
         "source_commit": criteria["source_commit"],
+        "host_verifier_sha256": sha256(HOST_VERIFIER),
         "selected_gpu_uuid": selected_uuid,
+        "backend_identity": observed_backend_identity(
+            criteria, summary, fingerprint, gpu_rows),
         "verified_files": file_count,
         "output_manifest_sha256": output_manifest_sha,
         "margin_m": margin,

@@ -1,7 +1,10 @@
 import hashlib
 import importlib.util
+import json
 import math
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,10 +45,15 @@ def fixture():
         },
         "backend": {
             "accelerator": "NvidiaTeslaT4",
+            "machine_shape": "NvidiaTeslaT4",
             "gpu_name": "Tesla T4",
             "gpu_count": 2,
             "driver_version": "580.159.04",
+            "cuda_visible_devices": "0",
+            "julia_archive_sha256": runner.JULIA_SHA256,
             "compute_capability": "7.5.0",
+            "cuda_driver_api_version": "13.3.0",
+            "cuda_runtime_version": "12.8.0",
             "julia_version": "1.12.6",
             "julia_threads": 1,
             "waterlily_version": "1.8.0",
@@ -98,6 +106,7 @@ def fixture():
         "julia_version": "1.12.6",
         "julia_threads": 1,
         "waterlily_version": "1.8.0",
+        "waterlily_backend": "fixture-backend",
         "cuda_jl_version": "6.3.1",
         "t_end_target": 120.0,
         "t_end_reached": 120.2,
@@ -200,6 +209,49 @@ def test_w3_criteria_input_names_match_runner_contract():
     assert registrar.SOURCE_INPUTS["host_verifier"] == HOST_VERIFIER_PATH
 
 
+def test_w3_criteria_round_paths_are_append_only():
+    assert registrar.criteria_output_path(1) == registrar.OUTPUT
+    assert registrar.criteria_output_path(2).name == (
+        "kaggle_w3_v16_primal_criteria_2026_09_round2.json"
+    )
+    with pytest.raises(ValueError, match="must be positive"):
+        registrar.criteria_output_path(0)
+
+
+def test_w3_criteria_discovery_resolves_actual_mount_name_and_records_inventory(tmp_path, monkeypatch):
+    input_root = tmp_path / "input"
+    dataset_dir = input_root / "cfd-opt-sdf-v16-genesis-state-mounted"
+    dataset_dir.mkdir(parents=True)
+    criteria_path = dataset_dir / "w3_v16_criteria.json"
+    criteria_path.write_text(json.dumps({
+        "immutable": True,
+        "registered_before_computation": True,
+        "input_dataset_id": runner.DATASET_ID,
+    }))
+    criteria_sha = hashlib.sha256(criteria_path.read_bytes()).hexdigest()
+    criteria_path.with_suffix(criteria_path.suffix + ".sha256").write_text(criteria_sha + "\n")
+    monkeypatch.setattr(runner, "OUT", tmp_path / "working")
+
+    criteria, actual_sha, actual_dataset_dir, actual_criteria_path = runner.read_criteria(input_root)
+
+    assert actual_sha == criteria_sha
+    assert criteria["input_dataset_id"] == runner.DATASET_ID
+    assert actual_dataset_dir == dataset_dir
+    assert actual_criteria_path == criteria_path
+    inventory = json.loads((runner.OUT / "input_mount_inventory.json").read_text())
+    assert inventory["top_level_entries"] == ["dir:cfd-opt-sdf-v16-genesis-state-mounted"]
+
+
+def test_w3_criteria_discovery_rejects_ambiguous_attached_datasets(tmp_path):
+    for name in ("dataset-a", "dataset-b"):
+        folder = tmp_path / name
+        folder.mkdir()
+        (folder / "w3_v16_criteria.json").write_text("{}")
+
+    with pytest.raises(RuntimeError, match="expected one registered W3 criteria"):
+        runner.discover_dataset(tmp_path)
+
+
 def test_w3_host_verifier_recomputes_force_metrics_independently():
     criteria, _, rows = fixture()
     remote_metrics = runner.recompute_metrics(rows, criteria["measurement"])
@@ -210,3 +262,33 @@ def test_w3_host_verifier_recomputes_force_metrics_independently():
     assert host_verifier.force_components_close(rows, criteria["measurement"])
     rows[-1]["pressure_drag_solver"] += 0.01
     assert not host_verifier.force_components_close(rows, criteria["measurement"])
+
+
+def test_w3_host_verifier_exports_observed_backend_for_w4_binding():
+    criteria, summary, _ = fixture()
+    identity = host_verifier.observed_backend_identity(
+        criteria, summary, {
+            "julia_archive_sha256": runner.JULIA_SHA256,
+            "cuda_visible_devices": "0",
+        }, [
+            "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
+            "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
+        ])
+
+    assert identity == {
+        "accelerator": "NvidiaTeslaT4",
+        "machine_shape": "NvidiaTeslaT4",
+        "gpu_count": 2,
+        "gpu_name": "Tesla T4",
+        "driver_version": "580.159.04",
+        "cuda_visible_devices": "0",
+        "julia_archive_sha256": runner.JULIA_SHA256,
+        "compute_capability": "7.5.0",
+        "cuda_driver_api_version": "13.3.0",
+        "cuda_runtime_version": "12.8.0",
+        "cuda_jl_version": "6.3.1",
+        "julia_version": "1.12.6",
+        "julia_threads": 1,
+        "waterlily_version": "1.8.0",
+        "waterlily_backend": "fixture-backend",
+    }

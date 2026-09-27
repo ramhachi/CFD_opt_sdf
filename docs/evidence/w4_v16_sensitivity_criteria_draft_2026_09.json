@@ -10,13 +10,16 @@
     "w3_baseline_reuse_is_optional": true,
     "w3_baseline_reuse_requires_exact_identity_and_fixture_semantics": true,
     "source_commit_must_be_pinned_after_w4_code_is_final": true,
-    "backend_identity_must_be_bound_before_first_gpu_measurement": true
+    "backend_identity_must_be_bound_before_first_gpu_measurement": true,
+    "w3_result_evidence": null
   },
   "geometry": {
     "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
     "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
     "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
     "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "point_shape": [61, 33, 25],
+    "cell_shape": [60, 32, 24],
     "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
     "design_lattice_spacing_m": 0.05,
     "design_lattice_is_resampled": false,
@@ -30,7 +33,8 @@
     "reference_length_m": 0.8,
     "reference_area_m2": 0.64,
     "phi_margin_gate_m": 0.15,
-    "phi_expected_margin_m": 0.3499999939931499
+    "phi_expected_margin_m": 0.3499999939931499,
+    "phi_margin_tolerance_m": 1e-6
   },
   "cases": [
     {
@@ -42,6 +46,12 @@
       "solver_length": 16.0,
       "solver_time_unit_s": 0.05,
       "solver_viscosity": 0.2,
+      "reynolds": 80.0,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "freestream_mps": [1.0, 0.0, 0.0],
+      "reference_length_m": 0.8,
+      "reference_area_m2": 0.64,
       "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
     },
     {
@@ -53,6 +63,12 @@
       "solver_length": 24.0,
       "solver_time_unit_s": 0.03333333333333333,
       "solver_viscosity": 0.3,
+      "reynolds": 80.0,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "freestream_mps": [1.0, 0.0, 0.0],
+      "reference_length_m": 0.8,
+      "reference_area_m2": 0.64,
       "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
     },
     {
@@ -64,6 +80,12 @@
       "solver_length": 32.0,
       "solver_time_unit_s": 0.025,
       "solver_viscosity": 0.4,
+      "reynolds": 80.0,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "freestream_mps": [1.0, 0.0, 0.0],
+      "reference_length_m": 0.8,
+      "reference_area_m2": 0.64,
       "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
     },
     {
@@ -75,17 +97,36 @@
       "solver_length": 16.0,
       "solver_time_unit_s": 0.05,
       "solver_viscosity": 0.2,
+      "reynolds": 80.0,
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "freestream_mps": [1.0, 0.0, 0.0],
+      "reference_length_m": 0.8,
+      "reference_area_m2": 0.64,
       "physical_box_m": [[-1.0, 5.5], [-0.8, 0.8], [-0.6, 0.6]],
       "x_plus_extension_m": 3.5
     }
   ],
+  "profile_semantics": {
+    "native_velocity_boundary": "v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+    "side_top_tangential_boundary": "WaterLily native tangential zero-Neumann",
+    "x_plus_boundary": "WaterLily convective exit",
+    "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
+    "ground_model": "moving planar half-space at z=0 with +x wall velocity 1 m/s",
+    "force_integration_body": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+    "drag_projection": [1.0, 0.0, 0.0],
+    "downforce_projection": [0.0, 0.0, -1.0],
+    "source_profile_equivalent": false,
+    "physical_profile_qualified": false
+  },
   "measurement": {
     "target_t_u_l": 120.0,
     "burn_in_t_u_l": 80.0,
     "force_window_t_u_l": [80.0, 120.0],
     "force_sample_every_solver_steps": 8,
+    "force_sample_policy": "sample every 8 solver steps and also sample the first step at or beyond tU/L=120 to bracket the exact measurement window",
     "minimum_force_window_samples": 4,
-    "primary_force_metric": "trapezoidal physical-time-weighted mean over the registered [80,120] window",
+    "primary_force_metric": "trapezoidal physical-time-weighted mean over exact [80,120] endpoints, with linear interpolation from bracketing raw force samples",
     "force_integration_body": "canonical v16 candidate GridSDF only; exclude the auxiliary moving-ground half-space",
     "drag_projection": [1.0, 0.0, 0.0],
     "downforce_projection": [0.0, 0.0, -1.0],
@@ -131,8 +172,8 @@
   },
   "registration_todo": [
     "bind exact source commit and hashes for W4 runner, Julia job, profile adapter, and Project/Manifest",
-    "bind the passing W3 result/evidence and verify the W4 flow_16 semantics against it",
-    "bind the observed T4 UUID/driver/CUDA runtime and Julia/WaterLily versions before running",
+    "bind immutable W3 criteria and its exact host-verified PASS result, including the observed backend_identity; require W4 backend_identity equality",
+    "bind the observed T4 driver/CUDA runtime and Julia/WaterLily versions; record the per-run UUID",
     "generate final immutable criteria plus sidecar and private Kaggle dataset",
     "verify criteria and dataset hashes before submitting any W4 GPU measurement"
   ]

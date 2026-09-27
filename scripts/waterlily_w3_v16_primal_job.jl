@@ -18,6 +18,14 @@ Base.include(CFDSDFWaterLily,
 
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
+using .CFDSDFWaterLily: V16_PROFILE_CELL_DIMS, V16_PROFILE_DENSITY_KG_M3,
+    V16_PROFILE_FREESTREAM_MPS, V16_PROFILE_ORIGIN_M, V16_PROFILE_POINT_SHAPE,
+    V16_PROFILE_REFERENCE_AREA_M2, V16_PROFILE_REYNOLDS,
+    V16_PROFILE_SOLVER_LENGTH, V16_PROFILE_SOLVER_TIME_UNIT_S,
+    V16_PROFILE_SOLVER_U, V16_PROFILE_SOLVER_VISCOSITY,
+    V16_PROFILE_SPACING_M, build_v16_physical_profile_simulation,
+    runtime_fingerprint, v16_physical_profile_adapter_contract,
+    v16_physical_profile_bodies
 using .CFDSDFWaterLily.DeviceGridSDF
 
 length(ARGS) == 2 || error("usage: waterlily_w3_v16_primal_job.jl <phi_fortran.raw> <output_dir>")

@@ -395,16 +395,24 @@ before solver initialization, keep the criteria unchanged and inspect the
 exact version's logs and `ERROR.txt` before deciding whether a retry or a
 path-resolution fix is required.
 
-Static source-review note (not execution evidence): the pinned W3 Julia job
-uses several `CFDSDFWaterLily` parent-module definitions without qualification
-after including the profile file into that module. The parent declares no
-exports, and `using .CFDSDFWaterLily` alone does not import non-exported
-bindings. If v2 reaches the Julia job and reports `UndefVarError`, preserve its
-exact logs/output and record that it stopped before `sim_step!`; do not alter
-the submitted criteria or source identity in place. Any source fix needs a
-new immutable criteria round before the next measurement.
+Version 2 was collected on 2026-09-28 and failed at the same criteria lookup
+as version 1. Its append-only diagnostic records the exact logs/output hashes
+and confirms no GPU inventory or solver step was reached:
+[`evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version2_diagnostic_2026_09.json).
+The dataset API reported `ready` and listed the criteria file, but the runtime
+did not record its `/kaggle/input` mount inventory. The runner now discovers
+the unique criteria file recursively and records top-level mount entries
+before lookup. No threshold or registered criteria was edited.
 
-W3 run commands (use the actual version returned by `push` in every command):
+Static source-review note (not execution evidence): the pinned W3 Julia job
+also used several non-exported `CFDSDFWaterLily` definitions without explicit
+imports. Version 2 failed before reaching Julia, so this was not its observed
+failure. The W3 job now explicitly imports its profile constants and helpers;
+that source change, together with input-path discovery, must be bound to a new
+immutable criteria round before retrying.
+
+Historical W3 version 2 collection commands (completed; do not run the
+success-only host verifier against this ERROR output):
 
 ```bash
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
@@ -428,42 +436,173 @@ W3's adapter is an explicitly non-equivalent finite-box approximation; a pass
 does not qualify the OpenFOAM physical profile, force stationarity, grid
 response, gradients, topology, or a shape update.
 
+### W3 immutable round 2 and retry workflow
+
+After the source fix is committed and pushed, the working tree must be clean
+before generating a new round. Round 2 is append-only and binds the new runner
+and Julia job hashes without changing any acceptance limit:
+
+```bash
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py \
+  --round 2 --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py --round 2 --check
+git add docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json.sha256
+git commit -m "Register W3 v16 primal criteria round 2"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  work/kaggle_w3_v16_dataset_round2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets version \
+  -p work/kaggle_w3_v16_dataset_round2 \
+  -m "W3 v16 immutable criteria round 2: input mount discovery" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets status \
+  ramhachi888/cfd-opt-sdf-v16-genesis-state
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+```
+
+Use the actual kernel version returned by the push in every status/log/output
+command. If it is version 3:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3 -p work/kaggle_w3_version3
+test ! -e docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  work/kaggle_w3_version3 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round2 \
+  --kernel-version 3 \
+  > docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+```
+
+The verifier prints an append-only PASS candidate containing the exact
+criteria/source/version bindings, T0-T9 recomputation and observed backend
+identity, including `waterlily_backend`. Confirm it reports `verdict: PASS`
+and `host_verification_passed: true`, then commit and push that result evidence
+before registering W4.
+
+If version 3 still fails criteria discovery, its downloaded
+`input_mount_inventory.json` distinguishes the visible `/kaggle/input` entries
+from a registered dataset that is absent from the runtime mount.
+
 ## W4 v16 resolution/domain sensitivity preparation (not registered)
 
-The current W4 code and criteria sketch are local preparation only:
+W3 version 2 failed before solver startup; a new W3 immutable round must first
+pass its exact-version host verifier. The local W4 execution shell and gated
+final-registration/staging tools are now implemented, but its draft remains
+`immutable: false` / `registered_before_computation: false`; there is no final
+criteria file or staged W4 dataset and no W4 run is authorized.
 
 - `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
   maps and checks physical-box alignment, dimensions, solver length, and Re=80.
-- `scripts/waterlily_w4_v16_sensitivity_job.jl` keeps the canonical v16 SDF
-  fixed and drafts the T4 primal matrix, including raw pressure/viscous/total
-  force components, time-weighted means, half-window diagnostics, runtime,
-  VRAM, and SDF/backend hashes.
-- `evidence/w4_v16_sensitivity_criteria_draft_2026_09.json` is deliberately
-  marked `immutable: false` and `registered_before_computation: false`. It is
-  not the final criteria file, a dataset upload, or permission to run W4.
+- `scripts/waterlily_w4_v16_sensitivity_job.jl` runs the four T4 cases against
+  the unchanged canonical v16 SDF and writes raw 3-axis pressure, viscous, and
+  total force vectors. It also writes physical-time-weighted solver means,
+  physical N forces, half-window diagnostics, runtime, VRAM, SDF hashes, and
+  backend identity. Sampling is every eight solver steps plus a terminal force
+  sample; host and Julia recomputation linearly interpolate to the exact
+  registered [80,120] endpoints before trapezoidal integration.
+- `infra/kaggle/kernel_w4/runner.py` discovers the criteria by filename under
+  `/kaggle/input` (not a hard-coded Kaggle mount path), checks criteria,
+  dataset, source commit, input hashes, W3 PASS evidence, canonical state,
+  measured SDF margin, T4 inventory and CUDA smoke, then records stage and
+  solver-step progress with a complete output SHA manifest. It refuses draft
+  criteria.
+- `scripts/verify_kaggle_w4_v16.py` independently checks the version-bound
+  output, inputs, SDF hashes/margin, all raw force rows, component closure,
+  projections, endpoint-clipped time-weighted means, physical N conversion,
+  runtime/VRAM, backend identity and the W3 prerequisite. It recomputes both
+  the runner's gates and the domain-versus-resolution follow-up rule.
+- `tests/test_kaggle_w4.py` covers runner/host gate agreement, 3-axis force
+  closure, exact [80,120] endpoint interpolation, grid identity rejection,
+  the extended-domain rule, the SDF margin definition, staged-file inventory,
+  and refusal to register W4 from W3 error evidence.
+- `scripts/register_kaggle_w4_v16_sensitivity_2026_09.py` refuses final
+  criteria without an exact host-verified W3 PASS and complete observed T4
+  backend identity. It binds the W3 criteria/result and W4 source hashes.
+- `scripts/prepare_kaggle_w4_v16_dataset_2026_09.py` accepts only immutable
+  W4 criteria, rechecks pinned source and canonical state/phi identities, and
+  stages the exact private dataset inventory.
+- `infra/kaggle/kernel_w4/kernel-metadata.json` is private T4 metadata pointed
+  at the future W4 dataset. Do not push it while W3 is still pending.
 
-W3 version 2 must first pass its exact-version host verifier. Then finish the
-W4 runner and verifier, bind the passing W3 evidence and exact W4 source/input
-hashes, bind the observed backend identity, and register a final immutable
-criteria file plus its sidecar and private input dataset. Check every staged
-hash before the first W4 GPU measurement. Do not submit `kernel_w4` until this
-registration is complete and W3 is formally PASS. If the domain delta in
-time-weighted drag or downforce is at least the corresponding 24-to-32
-resolution delta, preregister and run the extended-domain fine-grid case
-before opening the centered-FD gate. A complete W4 matrix reports sensitivity;
-it does not qualify grid/domain convergence or the physical profile.
+After W3 formally passes, bind both its immutable criteria file and its
+append-only result evidence. The round-2 host verifier now emits
+`verdict: PASS`,
+`host_verification_passed: true`, the exact W3 criteria SHA, kernel version,
+source commit, and the observed `backend_identity` (including the
+`waterlily_backend` string). Copy that backend identity into the W4 criteria;
+the W4 runner and host verifier require exact equality while recording the
+selected T4 UUID separately for each run. Then bind the exact W4
+runner/job/case module/profile/SDF adapter, Project/Manifest,
+verifier/test/metadata hashes, criteria, raw phi and canonical state. Register
+the final immutable criteria, stage the private dataset, validate the hashes,
+and only then push the W4 kernel. For the W3 round-2 result path:
 
-The preparation-only local checks currently used are:
+```bash
+.venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+.venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json --check
+git add docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json.sha256
+git commit -m "Register W4 v16 sensitivity criteria"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_round2/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  --output work/kaggle_w4_v16_dataset
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \
+  -p work/kaggle_w4_v16_dataset --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets status \
+  ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets files \
+  ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+```
+
+Run this only after the W3 evidence is an exact host-verified PASS. The new
+W4 dataset remains private by default. Once Kaggle reports it ready and its
+file listing matches the staging manifest, submit and retrieve W4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w4 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION>
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION>
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/<VERSION> \
+  -p work/kaggle_w4_version<VERSION>
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w4_v16.py \
+  work/kaggle_w4_version<VERSION> --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
+  --dataset-dir work/kaggle_w4_v16_dataset --kernel-version <VERSION>
+```
+
+The `<VERSION>` value must be the exact version printed by `push` and kept the
+same for status, logs, output and verification. If either physical-force domain
+delta is greater than or equal to its corresponding 24-to-32 resolution delta,
+register and run the extended-domain fine-grid case before centered FD. W4
+reports sensitivity; it does not qualify convergence or the physical profile.
+
+Preparation checks (no solver/GPU measurement):
 
 ```bash
 julia --startup-file=no -e 'include("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl"); using .V16W4Sensitivity; foreach(println, V16W4_CASES)'
 julia --startup-file=no --project=julia/CFDSDFWaterLilyT4 -e 'Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); println("W4 Julia syntax parsed")'
 python3 -m json.tool docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json >/dev/null
+python3 -m pytest -q tests/test_kaggle_w4.py
 git diff --check
 ```
 
-The standalone builder check produced the four registered grids and their
-Re=80 viscosities. `Meta.parseall`, JSON parsing, and whitespace checks passed.
-An attempt to load CUDA/WaterLily from the local T4 Project stopped because
-CUDA is not installed in this managed worktree; no package installation was
-attempted. These checks do not execute a solver or qualify W4.
+The four-case builder, Julia parser, JSON parser and focused W4 contract tests
+pass. These checks do not run a solver and do not qualify W4.

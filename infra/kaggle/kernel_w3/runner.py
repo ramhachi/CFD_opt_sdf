@@ -18,8 +18,7 @@ from pathlib import Path
 STAGE = "w3_v16"
 OUT = Path("/kaggle/working") / STAGE
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v16-genesis-state"
-DATASET_DIR = Path("/kaggle/input/cfd-opt-sdf-v16-genesis-state")
-CRITERIA_PATH = DATASET_DIR / "w3_v16_criteria.json"
+INPUT_ROOT = Path("/kaggle/input")
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 16
@@ -58,23 +57,48 @@ def command(args, log_path, *, env=None, timeout=3600):
     return Path(log_path).read_text(errors="replace")
 
 
-def read_criteria():
-    sidecar = CRITERIA_PATH.with_suffix(CRITERIA_PATH.suffix + ".sha256")
-    if not CRITERIA_PATH.is_file() or not sidecar.is_file():
-        raise RuntimeError("registered W3 criteria missing from the attached private dataset")
+def discover_dataset(input_root=INPUT_ROOT):
+    input_root = Path(input_root)
+    matches = sorted(path for path in input_root.rglob("w3_v16_criteria.json")
+                     if path.is_file()) if input_root.is_dir() else []
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"expected one registered W3 criteria under {input_root}, found {len(matches)}"
+        )
+    return matches[0].parent, matches[0]
+
+
+def read_criteria(input_root=INPUT_ROOT):
+    input_root = Path(input_root)
+    OUT.mkdir(parents=True, exist_ok=True)
+    top_level_entries = (
+        sorted(f"{ 'dir' if path.is_dir() else 'file' }:{path.name}"
+               for path in input_root.iterdir())
+        if input_root.is_dir() else []
+    )
+    write_json(OUT / "input_mount_inventory.json", {
+        "input_root": str(input_root),
+        "input_root_exists": input_root.is_dir(),
+        "top_level_entries": top_level_entries,
+    })
+    dataset_dir, criteria_path = discover_dataset(input_root)
+    sidecar = criteria_path.with_suffix(criteria_path.suffix + ".sha256")
+    if not sidecar.is_file():
+        raise RuntimeError("registered W3 criteria SHA sidecar missing from the attached private dataset")
     expected = sidecar.read_text().strip()
-    if sha256(CRITERIA_PATH) != expected:
+    if sha256(criteria_path) != expected:
         raise RuntimeError("W3 criteria sidecar mismatch")
-    criteria = json.loads(CRITERIA_PATH.read_text())
+    criteria = json.loads(criteria_path.read_text())
     if criteria.get("immutable") is not True or criteria.get("registered_before_computation") is not True:
         raise RuntimeError("W3 criteria are not immutable preregistration")
     if criteria.get("input_dataset_id") != DATASET_ID:
         raise RuntimeError("W3 criteria dataset identity mismatch")
-    return criteria, expected
+    return criteria, expected, dataset_dir, criteria_path
 
 
-def verify_dataset_manifest(criteria, criteria_sha):
-    manifest_path = DATASET_DIR / "w3_v16_dataset_manifest.json"
+def verify_dataset_manifest(criteria, criteria_sha, dataset_dir):
+    dataset_dir = Path(dataset_dir)
+    manifest_path = dataset_dir / "w3_v16_dataset_manifest.json"
     manifest = json.loads(manifest_path.read_text())
     if manifest.get("dataset_id") != DATASET_ID:
         raise RuntimeError("W3 input dataset manifest id mismatch")
@@ -84,10 +108,10 @@ def verify_dataset_manifest(criteria, criteria_sha):
         "sdf_design_state.npz": criteria["inputs"]["canonical_state_npz"]["sha256"],
         "canonical_v16_phi_f4_fortran.raw": criteria["inputs"]["canonical_phi_fortran_raw"]["sha256"],
         "w3_v16_criteria.json": criteria_sha,
-        "w3_v16_criteria.json.sha256": sha256(DATASET_DIR / "w3_v16_criteria.json.sha256"),
+        "w3_v16_criteria.json.sha256": sha256(dataset_dir / "w3_v16_criteria.json.sha256"),
     }
     for name, expected_sha in expected_names.items():
-        path = DATASET_DIR / name
+        path = dataset_dir / name
         if not path.is_file() or sha256(path) != expected_sha:
             raise RuntimeError(f"W3 staged dataset file hash mismatch: {name}")
         if manifest.get("files", {}).get(name) != expected_sha:
@@ -116,11 +140,12 @@ def gpu_inventory(criteria):
     return rows, uuids[0]
 
 
-def verify_dataset_state(criteria):
+def verify_dataset_state(criteria, dataset_dir):
     import numpy as np
 
+    dataset_dir = Path(dataset_dir)
     entry = criteria["inputs"]["canonical_state_npz"]
-    state_path = DATASET_DIR / entry["path"]
+    state_path = dataset_dir / entry["path"]
     if sha256(state_path) != entry["sha256"]:
         raise RuntimeError("canonical v16 SDF NPZ hash mismatch")
     expected = criteria["geometry"]
@@ -147,7 +172,7 @@ def verify_dataset_state(criteria):
     raw_path.write_bytes(fortran_bytes)
     if sha256(raw_path) != expected["phi_fortran_sha256"]:
         raise RuntimeError("canonical v16 Fortran-order phi bytes mismatch")
-    if sha256(DATASET_DIR / criteria["inputs"]["canonical_phi_fortran_raw"]["path"]) != expected["phi_fortran_sha256"]:
+    if sha256(dataset_dir / criteria["inputs"]["canonical_phi_fortran_raw"]["path"]) != expected["phi_fortran_sha256"]:
         raise RuntimeError("staged canonical v16 Fortran-order phi input mismatch")
     return state_path, raw_path, metadata
 
@@ -310,6 +335,7 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
             and len(set(uuids)) == runtime["gpu_count"]
             and all(runtime["gpu_name"] in row and row.split(", ")[-1] == runtime["driver_version"]
                     for row in gpu_rows)
+            and JULIA_SHA256 == runtime["julia_archive_sha256"]
             and summary.get("gpu_uuid") == uuids[0]
             and summary.get("gpu_name") == "Tesla T4"
             and summary.get("julia_version") == runtime["julia_version"]
@@ -355,13 +381,13 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    criteria, criteria_sha = read_criteria()
-    dataset_manifest_path = verify_dataset_manifest(criteria, criteria_sha)
+    criteria, criteria_sha, dataset_dir, criteria_path = read_criteria()
+    dataset_manifest_path = verify_dataset_manifest(criteria, criteria_sha, dataset_dir)
     runner_sha = sha256(Path(__file__))
     if runner_sha != criteria["inputs"]["kernel_runner"]["sha256"]:
         raise RuntimeError("W3 Kaggle kernel runner hash mismatch")
     gpu_rows, selected_uuid = gpu_inventory(criteria)
-    state_path, raw_phi_path, state_metadata = verify_dataset_state(criteria)
+    state_path, raw_phi_path, state_metadata = verify_dataset_state(criteria, dataset_dir)
     write_json(OUT / "input_state_metadata.json", state_metadata)
     (OUT / "input_dataset_manifest.json").write_bytes(dataset_manifest_path.read_bytes())
     with tempfile.TemporaryDirectory(prefix="cfd_w3_") as temp:
@@ -413,7 +439,7 @@ def main():
     )
     write_json(OUT / "fingerprint.json", {
         "criteria_sha256": criteria_sha,
-        "criteria_path": CRITERIA_PATH.name,
+        "criteria_path": criteria_path.name,
         "dataset_id": DATASET_ID,
         "state_npz_sha256": sha256(state_path),
         "runner_sha256": runner_sha,
@@ -421,6 +447,7 @@ def main():
         "gpu_inventory": gpu_rows,
         "selected_gpu_uuid": selected_uuid,
         "julia_archive_sha256": JULIA_SHA256,
+        "cuda_visible_devices": env["CUDA_VISIBLE_DEVICES"],
         "platform": platform.platform(),
         "python": platform.python_version(),
     })

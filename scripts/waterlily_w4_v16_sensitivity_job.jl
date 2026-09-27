@@ -50,6 +50,26 @@ function time_weighted_mean(rows, column, fallback)
     denominator > 0.0 ? numerator / denominator : fallback
 end
 
+function interpolate_force_row(left, right, t)
+    left[2] <= t <= right[2] || error("force samples do not bracket the measurement endpoint")
+    left[2] == right[2] && return left
+    alpha = (t - left[2]) / (right[2] - left[2])
+    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), 13)
+end
+
+function clipped_force_window(rows, start_t, end_t)
+    start_left = findlast(row -> row[2] <= start_t, rows)
+    start_right = findfirst(row -> row[2] >= start_t, rows)
+    end_left = findlast(row -> row[2] <= end_t, rows)
+    end_right = findfirst(row -> row[2] >= end_t, rows)
+    all(index -> index !== nothing, (start_left, start_right, end_left, end_right)) ||
+        error("raw force samples do not bracket the complete registered time window")
+    first_row = interpolate_force_row(rows[start_left], rows[start_right], start_t)
+    last_row = interpolate_force_row(rows[end_left], rows[end_right], end_t)
+    interior = [row for row in rows if start_t < row[2] < end_t]
+    return vcat([first_row], interior, [last_row])
+end
+
 function load_canonical_grid(path)
     Base.ENDIAN_BOM == 0x04030201 || error("registered phi requires a little-endian runtime")
     bytes = read(path)
@@ -81,6 +101,8 @@ end
 
 function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
     validate_v16_w4_case(case)
+    println("W4_CASE_STARTED ", case.case_id)
+    flush(stdout)
     candidate_grid = kernel_grid(owner)
     candidate = GridSDFWaterLilyBody(candidate_grid,
         Float32.(case.world_origin_m), Float32(case.flow_spacing_m))
@@ -94,7 +116,11 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
 
     history = Vector{NTuple{13,Float64}}()
     warm_started = time()
+    println("W4_SOLVER_STEP_INVOKED ", case.case_id)
+    flush(stdout)
     sim_step!(sim) # compile this grid's GPU path; excluded from case solve timing
+    println("W4_SOLVER_STEP_RETURNED ", case.case_id)
+    flush(stdout)
     first_step_seconds = time() - warm_started
     step = 1
     peak_vram = CUDA.used_memory()
@@ -102,7 +128,7 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
     while sim_time(sim) < T_END
         sim_step!(sim)
         step += 1
-        if step % SAMPLE_EVERY == 0
+        if step % SAMPLE_EVERY == 0 || sim_time(sim) >= T_END
             pressure = -(WaterLily.pressure_force(sim.flow, bodies.candidate))
             viscous = -(WaterLily.viscous_force(sim.flow, bodies.candidate))
             total = pressure + viscous
@@ -127,6 +153,7 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
     finite_u && finite_p && finite_forces || error("$(case.case_id): non-finite field or force")
     window = [row for row in history if BURN_IN <= row[2] <= T_END]
     length(window) >= 4 || error("$(case.case_id): too few samples in [80,120]")
+    weighted_window = clipped_force_window(history, BURN_IN, T_END)
     middle = 0.5 * (BURN_IN + T_END)
     first_half = [row for row in window if row[2] < middle]
     second_half = [row for row in window if row[2] >= middle]
@@ -134,8 +161,8 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
 
     drag_mean = mean_column(window, 6)
     downforce_mean = mean_column(window, 7)
-    drag_weighted = time_weighted_mean(window, 6, drag_mean)
-    downforce_weighted = time_weighted_mean(window, 7, downforce_mean)
+    drag_weighted = time_weighted_mean(weighted_window, 6, drag_mean)
+    downforce_weighted = time_weighted_mean(weighted_window, 7, downforce_mean)
     area_solver = case.reference_area_m2 / case.flow_spacing_m^2
     force_scale_n = case.density_kg_m3 * case.freestream_mps^2 * case.flow_spacing_m^2
     summary = (
@@ -151,6 +178,11 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         solver_velocity=case.solver_velocity,
         solver_viscosity=case.solver_viscosity,
         reynolds=case.reynolds,
+        density_kg_m3=case.density_kg_m3,
+        dynamic_viscosity_pa_s=case.dynamic_viscosity_pa_s,
+        freestream_mps=(case.freestream_mps, 0.0, 0.0),
+        reference_length_m=case.reference_length_m,
+        reference_area_m2=case.reference_area_m2,
         state_sha256=EXPECTED_STATE_SHA256,
         source_surface_sha256=EXPECTED_SOURCE_STL_SHA256,
         phi_c_order_sha256=phi_c_sha,
@@ -165,8 +197,13 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         cuda_jl_version=string(pkgversion(CUDA)),
         gpu_name=CUDA.name(CUDA.device()),
         gpu_uuid=get(ENV, "W4_SELECTED_GPU_UUID", ""),
+        native_velocity_boundary="v16_native_far_field_uBC: +x freestream velocity 1 m/s; other normal components zero",
+        side_top_tangential_boundary="WaterLily native tangential zero-Neumann",
         x_max_boundary="WaterLily convective exit",
         pressure_boundary="WaterLily projection pressure; no per-patch freestreamPressure input",
+        ground_model="moving planar half-space at z=0 with +x wall velocity 1 m/s",
+        force_integration_body="canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        force_projection_semantics="drag=+Fx; downforce=-Fz",
         source_profile_equivalent=false,
         physical_profile_qualified=false,
         t_end_target=T_END,
@@ -183,8 +220,17 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         finite_forces=finite_forces,
         window_mean_drag_solver=drag_mean,
         window_mean_downforce_solver=downforce_mean,
-        window_time_weighted_drag_solver=drag_weighted,
-        window_time_weighted_downforce_solver=downforce_weighted,
+        window_time_weighted_fx_solver=time_weighted_mean(weighted_window, 3, mean_column(window, 3)),
+        window_time_weighted_fy_solver=time_weighted_mean(weighted_window, 4, mean_column(window, 4)),
+        window_time_weighted_fz_solver=time_weighted_mean(weighted_window, 5, mean_column(window, 5)),
+        window_time_weighted_drag_solver=time_weighted_mean(weighted_window, 6, drag_mean),
+        window_time_weighted_downforce_solver=time_weighted_mean(weighted_window, 7, downforce_mean),
+        window_time_weighted_pressure_fx_solver=time_weighted_mean(weighted_window, 8, mean_column(window, 8)),
+        window_time_weighted_pressure_fy_solver=time_weighted_mean(weighted_window, 9, mean_column(window, 9)),
+        window_time_weighted_pressure_fz_solver=time_weighted_mean(weighted_window, 10, mean_column(window, 10)),
+        window_time_weighted_viscous_fx_solver=time_weighted_mean(weighted_window, 11, mean_column(window, 11)),
+        window_time_weighted_viscous_fy_solver=time_weighted_mean(weighted_window, 12, mean_column(window, 12)),
+        window_time_weighted_viscous_fz_solver=time_weighted_mean(weighted_window, 13, mean_column(window, 13)),
         diagnostic_first_half_mean_drag_solver=mean_column(first_half, 6),
         diagnostic_second_half_mean_drag_solver=mean_column(second_half, 6),
         diagnostic_first_half_mean_downforce_solver=mean_column(first_half, 7),

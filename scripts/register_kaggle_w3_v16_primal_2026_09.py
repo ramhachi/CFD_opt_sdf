@@ -70,7 +70,18 @@ def input_entry(path: Path, *, location: str = "source_repo") -> dict:
     }
 
 
-def build_criteria(source_commit: str) -> dict:
+def criteria_output_path(criteria_round: int) -> Path:
+    if criteria_round < 1:
+        raise ValueError("W3 criteria round must be positive")
+    if criteria_round == 1:
+        return OUTPUT
+    return OUTPUT.with_name(
+        f"kaggle_w3_v16_primal_criteria_2026_09_round{criteria_round}.json"
+    )
+
+
+def build_criteria(source_commit: str, *, criteria_round: int = 1,
+                   state_path: Path = STATE) -> dict:
     genesis = json.loads(GENESIS.read_text())
     w1 = json.loads(W1_RESULT.read_text())
     profile = json.loads(PROFILE_MANIFEST.read_text())
@@ -78,11 +89,12 @@ def build_criteria(source_commit: str) -> dict:
     previous = json.loads(W2B_CRITERIA.read_text())
     profile_spec = yaml.safe_load(PROFILE.read_text())
 
-    npz_sha = sha256(STATE)
+    state_path = Path(state_path)
+    npz_sha = sha256(state_path)
     registered_state = genesis["state"]
     if npz_sha != registered_state["state_file_sha256"]:
         raise ValueError("canonical v16 NPZ does not match immutable genesis evidence")
-    with np.load(STATE, allow_pickle=False) as archive:
+    with np.load(state_path, allow_pickle=False) as archive:
         metadata = json.loads(str(archive["metadata"].item()))
         phi = np.asarray(archive["phi"], dtype="<f4")
     phi_c = hashlib.sha256(np.ascontiguousarray(phi).tobytes(order="C")).hexdigest()
@@ -177,7 +189,11 @@ def build_criteria(source_commit: str) -> dict:
 
     return {
         "schema_version": 1,
-        "criteria_id": "kaggle_w3_v16_primal_2026_09",
+        "criteria_id": (
+            "kaggle_w3_v16_primal_2026_09" if criteria_round == 1
+            else f"kaggle_w3_v16_primal_2026_09_round{criteria_round}"
+        ),
+        "criteria_round": criteria_round,
         "kind": "waterlily_w3_v16_primal_criteria",
         "immutable": True,
         "status": "registered_not_run",
@@ -311,18 +327,23 @@ def build_criteria(source_commit: str) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="verify an existing immutable registration")
+    parser.add_argument("--round", type=int, default=1,
+                        help="immutable W3 criteria round number (default: 1)")
+    parser.add_argument("--state", type=Path, default=STATE,
+                        help="canonical v16 state NPZ used to bind the dataset inputs")
     args = parser.parse_args()
-    sidecar = OUTPUT.with_suffix(OUTPUT.suffix + ".sha256")
+    output = criteria_output_path(args.round)
+    sidecar = output.with_suffix(output.suffix + ".sha256")
     if args.check:
-        if not OUTPUT.is_file() or not sidecar.is_file():
+        if not output.is_file() or not sidecar.is_file():
             raise SystemExit("W3 criteria or its SHA sidecar is missing")
-        actual = sha256(OUTPUT)
+        actual = sha256(output)
         expected = sidecar.read_text().strip()
         if actual != expected:
             raise SystemExit("W3 criteria SHA sidecar mismatch")
         print(actual)
         return 0
-    if OUTPUT.exists() or sidecar.exists():
+    if output.exists() or sidecar.exists():
         raise SystemExit("W3 criteria already exists; immutable registration will not be overwritten")
     source_commit = subprocess.check_output(
         ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True,
@@ -336,11 +357,12 @@ def main() -> int:
         raise SystemExit("pinned T4 project changed")
     if sha256(T4_MANIFEST) != "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707":
         raise SystemExit("pinned T4 manifest changed")
-    criteria = build_criteria(source_commit)
-    OUTPUT.write_text(json.dumps(criteria, indent=2, sort_keys=True, allow_nan=False) + "\n")
-    digest = sha256(OUTPUT)
+    criteria = build_criteria(source_commit, criteria_round=args.round,
+                              state_path=args.state)
+    output.write_text(json.dumps(criteria, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    digest = sha256(output)
     sidecar.write_text(digest + "\n")
-    print(json.dumps({"criteria_path": OUTPUT.relative_to(ROOT).as_posix(),
+    print(json.dumps({"criteria_path": output.relative_to(ROOT).as_posix(),
                       "criteria_sha256": digest,
                       "source_commit": source_commit}, sort_keys=True))
     return 0
