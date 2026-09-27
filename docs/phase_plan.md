@@ -2221,3 +2221,40 @@ confirmed they depend on ignored `work/` evidence artifacts absent from this
 fresh managed worktree (including an STL load after its registered file is
 missing); none is a W2b contract test. `shape_update_allowed=false` remains in
 force.
+
+### 2026-09-27 W2b version 9 partial-run diagnostic; round 4 registered
+
+Kaggle version 9 fetched the round-3 source and verified the registered input
+hashes, instantiated Julia dependencies, and passed the registered T4 CUDA
+smoke. `analytic_16` then completed through `t_end=60.0000228882` with finite
+fields and forces; its 561-sample force CSV reproduces the reported
+time-weighted drag and Cd `0.879587436031` under host recomputation. Before
+case 2, Julia stopped at the top-level `case_count += 1` with
+`UndefVarError: case_count not defined in local scope`; no
+`W2B_JOB_DONE` marker or remaining five cases exist. The exact 12 downloaded
+output hashes and kernel log are retained in
+`work/kaggle_w2b_version9/`; its append-only diagnostic is
+`evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json`
+(SHA-256 `43ffa63058606638cd70f2bfbd18c68c8521a3fa67c81ad9bf03ebd8f7b3f35e`),
+kernel-log SHA-256
+`d12a2e07f65bdfe5c7a8811fa8fd5fbd4d29239a5790014abe045b7322a21ee3`. The
+one-case response is diagnostic only; it does not satisfy any complete-matrix
+claim and will not be reused as round-4 acceptance evidence.
+
+The minimal source fix removes the top-level mutable counter and prints the
+registered tuple length after the loop; source commit
+`a29e282982a923e0a93ed31d3643e59c7ec6e42e`, job SHA-256
+`cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440`. Julia
+parser and a top-level execution of the corrected completion-marker pattern
+passed. Append-only round-4 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round4.json` (SHA-256
+`4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0`); only the
+source pin and job hash change for the implementation fix. Backend identity,
+fixture, all other inputs, and every numerical threshold remain the same as
+round 3. The 5 focused W2b
+tests, compile/syntax and JSON checks, criteria and diagnostic sidecars, all
+12 version-9 output hashes, kernel-log hash, Julia parser and marker check,
+and `git diff --check` passed. Full pytest reports 1048 passed, 37 failed,
+and 4 skipped; rerunning the 37 confirms dependence on absent ignored `work/`
+evidence artifacts. Next is dedicated Kaggle kernel version 10.
+`shape_update_allowed=false` remains in force.

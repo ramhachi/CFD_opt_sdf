@@ -20,12 +20,12 @@ OUT = Path("/kaggle/working") / STAGE
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 8
-SOURCE_COMMIT = "548231050fc6ca22bc1c0394272564f81571dbbc"
+SOURCE_COMMIT = "a29e282982a923e0a93ed31d3643e59c7ec6e42e"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 PROJECT_SHA256 = "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
 MANIFEST_SHA256 = "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
-CRITERIA_SHA256 = "3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c"
+CRITERIA_SHA256 = "4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0"
 CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
 CUDA_DRIVER_API_VERSION = "13.3.0"
 CUDA_RUNTIME_VERSION = "12.8.0"
@@ -45,7 +45,7 @@ REGISTERED_INPUTS = {
     "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
     "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
     "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
-    "scripts/waterlily_w2b_grid_ladder_job.jl": "e907cf1e038ce76556533a59c2f1ce1ebb7de51c7ad134e0b3f6756ad34b9a26",
+    "scripts/waterlily_w2b_grid_ladder_job.jl": "cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440",
     "docs/evidence/kaggle_k0_result_2026_09.json": "0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719",
     "julia/CFDSDFWaterLilyT4/Manifest.toml": MANIFEST_SHA256,
     "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",

@@ -208,7 +208,7 @@ agreement gates at 16 cells/D. The next slice is W2b; its separate
 16/24/32 cells/D flow-grid matrix and gates are registered below before the
 first ladder measurement.
 
-## W2b round 3: registered three-resolution flow-grid ladder
+## W2b: registered three-resolution flow-grid ladder
 
 The six-case matrix and numerical bounds remain those registered in
 [`evidence/kaggle_w2b_criteria_2026_09_round1.json`](evidence/kaggle_w2b_criteria_2026_09_round1.json)
@@ -245,9 +245,32 @@ for each geometry. The 3% value is a PoC candidate bound, not formal GCI or
 absolute-accuracy evidence; all six cases must also pass the registered
 finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
 
-The solver job is pinned to source commit
-`548231050fc6ca22bc1c0394272564f81571dbbc`. Its exact six-case parameters and
-input hashes are frozen in the criteria. W2b uses its own private Kaggle kernel,
+Rounds 2 and 3 pinned the solver job to
+`548231050fc6ca22bc1c0394272564f81571dbbc`. Version 9 fetched that source,
+verified its inputs, passed T4 smoke, and completed `analytic_16` through
+`t_end=60`. Host recomputation matched its 561-sample force CSV and reported
+time-weighted Cd `0.879587436031`. The Julia script then stopped before case 2:
+top-level `case_count += 1` raised a soft-scope `UndefVarError`, and the
+`W2B_JOB_DONE` marker was absent. The six-case matrix is incomplete; the single
+case is diagnostic only and is not reused for round 4. All 12 retrieved output
+hashes and the kernel-log hash verify. The immutable failure diagnostic is
+[`evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json`](evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json)
+(SHA-256 `43ffa63058606638cd70f2bfbd18c68c8521a3fa67c81ad9bf03ebd8f7b3f35e`);
+the kernel log SHA-256 is
+`d12a2e07f65bdfe5c7a8811fa8fd5fbd4d29239a5790014abe045b7322a21ee3`.
+
+The counter-only fix is source commit
+`a29e282982a923e0a93ed31d3643e59c7ec6e42e`; the job hash is
+`cc351f6eb5f8ca8f2bc210100f82b46481335003a818d45466757f588ffd0440`. It removes
+the mutable top-level counter and prints the registered tuple length only
+after all six cases return. Round 4 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round4.json`](evidence/kaggle_w2b_criteria_2026_09_round4.json)
+(SHA-256 `4b5789d4dcf2e9b79b10eb5e388d5a56951df5c835f0c993903527463b6a82d0`).
+It updates the source/job pin for the counter fix; runtime identity, fixture,
+all other inputs, and every numerical threshold equal round 3. The round-9
+partial measurement remains diagnostic and the round-4 solver has not started.
+
+W2b uses its own private Kaggle kernel,
 `ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`. Version 7 failed at source
 fetch before any solver case began because the round-1 source SHA was mistyped.
 Its exact error and retrieval hashes are recorded in
@@ -269,6 +292,14 @@ full suite reported 1047 passed, 37 failed, and 4 skipped. Re-running only the
 37 failures confirmed they all depend on ignored `work/` evidence artifacts
 absent from the fresh managed worktree (including an STL load that fails after
 its registered file is missing); the focused W2b tests are not among them.
+Before version 10, round-4 focused tests passed (5 tests), including a
+regression assertion for the top-level completion counter. Python
+`compileall`/syntax checks, metadata and criteria JSON parsing, criteria-chain
+and sidecar hashes, all 12 version-9 output hashes, the kernel-log hash, the
+Julia parser and top-level marker check, and `git diff --check` passed. The
+full suite reported 1048 passed, 37 failed, and 4 skipped. Re-running the 37
+failures confirmed they still depend on ignored `work/` evidence artifacts
+missing from this managed worktree.
 After retrieval,
 the host verifier checks every manifest hash and recomputes the force means,
 time-weighted coefficients, stationarity and all registered gates from the raw
@@ -279,18 +310,18 @@ PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
   -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9 -p work/kaggle_w2b_version9
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10 -p work/kaggle_w2b_version10
 PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
-  work/kaggle_w2b_version9
+  work/kaggle_w2b_version10
 ```
 
 Use the version actually returned by `push` consistently in all four Kaggle
 commands and the retrieval path. A missing `DONE`, `ERROR.txt`, hash mismatch,
 or any failed gate remains diagnostic; do not relax numerical thresholds after
-seeing the solver result. Rounds 2 and 3 preserve round-1 numerical bounds. No
-W2b solver measurement is recorded in this runbook until the exact
+seeing the solver result. Rounds 2, 3 and 4 preserve round-1 numerical bounds.
+No complete W2b ladder measurement is recorded in this runbook until the exact
 version-specific output has passed host verification.
