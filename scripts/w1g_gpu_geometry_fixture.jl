@@ -218,11 +218,10 @@ end, outside_indices)
 
 identity = if backend == "gpu"
     device = CUDA.device()
-    uuid = try
-        strip(read(`nvidia-smi --query-gpu=uuid --format=csv,noheader`, String))
-    catch
-        "not exposed"
-    end
+    visible = get(ENV, "CUDA_VISIBLE_DEVICES", "0")
+    visible in ("0", "1") || error("W1g requires one CUDA-visible GPU index")
+    uuid = strip(read(`nvidia-smi --id=$visible --query-gpu=uuid --format=csv,noheader`, String))
+    startswith(uuid, "GPU-") && !occursin('\n', uuid) || error("invalid selected GPU UUID")
     (
         gpu_name = CUDA.name(device),
         gpu_uuid = uuid,
