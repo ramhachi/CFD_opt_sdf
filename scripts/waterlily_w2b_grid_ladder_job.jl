@@ -229,11 +229,9 @@ end
 fingerprint = CFDSDFWaterLily.runtime_fingerprint()
 vram_total = last(CUDA.memory_info())
 mkpath(output_dir)
-case_count = 0
 for p in W2B_CASES
     run_case(p, fingerprint, vram_total)
-    case_count += 1
     GC.gc()
     CUDA.synchronize()
 end
-println("W2B_JOB_DONE ", case_count, " cases")
+println("W2B_JOB_DONE ", length(W2B_CASES), " cases")
