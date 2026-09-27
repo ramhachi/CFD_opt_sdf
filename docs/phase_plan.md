@@ -2419,3 +2419,57 @@ its registered gates pass. Register every W4 case, thresholds, runtime/VRAM
 limits, and output contract before its first GPU measurement. Until those
 criteria exist and W4 is independently verified, centered-FD execution stays
 closed.
+
+### 2026-09-28 live queue recheck and W4 preparation
+
+After `git fetch origin codex/kaggle-batch-migration`, local HEAD and the
+remote feature ref both resolved to `fe1552770e1e27ab49fedf44c53f5248b475d3f0`;
+the worktree was clean before W4 edits. At 2026-09-27 15:23:35 UTC, the
+version-bound Kaggle status command reported W3
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/2` as `QUEUED`; its logs were empty.
+The reverse diagnostic
+`ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1` was also `QUEUED` with empty
+logs. Neither run has retrievable terminal output at this check, so no solver
+start, reverse failure locus, or new measurement is inferred. W3 qualification
+and all gradient/reverse/update flags remain false.
+The local W3 dataset staged at
+`work/kaggle_w3_v16_dataset_registered_3c54f386` is available: the criteria,
+sidecar, canonical state NPZ, Fortran phi, and dataset manifest hashes match
+their registrations: criteria `3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3`,
+sidecar `9268906c5c5aadab69be30ef579fdc6bdee51a2b7e1078302633202d51042c2f`,
+state NPZ `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`,
+Fortran phi `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`,
+and dataset manifest `f01176977c3c15cb93d5a164e0b7d166adbb750143ee49ac62114968575c868f`.
+
+Unexecuted W3 source-review risk: the pinned Julia job calls names such as
+`V16_PROFILE_POINT_SHAPE` and `v16_physical_profile_bodies` without module
+qualification after including `V16PhysicalProfile.jl` into
+`CFDSDFWaterLily`. That parent module declares no exports, and a Julia 1.12
+namespace probe confirmed that plain `using .ModuleName` does not import
+non-exported bindings. If version 2 reaches this job, an `UndefVarError` before
+the first `sim_step!` is plausible. This is a source-level hypothesis, not an
+observed failure; preserve the submitted v2 source/criteria and resolve it
+from its exact terminal log before registering any changed-source retry.
+
+W4 local preparation is tracked separately from W3's pinned source and
+criteria. `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` encodes the fixed
+four-case physical-grid matrix, and
+`scripts/waterlily_w4_v16_sensitivity_job.jl` is the CUDA job draft. The
+non-immutable criteria sketch is
+[`evidence/w4_v16_sensitivity_criteria_draft_2026_09.json`](evidence/w4_v16_sensitivity_criteria_draft_2026_09.json);
+it is explicitly not registered and cannot authorize a GPU run. It keeps the
+canonical phi at 0.05 m while changing only the flow-grid spacing and box,
+preserves Re=80 and the [80,120] tU/L window, and defines the extended-domain
+follow-up rule by comparing the absolute physical-force response of the
+domain and 24-to-32 resolution changes. Its integrity checks are not
+grid/domain-convergence gates.
+
+Local checks completed: Julia's standalone case builder returned the
+registered dimensions `(60,32,24)`, `(90,48,36)`, `(120,64,48)`, and
+`(130,32,24)` with solver viscosities `0.2`, `0.3`, `0.4`, and `0.2`; the
+W4 job parsed with `Meta.parseall`; `git diff --check` passed. Loading the
+local T4 Project failed because its CUDA package is not installed in this
+managed worktree. No package installation or GPU run was attempted. W2b's
+registered 32-grid GridSDF case took 327.4 s for its 60 tU/D window; this is
+planning context only, not a runtime prediction or acceptance result for the
+v16 W4 cases.

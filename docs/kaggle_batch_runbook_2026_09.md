@@ -395,6 +395,15 @@ before solver initialization, keep the criteria unchanged and inspect the
 exact version's logs and `ERROR.txt` before deciding whether a retry or a
 path-resolution fix is required.
 
+Static source-review note (not execution evidence): the pinned W3 Julia job
+uses several `CFDSDFWaterLily` parent-module definitions without qualification
+after including the profile file into that module. The parent declares no
+exports, and `using .CFDSDFWaterLily` alone does not import non-exported
+bindings. If v2 reaches the Julia job and reports `UndefVarError`, preserve its
+exact logs/output and record that it stopped before `sim_step!`; do not alter
+the submitted criteria or source identity in place. Any source fix needs a
+new immutable criteria round before the next measurement.
+
 W3 run commands (use the actual version returned by `push` in every command):
 
 ```bash
@@ -418,3 +427,43 @@ metrics, validates the raw force-component closure, then recomputes T0-T9.
 W3's adapter is an explicitly non-equivalent finite-box approximation; a pass
 does not qualify the OpenFOAM physical profile, force stationarity, grid
 response, gradients, topology, or a shape update.
+
+## W4 v16 resolution/domain sensitivity preparation (not registered)
+
+The current W4 code and criteria sketch are local preparation only:
+
+- `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
+  maps and checks physical-box alignment, dimensions, solver length, and Re=80.
+- `scripts/waterlily_w4_v16_sensitivity_job.jl` keeps the canonical v16 SDF
+  fixed and drafts the T4 primal matrix, including raw pressure/viscous/total
+  force components, time-weighted means, half-window diagnostics, runtime,
+  VRAM, and SDF/backend hashes.
+- `evidence/w4_v16_sensitivity_criteria_draft_2026_09.json` is deliberately
+  marked `immutable: false` and `registered_before_computation: false`. It is
+  not the final criteria file, a dataset upload, or permission to run W4.
+
+W3 version 2 must first pass its exact-version host verifier. Then finish the
+W4 runner and verifier, bind the passing W3 evidence and exact W4 source/input
+hashes, bind the observed backend identity, and register a final immutable
+criteria file plus its sidecar and private input dataset. Check every staged
+hash before the first W4 GPU measurement. Do not submit `kernel_w4` until this
+registration is complete and W3 is formally PASS. If the domain delta in
+time-weighted drag or downforce is at least the corresponding 24-to-32
+resolution delta, preregister and run the extended-domain fine-grid case
+before opening the centered-FD gate. A complete W4 matrix reports sensitivity;
+it does not qualify grid/domain convergence or the physical profile.
+
+The preparation-only local checks currently used are:
+
+```bash
+julia --startup-file=no -e 'include("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl"); using .V16W4Sensitivity; foreach(println, V16W4_CASES)'
+julia --startup-file=no --project=julia/CFDSDFWaterLilyT4 -e 'Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); println("W4 Julia syntax parsed")'
+python3 -m json.tool docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json >/dev/null
+git diff --check
+```
+
+The standalone builder check produced the four registered grids and their
+Re=80 viscosities. `Meta.parseall`, JSON parsing, and whitespace checks passed.
+An attempt to load CUDA/WaterLily from the local T4 Project stopped because
+CUDA is not installed in this managed worktree; no package installation was
+attempted. These checks do not execute a solver or qualify W4.
