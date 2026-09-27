@@ -1,4 +1,4 @@
-# Kaggle background GPU runbook (K0, W1g, and W2-T4b)
+# Kaggle background GPU runbook (K0, W1g, W2-T4b, and W2b)
 
 This is the execution path for the SDF-native WaterLily GPU line. The
 authoritative order and gate status are in [`phase_plan.md`](phase_plan.md),
@@ -204,5 +204,51 @@ CPU sampled fixture), and `Cd=0.8777003092` (relative difference `0.00215`
 from analytic T4). The append-only result is
 [`evidence/kaggle_w2t4b_round2_result_2026_09.json`](evidence/kaggle_w2t4b_round2_result_2026_09.json).
 It qualifies only the registered sampled-sphere CUDA primal capability and
-agreement gates at 16 cells/D. Next in plan order is W2b: preregister the
-16/24/32 cells/D flow-grid matrix and its gates before launching those runs.
+agreement gates at 16 cells/D. The next slice is W2b; its separate
+16/24/32 cells/D flow-grid matrix and gates are registered below before the
+first ladder measurement.
+
+## W2b: registered three-resolution flow-grid ladder
+
+W2b round 1 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round1.json`](evidence/kaggle_w2b_criteria_2026_09_round1.json)
+(SHA-256 `eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`).
+It compares analytic and canonical GridSDF spheres at 16, 24, and 32 cells/D
+on identical dimensionless domains at Re_D=100. The registered bounds require
+each per-rung geometry Cd pair within 1%, the 16-cells/D drag values within 1%
+of the W2-T4a/W2-T4b references, and the 24-to-32 cells/D Cd change within 3%
+for each geometry. The 3% value is a PoC candidate bound, not formal GCI or
+absolute-accuracy evidence; all six cases must also pass the registered
+finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
+
+The solver job is pinned to source commit
+`5482310d9778229fe692cdc6799c2e1c31cc9982`. Its exact six-case parameters and
+input hashes are frozen in the criteria. `infra/kaggle/kernel_w2b/runner.py`
+uploads W2b as the next private kernel version after W2-T4b version 6. Before
+submission, the focused W2b contract test passed (4 tests), the Julia parser,
+Python compilation, criteria/input hashes, and `git diff --check` passed. The
+full suite reported 1047 passed, 37 failed, and 4 skipped; each failure is a
+missing ignored `work/` fixture in the fresh managed worktree. After retrieval,
+the host verifier checks every manifest hash and recomputes the force means,
+time-weighted coefficients, stationarity and all registered gates from the raw
+force CSVs.
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/7
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/7
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/7 -p work/kaggle_w2b_version7
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
+  work/kaggle_w2b_version7
+```
+
+Use the version actually returned by `push` consistently in all four Kaggle
+commands and the retrieval path. A missing `DONE`, `ERROR.txt`, hash mismatch,
+or any failed gate remains diagnostic; do not change round-1 thresholds after
+seeing the solver result. No W2b solver measurement is recorded in this
+runbook until the exact version-specific output has passed host verification.

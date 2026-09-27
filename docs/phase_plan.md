@@ -2141,3 +2141,29 @@ grid convergence, absolute/literature Cd, gradients, reverse CUDA, topology,
 v16, optimizer readiness, or target aerodynamics. The next planned slice is
 W2b, with a 16/24/32-cells/D flow-grid ladder; preregister that matrix and its
 acceptance rules before any W2b GPU measurement.
+
+### 2026-09-27 W2b six-case criteria registered; runner preflight
+
+Before the first W2b solver measurement, the analytic/GridSDF matrix at 16,
+24, and 32 cells/D and all numerical bounds were registered in
+`evidence/kaggle_w2b_criteria_2026_09_round1.json` (SHA-256
+`eab8213461d95a714910a2055a957d3614f1e257dcc79197f6068cd35a04b1bd`). The
+criteria pin the solver job at source commit
+`5482310d9778229fe692cdc6799c2e1c31cc9982`. The 3% 24-to-32 cells/D response
+is only the explicitly proposed PoC bound from the WaterLily deep dive; this
+ladder is not registered as formal GCI or absolute-Cd qualification.
+
+The standalone Kaggle runner and host verifier are ready for the next private
+kernel version. Preflight review found two prerequisite file hashes
+transcribed incorrectly in the runner, which would have failed T0 before any
+case started. The values are corrected to match the immutable criteria. The
+host verifier also recomputes reported force means and time-weighted Cd from
+the retrieved CSV history, and both runner and verifier check the registered
+one-thread identity. These checks do not change any registered CFD threshold.
+Validation: `tests/test_kaggle_w2b.py` reports 4 passed; `compileall src tests`,
+Python syntax checks, metadata JSON parsing, Julia parser, the criteria/input
+hash checks, and `git diff --check` pass. The full suite reports 1047 passed,
+37 failed, 4 skipped; all 37 failures are `FileNotFoundError` for pre-existing
+ignored `work/` CFD fixtures absent from this fresh managed worktree. No W2b
+solver measurement has started. T4 selection, evidence scope limits, and
+`shape_update_allowed=false` remain unchanged.
