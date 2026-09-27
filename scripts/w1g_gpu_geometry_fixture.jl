@@ -99,8 +99,10 @@ end
 canonical = CFDSDFWaterLily.sphere_phi_fixture()
 source_sha = phi_sha(canonical.phi)
 
+device_owner = nothing
 device_grid, roundtrip_sha = if backend == "gpu"
     device = device_copy(canonical)
+    device_owner = device
     roundtrip = device_roundtrip_sha(device)
     kernel_grid(device), roundtrip
 else
@@ -148,11 +150,16 @@ end
 
 kernel! = w1g_probe_kernel!(get_backend(probe_memory))
 kernel!(d_out, nx_out, ny_out, nz_out, gpu_body, probe_memory; ndrange = probe_count)
-if backend == "gpu"
+scalar_index_blocked = if backend == "gpu"
     synchronize()
-    allowscalar = CUDA.allowscalar()
+    try
+        device_owner.grid.phi[1, 1, 1]  # negative control: must throw fail-closed
+        false
+    catch
+        true
+    end
 else
-    allowscalar = false
+    true  # cpu validation mode: no device scalar-index policy exists
 end
 gpu_d = Array(d_out)
 gpu_nx = Array(nx_out)
@@ -252,7 +259,7 @@ summary = string(
     "\"outside_probes\":", length(outside_indices), ",",
     "\"outside_exact\":", outside_exact, ",",
     "\"all_finite\":", comparison.all_finite, ",",
-    "\"allowscalar\":", allowscalar, ",",
+    "\"scalar_index_blocked\":", scalar_index_blocked, ",",
     "\"backend_identity\":{",
     "\"gpu_name\":\"", identity.gpu_name, "\",",
     "\"gpu_uuid\":\"", identity.gpu_uuid, "\",",

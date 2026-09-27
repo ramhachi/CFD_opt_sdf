@@ -15,6 +15,13 @@
     "CPU and GPU geometry evaluation agree within the registered tolerances",
     "the outside positive-fluid extension is exact and no scalar-indexing fallback is enabled"
   ],
+  "criteria_correction_history": [
+    {
+      "fix": "G8 operationalized as the scalar_index_blocked negative control (a host-side scalar access to the device phi must throw), with the fixture source containing no CUDA.allowscalar(true) call; all other gates and tolerances unchanged",
+      "reason": "implementation-validation run 2026-09-26: in CUDA.jl 6.3.1 the no-argument CUDA.allowscalar() does not return the scalar-indexing state (it returned nothing and emitted the legacy setter warning), so the literal 'CUDA.allowscalar() == false' comparison is not measurable; no registered measurement had been recorded under round 1",
+      "round": 2
+    }
+  ],
   "criteria_id": "sdf_native_w1g_gpu_gridsdf_2026_09",
   "evidence_class": "contract_and_numerical",
   "existing_evidence_modified": false,
@@ -71,7 +78,7 @@
     "G5_value_bound": "max |phi_gpu_world - phi_cpu_world| <= 1e-5 m over all inside-box probes",
     "G6_normal_bound": "max ||n_gpu - n_cpu||_2 <= 1e-3 over the registered normal-gate subset",
     "G7_outside_extension": "for every outside-box probe the GPU value is exactly Float32(outside_value_m)/world_per_solver with zero normal, equals the CPU value exactly, and is positive",
-    "G8_no_scalar_fallback": "CUDA.allowscalar() == false throughout the fixture and no scalar-indexing exception occurs",
+    "G8_no_scalar_fallback": "scalar fallback is blocked: a host-side scalar access to the device phi throws fail-closed (recorded as the boolean negative control scalar_index_blocked == true), the fixture never calls CUDA.allowscalar(true), and no scalar-indexing exception occurs in the kernel run",
     "G9_backend_identity": "the observed T4 identity (GPU name/UUID/compute capability, CUDA.jl/WaterLily/Julia versions, CUDA runtime) and the T4 Project/Manifest hashes match the W0b record exactly",
     "threshold_modification_rule": "no bound relaxation after seeing a measurement; any failure is a fail-closed stop with no evidence written"
   },

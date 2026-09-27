@@ -123,8 +123,8 @@ def main() -> None:
     )
     record(
         "G8_no_scalar_fallback",
-        summary["allowscalar"] is False,
-        f"allowscalar={summary['allowscalar']}",
+        summary["scalar_index_blocked"] is True,
+        f"scalar_index_blocked={summary['scalar_index_blocked']}",
     )
     identity_check = verify_backend_identity(summary["backend_identity"])
     record(
