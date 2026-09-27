@@ -6,16 +6,19 @@ sphere-derived grid, and reverse differentiation through a two-step WaterLily
 sphere primal. It is a scratch experiment. `DONE` means the diagnostic script
 finished; it does not mean any reverse stage passed or is qualified.
 
-The runner hashes the submitted Julia `Project.toml` and `Manifest.toml`, copies
-that pinned project to a temporary writable directory under `/kaggle/working`,
-and verifies both copied hashes before `Pkg.instantiate()`. It writes those
-input/copy hashes to `enzyme_reverse_spike/project_identity.json`, then records
-post-instantiation hashes and whether instantiation completed. Both Julia
-commands use the writable project copy. On setup failure,
-`project_identity.json` records the failure stage; the command-specific log and
-`ERROR.txt` retain the exception. The CUDA.jl 6.2.1, Enzyme and PR #285 pins
-remain unchanged. This specifically avoids the v1 failure where Pkg tried to
-write into the read-only `/kaggle/src/julia` mount.
+Kaggle runs the submitted `runner.py` as `/kaggle/src/script.py` and does not
+mount this folder's neighboring `julia/` directory. The runner therefore
+downloads the repository archive at the pinned source commit recorded in the
+code, extracts only this scratch project, and verifies exact
+`Project.toml`/`Manifest.toml`/`reverse_spike.jl` SHA-256 values. It then copies
+the verified project to a temporary writable directory under
+`/kaggle/working`, checks the copied Project/Manifest hashes, and runs both
+`Pkg.instantiate()` and the diagnostic script from that copy. The
+`enzyme_reverse_spike/project_identity.json` output records source archive and
+input/copy hashes, post-instantiation hashes, and the failure stage. The
+CUDA.jl 6.2.1, Enzyme and PR #285 pins remain unchanged. This avoids both the
+v2 missing-source-bundle failure and v1's attempt to write under the
+read-only `/kaggle/src` mount.
 
 The package manifest pins Julia 1.12.6 dependencies to Enzyme 0.13.205,
 CUDA.jl 6.2.1, and WaterLily PR #285 at
