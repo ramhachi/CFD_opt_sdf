@@ -2007,3 +2007,23 @@ W2-T4b sampled sphere and W2b flow-grid ladder in that order. Colab evidence
 remains the historical reference, not the active execution route.
 `shape_update_allowed=false`, `sdf_gradient_qualified=false`, and no v16
 optimization or topology work is authorized by this migration.
+
+### 2026-09-27 Kaggle W1g round 1 retained as diagnostic
+
+Kaggle private-kernel version 3 completed and reported G1–G9 true, but the
+result is not accepted: its pinned fixture source checked finiteness only for
+the x component of each normal while the registered G3 required the complete
+normal vector. Preserve the exact version-3 download under
+`work/kaggle_w1g_version3_diagnostic`; see
+[`evidence/kaggle_w1g_round1_diagnostic_2026_09.json`](evidence/kaggle_w1g_round1_diagnostic_2026_09.json)
+for the source, criteria, and output hashes. No W1g or downstream gate is
+qualified by this run.
+
+Before the next GPU measurement, the fixture was corrected to check all three
+CPU/GPU normal components, then round-2 criteria were registered at
+[`evidence/kaggle_w1g_criteria_2026_09_round2.json`](evidence/kaggle_w1g_criteria_2026_09_round2.json)
+(SHA-256 `717053a2e4cb32d16cbbc2e3de2007371c1046f365f76a404cb166322adaadcb`).
+The next authorized slice is a fresh private Kaggle W1g run pinned to source
+`f01462a44bf8b8cbefb0f5f7977916be94687b6c`; only a verified pass proceeds to
+W2-T4b. No bound was relaxed. `shape_update_allowed=false` and
+`sdf_gradient_qualified=false` remain in force.

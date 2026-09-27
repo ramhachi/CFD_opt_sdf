@@ -1,15 +1,18 @@
-# Kaggle background GPU runbook (K0)
+# Kaggle background GPU runbook (K0 and W1g)
 
 This is the execution path for the SDF-native WaterLily GPU line. The
 authoritative order and gate status are in [`phase_plan.md`](phase_plan.md),
 and the numeric K0 contract is
 [`evidence/kaggle_k0_criteria_2026_09.json`](evidence/kaggle_k0_criteria_2026_09.json).
-The existing Colab evidence remains a reference. No W1g, sampled-sphere, v16,
-or optimizer result follows from K0 alone.
+The existing Colab evidence remains a reference. No sampled-sphere, v16, or
+optimizer result follows from K0 or W1g alone.
 
 K0-A–F passed on 2026-09-27. Version 1 was the GPU inventory smoke; version 2
-ran the Julia environment, analytic sphere and dual-process checks. The
-append-only result is
+ran the Julia environment, analytic sphere and dual-process checks. W1g
+version 3 completed as a diagnostic, but was not accepted because the fixture
+at its pinned source checked only the x components for finiteness. The
+round-2 source checks every CPU/GPU normal component and was registered before
+the next GPU run. The append-only K0 result is
 [`evidence/kaggle_k0_result_2026_09.json`](evidence/kaggle_k0_result_2026_09.json).
 
 ## Audit corrections to the migration draft
@@ -23,9 +26,9 @@ append-only result is
   relative window-mean-drag difference at most `1e-4` versus the Colab
   W2-T4a fixture, and each concurrent GPU process at most `1e-6` versus the
   single-GPU Kaggle run. A result cannot be used to relax these values.
-- The source fetched by the kernel is the exact public commit
-  `d81d0ccd13379fc86de48d52a797e6e7612658bd`, the last unchanged solver
-  commit before this migration. The Julia binary and Project/Manifest are
+- The K0 source fetched by version 2 is the exact public commit
+  `d81d0ccd13379fc86de48d52a797e6e7612658bd`. W1g versions pin their own
+  registered source commits. The Julia binary and Project/Manifest are
   SHA-256 checked. Internet is enabled on the **private** Kaggle kernel for
   those downloads. No credential is in the repository or upload folder.
 - GPU UUIDs and driver versions from Colab are machine identities, not
@@ -38,18 +41,12 @@ documents `push`, `status`, `logs`, and version-specific `output`; its
 defines private script kernels and `NvidiaTeslaT4`. The Julia 1.12.6 Linux
 binary digest is from the [Julia release archive](https://julialang.org/downloads/oldreleases/).
 
-## Submit and collect
+## K0 historical collection
 
-Run from this repository's root. Kaggle credentials stay in the user's normal
-Kaggle CLI configuration; do not print or upload them.
-
-```bash
-uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
-  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
-```
-
-Record the version number printed by `push`. Use that explicit version for
-every later command; an unversioned `output` can point at a newer run.
+K0 version 2 has completed. The commands below retrieve that historical run;
+they do not submit another K0 campaign. The kernel directory now carries the
+W1g runner described in the next section. Kaggle credentials stay in the
+user's normal CLI configuration; do not print or upload them.
 
 ```bash
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
@@ -83,3 +80,36 @@ own registered criteria; the Colab W0b GPU UUID cannot be reused. Keep
 optimizer work blocked. The existing `scripts/waterlily_w2t4_job.jl`
 supports only `analytic` at this boundary; `gridsdf` is still reserved for
 the later sampled-sphere step.
+
+## W1g: GPU GridSDF contract check
+
+W1g round 2 pins source commit `f01462a44bf8b8cbefb0f5f7977916be94687b6c`
+and criteria SHA-256
+`717053a2e4cb32d16cbbc2e3de2007371c1046f365f76a404cb166322adaadcb`.
+It checks 200,012 registered probes on one selected Tesla T4, while recording
+both T4 UUIDs in the run output. G3 requires every CPU/GPU distance and all
+three components of each CPU/GPU normal to be finite. This is geometry
+contract and numerical agreement evidence only; it does not qualify a solver
+step, force, gradient, topology update, or optimizer.
+
+Submit and collect each round by explicit Kaggle version. For the currently
+registered round, the expected version is 4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/4 -p work/kaggle_w1g_version4
+python3 scripts/verify_kaggle_w1g.py work/kaggle_w1g_version4
+```
+
+Use the version printed by `push` if it is not 4, and change both the output
+reference and directory to match. The verifier checks the output file
+manifest, registered criteria and prerequisite hashes, uploaded runner hash,
+source commit, fixture parameters, runtime/GPU identity, and recomputed G1–G9
+gates. A failed run is retained as diagnostic evidence. Only a fully verified
+round-2 pass opens the next planned slice, W2-T4b.

@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,8 @@ SPEC.loader.exec_module(runner)
 VERIFY_SPEC = importlib.util.spec_from_file_location("verify_kaggle_k0", ROOT / "scripts/verify_kaggle_k0.py")
 verifier = importlib.util.module_from_spec(VERIFY_SPEC)
 VERIFY_SPEC.loader.exec_module(verifier)
+sys.path.insert(0, str(ROOT / "scripts"))
+import verify_kaggle_w1g
 
 
 def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
@@ -36,6 +39,8 @@ def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
 def test_verifier_refuses_incomplete_download(tmp_path):
     with pytest.raises(ValueError, match="completion marker"):
         verifier.verify(tmp_path)
+    with pytest.raises(ValueError, match="completion marker"):
+        verify_kaggle_w1g.verify(tmp_path)
 
 
 def test_w1g_gates_reject_geometry_and_identity_drift():
@@ -59,6 +64,7 @@ def test_w1g_gates_reject_geometry_and_identity_drift():
         },
     }
     assert all(runner.w1g_gates(summary, rows, "").values())
+    assert not runner.w1g_gates(dict(summary, all_finite=False), rows, "")["G3_finite"]
     assert not runner.w1g_gates(dict(summary, max_normal_error=0.002), rows, "")["G6_normal"]
     wrong = dict(summary, backend_identity=dict(summary["backend_identity"], gpu_uuid="GPU-b"))
     assert not runner.w1g_gates(wrong, rows, "")["G9_backend"]

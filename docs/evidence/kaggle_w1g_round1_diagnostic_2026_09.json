@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "kaggle_w1g_round1_diagnostic",
+  "evidence_class": "gpu_geometry_diagnostic_not_qualified",
+  "criteria": {
+    "path": "docs/evidence/kaggle_w1g_criteria_2026_09.json",
+    "sha256": "c5c51f84fb1574bede9f7396e0a75bb997aecfc7b5117f4b8cf0d814f59a70ef"
+  },
+  "kernel": {
+    "ref": "ramhachi888/cfd-opt-sdf-k0",
+    "private": true,
+    "version": 3,
+    "status": "COMPLETE",
+    "cli_version": "2.2.4",
+    "host_local_download": "work/kaggle_w1g_version3_diagnostic",
+    "kernel_log_sha256": "103ce396cc94c5767b19c41a52f5d4d76b0c077621241378e40b71c360cfdf69"
+  },
+  "source": {
+    "commit": "2a0ace4104ae435dbe26160dad85ce038770a862",
+    "runner_sha256": "eee1a575a508416cfb84fa93723ada85880d3c9b6d0d6af193d32813d87ff009",
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+  },
+  "reported": {
+    "status": "all_gates_true",
+    "gates": {
+      "G1_device_copy": true,
+      "G2_kernel": true,
+      "G3_finite": true,
+      "G4_sign": true,
+      "G5_value": true,
+      "G6_normal": true,
+      "G7_outside": true,
+      "G8_no_scalar_fallback": true,
+      "G9_backend": true
+    },
+    "probe_count": 200012,
+    "max_value_error_world_m": 3.5762786865234375e-7,
+    "max_normal_error": 2.4211522031691857e-7,
+    "sign_violations": 0,
+    "selected_gpu_uuid": "GPU-1ac808b6-7067-4d6e-54eb-36ad5d6a18a3",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-1ac808b6-7067-4d6e-54eb-36ad5d6a18a3, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-e5cb741a-2187-fc37-f389-5ee96995374e, 15360 MiB, 580.159.04"
+    ]
+  },
+  "audit": {
+    "accepted": false,
+    "reason": "The registered G3 requires finiteness of all x/y/z CPU and GPU normal components. The pinned source checks only cpu_n[index][1] and gpu_nx[index]; therefore its all_finite result cannot establish G3.",
+    "no_threshold_relaxed": true
+  },
+  "download_integrity": {
+    "verified_remote_files": 11,
+    "manifest_sha256": "bcd6631d30bb98b4cdee1c68d3a626921760021aa82553fb21c35123dfcf71fa",
+    "outcome_sha256": "5a0bfa01615764976d8bdb64f18a1b3a3c2911e21be1210dbf4982aabdf6f0d1",
+    "fixture_summary_sha256": "2b5ab9bcb8f3e04c5619e6dae4207ef17b232abc81614ed15071cf9c98b74481",
+    "fingerprint_sha256": "c5ab53f8d46b2448043ac39a3457d82d748c9ab825651cc474614fb666e97eea"
+  },
+  "verdict": {
+    "w1g_qualified": false,
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false
+  },
+  "scope": "Preserved diagnostic of the Kaggle W1g runner. The output is not W1g qualification or solver, force, gradient, or optimizer evidence."
+}

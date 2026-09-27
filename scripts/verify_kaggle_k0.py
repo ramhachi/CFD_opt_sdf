@@ -31,6 +31,18 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def verify_files(folder):
+    require((folder / "DONE").is_file() and (folder / "outcome.json").is_file(),
+            "completion marker or outcome missing")
+    manifest = json.loads((folder / "sha256.json").read_text())
+    names = {file.name for file in folder.iterdir() if file.is_file()}
+    require(set(manifest) == names - {"sha256.json", "DONE"}, "artifact inventory mismatch")
+    for name, expected in manifest.items():
+        require(Path(name).name == name and sha256(folder / name) == expected,
+                f"artifact SHA-256 mismatch: {name}")
+    return len(manifest)
+
+
 def verify(download):
     k0 = download / "k0"
     criteria = json.loads(CRITERIA.read_text())
@@ -39,14 +51,7 @@ def verify(download):
     reference = ROOT / criteria["colab_reference"]["evidence_path"]
     require(sha256(reference) == criteria["colab_reference"]["evidence_sha256"],
             "Colab reference hash mismatch")
-    require((k0 / "DONE").is_file() and (k0 / "outcome.json").is_file(),
-            "K0 completion marker or outcome missing")
-    manifest = json.loads((k0 / "sha256.json").read_text())
-    names = {file.name for file in k0.iterdir() if file.is_file()}
-    require(set(manifest) == names - {"sha256.json", "DONE"}, "artifact inventory mismatch")
-    for name, expected in manifest.items():
-        require(Path(name).name == name and sha256(k0 / name) == expected,
-                f"artifact SHA-256 mismatch: {name}")
+    verified_files = verify_files(k0)
 
     outcome = json.loads((k0 / "outcome.json").read_text())
     require(outcome["source_commit"] == criteria["source_commit"], "source commit drift")
@@ -80,7 +85,7 @@ def verify(download):
     require(all(item["exit_code"] == 0 for item in intervals.values()), "Julia worker exit failure")
     require(max(item["start_monotonic"] for item in intervals.values()) < min(
         item["end_monotonic"] for item in intervals.values()), "Julia workers did not overlap")
-    return {"verified_files": len(manifest),
+    return {"verified_files": verified_files,
             "single_drag": outcome["single"]["window_mean_drag"],
             "colab_relative_difference": relative(outcome["single"]["window_mean_drag"], ref_drag),
             "dual_drags": {key: value["window_mean_drag"] for key, value in outcome["dual"].items()}}
