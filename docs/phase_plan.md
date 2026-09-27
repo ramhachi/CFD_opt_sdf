@@ -1972,3 +1972,38 @@ flags remain false.
   `scripts/t4_backend_identity.py` (with pytest coverage) now fail-closes any
   future T4 job whose GPU/UUID/compute capability/versions or T4
   Project/Manifest hashes drift from the W0b record.
+
+## 2026-09-27 Kaggle background GPU migration: K0 passed
+
+The GPU execution route for the **next** SDF-native slices is now the private
+Kaggle background script kernel, operated and collected through the Kaggle CLI
+without an interactive notebook. The registered K0 contract is
+[`evidence/kaggle_k0_criteria_2026_09.json`](evidence/kaggle_k0_criteria_2026_09.json)
+(SHA-256 `5978460903fa193ec667c36ff86603d3cb7b067714d124c72094c94f2e3d30ac`).
+Its outcome is
+[`evidence/kaggle_k0_result_2026_09.json`](evidence/kaggle_k0_result_2026_09.json)
+(SHA-256 `0f9176083c2cb2503101b7f69fd48ef9bc24f15f63d7d187e32bc8eef4cda719`);
+the exact commands and retrieval check are in
+[`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md).
+
+K0-A--F passed: private version 1 completed a two-T4 background smoke;
+version 2 instantiated the unchanged Julia 1.12.6 Project/Manifest, passed
+CUDA/WaterLily smoke, then ran the original W2-T4a analytic job once on a
+single T4 and concurrently in two Julia processes pinned to separate T4s.
+All three runs reached 2246 steps and returned the same window-mean drag
+`88.42577373189188` as the existing Colab reference, within the
+pre-registered cross-backend relative bound `1e-4`; the dual processes
+overlapped. CLI retrieval by exact version and SHA-256 verification passed
+for 19 output files. This is execution and analytic-fixture numerical evidence,
+not new aerodynamic or optimizer qualification.
+
+The Kaggle GPU UUIDs changed between versions 1 and 2. The Colab W0b UUID
+cannot be a Kaggle hard gate. The next authorized slice is a **new, immutable
+Kaggle W1g backend/geometry criteria round**, registered before running the
+existing GPU GridSDF fixture. Require hardware class, compute capability,
+package/Manifest identity and per-run UUID recording; do not silently relax
+the old Colab G9 or overwrite its evidence. After a passing W1g, continue
+W2-T4b sampled sphere and W2b flow-grid ladder in that order. Colab evidence
+remains the historical reference, not the active execution route.
+`shape_update_allowed=false`, `sdf_gradient_qualified=false`, and no v16
+optimization or topology work is authorized by this migration.

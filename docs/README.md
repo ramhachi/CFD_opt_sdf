@@ -46,6 +46,8 @@ Start here in a new terminal, after reading the repository root
 
 - [`git_branching_strategy.md`](git_branching_strategy.md) — Git and pull
   request workflow.
+- [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) — private
+  background T4 batch submission, version-specific retrieval and K0 verification.
 
 - [`cross_platform_research.md`](cross_platform_research.md) — setup, bounded
   research commands, measured evidence and remaining platform work.

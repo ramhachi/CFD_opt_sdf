@@ -7,6 +7,11 @@ and the numeric K0 contract is
 The existing Colab evidence remains a reference. No W1g, sampled-sphere, v16,
 or optimizer result follows from K0 alone.
 
+K0-A–F passed on 2026-09-27. Version 1 was the GPU inventory smoke; version 2
+ran the Julia environment, analytic sphere and dual-process checks. The
+append-only result is
+[`evidence/kaggle_k0_result_2026_09.json`](evidence/kaggle_k0_result_2026_09.json).
+
 ## Audit corrections to the migration draft
 
 - The current repository has no `ColabBackend` to swap out. Its
