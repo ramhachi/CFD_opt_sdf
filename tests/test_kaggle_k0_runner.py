@@ -4,11 +4,16 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("kaggle_k0_runner", ROOT / "infra/kaggle/kernel/runner.py")
 runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
+VERIFY_SPEC = importlib.util.spec_from_file_location("verify_kaggle_k0", ROOT / "scripts/verify_kaggle_k0.py")
+verifier = importlib.util.module_from_spec(VERIFY_SPEC)
+VERIFY_SPEC.loader.exec_module(verifier)
 
 
 def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
@@ -26,3 +31,8 @@ def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
     assert not runner.assess_analytic(changed, reference)["colab_agreement"]
     changed = dict(summary, finite_p=False)
     assert not runner.assess_analytic(changed, reference)["finite"]
+
+
+def test_verifier_refuses_incomplete_download(tmp_path):
+    with pytest.raises(ValueError, match="completion marker"):
+        verifier.verify(tmp_path)
