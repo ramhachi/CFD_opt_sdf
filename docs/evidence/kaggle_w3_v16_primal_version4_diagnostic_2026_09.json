@@ -1,0 +1,367 @@
+{
+  "backend_identity": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-477beac4-db73-21f7-24ae-309cf7ea2e4f, 15360 MiB, 580.159.04"
+    ],
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "selected_gpu_uuid": "GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "canonical_sdf_identity": {
+    "canonical_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "cpu_measured_margin_m": 0.3499999939931499,
+    "gpu_roundtrip_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "margin_gate_m": 0.15,
+    "phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "phi_fortran_order_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.05,
+    "state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  },
+  "criteria": {
+    "acceptance_thresholds_changed_after_measurement": false,
+    "force_projection": {
+      "downforce": "-Fz",
+      "drag": "+Fx"
+    },
+    "immutable": true,
+    "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+    "registered_before_computation": true,
+    "sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+    "sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+    "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+    "stationarity_drift_max": 0.02
+  },
+  "dataset_identity": {
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "remote_download_inventory_and_hashes_match": true,
+    "remote_file_sha256": {
+      "canonical_v16_phi_f4_fortran.raw": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "sdf_design_state.npz": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+      "w3_v16_criteria.json": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+      "w3_v16_criteria.json.sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+      "w3_v16_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b"
+    },
+    "remote_status": "ready"
+  },
+  "evidence_id": "kaggle_w3_v16_primal_version4_diagnostic_2026_09",
+  "evidence_type": "diagnostic_only",
+  "execution": {
+    "exact_exception": "RuntimeError: W3 registered gates failed: {'T0_registered_inputs': True, 'T1_canonical_v16_identity': True, 'T2_margin_gate': True, 'T3_profile_adapter_is_explicitly_limited': True, 'T4_backend_identity': True, 'T5_primal_completion': True, 'T6_finite_fields_and_candidate_forces': True, 'T7_drag_orientation_and_host_recomputation': False, 'T8_runtime_and_vram': True, 'T9_source_commit_and_runner': True, 'T10_stationarity': True}",
+    "failure_class": "force_integration_acceptance",
+    "failure_stage": "post-solver force integration / registered T7 acceptance gate",
+    "finite_pressure": true,
+    "finite_velocity": true,
+    "first_sim_step_reached": true,
+    "first_step_seconds": 19.792299032211304,
+    "force_rows": 481,
+    "peak_vram_bytes": 24741180,
+    "solver_started": true,
+    "solver_steps": 3841,
+    "t_u_l_reached": 120.015625,
+    "t_u_l_target": 120.0,
+    "total_vram_bytes": 15636037632,
+    "wall_seconds": 31.03353500366211,
+    "window_rows": 160
+  },
+  "force_diagnostic": {
+    "all_axis_total_pressure_viscous_closure": true,
+    "all_total_pressure_viscous_components_zero": true,
+    "downforce_sign_or_magnitude_gate": false,
+    "host_metric_recomputation_matches_runner": true,
+    "host_recomputed_metrics": {
+      "cd_time_weighted": 0.0,
+      "diagnostic_first_half_time_weighted_downforce_solver": 0.0,
+      "diagnostic_first_half_time_weighted_drag_solver": 0.0,
+      "diagnostic_second_half_time_weighted_downforce_solver": 0.0,
+      "diagnostic_second_half_time_weighted_drag_solver": 0.0,
+      "downforce_time_weighted_n": 0.0,
+      "drag_time_weighted_n": 0.0,
+      "stationarity_relative_half_window_drift_downforce": 0.0,
+      "stationarity_relative_half_window_drift_drag": 0.0,
+      "window_samples": 160,
+      "window_time_weighted_downforce_solver": 0.0,
+      "window_time_weighted_drag_solver": 0.0
+    },
+    "maximum_component_closure_residual": 0.0,
+    "positive_plus_x_drag_gate": false,
+    "raw_force_csv_path": "work/kaggle_w3_version4/w3_v16/v16.forces.csv",
+    "raw_force_csv_sha256": "cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c",
+    "row_count": 481,
+    "stationarity_degenerate_due_to_zero_signal": true,
+    "stationarity_gate_boolean": true
+  },
+  "formal_host_verification_passed": false,
+  "formal_host_verifier_refusal": "Kaggle W3 completion marker missing; ERROR.txt is present, so the PASS-only verifier refused formal verification.",
+  "host_diagnostic_recomputation_completed": true,
+  "host_recomputed_gates": {
+    "T0_registered_inputs": true,
+    "T10_stationarity": true,
+    "T1_canonical_v16_identity": true,
+    "T2_margin_gate": true,
+    "T3_profile_adapter_is_explicitly_limited": true,
+    "T4_backend_identity": true,
+    "T5_primal_completion": true,
+    "T6_finite_fields_and_candidate_forces": true,
+    "T7_drag_orientation_and_host_recomputation": false,
+    "T8_runtime_and_vram": true,
+    "T9_source_commit_and_runner": true
+  },
+  "interpretation": "The expanded-domain primal reached tU/L=120 and every runner/host diagnostic gate except T7 was true. All raw force vectors are signed zero, so +Fx drag fails. T10 has zero relative drift but is vacuous because its signal is zero. This does not establish a force-sign bug, physical-profile equivalence, absolute aerodynamic correctness, stationarity, or qualification; the cause of zero integrated force remains undetermined.",
+  "kaggle_logs": {
+    "exact_version_bytes": 3297,
+    "exact_version_path": "work/kaggle_w3_version4/kaggle.log",
+    "exact_version_sha256": "c1217626c24d099c850c79378c42771ed235ad392393d3b8098e51cee3544ab3",
+    "output_bundle_equals_exact_log_without_final_newline": true,
+    "output_bundle_sha256": "ce76ce09ac07ed4c0285144081752401ce5eb2ab6ad74349a53c50b98de3af68"
+  },
+  "kernel": {
+    "exact_version_ref": "ramhachi888/cfd-opt-sdf-w3-v16-primal/4",
+    "id": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+    "status_output_sha256": "368662655f7cc049a9f53b4e73c2db1e674c8d6dc20fd026940603cbe300f115",
+    "terminal_status": "KernelWorkerStatus.ERROR",
+    "version": 4
+  },
+  "output_artifacts": {
+    "DONE_present": false,
+    "ERROR_txt_sha256": "6f8f87445b8af7a6e2eaa7559b128cb66fa8260f29bff25bf36d06e6d7f3c792",
+    "artifact_sha256": {
+      "ERROR.txt": "6f8f87445b8af7a6e2eaa7559b128cb66fa8260f29bff25bf36d06e6d7f3c792",
+      "canonical_v16_phi_f4_fortran.raw": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "fingerprint.json": "4e86ef36a9ab8073fcbc286c09e92ed9c26075400b84a9f687b5bd04ed670f4e",
+      "git_checkout.log": "70275704abf9ffdb10e7ca6f8135c84511878baa56a039699bb67a4d2a79cb50",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_status.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+      "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+      "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+      "instantiate.log": "8eb76a310c9d3295d128a6fbb6a07469e5658cef6f7ce4c6b4f835a662cfe359",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "36bbe4c5949bd038c73bc522fd6d4195928461c50e90575f634b9d57c4465d38",
+      "outcome.json": "3625d027e2933df8b42a833ce71f99e74f47daac25352a1a9e5701b0bc873d1e",
+      "v16.forces.csv": "cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c",
+      "v16.summary.json": "0d8b73c6ebde2dfb6086fb22a8efe1eff3c9735b5dfc7538ca7b48382940eb4b",
+      "w3_adapter_contract.json": "18b3ba51a62d4cb668733a1ba1e38a2448adb70de86a3298dabaec08c7a3990c",
+      "w3_v16.log": "1fe16b8285a39eadbcfd5d0d58e45dc0e6213942dc85a460f0a48ae39c93e6f0"
+    },
+    "directory": "work/kaggle_w3_version4/w3_v16",
+    "manifest_entry_count": 19,
+    "manifest_matches_all_files": true,
+    "sha256_manifest_sha256": "3c49c58d7f5f78638813cc937ebd17eed6e6f5ac1472375377aebbe20e798672"
+  },
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "recorded_utc_date": "2026-09-28",
+  "runner_gates": {
+    "T0_registered_inputs": true,
+    "T10_stationarity": true,
+    "T1_canonical_v16_identity": true,
+    "T2_margin_gate": true,
+    "T3_profile_adapter_is_explicitly_limited": true,
+    "T4_backend_identity": true,
+    "T5_primal_completion": true,
+    "T6_finite_fields_and_candidate_forces": true,
+    "T7_drag_orientation_and_host_recomputation": false,
+    "T8_runtime_and_vram": true,
+    "T9_source_commit_and_runner": true
+  },
+  "runner_host_gate_maps_match": true,
+  "schema_version": 1,
+  "solver_fixture": {
+    "dims": [
+      100,
+      48,
+      36
+    ],
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "flow_upper_m": [
+      2.5,
+      1.2,
+      0.9
+    ],
+    "physical_profile_qualified": false,
+    "reynolds": 80.0,
+    "solver_length": 16.0,
+    "solver_viscosity": 0.19999999999999996,
+    "source_profile_equivalent": false,
+    "spacing_m": 0.05
+  },
+  "source_identity": {
+    "commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+    "observed_runner_sha256": "536d4f4f41c82e824ebfde33717d2873d974c955fd4ea01730017dbc5f8a26d7",
+    "observed_source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+    "registered_inputs": {
+      "adapter": {
+        "location": "source_repo",
+        "path": "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
+        "sha256": "eaae3ca4db17e2d69b73a16626ac6a99f47b85dd892cba005eb93da361403b1c"
+      },
+      "adapter_test": {
+        "location": "source_repo",
+        "path": "julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl",
+        "sha256": "34d72936eef5cfbef9ca7222f1f55cdbd6081f3af4d00c19bf41fcc8cf43a92d"
+      },
+      "candidate_stl": {
+        "location": "source_repo",
+        "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+        "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+      },
+      "canonical_phi_fortran_raw": {
+        "dtype": "float32_little_endian",
+        "location": "kaggle_dataset",
+        "order": "Fortran",
+        "path": "canonical_v16_phi_f4_fortran.raw",
+        "sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+        "shape": [
+          61,
+          33,
+          25
+        ]
+      },
+      "canonical_state_npz": {
+        "location": "kaggle_dataset",
+        "path": "sdf_design_state.npz",
+        "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+      },
+      "criteria_registrar": {
+        "location": "source_repo",
+        "path": "scripts/register_kaggle_w3_v16_primal_2026_09.py",
+        "sha256": "68f6575e1c44986d0711f063b752ecf662a1f9fe063db74aca7a98ec9d2e6d94"
+      },
+      "dataset_preparer": {
+        "location": "source_repo",
+        "path": "scripts/prepare_kaggle_w3_dataset_2026_09.py",
+        "sha256": "215ddab18d91315e1b69947c40ae275928da61fd77ab65575e42055816403b4d"
+      },
+      "design_domain_stl": {
+        "location": "source_repo",
+        "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+        "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+      },
+      "genesis_evidence": {
+        "location": "source_repo",
+        "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+        "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+      },
+      "host_verifier": {
+        "location": "source_repo",
+        "path": "scripts/verify_kaggle_w3_v16.py",
+        "sha256": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5"
+      },
+      "job": {
+        "location": "source_repo",
+        "path": "scripts/waterlily_w3_v16_primal_job.jl",
+        "sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142"
+      },
+      "kaggle_smoke": {
+        "location": "source_repo",
+        "path": "scripts/w0b_t4_smoke.jl",
+        "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+      },
+      "kernel_runner": {
+        "location": "source_repo",
+        "path": "infra/kaggle/kernel_w3/runner.py",
+        "sha256": "536d4f4f41c82e824ebfde33717d2873d974c955fd4ea01730017dbc5f8a26d7"
+      },
+      "manifest": {
+        "location": "source_repo",
+        "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+        "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+      },
+      "profile_candidate_lineage": {
+        "location": "source_repo",
+        "path": "docs/evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json",
+        "sha256": "8071ad02d7e1c5c936fa03729dc857deaea6c1f27f009eda38365a1bb1a08f9d"
+      },
+      "profile_contract_manifest": {
+        "location": "source_repo",
+        "path": "docs/evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json",
+        "sha256": "04bb038dd9bfb61fe71b51689a320abc7fa04204aadecd1fb7309114f379b85d"
+      },
+      "profile_spec": {
+        "location": "source_repo",
+        "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+        "sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3"
+      },
+      "project": {
+        "location": "source_repo",
+        "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+        "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+      },
+      "python_tests": {
+        "location": "source_repo",
+        "path": "tests/test_kaggle_w3.py",
+        "sha256": "26c6808e832437cc2dd0a9e037305ecaf08e0877c06e5b675479257c9d343740"
+      },
+      "stage_v_domain_pair_result": {
+        "location": "source_repo",
+        "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json",
+        "sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf"
+      },
+      "stage_v_expanded_domain_pass": {
+        "location": "source_repo",
+        "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+        "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+      },
+      "stage_v_small_box_diagnostic": {
+        "location": "source_repo",
+        "path": "docs/evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json",
+        "sha256": "de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002"
+      },
+      "w1_result": {
+        "location": "source_repo",
+        "path": "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json",
+        "sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+      },
+      "w2b_criteria": {
+        "location": "source_repo",
+        "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+        "sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47"
+      },
+      "w2b_result": {
+        "location": "source_repo",
+        "path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+        "sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc"
+      }
+    }
+  }
+}

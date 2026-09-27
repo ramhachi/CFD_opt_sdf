@@ -2851,3 +2851,101 @@ diagnostic, criteria, force sign, and measurement thresholds remain unchanged.
   criterion fails, preserve an append-only diagnostic and do not proceed to
   W4. Diagnostic-only Enzyme reverse spike version 3 is independently
   `RUNNING`; it does not affect the qualification sequence.
+
+### 2026-09-28 W3 round 3 version 4 terminal diagnostic; reverse spike version 3
+
+This checkpoint supersedes the preceding “exact run active” checkpoint. Exact
+W3 kernel version 4 is terminal `KernelWorkerStatus.ERROR`; reverse-spike
+version 3 is terminal `KernelWorkerStatus.COMPLETE` with an internal
+`ERROR.txt`. Both records remain diagnostic-only. W3 v3 evidence, registered
+round-3 acceptance criteria, force projections, and thresholds are unchanged.
+
+- **Implemented:** expanded-domain W3 source, runner, host verifier, and tests
+  remain pinned to source commit
+  `5e985fa3395a01228c18910d96e09ecbc5497628`. The registered fixture keeps
+  flow origin `[-2.5,-1.2,-0.9] m`, dimensions `100x48x36`, and the canonical
+  GridSDF origin `[-1.0,-0.8,-0.6] m`. The short host-side follow-up probe
+  found the candidate interface on that mapped lattice and nonzero raw
+  WaterLily forces in a 100-step CPU smoke. This does not establish the remote
+  T4 body field or explain its zero force history.
+- **Registered:** W3 round-3 criteria remain immutable at SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`; the
+  five-file private dataset manifest SHA-256 remains
+  `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`. No
+  threshold or force sign changed after measurement. Round-3 criteria SHA-256
+  sidecar is `dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05`.
+- **Submitted:** exact kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/4` reached terminal
+  `KernelWorkerStatus.ERROR`. The exact Kaggle log SHA-256 is
+  `c1217626c24d099c850c79378c42771ed235ad392393d3b8098e51cee3544ab3`; the
+  status response SHA-256 is
+  `368662655f7cc049a9f53b4e73c2db1e674c8d6dc20fd026940603cbe300f115`.
+- **Measured:** the T4 solver reached 3,841 steps and `tU/L=120.015625` with
+  finite velocity and pressure. It recorded 481 force rows, including 160 in
+  `[80,120]`; every total, pressure, and viscous `Fx/Fy/Fz` value is exactly
+  signed zero. The raw CSV SHA-256 is
+  `cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c`. The
+  run used Julia 1.12.6, CUDA.jl 6.3.1, WaterLily 1.8.0 on
+  `KernelAbstractions`, and the selected Tesla T4 UUID
+  `GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c`; wall time was 31.033535 s and
+  peak VRAM was 24,741,180 bytes. Exact-window drag/downforce and physical N
+  projections recompute to zero. T10 evaluates true only because both
+  half-window signals are zero; it is a degenerate stationarity diagnostic,
+  not evidence of a stationary nonzero response.
+- **Verified:** all 19 output artifacts match the version-4 SHA-256 manifest;
+  the exact output-bundled log is the Kaggle log without its final newline.
+  Remote dataset inventory and all five payload hashes match the staged
+  dataset. The independent host diagnostic recomputation matches the runner
+  gate map: T0-T6 true, T7 false, T8-T10 true. Formal success-only host
+  verification did not pass: it refused the output because `ERROR.txt` is
+  present and the required `DONE` marker is absent. The append-only primary
+  diagnostic is
+  [`kaggle_w3_v16_primal_version4_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json)
+  (SHA-256 `1a22808509795a2735589743817fe2287014d7fbce7944492cd7e19bf4d4f51d`);
+  the host CPU follow-up is
+  [`kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json)
+  (SHA-256 `360f7b12f4090fe9447d9aa3b1a13cce9d3e7fc58998329cb1a9884faddf2ac5`).
+  Validation: `python -m compileall src tests` passed; focused W3/W4 pytest
+  passed 19 tests; both W3/W4 Julia jobs parsed; the W3 adapter test passed 16
+  checks without solver steps; all three evidence JSON/sidecar pairs matched.
+  The full pytest suite reported 1,068 passed, 37 failed, and 4 skipped; the
+  failure tracebacks are `FileNotFoundError` for historical solver fixtures
+  and state files under ignored `work/` paths absent from this managed
+  worktree. The changed W3/W4 slice passes independently.
+- **Qualified:** no new qualification. W2 sampled-sphere primal and W2b
+  sphere grid-response evidence remain qualified. W3 round 3 remains
+  unqualified: T7 failed the registered positive `+Fx` drag gate. The
+  all-zero response does not establish a force-sign bug. It also does not
+  establish physical-profile equivalence, absolute downforce correctness,
+  grid/domain response, gradient, reverse mode, topology, optimizer, or a
+  shape update. Fixture selection was separately audited against the existing
+  Stage V evidence: the original `[-1,2]x[-0.8,0.8]x[-0.6,0.6] m` OpenFOAM
+  box failed `outer_patch_backflow_and_pressure_disturbance` (inlet normalized
+  pressure mean absolute disturbance `0.153719` against `0.05`, maximum
+  `0.290554`); the registered expanded `[-2.5,2.5]x[-1.2,1.2]x[-0.9,0.9] m`
+  box passed. Its same-candidate child with only the +x limit extended to
+  `3.5 m` also passed the registered domain-pair gate: parent/child Cd
+  `1.16939914/1.17036295`, downforce `0.75655147/0.75735487`, absolute
+  downforce delta `0.00080340 <= 0.005`, and relative Cd delta
+  `0.00082419 <= 0.02`. W2b round 5's `T4_drag_sign` gate and positive sampled
+  sphere drag support the unchanged `drag=+Fx` convention. These independent
+  records justify fixture/sign selection only; their OpenFOAM or sphere values
+  are not WaterLily v16 targets, nor do they establish solver equivalence or
+  absolute aerodynamics.
+- **Reverse diagnostic:** version 3 fixed the prior read-only Julia project
+  setup issue: the writable Project/Manifest copy hash-checked, instantiation
+  completed, and CUDA initialized on two T4 devices. Basic Enzyme reverse of a
+  CuArray then stopped with `EnzymeRuntimeActivityError` in
+  `GPUArrays._mapreduce`; the continued WaterLily Flow construction failed
+  compiling `llvm.nvvm.shfl.sync.down.f32` before `WATERLILY_PRIMAL_BEGIN`.
+  No primal, Poisson VJP, or timestep reverse ran. Append-only evidence is
+  [`kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json)
+  (SHA-256 `71323038d1ff5404ec23e5b695f6ea2102116ca7f9406a27074aaa2a87b41185`);
+  this remains diagnostic-only and changed no production dependencies.
+- **Open:** isolate why the remote T4 path returns an all-zero candidate-force
+  history before another W3 qualification attempt. Any code or diagnostic
+  change requires an append-only new immutable criteria round and matching
+  dataset before another T4 measurement; keep T7 and stationarity thresholds
+  unchanged unless a pre-measurement scientific basis justifies a new round.
+  W4 criteria/dataset/measurement and formal FD remain blocked. Keep WaterLily
+  as the optimization oracle and OpenFOAM as an independent physical verifier.

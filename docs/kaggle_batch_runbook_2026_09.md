@@ -912,3 +912,140 @@ Do not register W4 or start W4/FD measurements unless exact version 4 passes
 the round-3 host verifier. Enzyme reverse spike version 3 is a separate
 diagnostic-only run and was `RUNNING` at this checkpoint; it is never gradient
 qualification evidence.
+
+### W3 round 3, exact kernel version 4: terminal diagnostic (2026-09-28)
+
+This section supersedes the preceding active-run status. Exact W3 version 4 is
+terminal `KernelWorkerStatus.ERROR`. The immutable round-3 criteria and dataset
+were not changed; no force sign or threshold was adjusted after observing the
+run.
+
+The expanded fixture choice is backed by independent Stage V records, not by
+WaterLily/OpenFOAM equivalence: the original small OpenFOAM box failed its
+outer-patch pressure-disturbance gate (inlet normalized mean absolute
+disturbance `0.153719 > 0.05`); the registered expanded box passed, and the
+same-candidate +x outlet-extension pair passed with parent/child Cd
+`1.16939914/1.17036295` and downforce `0.75655147/0.75735487`. The measured
+domain-pair values justify the WaterLily fixture selection only and are not
+WaterLily acceptance targets. W2b's positive sampled-sphere `T4_drag_sign`
+gate remains the independent precedent for keeping `drag=+Fx`.
+
+Collect the exact version with the same version number in every command:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 > work/kaggle_w3_version4/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/4 -p work/kaggle_w3_version4
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16.py work/kaggle_w3_version4 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 --kernel-version 4 \
+  --kaggle-log work/kaggle_w3_version4/kaggle.log
+```
+
+The success-only host verifier refused formal verification with
+`Kaggle W3 completion marker missing`; the output contains `ERROR.txt` and no
+`DONE`. Preserve that as `formal_host_verification_passed=false`. The separate
+host diagnostic recomputation independently checked the registered source and
+dataset hashes, canonical SDF identity/margin, backend, raw CSV schema and
+sampling, 3-axis pressure-plus-viscous closure, exact-window force metrics and
+T0-T10; its gate map matched the runner. This diagnostic recomputation is not
+a PASS result and must not be used to generate W4 criteria.
+
+Recorded exact-run facts:
+
+- Criteria SHA-256: `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`;
+  dataset manifest SHA-256:
+  `17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b`.
+- Kaggle status output SHA-256:
+  `368662655f7cc049a9f53b4e73c2db1e674c8d6dc20fd026940603cbe300f115`;
+  exact logs SHA-256:
+  `c1217626c24d099c850c79378c42771ed235ad392393d3b8098e51cee3544ab3`;
+  output-bundled log SHA-256:
+  `ce76ce09ac07ed4c0285144081752401ce5eb2ab6ad74349a53c50b98de3af68`.
+- All 19 output artifacts match the bundled SHA-256 manifest. The T4 run
+  reached 3,841 solver steps and `tU/L=120.015625`, recording 481 force rows
+  (160 in `[80,120]`). Every total, pressure, and viscous component on all
+  three axes is signed zero. The raw force CSV SHA-256 is
+  `cf20d9ccf0c685500819801be9a6925346d15a2c881031a09cba599135ea8d9c`.
+- Runner and host diagnostic gates agree: T0-T6 true, T7 false, T8-T10 true.
+  The numeric T10 drift is zero only because the signal itself is zero, so it
+  is a degenerate stationarity observation. T7's registered positive `+Fx`
+  condition remains unchanged. This does not establish a force-sign bug.
+- Backend: two Tesla T4 GPUs; selected UUID
+  `GPU-3adff65b-4908-2981-c7a1-cfd5b5a5bd3c`; Julia 1.12.6, CUDA.jl 6.3.1,
+  CUDA runtime 12.8.0, WaterLily 1.8.0 / `KernelAbstractions`. Runtime was
+  31.033535 s and peak VRAM 24,741,180 bytes.
+- A follow-up host-only mapping probe found 1,121 negative-distance solver
+  lattice points for the expanded fixture and placed the unchanged interface
+  inside the `100x48x36` box. A 100-step CPU smoke using Julia 1.12.6 and
+  WaterLily 1.8.0 returned nonzero raw WaterLily force by step 20. These
+  probes do not reproduce the T4 path and leave the all-zero T4 history's
+  cause open. Exact probe scripts/logs are under the ignored `work/` paths
+  bound by the follow-up diagnostic evidence; rerun with:
+
+  ```bash
+  julia --project=julia/CFDSDFWaterLily work/w3_v4_grid_occupancy.jl
+  julia --project=julia/CFDSDFWaterLily work/w3_v4_cpu_smoke.jl
+  ```
+
+Append-only records:
+[`W3 version-4 diagnostic`](evidence/kaggle_w3_v16_primal_version4_diagnostic_2026_09.json)
+and
+[`host CPU follow-up diagnostic`](evidence/kaggle_w3_v16_primal_version4_followup_diagnostic_2026_09.json).
+Do not create a W3 PASS record from this output. Keep W4 criteria and dataset
+unregistered, W4 measurements and formal FD unrun, and all physical-profile,
+gradient, reverse, topology and shape-update claims false.
+
+Local validation for this checkpoint:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m compileall src tests
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_primal_job.jl", String)); Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); println("W3/W4 Julia syntax parsed")'
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl
+git diff --check
+```
+
+The focused W3/W4 tests passed (19); `compileall`, W3/W4 Julia parsing, and
+all 16 no-solver adapter checks passed. The full suite returned 1,068 passed,
+37 failed, and 4 skipped. Its reported failures were `FileNotFoundError` on
+historical host-local fixtures under ignored `work/` directories that are not
+present in this managed worktree; no W3/W4 test failed. This worktree has no
+`.venv`, so Python checks used the compatible environment in the separate
+project checkout; that checkout's source changes were left untouched.
+
+### Enzyme reverse spike, exact kernel version 3: terminal diagnostic
+
+Retrieve the scratch run by exact version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  > work/kaggle_enzyme_reverse_spike_version3/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  -p work/kaggle_enzyme_reverse_spike_version3
+```
+
+The worker status is `KernelWorkerStatus.COMPLETE`, but its output includes
+`ERROR.txt`. The Project/Manifest writable copy passed pre/post SHA checks,
+package instantiation completed, CUDA initialized, and the two-T4 inventory
+was recorded. A basic Enzyme CuArray reverse then failed with
+`EnzymeRuntimeActivityError` at `GPUArrays._mapreduce`. The subsequent
+WaterLily `Flow` compilation failed on unsupported
+`llvm.nvvm.shfl.sync.down.f32` before any primal. Poisson VJP and timestep
+reverse were not reached. This is diagnostic-only, not reverse qualification;
+the scratch CUDA.jl 6.2.1 / Enzyme / WaterLily PR #285 environment must remain
+isolated from production W2/W3/W4 dependencies. Exact artifact identities and
+the failure boundary are in
+[`reverse spike version-3 diagnostic`](evidence/kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json).

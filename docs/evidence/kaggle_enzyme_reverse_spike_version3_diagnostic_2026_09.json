@@ -1,0 +1,86 @@
+{
+  "artifacts": {
+    "artifact_sha256": {
+      "ERROR.txt": "e94da6e00cbdd92b1f73b6daafdd1243ad96bbe271169b36da889f39dc40ab75",
+      "instantiate.log": "289069ca18dd1a77ae3ef68f3c86298d45f148c84c67736214a98185022487b5",
+      "nvidia_smi.csv": "7321bb2cdffd61c18e2798776b1df89a7cb7651498a70e9d009b3573537a9866",
+      "project_identity.json": "f221663d03f5acc47a2d8059e42e4461db55912725886627b78dc74e0aed4b94",
+      "reverse_spike.log": "13088e1a8b605398ffa5fc05e850beab30b4cfa778a45582f55939f68c4da8b7"
+    },
+    "directory": "work/kaggle_enzyme_reverse_spike_version3/enzyme_reverse_spike",
+    "exact_version_logs_path": "work/kaggle_enzyme_reverse_spike_version3/kaggle.log",
+    "exact_version_logs_sha256": "cb9ac2f834952b2db7dd231721c07181afdbf581dde9a548a7731116ca08c87a",
+    "output_artifact_count": 5,
+    "output_bundle_logs_sha256": "11fe372d5089d4e76ed3e6d06b4a3ee34c5e51be91716727b02c18524d6e36c9",
+    "output_manifest_matches_all_artifacts": true,
+    "output_manifest_sha256": "7d46669b5a6ffcc3754301ed419d2369d46536023950521dfcaaacecde267707",
+    "status_output_sha256": "1e7d42796dd97eda07f226eee3618101da4a24b427c7153e349905879d5a0e75"
+  },
+  "evidence_id": "kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09",
+  "evidence_type": "diagnostic_only",
+  "failure_boundary": {
+    "ERROR_txt_excerpt": "RuntimeError: command exit 1: reverse_spike.log",
+    "exact_ERROR_txt_sha256": "e94da6e00cbdd92b1f73b6daafdd1243ad96bbe271169b36da889f39dc40ab75",
+    "first_error_boundary": "basic CuArray reverse activity analysis",
+    "reverse_script_completed": false,
+    "runner_failure_stage": "cuda_and_reverse_diagnostics",
+    "terminal_exception_boundary": "WaterLily CUDA Flow construction compile failure before WATERLILY_PRIMAL_BEGIN"
+  },
+  "interpretation": "The writable-project retry fixed version 2 setup failure: source identities match, Pkg.instantiate completed, and CUDA initialized. It is diagnostic-only. A basic Enzyme CuArray reverse failed with EnzymeRuntimeActivityError; continuing diagnostics then failed compiling WaterLily Flow on an unsupported NVVM shuffle intrinsic before any WaterLily primal, Poisson VJP, or timestep reverse. No production dependency or qualification status changes follow.",
+  "kernel": {
+    "exact_version_ref": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3",
+    "id": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike",
+    "kernel_branch": "exp/w3-enzyme-reverse-spike",
+    "kernel_runner_commit": "61a1a1ce00f2e9028b0532273a4f7b342bc20849",
+    "status_output_sha256": "1e7d42796dd97eda07f226eee3618101da4a24b427c7153e349905879d5a0e75",
+    "terminal_status": "KernelWorkerStatus.COMPLETE",
+    "version": 3
+  },
+  "pinned_scratch_source": {
+    "project_source_commit": "9b22f719e2f06222dd7f01788154399f0fef441d",
+    "registered_manifest_sha256": "f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e",
+    "registered_project_sha256": "867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383",
+    "registered_reverse_script_sha256": "2d261585eb1dd2b408ab730bde010f741f1b8080dcce2319759d43f4ca3c0c48",
+    "source_archive_sha256": "20e0473d6a55b114a5feec522753a3e6b221fd1af195ace7fafdf95c37d3dfb2",
+    "source_manifest_sha256": "f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e",
+    "source_project_sha256": "867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383",
+    "source_reverse_script_sha256": "2d261585eb1dd2b408ab730bde010f741f1b8080dcce2319759d43f4ca3c0c48",
+    "writable_copy_pre_and_post_instantiate_hashes_match": true,
+    "writable_project_path": "/kaggle/working/enzyme-reverse-spike-dxdkpyvl/julia-project"
+  },
+  "qualification_flags": {
+    "custom_adjoint_qualified": false,
+    "gradient_qualified": false,
+    "reverse_cpu_qualified": false,
+    "reverse_cuda_qualified": false,
+    "shape_update_allowed": false
+  },
+  "recorded_utc_date": "2026-09-28",
+  "runtime_identity": {
+    "cuda_functional": true,
+    "cuda_jl_version": "6.2.1",
+    "cuda_runtime_version": "12.8.0",
+    "enzyme_version": "0.13.205",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-9d7feb42-eb86-32cb-e606-8913c4263d27, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-99a90ddb-b3f8-2681-3a58-e6efc293c0fa, 15360 MiB, 580.159.04"
+    ],
+    "julia_version": "1.12.6",
+    "waterlily_enzyme_extension": true,
+    "waterlily_pr_285_head": "feed49f480b52047b4e9b8bfacdf3e4f8201106b",
+    "waterlily_version": "1.6.1"
+  },
+  "schema_version": 1,
+  "stage_results": {
+    "basic_enzyme_cuda_reverse": "FAIL: EnzymeRuntimeActivityError in GPUArrays._mapreduce reporting potential runtime activity",
+    "cuda_initialization": "PASS",
+    "host_device_transfer_derivative_reached": false,
+    "julia_package_resolution_and_instantiate": "PASS",
+    "poisson_vjp_reached": false,
+    "source_archive_and_pinned_hash_checks": "PASS",
+    "timestep_reverse_reached": false,
+    "waterlily_primal_started": false,
+    "waterlily_simulation_construction": "FAIL: CUDA kernel compilation cannot handle augmented unknown intrinsic llvm.nvvm.shfl.sync.down.f32 during WaterLily Flow construction",
+    "writable_project_copy_hash_checks": "PASS"
+  }
+}
