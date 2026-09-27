@@ -10,7 +10,7 @@ from pathlib import Path
 from verify_kaggle_k0 import ROOT, require, sha256, verify_files
 
 
-CRITERIA = ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09.json"
+CRITERIA = ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09_round2.json"
 RUNNER = ROOT / "infra/kaggle/kernel/runner.py"
 JOB = ROOT / "scripts/waterlily_w2t4_job.jl"
 DEVICE_GRID = ROOT / "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl"
@@ -108,6 +108,8 @@ def verify(download):
                          <= threshold["relative_lift_to_drag"],
         "T9_canonical_grid": summary["phi_sha256"] == ref["canonical_phi_sha256"]
                              and summary["device_roundtrip_sha256"] == ref["canonical_phi_sha256"]
+                             and summary.get("phi_margin_gate_m")
+                             == criteria["fixture"]["canonical_phi"]["margin_gate_m"]
                              and summary["phi_margin_m"] >= threshold["phi_margin_min_m"]
                              and abs(summary["phi_margin_m"] - threshold["phi_margin_expected_m"])
                              <= threshold["phi_margin_abs_tolerance_m"],

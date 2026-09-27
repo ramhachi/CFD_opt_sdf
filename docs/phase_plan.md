@@ -2067,3 +2067,46 @@ the private Kaggle runner from the W1g fixture to the registered single-T4
 W2-T4b job, add independent artifact verification, then submit a fresh
 version. All gradient, reverse-mode, topology, and shape-update flags remain
 false.
+
+### 2026-09-27 W2-T4b version 5 retained as diagnostic; round 2 registered
+
+Private Kaggle version 5 fetched source
+`99c013a089b196975c190d413e4b4103ccbe755e`, completed the sampled-sphere
+primal, and returned all 14 manifested files with locally verified hashes.
+The worker exited `ERROR` because T9 failed; T0–T8, T10, and T11 passed. The
+append-only diagnostic record is
+[`evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json`](evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json),
+SHA-256 `1836a4a7e33fa14c4c959560c712637e9706771ab13457715ad9b3753a623781`.
+The exact download remains host-local under
+`work/kaggle_w2t4b_version5/w2t4b`; it has no `DONE` marker and does not qualify
+W2-T4b.
+
+The failure is a reporting error, not a relaxation of T9 or evidence of a
+changed grid. Version 5's phi and device-round-trip hashes both equal the
+canonical phi hash, but its `phi_margin_m` was `0.15`. In the `GridSDF`
+constructor, `margin_m` is the caller's configured gate; the measured
+clearance is calculated separately with `zero_level_margin_m`. The job had
+serialized the stored gate as the measurement. The byte-identical canonical
+CPU fixture reports measured margin `0.19999998807907104 m` in the existing
+W2a evidence. The job now reports measured `phi_margin_m` and configured
+`phi_margin_gate_m` separately in source commit
+`2da94a92ffb9af55dfc159068ace8f25c55c0e6c`.
+
+Before another sampled-sphere GPU measurement, round-2 criteria were
+registered at
+[`evidence/kaggle_w2t4b_criteria_2026_09_round2.json`](evidence/kaggle_w2t4b_criteria_2026_09_round2.json),
+SHA-256 `85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`.
+Every numerical threshold is identical to round 1. T9 now also verifies the
+reported gate field against its already registered `0.15 m` value while
+checking the measured margin against the same expected value and tolerance.
+Validation after the correction: the W2-T4b runner tests pass (`4 passed`),
+Python compilation and Julia parser checks pass, and `git diff --check` passes.
+The full suite reports `1043 passed, 37 failed, 4 skipped`; all 37 failures are
+missing ignored `work/` campaign inputs in this fresh worktree, not failures in
+the W2-T4b slice. The full suite limitation is the same missing-artifact class
+seen on the earlier migration checkpoint.
+
+Next: push the runner/verifier update, submit Kaggle version 6 from its
+pre-registered round-2 criteria, and independently verify version-bound
+artifacts. Until that pass, W2-T4b remains unqualified; reverse CUDA,
+gradients, topology, and shape updates remain unauthorized.

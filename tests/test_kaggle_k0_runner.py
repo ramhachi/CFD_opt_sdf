@@ -74,8 +74,12 @@ def test_w1g_gates_reject_geometry_and_identity_drift():
 
 
 def test_w2t4b_gates_reject_force_and_grid_drift():
-    criteria_path = ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09.json"
+    criteria_path = verify_kaggle_w2t4b.CRITERIA
     criteria = json.loads(criteria_path.read_text())
+    round1 = json.loads((ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09.json").read_text())
+    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(
+        ROOT / "docs/evidence/kaggle_w2t4b_criteria_2026_09.json")
+    assert criteria["thresholds"] == round1["thresholds"]
     assert runner.SOURCE_COMMIT == criteria["source_commit"]
     assert runner.W2T4B_CRITERIA_SHA256 == verifier.sha256(criteria_path)
     assert runner.W2A_CPU_SAMPLED_DRAG == criteria["reference_values"]["w2a_cpu_sampled"][
@@ -87,6 +91,7 @@ def test_w2t4b_gates_reject_force_and_grid_drift():
     assert runner.W2T4B_STATIONARITY_TOL == criteria["thresholds"]["stationarity_relative_drift"]
     assert runner.W2T4B_LIFT_RATIO_TOL == criteria["thresholds"]["relative_lift_to_drag"]
     assert runner.W2T4B_PHI_MARGIN_MIN_M == criteria["thresholds"]["phi_margin_min_m"]
+    assert runner.W2T4B_PHI_MARGIN_GATE_M == criteria["fixture"]["canonical_phi"]["margin_gate_m"]
     assert runner.W2T4B_PHI_MARGIN_EXPECTED_M == criteria["thresholds"]["phi_margin_expected_m"]
     assert runner.W2T4B_PHI_MARGIN_TOL_M == criteria["thresholds"]["phi_margin_abs_tolerance_m"]
     assert runner.W2T4B_T_END == criteria["fixture"]["time"]["t_end_tu_d"]
@@ -105,6 +110,7 @@ def test_w2t4b_gates_reject_force_and_grid_drift():
         "phi_sha256": runner.CANONICAL_PHI_SHA256,
         "device_roundtrip_sha256": runner.CANONICAL_PHI_SHA256,
         "phi_margin_m": 0.19999998807907104,
+        "phi_margin_gate_m": criteria["fixture"]["canonical_phi"]["margin_gate_m"],
         "wall_seconds": 28.0, "ms_per_step": 12.0,
         "peak_vram_bytes": 100, "vram_total_bytes": 1000,
         "gpu_name": "Tesla T4", "julia_version": "1.12.6",
@@ -114,6 +120,8 @@ def test_w2t4b_gates_reject_force_and_grid_drift():
     changed = dict(summary, finite_forces=False)
     assert not runner.w2t4b_gates(changed, rows, smoke)["T3_force_finite"]
     changed = dict(summary, phi_sha256="0" * 64)
+    assert not runner.w2t4b_gates(changed, rows, smoke)["T9_canonical_grid"]
+    changed = dict(summary, phi_margin_gate_m=0.20)
     assert not runner.w2t4b_gates(changed, rows, smoke)["T9_canonical_grid"]
     changed = dict(summary, window_mean_drag=89.5)
     assert not runner.w2t4b_gates(changed, rows, smoke)["T6_cpu_kaggle_agreement"]

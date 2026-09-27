@@ -1,4 +1,4 @@
-# Kaggle background GPU runbook (K0 and W1g)
+# Kaggle background GPU runbook (K0, W1g, and W2-T4b)
 
 This is the execution path for the SDF-native WaterLily GPU line. The
 authoritative order and gate status are in [`phase_plan.md`](phase_plan.md),
@@ -137,8 +137,8 @@ forces, sign, stationarity, canonical phi/margin and round-trip hash, runtime,
 VRAM, backend identity, and artifact transport. No gradient, reverse mode,
 topology, grid convergence, or optimizer claim follows from this run.
 
-The current kernel directory runner targets W2-T4b; after W1g version 4, the
-expected Kaggle version is 5:
+At W2-T4b round 1, after W1g version 4, the expected Kaggle version was 5.
+The commands below collect that now-historical diagnostic:
 
 ```bash
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
@@ -157,3 +157,41 @@ the exact registered criteria hash, runner/source/Julia environment identity,
 version-specific output manifest, force CSV hash/schema/count, and independently
 recomputed T0–T12 gates. A missing `DONE`, `ERROR.txt`, or a failed gate remains
 diagnostic and does not qualify W2-T4b.
+
+Version 5 completed the sampled-sphere primal, but the Kaggle worker returned
+`ERROR` because only T9 failed. The force, stationarity, CPU agreement,
+sampled-to-analytic Cd, runtime, VRAM, backend and prerequisite gates passed.
+All 14 files in its SHA-256 manifest match the local download under
+`work/kaggle_w2t4b_version5/w2t4b`; there is no `DONE` marker, so the output is
+diagnostic only. See
+[`evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json`](evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json)
+for the version, source, criteria, metrics, gate results, and artifact hashes.
+
+## W2-T4b round 2 retry
+
+The append-only round-2 criteria are
+[`evidence/kaggle_w2t4b_criteria_2026_09_round2.json`](evidence/kaggle_w2t4b_criteria_2026_09_round2.json)
+(SHA-256 `85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`).
+All numerical thresholds are identical to round 1. The only correction is
+telemetry semantics: `phi_margin_m` is recomputed with
+`zero_level_margin_m(phi, origin, h)`, and `phi_margin_gate_m` separately
+records the constructor's registered `0.15 m` gate. The repaired job is pinned
+to source commit `2da94a92ffb9af55dfc159068ace8f25c55c0e6c`. The current local
+runner is configured for Kaggle version 6:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-k0/6
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-k0/6
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-k0/6 -p work/kaggle_w2t4b_version6
+python3 scripts/verify_kaggle_w2t4b.py work/kaggle_w2t4b_version6
+```
+
+Use the version actually returned by `push` and keep it matched across
+`status`, `logs`, `output`, and the output directory. A missing `DONE`, an
+`ERROR.txt`, any hash mismatch, or any failed independent gate is diagnostic;
+do not alter round-2 thresholds after seeing the result.

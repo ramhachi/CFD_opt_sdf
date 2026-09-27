@@ -17,7 +17,7 @@ from pathlib import Path
 
 STAGE = "w2t4b"
 OUT = Path("/kaggle/working") / STAGE
-SOURCE_COMMIT = "99c013a089b196975c190d413e4b4103ccbe755e"
+SOURCE_COMMIT = "2da94a92ffb9af55dfc159068ace8f25c55c0e6c"
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -32,9 +32,9 @@ W2A_CPU_RESULT_SHA256 = "26b6a65f6a2f89dde7e9976b2209b776eeb90d895432707214a582e
 W2A_CPU_CRITERIA_SHA256 = "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f"
 W2T4A_RESULT_SHA256 = "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
 W2T4A_CRITERIA_SHA256 = "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
-W2T4B_CRITERIA_SHA256 = "4617f98ca2cd95e60baba4c86d78f66aa8dff2261ff688e17f06a00ab06fc444"
+W2T4B_CRITERIA_SHA256 = "85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66"
 CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
-W2T4_JOB_SHA256 = "c37d3fe7eea48b64bfe9db610a8264b77edd2708b62b1ce4d9efa494f3fe079b"
+W2T4_JOB_SHA256 = "b968f853343611b6ababe4951bc4f470a8f5d596ddead3131cdfecccbde1027b"
 DEVICE_GRID_SDF_SHA256 = "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874"
 W2A_CPU_SAMPLED_DRAG = 88.2335378441562
 W2T4A_ANALYTIC_CD = 0.8795874366347541
@@ -43,6 +43,7 @@ CPU_KAGGLE_SAMPLED_DRAG_TOL = 0.01
 W2T4B_STATIONARITY_TOL = 0.02
 W2T4B_LIFT_RATIO_TOL = 0.10
 W2T4B_PHI_MARGIN_MIN_M = 0.15
+W2T4B_PHI_MARGIN_GATE_M = 0.15
 W2T4B_PHI_MARGIN_EXPECTED_M = 0.19999998807907104
 W2T4B_PHI_MARGIN_TOL_M = 1e-6
 W2T4B_T_END = 60.0
@@ -220,6 +221,7 @@ def w2t4b_gates(summary, rows, smoke, prerequisites_ok=True):
                          and abs(summary["window_mean_lift"]) / drag <= W2T4B_LIFT_RATIO_TOL,
         "T9_canonical_grid": summary["phi_sha256"] == CANONICAL_PHI_SHA256
                              and summary["device_roundtrip_sha256"] == CANONICAL_PHI_SHA256
+                             and summary.get("phi_margin_gate_m") == W2T4B_PHI_MARGIN_GATE_M
                              and summary["phi_margin_m"] >= W2T4B_PHI_MARGIN_MIN_M
                              and abs(summary["phi_margin_m"] - W2T4B_PHI_MARGIN_EXPECTED_M)
                              <= W2T4B_PHI_MARGIN_TOL_M,
