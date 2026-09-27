@@ -1,0 +1,417 @@
+{
+  "acceptance": {
+    "claim_scope": "canonical v16 SDF met the registered integrity, force, and stationarity contract on the registered WaterLily finite-box approximation",
+    "downforce_sign_or_magnitude_gate": false,
+    "gates": [
+      "T0 all registered source and dataset inputs match their SHA-256 values",
+      "T1 canonical state, source surface, C/Fortran phi hashes, GPU round-trip and solver grid identity match",
+      "T2 CPU-side W1 margin gate is 0.15 m and measured margin matches the registered v16 value within 1e-6 m",
+      "T3 mapped adapter semantics are present and remain explicitly non-equivalent/unqualified",
+      "T4 registered single-T4 visible-device, GPU inventory, driver/runtime and Julia/WaterLily identity match",
+      "T5 simulation reaches tU/L=120",
+      "T6 velocity, pressure and candidate-force samples are finite, with at least four registered window samples",
+      "T7 drag is along +x, downforce is the -z projection without a sign/magnitude threshold, all total force components close pressure plus viscous, and host exact-window recomputation matches",
+      "T8 run is within the per-run wall-time and VRAM bounds",
+      "T9 exact source commit and kernel runner identity match preregistration",
+      "T10 exact-window relative half-window drift for drag and downforce is at most 0.02"
+    ],
+    "physical_profile_equivalence_gate": false,
+    "stationarity_gate": true,
+    "stationarity_threshold_precedent": "registered W2 sphere capability convention"
+  },
+  "backend": {
+    "accelerator": "NvidiaTeslaT4",
+    "backend": "kaggle_background",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "selected_gpu_policy": "visible GPU index 0; record the selected UUID for this run",
+    "waterlily_version": "1.8.0"
+  },
+  "claims_not_supported": [
+    "equivalence to the registered OpenFOAM freestreamPressure/freestreamVelocity outer patches",
+    "Stage V physical-profile qualification",
+    "grid/domain convergence, absolute downforce or target-vehicle qualification",
+    "gradient, reverse-mode, topology, optimization or shape-update qualification",
+    "high-Reynolds-number or full-vehicle FSAE qualification"
+  ],
+  "criteria_id": "kaggle_w3_v16_primal_2026_09_round3",
+  "criteria_round": 3,
+  "fixture_selection": {
+    "expanded_domain_profile": {
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "physical_bounds_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "role": "fixture-selection precedent only",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66",
+      "status": "pass"
+    },
+    "force_sign_precedent": {
+      "force_convention": "drag=+Fx; downforce=-Fz",
+      "path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+      "positive_drag_gate_passed": true,
+      "sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc",
+      "w2_round5_criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+      "w2_round5_criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47"
+    },
+    "original_small_box_diagnostic": {
+      "failed_gate": "outer_patch_backflow_and_pressure_disturbance",
+      "interpretation": "the original small box was boundary-contaminated under the registered OpenFOAM profile",
+      "path": "docs/evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json",
+      "sha256": "de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002",
+      "status": "fail"
+    },
+    "purpose": "select a WaterLily finite-box fixture using independent OpenFOAM boundary evidence; no WaterLily/OpenFOAM numerical equivalence is asserted",
+    "same_candidate_domain_pair": {
+      "child_bounds_m": [
+        [
+          -2.5,
+          3.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "openfoam_cd_parent_child": [
+        1.1693991415068494,
+        1.17036295130137
+      ],
+      "openfoam_downforce_parent_child": [
+        0.7565514657808219,
+        0.7573548684589041
+      ],
+      "parent_bounds_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json",
+      "role": "fixture-selection precedent only; these values are not WaterLily targets",
+      "same_candidate": true,
+      "sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf",
+      "status": "pass"
+    }
+  },
+  "flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "geometry": {
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "cell_shape": [
+      60,
+      32,
+      24
+    ],
+    "design_domain_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "expected_margin_m": 0.3499999939931499,
+    "margin_gate_m": 0.15,
+    "margin_tolerance_m": 1e-06,
+    "phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "sign_convention": "phi < 0 solid / phi > 0 fluid",
+    "source_surface_path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.05,
+    "state_npz_path": "sdf_design_state.npz",
+    "state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  },
+  "immutable": true,
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+  "inputs": {
+    "adapter": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
+      "sha256": "eaae3ca4db17e2d69b73a16626ac6a99f47b85dd892cba005eb93da361403b1c"
+    },
+    "adapter_test": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl",
+      "sha256": "34d72936eef5cfbef9ca7222f1f55cdbd6081f3af4d00c19bf41fcc8cf43a92d"
+    },
+    "candidate_stl": {
+      "location": "source_repo",
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/v16_candidate_threshold_0p5.iso_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    "canonical_phi_fortran_raw": {
+      "dtype": "float32_little_endian",
+      "location": "kaggle_dataset",
+      "order": "Fortran",
+      "path": "canonical_v16_phi_f4_fortran.raw",
+      "sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "shape": [
+        61,
+        33,
+        25
+      ]
+    },
+    "canonical_state_npz": {
+      "location": "kaggle_dataset",
+      "path": "sdf_design_state.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+    },
+    "criteria_registrar": {
+      "location": "source_repo",
+      "path": "scripts/register_kaggle_w3_v16_primal_2026_09.py",
+      "sha256": "68f6575e1c44986d0711f063b752ecf662a1f9fe063db74aca7a98ec9d2e6d94"
+    },
+    "dataset_preparer": {
+      "location": "source_repo",
+      "path": "scripts/prepare_kaggle_w3_dataset_2026_09.py",
+      "sha256": "215ddab18d91315e1b69947c40ae275928da61fd77ab65575e42055816403b4d"
+    },
+    "design_domain_stl": {
+      "location": "source_repo",
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/geometry/design_domain.stl",
+      "sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446"
+    },
+    "genesis_evidence": {
+      "location": "source_repo",
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    },
+    "host_verifier": {
+      "location": "source_repo",
+      "path": "scripts/verify_kaggle_w3_v16.py",
+      "sha256": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5"
+    },
+    "job": {
+      "location": "source_repo",
+      "path": "scripts/waterlily_w3_v16_primal_job.jl",
+      "sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142"
+    },
+    "kaggle_smoke": {
+      "location": "source_repo",
+      "path": "scripts/w0b_t4_smoke.jl",
+      "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+    },
+    "kernel_runner": {
+      "location": "source_repo",
+      "path": "infra/kaggle/kernel_w3/runner.py",
+      "sha256": "536d4f4f41c82e824ebfde33717d2873d974c955fd4ea01730017dbc5f8a26d7"
+    },
+    "manifest": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "profile_candidate_lineage": {
+      "location": "source_repo",
+      "path": "docs/evidence/stage_v_v16_physical_profile_candidate_lineage_v2_2026_09.json",
+      "sha256": "8071ad02d7e1c5c936fa03729dc857deaea6c1f27f009eda38365a1bb1a08f9d"
+    },
+    "profile_contract_manifest": {
+      "location": "source_repo",
+      "path": "docs/evidence/stage_v_v16_physical_profile_contract_manifest_v2_2026_09.json",
+      "sha256": "04bb038dd9bfb61fe71b51689a320abc7fa04204aadecd1fb7309114f379b85d"
+    },
+    "profile_spec": {
+      "location": "source_repo",
+      "path": "docs/evidence/assets/stage_v_v16_physical_profile_v2/project_matched_re_laminar_moving_ground_far_field_v2.yaml",
+      "sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3"
+    },
+    "project": {
+      "location": "source_repo",
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "python_tests": {
+      "location": "source_repo",
+      "path": "tests/test_kaggle_w3.py",
+      "sha256": "26c6808e832437cc2dd0a9e037305ecaf08e0877c06e5b675479257c9d343740"
+    },
+    "stage_v_domain_pair_result": {
+      "location": "source_repo",
+      "path": "docs/evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json",
+      "sha256": "13374c722b4993f941ca6487a305fe2f371551d2eed152f744ef016f5b18b5bf"
+    },
+    "stage_v_expanded_domain_pass": {
+      "location": "source_repo",
+      "path": "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json",
+      "sha256": "8871255838b9666683581a3cb50d949764f6a4b27fb3dab24d6f6f52b4a75e66"
+    },
+    "stage_v_small_box_diagnostic": {
+      "location": "source_repo",
+      "path": "docs/evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json",
+      "sha256": "de500ec9ce7166ef71dee721fbd6d45f548896f381a11880b411e6489c7fb002"
+    },
+    "w1_result": {
+      "location": "source_repo",
+      "path": "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json",
+      "sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
+    },
+    "w2b_criteria": {
+      "location": "source_repo",
+      "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+      "sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47"
+    },
+    "w2b_result": {
+      "location": "source_repo",
+      "path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+      "sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc"
+    }
+  },
+  "kind": "waterlily_w3_v16_primal_criteria",
+  "measurement": {
+    "burn_in_t_u_l": 80.0,
+    "density_kg_m3": 1.0,
+    "downforce_direction": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "drag_direction": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "endpoint_policy": "if exact 80 or 120 samples are absent, linearly interpolate from bracketing raw force samples",
+    "force_component_absolute_tolerance": 1e-08,
+    "force_component_relative_tolerance": 1e-06,
+    "force_integration_body": "canonical v16 candidate GridSDF only; do not integrate the auxiliary moving-ground half-space",
+    "force_sampling": "every 8 solver steps",
+    "force_window_t_u_l": [
+      80.0,
+      120.0
+    ],
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "host_recompute_relative_tolerance": 1e-09,
+    "integration": "trapezoidal time-weighted means on exact [80,120], [80,100], and [100,120] intervals",
+    "memory": "CuArray",
+    "minimum_window_samples": 4,
+    "primary_force_metric": "trapezoidal physical-time-weighted mean over samples in [80,120] tU/L",
+    "reference_area_m2": 0.64,
+    "runtime_limit_s": 1800.0,
+    "sample_every_solver_steps": 8,
+    "solver_precision": "Float32",
+    "spacing_m": 0.05,
+    "stationarity": {
+      "formula": "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))",
+      "mean_definition": "independent trapezoidal physical-time-weighted means on exact endpoint-clipped [80,100], [100,120], and [80,120] windows",
+      "precedent": "inherited before measurement from registered W2 sphere capability criterion; not selected from W3 v3 values",
+      "precedent_criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+      "precedent_criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47",
+      "quantities": [
+        "drag",
+        "downforce"
+      ],
+      "relative_half_window_drift_max": 0.02
+    },
+    "t_end_t_u_l": 120.0
+  },
+  "profile_adapter": {
+    "cell_dims": [
+      100,
+      48,
+      36
+    ],
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "ground_model": "embedded planar half-space at the lower-z domain plane; +x wall velocity from the registered translation profile",
+    "ground_velocity_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "limitation": "WaterLily 1.8.0 native outer BCs do not reproduce the source profile's per-patch OpenFOAM freestreamVelocity/freestreamPressure semantics.",
+    "physical_box_m": [
+      [
+        -2.5,
+        2.5
+      ],
+      [
+        -1.2,
+        1.2
+      ],
+      [
+        -0.9,
+        0.9
+      ]
+    ],
+    "physical_profile_qualified": false,
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
+    "profile_spec_sha256": "5a9360f9f0d5f40318ff88ee675bb64ee9dc897ca611cf817aa1fd90ebe1f7c3",
+    "reynolds": 80.0,
+    "reynolds_length_m": 0.8,
+    "side_top_normal_velocity": "zero",
+    "side_top_tangential_condition": "zero-Neumann",
+    "solver_length": 16.0,
+    "solver_time_unit_s": 0.05,
+    "solver_velocity": 1.0,
+    "solver_viscosity": 0.19999999999999996,
+    "source_profile_equivalent": false,
+    "source_profile_id": "stage_v_v16_project_matched_re_laminar_moving_ground_far_field_v2",
+    "source_profile_sha256": "a84670733ad5009ee57e84b9ee40b19da3254aae45846e5fb7a7f3ae8f72ceca",
+    "world_per_solver_m": 0.05,
+    "x_max_boundary": "WaterLily convective exit"
+  },
+  "registered_before_computation": true,
+  "registered_source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "schema_version": 1,
+  "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "status": "registered_not_run"
+}
