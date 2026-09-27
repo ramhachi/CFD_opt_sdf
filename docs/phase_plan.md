@@ -2334,3 +2334,51 @@ This does not identify whether `/kaggle/input` was empty or the dataset was
 available at another path. The unchanged kernel was pushed as version 2 after
 the dataset reported ready. Until input loading and all preregistered gates
 pass, W3 remains open and all qualification/update flags remain false.
+
+## 2026-09-27 execution-order adjustment: W3/W4 qualification plus parallel reverse scratch
+
+The architecture is unchanged. WaterLily is the optimization oracle; OpenFOAM
+is the independent physical verifier. WaterLily 1.8.0's outer boundary is not
+equivalent to the registered OpenFOAM per-patch freestream profile, so W3 will
+not force the two solvers into an artificial identical problem. W3 retains its
+registered profile and criteria.
+
+W3 version 2 remains the next qualification run. Its current Kaggle state is
+`QUEUED`; version 1 stopped at criteria loading before backend inventory or a
+solver step. No W3 primal evidence exists yet. The mandatory formal order is:
+
+1. W3: first v16 primal under the registered WaterLily profile.
+2. W4: v16 flow-grid resolution and domain response under that same profile.
+3. Local SDF perturbations and centered finite differences.
+4. CPU reverse-gradient correctness against the registered finite differences.
+5. GPU reverse/custom-adjoint Go/No-Go.
+6. P22 SDF volume enforcement.
+7. One constrained SDF update.
+8. P23 topology policy.
+9. Birth-0.
+
+In parallel, a diagnostic-only Enzyme track has started on
+`exp/w3-enzyme-reverse-spike`; it has no preregistered qualification criteria
+and cannot open any formal gate. On Julia 1.12.6 / Enzyme 0.13.205, the tiny
+sphere's primal runs on CPU. In both the current WaterLily 1.8.0 environment
+and WaterLily PR #285 (`feed49f480b52047b4e9b8bfacdf3e4f8201106b`, version
+1.6.1), reverse through the full time step stops at
+`MixedDuplicated(Flow, Flow)`, even with static-body remeasurement disabled.
+PR #285's isolated Poisson VJP does execute, but its directional derivative
+was `1.0658` times the centered finite difference in this small test; this is
+diagnostic only and the default Poisson solve tolerance is not a qualified
+gradient setting. The WaterLily 1.8.0 project currently loads no Enzyme
+extension.
+
+The exact package pair Enzyme 0.13.205 + CUDA.jl 6.3.1 does not resolve under
+Julia Pkg because the required GPUCompiler ranges do not intersect. The
+separate scratch environment resolves with CUDA.jl 6.2.1 and PR #285; it does
+not change the W2/W3 environment. A private T4 reverse-spike kernel was pushed
+as version 1 and is currently `QUEUED`; its output is pending. Track commands
+and package pins are in
+[reverse-spike README at experiment commit 7aa9c61](https://github.com/ramhachi/CFD_opt_sdf/blob/7aa9c61/infra/kaggle/kernel_enzyme_reverse_spike/README.md).
+
+These scratch findings do not qualify CPU or GPU reverse mode, SDF gradients,
+or an optimizer update. Keep `waterlily_reverse_cuda_qualified=false`,
+`sdf_gradient_qualified=false`, and `shape_update_allowed=false`. The existing
+W2b sphere resolution result remains PoC-only; W4 stays ahead of formal FD.
