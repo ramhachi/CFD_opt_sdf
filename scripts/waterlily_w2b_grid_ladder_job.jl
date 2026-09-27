@@ -76,7 +76,8 @@ function build_body(p)
     end
 
     canonical = CFDSDFWaterLily.sphere_phi_fixture()
-    measured_margin = zero_level_margin_m(canonical.phi, canonical.origin, canonical.h)
+    measured_margin = CFDSDFWaterLily.GridSDFBody.zero_level_margin_m(
+        canonical.phi, canonical.origin, canonical.h)
     phi_sha = canonical_phi_sha256(canonical.phi)
     phi_sha == PHI_SHA256 || error("canonical W2b phi hash drift")
     owner = device_copy(canonical)
