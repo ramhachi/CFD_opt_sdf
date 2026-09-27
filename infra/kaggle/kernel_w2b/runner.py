@@ -25,8 +25,10 @@ JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 PROJECT_SHA256 = "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
 MANIFEST_SHA256 = "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
-CRITERIA_SHA256 = "36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5"
+CRITERIA_SHA256 = "3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c"
 CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
+CUDA_DRIVER_API_VERSION = "13.3.0"
+CUDA_RUNTIME_VERSION = "12.8.0"
 W2T4A_ANALYTIC_DRAG = 88.42577373189188
 W2T4B_GRID_SDF_DRAG = 88.23605899425723
 STATIONARITY_TOL = 0.02
@@ -266,7 +268,8 @@ def w2b_gates(summaries, finite_force_csv, rows, smoke, prerequisites_ok=True):
                    for s in all_summaries)
            and selected_uuid.startswith("GPU-")
            and "GPU_COMPUTE_CAPABILITY 7.5.0" in smoke
-           and "CUDA_RUNTIME_VERSION 13.3.0" in smoke)
+           and f"CUDA_DRIVER_VERSION {CUDA_DRIVER_API_VERSION}" in smoke
+           and f"CUDA_RUNTIME_VERSION {CUDA_RUNTIME_VERSION}" in smoke)
     return {
         "T0_prerequisites": prerequisites_ok,
         "T1_completion": t1,
@@ -338,7 +341,8 @@ def main():
                          str(source / "scripts/w0b_t4_smoke.jl")],
                         OUT / "julia_smoke.log", env=env, timeout=1200)
         for marker in ("W0B_SMOKE_DONE", "CUDA_FUNCTIONAL true", "GPU_COMPUTE_CAPABILITY 7.5.0",
-                       "CUDA_RUNTIME_VERSION 13.3.0", "JULIA_VERSION 1.12.6",
+                       f"CUDA_DRIVER_VERSION {CUDA_DRIVER_API_VERSION}",
+                       f"CUDA_RUNTIME_VERSION {CUDA_RUNTIME_VERSION}", "JULIA_VERSION 1.12.6",
                        "CUDA_JL_VERSION 6.3.1", "WATERLILY_VERSION 1.8.0", "GPU_NAME Tesla T4"):
             if marker not in smoke:
                 raise RuntimeError(f"W2b CUDA smoke missing marker: {marker}")

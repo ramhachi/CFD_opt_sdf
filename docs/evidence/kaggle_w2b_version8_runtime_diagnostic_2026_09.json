@@ -1,0 +1,69 @@
+{
+  "criteria": {
+    "path": "docs/evidence/kaggle_w2b_criteria_2026_09_round2.json",
+    "sha256": "36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5"
+  },
+  "decision": "Retain version 8 as an append-only backend startup diagnostic. Source checkout, all 20 registered file hashes, Project/Manifest instantiation, CUDA functionality, CuArray and KernelAbstractions smoke passed. The observed CUDA runtime is 12.8.0 while round 2 registered 13.3.0. No WaterLily solver case started. Register the observed runtime identity before any solver measurement; preserve every numerical threshold.",
+  "environment": {
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "nvidia_driver_version": "580.159.04",
+    "waterlily_version": "1.8.0"
+  },
+  "evidence_class": "t4_cuda_runtime_identity_diagnostic_no_solver",
+  "generated_on": "2026-09-27",
+  "immutable": true,
+  "kernel": {
+    "id": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+    "version": 8
+  },
+  "observed": {
+    "cuda_smoke": {
+      "CUARRAY_SMOKE": "true",
+      "CUDA_DRIVER_VERSION": "13.3.0",
+      "CUDA_FUNCTIONAL": "true",
+      "CUDA_JL_VERSION": "6.3.1",
+      "CUDA_RUNTIME_VERSION": "12.8.0",
+      "GPU_COMPUTE_CAPABILITY": "7.5.0",
+      "GPU_NAME": "Tesla T4",
+      "JULIA_VERSION": "1.12.6",
+      "KA_SMOKE": "true",
+      "NO_SOLVER_STEP": true,
+      "W0B_SMOKE_DONE": true,
+      "WATERLILY_CUDA_EXT": "true",
+      "WATERLILY_VERSION": "1.8.0"
+    },
+    "error": "RuntimeError: W2b CUDA smoke missing marker: CUDA_RUNTIME_VERSION 13.3.0",
+    "failure_stage": "CUDA smoke identity check",
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-958d1c95-95c4-c54e-2cb2-d884af605924, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-10f79d52-9ed7-8f3f-7884-0c3273f15060, 15360 MiB, 580.159.04"
+    ],
+    "solver_started": false,
+    "source_commit": "548231050fc6ca22bc1c0394272564f81571dbbc",
+    "status": "KernelWorkerStatus.ERROR"
+  },
+  "retrieval": {
+    "artifact_sha256": {
+      "ERROR.txt": "cb77cb0e0d7faec896bf79f4d62739f452cfffd3d8b8a9731b8bd386d7f4bc41",
+      "git_checkout.log": "6a4a5278270023f6471fc7bcc2ff3cede891659643590fe31ad7bfd913e3543e",
+      "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "instantiate.log": "d09761cf3e13dbc6097ec3f0328dea77db77b94e400689713c6c333c4fff27b9",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+      "nvidia_smi.csv": "7d92dd941ef44c322e655ae31868831a0df3e03b2807feb1bd75f7d7d9d1d360"
+    },
+    "download": "work/kaggle_w2b_version8/w2b",
+    "kernel_log_sha256": "36ef8446886e09c44bd985c273f4d2c591aafd952a265d4cc2f1e6e038e5e922",
+    "manifest_sha256": "1b927cd47646d892c07589ee45c91052da356dff4b2d10ea9980ed113d8e2f99",
+    "verified_files": 8
+  },
+  "scope_exclusions": [
+    "no WaterLily Simulation or solver step",
+    "no force/Cd/grid-response result",
+    "no numerical acceptance threshold changed"
+  ]
+}

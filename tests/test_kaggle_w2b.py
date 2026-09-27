@@ -64,16 +64,25 @@ def valid_summaries():
 
 def test_runner_matches_registered_w2b_matrix_and_thresholds():
     criteria = json.loads(verifier.CRITERIA.read_text())
+    round2 = json.loads(verifier.ROUND2_CRITERIA.read_text())
     round1 = json.loads(verifier.ROUND1_CRITERIA.read_text())
+    runtime_diagnostic = json.loads(verifier.ROUND2_DIAGNOSTIC.read_text())
     fixture_cases = criteria["fixture"]["cases"]
     assert runner.CASE_IDS == [case["case_id"] for case in fixture_cases]
     assert runner.SOURCE_COMMIT == criteria["source_commit"]
+    assert runner.CUDA_DRIVER_API_VERSION == criteria["backend"]["cuda_driver_api_version"]
+    assert runner.CUDA_RUNTIME_VERSION == criteria["backend"]["cuda_runtime_version"]
     assert runner.SOURCE_REF == "refs/heads/codex/kaggle-batch-migration"
     assert runner.SOURCE_FETCH_DEPTH >= 4
-    assert criteria["round"] == 2
-    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND1_CRITERIA)
-    assert criteria["thresholds"] == round1["thresholds"]
-    assert criteria["fixture"] == round1["fixture"]
+    assert criteria["round"] == 3
+    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND2_CRITERIA)
+    assert criteria["thresholds"] == round1["thresholds"] == round2["thresholds"]
+    assert criteria["fixture"] == round1["fixture"] == round2["fixture"]
+    assert criteria["inputs"] == round1["inputs"] == round2["inputs"]
+    assert criteria["backend"]["cuda_runtime_version"] == runtime_diagnostic[
+        "environment"]["cuda_runtime_version"]
+    assert criteria["backend"]["cuda_driver_api_version"] == runtime_diagnostic[
+        "environment"]["cuda_driver_api_version"]
     assert runner.CRITERIA_SHA256 == verifier.sha256(verifier.CRITERIA)
     assert runner.CANONICAL_PHI_SHA256 == criteria["inputs"]["canonical_phi_sha256"]
 
@@ -97,7 +106,8 @@ def test_w2b_gates_accept_valid_matrix_and_reject_registered_bound_drift():
         "0, Tesla T4, GPU-a, 15360 MiB, 580.159.04",
         "1, Tesla T4, GPU-b, 15360 MiB, 580.159.04",
     ]
-    smoke = "GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_RUNTIME_VERSION 13.3.0"
+    smoke = ("GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_DRIVER_VERSION 13.3.0 "
+             "CUDA_RUNTIME_VERSION 12.8.0")
     summaries = valid_summaries()
     finite_csv = {case_id: True for case_id in runner.CASE_IDS}
     assert all(runner.w2b_gates(summaries, finite_csv, rows, smoke).values())

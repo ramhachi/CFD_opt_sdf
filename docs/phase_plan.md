@@ -2185,5 +2185,39 @@ all 20 registered source, Project, and Manifest file hashes also verified at
 the pinned checkout. The 4 focused W2b tests, Python compile/syntax checks,
 Julia parser, criteria and diagnostic sidecars, and `git diff --check` pass; the full suite was rerun
 with the same 1047 passed, 37 missing-`work/` failures, and 4 skipped. The next
-submission uses the dedicated kernel's version 8. T4 selection, evidence scope
-limits, and `shape_update_allowed=false` remain unchanged.
+submission used the dedicated kernel's version 8. That run passed source
+fetch, registered file hashes and package instantiation, then stopped in CUDA
+smoke before a WaterLily solver step because runtime 12.8.0 differed from the
+round-2 13.3.0 pin. See the round-3 checkpoint below. T4 selection, evidence
+scope limits, and `shape_update_allowed=false` remain unchanged.
+
+### 2026-09-27 W2b version 8 CUDA identity diagnostic; round 3 registered
+
+Kaggle version 8 retrieved all 8 files in its failure manifest, and each
+downloaded hash verifies. Source checkout at
+`548231050fc6ca22bc1c0394272564f81571dbbc`, all 20 registered source/Project/
+Manifest hashes, Julia 1.12.6 package instantiation, and the T4 CUDA, CuArray,
+and KernelAbstractions smoke passed. The smoke observed CUDA driver API
+`13.3.0` and CUDA runtime `12.8.0`; NVIDIA driver `580.159.04` and compute
+capability `7.5.0` matched the registration. Version 8 stopped because round 2
+had pinned CUDA runtime `13.3.0`. The append-only diagnostic is
+`evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json` (SHA-256
+`08385ba971be70ad08fa73fa6d5f6587fa89b4137d3fded4c922ab15d6fc000d`). No
+WaterLily simulation or solver step began.
+
+Round 3 criteria are registered at
+`evidence/kaggle_w2b_criteria_2026_09_round3.json` (SHA-256
+`3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c`). They
+record the observed CUDA runtime `12.8.0` separately from driver API `13.3.0`.
+The source commit, fixture, inputs, and every numerical threshold remain equal
+to rounds 1 and 2. This registers the actual T4 runtime identity before the
+first W2b solver measurement; it does not relax CFD acceptance. Next is
+dedicated Kaggle kernel version 9. Before submission, the 4 focused W2b tests,
+Python compilation/syntax and JSON checks, the criteria-chain and sidecar
+hashes, all 8 version-8 output hashes and kernel-log hash, CUDA identity
+binding, the Julia parser, and `git diff --check` passed. The full suite
+reported 1047 passed, 37 failed, and 4 skipped. Re-running its 37 failures
+confirmed they depend on ignored `work/` evidence artifacts absent from this
+fresh managed worktree (including an STL load after its registered file is
+missing); none is a W2b contract test. `shape_update_allowed=false` remains in
+force.

@@ -208,7 +208,7 @@ agreement gates at 16 cells/D. The next slice is W2b; its separate
 16/24/32 cells/D flow-grid matrix and gates are registered below before the
 first ladder measurement.
 
-## W2b round 2: registered three-resolution flow-grid ladder
+## W2b round 3: registered three-resolution flow-grid ladder
 
 The six-case matrix and numerical bounds remain those registered in
 [`evidence/kaggle_w2b_criteria_2026_09_round1.json`](evidence/kaggle_w2b_criteria_2026_09_round1.json)
@@ -222,7 +222,21 @@ Round 2 is registered at
 (SHA-256 `36c4cc138af4c30e022ddad9993798dfea6c8432cc72c4d216fb4cc569ce4cb5`).
 It corrects only the source commit pin to the actual job commit
 `548231050fc6ca22bc1c0394272564f81571dbbc`; the fixture, input hashes, and
-all numeric bounds equal round 1. It compares analytic and canonical GridSDF
+all numeric bounds equal round 1. Its version 8 run passed source fetch, all
+20 pinned input hashes, and Julia Project/Manifest instantiation. The T4 smoke
+passed `CUDA_FUNCTIONAL`, CuArray, and KernelAbstractions checks, but the
+observed CUDA runtime was 12.8.0 rather than round 2's registered 13.3.0. The
+CUDA driver API value was 13.3.0; the NVIDIA driver from `nvidia-smi` remained
+580.159.04. The no-solver diagnostic is
+[`evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json`](evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json)
+(SHA-256 `08385ba971be70ad08fa73fa6d5f6587fa89b4137d3fded4c922ab15d6fc000d`).
+
+Round 3 is registered at
+[`evidence/kaggle_w2b_criteria_2026_09_round3.json`](evidence/kaggle_w2b_criteria_2026_09_round3.json)
+(SHA-256 `3573b903c2ff025db62cb184ba328f81c48da70f72d4393e3623bd3bbb58bf1c`).
+It registers the observed CUDA runtime 12.8.0 and records the CUDA driver API
+version separately as 13.3.0. The source pin, fixture, input hashes, Project,
+Manifest, and every numerical bound equal rounds 1 and 2. It compares analytic and canonical GridSDF
 spheres at 16, 24, and 32 cells/D on identical dimensionless domains at
 Re_D=100. The registered bounds require
 each per-rung geometry Cd pair within 1%, the 16-cells/D drag values within 1%
@@ -234,10 +248,9 @@ finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
 The solver job is pinned to source commit
 `548231050fc6ca22bc1c0394272564f81571dbbc`. Its exact six-case parameters and
 input hashes are frozen in the criteria. W2b uses its own private Kaggle kernel,
-`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`; it was first submitted as
-version 7. That attempt failed at source fetch before any solver case began:
-the criteria's SHA was mistyped, so it was not a repository object. Its exact
-error and retrieval hashes are recorded in
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`. Version 7 failed at source
+fetch before any solver case began because the round-1 source SHA was mistyped.
+Its exact error and retrieval hashes are recorded in
 [`evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json`](evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json)
 (SHA-256 `5df35a54ea1755ea12cf70b180618fdfc99700c6958334312a2b43e48f38ec91`).
 The runner fetches the advertised feature branch shallowly, then checks out the
@@ -248,8 +261,14 @@ resolves the kernel slug from the title, so the metadata ID uses that same
 slug. Before version 7, the focused W2b contract test passed (4 tests), the Julia
 parser, Python compilation, criteria/input hashes, and `git diff --check` passed.
 After registering round 2, the focused tests and corrected branch-fetch probe
-passed. The full suite again reported 1047 passed, 37 failed, and 4 skipped;
-each failure is a missing ignored `work/` fixture in the fresh managed worktree.
+passed. Before version 9, round-3 focused tests passed (4 tests); Python
+`compileall`/syntax checks, metadata and criteria JSON parsing, criteria-chain
+and sidecar hashes, all 8 version-8 output hashes, the kernel-log hash, CUDA
+identity binding, the Julia parser, and `git diff --check` also passed. The
+full suite reported 1047 passed, 37 failed, and 4 skipped. Re-running only the
+37 failures confirmed they all depend on ignored `work/` evidence artifacts
+absent from the fresh managed worktree (including an STL load that fails after
+its registered file is missing); the focused W2b tests are not among them.
 After retrieval,
 the host verifier checks every manifest hash and recomputes the force means,
 time-weighted coefficients, stationarity and all registered gates from the raw
@@ -260,17 +279,18 @@ PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
   -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/8 -p work/kaggle_w2b_version8
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/9 -p work/kaggle_w2b_version9
 PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
-  work/kaggle_w2b_version8
+  work/kaggle_w2b_version9
 ```
 
 Use the version actually returned by `push` consistently in all four Kaggle
 commands and the retrieval path. A missing `DONE`, `ERROR.txt`, hash mismatch,
-or any failed gate remains diagnostic; do not change round-1 thresholds after
-seeing the solver result. Round-2 thresholds equal round 1. No W2b solver measurement is recorded in this
-runbook until the exact version-specific output has passed host verification.
+or any failed gate remains diagnostic; do not relax numerical thresholds after
+seeing the solver result. Rounds 2 and 3 preserve round-1 numerical bounds. No
+W2b solver measurement is recorded in this runbook until the exact
+version-specific output has passed host verification.
