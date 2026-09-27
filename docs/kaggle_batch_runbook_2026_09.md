@@ -299,6 +299,24 @@ Full pytest reports 1049 passed, 37 failed, and 4 skipped. Re-running the 37
 failures alone reproduces only `FileNotFoundError` for ignored `work/` evidence
 files absent from this managed worktree; none is a W2b test.
 
+Kaggle version 11 completed the round-5 six-case ladder. The exact-version
+download contains 23 files; the host verifier checked every manifest hash,
+recomputed all force-window metrics from the six raw CSVs, and passed T0-T13.
+The immutable result record is
+[`evidence/kaggle_w2b_round5_result_2026_09.json`](evidence/kaggle_w2b_round5_result_2026_09.json)
+(SHA-256 `8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc`);
+the downloaded manifest SHA-256 is
+`6c6c940605c76007f171bb8b5ffcf21b50d060ef9ec6b8cfd2514d258fd3bb87`, and
+the Kaggle log SHA-256 is
+`cc65a38d805b74bf920f41371b542cc674ad919c3be9a7d413757796573cc44d`. At each
+resolution, analytic-versus-GridSDF time-weighted Cd differs by 0.209-0.243%.
+The 24-to-32 cells/D response is 1.903% analytic and 1.869% GridSDF, below
+the registered 3% PoC candidate bound; both changes are smaller than their
+16-to-24 changes. This closes only the registered sphere-fixture W2b gates;
+it does not establish formal GCI, asymptotic order, absolute Cd accuracy, or
+target-vehicle physics. The grid-response and shape-update qualification flags
+remain false.
+
 W2b uses its own private Kaggle kernel,
 `ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`. Version 7 failed at source
 fetch before any solver case began because the round-1 source SHA was mistyped.
@@ -349,8 +367,8 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
 ```
 
 Use the version actually returned by `push` consistently in all four Kaggle
-commands and the retrieval path. A missing `DONE`, `ERROR.txt`, hash mismatch,
-or any failed gate remains diagnostic; do not relax numerical thresholds after
-seeing the solver result. Rounds 2, 3 and 4 preserve round-1 numerical bounds.
-No complete W2b ladder measurement is recorded in this runbook until the exact
-version-specific output has passed host verification.
+commands and the retrieval path. Version 11's exact output passed host
+verification as recorded above. For any later round, a missing `DONE`,
+`ERROR.txt`, hash mismatch, or failed gate remains diagnostic; do not relax
+numerical thresholds after seeing solver results. Rounds 2 through 5 preserve
+round-1 numerical bounds.

@@ -2290,5 +2290,29 @@ version 11, all 6 focused W2b tests, Python `compileall`, version-10 artifact
 and kernel-log hashes, and `git diff --check` pass. Full pytest reports 1049
 passed, 37 failed, and 4 skipped. Re-running only those 37 failures reproduces
 the same missing ignored `work/` evidence paths (FileNotFoundError); none is a
-W2b contract test. Next is dedicated Kaggle kernel version 11.
-`shape_update_allowed=false` remains in force.
+W2b contract test. `shape_update_allowed=false` remains in force.
+
+### 2026-09-27 W2b version 11 round 5 passed
+
+The dedicated Kaggle T4 kernel completed all six registered cases at 16, 24,
+and 32 cells per diameter. The exact version-11 download contains 23 files;
+the host verifier confirmed each SHA-256, recomputed all force-window metrics
+from the six raw CSVs, and passed T0-T13. The immutable result is
+`evidence/kaggle_w2b_round5_result_2026_09.json` (SHA-256
+`8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc`), with
+output-manifest SHA-256
+`6c6c940605c76007f171bb8b5ffcf21b50d060ef9ec6b8cfd2514d258fd3bb87` and
+Kaggle-log SHA-256
+`cc65a38d805b74bf920f41371b542cc674ad919c3be9a7d413757796573cc44d`.
+Analytic versus GridSDF time-weighted Cd differs by 0.209-0.243% at the three
+resolutions. The 24-to-32 cells/D response is 1.903% analytic and 1.869%
+GridSDF, within the preregistered 3% PoC candidate bound; both changes are
+smaller than the corresponding 16-to-24 changes. This is the registered
+sphere-fixture flow-grid response result, not a formal GCI/asymptotic-order or
+absolute-Cd qualification. The target-vehicle, gradient, reverse-mode,
+topology, and optimizer gates remain closed; `shape_update_allowed=false`.
+
+The next roadmap gate is W3, the v16 WaterLily primal with its physical-profile
+adapter. Before that solver measurement, register its separate input, geometry,
+profile, force, runtime, and acceptance contracts against the canonical v16
+state. Do not inherit W2b sphere thresholds as W3 acceptance criteria.
