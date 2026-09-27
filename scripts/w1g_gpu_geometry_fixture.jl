@@ -177,7 +177,8 @@ function compare_all(cpu_d, cpu_n, gpu_d, gpu_nx, gpu_ny, gpu_nz, probes)
         d_cpu_world = Float64(cpu_d[index]) * SCALE
         d_gpu_world = Float64(gpu_d[index]) * SCALE
         all_finite &= isfinite(cpu_d[index]) && isfinite(gpu_d[index])
-        all_finite &= isfinite(cpu_n[index][1]) && isfinite(gpu_nx[index])
+        all_finite &= all(isfinite, cpu_n[index])
+        all_finite &= all(isfinite, (gpu_nx[index], gpu_ny[index], gpu_nz[index]))
         if !outside_world(probes[index])
             max_value_error = max(max_value_error, abs(d_gpu_world - d_cpu_world))
             if abs(d_cpu_world) > 1e-5
