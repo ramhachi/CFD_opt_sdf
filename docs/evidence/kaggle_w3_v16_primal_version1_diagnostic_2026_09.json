@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "kaggle_w3_v16_primal_execution_diagnostic",
+  "diagnostic_id": "kaggle_w3_v16_primal_version1_2026_09",
+  "status": "pre_solver_input_path_lookup_failure",
+  "generated_on": "2026-09-27",
+  "evidence_class": "execution_diagnostic",
+  "existing_evidence_modified": false,
+  "solver_started": false,
+  "solver_steps": 0,
+  "gpu_inventory_captured": false,
+  "criteria": {
+    "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09.json",
+    "sha256": "3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3",
+    "sidecar_sha256": "9268906c5c5aadab69be30ef579fdc6bdee51a2b7e1078302633202d51042c2f",
+    "registered_source_commit": "b46ef4270df0c76d91922b8f1b2455fabad62418"
+  },
+  "kaggle": {
+    "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+    "kernel_version": 1,
+    "reported_status": "KernelWorkerStatus.ERROR",
+    "requested_machine_shape": "NvidiaTeslaT4",
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "dataset_ready": true,
+    "dataset_sources_in_committed_kernel_metadata": [
+      "ramhachi888/cfd-opt-sdf-v16-genesis-state"
+    ],
+    "criteria_present_at_runner_expected_path": false,
+    "input_mount_inventory_recorded": false
+  },
+  "failure": {
+    "stage": "read_criteria before GPU inventory, source fetch, Julia setup, CUDA smoke, or primal job",
+    "expected_path": "/kaggle/input/cfd-opt-sdf-v16-genesis-state/w3_v16_criteria.json",
+    "error": "RuntimeError: registered W3 criteria missing from the attached private dataset",
+    "diagnostic_interpretation": "The registered criteria file was absent at the runner's expected input path. The output does not distinguish an empty input mount from a different mount path; no solver work occurred."
+  },
+  "artifacts": {
+    "error_file": {
+      "path": "work/kaggle_w3_version1_diagnostic/w3_v16/ERROR.txt",
+      "sha256": "adb716bff1b5b48becb415440290c4be917d27e8509d35f68f42ad3644f821fb"
+    },
+    "output_sha256_manifest": {
+      "path": "work/kaggle_w3_version1_diagnostic/w3_v16/sha256.json",
+      "sha256": "b42d39774c19a43c31d381c371956c944bc2b73b5d060d4d4a6070bed74c978e"
+    },
+    "kernel_log": {
+      "path": "work/kaggle_w3_version1_diagnostic/cfd-opt-sdf-w3-v16-primal.log",
+      "sha256": "12a0fb8cefbbd71122bb8dd0006f16f93865426bf9b6cec705782379afff3990"
+    },
+    "private_dataset_manifest": {
+      "path": "work/kaggle_w3_v16_dataset_registered_3c54f386/w3_v16_dataset_manifest.json",
+      "sha256": "f01176977c3c15cb93d5a164e0b7d166adbb750143ee49ac62114968575c868f"
+    }
+  },
+  "flags": {
+    "waterlily_v16_primal_qualified": false,
+    "physical_profile_qualified": false,
+    "grid_response_qualified": false,
+    "shape_update_allowed": false,
+    "sdf_gradient_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "topology_birth_qualified": false
+  },
+  "claims_not_supported": [
+    "Kaggle input mounting or dataset path semantics were qualified",
+    "a T4 runtime identity was observed",
+    "any WaterLily time step or force measurement ran",
+    "physical-profile equivalence or qualification",
+    "grid response, gradient, reverse-mode, topology, optimization, or shape update"
+  ],
+  "next_action": "Re-push the unchanged private kernel after the newly attached private dataset is ready; preserve these criteria and gates unless a solver measurement has occurred."
+}

@@ -1,4 +1,4 @@
-# Kaggle background GPU runbook (K0, W1g, W2-T4b, and W2b)
+# Kaggle background GPU runbook (K0, W1g, W2-T4b, W2b, and W3)
 
 This is the execution path for the SDF-native WaterLily GPU line. The
 authoritative order and gate status are in [`phase_plan.md`](phase_plan.md),
@@ -372,3 +372,49 @@ verification as recorded above. For any later round, a missing `DONE`,
 `ERROR.txt`, hash mismatch, or failed gate remains diagnostic; do not relax
 numerical thresholds after seeing solver results. Rounds 2 through 5 preserve
 round-1 numerical bounds.
+
+## W3: v16 first-primal input-path diagnostic
+
+W3 has its own immutable criteria and private v16 input dataset. Criteria SHA
+`3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3` binds
+source commit `b46ef4270df0c76d91922b8f1b2455fabad62418`. The dataset is
+`ramhachi888/cfd-opt-sdf-v16-genesis-state`; the kernel is
+`ramhachi888/cfd-opt-sdf-w3-v16-primal`.
+
+Kaggle version 1 stopped during criteria loading because the registered JSON
+was not present at the runner's expected path under `/kaggle/input`. It did not
+inventory a GPU, fetch source, start Julia, or take a solver step. The failure
+and hashes are preserved in
+[`evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json).
+The kernel metadata returned by `kaggle kernels pull` contains the expected
+dataset source, and the dataset status was `ready`; the missing criteria path
+does not establish whether the input mount was empty or differently named.
+Version 2 re-pushes the unchanged kernel after the new private source was
+ready. If a first run immediately after attaching a new Kaggle source fails
+before solver initialization, keep the criteria unchanged and inspect the
+exact version's logs and `ERROR.txt` before deciding whether a retry or a
+path-resolution fix is required.
+
+W3 run commands (use the actual version returned by `push` in every command):
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/2 -p work/kaggle_w3_version2
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  work/kaggle_w3_version2 \
+  --dataset-dir work/kaggle_w3_v16_dataset_registered_3c54f386 \
+  --kernel-version 2
+```
+
+The host verifier rechecks registered source and dataset hashes, reads the
+canonical SDF state independently, recomputes its margin and force-window
+metrics, validates the raw force-component closure, then recomputes T0-T9.
+W3's adapter is an explicitly non-equivalent finite-box approximation; a pass
+does not qualify the OpenFOAM physical profile, force stationarity, grid
+response, gradients, topology, or a shape update.

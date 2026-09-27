@@ -2316,3 +2316,21 @@ The next roadmap gate is W3, the v16 WaterLily primal with its physical-profile
 adapter. Before that solver measurement, register its separate input, geometry,
 profile, force, runtime, and acceptance contracts against the canonical v16
 state. Do not inherit W2b sphere thresholds as W3 acceptance criteria.
+
+### 2026-09-27 Kaggle W3 version 1 stopped before the primal
+
+W3 criteria were immutably registered at SHA-256
+`3c54f3867d9eb9a5960b4c153bd1bffbfc4ca3a547456ecd51b340f808476de3`
+against source commit `b46ef4270df0c76d91922b8f1b2455fabad62418`. The private
+dataset reached `ready` and its five registered input files were listed. The
+kernel's committed metadata includes that dataset as a source, but Kaggle
+version 1 could not find `w3_v16_criteria.json` at the configured input path.
+It stopped in criteria loading before GPU inventory, source checkout, Julia
+setup, CUDA smoke, or any solver step. The exact diagnostic and downloaded
+artifact hashes are recorded in
+[`evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version1_diagnostic_2026_09.json).
+
+This does not identify whether `/kaggle/input` was empty or the dataset was
+available at another path. The unchanged kernel was pushed as version 2 after
+the dataset reported ready. Until input loading and all preregistered gates
+pass, W3 remains open and all qualification/update flags remain false.
