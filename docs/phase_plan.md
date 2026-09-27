@@ -2164,6 +2164,9 @@ Validation: `tests/test_kaggle_w2b.py` reports 4 passed; `compileall src tests`,
 Python syntax checks, metadata JSON parsing, Julia parser, the criteria/input
 hash checks, and `git diff --check` pass. The full suite reports 1047 passed,
 37 failed, 4 skipped; all 37 failures are `FileNotFoundError` for pre-existing
-ignored `work/` CFD fixtures absent from this fresh managed worktree. No W2b
-solver measurement has started. T4 selection, evidence scope limits, and
-`shape_update_allowed=false` remain unchanged.
+ignored `work/` CFD fixtures absent from this fresh managed worktree. W2b was
+submitted to its dedicated private Kaggle kernel
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`, version 7, which reported
+`RUNNING`; its exact version output is not yet retrieved or verified. T4
+selection, evidence scope limits, and `shape_update_allowed=false` remain
+unchanged.

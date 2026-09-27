@@ -223,9 +223,11 @@ finiteness, force, stationarity, phi, runtime/VRAM and T4 identity gates.
 
 The solver job is pinned to source commit
 `5482310d9778229fe692cdc6799c2e1c31cc9982`. Its exact six-case parameters and
-input hashes are frozen in the criteria. `infra/kaggle/kernel_w2b/runner.py`
-uploads W2b as the next private kernel version after W2-T4b version 6. Before
-submission, the focused W2b contract test passed (4 tests), the Julia parser,
+input hashes are frozen in the criteria. W2b uses its own private Kaggle kernel,
+`ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`; it was first submitted as
+version 7. The Kaggle CLI resolves the kernel slug from the title, so the
+metadata ID now uses that same slug. Before submission, the focused W2b
+contract test passed (4 tests), the Julia parser,
 Python compilation, criteria/input hashes, and `git diff --check` passed. The
 full suite reported 1047 passed, 37 failed, and 4 skipped; each failure is a
 missing ignored `work/` fixture in the fresh managed worktree. After retrieval,
@@ -238,11 +240,11 @@ PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
   -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-k0/7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-k0/7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-k0/7 -p work/kaggle_w2b_version7
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/7 -p work/kaggle_w2b_version7
 PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
   work/kaggle_w2b_version7
 ```
