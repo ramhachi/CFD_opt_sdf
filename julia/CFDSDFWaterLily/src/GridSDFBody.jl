@@ -159,18 +159,24 @@ solver_to_world(g::GridSDF, x_solver::NTuple{3,Float64}) =
      g.origin[3] + x_solver[3] * g.h[3])
 
 """
-    sdf_at_world(g, x_world) -> Float64
+    sdf_at_world(g, x_world) -> S
 
 Trilinear interpolation of `phi` at the world point, caller-side guidance
-value.  Outside the closed design box returns `g.outside_value` exactly.
+value, evaluated in `S = promote_type(T, Sc, eltype(phi))`: Float64 for the
+CPU-qualified path and Float32 when the query, the grid fields and the phi
+storage are all Float32 (device copy).  Outside the closed design box returns
+the extension value exactly.  The Float64 path is bit-identical to the
+W1-qualified implementation.
 """
-function sdf_at_world(g::GridSDF{A,T}, x_world::NTuple{3,Float64})::Float64 where {A,T}
+function sdf_at_world(g::GridSDF{A,T}, x_world::NTuple{3,Sc}) where {A,T,Sc<:Real}
+    S = promote_type(T, Sc, eltype(A))
     nx, ny, nz = g.shape
-    xs = (x_world[1] - g.origin[1]) / g.h[1]
-    ys = (x_world[2] - g.origin[2]) / g.h[2]
-    zs = (x_world[3] - g.origin[3]) / g.h[3]
-    if !(0.0 <= xs <= (nx - 1) && 0.0 <= ys <= (ny - 1) && 0.0 <= zs <= (nz - 1))
-        return Float64(g.outside_value)
+    hx = S(g.h[1]); hy = S(g.h[2]); hz = S(g.h[3])
+    xs = (S(x_world[1]) - S(g.origin[1])) / hx
+    ys = (S(x_world[2]) - S(g.origin[2])) / hy
+    zs = (S(x_world[3]) - S(g.origin[3])) / hz
+    if !(zero(S) <= xs <= (nx - 1) && zero(S) <= ys <= (ny - 1) && zero(S) <= zs <= (nz - 1))
+        return S(g.outside_value)
     end
     i0 = min(floor(Int, xs) + 1, nx - 1)
     j0 = min(floor(Int, ys) + 1, ny - 1)
@@ -179,14 +185,14 @@ function sdf_at_world(g::GridSDF{A,T}, x_world::NTuple{3,Float64})::Float64 wher
     ty = ys - (j0 - 1)
     tz = zs - (k0 - 1)
     phi = g.phi
-    v000 = Float64(phi[i0,     j0,     k0])
-    v100 = Float64(phi[i0 + 1, j0,     k0])
-    v010 = Float64(phi[i0,     j0 + 1, k0])
-    v110 = Float64(phi[i0 + 1, j0 + 1, k0])
-    v001 = Float64(phi[i0,     j0,     k0 + 1])
-    v101 = Float64(phi[i0 + 1, j0,     k0 + 1])
-    v011 = Float64(phi[i0,     j0 + 1, k0 + 1])
-    v111 = Float64(phi[i0 + 1, j0 + 1, k0 + 1])
+    v000 = S(phi[i0,     j0,     k0])
+    v100 = S(phi[i0 + 1, j0,     k0])
+    v010 = S(phi[i0,     j0 + 1, k0])
+    v110 = S(phi[i0 + 1, j0 + 1, k0])
+    v001 = S(phi[i0,     j0,     k0 + 1])
+    v101 = S(phi[i0 + 1, j0,     k0 + 1])
+    v011 = S(phi[i0,     j0 + 1, k0 + 1])
+    v111 = S(phi[i0 + 1, j0 + 1, k0 + 1])
     bilinear_bot = (1 - tx) * v000 + tx * v100
     bilinear_top = (1 - tx) * v001 + tx * v101
     bilinear_bot_hi = (1 - tx) * v010 + tx * v110
@@ -209,15 +215,17 @@ is not a finite-difference stencil.
 """
 function sdf_value_gradient_at_world(
     g::GridSDF{A,T},
-    x_world::NTuple{3,Float64},
-)::Tuple{Float64,NTuple{3,Float64}} where {A,T}
+    x_world::NTuple{3,Sc},
+) where {A,T,Sc<:Real}
+    S = promote_type(T, Sc, eltype(A))
     value = sdf_at_world(g, x_world)
     nx, ny, nz = g.shape
-    xs = (x_world[1] - g.origin[1]) / g.h[1]
-    ys = (x_world[2] - g.origin[2]) / g.h[2]
-    zs = (x_world[3] - g.origin[3]) / g.h[3]
-    if !(0.0 <= xs <= (nx - 1) && 0.0 <= ys <= (ny - 1) && 0.0 <= zs <= (nz - 1))
-        return (value, (0.0, 0.0, 0.0))
+    hx = S(g.h[1]); hy = S(g.h[2]); hz = S(g.h[3])
+    xs = (S(x_world[1]) - S(g.origin[1])) / hx
+    ys = (S(x_world[2]) - S(g.origin[2])) / hy
+    zs = (S(x_world[3]) - S(g.origin[3])) / hz
+    if !(zero(S) <= xs <= (nx - 1) && zero(S) <= ys <= (ny - 1) && zero(S) <= zs <= (nz - 1))
+        return (value, (zero(S), zero(S), zero(S)))
     end
     i0 = min(floor(Int, xs) + 1, nx - 1)
     j0 = min(floor(Int, ys) + 1, ny - 1)
@@ -226,14 +234,14 @@ function sdf_value_gradient_at_world(
     ty = ys - (j0 - 1)
     tz = zs - (k0 - 1)
     phi = g.phi
-    v000 = Float64(phi[i0,     j0,     k0])
-    v100 = Float64(phi[i0 + 1, j0,     k0])
-    v010 = Float64(phi[i0,     j0 + 1, k0])
-    v110 = Float64(phi[i0 + 1, j0 + 1, k0])
-    v001 = Float64(phi[i0,     j0,     k0 + 1])
-    v101 = Float64(phi[i0 + 1, j0,     k0 + 1])
-    v011 = Float64(phi[i0,     j0 + 1, k0 + 1])
-    v111 = Float64(phi[i0 + 1, j0 + 1, k0 + 1])
+    v000 = S(phi[i0,     j0,     k0])
+    v100 = S(phi[i0 + 1, j0,     k0])
+    v010 = S(phi[i0,     j0 + 1, k0])
+    v110 = S(phi[i0 + 1, j0 + 1, k0])
+    v001 = S(phi[i0,     j0,     k0 + 1])
+    v101 = S(phi[i0 + 1, j0,     k0 + 1])
+    v011 = S(phi[i0,     j0 + 1, k0 + 1])
+    v111 = S(phi[i0 + 1, j0 + 1, k0 + 1])
     dvdtx = (1 - ty) * (1 - tz) * (v100 - v000) +
             ty * (1 - tz) * (v110 - v010) +
             (1 - ty) * tz * (v101 - v001) +
@@ -245,7 +253,7 @@ function sdf_value_gradient_at_world(
     dvdtz_ty = (1 - tx) * (v011 - v001) + tx * (v111 - v101)
     dvdtz_ty0 = (1 - tx) * (v010 - v000) + tx * (v110 - v100)
     dvdty = dvdtz_ty0 + tz * (dvdtz_ty - dvdtz_ty0)
-    return (value, (dvdtx / g.h[1], dvdty / g.h[2], dvdtz / g.h[3]))
+    return (value, (dvdtx / hx, dvdty / hy, dvdtz / hz))
 end
 
 end # module
