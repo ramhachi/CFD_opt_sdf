@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagnostic_id": "kaggle_enzyme_reverse_spike_version1_2026_09",
+  "generated_on": "2026-09-28",
+  "kind": "kaggle_enzyme_reverse_spike_execution_diagnostic",
+  "evidence_class": "execution_diagnostic",
+  "pass": false,
+  "qualification": "diagnostic_only",
+  "existing_evidence_modified": false,
+  "kaggle": {
+    "kernel_id": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike",
+    "kernel_version": 1,
+    "reported_status": "KernelWorkerStatus.COMPLETE",
+    "requested_machine_shape": "NvidiaTeslaT4",
+    "log": {
+      "path": "work/kaggle_enzyme_reverse_spike_version1/cfd-opt-sdf-enzyme-reverse-spike.log",
+      "bytes": 7147,
+      "sha256": "8229300291b0f7dcf94a14a414e482c9ea1f656ee648fcb205a5367c644a21f5"
+    }
+  },
+  "source": {
+    "commit": "7aa9c6144e94988bfcb37648ea4567fdcbeaa503",
+    "runner_path": "infra/kaggle/kernel_enzyme_reverse_spike/runner.py",
+    "runner_project_path_expression": "ROOT / 'julia'",
+    "project_mount_path": "/kaggle/src/julia"
+  },
+  "backend_observed": {
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-b1e0f6cf-6e55-2a5c-1d5b-88fc1a599371, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-9381bdd9-02de-9d9a-7287-4d1ddb237815, 15360 MiB, 580.159.04"
+    ],
+    "gpu_count": 2,
+    "driver_version": "580.159.04",
+    "cuda_visible_devices_configured_for_julia_process": "0",
+    "cuda_initialized": false
+  },
+  "julia_environment": {
+    "version": "1.12.6",
+    "archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "download_and_archive_hash_check_reached": true,
+    "archive_extraction_reached": true,
+    "pkg_instantiate_started": true,
+    "pkg_instantiate_completed": false,
+    "dependency_resolution_outcome": "unverified; instantiate failed while Pkg attempted to write its environment manifest",
+    "manifest_write_path": "/kaggle/src/julia",
+    "manifest_write_path_writable": false
+  },
+  "stages": {
+    "gpu_inventory_reached": true,
+    "julia_download_and_hash_verification_reached": true,
+    "julia_extraction_reached": true,
+    "julia_process_started": true,
+    "pkg_instantiate_reached": true,
+    "pkg_manifest_write_failed": true,
+    "reverse_spike_jl_started": false,
+    "cuda_initialization_reached": false,
+    "enzyme_basic_cuda_reverse_reached": false,
+    "isolated_poisson_vjp_reached": false,
+    "flow_mutation_activity_analysis_reached": false,
+    "timestep_reverse_reached": false,
+    "host_device_transfer_derivative_reached": false
+  },
+  "failure": {
+    "classification": "julia_runtime_setup_project_path_read_only",
+    "failure_stage": "Pkg.instantiate manifest write before diagnostic Julia script",
+    "exact_exception": "IOError: mkdir(\"/kaggle/src/julia\"; mode=0o777): read-only file system (EROFS)",
+    "interpretation": "The kernel runner resolves its Julia project inside Kaggle's read-only source mount. Pkg.instantiate reached the environment manifest write and failed with EROFS. This is a Julia environment setup/path failure; dependency-resolution completion is unverified. No CUDA initialization or reverse-mode probe ran.",
+    "failure_classes_not_observed": [
+      "package compatibility or resolution conflict",
+      "CUDA initialization failure",
+      "Enzyme CUDA compilation or activity-analysis failure",
+      "host/device transfer derivative failure",
+      "WaterLily Flow mutation or aliasing failure",
+      "Poisson reverse failure",
+      "time-step reverse failure"
+    ]
+  },
+  "artifacts": {
+    "output_directory": "work/kaggle_enzyme_reverse_spike_version1/enzyme_reverse_spike",
+    "output_manifest": {
+      "path": "work/kaggle_enzyme_reverse_spike_version1/enzyme_reverse_spike/output_manifest.json",
+      "sha256": "24193fbb7a1575f6d39015dd38d953c84e550621ed1974e8d1455d56c08e5c9f",
+      "contents": {
+        "ERROR.txt": "6aef53927d123d1088ed3bb462f88915936a6af5c34f15051003fd66d9bc8b6b",
+        "instantiate.log": "708df30e558366e7e801cd655641dcbd6efe89d292791ab760daa8a900821d70",
+        "nvidia_smi.csv": "6b96568450f8619dbf7060a96f3be78e4c86c9380b1498b60db8083a14064d7e"
+      }
+    },
+    "error_file_sha256": "6aef53927d123d1088ed3bb462f88915936a6af5c34f15051003fd66d9bc8b6b",
+    "instantiate_log_sha256": "708df30e558366e7e801cd655641dcbd6efe89d292791ab760daa8a900821d70",
+    "gpu_inventory_sha256": "6b96568450f8619dbf7060a96f3be78e4c86c9380b1498b60db8083a14064d7e"
+  },
+  "qualification_flags_unchanged": {
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false
+  },
+  "next_action": "For any diagnostic-only retry, run Pkg against a writable copy of the pinned Julia project, preserve the same package pins, and record a new exact kernel version. Do not mix the scratch CUDA.jl 6.2.1 environment into production W2/W3/W4 environments."
+}

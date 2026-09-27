@@ -492,10 +492,98 @@ If version 3 still fails criteria discovery, its downloaded
 `input_mount_inventory.json` distinguishes the visible `/kaggle/input` entries
 from a registered dataset that is absent from the runtime mount.
 
+### W3 round-2 version 3 terminal diagnostic (2026-09-28)
+
+Version 3 used the exact immutable round-2 criteria and source binding above.
+Its Kaggle worker status is `KernelWorkerStatus.ERROR`, but the solver ran
+10,600 steps through `tU/L=120.0103759766` and completed force integration.
+Criteria discovery, dataset/source hashes, Julia setup, CUDA smoke, T4
+inventory, SDF transfer/body/simulation construction, finite fields, runtime,
+and VRAM gates passed. T7 alone failed: the registered `[80,120]` time-weighted
+`+Fx` drag was negative (`-23.45292019493048` solver units,
+`-0.05863230048732621 N`). The raw force CSV and independent host recomputation
+agree; this is a measured registered acceptance failure, not an infrastructure
+or primal-start failure. Do not flip the sign or alter round-2 criteria based
+on this result.
+
+The exact append-only diagnostic is
+[`evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json)
+(SHA-256 `fa278d11d7f2dfcde134671fea35580955d542447a51646864fc14ddad2fbe1f`).
+It records all T0-T9 values (T0-T6, T8 and T9 true; T7 false), exact source,
+criteria, backend and output hashes. The downloaded `sha256.json` and all 19
+listed output files were independently rehashed and match. Independent host
+helpers verified registered source and staged dataset identities, CPU-side
+SDF margin (`0.3499999939931499 m` against the `0.15 m` gate), raw force
+recomputation, summary metrics, and recorded x-force closure. The success-only
+formal W3 verifier was not run because the output contains `ERROR.txt` and no
+`DONE`; `formal_host_verification_passed=false`. The W3 CSV records separate
+pressure/viscous x components but not separate y/z components, so y/z component
+closure is not independently verifiable from this output.
+
+The run recorded two Tesla T4 GPUs, selected UUID
+`GPU-208ce4aa-07f3-1e25-2d6e-f1f2e2adbef9`, driver `580.159.04`, CUDA driver
+API `13.3.0`, runtime `12.8.0`, Julia `1.12.6`, CUDA.jl `6.3.1`, WaterLily
+`1.8.0` / `KernelAbstractions`, and `CUDA_VISIBLE_DEVICES=0`. It recorded 441
+force samples in the measurement window, 94.272 seconds wall time, and peak
+VRAM `7,132,408` bytes. The first/second-half force means are diagnostic only;
+they do not establish stationarity.
+
+Exact-version collection commands (completed):
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-primal/3 -p work/kaggle_w3_version3
+```
+
+Keep `waterlily_v16_primal_qualified=false`,
+`physical_profile_qualified=false`, `grid_response_qualified=false`,
+`sdf_gradient_qualified=false`, both reverse qualification flags false, and
+`shape_update_allowed=false`. W4 remains implemented only: do not register
+its criteria, stage/upload its dataset, or start measurement until an exact
+W3 run has a passing formal host verification. Investigate the negative
+registered drag against the force convention and physical fixture without
+changing round 2; any justified source or measurement change requires a new
+immutable criteria round before a new run.
+
+### Diagnostic-only Enzyme reverse spike version 1 (2026-09-28)
+
+Exact version 1 completed as a Kaggle worker but produced `ERROR.txt` before
+the reverse Julia script. Its append-only diagnostic is
+[`evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json)
+(SHA-256 `9d969272bd3730b6d7cd5609a93bd3748d3fe9698dcf5597c3ee8def755e0e67`).
+The runner recorded two Tesla T4 GPUs and downloaded/hash-checked/extracted
+Julia 1.12.6. `Pkg.instantiate()` then tried to write the project manifest
+under `/kaggle/src/julia`, the read-only Kaggle source mount, and failed with
+`EROFS`. This is a Julia setup/project-path failure; package-resolution
+completion is unverified. No CUDA initialization, Enzyme probe, isolated
+Poisson VJP, WaterLily Flow activity analysis, timestep reverse, or
+host/device derivative ran. Do not label it a package-compatibility or
+reverse-mode failure.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/1 \
+  -p work/kaggle_enzyme_reverse_spike_version1
+```
+
+If this diagnostic scratch run is retried, copy the pinned Julia project to a
+writable temporary directory before `Pkg.instantiate()` and keep all scratch
+package changes isolated from W2/W3/W4. These logs are diagnostic only and
+cannot qualify reverse mode or a gradient.
+
 ## W4 v16 resolution/domain sensitivity preparation (not registered)
 
-W3 version 2 failed before solver startup; a new W3 immutable round must first
-pass its exact-version host verifier. The local W4 execution shell and gated
+W3 version 3 completed the registered primal horizon but failed its T7
+positive-drag acceptance gate; a new W3 immutable round must first pass its
+exact-version host verifier. The local W4 execution shell and gated
 final-registration/staging tools are now implemented, but its draft remains
 `immutable: false` / `registered_before_computation: false`; there is no final
 criteria file or staged W4 dataset and no W4 run is authorized.

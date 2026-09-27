@@ -1,0 +1,273 @@
+{
+  "artifacts": {
+    "error_file": {
+      "path": "work/kaggle_w3_version3/w3_v16/ERROR.txt",
+      "sha256": "e97dda06c258bba3db4c332f5b56d07dd5b3ea611765cb4bf628e619049fc1a6"
+    },
+    "input_dataset_manifest": {
+      "path": "work/kaggle_w3_version3/w3_v16/input_dataset_manifest.json",
+      "sha256": "84ed2cde5bc22647592c74ecc81511e25f5d014774f93eb9afda5b2dbb821c12"
+    },
+    "mount_inventory": {
+      "path": "work/kaggle_w3_version3/w3_v16/input_mount_inventory.json",
+      "sha256": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441"
+    },
+    "output_directory": "work/kaggle_w3_version3",
+    "output_sha256_manifest": {
+      "contents": {
+        "ERROR.txt": "e97dda06c258bba3db4c332f5b56d07dd5b3ea611765cb4bf628e619049fc1a6",
+        "canonical_v16_phi_f4_fortran.raw": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+        "fingerprint.json": "c9f4de4bfdec23954f1a545f3c4050babd00cb3d6c9501188eb9abc8b837e508",
+        "git_checkout.log": "078bedfc9e5f64bc7ac50e3e847c640b344463a8670ad9ad2365f92299235c01",
+        "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+        "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_status.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input_dataset_manifest.json": "84ed2cde5bc22647592c74ecc81511e25f5d014774f93eb9afda5b2dbb821c12",
+        "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+        "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+        "instantiate.log": "07f0b7a664da8dfbb0b4c3265be799d1076ea89ddb0cdabedff4de15efb41a78",
+        "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+        "nvidia_smi.csv": "2fe03ba30fe0c9e91b8402fa187ffd025407cca62d40d5c99cbd35ab261db15f",
+        "outcome.json": "d40e238eb43930c27f36d85f8380c7359cfebf275fde3872f5a0f7991f8db012",
+        "v16.forces.csv": "356310944f7ba7d6666feac1802e4a40bdf3277d8ac25e5be3ad9fdd62920efb",
+        "v16.summary.json": "d22aa4e54f09797d7eb23f7b82bafb5e3d35473f312fae21202de934c6481ed3",
+        "w3_adapter_contract.json": "30a4fa99ea0dec0848406f88c6c3cf365a4d74a129993ef7784cdbb63513cc78",
+        "w3_v16.log": "85319469d7c1e07d1e40e1119da31a4bcdcdb460577a64ae174e1f66dd82cef1"
+      },
+      "path": "work/kaggle_w3_version3/w3_v16/sha256.json",
+      "sha256": "305e829d315b88381843e4db010a2288d66dc8b0afe35914b56604c683bdd393"
+    },
+    "raw_force_csv": {
+      "path": "work/kaggle_w3_version3/w3_v16/v16.forces.csv",
+      "sha256": "356310944f7ba7d6666feac1802e4a40bdf3277d8ac25e5be3ad9fdd62920efb"
+    },
+    "summary": {
+      "path": "work/kaggle_w3_version3/w3_v16/v16.summary.json",
+      "sha256": "d22aa4e54f09797d7eb23f7b82bafb5e3d35473f312fae21202de934c6481ed3"
+    }
+  },
+  "backend_observed": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-208ce4aa-07f3-1e25-2d6e-f1f2e2adbef9, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-847f09fa-667f-93a3-bc80-1e2af11c6583, 15360 MiB, 580.159.04"
+    ],
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "selected_gpu_uuid": "GPU-208ce4aa-07f3-1e25-2d6e-f1f2e2adbef9",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "claims_not_supported": [
+    "W3 preregistered T0-T9 gates all passed",
+    "WaterLily physical-profile equivalence or absolute downforce correctness",
+    "grid/domain convergence or stationarity",
+    "gradient or reverse-mode qualification",
+    "topology, optimizer, or shape-update qualification"
+  ],
+  "criteria": {
+    "criteria_in_dataset_sha256": "0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json",
+    "private_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "private_dataset_manifest_sha256": "84ed2cde5bc22647592c74ecc81511e25f5d014774f93eb9afda5b2dbb821c12",
+    "registered_source_commit": "abb0aee8351095d13a7166ea72556e0fff474242",
+    "round": 2,
+    "sha256": "0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e",
+    "sidecar_content_equals_criteria_sha256": true,
+    "sidecar_file_sha256": "6aed490baf59eacb3fe29fe63dc899fb4266ccf8e78f377b140af36c6a08bd3e",
+    "source_hashes": {
+      "host_verifier": "1e06142a321479d6637feff0f997c5b6d50db1a88b50e9ddbfd9e088f68132f9",
+      "job": "c5da2f04447f54426acf8898e97aca04a48579038fa57b0371c557e1cd27093a",
+      "kernel_runner": "e84b4a5019f84b2b58af39343b629b0772bb1b51199de32f3e1d456d2006b0c4",
+      "manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+      "project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    }
+  },
+  "diagnostic_id": "kaggle_w3_v16_primal_version3_2026_09",
+  "evidence_class": "execution_diagnostic",
+  "existing_evidence_modified": false,
+  "failure": {
+    "classification": "force_integration_registered_acceptance_gate",
+    "diagnostic_interpretation": "The solver and force integration completed. All registered gates except T7 were true. The exact raw force CSV closes the recorded x-force components and independent host recomputation matches the runner, but the registered [80,120] time-weighted +x drag is negative. This is a registered acceptance failure, not a package, CUDA, input, or solver-start failure. No criterion or threshold was changed.",
+    "exact_exception": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 480, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 468, in main\n    raise RuntimeError(f\"W3 registered gates failed: {gates}\")\nRuntimeError: W3 registered gates failed: {'T0_registered_inputs': True, 'T1_canonical_v16_identity': True, 'T2_margin_gate': True, 'T3_profile_adapter_is_explicitly_limited': True, 'T4_backend_identity': True, 'T5_primal_completion': True, 'T6_finite_fields_and_candidate_forces': True, 'T7_drag_orientation_and_host_recomputation': False, 'T8_runtime_and_vram': True, 'T9_source_commit_and_runner': True}",
+    "failed_gate": "T7_drag_orientation_and_host_recomputation",
+    "force_csv_coverage_limit": "W3 CSV records total Fx/Fy/Fz and pressure/viscous x components only; it does not separately record pressure and viscous y/z components, so those component closures cannot be independently recomputed from this registered output.",
+    "stage": "runner_registered_gate_evaluation_after_force_integration",
+    "t7_subchecks": {
+      "force_component_closure": true,
+      "registered_positive_drag_along_plus_x": false,
+      "runner_recomputed_metrics_match_host": true,
+      "summary_matches_independent_host_force_metrics": true
+    }
+  },
+  "first_sim_step_reached": true,
+  "flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "generated_on": "2026-09-28",
+  "host_checks": {
+    "force_component_closure": true,
+    "force_metrics_independently_recomputed": true,
+    "formal_host_verification_passed": false,
+    "formal_host_verifier_not_run_reason": "The exact version output contains ERROR.txt and no DONE marker; the existing host verifier is success-only.",
+    "output_sha256_manifest_verified": true,
+    "registered_source_hashes": true,
+    "run_dataset_manifest_matches_staging": true,
+    "staged_dataset_and_canonical_state": true
+  },
+  "input_mount_inventory": {
+    "input_root": "/kaggle/input",
+    "input_root_exists": true,
+    "top_level_entries": [
+      "dir:datasets"
+    ]
+  },
+  "kaggle": {
+    "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+    "kernel_version": 3,
+    "log": {
+      "bytes": 3269,
+      "path": "work/kaggle_w3_version3/cfd-opt-sdf-w3-v16-primal.log",
+      "sha256": "7e12fbec7c2c1e850fad9faad05f776162dbab5a3112f8ee28946d10e143a57a"
+    },
+    "reported_status": "KernelWorkerStatus.ERROR",
+    "requested_machine_shape": "NvidiaTeslaT4"
+  },
+  "kind": "kaggle_w3_v16_primal_execution_diagnostic",
+  "next_action": "Preserve this exact v3 output as diagnostic evidence; review the negative +x drag response and the unrecorded pressure/viscous y/z decomposition without changing round-2 criteria. Register a new immutable round before any source or measurement change.",
+  "pass": false,
+  "registered_T0_T9": {
+    "T0_registered_inputs": true,
+    "T1_canonical_v16_identity": true,
+    "T2_margin_gate": true,
+    "T3_profile_adapter_is_explicitly_limited": true,
+    "T4_backend_identity": true,
+    "T5_primal_completion": true,
+    "T6_finite_fields_and_candidate_forces": true,
+    "T7_drag_orientation_and_host_recomputation": false,
+    "T8_runtime_and_vram": true,
+    "T9_source_commit_and_runner": true
+  },
+  "schema_version": 1,
+  "sdf_identity": {
+    "canonical_c_order_phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "canonical_fortran_order_phi_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "cpu_measured_margin_m": 0.3499999939931499,
+    "design_domain_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "gpu_roundtrip_phi_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "margin_gate_passed": true,
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "canonical_point_shape": [
+      61,
+      33,
+      25
+    ],
+    "registered_margin_gate_m": 0.15,
+    "flow_cell_dims": [
+      60,
+      32,
+      24
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.05
+  },
+  "solver_and_force": {
+    "downforce_projection": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "downforce_time_weighted_physical_n": -0.5793328138877301,
+    "drag_projection": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "drag_time_weighted_physical_n": -0.05863230048732621,
+    "finite_pressure": true,
+    "finite_velocity": true,
+    "force_rows": 1325,
+    "force_rows_finite": true,
+    "force_window_t_u_l": [
+      80.0,
+      120.0
+    ],
+    "host_recomputed_metrics": {
+      "cd_time_weighted": -0.1832259390228944,
+      "cd_window_mean": -0.17943462870080967,
+      "diagnostic_first_half_mean_downforce_solver": -196.19168921027207,
+      "diagnostic_first_half_mean_drag_solver": -8.730026686983585,
+      "diagnostic_second_half_mean_downforce_solver": -254.49988666519815,
+      "diagnostic_second_half_mean_drag_solver": -37.269954650363324,
+      "window_mean_downforce_solver": -225.2796788703259,
+      "window_mean_drag_solver": -22.967632473703635,
+      "window_samples": 441,
+      "window_time_weighted_downforce_solver": -231.73312555509196,
+      "window_time_weighted_drag_solver": -23.45292019493048
+    },
+    "minimum_window_sample_count": 4,
+    "peak_vram_bytes": 7132408,
+    "pressure_plus_viscous_x_closure": true,
+    "raw_force_csv_sha256": "356310944f7ba7d6666feac1802e4a40bdf3277d8ac25e5be3ad9fdd62920efb",
+    "runtime_limit_seconds": 1800.0,
+    "runtime_seconds": 94.27203702926636,
+    "sample_stride_solver_steps": 8,
+    "sampling_stride_valid": true,
+    "steps": 10600,
+    "summary_metrics_match_host": true,
+    "t_u_l_reached": 120.0103759765625,
+    "t_u_l_target": 120.0,
+    "total_vram_bytes": 15636037632,
+    "window_sample_count": 441
+  },
+  "solver_started": true,
+  "solver_steps": 10600,
+  "stages": {
+    "criteria_discovery_succeeded": true,
+    "criteria_sha_and_sidecar_verified": true,
+    "cuda_smoke_reached": true,
+    "dataset_identity_verified": true,
+    "dataset_manifest_verification_reached": true,
+    "first_primal_step_invoked": true,
+    "force_integration_completed": true,
+    "gpu_inventory_reached": true,
+    "independent_host_input_and_force_checks_completed": true,
+    "input_mount_inventory_recorded": true,
+    "julia_archive_download_and_extract_reached": true,
+    "julia_package_instantiate_reached": true,
+    "long_horizon_integration_completed": true,
+    "registered_gate_evaluation_reached": true,
+    "registered_source_checkout_reached": true,
+    "sdf_device_transfer_and_roundtrip_reached": true,
+    "simulation_construction_reached": true,
+    "source_fetch_reached": true,
+    "success_only_host_verifier_executed": false,
+    "waterlily_body_construction_reached": true
+  },
+  "status": "primal_completed_registered_T7_drag_sign_gate_failed"
+}

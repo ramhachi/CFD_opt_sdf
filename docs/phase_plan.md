@@ -2678,3 +2678,69 @@ solver result are available yet. Version 2 remains preserved as the
 pre-solver criteria-path diagnostic. W4 remains blocked on v3 completing and
 passing its exact-version host verifier; no W4 criteria, dataset, or GPU run
 has been created.
+
+### 2026-09-28 W3 version 3 completed as a T7 diagnostic; W4 remains blocked
+
+This is the latest execution checkpoint and supersedes the preceding `QUEUED`
+status without modifying any earlier evidence or immutable criteria.
+
+- **Implemented:** the W3 input-discovery and Julia explicit-import source
+  changes are bound to source commit
+  `abb0aee8351095d13a7166ea72556e0fff474242`. The W4 case builder, solver
+  harness, runner, host verifier, registrar/stager and contract tests remain
+  implemented.
+- **Submitted:** W3 kernel version 3 used immutable round-2 criteria SHA-256
+  `0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e` and the
+  registered private dataset. Its terminal Kaggle worker status is
+  `KernelWorkerStatus.ERROR`.
+- **Measured:** the W3 primal reached 10,600 solver steps and `tU/L=120.0103759766`;
+  it wrote 1,325 finite force rows and 441 samples in `[80,120]`. The registered
+  time-weighted `+Fx` drag is `-23.45292019493048` solver units
+  (`-0.05863230048732621 N`), so the preregistered positive-drag T7 gate is
+  false. Wall time was `94.272037 s`, peak VRAM `7,132,408` bytes. No criterion,
+  sign convention or threshold was changed after measurement.
+- **Verified:** the append-only execution diagnostic
+  [`evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json`](evidence/kaggle_w3_v16_primal_version3_diagnostic_2026_09.json)
+  has SHA-256 `fa278d11d7f2dfcde134671fea35580955d542447a51646864fc14ddad2fbe1f`.
+  Its exact Kaggle log SHA-256 is
+  `7e12fbec7c2c1e850fad9faad05f776162dbab5a3112f8ee28946d10e143a57a`; the
+  downloaded output-manifest SHA is
+  `305e829d315b88381843e4db010a2288d66dc8b0afe35914b56604c683bdd393` and all
+  19 listed file hashes match. Registered source and dataset identities,
+  canonical state/phi and round-trip hashes, CPU SDF margin, two-T4/Julia/CUDA/
+  WaterLily identity, force-row arithmetic and time-weighted recomputation,
+  recorded x-force component closure, completion, runtime, VRAM, and T0-T9
+  values were independently inspected. T0-T6, T8, T9 are true; T7 is false.
+  The success-only host verifier was not run against `ERROR.txt`/missing `DONE`,
+  so `formal_host_verification_passed=false`. The v3 force CSV has separate
+  pressure/viscous x components only; y/z component closure cannot be
+  independently recomputed from these registered outputs.
+- **Qualified:** no new qualification. In particular,
+  `waterlily_v16_primal_qualified=false`,
+  `physical_profile_qualified=false`, `grid_response_qualified=false`,
+  `sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
+  `waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
+  and `shape_update_allowed=false`. No OpenFOAM equivalence, absolute-downforce,
+  stationarity, grid/domain convergence, gradient, reverse, topology or
+  optimizer claim follows.
+- **Open:** diagnose the negative registered drag and any force-contract or
+  fixture issue without changing round-2 criteria. The current evidence does
+  not establish a source-code sign bug, so do not blindly flip force signs or
+  repeat under the same criteria. Any justified source/measurement change
+  needs a new immutable W3 round. W4 criteria and dataset are still
+  unregistered, and no W4 measurement or formal FD measurement may begin until
+  an exact W3 result passes its formal host verifier.
+
+The diagnostic-only Enzyme reverse spike version 1 is now terminal: Kaggle
+reports `KernelWorkerStatus.COMPLETE`, but its output contains `ERROR.txt`.
+The append-only record is
+[`evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version1_diagnostic_2026_09.json)
+(SHA-256 `9d969272bd3730b6d7cd5609a93bd3748d3fe9698dcf5597c3ee8def755e0e67`).
+GPU inventory and Julia archive extraction succeeded; `Pkg.instantiate()` then
+failed with `EROFS` while attempting to write a manifest under read-only
+`/kaggle/src/julia`. This is a Julia setup/project-path failure. Package
+resolution outcome is unverified, and no CUDA initialization or reverse test
+was reached. It is not evidence of Enzyme/CUDA incompatibility or a reverse
+failure; all reverse and gradient qualification flags remain false. If retried
+for diagnosis, use a writable temporary copy of the pinned scratch project and
+keep the CUDA.jl 6.2.1 scratch environment isolated from production W2/W3/W4.
