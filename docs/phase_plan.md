@@ -2652,3 +2652,29 @@ artifacts. W3 v2 remains an infrastructure diagnostic with zero solver steps.
 No W3 round-2 criteria, dataset version, or retry kernel has been registered
 or submitted yet. W4 remains unregistered and unrun pending exact host-verified
 W3 PASS. OpenCode remains frozen; no OpenCode CLI or worker was used.
+
+### 2026-09-28 W3 immutable round 2 submitted
+
+The source preparation was committed and pushed as `abb0aee8351095d13a7166ea72556e0fff474242`.
+W3 immutable criteria round 2 was generated only after that source commit, with
+SHA-256
+`0624c3498cddc40db0b21144cd818b3cd5837bbb8e735d3d84f8b78782a1fb2e`, then
+committed and pushed as `9daaa55`. It preserves round 1 acceptance and
+measurement criteria exactly; no threshold changed. The private input dataset
+staging manifest binds the canonical NPZ
+`3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, C-order
+phi `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`, and
+Fortran phi
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`. After
+Kaggle reported the dataset `ready`, the remote dataset was downloaded again;
+its exact five-file inventory and all file hashes, including manifest SHA
+`84ed2cde5bc22647592c74ecc81511e25f5d014774f93eb9afda5b2dbb821c12`, match
+the local staged dataset.
+
+The existing private W3 kernel was pushed to Kaggle as version 3 with
+`NvidiaTeslaT4`, timeout 7200 seconds, and the registered round-2 dataset.
+The first exact status check reports `KernelWorkerStatus.QUEUED`; no v3 logs or
+solver result are available yet. Version 2 remains preserved as the
+pre-solver criteria-path diagnostic. W4 remains blocked on v3 completing and
+passing its exact-version host verifier; no W4 criteria, dataset, or GPU run
+has been created.
