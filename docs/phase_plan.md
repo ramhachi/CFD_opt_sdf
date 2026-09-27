@@ -2106,7 +2106,38 @@ missing ignored `work/` campaign inputs in this fresh worktree, not failures in
 the W2-T4b slice. The full suite limitation is the same missing-artifact class
 seen on the earlier migration checkpoint.
 
-Next: push the runner/verifier update, submit Kaggle version 6 from its
-pre-registered round-2 criteria, and independently verify version-bound
-artifacts. Until that pass, W2-T4b remains unqualified; reverse CUDA,
-gradients, topology, and shape updates remain unauthorized.
+At this registration checkpoint, the next action was to push the
+runner/verifier update and independently verify a fresh Kaggle run. The
+version-6 outcome is recorded below; reverse CUDA, gradients, topology, and
+shape updates remain unauthorized.
+
+### 2026-09-27 Kaggle W2-T4b round 2 passed
+
+The private Kaggle kernel version 6 ran the repaired source
+`2da94a92ffb9af55dfc159068ace8f25c55c0e6c` against immutable round-2 criteria
+`85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`.
+Kaggle reported T0–T11 true; after collecting version-specific outputs, the
+host verifier independently checked all 13 manifested files, the `DONE`
+marker, force CSV values/schema/hash, source and runner identity, preregistered
+inputs, and recomputed T0–T12. All gates passed.
+
+The measured zero-level clearance is `0.19999998807907104 m`; the configured
+constructor gate is separately recorded as `0.15 m`. Both canonical phi and
+device-round-trip hashes match
+`393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161`. The
+window-mean drag is `88.2360589943`, with relative difference `2.86e-5` from
+the registered W2a CPU sampled sphere. `Cd=0.8777003092`, with relative
+difference `0.00215` from the analytic T4 reference; stationarity drift is
+`2.65e-8` and relative lift/drag is `9.50e-6`. The run took `26.71 s`
+after warm-up and sampled `54.1 MB` peak VRAM on one selected T4 from a
+two-T4 inventory.
+
+Append-only result:
+[`evidence/kaggle_w2t4b_round2_result_2026_09.json`](evidence/kaggle_w2t4b_round2_result_2026_09.json),
+SHA-256 `737ea3f6946b0eb3867902ea2b1db8bc6c92ccb8f45de30f664cd34dd2fb4b82`.
+This closes W2-T4b only for the registered Re_D=100, Float32, 16-cells/D
+sampled-sphere primal and its numerical agreement gates. It does not qualify
+grid convergence, absolute/literature Cd, gradients, reverse CUDA, topology,
+v16, optimizer readiness, or target aerodynamics. The next planned slice is
+W2b, with a 16/24/32-cells/D flow-grid ladder; preregister that matrix and its
+acceptance rules before any W2b GPU measurement.

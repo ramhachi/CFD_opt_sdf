@@ -169,15 +169,15 @@ for the version, source, criteria, metrics, gate results, and artifact hashes.
 
 ## W2-T4b round 2 retry
 
-The append-only round-2 criteria are
+The append-only round-2 criteria were
 [`evidence/kaggle_w2t4b_criteria_2026_09_round2.json`](evidence/kaggle_w2t4b_criteria_2026_09_round2.json)
 (SHA-256 `85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66`).
 All numerical thresholds are identical to round 1. The only correction is
 telemetry semantics: `phi_margin_m` is recomputed with
 `zero_level_margin_m(phi, origin, h)`, and `phi_margin_gate_m` separately
 records the constructor's registered `0.15 m` gate. The repaired job is pinned
-to source commit `2da94a92ffb9af55dfc159068ace8f25c55c0e6c`. The current local
-runner is configured for Kaggle version 6:
+to source commit `2da94a92ffb9af55dfc159068ace8f25c55c0e6c`. The retry used
+Kaggle version 6:
 
 ```bash
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
@@ -195,3 +195,14 @@ Use the version actually returned by `push` and keep it matched across
 `status`, `logs`, `output`, and the output directory. A missing `DONE`, an
 `ERROR.txt`, any hash mismatch, or any failed independent gate is diagnostic;
 do not alter round-2 thresholds after seeing the result.
+
+Version 6 completed and passed the round-2 criteria. Host verification checked
+13 manifested files and independently recomputed all gates. Measured margin
+was `0.19999998807907104 m`, distinct from the recorded `0.15 m` gate;
+window-mean drag was `88.2360589943` (relative difference `2.86e-5` from the
+CPU sampled fixture), and `Cd=0.8777003092` (relative difference `0.00215`
+from analytic T4). The append-only result is
+[`evidence/kaggle_w2t4b_round2_result_2026_09.json`](evidence/kaggle_w2t4b_round2_result_2026_09.json).
+It qualifies only the registered sampled-sphere CUDA primal capability and
+agreement gates at 16 cells/D. Next in plan order is W2b: preregister the
+16/24/32 cells/D flow-grid matrix and its gates before launching those runs.

@@ -1,0 +1,127 @@
+{
+  "backend": {
+    "compute_capability": "7.5.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "13.3.0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "claims_not_supported": [
+    "no flow-grid convergence, absolute Cd validation, or literature validation",
+    "no gradient, reverse-mode, topology, v16 or optimizer qualification",
+    "no target-aerodynamics, full-vehicle or high-Re claim"
+  ],
+  "claims_supported": [
+    "the registered Float32 sampled-sphere GridSDF body completes one WaterLily primal on the Kaggle T4 CUDA backend",
+    "the CUDA solver run returns finite fields and force history with positive drag and bounded stationarity",
+    "the sampled T4 drag is within the registered 1% bound of the existing CPU sampled-sphere fixture"
+  ],
+  "criteria": {
+    "path": "docs/evidence/kaggle_w2t4b_criteria_2026_09_round2.json",
+    "previous_diagnostic_path": "docs/evidence/kaggle_w2t4b_round1_diagnostic_2026_09.json",
+    "previous_diagnostic_sha256": "1836a4a7e33fa14c4c959560c712637e9706771ab13457715ad9b3753a623781",
+    "sha256": "85bd5ba4f6ff0a13c7f0509b1ba86b74cfeb7bc346fc590b27a819ce3f228e66"
+  },
+  "decision": "W2-T4b round 2 passes the registered sampled-sphere CUDA primal capability and numerical-agreement gates on the Kaggle T4 backend. This is a narrow fixture result; it does not establish grid convergence, absolute or literature Cd accuracy, gradient fidelity, optimization readiness, or target aerodynamics.",
+  "evidence_class": "sampled_sphere_cuda_primal_capability_and_numerical_agreement",
+  "existing_evidence_modified": false,
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_sampled_sphere_t4_qualified": true
+  },
+  "gates": {
+    "T0_prerequisites": true,
+    "T10_runtime_vram": true,
+    "T11_backend_identity": true,
+    "T12_artifact_retrieval": true,
+    "T1_completion": true,
+    "T2_finiteness": true,
+    "T3_force_finite": true,
+    "T4_drag_sign": true,
+    "T5_stationarity": true,
+    "T6_cpu_kaggle_agreement": true,
+    "T7_sampled_analytic_agreement": true,
+    "T8_lift_bound": true,
+    "T9_canonical_grid": true
+  },
+  "generated_on": "2026-09-27",
+  "immutable": true,
+  "measurements": {
+    "cd": 0.8777003092427581,
+    "cpu_sampled_relative_drag_difference": 2.8573603219728538e-05,
+    "device_roundtrip_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+    "finite_forces": true,
+    "finite_p": true,
+    "finite_u": true,
+    "first_step_seconds": 18.509665966033936,
+    "force_csv_rows": 560,
+    "force_csv_sha256": "51fe870cb044f3b7f27ae6325c37a08a5e8b133308f6ce03dc70ee67b5d987e7",
+    "force_samples": 560,
+    "mode": "gridsdf",
+    "ms_per_step": 11.918995541049561,
+    "peak_vram_bytes": 54091392,
+    "phi_margin_gate_m": 0.15,
+    "phi_margin_measured_m": 0.19999998807907104,
+    "phi_sha256": "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161",
+    "reached_time_tu_d": 60.001182556152344,
+    "relative_lift_to_drag": 9.501199278593831e-06,
+    "sampled_analytic_relative_cd_difference": 0.0021454687884311595,
+    "stationarity_relative_drift": 2.6540269608297347e-08,
+    "steps": 2242,
+    "target_time_tu_d": 60.0,
+    "vram_total_bytes": 15636037632,
+    "wall_seconds": 26.710469007492065,
+    "window_mean_drag": 88.23605899425723,
+    "window_mean_lift": 0.0008383483800621995,
+    "window_mean_side": 0.0034753478480125206
+  },
+  "next": "Proceed to the separately scoped W2b flow-grid ladder only after auditing/registering its criteria; do not infer a qualified flow-grid result from this single 16-cells-per-diameter sampled-sphere run.",
+  "retrieval": {
+    "artifact_sha256": {
+      "fingerprint.json": "3854d1d87cc25fcb6c8970903b0b4d1147222679d2693d97e1ff0ae944b66773",
+      "git_checkout.log": "53704c4e801050e5bdd6d668b56e422cef5a1933462cfd97275def6afdbebf61",
+      "git_fetch.log": "44055a9edf9629a7bad73d60beabc52e9574d0ded81337ac6f3c67984b054a23",
+      "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gridsdf.forces.csv": "51fe870cb044f3b7f27ae6325c37a08a5e8b133308f6ce03dc70ee67b5d987e7",
+      "gridsdf.log": "5d20582185d15b5791e50db067d2944567e50529970bc5e192e7f4c3c071bf9c",
+      "gridsdf.summary.json": "197e89e516702f490b01f56379646cc2ba187518d2e0c5d1b8729ea881085809",
+      "instantiate.log": "08b72962c2a12a6675c8073cab57f5f3b427d0dabc81742bf4822fe9aa54d4a0",
+      "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "julia_smoke.log": "e5a25b3610b9d3f1d5e60be48c1b18c918405961b9123d4bb81e1dcc6a2ef48d",
+      "nvidia_smi.csv": "1e6287da7094f0bf5350f9fa2381d2a3adc0ecdb13ec1e077ce058d81f325f1b",
+      "outcome.json": "61980f785b51619089839490f8896bc77760f0b4c738f6b25785d907f64b4e6d",
+      "params.jl": "3a5aab5b7f9d28f0f71222040261698a6b1a663b212139a83e11b7d696254acb"
+    },
+    "done_marker_present": true,
+    "kaggle_log_sha256": "cf71c9c8977c85bcdff05448f4fb5b6de64157ce74c0c262275d040df30187df",
+    "local_download": "work/kaggle_w2t4b_version6/w2t4b",
+    "output_manifest_sha256": "a92464675a2267bea666542fcc1127e6f89fd92075d0ae685e2fad3de095fa87",
+    "verified_files": 13
+  },
+  "run": {
+    "gpu_inventory": [
+      "0, Tesla T4, GPU-8dd41b69-ef0f-23bf-d1d1-1e8829eb87c6, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-c3597c05-e349-558b-5e72-073a86fb6b87, 15360 MiB, 580.159.04"
+    ],
+    "gpu_uuid_policy": "Ephemeral Kaggle UUID recorded for this run only; not compared across kernel versions.",
+    "kernel_ref": "ramhachi888/cfd-opt-sdf-k0",
+    "manifest_sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "private": true,
+    "project_sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "runner_sha256": "740141e20e84533b4f757d4d6c7920f78f6a197a2e172618045a46afae98a4eb",
+    "selected_gpu_uuid": "GPU-8dd41b69-ef0f-23bf-d1d1-1e8829eb87c6",
+    "source_commit": "2da94a92ffb9af55dfc159068ace8f25c55c0e6c",
+    "version": 6
+  },
+  "schema_version": 1,
+  "solver_started": true,
+  "verdict": "pass"
+}
