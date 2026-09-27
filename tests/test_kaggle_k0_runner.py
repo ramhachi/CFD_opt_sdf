@@ -36,3 +36,29 @@ def test_registered_params_and_analytic_gates(tmp_path, monkeypatch):
 def test_verifier_refuses_incomplete_download(tmp_path):
     with pytest.raises(ValueError, match="completion marker"):
         verifier.verify(tmp_path)
+
+
+def test_w1g_gates_reject_geometry_and_identity_drift():
+    rows = [
+        "0, Tesla T4, GPU-a, 15360 MiB, 580.159.04",
+        "1, Tesla T4, GPU-b, 15360 MiB, 580.159.04",
+    ]
+    summary = {
+        "mode": "gpu", "source_phi_sha256": runner.CANONICAL_PHI_SHA256,
+        "device_roundtrip_sha256": runner.CANONICAL_PHI_SHA256,
+        "probe_count": 200012, "bulk_box": 100000, "bulk_band": 100000,
+        "representative_count": 12, "all_finite": True, "sign_violations": 0,
+        "sign_gated_probes": 199321, "max_value_error_world_m": 3.6e-7,
+        "max_normal_error": 3e-7, "normal_gated_probes": 199896,
+        "outside_exact": True, "outside_probes": 6, "scalar_index_blocked": True,
+        "backend_identity": {
+            "gpu_name": "Tesla T4", "gpu_uuid": "GPU-a",
+            "compute_capability": "7.5.0", "cuda_jl_version": "6.3.1",
+            "waterlily_version": "1.8.0", "julia_version": "1.12.6",
+            "cuda_runtime_version": "13.3.0",
+        },
+    }
+    assert all(runner.w1g_gates(summary, rows, "").values())
+    assert not runner.w1g_gates(dict(summary, max_normal_error=0.002), rows, "")["G6_normal"]
+    wrong = dict(summary, backend_identity=dict(summary["backend_identity"], gpu_uuid="GPU-b"))
+    assert not runner.w1g_gates(wrong, rows, "")["G9_backend"]

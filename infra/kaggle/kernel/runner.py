@@ -1,4 +1,4 @@
-"""Kaggle K0: reproduce the existing W2-T4a analytic job on two T4 devices."""
+"""Kaggle background runner for the registered SDF-native GPU gate."""
 
 import hashlib
 import json
@@ -15,8 +15,9 @@ import urllib.request
 from pathlib import Path
 
 
-OUT = Path("/kaggle/working/k0")
-SOURCE_COMMIT = "d81d0ccd13379fc86de48d52a797e6e7612658bd"
+STAGE = "w1g"
+OUT = Path("/kaggle/working") / STAGE
+SOURCE_COMMIT = "2a0ace4104ae435dbe26160dad85ce038770a862"
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -24,6 +25,8 @@ PROJECT_SHA256 = "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb9841
 MANIFEST_SHA256 = "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
 CRITERIA_SHA256 = "154fec9111737f8cb76579f0a02fd2d6b4c043c30250d1d24b8a5d05b3ea15ad"
 COLAB_RESULT_SHA256 = "70f747e264bacc9c3360ab9d6445c7bb77e6b11a6a6d521271297780301af754"
+W1G_CRITERIA_SHA256 = "c5c51f84fb1574bede9f7396e0a75bb997aecfc7b5117f4b8cf0d814f59a70ef"
+CANONICAL_PHI_SHA256 = "393d5d7897885d71cda0902129a4aa3db561c59b1a85e8e221d55ce19fca4161"
 
 
 def sha256(path):
@@ -174,6 +177,53 @@ def write_hash_manifest():
             if path.is_file() and path.name not in {"sha256.json", "DONE"}})
 
 
+def w1g_gates(summary, rows, fixture_text):
+    identity = summary["backend_identity"]
+    selected_uuid = rows[0].split(", ")[2]
+    return {
+        "G1_device_copy": summary["source_phi_sha256"] == CANONICAL_PHI_SHA256
+                          and summary["device_roundtrip_sha256"] == CANONICAL_PHI_SHA256,
+        "G2_kernel": summary["mode"] == "gpu" and summary["probe_count"] == 200012
+                     and summary["bulk_box"] == 100000 and summary["bulk_band"] == 100000
+                     and summary["representative_count"] == 12,
+        "G3_finite": summary["all_finite"] is True,
+        "G4_sign": summary["sign_violations"] == 0 and summary["sign_gated_probes"] > 0,
+        "G5_value": summary["max_value_error_world_m"] <= 1e-5,
+        "G6_normal": summary["max_normal_error"] <= 1e-3 and summary["normal_gated_probes"] > 0,
+        "G7_outside": summary["outside_exact"] is True and summary["outside_probes"] == 6,
+        "G8_no_scalar_fallback": summary["scalar_index_blocked"] is True
+                                 and "CUDA.allowscalar(true)" not in fixture_text,
+        "G9_backend": identity == {
+            "gpu_name": "Tesla T4", "gpu_uuid": selected_uuid,
+            "compute_capability": "7.5.0", "cuda_jl_version": "6.3.1",
+            "waterlily_version": "1.8.0", "julia_version": "1.12.6",
+            "cuda_runtime_version": "13.3.0",
+        },
+    }
+
+
+def run_w1g(julia, project, source, env, rows, smoke):
+    if "GPU_COMPUTE_CAPABILITY 7.5.0" not in smoke or "CUDA_RUNTIME_VERSION 13.3.0" not in smoke:
+        raise RuntimeError("Kaggle W1g hardware/runtime cohort drift")
+    if any(row.split(", ")[-1] != "580.159.04" for row in rows):
+        raise RuntimeError("Kaggle W1g NVIDIA driver cohort drift")
+    log = OUT / "w1g.log"
+    command([str(julia), "--startup-file=no", f"--project={project}",
+             str(source / "scripts/w1g_gpu_geometry_fixture.jl"), "gpu", str(OUT / "fixture")],
+            log, env=env, timeout=1800)
+    summary = json.loads((OUT / "fixture.summary.json").read_text())
+    gates = w1g_gates(summary, rows,
+                      (source / "scripts/w1g_gpu_geometry_fixture.jl").read_text())
+    write_json(OUT / "outcome.json", {
+        "criteria_sha256": W1G_CRITERIA_SHA256, "source_commit": SOURCE_COMMIT,
+        "project_sha256": PROJECT_SHA256, "manifest_sha256": MANIFEST_SHA256,
+        "gpu_inventory": rows, "fixture_summary": summary, "gates": gates,
+    })
+    if not all(gates.values()):
+        raise RuntimeError(f"W1g failed: {gates}")
+    print("KAGGLE_W1G_DONE", json.dumps(gates, sort_keys=True), flush=True)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     rows = gpu_inventory()
@@ -202,6 +252,11 @@ def main():
                        "CUDA_JL_VERSION 6.3.1", "WATERLILY_VERSION 1.8.0", "GPU_NAME Tesla T4"):
             if marker not in smoke:
                 raise RuntimeError(f"Julia CUDA smoke missing marker: {marker}")
+        if STAGE == "w1g":
+            run_w1g(julia, project, source, env, rows, smoke)
+            write_hash_manifest()
+            (OUT / "DONE").write_text("Kaggle W1g G1-G9 completed; verify retrieved SHA-256 files\n")
+            return
         params = write_params(source)
         colab = json.loads((source / "docs/evidence/sdf_native_w2t4a_analytic_sphere_2026_09.json").read_text())
         reference_drag = colab["runs"]["run"]["window_mean_drag"]
