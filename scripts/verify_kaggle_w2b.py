@@ -10,13 +10,15 @@ from pathlib import Path
 from verify_kaggle_k0 import ROOT, require, sha256, verify_files
 
 
-CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round4.json"
+CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json"
 ROUND1_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round1.json"
 ROUND2_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round2.json"
 ROUND3_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round3.json"
+ROUND4_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round4.json"
 ROUND1_DIAGNOSTIC = ROOT / "docs/evidence/kaggle_w2b_version7_fetch_diagnostic_2026_09.json"
 ROUND2_DIAGNOSTIC = ROOT / "docs/evidence/kaggle_w2b_version8_runtime_diagnostic_2026_09.json"
 ROUND3_DIAGNOSTIC = ROOT / "docs/evidence/kaggle_w2b_version9_partial_failure_diagnostic_2026_09.json"
+ROUND4_DIAGNOSTIC = ROOT / "docs/evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json"
 RUNNER = ROOT / "infra/kaggle/kernel_w2b/runner.py"
 JOB = ROOT / "scripts/waterlily_w2b_grid_ladder_job.jl"
 CASE_IDS = [f"{mode}_{n}" for n in (16, 24, 32) for mode in ("analytic", "gridsdf")]
@@ -99,18 +101,20 @@ def verify(download):
     require(sha256(CRITERIA) == CRITERIA.with_suffix(CRITERIA.suffix + ".sha256").read_text().strip(),
             "W2b criteria hash mismatch")
     previous = criteria["previous_round"]
-    require(previous["criteria_path"] == ROUND3_CRITERIA.relative_to(ROOT).as_posix()
-            and previous["criteria_sha256"] == sha256(ROUND3_CRITERIA),
+    require(previous["criteria_path"] == ROUND4_CRITERIA.relative_to(ROOT).as_posix()
+            and previous["criteria_sha256"] == sha256(ROUND4_CRITERIA),
             "W2b previous criteria binding mismatch")
-    require(previous["diagnostic_path"] == ROUND3_DIAGNOSTIC.relative_to(ROOT).as_posix()
-            and previous["diagnostic_sha256"] == sha256(ROUND3_DIAGNOSTIC)
-            and sha256(ROUND3_DIAGNOSTIC)
-            == ROUND3_DIAGNOSTIC.with_suffix(ROUND3_DIAGNOSTIC.suffix + ".sha256").read_text().strip(),
-            "W2b round-3 diagnostic binding mismatch")
+    require(previous["diagnostic_path"] == ROUND4_DIAGNOSTIC.relative_to(ROOT).as_posix()
+            and previous["diagnostic_sha256"] == sha256(ROUND4_DIAGNOSTIC)
+            and sha256(ROUND4_DIAGNOSTIC)
+            == ROUND4_DIAGNOSTIC.with_suffix(ROUND4_DIAGNOSTIC.suffix + ".sha256").read_text().strip(),
+            "W2b round-4 diagnostic binding mismatch")
     round1 = json.loads(ROUND1_CRITERIA.read_text())
     round2 = json.loads(ROUND2_CRITERIA.read_text())
     round3 = json.loads(ROUND3_CRITERIA.read_text())
+    round4 = json.loads(ROUND4_CRITERIA.read_text())
     round3_diagnostic = json.loads(ROUND3_DIAGNOSTIC.read_text())
+    round4_diagnostic = json.loads(ROUND4_DIAGNOSTIC.read_text())
     require(round3_diagnostic["criteria"]["path"] == ROUND3_CRITERIA.relative_to(ROOT).as_posix()
             and round3_diagnostic["criteria"]["sha256"] == sha256(ROUND3_CRITERIA)
             and round3_diagnostic["kernel"]["version"] == 9
@@ -118,6 +122,19 @@ def verify(download):
             and round3_diagnostic["observed"]["completed_case_ids"] == ["analytic_16"]
             and round3_diagnostic["observed"]["job_completion_marker_present"] is False,
             "W2b round-3 partial-failure diagnostic binding mismatch")
+    require(round4_diagnostic["criteria"]["path"] == ROUND4_CRITERIA.relative_to(ROOT).as_posix()
+            and round4_diagnostic["criteria"]["sha256"] == sha256(ROUND4_CRITERIA)
+            and round4_diagnostic["kernel"]["version"] == 10
+            and round4_diagnostic["observed"]["status"] == "KernelWorkerStatus.ERROR"
+            and round4_diagnostic["observed"]["completed_case_ids"] == ["analytic_16"]
+            and round4_diagnostic["observed"]["failed_case_id"] == "gridsdf_16"
+            and round4_diagnostic["observed"]["job_completion_marker_present"] is False,
+            "W2b round-4 partial-failure diagnostic binding mismatch")
+    require(round4["previous_round"]["criteria_path"] == ROUND3_CRITERIA.relative_to(ROOT).as_posix()
+            and round4["previous_round"]["criteria_sha256"] == sha256(ROUND3_CRITERIA)
+            and round4["previous_round"]["diagnostic_path"] == ROUND3_DIAGNOSTIC.relative_to(ROOT).as_posix()
+            and round4["previous_round"]["diagnostic_sha256"] == sha256(ROUND3_DIAGNOSTIC),
+            "W2b round-3 to round-4 chain binding mismatch")
     require(round3["previous_round"]["criteria_path"] == ROUND2_CRITERIA.relative_to(ROOT).as_posix()
             and round3["previous_round"]["criteria_sha256"] == sha256(ROUND2_CRITERIA)
             and round3["previous_round"]["diagnostic_path"] == ROUND2_DIAGNOSTIC.relative_to(ROOT).as_posix()
@@ -134,6 +151,9 @@ def verify(download):
     require(sha256(ROUND3_CRITERIA)
             == ROUND3_CRITERIA.with_suffix(ROUND3_CRITERIA.suffix + ".sha256").read_text().strip(),
             "W2b round-3 criteria sidecar mismatch")
+    require(sha256(ROUND4_CRITERIA)
+            == ROUND4_CRITERIA.with_suffix(ROUND4_CRITERIA.suffix + ".sha256").read_text().strip(),
+            "W2b round-4 criteria sidecar mismatch")
     require(sha256(ROUND1_CRITERIA)
             == ROUND1_CRITERIA.with_suffix(ROUND1_CRITERIA.suffix + ".sha256").read_text().strip(),
             "W2b round-1 criteria sidecar mismatch")
@@ -143,23 +163,30 @@ def verify(download):
     require(sha256(ROUND2_DIAGNOSTIC)
             == ROUND2_DIAGNOSTIC.with_suffix(ROUND2_DIAGNOSTIC.suffix + ".sha256").read_text().strip(),
             "W2b round-2 diagnostic sidecar mismatch")
+    require(sha256(ROUND3_DIAGNOSTIC)
+            == ROUND3_DIAGNOSTIC.with_suffix(ROUND3_DIAGNOSTIC.suffix + ".sha256").read_text().strip(),
+            "W2b round-3 diagnostic sidecar mismatch")
     round3_inputs_without_job = {key: value for key, value in round3["inputs"].items() if key != "job"}
-    round4_inputs_without_job = {key: value for key, value in criteria["inputs"].items() if key != "job"}
-    require(criteria["round"] == 4 and criteria["criteria_id"].endswith("round4")
-            and criteria["thresholds"] == round1["thresholds"] == round2["thresholds"] == round3["thresholds"]
-            and criteria["fixture"] == round1["fixture"] == round2["fixture"] == round3["fixture"]
+    round4_inputs_without_job = {key: value for key, value in round4["inputs"].items() if key != "job"}
+    round5_inputs_without_job = {key: value for key, value in criteria["inputs"].items() if key != "job"}
+    require(criteria["round"] == 5 and criteria["criteria_id"].endswith("round5")
+            and criteria["thresholds"] == round1["thresholds"] == round2["thresholds"]
+            == round3["thresholds"] == round4["thresholds"]
+            and criteria["fixture"] == round1["fixture"] == round2["fixture"]
+            == round3["fixture"] == round4["fixture"]
             and round3["inputs"] == round2["inputs"]
             and round4_inputs_without_job == round3_inputs_without_job
-            and criteria["inputs"]["job"]["path"] == round3["inputs"]["job"]["path"]
-            and criteria["source_commit"] != round3["source_commit"],
-            "W2b round-4 contract, source update, or threshold drift")
+            and round5_inputs_without_job == round4_inputs_without_job
+            and criteria["inputs"]["job"]["path"] == round4["inputs"]["job"]["path"]
+            and criteria["source_commit"] != round4["source_commit"],
+            "W2b round-5 contract, source update, or threshold drift")
     runtime_diagnostic = json.loads(ROUND2_DIAGNOSTIC.read_text())
-    require(criteria["backend"] == round3["backend"]
+    require(criteria["backend"] == round4["backend"] == round3["backend"]
             and criteria["backend"]["cuda_runtime_version"]
             == runtime_diagnostic["environment"]["cuda_runtime_version"]
             and criteria["backend"]["cuda_driver_api_version"]
             == runtime_diagnostic["environment"]["cuda_driver_api_version"],
-            "W2b round-4 CUDA identity does not match registered backend")
+            "W2b round-5 CUDA identity does not match registered backend")
     require(sha256(JOB) == criteria["inputs"]["job"]["sha256"], "W2b job source mismatch")
     for entry in criteria["inputs"].values():
         if isinstance(entry, dict) and "path" in entry:

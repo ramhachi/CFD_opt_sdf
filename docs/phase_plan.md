@@ -2258,3 +2258,37 @@ and `git diff --check` passed. Full pytest reports 1048 passed, 37 failed,
 and 4 skipped; rerunning the 37 confirms dependence on absent ignored `work/`
 evidence artifacts. Next is dedicated Kaggle kernel version 10.
 `shape_update_allowed=false` remains in force.
+
+### 2026-09-27 W2b version 10 diagnostic; round 5 registered
+
+Kaggle version 10 used the round-4 pin, passed the registered Tesla T4 CUDA
+smoke, and completed `analytic_16` through `t_end=60.0000228882`. Its
+561-sample force CSV reproduces the reported time-weighted drag and Cd
+`0.8795874360307699` under host recomputation. `gridsdf_16` stopped during
+`build_body`, before solver integration, because `zero_level_margin_m` was
+defined in `CFDSDFWaterLily.GridSDFBody` but referenced unqualified from
+`Main`. The 12 retrieved output hashes and kernel log were verified. The
+append-only diagnostic is
+`evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json`
+(SHA-256 `b2df282a40d776abeaf3ec63b086c4e297e6ffe1bafdd1de3b44d17a415f7cec`),
+kernel-log SHA-256
+`1ce4d69aec373c4d20e86937b2868b771f8a58390f1209289e2579481ba2ed97`. The
+single completed case is diagnostic only and is not reused as acceptance
+evidence; the other five cases and all T1-T12 gates remain incomplete.
+
+The minimal fix qualifies the already-existing helper with
+`CFDSDFWaterLily.GridSDFBody.zero_level_margin_m`; it changes neither the
+helper nor fixture or solver settings. The source commit is
+`65dbb015994e34669ec5d22f671b97128eaf87d2`, and the W2b job SHA-256 is
+`eaedc02478ee1b966dce3ecb24bc9b8bb2b41223706f9ea1a71c070619c53e15`.
+Append-only round-5 criteria were registered before measurement at
+`evidence/kaggle_w2b_criteria_2026_09_round5.json` (SHA-256
+`32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47`). Only
+the source/job pin changes from round 4; runtime identity, fixture, all other
+registered inputs, and every numerical threshold remain unchanged. Before
+version 11, all 6 focused W2b tests, Python `compileall`, version-10 artifact
+and kernel-log hashes, and `git diff --check` pass. Full pytest reports 1049
+passed, 37 failed, and 4 skipped. Re-running only those 37 failures reproduces
+the same missing ignored `work/` evidence paths (FileNotFoundError); none is a
+W2b contract test. Next is dedicated Kaggle kernel version 11.
+`shape_update_allowed=false` remains in force.

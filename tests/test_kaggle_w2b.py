@@ -64,11 +64,12 @@ def valid_summaries():
 
 def test_runner_matches_registered_w2b_matrix_and_thresholds():
     criteria = json.loads(verifier.CRITERIA.read_text())
+    round4 = json.loads(verifier.ROUND4_CRITERIA.read_text())
     round3 = json.loads(verifier.ROUND3_CRITERIA.read_text())
     round2 = json.loads(verifier.ROUND2_CRITERIA.read_text())
     round1 = json.loads(verifier.ROUND1_CRITERIA.read_text())
     runtime_diagnostic = json.loads(verifier.ROUND2_DIAGNOSTIC.read_text())
-    partial_diagnostic = json.loads(verifier.ROUND3_DIAGNOSTIC.read_text())
+    partial_diagnostic = json.loads(verifier.ROUND4_DIAGNOSTIC.read_text())
     fixture_cases = criteria["fixture"]["cases"]
     assert runner.CASE_IDS == [case["case_id"] for case in fixture_cases]
     assert runner.SOURCE_COMMIT == criteria["source_commit"]
@@ -76,21 +77,27 @@ def test_runner_matches_registered_w2b_matrix_and_thresholds():
     assert runner.CUDA_RUNTIME_VERSION == criteria["backend"]["cuda_runtime_version"]
     assert runner.SOURCE_REF == "refs/heads/codex/kaggle-batch-migration"
     assert runner.SOURCE_FETCH_DEPTH >= 4
-    assert criteria["round"] == 4
-    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND3_CRITERIA)
-    assert criteria["previous_round"]["diagnostic_sha256"] == verifier.sha256(verifier.ROUND3_DIAGNOSTIC)
+    assert criteria["round"] == 5
+    assert criteria["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND4_CRITERIA)
+    assert criteria["previous_round"]["diagnostic_sha256"] == verifier.sha256(verifier.ROUND4_DIAGNOSTIC)
+    assert round4["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND3_CRITERIA)
+    assert round4["previous_round"]["diagnostic_sha256"] == verifier.sha256(verifier.ROUND3_DIAGNOSTIC)
     assert round3["previous_round"]["criteria_sha256"] == verifier.sha256(verifier.ROUND2_CRITERIA)
     assert round3["previous_round"]["diagnostic_sha256"] == verifier.sha256(verifier.ROUND2_DIAGNOSTIC)
-    assert partial_diagnostic["criteria"]["sha256"] == verifier.sha256(verifier.ROUND3_CRITERIA)
+    assert partial_diagnostic["criteria"]["sha256"] == verifier.sha256(verifier.ROUND4_CRITERIA)
     assert partial_diagnostic["observed"]["completed_case_ids"] == ["analytic_16"]
-    assert criteria["thresholds"] == round1["thresholds"] == round2["thresholds"] == round3["thresholds"]
-    assert criteria["fixture"] == round1["fixture"] == round2["fixture"] == round3["fixture"]
+    assert partial_diagnostic["observed"]["failed_case_id"] == "gridsdf_16"
+    assert criteria["thresholds"] == round1["thresholds"] == round2["thresholds"] == round3["thresholds"] == round4["thresholds"]
+    assert criteria["fixture"] == round1["fixture"] == round2["fixture"] == round3["fixture"] == round4["fixture"]
     assert round3["inputs"] == round2["inputs"]
-    assert {k: v for k, v in criteria["inputs"].items() if k != "job"} == {
+    assert {k: v for k, v in round4["inputs"].items() if k != "job"} == {
         k: v for k, v in round3["inputs"].items() if k != "job"
     }
+    assert {k: v for k, v in criteria["inputs"].items() if k != "job"} == {
+        k: v for k, v in round4["inputs"].items() if k != "job"
+    }
     assert criteria["inputs"]["job"]["sha256"] == verifier.sha256(verifier.JOB)
-    assert criteria["backend"] == round3["backend"]
+    assert criteria["backend"] == round4["backend"] == round3["backend"]
     assert criteria["backend"]["cuda_runtime_version"] == runtime_diagnostic[
         "environment"]["cuda_runtime_version"]
     assert criteria["backend"]["cuda_driver_api_version"] == runtime_diagnostic[
@@ -117,6 +124,11 @@ def test_w2b_job_completion_marker_avoids_top_level_soft_scope_counter():
     source = verifier.JOB.read_text()
     assert "case_count += 1" not in source
     assert 'println("W2B_JOB_DONE ", length(W2B_CASES), " cases")' in source
+
+
+def test_w2b_grid_margin_helper_uses_its_defined_module():
+    source = verifier.JOB.read_text()
+    assert "CFDSDFWaterLily.GridSDFBody.zero_level_margin_m(" in source
 
 
 def test_w2b_gates_accept_valid_matrix_and_reject_registered_bound_drift():

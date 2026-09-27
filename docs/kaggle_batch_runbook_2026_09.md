@@ -270,6 +270,35 @@ It updates the source/job pin for the counter fix; runtime identity, fixture,
 all other inputs, and every numerical threshold equal round 3. The round-9
 partial measurement remains diagnostic and the round-4 solver has not started.
 
+Kaggle version 10 fetched the round-4 source, passed the registered T4 smoke,
+and completed `analytic_16` through `t_end=60.0000228882`; host recomputation
+matched its 561-sample force CSV (time-weighted Cd `0.8795874360307699`). The
+next case, `gridsdf_16`, stopped in `build_body` before solver integration:
+`zero_level_margin_m` was defined in `CFDSDFWaterLily.GridSDFBody` but called
+unqualified from `Main`. The exact 12 retrieved output hashes and kernel log
+verify. The immutable partial diagnostic is
+[`evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json`](evidence/kaggle_w2b_version10_partial_failure_diagnostic_2026_09.json)
+(SHA-256 `b2df282a40d776abeaf3ec63b086c4e297e6ffe1bafdd1de3b44d17a415f7cec`);
+the kernel-log SHA-256 is
+`1ce4d69aec373c4d20e86937b2868b771f8a58390f1209289e2579481ba2ed97`. The
+single analytic case remains diagnostic and is not reused for acceptance.
+
+The source fix qualifies the existing helper as
+`CFDSDFWaterLily.GridSDFBody.zero_level_margin_m`, without changing its
+implementation or any solver parameter. It is committed as
+`65dbb015994e34669ec5d22f671b97128eaf87d2`; the new registered job SHA-256 is
+`eaedc02478ee1b966dce3ecb24bc9b8bb2b41223706f9ea1a71c070619c53e15`. Round 5
+is registered before its first measurement at
+[`evidence/kaggle_w2b_criteria_2026_09_round5.json`](evidence/kaggle_w2b_criteria_2026_09_round5.json)
+(SHA-256 `32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47`).
+It changes only the pinned source commit/job hash from round 4; backend, fixture,
+other input hashes, and all numerical thresholds are identical. The round-5
+solver has not started. Before version 11, all 6 focused W2b tests, Python
+`compileall`, diagnostic output/kernel-log hashes, and `git diff --check` pass.
+Full pytest reports 1049 passed, 37 failed, and 4 skipped. Re-running the 37
+failures alone reproduces only `FileNotFoundError` for ignored `work/` evidence
+files absent from this managed worktree; none is a W2b test.
+
 W2b uses its own private Kaggle kernel,
 `ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder`. Version 7 failed at source
 fetch before any solver case began because the round-1 source SHA was mistyped.
@@ -310,13 +339,13 @@ PYTHONPATH=src:scripts .venv/bin/python -m pytest -q tests/test_kaggle_w2b.py
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
   -p infra/kaggle/kernel_w2b --accelerator NvidiaTeslaT4 --timeout 7200
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/10 -p work/kaggle_w2b_version10
+  ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder/11 -p work/kaggle_w2b_version11
 PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w2b.py \
-  work/kaggle_w2b_version10
+  work/kaggle_w2b_version11
 ```
 
 Use the version actually returned by `push` consistently in all four Kaggle
