@@ -27,7 +27,7 @@ using CUDA
 using SHA
 using ..GridSDFBody: GridSDF
 
-export DeviceGridSDF, device_copy, canonical_phi_sha256, device_roundtrip_sha
+export DeviceGridSDF, device_copy, canonical_phi_sha256, device_roundtrip_sha, kernel_grid
 
 """
     DeviceGridSDF(grid, source_phi_sha256)
@@ -74,6 +74,27 @@ Read the device phi back to the host and apply the same byte rule.
 """
 function device_roundtrip_sha(device::DeviceGridSDF)
     return canonical_phi_sha256(Array(device.grid.phi))
+end
+
+"""
+    kernel_grid(device::DeviceGridSDF) -> GridSDF
+
+Kernel-safe (isbits) view of the derived grid: the phi field is converted to
+a `CuDeviceArray` via `CUDA.cudaconvert`, so the whole grid and a
+`GridSDFWaterLilyBody` over it can be passed as CUDA kernel arguments.  The
+owning `DeviceGridSDF` (and its CuArray) must stay alive for as long as any
+kernel uses the view; no Adapt import or Project change is needed.
+"""
+function kernel_grid(device::DeviceGridSDF)
+    device_phi = CUDA.cudaconvert(device.grid.phi)
+    return GridSDF(
+        device_phi,
+        device.grid.origin,
+        device.grid.h,
+        device.grid.shape,
+        device.grid.outside_value,
+        device.grid.margin_m,
+    )
 end
 
 end # module

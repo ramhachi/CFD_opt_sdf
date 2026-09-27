@@ -102,7 +102,7 @@ source_sha = phi_sha(canonical.phi)
 device_grid, roundtrip_sha = if backend == "gpu"
     device = device_copy(canonical)
     roundtrip = device_roundtrip_sha(device)
-    device.grid, roundtrip
+    kernel_grid(device), roundtrip
 else
     (
         GridSDF(
