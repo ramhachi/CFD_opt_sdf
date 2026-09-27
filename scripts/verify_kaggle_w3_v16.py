@@ -24,6 +24,21 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def write_result_evidence(path: Path, result: dict) -> str:
+    """Write one append-only PASS result and its SHA sidecar."""
+    path = Path(path)
+    sidecar = path.with_suffix(path.suffix + ".sha256")
+    require(not path.exists() and not sidecar.exists(),
+            "W3 result evidence or SHA sidecar already exists")
+    payload = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    with path.open("x") as handle:
+        handle.write(payload)
+    digest = sha256(path)
+    with sidecar.open("x") as handle:
+        handle.write(digest + "\n")
+    return digest
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise ValueError(message)
@@ -113,7 +128,7 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
     require(metadata.get("source_sha256") == geometry["source_surface_sha256"],
             "canonical v16 source-surface lineage mismatch")
     require(metadata.get("shape") == geometry["point_shape"]
-            and metadata.get("origin_m") == geometry["origin_m"]
+            and metadata.get("origin_m") == geometry["canonical_sdf_origin_m"]
             and metadata.get("spacing_m") == geometry["spacing_m"],
             "canonical v16 world-grid metadata mismatch")
     phi_c = hashlib.sha256(np.ascontiguousarray(phi, dtype="<f4").tobytes(order="C")).hexdigest()
@@ -136,9 +151,12 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
 
 
 def read_force_rows(path: Path, measurement: dict) -> list[dict[str, float]]:
-    expected = ["step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
-                "drag_solver", "downforce_solver", "pressure_drag_solver",
-                "viscous_drag_solver"]
+    expected = [
+        "step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
+        "drag_solver", "downforce_solver", "pressure_fx_solver",
+        "pressure_fy_solver", "pressure_fz_solver", "viscous_fx_solver",
+        "viscous_fy_solver", "viscous_fz_solver",
+    ]
     with path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         require(reader.fieldnames == expected, "W3 force CSV schema mismatch")
@@ -150,9 +168,13 @@ def read_force_rows(path: Path, measurement: dict) -> list[dict[str, float]]:
                 for left, right in zip(rows, rows[1:])),
             "W3 force CSV step or time is not strictly increasing")
     stride = measurement["sample_every_solver_steps"]
-    require(all(row["step"] % stride == 0 for row in rows),
+    terminal_extra = rows[-1]["t_u_l"] >= measurement["t_end_t_u_l"] and rows[-1]["step"] % stride != 0
+    require(all(row["step"] % stride == 0 for row in (rows[:-1] if terminal_extra else rows)),
             "W3 force CSV sample step is off the registered stride")
-    require(all(right["step"] - left["step"] == stride for left, right in zip(rows, rows[1:])),
+    require(all((right["step"] - left["step"] == stride)
+                or (terminal_extra and right is rows[-1]
+                    and right["t_u_l"] >= measurement["t_end_t_u_l"])
+                for left, right in zip(rows, rows[1:])),
             "W3 force CSV sampling is not regular")
     return rows
 
@@ -166,29 +188,63 @@ def _time_weighted_mean(rows: list[dict[str, float]], key: str) -> float:
     return numerator / denominator if denominator > 0 else sum(row[key] for row in rows) / len(rows)
 
 
+def _clipped_force_window(rows: list[dict[str, float]], start: float,
+                          end: float) -> list[dict[str, float]]:
+    def interpolate(left: dict[str, float], right: dict[str, float],
+                    t: float) -> dict[str, float]:
+        require(left["t_u_l"] <= t <= right["t_u_l"],
+                f"raw force rows do not bracket tU/L={t}")
+        if left["t_u_l"] == right["t_u_l"]:
+            return dict(left)
+        alpha = (t - left["t_u_l"]) / (right["t_u_l"] - left["t_u_l"])
+        return {key: float(t) if key == "t_u_l" else
+                left[key] + alpha * (right[key] - left[key]) for key in left}
+
+    def bracket(t: float) -> dict[str, float]:
+        left = next((row for row in reversed(rows) if row["t_u_l"] <= t), None)
+        right = next((row for row in rows if row["t_u_l"] >= t), None)
+        require(left is not None and right is not None,
+                f"raw force rows do not bracket exact endpoint {t}")
+        return interpolate(left, right, t)
+
+    return ([bracket(start)]
+            + [row for row in rows if start < row["t_u_l"] < end]
+            + [bracket(end)])
+
+
 def recompute_metrics(rows: list[dict[str, float]], measurement: dict) -> dict:
-    start, end = measurement["burn_in_t_u_l"], measurement["t_end_t_u_l"]
-    window = [row for row in rows if start <= row["t_u_l"] <= end]
+    start, end = measurement["force_window_t_u_l"]
     middle = 0.5 * (start + end)
-    first = [row for row in window if row["t_u_l"] < middle]
-    second = [row for row in window if row["t_u_l"] >= middle]
-    require(len(window) >= measurement["minimum_window_samples"] and first and second,
+    raw_window = [row for row in rows if start <= row["t_u_l"] <= end]
+    require(len(raw_window) >= measurement["minimum_window_samples"],
             "W3 registered force window is incomplete")
-    drag_mean = sum(row["drag_solver"] for row in window) / len(window)
-    down_mean = sum(row["downforce_solver"] for row in window) / len(window)
+    window = _clipped_force_window(rows, start, end)
+    first = _clipped_force_window(rows, start, middle)
+    second = _clipped_force_window(rows, middle, end)
+    drag = _time_weighted_mean(window, "drag_solver")
+    downforce = _time_weighted_mean(window, "downforce_solver")
+    first_drag = _time_weighted_mean(first, "drag_solver")
+    second_drag = _time_weighted_mean(second, "drag_solver")
+    first_downforce = _time_weighted_mean(first, "downforce_solver")
+    second_downforce = _time_weighted_mean(second, "downforce_solver")
     area_solver = measurement["reference_area_m2"] / measurement["spacing_m"] ** 2
+    force_scale_n = (measurement["density_kg_m3"] * measurement["freestream_mps"][0] ** 2
+                     * measurement["spacing_m"] ** 2)
     return {
-        "window_samples": len(window),
-        "window_mean_drag_solver": drag_mean,
-        "window_mean_downforce_solver": down_mean,
-        "window_time_weighted_drag_solver": _time_weighted_mean(window, "drag_solver"),
-        "window_time_weighted_downforce_solver": _time_weighted_mean(window, "downforce_solver"),
-        "diagnostic_first_half_mean_drag_solver": sum(row["drag_solver"] for row in first) / len(first),
-        "diagnostic_second_half_mean_drag_solver": sum(row["drag_solver"] for row in second) / len(second),
-        "diagnostic_first_half_mean_downforce_solver": sum(row["downforce_solver"] for row in first) / len(first),
-        "diagnostic_second_half_mean_downforce_solver": sum(row["downforce_solver"] for row in second) / len(second),
-        "cd_window_mean": drag_mean / (0.5 * area_solver),
-        "cd_time_weighted": _time_weighted_mean(window, "drag_solver") / (0.5 * area_solver),
+        "window_samples": len(raw_window),
+        "window_time_weighted_drag_solver": drag,
+        "window_time_weighted_downforce_solver": downforce,
+        "diagnostic_first_half_time_weighted_drag_solver": first_drag,
+        "diagnostic_second_half_time_weighted_drag_solver": second_drag,
+        "diagnostic_first_half_time_weighted_downforce_solver": first_downforce,
+        "diagnostic_second_half_time_weighted_downforce_solver": second_downforce,
+        "stationarity_relative_half_window_drift_drag":
+            abs(first_drag - second_drag) / max(abs(drag), math.ulp(1.0)),
+        "stationarity_relative_half_window_drift_downforce":
+            abs(first_downforce - second_downforce) / max(abs(downforce), math.ulp(1.0)),
+        "cd_time_weighted": drag / (0.5 * area_solver),
+        "drag_time_weighted_n": drag * force_scale_n,
+        "downforce_time_weighted_n": downforce * force_scale_n,
     }
 
 
@@ -205,9 +261,10 @@ def force_components_close(rows: list[dict[str, float]], measurement: dict) -> b
         math.isclose(row["fx_solver"], row["drag_solver"], rel_tol=relative, abs_tol=absolute)
         and math.isclose(row["downforce_solver"], -row["fz_solver"],
                          rel_tol=relative, abs_tol=absolute)
-        and math.isclose(row["drag_solver"],
-                         row["pressure_drag_solver"] + row["viscous_drag_solver"],
-                         rel_tol=relative, abs_tol=absolute)
+        and all(math.isclose(row[f"{axis}_solver"],
+                             row[f"pressure_{axis}_solver"] + row[f"viscous_{axis}_solver"],
+                             rel_tol=relative, abs_tol=absolute)
+                for axis in ("fx", "fy", "fz"))
         for row in rows
     )
 
@@ -234,13 +291,134 @@ def observed_backend_identity(criteria: dict, summary: dict,
     }
 
 
+def evaluate_gates(criteria: dict, summary: dict, rows: list[dict[str, float]],
+                   source_ok: bool, metadata: dict, margin: float,
+                   adapter: dict, gpu_rows: list[list[str]], selected_uuid: str,
+                   smoke: str, fingerprint: dict, metrics: dict,
+                   metric_match: bool, force_components_ok: bool) -> dict[str, bool]:
+    geometry, profile = criteria["geometry"], criteria["profile_adapter"]
+    backend, measurement = criteria["backend"], criteria["measurement"]
+    stride = measurement["sample_every_solver_steps"]
+    terminal_extra = bool(rows) and rows[-1]["t_u_l"] >= measurement["t_end_t_u_l"] \
+        and rows[-1]["step"] % stride != 0
+    regular_sampling = all(
+        (right["step"] - left["step"] == stride)
+        or (terminal_extra and right is rows[-1]
+            and right["t_u_l"] >= measurement["t_end_t_u_l"])
+        for left, right in zip(rows, rows[1:])
+    ) and all(row["step"] % stride == 0
+              for row in (rows[:-1] if terminal_extra else rows))
+    return {
+        "T0_registered_inputs": source_ok and metadata is not None,
+        "T1_canonical_v16_identity": (
+            summary.get("state_sha256") == geometry["state_sha256"]
+            and summary.get("source_surface_sha256") == geometry["source_surface_sha256"]
+            and summary.get("phi_c_order_sha256") == geometry["phi_c_order_sha256"]
+            and summary.get("phi_fortran_sha256") == geometry["phi_fortran_sha256"]
+            and summary.get("device_roundtrip_sha256") == geometry["phi_fortran_sha256"]
+            and summary.get("dims") == profile["cell_dims"]
+            and summary.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
+            and summary.get("flow_origin_m") == profile["flow_origin_m"]
+            and summary.get("flow_upper_m") == [bounds[1] for bounds in profile["physical_box_m"]]
+            and summary.get("spacing_m") == geometry["spacing_m"]
+        ),
+        "T2_margin_gate": (
+            summary.get("phi_margin_gate_m") == geometry["margin_gate_m"]
+            and abs(margin - geometry["expected_margin_m"]) <= geometry["margin_tolerance_m"]
+            and abs(summary.get("phi_margin_m", math.inf) - margin) <= geometry["margin_tolerance_m"]
+            and margin >= geometry["margin_gate_m"]
+        ),
+        "T3_profile_adapter_is_explicitly_limited": (
+            summary.get("source_profile_equivalent") is False
+            and summary.get("physical_profile_qualified") is False
+            and adapter.get("source_profile_equivalent") is False
+            and adapter.get("physical_profile_qualified") is False
+            and summary.get("x_max_boundary") == profile["x_max_boundary"]
+            and summary.get("pressure_boundary") == profile["pressure_boundary"]
+            and adapter.get("x_max_boundary") == profile["x_max_boundary"]
+            and adapter.get("pressure_boundary") == profile["pressure_boundary"]
+            and adapter.get("flow_origin_m") == profile["flow_origin_m"]
+            and adapter.get("flow_cell_dims") == profile["cell_dims"]
+            and adapter.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
+            and math.isclose(summary.get("solver_length", math.nan),
+                             profile["solver_length"], rel_tol=0, abs_tol=1e-7)
+            and math.isclose(summary.get("solver_viscosity", math.nan),
+                             profile["solver_viscosity"], rel_tol=0, abs_tol=1e-7)
+            and summary.get("reynolds") == profile["reynolds"]
+        ),
+        "T4_backend_identity": (
+            len(gpu_rows) == backend["gpu_count"]
+            and summary.get("gpu_uuid") == selected_uuid
+            and summary.get("gpu_name") == backend["gpu_name"]
+            and summary.get("julia_version") == backend["julia_version"]
+            and summary.get("julia_threads") == backend["julia_threads"]
+            and summary.get("waterlily_version") == backend["waterlily_version"]
+            and summary.get("cuda_jl_version") == backend["cuda_jl_version"]
+            and bool(summary.get("waterlily_backend"))
+            and fingerprint.get("julia_archive_sha256") == backend["julia_archive_sha256"]
+            and fingerprint.get("cuda_visible_devices") == backend["cuda_visible_devices"]
+            and all(backend["gpu_name"] in row[1] and row[-1] == backend["driver_version"]
+                    and row[2].startswith("GPU-") for row in gpu_rows)
+            and len({row[2] for row in gpu_rows}) == backend["gpu_count"]
+            and all(marker in smoke for marker in (
+                "W0B_SMOKE_DONE", "CUDA_FUNCTIONAL true",
+                f"GPU_COMPUTE_CAPABILITY {backend['compute_capability']}",
+                f"CUDA_DRIVER_VERSION {backend['cuda_driver_api_version']}",
+                f"CUDA_RUNTIME_VERSION {backend['cuda_runtime_version']}",
+                f"JULIA_VERSION {backend['julia_version']}",
+                f"CUDA_JL_VERSION {backend['cuda_jl_version']}",
+                f"WATERLILY_VERSION {backend['waterlily_version']}",
+                f"GPU_NAME {backend['gpu_name']}", "NO_SOLVER_STEP",
+            ))
+        ),
+        "T5_primal_completion": (
+            summary.get("t_end_target") == measurement["t_end_t_u_l"]
+            and summary.get("t_end_reached", 0) >= measurement["t_end_t_u_l"]
+            and summary.get("steps", 0) > 0
+        ),
+        "T6_finite_fields_and_candidate_forces": (
+            summary.get("finite_u") is True and summary.get("finite_p") is True
+            and summary.get("force_samples") == len(rows)
+            and regular_sampling
+            and summary.get("window_samples", 0) >= measurement["minimum_window_samples"]
+        ),
+        "T7_drag_orientation_and_host_recomputation": (
+            math.isfinite(summary.get("window_time_weighted_drag_solver", math.nan))
+            and summary.get("window_time_weighted_drag_solver", 0) > 0
+            and force_components_ok and metric_match
+        ),
+        "T8_runtime_and_vram": (
+            0 < summary.get("wall_seconds", 0) <= measurement["runtime_limit_s"]
+            and 0 < summary.get("peak_vram_bytes", 0) < summary.get("vram_total_bytes", 0)
+        ),
+        "T9_source_commit_and_runner": (
+            fingerprint.get("source_commit") == criteria["source_commit"]
+            and fingerprint.get("runner_sha256") == criteria["inputs"]["kernel_runner"]["sha256"]
+            and len(fingerprint.get("criteria_sha256", "")) == 64
+        ),
+        "T10_stationarity": (
+            metrics.get("stationarity_relative_half_window_drift_drag", math.inf)
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
+            and metrics.get("stationarity_relative_half_window_drift_downforce", math.inf)
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
+        ),
+    }
+
+
 def verify(download: Path, *, criteria_path: Path = CRITERIA,
-           dataset_dir: Path = DATASET_DIR, kernel_version: int | None = None) -> dict:
+           dataset_dir: Path = DATASET_DIR, kernel_version: int | None = None,
+           kaggle_log_path: Path | None = None) -> dict:
     criteria, criteria_sha = load_criteria(criteria_path)
     source_ok = verify_registered_source(criteria)
     metadata, margin = verify_dataset(criteria, criteria_sha, dataset_dir)
     folder = download / OUTPUT_NAME if (download / OUTPUT_NAME).is_dir() else download
     file_count, output_manifest_sha = verify_output_files(folder)
+    artifact_manifest = json.loads((folder / "sha256.json").read_text())
+    kaggle_log_sha = None
+    if kaggle_log_path is not None:
+        kaggle_log_path = Path(kaggle_log_path)
+        require(kaggle_log_path.is_file(), "exact-version Kaggle log is missing")
+        kaggle_log_sha = sha256(kaggle_log_path)
     summary = json.loads((folder / "v16.summary.json").read_text())
     outcome = json.loads((folder / "outcome.json").read_text())
     fingerprint = json.loads((folder / "fingerprint.json").read_text())
@@ -309,70 +487,11 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     force_components_ok = force_components_close(rows, measurement)
 
     adapter = json.loads((folder / "w3_adapter_contract.json").read_text())
-    gates = {
-        "T0_registered_inputs": source_ok and metadata is not None,
-        "T1_canonical_v16_identity": (
-            summary.get("state_sha256") == geometry["state_sha256"]
-            and summary.get("source_surface_sha256") == geometry["source_surface_sha256"]
-            and summary.get("phi_c_order_sha256") == geometry["phi_c_order_sha256"]
-            and summary.get("phi_fortran_sha256") == geometry["phi_fortran_sha256"]
-            and summary.get("device_roundtrip_sha256") == geometry["phi_fortran_sha256"]
-            and fingerprint.get("state_npz_sha256") == geometry["state_npz_sha256"]
-            and summary.get("dims") == profile["cell_dims"]
-            and summary.get("origin_m") == geometry["origin_m"]
-            and summary.get("spacing_m") == geometry["spacing_m"]
-        ),
-        "T2_margin_gate": (
-            summary.get("phi_margin_gate_m") == geometry["margin_gate_m"]
-            and abs(margin - geometry["expected_margin_m"]) <= geometry["margin_tolerance_m"]
-            and abs(summary.get("phi_margin_m", math.inf) - margin) <= geometry["margin_tolerance_m"]
-            and margin >= geometry["margin_gate_m"]
-        ),
-        "T3_profile_adapter_is_explicitly_limited": (
-            summary.get("source_profile_equivalent") is False
-            and summary.get("physical_profile_qualified") is False
-            and adapter.get("source_profile_equivalent") is False
-            and adapter.get("physical_profile_qualified") is False
-            and summary.get("x_max_boundary") == profile["x_max_boundary"]
-            and summary.get("pressure_boundary") == profile["pressure_boundary"]
-            and adapter.get("x_max_boundary") == profile["x_max_boundary"]
-            and adapter.get("pressure_boundary") == profile["pressure_boundary"]
-        ),
-        "T4_backend_identity": (
-            len(gpu_rows) == backend["gpu_count"] and smoke_ok
-            and fingerprint.get("julia_archive_sha256") == backend["julia_archive_sha256"]
-            and fingerprint.get("cuda_visible_devices") == backend["cuda_visible_devices"]
-            and summary.get("gpu_uuid") == selected_uuid
-            and summary.get("gpu_name") == backend["gpu_name"]
-            and summary.get("julia_version") == backend["julia_version"]
-            and summary.get("julia_threads") == backend["julia_threads"]
-            and summary.get("waterlily_version") == backend["waterlily_version"]
-            and summary.get("cuda_jl_version") == backend["cuda_jl_version"]
-        ),
-        "T5_primal_completion": (
-            summary.get("t_end_target") == measurement["t_end_t_u_l"]
-            and summary.get("t_end_reached", 0) >= measurement["t_end_t_u_l"]
-            and summary.get("steps", 0) > 0
-        ),
-        "T6_finite_fields_and_candidate_forces": (
-            summary.get("finite_u") is True and summary.get("finite_p") is True
-            and summary.get("force_samples") == len(rows)
-            and summary.get("window_samples", 0) >= measurement["minimum_window_samples"]
-        ),
-        "T7_drag_orientation_and_host_recomputation": (
-            summary.get("window_time_weighted_drag_solver", 0) > 0
-            and force_components_ok and metric_match
-        ),
-        "T8_runtime_and_vram": (
-            0 < summary.get("wall_seconds", 0) <= measurement["runtime_limit_s"]
-            and 0 < summary.get("peak_vram_bytes", 0) < summary.get("vram_total_bytes", 0)
-        ),
-        "T9_source_commit_and_runner": (
-            fingerprint.get("source_commit") == criteria["source_commit"]
-            and fingerprint.get("runner_sha256") == criteria["inputs"]["kernel_runner"]["sha256"]
-            and len(criteria_sha) == 64
-        ),
-    }
+    gates = evaluate_gates(
+        criteria, summary, rows, source_ok, metadata, margin, adapter,
+        gpu_cells, selected_uuid, smoke, fingerprint, metrics, metric_match,
+        force_components_ok,
+    )
     require(outcome.get("gates") == gates, "W3 runner gates disagree with host recomputation")
     require(all(gates.values()), f"W3 preregistered gates failed: {gates}")
     require(outcome.get("physical_profile_qualified") is False
@@ -392,8 +511,13 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
             criteria, summary, fingerprint, gpu_rows),
         "verified_files": file_count,
         "output_manifest_sha256": output_manifest_sha,
+        "artifact_manifest": artifact_manifest,
+        "kaggle_log_sha256": kaggle_log_sha,
         "margin_m": margin,
         "force_metrics": metrics,
+        "raw_measurements": summary,
+        "primal_contract_qualified": all(gates.values()),
+        "claim_scope": criteria["acceptance"]["claim_scope"],
         "gates": gates,
         "physical_profile_qualified": False,
         "shape_update_allowed": False,
@@ -405,11 +529,20 @@ def main() -> int:
     parser.add_argument("download", type=Path, help="version-specific kaggle kernels output directory")
     parser.add_argument("--criteria", type=Path, default=CRITERIA)
     parser.add_argument("--dataset-dir", type=Path, default=DATASET_DIR)
-    parser.add_argument("--kernel-version", type=int)
+    parser.add_argument("--kernel-version", type=int, required=True)
+    parser.add_argument("--kaggle-log", type=Path, required=True,
+                        help="exact-version logs downloaded from Kaggle")
+    parser.add_argument("--result-evidence", type=Path,
+                        help="new append-only PASS evidence path; existing paths are rejected")
     args = parser.parse_args()
-    print(json.dumps(verify(args.download, criteria_path=args.criteria,
-                            dataset_dir=args.dataset_dir,
-                            kernel_version=args.kernel_version), indent=2, sort_keys=True))
+    result = verify(args.download, criteria_path=args.criteria,
+                    dataset_dir=args.dataset_dir,
+                    kernel_version=args.kernel_version,
+                    kaggle_log_path=args.kaggle_log)
+    if args.result_evidence is not None:
+        write_result_evidence(args.result_evidence, result)
+    output = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    print(output, end="")
     return 0
 
 

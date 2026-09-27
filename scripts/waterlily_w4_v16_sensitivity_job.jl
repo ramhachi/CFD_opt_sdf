@@ -15,7 +15,7 @@ Base.include(CFDSDFWaterLily,
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "V16W4Sensitivity.jl"))
 using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
-    V16_PROFILE_ORIGIN_M, V16_PROFILE_SPACING_M, V16MovingGroundBody,
+    V16_CANONICAL_SDF_ORIGIN_M, V16_PROFILE_SPACING_M, V16MovingGroundBody,
     v16_native_far_field_uBC
 using .CFDSDFWaterLily.DeviceGridSDF
 using .CFDSDFWaterLily.V16W4Sensitivity
@@ -33,7 +33,7 @@ const MARGIN_TOL_M = 1e-6
 const T_END = 120.0
 const BURN_IN = 80.0
 const SAMPLE_EVERY = 8
-const EXPECTED_CASE_IDS = ("flow_16", "flow_24", "flow_32", "domain_xplus3p5_16")
+const EXPECTED_CASE_IDS = ("flow_16", "flow_24", "flow_32", "domain_xplus1m_16")
 
 json_number(x) = x isa Bool ? string(x) : x isa Integer ? string(x) : string(Float64(x))
 json_array(values) = "[" * join(json_number.(values), ",") * "]"
@@ -80,11 +80,11 @@ function load_canonical_grid(path)
     phi = reshape(copy(reinterpret(Float32, bytes)), V16_PROFILE_POINT_SHAPE)
     c_order_sha = bytes2hex(sha256(reinterpret(UInt8, vec(permutedims(phi, (3, 2, 1))))))
     c_order_sha == EXPECTED_PHI_C_ORDER_SHA256 || error("canonical v16 C-order phi hash mismatch")
-    margin = zero_level_margin_m(phi, V16_PROFILE_ORIGIN_M,
+    margin = zero_level_margin_m(phi, V16_CANONICAL_SDF_ORIGIN_M,
         (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))
     abs(margin - EXPECTED_MARGIN_M) <= MARGIN_TOL_M ||
         error("canonical v16 CPU-side SDF margin drift: $margin")
-    grid = GridSDF(phi; origin=V16_PROFILE_ORIGIN_M,
+    grid = GridSDF(phi; origin=V16_CANONICAL_SDF_ORIGIN_M,
         h=(V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M),
         outside_value=3.0, margin_m=REQUIRED_MARGIN_M)
     return grid, margin, bytes2hex(sha256(reinterpret(UInt8, vec(phi)))), c_order_sha
@@ -105,7 +105,7 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
     flush(stdout)
     candidate_grid = kernel_grid(owner)
     candidate = GridSDFWaterLilyBody(candidate_grid,
-        Float32.(case.world_origin_m), Float32(case.flow_spacing_m))
+        Float32.(case.flow_origin_m), Float32(case.flow_spacing_m))
     ground = V16MovingGroundBody(0.0f0, 1.0f0)
     bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
     sim = WaterLily.Simulation(
@@ -170,7 +170,8 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         cells_per_reference_length=case.cells_per_reference_length,
         flow_dims=case.flow_dims,
         flow_spacing_m=case.flow_spacing_m,
-        world_origin_m=case.world_origin_m,
+        flow_origin_m=case.flow_origin_m,
+        canonical_sdf_origin_m=case.canonical_design_origin_m,
         physical_box_max_m=case.physical_box_max_m,
         canonical_design_spacing_m=case.canonical_design_spacing_m,
         solver_length=case.solver_length,
@@ -201,7 +202,7 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         side_top_tangential_boundary="WaterLily native tangential zero-Neumann",
         x_max_boundary="WaterLily convective exit",
         pressure_boundary="WaterLily projection pressure; no per-patch freestreamPressure input",
-        ground_model="moving planar half-space at z=0 with +x wall velocity 1 m/s",
+        ground_model="moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
         force_integration_body="canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
         force_projection_semantics="drag=+Fx; downforce=-Fz",
         source_profile_equivalent=false,

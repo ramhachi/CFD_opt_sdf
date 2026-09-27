@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "diagnostic_id": "kaggle_enzyme_reverse_spike_version2_2026_09",
+  "generated_on": "2026-09-28",
+  "kind": "kaggle_enzyme_reverse_spike_execution_diagnostic",
+  "evidence_class": "execution_diagnostic",
+  "pass": false,
+  "qualification": "diagnostic_only",
+  "existing_evidence_modified": false,
+  "kaggle": {
+    "kernel_id": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike",
+    "kernel_version": 2,
+    "reported_status": "KernelWorkerStatus.COMPLETE",
+    "requested_machine_shape": "NvidiaTeslaT4",
+    "log": {
+      "path": "work/kaggle_enzyme_reverse_spike_version2/kaggle.log",
+      "bytes": 2244,
+      "sha256": "f6f13b40f46d4852b0aad1e21782806bd4a476a92d187ebebcd24bc28141e828"
+    }
+  },
+  "source": {
+    "commit": "9b22f719e2f06222dd7f01788154399f0fef441d",
+    "runner_path": "infra/kaggle/kernel_enzyme_reverse_spike/runner.py",
+    "runner_project_path_expression": "ROOT / 'julia'",
+    "expected_project_sha256": "867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383",
+    "expected_manifest_sha256": "f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e",
+    "kaggle_script_path": "/kaggle/src/script.py",
+    "missing_project_path": "/kaggle/src/julia/Project.toml"
+  },
+  "backend_observed": {
+    "gpu_inventory_reached": false,
+    "gpu_count": null,
+    "cuda_initialized": false
+  },
+  "julia_environment": {
+    "version": null,
+    "archive_download_reached": false,
+    "archive_extraction_reached": false,
+    "pkg_instantiate_started": false,
+    "pkg_instantiate_completed": false,
+    "project_input_hashing_started": true,
+    "project_hash_recorded": false,
+    "writable_project_copy_reached": false,
+    "dependency_resolution_outcome": "unreached"
+  },
+  "stages": {
+    "kernel_runner_started": true,
+    "source_project_input_hashing_reached": true,
+    "project_input_present_in_kaggle_source_bundle": false,
+    "gpu_inventory_reached": false,
+    "writable_project_copy_reached": false,
+    "julia_download_and_hash_verification_reached": false,
+    "julia_extraction_reached": false,
+    "julia_process_started": false,
+    "pkg_instantiate_reached": false,
+    "reverse_spike_jl_started": false,
+    "cuda_initialization_reached": false,
+    "enzyme_basic_cuda_reverse_reached": false,
+    "isolated_poisson_vjp_reached": false,
+    "flow_mutation_activity_analysis_reached": false,
+    "timestep_reverse_reached": false,
+    "host_device_transfer_derivative_reached": false
+  },
+  "failure": {
+    "classification": "kaggle_kernel_source_bundle_missing_pinned_project",
+    "failure_stage": "runner startup while hashing the adjacent Julia project, before GPU inventory",
+    "exact_exception": "FileNotFoundError: [Errno 2] No such file or directory: '/kaggle/src/julia/Project.toml'",
+    "interpretation": "Kaggle executed runner.py as /kaggle/src/script.py but did not provide the adjacent julia/ project directory from the pushed local kernel folder. The runner stopped before GPU inventory, Julia setup, dependency resolution, CUDA initialization or any reverse probe. This is a kernel source packaging/input availability failure, not an Enzyme, CUDA, package-resolution or reverse-mode failure.",
+    "failure_classes_not_observed": [
+      "dependency resolution or package compatibility",
+      "CUDA initialization failure",
+      "Enzyme basic CUDA reverse or compilation failure",
+      "isolated Poisson VJP failure",
+      "WaterLily Flow mutation/activity-analysis failure",
+      "time-step reverse failure",
+      "host/device transfer derivative failure"
+    ]
+  },
+  "artifacts": {
+    "output_directory": "work/kaggle_enzyme_reverse_spike_version2/enzyme_reverse_spike",
+    "output_manifest": {
+      "path": "work/kaggle_enzyme_reverse_spike_version2/enzyme_reverse_spike/output_manifest.json",
+      "sha256": "9b322e174657e1c8701bf7841011a224be1c6948cc35e29028aa4c22de6c6db9",
+      "contents": {
+        "ERROR.txt": "f8578e487c1d675eab4d510b6ddacb4375b8beb5efd3bf34502d5216f845fec8"
+      }
+    },
+    "error_file_sha256": "f8578e487c1d675eab4d510b6ddacb4375b8beb5efd3bf34502d5216f845fec8",
+    "project_identity_json_present": false,
+    "gpu_inventory_file_present": false,
+    "instantiate_log_present": false,
+    "reverse_spike_log_present": false
+  },
+  "qualification_flags_unchanged": {
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false
+  },
+  "next_action": "Fetch the scratch Julia project from exact public source commit 9b22f719e2f06222dd7f01788154399f0fef441d, verify Project.toml/Manifest.toml/reverse_spike.jl hashes, then copy it to a writable /kaggle/working directory and run a new diagnostic version. Preserve CUDA.jl 6.2.1, Enzyme and PR #285 pins."
+}

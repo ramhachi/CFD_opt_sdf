@@ -25,12 +25,12 @@ FORCE_COLUMNS = [
     "pressure_fy_solver", "pressure_fz_solver", "viscous_fx_solver",
     "viscous_fy_solver", "viscous_fz_solver",
 ]
-CASE_IDS = ["flow_16", "flow_24", "flow_32", "domain_xplus3p5_16"]
+CASE_IDS = ["flow_16", "flow_24", "flow_32", "domain_xplus1m_16"]
 EXPECTED_CASES = {
-    "flow_16": (16, 0.05, [60, 32, 24], 0.2, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "flow_24": (24, 1.0 / 30.0, [90, 48, 36], 0.3, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "flow_32": (32, 0.025, [120, 64, 48], 0.4, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "domain_xplus3p5_16": (16, 0.05, [130, 32, 24], 0.2, [[-1.0, 5.5], [-0.8, 0.8], [-0.6, 0.6]]),
+    "flow_16": (16, 0.05, [100, 48, 36], 0.2, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "flow_24": (24, 1.0 / 30.0, [150, 72, 54], 0.3, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "flow_32": (32, 0.025, [200, 96, 72], 0.4, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "domain_xplus1m_16": (16, 0.05, [120, 48, 36], 0.2, [[-2.5, 3.5], [-1.2, 1.2], [-0.9, 0.9]]),
 }
 
 
@@ -81,8 +81,9 @@ def validate_case_contract(criteria: dict) -> None:
     require(geometry.get("design_lattice_spacing_m") == 0.05
             and geometry.get("design_lattice_is_resampled") is False
             and geometry.get("flow_grid_is_separate_from_design_lattice") is True
-            and geometry.get("world_origin_m") == [-1.0, -0.8, -0.6]
-            and geometry.get("baseline_physical_box_m") == [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
+            and geometry.get("canonical_sdf_origin_m") == [-1.0, -0.8, -0.6]
+            and geometry.get("baseline_flow_origin_m") == [-2.5, -1.2, -0.9]
+            and geometry.get("baseline_physical_box_m") == [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]
             and geometry.get("reynolds") == 80.0
             and geometry.get("density_kg_m3") == 1.0
             and geometry.get("dynamic_viscosity_pa_s") == 0.01
@@ -138,7 +139,7 @@ def validate_case_contract(criteria: dict) -> None:
         "side_top_tangential_boundary": "WaterLily native tangential zero-Neumann",
         "x_plus_boundary": "WaterLily convective exit",
         "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
-        "ground_model": "moving planar half-space at z=0 with +x wall velocity 1 m/s",
+        "ground_model": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
         "force_integration_body": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
         "drag_projection": [1.0, 0.0, 0.0],
         "downforce_projection": [0.0, 0.0, -1.0],
@@ -265,7 +266,7 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
     require(metadata.get("state_sha256") == geometry["canonical_state_sha256"]
             and metadata.get("source_sha256") == geometry["source_surface_sha256"]
             and metadata.get("shape") == geometry["point_shape"]
-            and metadata.get("origin_m") == geometry["world_origin_m"]
+            and metadata.get("origin_m") == geometry["canonical_sdf_origin_m"]
             and metadata.get("spacing_m") == geometry["design_lattice_spacing_m"],
             "canonical W4 SDF metadata or lineage mismatch")
     phi_c = hashlib.sha256(np.ascontiguousarray(phi, dtype="<f4").tobytes(order="C")).hexdigest()
@@ -397,7 +398,7 @@ def response_analysis(metrics_by_case: dict) -> dict:
     result = {}
     for quantity in ("drag_time_weighted_n", "downforce_time_weighted_n"):
         r24, r32 = metrics_by_case["flow_24"][quantity], metrics_by_case["flow_32"][quantity]
-        d16, d_ext = metrics_by_case["flow_16"][quantity], metrics_by_case["domain_xplus3p5_16"][quantity]
+        d16, d_ext = metrics_by_case["flow_16"][quantity], metrics_by_case["domain_xplus1m_16"][quantity]
         resolution, domain = abs(r24 - r32), abs(d16 - d_ext)
         result[quantity] = {
             "resolution_delta_abs_n": resolution,
@@ -436,7 +437,8 @@ def recompute_gates(criteria: dict, summaries: dict, metrics: dict, rows: dict,
                 for s in summaries.values()),
         "T3_case_mapping_and_reynolds": all(
             s.get("case_id") == cid and s.get("flow_dims") == case["flow_dims"]
-            and s.get("world_origin_m") == geometry["world_origin_m"]
+            and s.get("flow_origin_m") == geometry["baseline_flow_origin_m"]
+            and s.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
             and s.get("physical_box_max_m") == case["physical_box_m"][1]
             and math.isclose(s.get("flow_spacing_m", math.nan), case["flow_spacing_m"], rel_tol=0, abs_tol=1e-12)
             and math.isclose(s.get("solver_length", math.nan), case["solver_length"], rel_tol=0, abs_tol=1e-12)

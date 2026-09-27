@@ -121,6 +121,9 @@ def build_criteria(source_commit: str, criteria_round: int,
         "point_shape": w3_criteria["geometry"]["point_shape"],
         "cell_shape": w3_criteria["geometry"]["cell_shape"],
         "source_surface_sha256": w3_criteria["geometry"]["source_surface_sha256"],
+        "canonical_sdf_origin_m": w3_criteria["geometry"]["canonical_sdf_origin_m"],
+        "baseline_flow_origin_m": w3_criteria["profile_adapter"]["flow_origin_m"],
+        "baseline_physical_box_m": w3_criteria["profile_adapter"]["physical_box_m"],
     }
     if any(draft["geometry"].get(key) != value for key, value in expected_geometry.items()):
         raise ValueError("W4 canonical v16 identity differs from the passing W3 registration")

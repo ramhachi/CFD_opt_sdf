@@ -13,9 +13,11 @@ as a physical qualification.
 using WaterLily
 using .GridSDFBody: GridSDF
 
-const V16_PROFILE_CELL_DIMS = (60, 32, 24)
+const V16_PROFILE_CELL_DIMS = (100, 48, 36)
 const V16_PROFILE_POINT_SHAPE = (61, 33, 25)
-const V16_PROFILE_ORIGIN_M = (-1.0, -0.8, -0.6)
+const V16_CANONICAL_SDF_ORIGIN_M = (-1.0, -0.8, -0.6)
+const V16_PROFILE_FLOW_ORIGIN_M = (-2.5, -1.2, -0.9)
+const V16_PROFILE_FLOW_UPPER_M = (2.5, 1.2, 0.9)
 const V16_PROFILE_SPACING_M = 0.05
 const V16_PROFILE_FREESTREAM_MPS = (1.0, 0.0, 0.0)
 const V16_PROFILE_DENSITY_KG_M3 = 1.0
@@ -67,13 +69,14 @@ Return the candidate body for force integration, the moving ground, and their
 union for the flow solver. `grid` must be the CPU-gated canonical v16 SDF;
 device copies are derived only after this constructor has accepted it.
 """
-function v16_physical_profile_bodies(grid::GridSDF; T = Float32)
+function v16_physical_profile_bodies(grid::GridSDF; T = Float32,
+                                     flow_origin_m = V16_PROFILE_FLOW_ORIGIN_M)
     grid.shape == V16_PROFILE_POINT_SHAPE ||
         throw(ArgumentError("v16 SDF point shape drift: $(grid.shape)"))
     # DeviceGridSDF stores map fields as Float32. Compare at that declared
     # precision so the registered Float64 origin survives the intentional
     # CPU -> CUDA representation without a false identity failure.
-    Tuple(Float32.(grid.origin)) == Tuple(Float32.(V16_PROFILE_ORIGIN_M)) ||
+    Tuple(Float32.(grid.origin)) == Tuple(Float32.(V16_CANONICAL_SDF_ORIGIN_M)) ||
         throw(ArgumentError("v16 SDF origin drift: $(grid.origin)"))
     Tuple(Float32.(grid.h)) == Tuple(Float32.((V16_PROFILE_SPACING_M,
         V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))) ||
@@ -81,7 +84,7 @@ function v16_physical_profile_bodies(grid::GridSDF; T = Float32)
 
     candidate = GridSDFWaterLilyBody(
         grid,
-        T.(V16_PROFILE_ORIGIN_M),
+        T.(flow_origin_m),
         T(V16_PROFILE_SPACING_M),
     )
     ground = V16MovingGroundBody(T(0), T(V16_PROFILE_GROUND_VELOCITY_SOLVER[1]))
@@ -91,7 +94,7 @@ end
 """
     build_v16_physical_profile_simulation(bodies; T=Float32, mem=Array)
 
-Build the registered 60x32x24, Re=80 first-primal fixture. The +x maximum
+    Build the registered 100x48x36, Re=80 first-primal fixture. The +x maximum
 uses WaterLily's convective exit. The side and top faces have its native
 zero-normal-velocity / tangential-zero-Neumann treatment; these are a declared
 finite-box approximation to the source profile's freestream patches.
@@ -115,6 +118,10 @@ v16_physical_profile_adapter_contract() = (
     source_profile = "stage_v_v16_project_matched_re_laminar_moving_ground_far_field_v2",
     solver = "WaterLily 1.8.0 BDIM on uniform Cartesian grid",
     geometry = "canonical v16 GridSDF candidate plus a translating bottom half-space",
+    flow_cell_dims = V16_PROFILE_CELL_DIMS,
+    flow_origin_m = V16_PROFILE_FLOW_ORIGIN_M,
+    flow_upper_m = V16_PROFILE_FLOW_UPPER_M,
+    canonical_sdf_origin_m = V16_CANONICAL_SDF_ORIGIN_M,
     ground_velocity_mps = V16_PROFILE_FREESTREAM_MPS,
     native_uBC_reference_velocity_mps = V16_PROFILE_FREESTREAM_MPS,
     solver_time_unit_s = V16_PROFILE_SOLVER_TIME_UNIT_S,

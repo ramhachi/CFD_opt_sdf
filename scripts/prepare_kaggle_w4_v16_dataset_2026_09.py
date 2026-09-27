@@ -46,7 +46,7 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
     if (metadata.get("state_sha256") != geometry["canonical_state_sha256"]
             or metadata.get("source_sha256") != geometry["source_surface_sha256"]
             or metadata.get("shape") != geometry["point_shape"]
-            or metadata.get("origin_m") != geometry["world_origin_m"]
+            or metadata.get("origin_m") != geometry["canonical_sdf_origin_m"]
             or metadata.get("spacing_m") != geometry["design_lattice_spacing_m"]
             or phi_c != geometry["canonical_phi_c_order_sha256"]
             or phi_f != geometry["canonical_phi_fortran_sha256"]

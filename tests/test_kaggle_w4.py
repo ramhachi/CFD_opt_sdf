@@ -74,7 +74,7 @@ def fixture():
         rows = []
         for step, time_value, offset in ((8, 80.0, 0.0), (16, 90.0, 0.1),
                                          (24, 110.0, 0.2), (32, 120.0, 0.3)):
-            drag = 2.0 + 0.1 * case_index + (0.4 if case["case_id"] == "domain_xplus3p5_16" else 0) + offset
+            drag = 2.0 + 0.1 * case_index + (0.4 if case["case_id"] == "domain_xplus1m_16" else 0) + offset
             downforce = 0.4 + 0.02 * case_index + 0.01 * offset
             rows.append({
                 "step": float(step), "t_u_l": time_value,
@@ -90,7 +90,8 @@ def fixture():
         summary.update({
             "case_id": case["case_id"],
             "flow_dims": case["flow_dims"],
-            "world_origin_m": criteria["geometry"]["world_origin_m"],
+            "flow_origin_m": criteria["geometry"]["baseline_flow_origin_m"],
+            "canonical_sdf_origin_m": criteria["geometry"]["canonical_sdf_origin_m"],
             "physical_box_max_m": case["physical_box_m"][1],
             "flow_spacing_m": case["flow_spacing_m"],
             "solver_length": case["solver_length"],

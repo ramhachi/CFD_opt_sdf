@@ -17,7 +17,8 @@ function check(name, ok)
     ok || push!(failures, name)
 end
 
-origin = CFDSDFWaterLily.V16_PROFILE_ORIGIN_M
+origin = CFDSDFWaterLily.V16_CANONICAL_SDF_ORIGIN_M
+flow_origin = CFDSDFWaterLily.V16_PROFILE_FLOW_ORIGIN_M
 h = CFDSDFWaterLily.V16_PROFILE_SPACING_M
 center = (0.25, 0.0, 0.0)
 radius = 0.2
@@ -31,19 +32,25 @@ end
 grid = GridSDF(phi; origin, h=(h,h,h), outside_value=3.0, margin_m=0.15)
 bodies = CFDSDFWaterLily.v16_physical_profile_bodies(grid)
 
+candidate_solver_point = Float32[(center[i] - flow_origin[i]) / h for i in 1:3]
 candidate_distance, candidate_normal, _ = WaterLily.measure(
-    bodies.candidate, Float32[29, 16, 12], 0.0f0,
+    bodies.candidate, candidate_solver_point, 0.0f0,
 )
-mapped_candidate_point = CFDSDFWaterLily.canonical_point(bodies.candidate, Float32[29,16,12])
+mapped_candidate_point = CFDSDFWaterLily.canonical_point(bodies.candidate, candidate_solver_point)
 expected_candidate_distance = Float32(
     sdf_at_world(grid, mapped_candidate_point) / CFDSDFWaterLily.V16_PROFILE_SPACING_M,
 )
-check("candidate_world_solver_map", abs(candidate_distance - expected_candidate_distance) <= 2e-6 &&
+check("candidate_world_solver_map", collect(mapped_candidate_point) ≈ collect(center) &&
+      abs(candidate_distance - expected_candidate_distance) <= 2e-6 &&
       abs(norm(candidate_normal) - 1.0f0) <= 2e-6)
 
 float32_grid = GridSDF(Float32.(phi); origin=Float32.(origin),
     h=(Float32(h), Float32(h), Float32(h)), outside_value=3.0f0, margin_m=0.15f0)
 float32_bodies = CFDSDFWaterLily.v16_physical_profile_bodies(float32_grid; T=Float32)
+check("canonical_sdf_origin_stays_fixed", grid.origin == origin &&
+      collect(CFDSDFWaterLily.canonical_point(bodies.candidate, candidate_solver_point)) ≈ collect(center))
+check("flow_origin_is_separate", bodies.candidate.world_origin_m == Float32.(flow_origin) &&
+      bodies.candidate.world_origin_m != Float32.(grid.origin))
 check("float32_device_map_identity", float32_grid.origin == Float32.(origin) &&
       float32_grid.h == (Float32(h), Float32(h), Float32(h)) &&
       float32_bodies.candidate.world_per_solver == Float32(h))
@@ -55,6 +62,10 @@ check("moving_ground_positive_fluid_side", ground_distance == 0.5f0 &&
       ground_normal == Float32[0,0,1])
 check("moving_ground_velocity", ground_velocity == Float32[1,0,0])
 check("moving_ground_zero_normal_flux", dot(ground_normal, ground_velocity) == 0.0f0)
+ground_at_bottom = CFDSDFWaterLily.canonical_point(
+    bodies.candidate, Float32[0, 0, 0])[3]
+check("moving_ground_at_expanded_flow_bottom", ground_at_bottom == -0.9f0 &&
+      bodies.ground.z_plane == 0.0f0)
 check("far_field_velocity_contract",
       CFDSDFWaterLily.v16_native_far_field_uBC(1, Float32[0,0,0], 0.0f0) == 1.0f0 &&
       CFDSDFWaterLily.v16_native_far_field_uBC(2, Float32[0,0,0], 0.0f0) == 0.0f0 &&
@@ -66,11 +77,13 @@ check("profile_non_equivalence_is_explicit", !contract.source_profile_equivalent
       occursin("no per-patch freestreamPressure", contract.pressure_boundary))
 check("physical_time_scale", contract.solver_time_unit_s == 0.05 &&
       isapprox(contract.solver_viscosity, 0.2; atol=1e-15))
+check("expanded_flow_grid_and_reynolds", CFDSDFWaterLily.V16_PROFILE_CELL_DIMS == (100,48,36) &&
+      CFDSDFWaterLily.V16_PROFILE_REYNOLDS == 80.0)
 
 sim = CFDSDFWaterLily.build_v16_physical_profile_simulation(bodies)
 check("registered_solver_scaling", sim.L == 16.0f0 && sim.U == 1.0f0 &&
       sim.flow.ν == 0.2f0 && sim.flow.exitBC &&
-      size(sim.flow.p)[1:3] == (62,34,26))
+      size(sim.flow.p)[1:3] == (102,50,38))
 ground_velocity_field = Array(sim.flow.V)
 check("moving_ground_enters_body_velocity_field",
       maximum(@view ground_velocity_field[:,:,:,1]) > 0.5f0)
@@ -80,4 +93,4 @@ check("candidate_force_overloads_exist",
       applicable(WaterLily.viscous_force, sim.flow, bodies.candidate))
 
 isempty(failures) || error("W3 adapter checks failed: $(join(failures, ", "))")
-println("W3_ADAPTER_DONE 11 checks; no solver step")
+println("W3_ADAPTER_DONE 16 checks; no solver step")

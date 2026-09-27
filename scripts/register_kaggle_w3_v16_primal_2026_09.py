@@ -24,6 +24,10 @@ PROFILE_LINEAGE = ROOT / "docs/evidence/stage_v_v16_physical_profile_candidate_l
 GENESIS = ROOT / "docs/evidence/sdf_native_genesis_v16_2026_09.json"
 W1_RESULT = ROOT / "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json"
 W2B_CRITERIA = ROOT / "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json"
+W2B_RESULT = ROOT / "docs/evidence/kaggle_w2b_round5_result_2026_09.json"
+STAGE_V_SMALL_BOX = ROOT / "docs/evidence/stage_v_v16_physical_profile_qualification_v1_2026_09.json"
+STAGE_V_EXPANDED = ROOT / "docs/evidence/stage_v_v16_physical_profile_expanded_domain_v2_2026_09.json"
+STAGE_V_DOMAIN_PAIR = ROOT / "docs/evidence/stage_v_v16_physical_profile_domain_convergence_result_v1_2026_09.json"
 T4_PROJECT = ROOT / "julia/CFDSDFWaterLilyT4/Project.toml"
 T4_MANIFEST = ROOT / "julia/CFDSDFWaterLilyT4/Manifest.toml"
 RUNNER = ROOT / "infra/kaggle/kernel_w3/runner.py"
@@ -52,6 +56,10 @@ SOURCE_INPUTS = {
     "genesis_evidence": GENESIS,
     "w1_result": W1_RESULT,
     "w2b_criteria": W2B_CRITERIA,
+    "w2b_result": W2B_RESULT,
+    "stage_v_small_box_diagnostic": STAGE_V_SMALL_BOX,
+    "stage_v_expanded_domain_pass": STAGE_V_EXPANDED,
+    "stage_v_domain_pair_result": STAGE_V_DOMAIN_PAIR,
     "criteria_registrar": Path(__file__).resolve(),
     "python_tests": W3_TESTS,
     "adapter_test": ADAPTER_TEST,
@@ -82,11 +90,17 @@ def criteria_output_path(criteria_round: int) -> Path:
 
 def build_criteria(source_commit: str, *, criteria_round: int = 1,
                    state_path: Path = STATE) -> dict:
+    if criteria_round != 3:
+        raise ValueError("new W3 registrations must use expanded-domain immutable round 3")
     genesis = json.loads(GENESIS.read_text())
     w1 = json.loads(W1_RESULT.read_text())
     profile = json.loads(PROFILE_MANIFEST.read_text())
     lineage = json.loads(PROFILE_LINEAGE.read_text())
     previous = json.loads(W2B_CRITERIA.read_text())
+    w2_result = json.loads(W2B_RESULT.read_text())
+    small_box = json.loads(STAGE_V_SMALL_BOX.read_text())
+    expanded = json.loads(STAGE_V_EXPANDED.read_text())
+    domain_pair = json.loads(STAGE_V_DOMAIN_PAIR.read_text())
     profile_spec = yaml.safe_load(PROFILE.read_text())
 
     state_path = Path(state_path)
@@ -104,7 +118,10 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
         raise ValueError("canonical v16 SDF state metadata mismatch")
     if metadata.get("shape") != [61, 33, 25]:
         raise ValueError("canonical v16 SDF point shape mismatch")
-    if metadata.get("origin_m") != [-1.0, -0.8, -0.6] or metadata.get("spacing_m") != 0.05:
+    canonical_origin = [-1.0, -0.8, -0.6]
+    flow_origin = [-2.5, -1.2, -0.9]
+    flow_upper = [2.5, 1.2, 0.9]
+    if metadata.get("origin_m") != canonical_origin or metadata.get("spacing_m") != 0.05:
         raise ValueError("canonical v16 SDF world-grid mapping mismatch")
     registered_w1_phi_f = w1["inputs"]["genesis_phi_fortran_raw"]["sha256"]
     if phi_c != registered_state["phi_sha256"] or phi_f != registered_w1_phi_f:
@@ -158,6 +175,28 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
             or ground_motion["boundary_ids"] != ["bottom"]
             or ground_motion["velocity_mps"] != freestream):
         raise ValueError("v16 adapter constants do not match the immutable physical-profile YAML")
+    if (small_box.get("status") != "fail" or small_box.get("qualified") is not False
+            or small_box["boundary_metrics"]["gates"]["outer_patch_backflow_and_pressure_disturbance"]["status"] != "fail"):
+        raise ValueError("Stage V original small-box evidence no longer records the registered boundary failure")
+    expanded_bounds = expanded["gates"]["candidate_clearance"]["preflight"]["fixed_domain_binding"]["domain_bounds_m"]
+    if (expanded.get("status") != "pass" or expanded.get("qualified") is not True
+            or expanded["boundary_metrics"]["gates"]["outer_patch_backflow_and_pressure_disturbance"]["status"] != "pass"
+            or expanded_bounds.get("lower") != flow_origin
+            or expanded_bounds.get("upper") != flow_upper):
+        raise ValueError("Stage V expanded-domain physical profile does not match W3 round-3 fixture")
+    pair_gate = domain_pair["gates"]["only_domain_bounds_changed"]["observed"]
+    if (domain_pair.get("status") != "pass" or domain_pair.get("qualified") is not True
+            or pair_gate.get("only_domain_bounds_changed") is not True
+            or pair_gate.get("base_domain_bounds_m", {}).get("lower") != flow_origin
+            or pair_gate.get("base_domain_bounds_m", {}).get("upper") != flow_upper
+            or pair_gate.get("expanded_domain_bounds_m", {}).get("upper") != [3.5, 1.2, 0.9]
+            or domain_pair["gates"]["same_candidate"]["qualified"] is not True):
+        raise ValueError("Stage V same-candidate expanded-domain pair does not bind requested W3 fixture")
+    if (w2_result.get("verdict") != "pass"
+            or w2_result.get("gates", {}).get("T4_drag_sign") is not True
+            or w2_result.get("gates", {}).get("T5_stationarity") is not True
+            or previous.get("thresholds", {}).get("stationarity_relative_drift") != 0.02):
+        raise ValueError("registered W2 sphere sign/stationarity precedent is unavailable")
     if metadata["source_sha256"] != sha256(STL):
         raise ValueError("SDF source lineage and canonical candidate STL disagree")
     if w1["inputs"]["genesis_state_npz"]["sha256"] != npz_sha:
@@ -202,6 +241,42 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
         "input_dataset_id": DATASET_ID,
         "source_commit": source_commit,
         "inputs": inputs,
+        "fixture_selection": {
+            "purpose": "select a WaterLily finite-box fixture using independent OpenFOAM boundary evidence; no WaterLily/OpenFOAM numerical equivalence is asserted",
+            "original_small_box_diagnostic": {
+                "path": STAGE_V_SMALL_BOX.relative_to(ROOT).as_posix(),
+                "sha256": sha256(STAGE_V_SMALL_BOX),
+                "status": "fail",
+                "failed_gate": "outer_patch_backflow_and_pressure_disturbance",
+                "interpretation": "the original small box was boundary-contaminated under the registered OpenFOAM profile",
+            },
+            "expanded_domain_profile": {
+                "path": STAGE_V_EXPANDED.relative_to(ROOT).as_posix(),
+                "sha256": sha256(STAGE_V_EXPANDED),
+                "status": "pass",
+                "physical_bounds_m": [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]],
+                "role": "fixture-selection precedent only",
+            },
+            "same_candidate_domain_pair": {
+                "path": STAGE_V_DOMAIN_PAIR.relative_to(ROOT).as_posix(),
+                "sha256": sha256(STAGE_V_DOMAIN_PAIR),
+                "status": "pass",
+                "parent_bounds_m": [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]],
+                "child_bounds_m": [[-2.5, 3.5], [-1.2, 1.2], [-0.9, 0.9]],
+                "same_candidate": True,
+                "openfoam_cd_parent_child": [1.1693991415068494, 1.17036295130137],
+                "openfoam_downforce_parent_child": [0.7565514657808219, 0.7573548684589041],
+                "role": "fixture-selection precedent only; these values are not WaterLily targets",
+            },
+            "force_sign_precedent": {
+                "path": W2B_RESULT.relative_to(ROOT).as_posix(),
+                "sha256": sha256(W2B_RESULT),
+                "w2_round5_criteria_path": W2B_CRITERIA.relative_to(ROOT).as_posix(),
+                "w2_round5_criteria_sha256": sha256(W2B_CRITERIA),
+                "positive_drag_gate_passed": True,
+                "force_convention": "drag=+Fx; downforce=-Fz",
+            },
+        },
         "geometry": {
             "state_npz_path": "sdf_design_state.npz",
             "state_sha256": registered_state["state_sha256"],
@@ -213,7 +288,7 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
             "phi_fortran_sha256": phi_f,
             "point_shape": [61, 33, 25],
             "cell_shape": [60, 32, 24],
-            "origin_m": profile_lower,
+            "canonical_sdf_origin_m": canonical_origin,
             "spacing_m": profile_spacing,
             "margin_gate_m": 0.15,
             "expected_margin_m": 0.3499999939931499,
@@ -226,9 +301,12 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
                 else "stage_v_v16_project_matched_re_laminar_moving_ground_far_field_v2",
             "source_profile_sha256": profile["physical_profile_sha256"],
             "profile_spec_sha256": sha256(PROFILE),
-            "cell_dims": profile_cells,
+            "cell_dims": [100, 48, 36],
             "point_shape": profile_shape,
-            "world_origin_m": profile_lower,
+            "flow_origin_m": flow_origin,
+            "physical_box_m": [[flow_origin[0], flow_upper[0]],
+                               [flow_origin[1], flow_upper[1]],
+                               [flow_origin[2], flow_upper[2]]],
             "world_per_solver_m": profile_spacing,
             "solver_time_unit_s": expected_solver_time,
             "solver_length": reference_length / profile_spacing,
@@ -271,7 +349,18 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
             "sample_every_solver_steps": 8,
             "primary_force_metric": "trapezoidal physical-time-weighted mean over samples in [80,120] tU/L",
             "minimum_window_samples": 4,
-            "stationarity": "record the first/second half-window means as diagnostics only; no stationarity qualification gate in W3",
+            "force_window_t_u_l": [80.0, 120.0],
+            "endpoint_policy": "if exact 80 or 120 samples are absent, linearly interpolate from bracketing raw force samples",
+            "integration": "trapezoidal time-weighted means on exact [80,120], [80,100], and [100,120] intervals",
+            "stationarity": {
+                "relative_half_window_drift_max": 0.02,
+                "formula": "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))",
+                "mean_definition": "independent trapezoidal physical-time-weighted means on exact endpoint-clipped [80,100], [100,120], and [80,120] windows",
+                "quantities": ["drag", "downforce"],
+                "precedent": "inherited before measurement from registered W2 sphere capability criterion; not selected from W3 v3 values",
+                "precedent_criteria_path": W2B_CRITERIA.relative_to(ROOT).as_posix(),
+                "precedent_criteria_sha256": sha256(W2B_CRITERIA),
+            },
             "reference_area_m2": reference_area,
             "spacing_m": profile_spacing,
             "density_kg_m3": density,
@@ -295,19 +384,21 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
                 "T4 registered single-T4 visible-device, GPU inventory, driver/runtime and Julia/WaterLily identity match",
                 "T5 simulation reaches tU/L=120",
                 "T6 velocity, pressure and candidate-force samples are finite, with at least four registered window samples",
-                "T7 drag is along +x, pressure plus viscous drag closes each row, and host recomputation matches the force CSV within registered tolerances",
+                "T7 drag is along +x, downforce is the -z projection without a sign/magnitude threshold, all total force components close pressure plus viscous, and host exact-window recomputation matches",
                 "T8 run is within the per-run wall-time and VRAM bounds",
                 "T9 exact source commit and kernel runner identity match preregistration",
+                "T10 exact-window relative half-window drift for drag and downforce is at most 0.02",
             ],
-            "no_stationarity_gate": True,
+            "stationarity_gate": True,
+            "stationarity_threshold_precedent": "registered W2 sphere capability convention",
             "downforce_sign_or_magnitude_gate": False,
             "physical_profile_equivalence_gate": False,
-            "claim_scope": "one v16 first primal under the declared native WaterLily finite-box approximation",
+            "claim_scope": "canonical v16 SDF met the registered integrity, force, and stationarity contract on the registered WaterLily finite-box approximation",
         },
         "claims_not_supported": [
             "equivalence to the registered OpenFOAM freestreamPressure/freestreamVelocity outer patches",
             "Stage V physical-profile qualification",
-            "force stationarity, grid/domain convergence, absolute downforce or target-vehicle qualification",
+            "grid/domain convergence, absolute downforce or target-vehicle qualification",
             "gradient, reverse-mode, topology, optimization or shape-update qualification",
             "high-Reynolds-number or full-vehicle FSAE qualification",
         ],

@@ -429,12 +429,14 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
   --kernel-version 2
 ```
 
-The host verifier rechecks registered source and dataset hashes, reads the
-canonical SDF state independently, recomputes its margin and force-window
-metrics, validates the raw force-component closure, then recomputes T0-T9.
-W3's adapter is an explicitly non-equivalent finite-box approximation; a pass
-does not qualify the OpenFOAM physical profile, force stationarity, grid
-response, gradients, topology, or a shape update.
+The round-1/round-2 host verifier rechecks registered source and dataset hashes,
+reads the canonical SDF state independently, recomputes its margin and
+force-window metrics, validates the available raw force-component closure, then
+recomputes T0-T9. Those rounds do not gate stationarity. Round 3 below adds the
+full three-axis closure and T10 stationarity gate. W3 remains an explicitly
+non-equivalent WaterLily finite-box approximation; even a round-3 pass does not
+qualify the OpenFOAM physical profile, grid/domain response, gradients,
+topology, or a shape update.
 
 ### W3 immutable round 2 and retry workflow
 
@@ -526,7 +528,11 @@ API `13.3.0`, runtime `12.8.0`, Julia `1.12.6`, CUDA.jl `6.3.1`, WaterLily
 `1.8.0` / `KernelAbstractions`, and `CUDA_VISIBLE_DEVICES=0`. It recorded 441
 force samples in the measurement window, 94.272 seconds wall time, and peak
 VRAM `7,132,408` bytes. The first/second-half force means are diagnostic only;
-they do not establish stationarity.
+they do not establish stationarity. The registered-window diagnostic means
+were approximately drag `-8.73/-37.27` and downforce `-196.19/-254.50` for
+the first/second halves, respectively. This response shows why a positive
+drag-only pass would not be enough for an FD baseline; the round-3 stationarity
+limit comes from W2 registration, not these v3 values.
 
 Exact-version collection commands (completed):
 
@@ -548,6 +554,121 @@ W3 run has a passing formal host verification. Investigate the negative
 registered drag against the force convention and physical fixture without
 changing round 2; any justified source or measurement change requires a new
 immutable criteria round before a new run.
+
+### W3 expanded-domain immutable round 3 (prepared, not registered)
+
+The v3 negative `+Fx` drag is a registered T7 failure, not proof of a sign
+implementation bug. Keep `drag=+Fx` and `downforce=-Fz`. Do not rerun the same
+small box by flipping signs. The next round uses the expanded WaterLily
+finite-box fixture because independent Stage V evidence already reports the
+original `[-1,2]x[-0.8,0.8]x[-0.6,0.6] m` OpenFOAM box as failed at
+`outer_patch_backflow_and_pressure_disturbance`, while the expanded
+`[-2.5,2.5]x[-1.2,1.2]x[-0.9,0.9] m` profile passed. A same-candidate
+OpenFOAM parent/child domain check from x-max 2.5 to 3.5 m also passed its
+registered domain gate. Its parent/child `Cd` (`1.16939914/1.17036295`) and
+downforce (`0.75655147/0.75735487`) are fixture-selection evidence only; they
+are not WaterLily targets and establish no OpenFOAM/WaterLily equivalence.
+The W2 round-5 sphere's positive-drag result is a separate precedent for the
+same `+Fx` convention.
+
+Round 3 keeps the canonical design SDF fixed at origin `[-1,-0.8,-0.6] m`,
+spacing `0.05 m`, and point shape `61x33x25`. It separates that origin from the
+flow origin `[-2.5,-1.2,-0.9] m`; flow dims are `100x48x36`, dx `0.05 m`,
+solver length 16, viscosity 0.20 and Re 80. The SDF-to-solver body map uses the
+flow origin while the canonical `GridSDF` retains its original origin. The
+moving-ground plane is solver z=0, which maps to world z=-0.9 m, the bottom of
+the expanded flow domain. The candidate world geometry, canonical phi bytes,
+moving-ground velocity, freestream and force signs remain fixed.
+
+Round-3 raw force output has total, pressure and viscous `Fx/Fy/Fz`, drag and
+downforce. T7 checks positive time-weighted +x drag, all three
+`total=pressure+viscous` components, projections and independent host
+recomputation. It imposes no downforce sign/magnitude gate. T10 is a hard
+stationarity gate for drag and downforce, each using
+`abs(mean_first-mean_second)/max(abs(mean_whole),eps(Float64)) <= 0.02`. Each
+mean uses exact endpoint-clipped trapezoidal integration over `[80,100]`,
+`[100,120]`, or `[80,120]`. The 2% limit is inherited from registered W2
+sphere capability criteria and fixed before W3 round-3 measurement; it was not
+chosen from v3 output.
+
+Before freezing round 3, run the adapter test, syntax parse, focused contracts,
+JSON parsing, Python compilation and diff check:
+
+```bash
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl
+julia --startup-file=no --project=julia/CFDSDFWaterLilyT4 \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_primal_job.jl", String)); println("W3 Julia syntax parsed")'
+.venv/bin/python -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+.venv/bin/python -m compileall -q src tests scripts infra/kaggle/kernel_w3 infra/kaggle/kernel_w4
+python3 -m json.tool docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json >/dev/null
+git diff --check
+```
+
+Only after all source, tests and the mutable W4 draft are final, commit and
+push the source to `codex/kaggle-batch-migration`. On that clean pushed source
+commit, register W3 criteria round 3 and commit/push the criteria plus sidecar:
+
+```bash
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py \
+  --round 3 --state work/sdf_native_genesis_v16/sdf_design_state.npz
+.venv/bin/python scripts/register_kaggle_w3_v16_primal_2026_09.py --round 3 --check
+git add docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json.sha256
+git commit -m "Register W3 expanded-domain criteria round 3"
+git push origin codex/kaggle-batch-migration
+.venv/bin/python scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/sdf_native_genesis_v16/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  work/kaggle_w3_v16_dataset_round3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets version \
+  -p work/kaggle_w3_v16_dataset_round3 \
+  -m "W3 v16 expanded-domain immutable criteria round 3" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets download \
+  -d ramhachi888/cfd-opt-sdf-v16-genesis-state \
+  -p work/kaggle_w3_v16_dataset_round3_remote --force --unzip
+```
+
+Before kernel submission, compare the re-downloaded remote dataset's manifest
+and exact file inventory/SHA-256 values against the staged round-3 dataset.
+Then submit the W3 kernel. Use the exact version returned by `push` for every
+subsequent status, log, output and verifier command. Set `KAGGLE_W3_VERSION`
+to that integer:
+
+```bash
+KAGGLE_W3_VERSION=4  # Replace with the exact version returned by push
+KAGGLE_W3_RUN="work/kaggle_w3_version${KAGGLE_W3_VERSION}"
+mkdir -p "$KAGGLE_W3_RUN"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3 --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}" \
+  > "$KAGGLE_W3_RUN/kaggle.log"
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  "ramhachi888/cfd-opt-sdf-w3-v16-primal/${KAGGLE_W3_VERSION}" \
+  -p "$KAGGLE_W3_RUN"
+```
+
+If the exact version reaches `COMPLETE` and contains `DONE`, run the success
+verifier. It independently verifies T0-T10 and writes a unique append-only
+result plus SHA sidecar only if every gate passes:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w3_v16.py \
+  "$KAGGLE_W3_RUN" \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version "$KAGGLE_W3_VERSION" \
+  --kaggle-log "$KAGGLE_W3_RUN/kaggle.log" \
+  --result-evidence docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json
+```
+
+An `ERROR` or failed gate is diagnostic only: preserve the exact log/output,
+record solver start/step count and failure stage, and do not relax criteria or
+proceed to W4. W4 stays unregistered/unmeasured until exact round-3 host
+verification passes.
 
 ### Diagnostic-only Enzyme reverse spike version 1 (2026-09-28)
 
@@ -574,15 +695,60 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
   -p work/kaggle_enzyme_reverse_spike_version1
 ```
 
-If this diagnostic scratch run is retried, copy the pinned Julia project to a
-writable temporary directory before `Pkg.instantiate()` and keep all scratch
-package changes isolated from W2/W3/W4. These logs are diagnostic only and
-cannot qualify reverse mode or a gradient.
+The exact reverse spike v2 result is an earlier source-packaging diagnostic.
+Kaggle reports `KernelWorkerStatus.COMPLETE`, but its output has `ERROR.txt`
+before GPU inventory: the script was at `/kaggle/src/script.py`, while the
+adjacent `julia/Project.toml` was not present in the Kaggle source bundle. The
+append-only record is
+[`evidence/kaggle_enzyme_reverse_spike_version2_diagnostic_2026_09.json`](evidence/kaggle_enzyme_reverse_spike_version2_diagnostic_2026_09.json)
+(SHA-256 `bb57d2db8a1bf4391e5c8dbdb7adb43d5a7a96807a385be4d3fccf24a5a5b656`).
+Its exact CLI log SHA-256 is
+`f6f13b40f46d4852b0aad1e21782806bd4a476a92d187ebebcd24bc28141e828`,
+`ERROR.txt` SHA-256 is
+`f8578e487c1d675eab4d510b6ddacb4375b8beb5efd3bf34502d5216f845fec8`, and
+output-manifest SHA-256 is
+`9b322e174657e1c8701bf7841011a224be1c6948cc35e29028aa4c22de6c6db9`. No
+GPU inventory, Julia setup, Pkg instantiation, CUDA initialization, or reverse
+probe ran. This is not an Enzyme/CUDA or package-resolution failure.
+
+The next diagnostic revision on `exp/w3-enzyme-reverse-spike` fetches the
+scratch Julia project from fixed source commit
+`9b22f719e2f06222dd7f01788154399f0fef441d`, verifies the exact Project,
+Manifest and reverse script SHA-256 values, then copies it to writable
+`/kaggle/working`. The expected pins are Project
+`867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383` and
+Manifest `f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e`.
+It logs source archive, source input, pre/post-instantiation copy hashes and
+the exact failure stage. CUDA.jl 6.2.1, Enzyme and WaterLily PR #285 remain
+isolated from W2/W3/W4.
+
+Submit and collect the next reverse diagnostic with Kaggle CLI 2.2.4:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_enzyme_reverse_spike --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  > work/kaggle_enzyme_reverse_spike_version3/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-enzyme-reverse-spike/3 \
+  -p work/kaggle_enzyme_reverse_spike_version3
+```
+
+Check that `project_identity.json` reports the pinned commit and input
+Project/Manifest hashes, identical pre-instantiation writable-copy hashes,
+post-instantiation hashes and failure stage. Classify failures separately as
+source fetch, dependency resolution, CUDA initialization, basic Enzyme CUDA
+reverse, isolated Poisson VJP, Flow activity analysis/mutation, timestep
+reverse, or host/device-transfer derivative. This run remains diagnostic-only
+regardless of its per-stage status.
 
 ## W4 v16 resolution/domain sensitivity preparation (not registered)
 
 W3 version 3 completed the registered primal horizon but failed its T7
-positive-drag acceptance gate; a new W3 immutable round must first pass its
+positive-drag acceptance gate; expanded-domain W3 round 3 must first pass its
 exact-version host verifier. The local W4 execution shell and gated
 final-registration/staging tools are now implemented, but its draft remains
 `immutable: false` / `registered_before_computation: false`; there is no final
@@ -590,6 +756,14 @@ criteria file or staged W4 dataset and no W4 run is authorized.
 
 - `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
   maps and checks physical-box alignment, dimensions, solver length, and Re=80.
+  The mutable draft separates canonical SDF origin `[-1,-0.8,-0.6] m` from
+  flow origin `[-2.5,-1.2,-0.9] m`. On the unchanged expanded baseline box,
+  `flow_16/24/32` are `100x48x36` at `dx=.05 m`, `150x72x54` at
+  `dx=.033333... m`, and `200x96x72` at `dx=.025 m`, with solver viscosities
+  `.20/.30/.40`. The domain case is
+  `[-2.5,3.5]x[-1.2,1.2]x[-.9,.9] m`, `120x48x36`, extending +x by 1 m to
+  match the existing OpenFOAM parent/child pair. All retain Re=80; the
+  canonical 0.05 m design lattice is not resampled.
 - `scripts/waterlily_w4_v16_sensitivity_job.jl` runs the four T4 cases against
   the unchanged canonical v16 SDF and writes raw 3-axis pressure, viscous, and
   total force vectors. It also writes physical-time-weighted solver means,
@@ -622,7 +796,7 @@ criteria file or staged W4 dataset and no W4 run is authorized.
   at the future W4 dataset. Do not push it while W3 is still pending.
 
 After W3 formally passes, bind both its immutable criteria file and its
-append-only result evidence. The round-2 host verifier now emits
+append-only result evidence. The round-3 host verifier emits
 `verdict: PASS`,
 `host_verification_passed: true`, the exact W3 criteria SHA, kernel version,
 source commit, and the observed `backend_identity` (including the
@@ -632,21 +806,21 @@ selected T4 UUID separately for each run. Then bind the exact W4
 runner/job/case module/profile/SDF adapter, Project/Manifest,
 verifier/test/metadata hashes, criteria, raw phi and canonical state. Register
 the final immutable criteria, stage the private dataset, validate the hashes,
-and only then push the W4 kernel. For the W3 round-2 result path:
+and only then push the W4 kernel. For the W3 round-3 result path:
 
 ```bash
 .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
-  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
-  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json
 .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
-  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round2.json \
-  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round2_2026_09.json --check
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json --check
 git add docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
   docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json.sha256
 git commit -m "Register W4 v16 sensitivity criteria"
 git push origin codex/kaggle-batch-migration
 .venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
-  --state work/kaggle_w3_v16_dataset_round2/sdf_design_state.npz \
+  --state work/kaggle_w3_v16_dataset_round3/sdf_design_state.npz \
   --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
   --output work/kaggle_w4_v16_dataset
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \

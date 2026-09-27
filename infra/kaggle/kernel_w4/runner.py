@@ -27,10 +27,10 @@ FORCE_COLUMNS = [
     "viscous_fy_solver", "viscous_fz_solver",
 ]
 EXPECTED_CASES = {
-    "flow_16": (16, 0.05, [60, 32, 24], 0.2, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "flow_24": (24, 1.0 / 30.0, [90, 48, 36], 0.3, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "flow_32": (32, 0.025, [120, 64, 48], 0.4, [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]),
-    "domain_xplus3p5_16": (16, 0.05, [130, 32, 24], 0.2, [[-1.0, 5.5], [-0.8, 0.8], [-0.6, 0.6]]),
+    "flow_16": (16, 0.05, [100, 48, 36], 0.2, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "flow_24": (24, 1.0 / 30.0, [150, 72, 54], 0.3, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "flow_32": (32, 0.025, [200, 96, 72], 0.4, [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]),
+    "domain_xplus1m_16": (16, 0.05, [120, 48, 36], 0.2, [[-2.5, 3.5], [-1.2, 1.2], [-0.9, 0.9]]),
 }
 STATE = {"stage": "startup", "solver_step_invoked": [], "solver_step_returned": []}
 
@@ -103,8 +103,9 @@ def validate_case_contract(criteria):
     if (geometry.get("design_lattice_spacing_m") != 0.05
             or geometry.get("design_lattice_is_resampled") is not False
             or geometry.get("flow_grid_is_separate_from_design_lattice") is not True
-            or geometry.get("world_origin_m") != [-1.0, -0.8, -0.6]
-            or geometry.get("baseline_physical_box_m") != [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
+            or geometry.get("canonical_sdf_origin_m") != [-1.0, -0.8, -0.6]
+            or geometry.get("baseline_flow_origin_m") != [-2.5, -1.2, -0.9]
+            or geometry.get("baseline_physical_box_m") != [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]]
             or geometry.get("reynolds") != 80.0
             or geometry.get("density_kg_m3") != 1.0
             or geometry.get("dynamic_viscosity_pa_s") != 0.01
@@ -163,7 +164,7 @@ def validate_case_contract(criteria):
         "side_top_tangential_boundary": "WaterLily native tangential zero-Neumann",
         "x_plus_boundary": "WaterLily convective exit",
         "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
-        "ground_model": "moving planar half-space at z=0 with +x wall velocity 1 m/s",
+        "ground_model": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
         "force_integration_body": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
         "drag_projection": [1.0, 0.0, 0.0],
         "downforce_projection": [0.0, 0.0, -1.0],
@@ -252,7 +253,7 @@ def verify_state(criteria, dataset_dir):
         raise RuntimeError("canonical W4 source-surface lineage mismatch")
     if metadata.get("shape") != geometry["point_shape"]:
         raise RuntimeError("canonical W4 point shape metadata mismatch")
-    if (metadata.get("origin_m") != geometry["world_origin_m"]
+    if (metadata.get("origin_m") != geometry["canonical_sdf_origin_m"]
             or metadata.get("spacing_m") != geometry["design_lattice_spacing_m"]):
         raise RuntimeError("canonical W4 design-lattice metadata mismatch")
     phi_c = sha256_bytes(np.ascontiguousarray(phi, dtype="<f4").tobytes(order="C"))
@@ -608,7 +609,7 @@ def response_analysis(metrics_by_case):
         resolution_a = metrics_by_case["flow_24"][quantity]
         resolution_b = metrics_by_case["flow_32"][quantity]
         domain_a = metrics_by_case["flow_16"][quantity]
-        domain_b = metrics_by_case["domain_xplus3p5_16"][quantity]
+        domain_b = metrics_by_case["domain_xplus1m_16"][quantity]
         resolution_delta = abs(resolution_a - resolution_b)
         domain_delta = abs(domain_a - domain_b)
         result[quantity] = {
@@ -628,7 +629,7 @@ def response_analysis(metrics_by_case):
 def evaluate_gates(criteria, summaries, metrics, rows, margin, gpu_rows, smoke,
                    source_commit, runner_sha, criteria_sha):
     case_ids = [case["case_id"] for case in criteria["cases"]]
-    expected_ids = ["flow_16", "flow_24", "flow_32", "domain_xplus3p5_16"]
+    expected_ids = ["flow_16", "flow_24", "flow_32", "domain_xplus1m_16"]
     measurement, geometry, backend = criteria["measurement"], criteria["geometry"], criteria["backend"]
     profile = criteria["profile_semantics"]
     source_inputs_ok = all(len(entry.get("sha256", "")) == 64
@@ -651,7 +652,8 @@ def evaluate_gates(criteria, summaries, metrics, rows, margin, gpu_rows, smoke,
         "T3_case_mapping_and_reynolds": all(
             s.get("case_id") == case["case_id"]
             and s.get("flow_dims") == case["flow_dims"]
-            and s.get("world_origin_m") == geometry["world_origin_m"]
+            and s.get("flow_origin_m") == geometry["baseline_flow_origin_m"]
+            and s.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
             and s.get("physical_box_max_m") == case["physical_box_m"][1]
             and math.isclose(s.get("flow_spacing_m", math.nan), case["flow_spacing_m"], rel_tol=0, abs_tol=1e-12)
             and math.isclose(s.get("solver_length", math.nan), case["solver_length"], rel_tol=0, abs_tol=1e-12)

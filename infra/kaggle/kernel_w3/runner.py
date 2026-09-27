@@ -160,7 +160,8 @@ def verify_dataset_state(criteria, dataset_dir):
         raise RuntimeError("canonical v16 SDF source-surface binding mismatch")
     if metadata.get("shape") != expected["point_shape"]:
         raise RuntimeError("canonical v16 SDF shape mismatch")
-    if metadata.get("origin_m") != expected["origin_m"] or metadata.get("spacing_m") != expected["spacing_m"]:
+    if (metadata.get("origin_m") != expected["canonical_sdf_origin_m"]
+            or metadata.get("spacing_m") != expected["spacing_m"]):
         raise RuntimeError("canonical v16 SDF lattice identity mismatch")
     if phi.shape != tuple(expected["point_shape"]) or not np.isfinite(phi).all():
         raise RuntimeError("canonical v16 SDF array shape/finiteness mismatch")
@@ -218,9 +219,12 @@ def install_julia(base):
 def parse_force_csv(path):
     with Path(path).open(newline="") as handle:
         reader = csv.DictReader(handle)
-        expected_header = ["step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
-                           "drag_solver", "downforce_solver", "pressure_drag_solver",
-                           "viscous_drag_solver"]
+        expected_header = [
+            "step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
+            "drag_solver", "downforce_solver", "pressure_fx_solver",
+            "pressure_fy_solver", "pressure_fz_solver", "viscous_fx_solver",
+            "viscous_fy_solver", "viscous_fz_solver",
+        ]
         if reader.fieldnames != expected_header:
             raise RuntimeError("W3 force CSV schema mismatch")
         rows = [{key: float(value) for key, value in row.items()} for row in reader]
@@ -243,58 +247,100 @@ def time_weighted_mean(rows, key):
     return numerator / denominator
 
 
+def clipped_force_window(rows, start, end):
+    def interpolate(left, right, t):
+        if not left["t_u_l"] <= t <= right["t_u_l"]:
+            raise RuntimeError(f"raw force rows do not bracket tU/L={t}")
+        if left["t_u_l"] == right["t_u_l"]:
+            return dict(left)
+        alpha = (t - left["t_u_l"]) / (right["t_u_l"] - left["t_u_l"])
+        return {
+            key: float(t) if key == "t_u_l" else
+            left[key] + alpha * (right[key] - left[key])
+            for key in left
+        }
+
+    def bracket(t):
+        left = next((row for row in reversed(rows) if row["t_u_l"] <= t), None)
+        right = next((row for row in rows if row["t_u_l"] >= t), None)
+        if left is None or right is None:
+            raise RuntimeError(f"raw force rows do not bracket exact endpoint {t}")
+        return interpolate(left, right, t)
+
+    return ([bracket(start)]
+            + [row for row in rows if start < row["t_u_l"] < end]
+            + [bracket(end)])
+
+
 def recompute_metrics(rows, measurement):
-    start = measurement["burn_in_t_u_l"]
-    end = measurement["t_end_t_u_l"]
-    window = [row for row in rows if start <= row["t_u_l"] <= end]
+    start, end = measurement["force_window_t_u_l"]
     middle = 0.5 * (start + end)
-    first_half = [row for row in window if row["t_u_l"] < middle]
-    second_half = [row for row in window if row["t_u_l"] >= middle]
-    if len(window) < measurement["minimum_window_samples"] or not first_half or not second_half:
+    raw_window = [row for row in rows if start <= row["t_u_l"] <= end]
+    if len(raw_window) < measurement["minimum_window_samples"]:
         raise RuntimeError("W3 registered force-window sample count not met")
-    drag_mean = sum(row["drag_solver"] for row in window) / len(window)
-    down_mean = sum(row["downforce_solver"] for row in window) / len(window)
+    window = clipped_force_window(rows, start, end)
+    first = clipped_force_window(rows, start, middle)
+    second = clipped_force_window(rows, middle, end)
+    drag = time_weighted_mean(window, "drag_solver")
+    downforce = time_weighted_mean(window, "downforce_solver")
+    first_drag = time_weighted_mean(first, "drag_solver")
+    second_drag = time_weighted_mean(second, "drag_solver")
+    first_downforce = time_weighted_mean(first, "downforce_solver")
+    second_downforce = time_weighted_mean(second, "downforce_solver")
     area_solver = measurement["reference_area_m2"] / measurement["spacing_m"] ** 2
+    force_scale_n = (measurement["density_kg_m3"] * measurement["freestream_mps"][0] ** 2
+                     * measurement["spacing_m"] ** 2)
     return {
-        "window_samples": len(window),
-        "window_mean_drag_solver": drag_mean,
-        "window_mean_downforce_solver": down_mean,
-        "window_time_weighted_drag_solver": time_weighted_mean(window, "drag_solver"),
-        "window_time_weighted_downforce_solver": time_weighted_mean(window, "downforce_solver"),
-        "diagnostic_first_half_mean_drag_solver": sum(row["drag_solver"] for row in first_half) / len(first_half),
-        "diagnostic_second_half_mean_drag_solver": sum(row["drag_solver"] for row in second_half) / len(second_half),
-        "diagnostic_first_half_mean_downforce_solver": sum(row["downforce_solver"] for row in first_half) / len(first_half),
-        "diagnostic_second_half_mean_downforce_solver": sum(row["downforce_solver"] for row in second_half) / len(second_half),
-        "cd_window_mean": drag_mean / (0.5 * area_solver),
-        "cd_time_weighted": time_weighted_mean(window, "drag_solver") / (0.5 * area_solver),
+        "window_samples": len(raw_window),
+        "window_time_weighted_drag_solver": drag,
+        "window_time_weighted_downforce_solver": downforce,
+        "diagnostic_first_half_time_weighted_drag_solver": first_drag,
+        "diagnostic_second_half_time_weighted_drag_solver": second_drag,
+        "diagnostic_first_half_time_weighted_downforce_solver": first_downforce,
+        "diagnostic_second_half_time_weighted_downforce_solver": second_downforce,
+        "stationarity_relative_half_window_drift_drag": (
+            abs(first_drag - second_drag) / max(abs(drag), float.fromhex("0x1.0p-52"))),
+        "stationarity_relative_half_window_drift_downforce": (
+            abs(first_downforce - second_downforce) / max(abs(downforce), float.fromhex("0x1.0p-52"))),
+        "cd_time_weighted": drag / (0.5 * area_solver),
+        "drag_time_weighted_n": drag * force_scale_n,
+        "downforce_time_weighted_n": downforce * force_scale_n,
     }
 
 
+def force_components_close(rows, measurement):
+    relative = measurement["force_component_relative_tolerance"]
+    absolute = measurement["force_component_absolute_tolerance"]
+    return bool(rows) and all(
+        math.isclose(row["fx_solver"], row["drag_solver"], rel_tol=relative, abs_tol=absolute)
+        and math.isclose(row["downforce_solver"], -row["fz_solver"],
+                         rel_tol=relative, abs_tol=absolute)
+        and all(math.isclose(
+            row[f"{axis}_solver"],
+            row[f"pressure_{axis}_solver"] + row[f"viscous_{axis}_solver"],
+            rel_tol=relative, abs_tol=absolute)
+            for axis in ("fx", "fy", "fz"))
+        for row in rows
+    )
+
+
 def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_sha,
-                   gpu_rows, smoke, source_prerequisites=True):
+                   gpu_rows, smoke, source_prerequisites=True, adapter_contract=None,
+                   cuda_visible_devices="0"):
     geometry = criteria["geometry"]
     profile = criteria["profile_adapter"]
     runtime = criteria["backend"]
     measurement = criteria["measurement"]
     finite_csv = bool(rows) and all(math.isfinite(value) for row in rows for value in row.values())
     sample_stride = measurement["sample_every_solver_steps"]
-    component_rtol = measurement["force_component_relative_tolerance"]
-    component_atol = measurement["force_component_absolute_tolerance"]
-    force_components_close = finite_csv and all(
-        math.isclose(row["fx_solver"], row["drag_solver"], rel_tol=component_rtol,
-                     abs_tol=component_atol)
-        and math.isclose(row["downforce_solver"], -row["fz_solver"], rel_tol=component_rtol,
-                         abs_tol=component_atol)
-        and math.isclose(row["drag_solver"],
-                         row["pressure_drag_solver"] + row["viscous_drag_solver"],
-                         rel_tol=component_rtol, abs_tol=component_atol)
-        and row["step"] % sample_stride == 0
-        for row in rows
-    )
+    force_closure = finite_csv and force_components_close(rows, measurement)
+    terminal_extra = bool(rows) and rows[-1]["t_u_l"] >= measurement["t_end_t_u_l"] \
+        and rows[-1]["step"] % sample_stride != 0
     regular_sampling = finite_csv and all(
-        right["step"] - left["step"] == sample_stride
+        (right["step"] - left["step"] == sample_stride)
+        or (terminal_extra and right is rows[-1] and right["t_u_l"] >= measurement["t_end_t_u_l"])
         for left, right in zip(rows, rows[1:])
-    )
+    ) and all(row["step"] % sample_stride == 0 for row in rows[:-1] if terminal_extra)
     try:
         metrics = recompute_metrics(rows, measurement) if finite_csv else {}
     except RuntimeError:
@@ -315,7 +361,9 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
             and summary.get("phi_fortran_sha256") == geometry["phi_fortran_sha256"]
             and summary.get("device_roundtrip_sha256") == geometry["phi_fortran_sha256"]
             and summary.get("dims") == profile["cell_dims"]
-            and summary.get("origin_m") == geometry["origin_m"]
+            and summary.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
+            and summary.get("flow_origin_m") == profile["flow_origin_m"]
+            and summary.get("flow_upper_m") == [bounds[1] for bounds in profile["physical_box_m"]]
             and summary.get("spacing_m") == geometry["spacing_m"]
         ),
         "T2_margin_gate": (
@@ -327,8 +375,19 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
         "T3_profile_adapter_is_explicitly_limited": (
             summary.get("source_profile_equivalent") is False
             and summary.get("physical_profile_qualified") is False
+            and adapter_contract is not None
+            and adapter_contract.get("source_profile_equivalent") is False
+            and adapter_contract.get("physical_profile_qualified") is False
             and summary.get("x_max_boundary") == profile["x_max_boundary"]
             and summary.get("pressure_boundary") == profile["pressure_boundary"]
+            and adapter_contract.get("flow_origin_m") == profile["flow_origin_m"]
+            and adapter_contract.get("flow_cell_dims") == profile["cell_dims"]
+            and adapter_contract.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
+            and math.isclose(summary.get("solver_length", math.nan),
+                             profile["solver_length"], rel_tol=0, abs_tol=1e-7)
+            and math.isclose(summary.get("solver_viscosity", math.nan),
+                             profile["solver_viscosity"], rel_tol=0, abs_tol=1e-7)
+            and summary.get("reynolds") == profile["reynolds"]
         ),
         "T4_backend_identity": (
             len(gpu_rows) == runtime["gpu_count"]
@@ -342,11 +401,17 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
             and summary.get("julia_threads") == runtime["julia_threads"]
             and summary.get("waterlily_version") == runtime["waterlily_version"]
             and summary.get("cuda_jl_version") == runtime["cuda_jl_version"]
+            and bool(summary.get("waterlily_backend"))
+            and cuda_visible_devices == runtime["cuda_visible_devices"]
             and all(marker in smoke for marker in (
                 "W0B_SMOKE_DONE", "CUDA_FUNCTIONAL true",
                 f"GPU_COMPUTE_CAPABILITY {runtime['compute_capability']}",
                 f"CUDA_DRIVER_VERSION {EXPECTED_DRIVER_API_VERSION}",
                 f"CUDA_RUNTIME_VERSION {EXPECTED_CUDA_RUNTIME_VERSION}",
+                f"JULIA_VERSION {runtime['julia_version']}",
+                f"CUDA_JL_VERSION {runtime['cuda_jl_version']}",
+                f"WATERLILY_VERSION {runtime['waterlily_version']}",
+                f"GPU_NAME {runtime['gpu_name']}", "NO_SOLVER_STEP",
             ))
         ),
         "T5_primal_completion": (
@@ -363,7 +428,7 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
         "T7_drag_orientation_and_host_recomputation": (
             math.isfinite(summary.get("window_time_weighted_drag_solver", math.nan))
             and summary.get("window_time_weighted_drag_solver", 0) > 0
-            and force_components_close
+            and force_closure
             and metric_match
         ),
         "T8_runtime_and_vram": (
@@ -374,6 +439,13 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
             source_commit == criteria["source_commit"]
             and runner_sha == criteria["inputs"]["kernel_runner"]["sha256"]
             and len(criteria_sha) == 64
+        ),
+        "T10_stationarity": (
+            bool(metrics)
+            and metrics.get("stationarity_relative_half_window_drift_drag", math.inf)
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
+            and metrics.get("stationarity_relative_half_window_drift_downforce", math.inf)
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
         ),
     }
     return gates, metrics
@@ -433,9 +505,11 @@ def main():
     if sha256(csv_path) != summary.get("force_csv_sha256"):
         raise RuntimeError("W3 candidate-force CSV hash mismatch")
     rows = parse_force_csv(csv_path)
+    adapter_contract = json.loads((OUT / "w3_adapter_contract.json").read_text())
     gates, metrics = evaluate_gates(
         criteria, summary, rows, criteria["source_commit"], runner_sha,
-        criteria_sha, gpu_rows, smoke,
+        criteria_sha, gpu_rows, smoke, adapter_contract=adapter_contract,
+        cuda_visible_devices=env["CUDA_VISIBLE_DEVICES"],
     )
     write_json(OUT / "fingerprint.json", {
         "criteria_sha256": criteria_sha,
@@ -460,7 +534,7 @@ def main():
         "summary": summary,
         "host_recomputed_metrics": metrics,
         "gates": gates,
-        "stationarity_is_diagnostic_only": True,
+        "stationarity_relative_drift_limit": criteria["measurement"]["stationarity"]["relative_half_window_drift_max"],
         "physical_profile_qualified": False,
         "shape_update_allowed": False,
     })

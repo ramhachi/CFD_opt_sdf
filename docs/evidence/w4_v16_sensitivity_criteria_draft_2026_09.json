@@ -18,23 +18,57 @@
     "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
     "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
     "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
-    "point_shape": [61, 33, 25],
-    "cell_shape": [60, 32, 24],
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "cell_shape": [
+      60,
+      32,
+      24
+    ],
     "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
     "design_lattice_spacing_m": 0.05,
     "design_lattice_is_resampled": false,
     "flow_grid_is_separate_from_design_lattice": true,
-    "world_origin_m": [-1.0, -0.8, -0.6],
-    "baseline_physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]],
+    "baseline_physical_box_m": [
+      [
+        -2.5,
+        2.5
+      ],
+      [
+        -1.2,
+        1.2
+      ],
+      [
+        -0.9,
+        0.9
+      ]
+    ],
     "reynolds": 80.0,
     "density_kg_m3": 1.0,
     "dynamic_viscosity_pa_s": 0.01,
-    "freestream_mps": [1.0, 0.0, 0.0],
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
     "reference_length_m": 0.8,
     "reference_area_m2": 0.64,
     "phi_margin_gate_m": 0.15,
     "phi_expected_margin_m": 0.3499999939931499,
-    "phi_margin_tolerance_m": 1e-6
+    "phi_margin_tolerance_m": 1e-06,
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "baseline_flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ]
   },
   "cases": [
     {
@@ -42,69 +76,153 @@
       "factor": "flow_resolution",
       "cells_per_reference_length": 16,
       "flow_spacing_m": 0.05,
-      "flow_dims": [60, 32, 24],
+      "flow_dims": [
+        100,
+        48,
+        36
+      ],
       "solver_length": 16.0,
       "solver_time_unit_s": 0.05,
       "solver_viscosity": 0.2,
       "reynolds": 80.0,
       "density_kg_m3": 1.0,
       "dynamic_viscosity_pa_s": 0.01,
-      "freestream_mps": [1.0, 0.0, 0.0],
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
       "reference_length_m": 0.8,
       "reference_area_m2": 0.64,
-      "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ]
     },
     {
       "case_id": "flow_24",
       "factor": "flow_resolution",
       "cells_per_reference_length": 24,
       "flow_spacing_m": 0.03333333333333333,
-      "flow_dims": [90, 48, 36],
+      "flow_dims": [
+        150,
+        72,
+        54
+      ],
       "solver_length": 24.0,
       "solver_time_unit_s": 0.03333333333333333,
       "solver_viscosity": 0.3,
       "reynolds": 80.0,
       "density_kg_m3": 1.0,
       "dynamic_viscosity_pa_s": 0.01,
-      "freestream_mps": [1.0, 0.0, 0.0],
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
       "reference_length_m": 0.8,
       "reference_area_m2": 0.64,
-      "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ]
     },
     {
       "case_id": "flow_32",
       "factor": "flow_resolution",
       "cells_per_reference_length": 32,
       "flow_spacing_m": 0.025,
-      "flow_dims": [120, 64, 48],
+      "flow_dims": [
+        200,
+        96,
+        72
+      ],
       "solver_length": 32.0,
       "solver_time_unit_s": 0.025,
       "solver_viscosity": 0.4,
       "reynolds": 80.0,
       "density_kg_m3": 1.0,
       "dynamic_viscosity_pa_s": 0.01,
-      "freestream_mps": [1.0, 0.0, 0.0],
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
       "reference_length_m": 0.8,
       "reference_area_m2": 0.64,
-      "physical_box_m": [[-1.0, 2.0], [-0.8, 0.8], [-0.6, 0.6]]
+      "physical_box_m": [
+        [
+          -2.5,
+          2.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ]
     },
     {
-      "case_id": "domain_xplus3p5_16",
+      "case_id": "domain_xplus1m_16",
       "factor": "domain_extent",
       "cells_per_reference_length": 16,
       "flow_spacing_m": 0.05,
-      "flow_dims": [130, 32, 24],
+      "flow_dims": [
+        120,
+        48,
+        36
+      ],
       "solver_length": 16.0,
       "solver_time_unit_s": 0.05,
       "solver_viscosity": 0.2,
       "reynolds": 80.0,
       "density_kg_m3": 1.0,
       "dynamic_viscosity_pa_s": 0.01,
-      "freestream_mps": [1.0, 0.0, 0.0],
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
       "reference_length_m": 0.8,
       "reference_area_m2": 0.64,
-      "physical_box_m": [[-1.0, 5.5], [-0.8, 0.8], [-0.6, 0.6]],
-      "x_plus_extension_m": 3.5
+      "physical_box_m": [
+        [
+          -2.5,
+          3.5
+        ],
+        [
+          -1.2,
+          1.2
+        ],
+        [
+          -0.9,
+          0.9
+        ]
+      ],
+      "x_plus_extension_m": 1.0
     }
   ],
   "profile_semantics": {
@@ -112,24 +230,43 @@
     "side_top_tangential_boundary": "WaterLily native tangential zero-Neumann",
     "x_plus_boundary": "WaterLily convective exit",
     "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
-    "ground_model": "moving planar half-space at z=0 with +x wall velocity 1 m/s",
+    "ground_model": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
     "force_integration_body": "canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
-    "drag_projection": [1.0, 0.0, 0.0],
-    "downforce_projection": [0.0, 0.0, -1.0],
+    "drag_projection": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "downforce_projection": [
+      0.0,
+      0.0,
+      -1.0
+    ],
     "source_profile_equivalent": false,
     "physical_profile_qualified": false
   },
   "measurement": {
     "target_t_u_l": 120.0,
     "burn_in_t_u_l": 80.0,
-    "force_window_t_u_l": [80.0, 120.0],
+    "force_window_t_u_l": [
+      80.0,
+      120.0
+    ],
     "force_sample_every_solver_steps": 8,
     "force_sample_policy": "sample every 8 solver steps and also sample the first step at or beyond tU/L=120 to bracket the exact measurement window",
     "minimum_force_window_samples": 4,
     "primary_force_metric": "trapezoidal physical-time-weighted mean over exact [80,120] endpoints, with linear interpolation from bracketing raw force samples",
     "force_integration_body": "canonical v16 candidate GridSDF only; exclude the auxiliary moving-ground half-space",
-    "drag_projection": [1.0, 0.0, 0.0],
-    "downforce_projection": [0.0, 0.0, -1.0],
+    "drag_projection": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "downforce_projection": [
+      0.0,
+      0.0,
+      -1.0
+    ],
     "record_first_second_half_means": true,
     "stationarity_gate": false,
     "native_waterlily_boundary_semantics_fixed": true,
@@ -139,9 +276,9 @@
     "memory": "CuArray",
     "per_case_wall_time_limit_s": 1800.0,
     "aggregate_solver_wall_time_limit_s": 5400.0,
-    "host_recompute_relative_tolerance": 1e-9,
-    "force_component_relative_tolerance": 1e-6,
-    "force_component_absolute_tolerance": 1e-8,
+    "host_recompute_relative_tolerance": 1e-09,
+    "force_component_relative_tolerance": 1e-06,
+    "force_component_absolute_tolerance": 1e-08,
     "vram_gate": "record peak and total; require 0 < peak < total"
   },
   "artifacts_per_case": [
@@ -151,7 +288,7 @@
   ],
   "response_analysis": {
     "report_resolution_delta": "flow_24 to flow_32 for time-weighted drag and downforce in N and relative terms",
-    "report_domain_delta": "flow_16 to domain_xplus3p5_16 for time-weighted drag and downforce in N and relative terms",
+    "report_domain_delta": "flow_16 to domain_xplus1m_16 for time-weighted drag and downforce in N and relative terms",
     "relative_delta_definition": "abs(a-b)/max(abs(a),abs(b)); when both values are zero report relative delta as not applicable and retain the absolute delta",
     "followup_rule": "If the absolute domain delta in either time-weighted force component in N is greater than or equal to its 24-to-32 resolution delta, register and run an extended-domain fine-grid case before centered FD.",
     "is_grid_or_domain_convergence_gate": false

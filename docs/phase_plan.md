@@ -2744,3 +2744,71 @@ was reached. It is not evidence of Enzyme/CUDA incompatibility or a reverse
 failure; all reverse and gradient qualification flags remain false. If retried
 for diagnosis, use a writable temporary copy of the pinned scratch project and
 keep the CUDA.jl 6.2.1 scratch environment isolated from production W2/W3/W4.
+
+### 2026-09-28 W3 expanded-domain round-3 preparation
+
+This checkpoint preserves W3 v3 and reverse spike v1 as historical diagnostics.
+The negative v3 `+Fx` drag is an acceptance failure, but it does not by itself
+establish a force-sign implementation bug. The registered sign is unchanged.
+The v3 first/second-half diagnostics were approximately drag `-8.73/-37.27`
+and downforce `-196.19/-254.50` solver units, showing a strongly changing
+response. Those measurements were not registered as a stationarity gate and
+were not used to choose round 3's threshold.
+
+- **Implemented:** W3 round-3 source uses the expanded WaterLily finite box
+  `[-2.5,2.5] x [-1.2,1.2] x [-0.9,0.9] m`, flow origin
+  `[-2.5,-1.2,-0.9] m`, and `100x48x36` cells at `dx=0.05 m`. It keeps the
+  canonical design SDF at origin `[-1,-0.8,-0.6] m`, spacing `0.05 m`, and
+  point shape `61x33x25`; the body map uses the flow origin while GridSDF keeps
+  its canonical origin. Candidate world location and moving ground at the
+  flow-domain bottom are covered by the Julia adapter test.
+- **Implemented:** the W3 raw force CSV records total, pressure and viscous
+  `Fx/Fy/Fz`, plus `drag=+Fx` and `downforce=-Fz`. Runner and host verifier
+  independently enforce all-axis component closure, exact `[80,120]` endpoint
+  interpolation/trapezoidal weighting, half-window integration and the hard
+  stationarity gate. T10 inherits relative half-window drift `<=0.02` from the
+  preregistered W2 sphere capability convention; this threshold was fixed
+  independently of the W3 v3 measurement. Positive +x drag remains T7; no
+  downforce sign/magnitude threshold was introduced.
+- **Implemented:** round-3 fixture selection binds three existing Stage V
+  records: original small-box failure on
+  `outer_patch_backflow_and_pressure_disturbance`, expanded-box physical-profile
+  pass, and same-candidate parent/child domain-convergence pass. The OpenFOAM
+  values `Cd=1.16939914/1.17036295` and downforce `0.75655147/0.75735487` are
+  retained solely as fixture-selection evidence, not WaterLily targets or an
+  equivalence claim. The W2 round-5 sphere's positive-drag gate is also bound
+  as a sign-convention precedent.
+- **Implemented:** W4 remains mutable and unregistered, but its draft, case
+  builder, solver, runner, host verifier and dataset preparer now use the
+  expanded W3 baseline. The four cases are `100x48x36` at `dx=.05`,
+  `150x72x54` at `dx=.033333...`, `200x96x72` at `dx=.025`, and the matched
+  `[-2.5,3.5]x[-1.2,1.2]x[-.9,.9] m` domain case at `120x48x36`; all retain
+  Re=80 and the canonical SDF unchanged. No W4 criteria are frozen and no W4
+  measurement has run.
+- **Implemented:** the diagnostic-only reverse spike runner copies its pinned
+  Project/Manifest to writable `/kaggle/working`, checks the copied input
+  hashes, then instantiates and runs from that copy. CUDA.jl 6.2.1, Enzyme and
+  WaterLily PR #285 pins remain scratch-only and unchanged. This corrects v1's
+  read-only-project EROFS failure without claiming a reverse result.
+- **Registered:** no W3 round-3 criteria yet. The criteria may be frozen only
+  after source, tests and draft are complete, committed and pushed, then
+  regenerated from the clean exact source commit. W4 criteria remain
+  unregistered and gated on a formally host-verified W3 PASS.
+- **Submitted:** no W3 round-3 or reverse-spike v2 kernel has been submitted at
+  this checkpoint.
+- **Measured:** no W3 round-3, W4, or reverse-spike v2 measurement exists.
+- **Verified:** 19 focused W3/W4 pytest tests pass; all 16 Julia adapter checks
+  pass without advancing a solver step; W3/W4 Julia jobs parse; W4 case mapping
+  yields the registered 100x48x36 / 150x72x54 / 200x96x72 / 120x48x36 grids at
+  Re=80; Python compileall, W4-draft JSON parsing, round-3 criteria preview,
+  and `git diff --check` pass. These are harness/contract checks only and do
+  not qualify a solver or gradient.
+- **Qualified:** W2 sphere primal/grid response remains qualified. W3 v3 remains
+  unqualified (T7 false); W3 expanded-domain primal, physical profile,
+  stationarity, grid response, gradient, CPU/GPU reverse, topology, optimizer
+  and shape update remain unqualified.
+- **Open:** complete requested syntax/tests and documentation, commit/push W3
+  source before immutable round-3 registration, stage and remotely re-verify
+  its private dataset, then submit the next exact W3 kernel version. Collect
+  its version-bound log/output and host-verify all T0-T10. W4 may freeze only
+  after that exact PASS; reverse spike v2 is a parallel diagnostic only.

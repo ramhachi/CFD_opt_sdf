@@ -19,7 +19,9 @@ Base.include(CFDSDFWaterLily,
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
 using .CFDSDFWaterLily: V16_PROFILE_CELL_DIMS, V16_PROFILE_DENSITY_KG_M3,
-    V16_PROFILE_FREESTREAM_MPS, V16_PROFILE_ORIGIN_M, V16_PROFILE_POINT_SHAPE,
+    V16_PROFILE_FREESTREAM_MPS, V16_CANONICAL_SDF_ORIGIN_M,
+    V16_PROFILE_FLOW_ORIGIN_M, V16_PROFILE_FLOW_UPPER_M,
+    V16_PROFILE_POINT_SHAPE,
     V16_PROFILE_REFERENCE_AREA_M2, V16_PROFILE_REYNOLDS,
     V16_PROFILE_SOLVER_LENGTH, V16_PROFILE_SOLVER_TIME_UNIT_S,
     V16_PROFILE_SOLVER_U, V16_PROFILE_SOLVER_VISCOSITY,
@@ -49,8 +51,8 @@ function json_number(x)
 end
 json_array(values) = "[" * join(json_number.(values), ",") * "]"
 
-function time_weighted_mean(rows, column, fallback)
-    length(rows) >= 2 || return fallback
+function time_weighted_mean(rows, column)
+    length(rows) >= 2 || error("time-weighted force window needs at least two rows")
     numerator = 0.0
     denominator = 0.0
     for i in 1:(length(rows) - 1)
@@ -58,16 +60,33 @@ function time_weighted_mean(rows, column, fallback)
         numerator += 0.5 * (rows[i][column] + rows[i + 1][column]) * dt
         denominator += dt
     end
-    denominator > 0.0 ? numerator / denominator : fallback
+    denominator > 0.0 || error("time-weighted force window has zero duration")
+    numerator / denominator
 end
 
-function mean_column(rows, column)
-    sum(row[column] for row in rows) / length(rows)
+function interpolate_force_row(left, right, t)
+    left[2] <= t <= right[2] || error("raw samples do not bracket tU/L=$t")
+    left[2] == right[2] && return left
+    alpha = (t - left[2]) / (right[2] - left[2])
+    ntuple(i -> i == 2 ? Float64(t) : left[i] + alpha * (right[i] - left[i]), 13)
+end
+
+function clipped_force_window(rows, start_t, end_t)
+    left_start = findlast(row -> row[2] <= start_t, rows)
+    right_start = findfirst(row -> row[2] >= start_t, rows)
+    left_end = findlast(row -> row[2] <= end_t, rows)
+    right_end = findfirst(row -> row[2] >= end_t, rows)
+    all(!isnothing, (left_start, right_start, left_end, right_end)) ||
+        error("raw force samples do not bracket exact [$start_t,$end_t]")
+    start_row = interpolate_force_row(rows[left_start], rows[right_start], start_t)
+    end_row = interpolate_force_row(rows[left_end], rows[right_end], end_t)
+    interior = [row for row in rows if start_t < row[2] < end_t]
+    vcat([start_row], interior, [end_row])
 end
 
 function write_force_csv(path, rows)
     open(path, "w") do io
-        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_drag_solver,viscous_drag_solver")
+        println(io, "step,t_u_l,fx_solver,fy_solver,fz_solver,drag_solver,downforce_solver,pressure_fx_solver,pressure_fy_solver,pressure_fz_solver,viscous_fx_solver,viscous_fy_solver,viscous_fz_solver")
         for row in rows
             println(io, join(row, ","))
         end
@@ -88,12 +107,12 @@ function load_canonical_grid(path)
         error("canonical v16 C-order phi hash mismatch")
     grid = GridSDF(
         phi;
-        origin = V16_PROFILE_ORIGIN_M,
+        origin = V16_CANONICAL_SDF_ORIGIN_M,
         h = (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M),
         outside_value = 3.0,
         margin_m = REQUIRED_MARGIN_M,
     )
-    measured_margin = zero_level_margin_m(phi, V16_PROFILE_ORIGIN_M,
+    measured_margin = zero_level_margin_m(phi, V16_CANONICAL_SDF_ORIGIN_M,
         (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))
     abs(measured_margin - EXPECTED_MARGIN_M) <= MARGIN_TOL_M ||
         error("canonical v16 phi margin drift: $(measured_margin)")
@@ -101,7 +120,7 @@ function load_canonical_grid(path)
 end
 
 function run_primal(sim, bodies; vram_total)
-    history = Vector{NTuple{9,Float64}}()
+    history = Vector{NTuple{13,Float64}}()
     warm_started = time()
     sim_step!(sim) # compile the registered GPU path; excluded from solve timing
     first_step_seconds = time() - warm_started
@@ -111,7 +130,7 @@ function run_primal(sim, bodies; vram_total)
     while sim_time(sim) < T_END
         sim_step!(sim)
         step += 1
-        if step % SAMPLE_EVERY == 0
+        if step % SAMPLE_EVERY == 0 || sim_time(sim) >= T_END
             pressure = -(WaterLily.pressure_force(sim.flow, bodies.candidate))
             viscous = -(WaterLily.viscous_force(sim.flow, bodies.candidate))
             total = pressure + viscous
@@ -120,7 +139,9 @@ function run_primal(sim, bodies; vram_total)
             push!(history, (
                 Float64(step), Float64(sim_time(sim)), Float64(total[1]),
                 Float64(total[2]), Float64(total[3]), Float64(drag),
-                Float64(downforce), Float64(pressure[1]), Float64(viscous[1]),
+                Float64(downforce), Float64(pressure[1]), Float64(pressure[2]),
+                Float64(pressure[3]), Float64(viscous[1]), Float64(viscous[2]),
+                Float64(viscous[3]),
             ))
         end
         if step % 50 == 0
@@ -133,14 +154,20 @@ function run_primal(sim, bodies; vram_total)
     all(isfinite, sim.flow.u) || error("non-finite velocity field")
     all(isfinite, sim.flow.p) || error("non-finite pressure field")
     isempty(history) && error("no candidate-force samples were captured")
-    window = [row for row in history if BURN_IN <= row[2] <= T_END]
-    length(window) >= 4 || error("too few samples in registered W3 force window")
+    raw_window = [row for row in history if BURN_IN <= row[2] <= T_END]
+    length(raw_window) >= 4 || error("too few raw samples in registered W3 force window")
+    window = clipped_force_window(history, BURN_IN, T_END)
     middle = (BURN_IN + T_END) / 2
-    first_half = [row for row in window if row[2] < middle]
-    second_half = [row for row in window if row[2] >= middle]
-    (!isempty(first_half) && !isempty(second_half)) || error("empty W3 diagnostic half-window")
-    drag = mean_column(window, 6)
-    downforce = mean_column(window, 7)
+    first_half = clipped_force_window(history, BURN_IN, middle)
+    second_half = clipped_force_window(history, middle, T_END)
+    drag = time_weighted_mean(window, 6)
+    downforce = time_weighted_mean(window, 7)
+    first_drag = time_weighted_mean(first_half, 6)
+    second_drag = time_weighted_mean(second_half, 6)
+    first_downforce = time_weighted_mean(first_half, 7)
+    second_downforce = time_weighted_mean(second_half, 7)
+    drag_drift = abs(first_drag - second_drag) / max(abs(drag), eps(Float64))
+    downforce_drift = abs(first_downforce - second_downforce) / max(abs(downforce), eps(Float64))
     area_solver = V16_PROFILE_REFERENCE_AREA_M2 / V16_PROFILE_SPACING_M^2
     force_scale_n = V16_PROFILE_DENSITY_KG_M3 *
         V16_PROFILE_FREESTREAM_MPS[1]^2 * V16_PROFILE_SPACING_M^2
@@ -153,19 +180,18 @@ function run_primal(sim, bodies; vram_total)
         finite_u = all(isfinite, sim.flow.u),
         finite_p = all(isfinite, sim.flow.p),
         force_samples = length(history),
-        window_samples = length(window),
-        window_mean_drag_solver = drag,
-        window_mean_downforce_solver = downforce,
-        window_time_weighted_drag_solver = time_weighted_mean(window, 6, drag),
-        window_time_weighted_downforce_solver = time_weighted_mean(window, 7, downforce),
-        diagnostic_first_half_mean_drag_solver = mean_column(first_half, 6),
-        diagnostic_second_half_mean_drag_solver = mean_column(second_half, 6),
-        diagnostic_first_half_mean_downforce_solver = mean_column(first_half, 7),
-        diagnostic_second_half_mean_downforce_solver = mean_column(second_half, 7),
-        cd_window_mean = drag / (0.5 * area_solver),
-        cd_time_weighted = time_weighted_mean(window, 6, drag) / (0.5 * area_solver),
-        drag_time_weighted_n = time_weighted_mean(window, 6, drag) * force_scale_n,
-        downforce_time_weighted_n = time_weighted_mean(window, 7, downforce) * force_scale_n,
+        window_samples = length(raw_window),
+        window_time_weighted_drag_solver = drag,
+        window_time_weighted_downforce_solver = downforce,
+        diagnostic_first_half_time_weighted_drag_solver = first_drag,
+        diagnostic_second_half_time_weighted_drag_solver = second_drag,
+        diagnostic_first_half_time_weighted_downforce_solver = first_downforce,
+        diagnostic_second_half_time_weighted_downforce_solver = second_downforce,
+        stationarity_relative_half_window_drift_drag = drag_drift,
+        stationarity_relative_half_window_drift_downforce = downforce_drift,
+        cd_time_weighted = drag / (0.5 * area_solver),
+        drag_time_weighted_n = drag * force_scale_n,
+        downforce_time_weighted_n = downforce * force_scale_n,
         peak_vram_bytes = peak_vram,
         vram_total_bytes = vram_total,
     )
@@ -205,7 +231,9 @@ function run_w3_primal()
         "\"gpu_name\":\"", CUDA.name(CUDA.device()), "\",",
         "\"gpu_uuid\":\"", get(ENV, "W3_SELECTED_GPU_UUID", ""), "\",",
         "\"dims\":", json_array(V16_PROFILE_CELL_DIMS), ",",
-        "\"origin_m\":", json_array(V16_PROFILE_ORIGIN_M), ",",
+        "\"flow_origin_m\":", json_array(V16_PROFILE_FLOW_ORIGIN_M), ",",
+        "\"flow_upper_m\":", json_array(V16_PROFILE_FLOW_UPPER_M), ",",
+        "\"canonical_sdf_origin_m\":", json_array(V16_CANONICAL_SDF_ORIGIN_M), ",",
         "\"spacing_m\":", json_number(V16_PROFILE_SPACING_M), ",",
         "\"world_per_solver\":", json_number(V16_PROFILE_SPACING_M), ",",
         "\"solver_time_unit_s\":", json_number(V16_PROFILE_SOLVER_TIME_UNIT_S), ",",
@@ -230,15 +258,14 @@ function run_w3_primal()
         "\"window_samples\":", summary.window_samples, ",",
         "\"finite_u\":", summary.finite_u, ",",
         "\"finite_p\":", summary.finite_p, ",",
-        "\"window_mean_drag_solver\":", json_number(summary.window_mean_drag_solver), ",",
-        "\"window_mean_downforce_solver\":", json_number(summary.window_mean_downforce_solver), ",",
         "\"window_time_weighted_drag_solver\":", json_number(summary.window_time_weighted_drag_solver), ",",
         "\"window_time_weighted_downforce_solver\":", json_number(summary.window_time_weighted_downforce_solver), ",",
-        "\"diagnostic_first_half_mean_drag_solver\":", json_number(summary.diagnostic_first_half_mean_drag_solver), ",",
-        "\"diagnostic_second_half_mean_drag_solver\":", json_number(summary.diagnostic_second_half_mean_drag_solver), ",",
-        "\"diagnostic_first_half_mean_downforce_solver\":", json_number(summary.diagnostic_first_half_mean_downforce_solver), ",",
-        "\"diagnostic_second_half_mean_downforce_solver\":", json_number(summary.diagnostic_second_half_mean_downforce_solver), ",",
-        "\"cd_window_mean\":", json_number(summary.cd_window_mean), ",",
+        "\"diagnostic_first_half_time_weighted_drag_solver\":", json_number(summary.diagnostic_first_half_time_weighted_drag_solver), ",",
+        "\"diagnostic_second_half_time_weighted_drag_solver\":", json_number(summary.diagnostic_second_half_time_weighted_drag_solver), ",",
+        "\"diagnostic_first_half_time_weighted_downforce_solver\":", json_number(summary.diagnostic_first_half_time_weighted_downforce_solver), ",",
+        "\"diagnostic_second_half_time_weighted_downforce_solver\":", json_number(summary.diagnostic_second_half_time_weighted_downforce_solver), ",",
+        "\"stationarity_relative_half_window_drift_drag\":", json_number(summary.stationarity_relative_half_window_drift_drag), ",",
+        "\"stationarity_relative_half_window_drift_downforce\":", json_number(summary.stationarity_relative_half_window_drift_downforce), ",",
         "\"cd_time_weighted\":", json_number(summary.cd_time_weighted), ",",
         "\"drag_time_weighted_n\":", json_number(summary.drag_time_weighted_n), ",",
         "\"downforce_time_weighted_n\":", json_number(summary.downforce_time_weighted_n), ",",
@@ -249,8 +276,12 @@ function run_w3_primal()
     )
     write(joinpath(output_dir, "v16.summary.json"), result * "\n")
     write(joinpath(output_dir, "w3_adapter_contract.json"),
-        "{\"source_profile_equivalent\":false,\"physical_profile_qualified\":false,\"" *
-        "pressure_boundary\":\"WaterLily projection pressure; no per-patch freestreamPressure input\",\"" *
+        "{\"source_profile_equivalent\":false,\"physical_profile_qualified\":false," *
+        "\"flow_cell_dims\":" * json_array(V16_PROFILE_CELL_DIMS) * "," *
+        "\"flow_origin_m\":" * json_array(V16_PROFILE_FLOW_ORIGIN_M) * "," *
+        "\"flow_upper_m\":" * json_array(V16_PROFILE_FLOW_UPPER_M) * "," *
+        "\"canonical_sdf_origin_m\":" * json_array(V16_CANONICAL_SDF_ORIGIN_M) * "," *
+        "\"pressure_boundary\":\"WaterLily projection pressure; no per-patch freestreamPressure input\",\"" *
         "x_max_boundary\":\"WaterLily convective exit\",\"" *
         "side_top_normal_velocity\":\"zero\",\"" *
         "side_top_tangential_condition\":\"zero-Neumann\"}\n")

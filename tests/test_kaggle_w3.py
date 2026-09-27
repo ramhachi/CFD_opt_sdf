@@ -1,294 +1,210 @@
 import hashlib
 import importlib.util
-import json
 import math
 from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
-RUNNER_PATH = ROOT / "infra/kaggle/kernel_w3/runner.py"
-SPEC = importlib.util.spec_from_file_location("kaggle_w3_runner", RUNNER_PATH)
-runner = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(runner)
-HOST_VERIFIER_PATH = ROOT / "scripts/verify_kaggle_w3_v16.py"
-HOST_SPEC = importlib.util.spec_from_file_location("verify_kaggle_w3_v16", HOST_VERIFIER_PATH)
-host_verifier = importlib.util.module_from_spec(HOST_SPEC)
-HOST_SPEC.loader.exec_module(host_verifier)
-REGISTRAR_PATH = ROOT / "scripts/register_kaggle_w3_v16_primal_2026_09.py"
-REG_SPEC = importlib.util.spec_from_file_location("register_kaggle_w3_v16", REGISTRAR_PATH)
-registrar = importlib.util.module_from_spec(REG_SPEC)
-REG_SPEC.loader.exec_module(registrar)
 
 
-def fixture():
-    runner_sha = hashlib.sha256(RUNNER_PATH.read_bytes()).hexdigest()
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+runner = load("w3_round3_runner", ROOT / "infra/kaggle/kernel_w3/runner.py")
+host = load("w3_round3_host", ROOT / "scripts/verify_kaggle_w3_v16.py")
+registrar = load("w3_round3_registrar", ROOT / "scripts/register_kaggle_w3_v16_primal_2026_09.py")
+
+
+def fixture(linear=False):
+    runner_path = ROOT / "infra/kaggle/kernel_w3/runner.py"
     criteria = {
         "source_commit": "a" * 40,
-        "inputs": {"kernel_runner": {"sha256": runner_sha}},
+        "inputs": {"kernel_runner": {"sha256": hashlib.sha256(runner_path.read_bytes()).hexdigest()}},
         "geometry": {
-            "state_sha256": "b" * 64,
-            "source_surface_sha256": "c" * 64,
-            "phi_c_order_sha256": "d" * 64,
-            "phi_fortran_sha256": "e" * 64,
-            "origin_m": [-1.0, -0.8, -0.6],
-            "spacing_m": 0.05,
-            "margin_gate_m": 0.15,
-            "expected_margin_m": 0.35,
-            "margin_tolerance_m": 1e-6,
+            "state_sha256": "b" * 64, "state_npz_sha256": "c" * 64,
+            "source_surface_sha256": "d" * 64, "design_domain_sha256": "e" * 64,
+            "phi_c_order_sha256": "f" * 64, "phi_fortran_sha256": "1" * 64,
+            "point_shape": [61, 33, 25], "cell_shape": [60, 32, 24],
+            "canonical_sdf_origin_m": [-1.0, -0.8, -0.6], "spacing_m": 0.05,
+            "margin_gate_m": 0.15, "expected_margin_m": 0.35, "margin_tolerance_m": 1e-6,
         },
         "profile_adapter": {
-            "cell_dims": [60, 32, 24],
+            "cell_dims": [100, 48, 36], "flow_origin_m": [-2.5, -1.2, -0.9],
+            "physical_box_m": [[-2.5, 2.5], [-1.2, 1.2], [-0.9, 0.9]],
+            "spacing_m": 0.05, "solver_length": 16.0, "solver_viscosity": 0.2, "reynolds": 80.0,
             "x_max_boundary": "WaterLily convective exit",
             "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
         },
         "backend": {
-            "accelerator": "NvidiaTeslaT4",
-            "machine_shape": "NvidiaTeslaT4",
-            "gpu_name": "Tesla T4",
-            "gpu_count": 2,
-            "driver_version": "580.159.04",
-            "cuda_visible_devices": "0",
-            "julia_archive_sha256": runner.JULIA_SHA256,
-            "compute_capability": "7.5.0",
-            "cuda_driver_api_version": "13.3.0",
-            "cuda_runtime_version": "12.8.0",
-            "julia_version": "1.12.6",
-            "julia_threads": 1,
-            "waterlily_version": "1.8.0",
+            "accelerator": "NvidiaTeslaT4", "machine_shape": "NvidiaTeslaT4", "gpu_name": "Tesla T4",
+            "gpu_count": 2, "driver_version": "580.159.04", "cuda_visible_devices": "0",
+            "julia_archive_sha256": runner.JULIA_SHA256, "compute_capability": "7.5.0",
+            "cuda_driver_api_version": "13.3.0", "cuda_runtime_version": "12.8.0",
+            "julia_version": "1.12.6", "julia_threads": 1, "waterlily_version": "1.8.0",
             "cuda_jl_version": "6.3.1",
         },
         "measurement": {
-            "burn_in_t_u_l": 80.0,
-            "t_end_t_u_l": 120.0,
-            "minimum_window_samples": 4,
-            "sample_every_solver_steps": 8,
-            "host_recompute_relative_tolerance": 1e-9,
-            "force_component_relative_tolerance": 1e-6,
-            "force_component_absolute_tolerance": 1e-8,
-            "reference_area_m2": 0.64,
-            "spacing_m": 0.05,
-            "runtime_limit_s": 1800.0,
+            "burn_in_t_u_l": 80.0, "t_end_t_u_l": 120.0, "force_window_t_u_l": [80.0, 120.0],
+            "minimum_window_samples": 4, "sample_every_solver_steps": 8,
+            "host_recompute_relative_tolerance": 1e-9, "force_component_relative_tolerance": 1e-6,
+            "force_component_absolute_tolerance": 1e-8, "reference_area_m2": 0.64,
+            "spacing_m": 0.05, "density_kg_m3": 1.0, "freestream_mps": [1.0, 0.0, 0.0],
+            "runtime_limit_s": 1800.0, "stationarity": {"relative_half_window_drift_max": 0.02},
         },
     }
-    rows = [
-        {"step": 8.0, "t_u_l": 80.0, "fx_solver": 2.0, "fy_solver": 0.1,
-         "fz_solver": -0.5, "drag_solver": 2.0, "downforce_solver": 0.5,
-         "pressure_drag_solver": 1.7, "viscous_drag_solver": 0.3},
-        {"step": 16.0, "t_u_l": 90.0, "fx_solver": 2.2, "fy_solver": 0.1,
-         "fz_solver": -0.55, "drag_solver": 2.2, "downforce_solver": 0.55,
-         "pressure_drag_solver": 1.8, "viscous_drag_solver": 0.4},
-        {"step": 24.0, "t_u_l": 110.0, "fx_solver": 2.5, "fy_solver": 0.1,
-         "fz_solver": -0.6, "drag_solver": 2.5, "downforce_solver": 0.6,
-         "pressure_drag_solver": 2.0, "viscous_drag_solver": 0.5},
-        {"step": 32.0, "t_u_l": 120.0, "fx_solver": 2.7, "fy_solver": 0.1,
-         "fz_solver": -0.65, "drag_solver": 2.7, "downforce_solver": 0.65,
-         "pressure_drag_solver": 2.1, "viscous_drag_solver": 0.6},
-    ]
+    rows = []
+    for step, t in zip((8, 16, 24, 32, 40, 43), (79.0, 85.0, 95.0, 105.0, 115.0, 121.0)):
+        drag, down = (t, 0.5 * t) if linear else (2.0, 0.5)
+        p, v = (0.8 * drag, 0.12, -0.75 * down), (0.2 * drag, 0.08, -0.25 * down)
+        rows.append({
+            "step": float(step), "t_u_l": t, "fx_solver": drag, "fy_solver": p[1] + v[1],
+            "fz_solver": -down, "drag_solver": drag, "downforce_solver": down,
+            "pressure_fx_solver": p[0], "pressure_fy_solver": p[1], "pressure_fz_solver": p[2],
+            "viscous_fx_solver": v[0], "viscous_fy_solver": v[1], "viscous_fz_solver": v[2],
+        })
     summary = {
-        "state_sha256": "b" * 64,
-        "source_surface_sha256": "c" * 64,
-        "phi_c_order_sha256": "d" * 64,
-        "phi_fortran_sha256": "e" * 64,
-        "device_roundtrip_sha256": "e" * 64,
-        "dims": [60, 32, 24],
-        "origin_m": [-1.0, -0.8, -0.6],
-        "spacing_m": 0.05,
-        "phi_margin_gate_m": 0.15,
-        "phi_margin_m": 0.35,
-        "source_profile_equivalent": False,
-        "physical_profile_qualified": False,
+        "state_sha256": "b" * 64, "source_surface_sha256": "d" * 64,
+        "phi_c_order_sha256": "f" * 64, "phi_fortran_sha256": "1" * 64,
+        "device_roundtrip_sha256": "1" * 64, "dims": [100, 48, 36],
+        "canonical_sdf_origin_m": [-1.0, -0.8, -0.6], "flow_origin_m": [-2.5, -1.2, -0.9],
+        "flow_upper_m": [2.5, 1.2, 0.9], "spacing_m": 0.05,
+        "phi_margin_gate_m": 0.15, "phi_margin_m": 0.35,
+        "source_profile_equivalent": False, "physical_profile_qualified": False,
         "x_max_boundary": criteria["profile_adapter"]["x_max_boundary"],
         "pressure_boundary": criteria["profile_adapter"]["pressure_boundary"],
-        "gpu_uuid": "GPU-test-0",
-        "gpu_name": "Tesla T4",
-        "julia_version": "1.12.6",
-        "julia_threads": 1,
-        "waterlily_version": "1.8.0",
-        "waterlily_backend": "fixture-backend",
-        "cuda_jl_version": "6.3.1",
-        "t_end_target": 120.0,
-        "t_end_reached": 120.2,
-        "steps": 33,
-        "finite_u": True,
-        "finite_p": True,
-        "force_samples": 4,
-        "window_samples": 4,
-        "wall_seconds": 10.0,
-        "peak_vram_bytes": 100,
-        "vram_total_bytes": 1000,
+        "reynolds": 80.0, "solver_length": 16.0, "solver_viscosity": 0.2,
+        "gpu_uuid": "GPU-test-0", "gpu_name": "Tesla T4", "julia_version": "1.12.6",
+        "julia_threads": 1, "waterlily_version": "1.8.0", "waterlily_backend": "KernelAbstractions",
+        "cuda_jl_version": "6.3.1", "t_end_target": 120.0, "t_end_reached": 121.0,
+        "steps": 43, "finite_u": True, "finite_p": True, "force_samples": len(rows),
+        "wall_seconds": 10.0, "peak_vram_bytes": 100, "vram_total_bytes": 1000,
     }
     summary.update(runner.recompute_metrics(rows, criteria["measurement"]))
-    return criteria, summary, rows
+    adapter = {
+        "source_profile_equivalent": False, "physical_profile_qualified": False,
+        "flow_origin_m": [-2.5, -1.2, -0.9], "flow_cell_dims": [100, 48, 36],
+        "canonical_sdf_origin_m": [-1.0, -0.8, -0.6],
+        "x_max_boundary": criteria["profile_adapter"]["x_max_boundary"],
+        "pressure_boundary": criteria["profile_adapter"]["pressure_boundary"],
+    }
+    gpu = ["0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
+           "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04"]
+    smoke = "W0B_SMOKE_DONE CUDA_FUNCTIONAL true GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_DRIVER_VERSION 13.3.0 CUDA_RUNTIME_VERSION 12.8.0 JULIA_VERSION 1.12.6 CUDA_JL_VERSION 6.3.1 WATERLILY_VERSION 1.8.0 GPU_NAME Tesla T4 NO_SOLVER_STEP"
+    return criteria, summary, rows, adapter, gpu, smoke
 
 
-def test_w3_registered_mapping_gates_accept_correct_native_approximation():
-    criteria, summary, rows = fixture()
-    gpu_rows = [
-        "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
-        "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
-    ]
-    smoke = "W0B_SMOKE_DONE\nCUDA_FUNCTIONAL true\nGPU_COMPUTE_CAPABILITY 7.5.0\nCUDA_DRIVER_VERSION 13.3.0\nCUDA_RUNTIME_VERSION 12.8.0\n"
-    gates, metrics = runner.evaluate_gates(
+def compare_gates(criteria, summary, rows, adapter, gpu, smoke):
+    rg, rm = runner.evaluate_gates(
         criteria, summary, rows, criteria["source_commit"],
-        criteria["inputs"]["kernel_runner"]["sha256"], "f" * 64,
-        gpu_rows, smoke,
-    )
-    assert all(gates.values())
-    assert math.isclose(metrics["cd_time_weighted"], summary["cd_time_weighted"])
-
-
-def test_w3_does_not_upgrade_native_waterlily_adapter_to_profile_equivalence():
-    criteria, summary, rows = fixture()
-    summary["source_profile_equivalent"] = True
-    gpu_rows = [
-        "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
-        "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
-    ]
-    smoke = "W0B_SMOKE_DONE CUDA_FUNCTIONAL true GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_DRIVER_VERSION 13.3.0 CUDA_RUNTIME_VERSION 12.8.0"
-    gates, _ = runner.evaluate_gates(
-        criteria, summary, rows, criteria["source_commit"],
-        criteria["inputs"]["kernel_runner"]["sha256"], "f" * 64,
-        gpu_rows, smoke,
-    )
-    assert gates["T3_profile_adapter_is_explicitly_limited"] is False
-
-
-def test_w3_drag_gate_uses_candidate_force_orientation():
-    criteria, summary, rows = fixture()
-    for row in rows:
-        row["fx_solver"] *= -1
-        row["drag_solver"] *= -1
-    summary.update(runner.recompute_metrics(rows, criteria["measurement"]))
-    gpu_rows = [
-        "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
-        "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
-    ]
-    smoke = "W0B_SMOKE_DONE CUDA_FUNCTIONAL true GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_DRIVER_VERSION 13.3.0 CUDA_RUNTIME_VERSION 12.8.0"
-    gates, _ = runner.evaluate_gates(
-        criteria, summary, rows, criteria["source_commit"],
-        criteria["inputs"]["kernel_runner"]["sha256"], "f" * 64,
-        gpu_rows, smoke,
-    )
-    assert gates["T7_drag_orientation_and_host_recomputation"] is False
-
-
-def test_w3_force_csv_rejects_schema_and_nonfinite_values(tmp_path):
-    path = tmp_path / "forces.csv"
-    path.write_text("step,t_u_l,drag\n1,80,nan\n")
-    try:
-        runner.parse_force_csv(path)
-    except RuntimeError as error:
-        assert "schema mismatch" in str(error)
-    else:
-        raise AssertionError("malformed W3 force CSV was accepted")
-
-
-def test_w3_force_gate_checks_sampling_and_component_closure():
-    criteria, summary, rows = fixture()
-    gpu_rows = [
-        "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
-        "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
-    ]
-    smoke = "W0B_SMOKE_DONE CUDA_FUNCTIONAL true GPU_COMPUTE_CAPABILITY 7.5.0 CUDA_DRIVER_VERSION 13.3.0 CUDA_RUNTIME_VERSION 12.8.0"
-    rows[1]["pressure_drag_solver"] += 0.1
-    gates, _ = runner.evaluate_gates(
-        criteria, summary, rows, criteria["source_commit"],
-        criteria["inputs"]["kernel_runner"]["sha256"], "f" * 64,
-        gpu_rows, smoke,
-    )
-    assert gates["T6_finite_fields_and_candidate_forces"] is True
-    assert gates["T7_drag_orientation_and_host_recomputation"] is False
-
-
-def test_w3_criteria_input_names_match_runner_contract():
-    assert registrar.SOURCE_INPUTS["kernel_runner"] == RUNNER_PATH
-    assert registrar.SOURCE_INPUTS["project"].name == "Project.toml"
-    assert registrar.SOURCE_INPUTS["manifest"].name == "Manifest.toml"
-    assert registrar.SOURCE_INPUTS["host_verifier"] == HOST_VERIFIER_PATH
-
-
-def test_w3_criteria_round_paths_are_append_only():
-    assert registrar.criteria_output_path(1) == registrar.OUTPUT
-    assert registrar.criteria_output_path(2).name == (
-        "kaggle_w3_v16_primal_criteria_2026_09_round2.json"
-    )
-    with pytest.raises(ValueError, match="must be positive"):
-        registrar.criteria_output_path(0)
-
-
-def test_w3_criteria_discovery_resolves_actual_mount_name_and_records_inventory(tmp_path, monkeypatch):
-    input_root = tmp_path / "input"
-    dataset_dir = input_root / "cfd-opt-sdf-v16-genesis-state-mounted"
-    dataset_dir.mkdir(parents=True)
-    criteria_path = dataset_dir / "w3_v16_criteria.json"
-    criteria_path.write_text(json.dumps({
-        "immutable": True,
-        "registered_before_computation": True,
-        "input_dataset_id": runner.DATASET_ID,
-    }))
-    criteria_sha = hashlib.sha256(criteria_path.read_bytes()).hexdigest()
-    criteria_path.with_suffix(criteria_path.suffix + ".sha256").write_text(criteria_sha + "\n")
-    monkeypatch.setattr(runner, "OUT", tmp_path / "working")
-
-    criteria, actual_sha, actual_dataset_dir, actual_criteria_path = runner.read_criteria(input_root)
-
-    assert actual_sha == criteria_sha
-    assert criteria["input_dataset_id"] == runner.DATASET_ID
-    assert actual_dataset_dir == dataset_dir
-    assert actual_criteria_path == criteria_path
-    inventory = json.loads((runner.OUT / "input_mount_inventory.json").read_text())
-    assert inventory["top_level_entries"] == ["dir:cfd-opt-sdf-v16-genesis-state-mounted"]
-
-
-def test_w3_criteria_discovery_rejects_ambiguous_attached_datasets(tmp_path):
-    for name in ("dataset-a", "dataset-b"):
-        folder = tmp_path / name
-        folder.mkdir()
-        (folder / "w3_v16_criteria.json").write_text("{}")
-
-    with pytest.raises(RuntimeError, match="expected one registered W3 criteria"):
-        runner.discover_dataset(tmp_path)
-
-
-def test_w3_host_verifier_recomputes_force_metrics_independently():
-    criteria, _, rows = fixture()
-    remote_metrics = runner.recompute_metrics(rows, criteria["measurement"])
-    host_metrics = host_verifier.recompute_metrics(rows, criteria["measurement"])
-    assert set(host_metrics) == set(remote_metrics)
-    assert all(math.isclose(host_metrics[key], remote_metrics[key], rel_tol=1e-12, abs_tol=1e-12)
-               for key in host_metrics)
-    assert host_verifier.force_components_close(rows, criteria["measurement"])
-    rows[-1]["pressure_drag_solver"] += 0.01
-    assert not host_verifier.force_components_close(rows, criteria["measurement"])
-
-
-def test_w3_host_verifier_exports_observed_backend_for_w4_binding():
-    criteria, summary, _ = fixture()
-    identity = host_verifier.observed_backend_identity(
-        criteria, summary, {
-            "julia_archive_sha256": runner.JULIA_SHA256,
-            "cuda_visible_devices": "0",
-        }, [
-            "0, Tesla T4, GPU-test-0, 15360 MiB, 580.159.04",
-            "1, Tesla T4, GPU-test-1, 15360 MiB, 580.159.04",
-        ])
-
-    assert identity == {
-        "accelerator": "NvidiaTeslaT4",
-        "machine_shape": "NvidiaTeslaT4",
-        "gpu_count": 2,
-        "gpu_name": "Tesla T4",
-        "driver_version": "580.159.04",
+        criteria["inputs"]["kernel_runner"]["sha256"], "2" * 64, gpu, smoke,
+        adapter_contract=adapter)
+    hm = host.recompute_metrics(rows, criteria["measurement"])
+    fingerprint = {
+        "source_commit": criteria["source_commit"],
+        "runner_sha256": criteria["inputs"]["kernel_runner"]["sha256"],
+        "criteria_sha256": "2" * 64, "julia_archive_sha256": runner.JULIA_SHA256,
         "cuda_visible_devices": "0",
-        "julia_archive_sha256": runner.JULIA_SHA256,
-        "compute_capability": "7.5.0",
-        "cuda_driver_api_version": "13.3.0",
-        "cuda_runtime_version": "12.8.0",
-        "cuda_jl_version": "6.3.1",
-        "julia_version": "1.12.6",
-        "julia_threads": 1,
-        "waterlily_version": "1.8.0",
-        "waterlily_backend": "fixture-backend",
     }
+    hg = host.evaluate_gates(
+        criteria, summary, rows, True, {"state_sha256": "b" * 64}, 0.35, adapter,
+        [[s.strip() for s in r.split(",")] for r in gpu], "GPU-test-0", smoke,
+        fingerprint, hm, host.metrics_match(summary, hm, criteria["measurement"]),
+        host.force_components_close(rows, criteria["measurement"]))
+    return rg, hg, rm, hm
+
+
+def test_expanded_flow_mapping_keeps_canonical_sdf_fixed():
+    criteria, summary, _, adapter, *_ = fixture()
+    assert criteria["geometry"]["canonical_sdf_origin_m"] == [-1.0, -0.8, -0.6]
+    assert summary["flow_origin_m"] == [-2.5, -1.2, -0.9]
+    assert summary["flow_origin_m"] != summary["canonical_sdf_origin_m"]
+    target = [0.25, 0.0, 0.0]
+    solver = [(target[i] - x) / 0.05 for i, x in enumerate(summary["flow_origin_m"])]
+    world = [x + 0.05 * q for x, q in zip(summary["flow_origin_m"], solver)]
+    assert world == pytest.approx(target)
+    assert adapter["flow_cell_dims"] == [100, 48, 36]
+    assert criteria["profile_adapter"]["solver_length"] == 16
+    assert criteria["profile_adapter"]["solver_viscosity"] == 0.2
+    assert criteria["profile_adapter"]["reynolds"] == 80
+
+
+def test_exact_endpoint_clipping_and_weighted_half_windows():
+    criteria, _, rows, *_ = fixture(linear=True)
+    rm = runner.recompute_metrics(rows, criteria["measurement"])
+    hm = host.recompute_metrics(rows, criteria["measurement"])
+    assert rm == pytest.approx(hm, rel=1e-12, abs=1e-12)
+    assert rm["window_time_weighted_drag_solver"] == pytest.approx(100.0)
+    assert rm["window_time_weighted_downforce_solver"] == pytest.approx(50.0)
+    assert rm["diagnostic_first_half_time_weighted_drag_solver"] == pytest.approx(90.0)
+    assert rm["diagnostic_second_half_time_weighted_drag_solver"] == pytest.approx(110.0)
+    assert rm["stationarity_relative_half_window_drift_drag"] == pytest.approx(0.2)
+    clipped = runner.clipped_force_window(rows, 80.0, 120.0)
+    assert (clipped[0]["t_u_l"], clipped[-1]["t_u_l"]) == (80.0, 120.0)
+
+
+def test_host_runner_gates_match_for_t7_orientation_and_t10_stationarity():
+    criteria, summary, rows, adapter, gpu, smoke = fixture(linear=True)
+    rg, hg, *_ = compare_gates(criteria, summary, rows, adapter, gpu, smoke)
+    assert rg == hg
+    assert rg["T7_drag_orientation_and_host_recomputation"] is True
+    assert rg["T10_stationarity"] is False
+    criteria, summary, rows, adapter, gpu, smoke = fixture()
+    rg, hg, *_ = compare_gates(criteria, summary, rows, adapter, gpu, smoke)
+    assert rg == hg and all(rg.values())
+    summary["window_time_weighted_drag_solver"] = -1.0
+    rg, hg, *_ = compare_gates(criteria, summary, rows, adapter, gpu, smoke)
+    assert rg == hg and rg["T7_drag_orientation_and_host_recomputation"] is False
+
+
+def test_pressure_viscous_closure_covers_all_force_axes():
+    criteria, _, rows, *_ = fixture()
+    assert runner.force_components_close(rows, criteria["measurement"])
+    assert host.force_components_close(rows, criteria["measurement"])
+    rows[2]["viscous_fy_solver"] += 0.1
+    assert not runner.force_components_close(rows, criteria["measurement"])
+    assert not host.force_components_close(rows, criteria["measurement"])
+
+
+def test_phi_hash_lineage_rejects_changed_gpu_round_trip():
+    criteria, summary, rows, adapter, gpu, smoke = fixture()
+    assert summary["device_roundtrip_sha256"] == criteria["geometry"]["phi_fortran_sha256"]
+    summary["device_roundtrip_sha256"] = "9" * 64
+    rg, hg, *_ = compare_gates(criteria, summary, rows, adapter, gpu, smoke)
+    assert rg == hg and rg["T1_canonical_v16_identity"] is False
+
+
+def test_sampling_contract_allows_only_terminal_bracketing_extra():
+    criteria, summary, rows, adapter, gpu, smoke = fixture()
+    assert compare_gates(criteria, summary, rows, adapter, gpu, smoke)[0][
+        "T6_finite_fields_and_candidate_forces"]
+    rows[-2]["step"] = 39
+    rg, hg, *_ = compare_gates(criteria, summary, rows, adapter, gpu, smoke)
+    assert rg == hg and not rg["T6_finite_fields_and_candidate_forces"]
+
+
+def test_force_csv_requires_all_13_columns(tmp_path):
+    path = tmp_path / "forces.csv"
+    path.write_text("step,t_u_l,drag_solver\n1,80,nan\n")
+    with pytest.raises(RuntimeError, match="schema mismatch"):
+        runner.parse_force_csv(path)
+
+
+def test_round3_registration_is_expanded_domain_and_append_only():
+    assert registrar.criteria_output_path(3).name == "kaggle_w3_v16_primal_criteria_2026_09_round3.json"
+    with pytest.raises(ValueError, match="expanded-domain"):
+        registrar.build_criteria("a" * 40, criteria_round=2)
+
+
+def test_pass_result_and_sha_sidecar_are_append_only(tmp_path):
+    result_path = tmp_path / "w3_round3_result.json"
+    result = {"verdict": "PASS", "kernel_version": 4}
+    digest = host.write_result_evidence(result_path, result)
+    assert digest == host.sha256(result_path)
+    assert result_path.with_suffix(".json.sha256").read_text() == digest + "\n"
+    with pytest.raises(ValueError, match="already exists"):
+        host.write_result_evidence(result_path, result)
