@@ -1450,3 +1450,44 @@ For terminal `ERROR`, keep the exact outputs and pass
 `--kernel-status KernelWorkerStatus.ERROR`. Criteria round 2 remains unchanged
 because version 4 launched no owner arm and measured none of the registered
 owner-lifetime outcomes.
+
+### Version 5 exact error and registered round-3 retry
+
+Version 5 terminated as `KernelWorkerStatus.ERROR`. The exact-version output
+was recovered to
+`work/kaggle_w3_v16_cuda_owner_lifetime_version5/`; the initial verifier record
+is `docs/evidence/kaggle_w3_v16_cuda_diagnostic_version5_2026_09.json` and the
+append-only exact-stage correction is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version5_host_correction_2026_09.json`.
+Both output manifests were host-verified. The correction records all four
+arm processes, their identical Julia exception, and the wrapper exception.
+
+Exact hashes:
+
+- log: `500306c3c4e0f7ca31dfe7a3c4191b5180ec7a8ad0fd8a154cb008a5581cb8f3`
+- captured status: `2341886fe14bda95b1cf663ab933c531b25e6cba8b281d9b6fd6c4cd6d8c5f16`
+- output `sha256.json`: `c95d0836fee46c74334599fd7ff00d98559495b19d26224d8cde61ad6525a91e`
+- `ERROR.txt`: `01f5ccc61439cb579aba16c988da9a51381fbf6084d20033b5d0396f74b6eb81`
+- original evidence: `6e125c47a252fcbbf5c2e78c8342cc16e352a1edea7674bf1510d75a0832e19e`
+- host classification correction:
+  `907babecef7f5ee9547e3c74a1f18d4bf751e9187a7a078de9bc67f9dd47a823`
+
+The base v16 CUDA diagnostic reached one primal step and host force/artifact
+checks passed. Each owner arm then stopped at the `v16_physical_profile_bodies`
+lookup with `UndefVarError` in `Main`, before candidate body construction. No
+owner or `WeakRef` was created, no forced-GC bracket ran, and no arm geometry,
+field, force, or owner-step data exists. This is a Julia job import failure,
+not an owner-lifetime or CUDA failure, and it does not explain W3 v4's full-run
+all-zero force history.
+
+Round 3 freezes only the required explicit imports for the two non-exported
+WaterLily helpers and the new owner-job SHA. Criteria file:
+`docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json`;
+criteria SHA:
+`906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274`;
+sidecar SHA:
+`23033b9601f6f38932e08c3c5e994651f71559da6b0966f7e0bc4172fe166c03`; owner
+job SHA:
+`b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac`. The
+flow fixture, A/C/B1/B2 order, measurements, tolerances, and causal rules are
+unchanged. Submit only after the source commit pinned in the runner is pushed.

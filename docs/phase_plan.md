@@ -3273,3 +3273,71 @@ qualification flag.
   forces, and process outcomes. Preserve failed outputs and append a
   diagnostic result. Do not modify the production W3 path or restart full W3,
   W4, or formal FD from this scratch experiment.
+
+### 2026-09-28 owner-lifetime diagnostic version 5 terminal diagnosis and round 3
+
+- **Implemented:** host failure classification now reads each exact arm report
+  and distinguishes the repeated missing-import failure from a CUDA/lifetime
+  arm failure. The owner job uses explicit imports for
+  `v16_physical_profile_bodies` and
+  `build_v16_physical_profile_simulation`; the W3 production job is unchanged.
+- **Registered:** immutable owner-lifetime criteria round 3 was frozen before
+  another measurement at
+  [`kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json),
+  SHA-256
+  `906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274`; sidecar
+  SHA-256
+  `23033b9601f6f38932e08c3c5e994651f71559da6b0966f7e0bc4172fe166c03`. It
+  binds owner job SHA-256
+  `b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac` and
+  supersedes round 2 only because version 5 reached no owner/body construction,
+  GC bracket, geometry/field/force measurement, or owner primal step. All
+  fixture values, arm order, GC procedure, tolerances, sample points and
+  causal rules remain identical.
+- **Submitted:** version 5 of the private owner-lifetime kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` terminated as
+  `KernelWorkerStatus.ERROR`. Exact runner SHA-256 was
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1` and the
+  runner fetched source commit `885ae7558012da43e6310e2ffb04db4230150f5b`.
+- **Measured:** the base CUDA diagnostic reached one v16 step. Each of A, C,
+  B1 and B2 launched a separate Julia process, but all four stopped at
+  `canonical_input_load_started` with
+  `UndefVarError: v16_physical_profile_bodies not defined in Main` before
+  candidate body construction. The base diagnostic's candidate drag was
+  `3485.132996418866` solver units after that single step. No owner was
+  constructed or collection-tested; the owner experiment has no geometry,
+  simulation-field, force, GC, or normal measurements.
+- **Verified:** exact version 5 log SHA-256 is
+  `500306c3c4e0f7ca31dfe7a3c4191b5180ec7a8ad0fd8a154cb008a5581cb8f3`, status
+  SHA-256 is
+  `2341886fe14bda95b1cf663ab933c531b25e6cba8b281d9b6fd6c4cd6d8c5f16`, output
+  manifest SHA-256 is
+  `c95d0836fee46c74334599fd7ff00d98559495b19d26224d8cde61ad6525a91e`, and
+  `ERROR.txt` SHA-256 is
+  `01f5ccc61439cb579aba16c988da9a51381fbf6084d20033b5d0396f74b6eb81`. The
+  original append-only evidence is
+  [`version 5 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version5_2026_09.json),
+  SHA-256
+  `6e125c47a252fcbbf5c2e78c8342cc16e352a1edea7674bf1510d75a0832e19e`; its
+  host-classification correction is
+  [`version 5 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version5_host_correction_2026_09.json),
+  SHA-256
+  `907babecef7f5ee9547e3c74a1f18d4bf751e9187a7a078de9bc67f9dd47a823`. Both
+  verify the output artifacts, but the owner diagnostic is incomplete and the
+  exact failure class is `owner_lifetime_julia_missing_import`.
+- **Local validation:** focused command
+  `PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_kaggle_w3.py tests/test_kaggle_w4.py tests/test_kaggle_w3_cuda_diagnostic.py`
+  passed 39 tests. `python -m compileall src tests`, Python `py_compile` for
+  the runner/verifier/tests, Julia `Meta.parseall` for the owner job, criteria
+  JSON/sidecar/job hash checks, and `git diff --check` passed. Repository-wide
+  pytest reported 1,088 passed, 37 failed, 4 skipped; the failures are
+  historical tests requiring ignored `work/` artifacts absent from this
+  worktree (for example PQ0.2/PQ3 checkpoints and Stage-S/Stage-V solver logs).
+- **Qualified:** nothing new. The owner-lifetime hypothesis remains unresolved;
+  the v5 import failure does not explain W3 v4's 3,841-step all-zero force
+  history. W3 v4 remains unqualified, and W4, FD, gradient, reverse, topology,
+  optimizer, and shape update remain unqualified/disallowed.
+- **Open:** push the frozen round-3 source and submit a new exact private
+  kernel version. Recollect its exact status/log/output and host-verify A/C
+  agreement, both B owner-collection brackets, and the registered geometry,
+  fields, forces, and normal diagnostics before interpreting causality.

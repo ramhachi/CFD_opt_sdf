@@ -22,7 +22,7 @@ SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 32
 # Pin the reviewed diagnostic source before submitting the private kernel.
-DIAGNOSTIC_SOURCE_COMMIT = "885ae7558012da43e6310e2ffb04db4230150f5b"
+DIAGNOSTIC_SOURCE_COMMIT = "22137e2c7e15e4bb4f62806e29e221a5965f64b2"
 DIAGNOSTIC_JOB_SHA256 = "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
 OWNER_LIFETIME_JOB_SHA256 = "b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac"
 OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
