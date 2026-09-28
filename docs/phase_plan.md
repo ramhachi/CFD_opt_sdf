@@ -3164,6 +3164,56 @@ host-verification correction; neither is a W3 or owner-lifetime pass.
   A/C controls plus both B collection brackets. No production fix or new W3
   qualification run is authorized by version 4.
 
+### 2026-09-28 owner-lifetime diagnostic version 5 submitted
+
+- **Implemented:** runner workspace lifetime correction, exact runner-source
+  override for historical host verification, and a regression test for the
+  version-4 missing Julia executable classification are committed at
+  `a5022c8`. Runner SHA-256:
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1`.
+- **Registered:** unchanged criteria round 2, SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`, and
+  unchanged owner Julia job SHA
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` was submitted with T4.
+  Its first exact-version check returned `KernelWorkerStatus.RUNNING`.
+- **Measured:** version 5 is not terminal; no owner arm result has been
+  recovered.
+- **Verified:** local focused W3/W4/diagnostic slice passes 38 tests; Python
+  compileall/py_compile, Julia syntax parsing, criteria/evidence JSON and
+  sidecar checks, and `git diff --check` pass. Remote host verification remains
+  open.
+- **Qualified:** nothing new. All qualification flags remain false.
+- **Open:** retrieve only exact version 5 status, logs, and outputs after it
+  reaches a terminal state; verify A/C agreement, actual owner collection in
+  both B replicates, geometry/field/force differences, and exception class.
+
+### 2026-09-28 owner-lifetime diagnostic version 5 submitted
+
+- **Implemented:** runner workspace lifetime correction, exact runner-source
+  override for historical host verification, and a regression test for the
+  version-4 missing Julia executable classification are committed at
+  `a5022c8`. Runner SHA-256:
+  `fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1`.
+- **Registered:** unchanged criteria round 2, SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`, and
+  unchanged owner Julia job SHA
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5` was submitted with T4.
+  Its first exact-version check returned `KernelWorkerStatus.RUNNING`.
+- **Measured:** version 5 is not terminal; no owner arm result has been
+  recovered.
+- **Verified:** local focused W3/W4/diagnostic slice passes 38 tests; Python
+  compileall/py_compile, Julia syntax parsing, criteria/evidence JSON and
+  sidecar checks, and `git diff --check` pass. Remote host verification remains
+  open.
+- **Qualified:** nothing new. All qualification flags remain false.
+- **Open:** retrieve only exact version 5 status, logs, and outputs after it
+  reaches a terminal state; verify A/C agreement, actual owner collection in
+  both B replicates, geometry/field/force differences, and exception class.
+
 ### 2026-09-28 diagnostic-only CUDA owner-lifetime A/B/C round 2 prepared
 
 This controlled implementation diagnostic follows the exact W3 round-3

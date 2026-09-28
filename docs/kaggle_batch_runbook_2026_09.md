@@ -1416,3 +1416,37 @@ fixture, tolerances, and arm procedure stay unchanged because version 4 did
 not launch an owner arm or produce an owner measurement. Use the exact new
 kernel version and current runner hash for the retry, preserving version 4 and
 both version-4 evidence files unchanged.
+
+### Corrected retry: exact kernel version 5
+
+The workspace-lifetime fix and host-verifier update were pushed in commit
+`a5022c8`; private T4 kernel version 5 was then submitted. The initial status
+was `KernelWorkerStatus.RUNNING`. Use `/5` for every status, log, and output
+request, then invoke the verifier with the current runner (default) after
+terminal state:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/5 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version5
+
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version5 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 5 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version5/kaggle.log
+```
+
+For terminal `ERROR`, keep the exact outputs and pass
+`--kernel-status KernelWorkerStatus.ERROR`. Criteria round 2 remains unchanged
+because version 4 launched no owner arm and measured none of the registered
+owner-lifetime outcomes.
