@@ -2046,5 +2046,40 @@ source snapshot `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, exact W3 round-4
 host-PASS, and the observed T4 cohort. Stage a fresh local dataset directory,
 publish a new version of the existing private dataset ID, then download and
 verify its exact inventory/hashes before submitting the next exact kernel
-version. Do not change case definitions, measurement
-window, force semantics or thresholds.
+version. Do not change case definitions, measurement window, force semantics
+or thresholds.
+
+The round-3 dataset stage is
+`work/kaggle_w4_v16_dataset_round3/`; downloaded remote payload and audit are
+under `work/kaggle_w4_v16_dataset_round3_remote/`. Dataset version 2 reports
+`ready`. The exact remote five-file payload matches the local manifest;
+manifest SHA-256 is
+`0215f60cbb9ab567ae2b79d2f03d29b3e1eb532adc060f96af71e289f49e49e7`, and
+remote inventory audit SHA-256 is
+`e281ab7ad3e3025d89f4084b18b5ad900365f608d8a51bfc9109583608271a56`.
+Independent host and runner-mount checks pass, including canonical NPZ and
+C-/Fortran-order phi identities, round-trip raw bytes, sidecar, and CPU margin
+`0.3499999939931499 m`.
+
+Reproduce and recheck the staging with:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json \
+  --output work/kaggle_w4_v16_dataset_round3
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_w4_v16_dataset_round3 \
+  -m "W4 v16 criteria round 3: tuple materialization fix" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets status ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download ramhachi888/cfd-opt-sdf-v16-w4-sensitivity \
+  -p work/kaggle_w4_v16_dataset_round3_remote --force --unzip
+```
+
+Kernel metadata remains private T4 and attaches this exact private dataset ID;
+the title slug equals the kernel ID. Submission and measurement have not yet
+occurred. The next kernel version is expected to be `/2`; capture the exact
+version returned by Kaggle and keep its logs/output isolated.
