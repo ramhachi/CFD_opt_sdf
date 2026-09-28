@@ -2084,9 +2084,11 @@ Kernel metadata SHA-256 is
 private T4, attaches this exact private dataset ID, and its title slug equals
 the kernel ID. Exact kernel
 `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/2` was submitted with timeout 7200;
-initial status is `KernelWorkerStatus.QUEUED`, saved at
-`work/kaggle_w4_version2/status_initial.txt`. No CFD measurement or output has
-been recorded yet. Preserve logs/output under this version-specific directory.
+it finished with `KernelWorkerStatus.ERROR` after all four CFD cases and T0-T2,
+T5-T10 passed but T3/T4 failed. Its exact status, logs and output are preserved
+under `work/kaggle_w4_version2/`. The initial queued snapshot remains at
+`status_initial.txt`; terminal status SHA-256 is
+`aa2cd16390695ae2a44ec7b099ae5de585974c2e916d851545ba9e122357988a`.
 The submission command was:
 
 ```bash
@@ -2094,3 +2096,81 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
   kaggle kernels push -p infra/kaggle/kernel_w4 \
   --accelerator NvidiaTeslaT4 --timeout 7200
 ```
+
+### W4 round-3 kernel version 2: four primal runs, T3/T4 guard diagnostic
+
+Exact kernel `/2` is bound to immutable criteria round 3 SHA-256
+`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`, source
+commit `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, and private W4 input dataset
+version 2. It ended `KernelWorkerStatus.ERROR`. Exact status SHA-256 is
+`aa2cd16390695ae2a44ec7b099ae5de585974c2e916d851545ba9e122357988a`; exact
+`kaggle kernels logs` response SHA-256 is
+`632ea975d88c85ec0942d0453182350ff8a15a3e1d87dda8d90a58f4908beeb6`; downloaded
+kernel log SHA-256 is
+`76325ce2abf666738faad65fc0f07641c5c76c5c8b92f27519741d13801ac705`.
+Downloaded files and status/log captures are isolated under
+`work/kaggle_w4_version2/`.
+
+`execution_state.json` shows all four `solver_step_invoked` and
+`solver_step_returned` markers. All cases reached at least tU/L=120, for a
+total of 31,893 solver steps and 515.3048713 seconds of summed case runtime.
+The exact output `sha256.json` has SHA-256
+`e9f70c36618c5dda3562dcc9557c390e648718da03404e8c298a580b45b11db9`; all 25
+listed output payload files, including every force CSV and case summary, match
+it. `ERROR.txt` SHA-256 is
+`f65d13aa85d10fa0c1c6eb90013d27595beec4152b390762bcda2f1012d0c36c`.
+
+The host verifier was run with the exact command:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w4_v16.py \
+  work/kaggle_w4_version2/output \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round3.json \
+  --dataset-dir work/kaggle_w4_v16_dataset_round3 --kernel-version 2
+```
+
+It rejects the output at the first check because the top-level `DONE` marker is
+absent. The runner deliberately writes `ERROR.txt` instead after T3/T4 fail; the
+Julia `W4_JOB_DONE` marker only indicates its four primal case runs completed.
+The host diagnosis preserved in the append-only evidence confirms the runner's
+force metrics and gates independently. It found:
+
+- **T3 implementation defect:** both Kaggle runner and host verifier compare
+  `physical_box_max_m` with `case["physical_box_m"][1]`, selecting the y-axis
+  interval `[-1.2, 1.2]`. Summaries correctly report the registered xyz maxima
+  `[2.5, 1.2, 0.9]` and `[3.5, 1.2, 0.9]`. Correct the predicate to compare
+  against `[axis[1] for axis in case["physical_box_m"]]`.
+- **T4 report-label mismatch:** each summary describes the moving half-space at
+  world z=-0.9 m on the expanded domain bottom, but the registered descriptor
+  reverses that phrase order. Strict string equality fails. Match the emitted
+  descriptor to the preregistered wording; do not change ground physics or
+  criteria.
+
+Append-only diagnostic evidence is
+[`kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_round3_kernel2_diagnostic_2026_09.json),
+SHA-256 `cde5c72b7a9996bd47933ec76ac3ce9990a57921256d96d6c5341de257458681`
+(sidecar matches). The output manifest, source and dataset identities were
+host-checked; every raw CSV row closes total=pressure+viscous in Fx/Fy/Fz, and
+the host's exact-endpoint trapezoidal recomputation matches the runner. T0-T2,
+T5-T10 pass; T3/T4 fail. The pinned host verifier does not produce a PASS
+result, so W4 and all broader qualification flags remain false.
+
+Diagnostic time-weighted values (physical N, Cd; not qualified):
+
+| Case | Drag (N) | Downforce (N) | Cd | Solver seconds |
+| --- | ---: | ---: | ---: | ---: |
+| `flow_16` | 0.33601773 | 0.35337324 | 1.05005541 | 36.7582 |
+| `flow_24` | 0.35761996 | 0.35674766 | 1.11756237 | 103.4465 |
+| `flow_32` | 0.41030528 | 0.41182016 | 1.28220400 | 342.1265 |
+| `domain_xplus1m_16` | 0.33637522 | 0.35322029 | 1.05117256 | 32.9737 |
+
+Host-recomputed 24→32 resolution deltas are 0.05268532 N drag and 0.05507250 N
+downforce; flow_16→extended-domain deltas are 0.00035749 N drag and 0.00015295
+N downforce. The registered extended-domain fine-grid follow-up condition is
+not triggered by these diagnostic values. FD remains blocked because this
+round has no host PASS.
+
+Keep round-3 criteria and kernel version 2 evidence unchanged. Correct the
+duplicate T3 predicate and report-only T4 ground descriptor, add regression
+tests for runner/host parity, then commit/push and register immutable round 4
+plus a new private dataset version before another kernel measurement.
