@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+JOB_PATH = ROOT / "scripts/waterlily_w3_v16_owner_type_probe_job.jl"
 VERIFY_PATH = ROOT / "scripts/verify_kaggle_w3_owner_type_probe.py"
 SPEC = importlib.util.spec_from_file_location("w3_owner_type_probe_host", VERIFY_PATH)
 host = importlib.util.module_from_spec(SPEC)
@@ -62,3 +63,7 @@ def test_type_probe_requires_the_real_parent_module():
     observed["owner"]["memory_module"]["module"] = "CUDA"
     with pytest.raises(ValueError, match="parent module"):
         host.verify_runtime_type(observed, criteria)
+
+
+def test_type_probe_report_serializer_supports_array_fields():
+    assert "json_value(value::AbstractArray)" in JOB_PATH.read_text()

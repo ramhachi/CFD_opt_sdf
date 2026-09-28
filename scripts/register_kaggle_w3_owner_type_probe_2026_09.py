@@ -13,7 +13,6 @@ OUTPUT = ROOT / "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09.json"
 W3_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json"
 W3_DATASET = ROOT / "work/kaggle_w3_v16_dataset_round3"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-owner-type-probe"
-CRITERIA_DATASET_ID = "ramhachi888/cfd-opt-sdf-w3-owner-type-probe-criteria"
 JULIA_ARCHIVE_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 
 
@@ -21,12 +20,17 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def build(source_commit: str) -> dict:
+def output_for_round(round_number: int) -> Path:
+    return OUTPUT if round_number == 1 else OUTPUT.with_name(
+        f"kaggle_w3_owner_type_probe_criteria_2026_09_round{round_number}.json")
+
+
+def build(source_commit: str, round_number: int) -> dict:
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     if source_commit != head:
         raise ValueError("source commit must equal the checked-out HEAD")
-    if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
-        raise ValueError("source tree must be clean before criteria registration")
+    if subprocess.check_output(["git", "diff", "--quiet", "HEAD", "--"], cwd=ROOT).returncode:
+        raise ValueError("tracked source tree must be clean before criteria registration")
     w3_sha = sha256(W3_CRITERIA)
     w3_criteria = json.loads(W3_CRITERIA.read_text())
     w3_sidecar = W3_CRITERIA.with_suffix(W3_CRITERIA.suffix + ".sha256")
@@ -52,15 +56,39 @@ def build(source_commit: str) -> dict:
     }
     files = {key: {"path": relative, "sha256": sha256(ROOT / relative)}
              for key, relative in source_paths.items()}
+    dataset_id = "ramhachi888/cfd-opt-sdf-w3-owner-type-probe-criteria"
+    if round_number > 1:
+        dataset_id += f"-round{round_number}"
+    prior_evidence = {
+        "owner_lifetime_round4_criteria": {
+            "path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json",
+            "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json"),
+        },
+        "owner_lifetime_v7_result": {
+            "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json",
+            "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json"),
+        },
+        "owner_lifetime_v7_host_correction": {
+            "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json",
+            "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json"),
+        },
+    }
+    if round_number > 1:
+        round1_diagnostic = ROOT / "docs/evidence/kaggle_w3_owner_type_probe_version1_diagnostic_2026_09.json"
+        prior_evidence["round1_type_probe_diagnostic"] = {
+            "path": round1_diagnostic.relative_to(ROOT).as_posix(),
+            "sha256": sha256(round1_diagnostic),
+        }
     return {
         "schema_version": 1,
-        "criteria_id": "kaggle_w3_owner_type_probe_2026_09",
+        "criteria_id": f"kaggle_w3_owner_type_probe_2026_09_round{round_number}",
+        "round": round_number,
         "evidence_type": "diagnostic_only",
         "immutable": True,
         "registered_before_computation": True,
         "claim_scope": "exact registered Kaggle T4 Julia runtime identity for the backing SDF CuArray memory type; no solver or qualification claim",
         "kernel_id": KERNEL_ID,
-        "criteria_dataset_id": CRITERIA_DATASET_ID,
+        "criteria_dataset_id": dataset_id,
         "source_commit": source_commit,
         "source_files": files,
         "w3_input": {
@@ -93,19 +121,11 @@ def build(source_commit: str) -> dict:
             "canonical_gpu_roundtrip_sha256": w3_criteria["geometry"]["phi_fortran_sha256"],
             "solver_steps": 0,
         },
-        "prior_evidence": {
-            "owner_lifetime_round4_criteria": {
-                "path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json",
-                "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json"),
-            },
-            "owner_lifetime_v7_result": {
-                "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json",
-                "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json"),
-            },
-            "owner_lifetime_v7_host_correction": {
-                "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json",
-                "sha256": sha256(ROOT / "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json"),
-            },
+        "prior_evidence": prior_evidence,
+        "supersedes_before_measurement": None if round_number == 1 else {
+            "path": "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09.json",
+            "sha256": sha256(OUTPUT),
+            "reason": "Round 1 reached the exact Julia job but failed while serializing a Vector field in its diagnostic report; no identity result was persisted and no solver step ran. Round 2 fixes only array serialization and uses a new immutable criteria dataset/kernel version.",
         },
         "qualification_flags": {key: False for key in (
             "waterlily_v16_primal_qualified", "physical_profile_qualified",
@@ -118,15 +138,17 @@ def build(source_commit: str) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--round", type=int, choices=(1, 2), required=True)
     args = parser.parse_args()
-    if OUTPUT.exists() or OUTPUT.with_suffix(OUTPUT.suffix + ".sha256").exists():
+    output = output_for_round(args.round)
+    if output.exists() or output.with_suffix(output.suffix + ".sha256").exists():
         raise SystemExit("refusing to overwrite type-probe criteria")
-    criteria = build(args.source_commit)
+    criteria = build(args.source_commit, args.round)
     payload = json.dumps(criteria, indent=2, sort_keys=True) + "\n"
     digest = hashlib.sha256(payload.encode()).hexdigest()
-    OUTPUT.write_text(payload)
-    OUTPUT.with_suffix(OUTPUT.suffix + ".sha256").write_text(digest + "\n")
-    print(json.dumps({"criteria_path": str(OUTPUT.relative_to(ROOT)), "sha256": digest}, sort_keys=True))
+    output.write_text(payload)
+    output.with_suffix(output.suffix + ".sha256").write_text(digest + "\n")
+    print(json.dumps({"criteria_path": str(output.relative_to(ROOT)), "sha256": digest}, sort_keys=True))
     return 0
 
 

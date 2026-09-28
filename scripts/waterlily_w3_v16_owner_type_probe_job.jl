@@ -24,6 +24,7 @@ json_value(value::AbstractFloat) = isfinite(value) ? repr(Float64(value)) : "nul
 json_value(value::AbstractString) = "\"" * json_escape(value) * "\""
 json_value(value::AbstractDict) = "{" * join((json_value(string(k)) * ":" * json_value(v)
     for (k, v) in sort!(collect(pairs(value)); by=pair -> string(first(pair)))), ",") * "}"
+json_value(value::AbstractArray) = "[" * join(json_value.(vec(value)), ",") * "]"
 write_json(path, value) = write(path, json_value(value), "\n")
 
 function package_identity(mod)
