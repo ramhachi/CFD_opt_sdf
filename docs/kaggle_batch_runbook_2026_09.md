@@ -1324,38 +1324,36 @@ tolerances, and causal rules stay fixed. A and C run first. B1 and B2 each run
 in a separate Julia process so an invalid-memory exit cannot remove the A/C or
 first-B evidence.
 
-After pushing the reviewed branch, submit the existing private kernel and use
-the exact version printed by `push` for every retrieval command. The next
-version is expected to be 4, but the returned number is authoritative:
+The reviewed source was pushed, then private kernel version 4 was submitted.
+Its first exact-version status check returned `KernelWorkerStatus.RUNNING`.
+Wait for a terminal state before downloading logs and output. Keep using `/4`
+for status, logs, and output:
 
 ```bash
-uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
-  -p infra/kaggle/kernel_w3_cuda_diagnostic \
-  --accelerator NvidiaTeslaT4 --timeout 7200
-
-# Replace VERSION in both the slug and output folder with the exact push result.
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
-  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
-  > work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle_status.txt
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
-  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
-  > work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle.log
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
-  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
-  -p work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version4
 
 PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
   scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
-  work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version4 \
   --dataset-dir work/kaggle_w3_v16_dataset_round3 \
-  --kernel-version VERSION \
+  --kernel-version 4 \
   --kernel-status KernelWorkerStatus.COMPLETE \
-  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle_status.txt \
-  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle.log
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log
 ```
 
-For a terminal `ERROR`, keep the exact status/log/output and pass
-`--kernel-status KernelWorkerStatus.ERROR`; verify that `ERROR.txt`, partial
+For a terminal `ERROR`, use `KernelWorkerStatus.ERROR` and still retrieve all
+three exact-version artifacts before classifying the failure.
+
+Verify that `ERROR.txt`, partial
 arm checkpoints, per-arm process logs and `sha256.json` were preserved. The
 host verifier recomputes arm identity, input and backend bindings, geometry
 and field bundle hashes/order, raw pressure/viscous/total closure, body-force

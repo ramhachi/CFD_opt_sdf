@@ -3130,11 +3130,15 @@ qualification flag.
   fixture, arms, GC procedure, tolerances, and causal decision rules did not
   change. Owner job SHA-256 is
   `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
-- **Submitted:** not yet submitted at this checkpoint. The runner pins source
-  commit `885ae7558012da43e6310e2ffb04db4230150f5b`, the private diagnostic
-  Julia job SHA, and round-2 criteria path. The next work is to push the
-  reviewed implementation and submit the existing private T4 kernel.
-- **Measured:** none for owner-lifetime arms. Local Julia syntax parsing,
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4` was submitted with the
+  NvidiaTeslaT4 accelerator after source commit
+  `885ae7558012da43e6310e2ffb04db4230150f5b` was pushed. At this checkpoint
+  its exact version-bound Kaggle status is `KernelWorkerStatus.RUNNING`. The
+  uploaded runner SHA-256 is
+  `609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`.
+- **Measured:** no terminal owner-lifetime measurements are available yet.
+  Local Julia syntax parsing,
   Python `compileall`, Python `py_compile`, focused owner diagnostic tests
   (18 passed), and `git diff --check` pass. The related W3/W4/diagnostic
   slice passes 37 tests. The required repository-wide run reports 1,086
