@@ -3341,3 +3341,70 @@ qualification flag.
   kernel version. Recollect its exact status/log/output and host-verify A/C
   agreement, both B owner-collection brackets, and the registered geometry,
   fields, forces, and normal diagnostics before interpreting causality.
+
+### 2026-09-28 owner-lifetime diagnostic version 6 measured; causal result unresolved
+
+- **Implemented:** version 6 used the round-3 owner job and runner pinned to
+  source commit `22137e2c7e15e4bb4f62806e29e221a5965f64b2`. The four arms ran
+  in separate Julia processes on one selected T4. The verifier was corrected
+  after the first host pass attempt exposed two latent host-only issues: the
+  Julia archive SHA is bound under criteria inputs, and completed arm arrays
+  must be kept internal while compact report summaries are serialized. A/C/B
+  measurements and registered conditions were not changed.
+- **Registered:** version 6 used immutable round-3 criteria SHA
+  `906fda6a3991d7a37ea29f50ccc851f3788cde9a6bb90dfcc5b11279fb3f4274` and owner
+  job SHA
+  `b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac`.
+- **Submitted:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/6` completed. Diagnostic
+  runner SHA-256 is
+  `deb12c2b9a9a72993f9a8967f12385d935022306ac25b8c30cd9cd07c3e5bc4e`; the
+  selected GPU is `GPU-a66ae48d-3270-ed38-0d97-a68246cf09ec` from an inventory
+  of 2 × Tesla T4. Runtime identity: Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime
+  12.8.0, driver API 13.3.0, WaterLily 1.8.0, backend `KernelAbstractions`.
+- **Measured:** A, C, B1 and B2 each completed two primal steps. Full 172,800
+  point candidate/combined CPU and CUDA geometry artifacts were captured. All
+  four arms had identical geometry arrays; candidate negative cells were
+  1,009 CPU and CUDA, CPU/CUDA distance error was at most
+  `4.7683716e-7 m`, and the pre-existing maximum normal-vector discrepancy
+  stayed `1.3379748`. A/C final flow-field arrays were byte-identical. Both B
+  replicates matched A through step 1 and diverged in final step-2 flow fields
+  and force: A/C drag/downforce were `707.1370 / 847.9948`, B1
+  `720.2276 / 854.9039`, and B2 `712.4746 / 853.7397` solver units. The
+  A/C host comparison passed and both B replicates had host divergence classes
+  `simulation_fields` and `force_history`.
+- **Verified:** exact `/6` log SHA-256 is
+  `0e300babad42276fcf18f6d9b11d2b6fd5f05802e906bd9c98c5e0becabf4b95`, status
+  SHA-256 is
+  `2f547f8fea5f9f2cc6b6c1d9bf11669c39105cb8dc194699c6d6398fc068a2b1`, output
+  manifest SHA-256 is
+  `f4944ddac2b19b6e1ba680964ed587e81c173a3544b8f3a189bd90a6b03b46ac`, and
+  `DONE` SHA-256 is
+  `c3ae0c1108a07ac153b0ee13893bc731b7e210607850bbb5c7956f02c3fc2525`. The
+  first host record is
+  [`version 6 result`](evidence/kaggle_w3_v16_cuda_diagnostic_version6_2026_09.json),
+  SHA-256
+  `68cf588200b84edf056a815e7d7f35683e113e21533a8819f641d7f17354482d`; its
+  appended host correction is
+  [`version 6 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version6_host_correction_2026_09.json),
+  SHA-256
+  `ad7e930eda5aa0ade067ed8797cacf03de256c31ddb7390383460e44652b25fb`. Base
+  source/input/backend and raw output artifact verification passed. Owner
+  behavioral verification is false because C and both B wrapper WeakRefs were
+  already clear before the forced-GC bracket.
+- **Causal interpretation:** source inspection shows round-3 code made
+  `WeakRef(owner)` where `owner` is immutable `DeviceGridSDF`, rather than
+  weak-referencing `owner.grid.phi`, the backing `CuArray`. The captured clear
+  state therefore does not prove backing-array collection. C has the same
+  wrapper WeakRef issue and nevertheless matches A exactly; B1/B2 share a
+  step-2 field/force divergence, but their collection was not bracketed at the
+  registered GC boundary. The owner-lifetime hypothesis remains **unresolved**;
+  this is not a root-cause confirmation and does not explain W3 v4's complete
+  all-zero force history.
+- **Qualified:** nothing. All W3 primal/physical/grid/gradient/reverse/topology
+  and shape-update qualification flags remain false. No production W3 path,
+  force convention, or acceptance threshold changed.
+- **Open:** register the next diagnostic round with `WeakRef(owner.grid.phi)`
+  for A/C/B and record the weak-reference target path/type explicitly. Keep the
+  same fixture, process isolation, GC procedure, force/field/geometry probes,
+  tolerances and causal rules; rerun only after that immutable round is pushed.

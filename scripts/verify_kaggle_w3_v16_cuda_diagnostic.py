@@ -713,16 +713,26 @@ def verify_owner_ownership_schema(arm_id: str, ownership: dict) -> dict:
         collected = before == "alive" and after == "cleared"
         require(ownership.get("owner_collected_during_forced_gc") is collected,
                 f"owner-lifetime owner-collection boolean mismatch: {arm_id}")
-        if arm_id in ("A", "C"):
-            require(after == "alive" and states == ["alive", "alive"],
-                    f"retained owner did not survive full GC: {arm_id}")
+    if arm_id in ("A", "C"):
+        lifetime_contract_satisfied = (
+            before == "alive" and after == "alive" and states == ["alive", "alive"]
+        )
+    else:
+        lifetime_contract_satisfied = (
+            before == "alive" and after == "cleared" and calls == 2
+            and ownership.get("owner_collected_during_forced_gc") is True
+        )
     return {
         "strategy": strategies[arm_id],
+        "weakref_before_pre_gc_observations": ownership.get(
+            "weakref_before_pre_gc_observations"),
         "weakref_before_gc": before,
         "weakref_after_each_gc": states,
         "weakref_after_gc": after,
         "owner_collected_during_forced_gc": ownership.get("owner_collected_during_forced_gc"),
         "forced_gc_calls": calls,
+        "registered_lifetime_contract_satisfied": lifetime_contract_satisfied,
+        "owner_cleared_before_forced_gc": calls == 2 and before == "cleared",
     }
 
 
@@ -1136,7 +1146,7 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
                     and identity.get("source_w3_job_sha256") == w3_criteria["inputs"]["job"]["sha256"]
                     and identity.get("project_sha256") == w3_criteria["inputs"]["project"]["sha256"]
                     and identity.get("manifest_sha256") == w3_criteria["inputs"]["manifest"]["sha256"]
-                    and identity.get("julia_archive_sha256") == backend["julia_archive_sha256"]
+                    and identity.get("julia_archive_sha256") == criteria["inputs"]["julia_archive_sha256"]
                     and identity.get("runner_sha256") == runner_sha
                     and identity.get("dataset_id") == EXPECTED_W3_DATASET_ID
                     and identity.get("dataset_manifest_sha256") == expected_geometry["input_dataset_manifest_sha256"],
@@ -1161,6 +1171,9 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
             backend_identity = runtime
         ownership = report.get("ownership", {})
         ownership_check = verify_owner_ownership_schema(arm_id, ownership) if ownership else None
+        if (ownership_check is not None
+                and not ownership_check["registered_lifetime_contract_satisfied"]):
+            accepted_process_outcomes = False
         if report.get("runtime_identity") and report.get("qualification_evidence") is not False:
             raise ValueError("owner-lifetime diagnostic incorrectly marks qualification evidence")
         if report.get("qualification_flags"):
@@ -1170,11 +1183,6 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
             require(report.get("last_stage") == "arm_completed"
                     and report.get("failed_stage") is None,
                     f"owner-lifetime completed arm has failure stage: {arm_id}")
-            ownership_states = ownership.get("weakref_after_each_gc", [])
-            if arm_id in ("A", "C"):
-                require(ownership.get("weakref_after_gc") == "alive"
-                        and ownership_states == ["alive", "alive"],
-                        f"retained owner did not survive full GC: {arm_id}")
             force_checks = {}
             for phase, snapshot in report["force_history"].items():
                 force_checks[phase] = _verify_owner_force(snapshot)
@@ -1263,6 +1271,15 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
                    and all(arm_data.get(name, {}).get("status") in
                            ("completed", "expected_lifetime_hazard") for name in OWNER_ARM_IDS)
                    and accepted_process_outcomes)
+    evidence_arms = {
+        arm_id: {
+            "status": item["status"],
+            "owner_collected_during_forced_gc": item.get(
+                "owner_collected_during_forced_gc"),
+            "report": item.get("report"),
+        }
+        for arm_id, item in arm_data.items()
+    }
     return {
         "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
         "criteria_sha256": criteria_sha,
@@ -1272,7 +1289,7 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
         "kernel_runner_sha256": runner_sha,
         "host_verifier_sha256": sha256(Path(__file__)),
         "execution_status": execution["status"],
-        "arms": arm_data,
+        "arms": evidence_arms,
         "arm_host_checks": arm_host_checks,
         "host_controls_A_C_match": controls_match,
         "host_verification_passed": host_passed,
@@ -1285,6 +1302,12 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
             "weakened": "The registered forced-GC contrast did not reproducibly change geometry, fields, or force, or the B owners remained retained.",
             "unresolved": "Control mismatch, unbracketed collection, incomplete evidence, or non-repeatable B behavior prevents a causal conclusion.",
         }[classification],
+        "weakref_target_assessment": (
+            "The pinned round-3 Julia job weak-references the DeviceGridSDF wrapper, "
+            "not owner.grid.phi (the backing CuArray); its clearing does not directly "
+            "establish backing CuArray collection. Round 4 must weak-reference the CuArray."
+            if criteria.get("round") == 3 else None
+        ),
         "qualification_flags": criteria["qualification_flags"],
         "claim_scope": criteria["claim_scope"],
     }
@@ -1331,12 +1354,44 @@ def classify_failure(folder: Path, progress: dict,
     owner_execution_path = folder / "owner_lifetime_execution.json"
     owner_execution = json.loads(owner_execution_path.read_text()) if owner_execution_path.is_file() else {}
     arm_reports = {}
-    if owner_execution.get("unexpected_arm_failures"):
-        for row in owner_execution.get("arms", []):
-            arm_id = row.get("arm_id")
-            report_path = folder / row.get("report_path", "")
-            if arm_id and report_path.is_file():
-                arm_reports[arm_id] = json.loads(report_path.read_text())
+    for row in owner_execution.get("arms", []):
+        arm_id = row.get("arm_id")
+        report_path = folder / row.get("report_path", "")
+        if arm_id and report_path.is_file():
+            arm_reports[arm_id] = json.loads(report_path.read_text())
+    owner_diagnostic_detail = None
+    if (owner_execution.get("status") == "captured"
+            and set(arm_reports) == {"A", "C", "B1", "B2"}
+            and all(report.get("status") == "completed"
+                    for report in arm_reports.values())):
+        failed_brackets = {
+            arm_id: {
+                "weakref_before_gc": report.get("ownership", {}).get("weakref_before_gc"),
+                "weakref_after_gc": report.get("ownership", {}).get("weakref_after_gc"),
+                "weakref_before_pre_gc_observations": report.get("ownership", {}).get(
+                    "weakref_before_pre_gc_observations"),
+            }
+            for arm_id, report in arm_reports.items()
+            if ((arm_id in ("A", "C") and report.get("ownership", {}).get(
+                    "weakref_after_gc") != "alive")
+                or (arm_id.startswith("B") and report.get("ownership", {}).get(
+                    "weakref_before_gc") != "alive"))
+        }
+        if failed_brackets:
+            owner_diagnostic_detail = {
+                "arms_with_unregistered_ownership_observation": failed_brackets,
+                "interpretation": (
+                    "All arm processes completed, but the registered owner WeakRef/GC "
+                    "bracket was not satisfied. Round-3 source weak-references the "
+                    "DeviceGridSDF wrapper instead of the backing CuArray; these states "
+                    "cannot establish backing CuArray collection or owner-lifetime causality."
+                ),
+            }
+    if owner_diagnostic_detail is not None:
+        failed_stage = "owner-lifetime WeakRef target or forced-GC causal bracket"
+        failure_class = "owner_lifetime_weakref_target_or_bracket_unresolved"
+        exception_text = ""
+    elif owner_execution.get("unexpected_arm_failures"):
         missing_import_arms = {
             arm_id: arm_report for arm_id, arm_report in arm_reports.items()
             if arm_report.get("status") == "operation_error"
@@ -1469,6 +1524,9 @@ def classify_failure(folder: Path, progress: dict,
         }
         if wrapper_error:
             result["runner_exception"] = wrapper_error
+    if owner_diagnostic_detail is not None:
+        result["owner_primal_step_reached"] = True
+        result["owner_diagnostic_detail"] = owner_diagnostic_detail
     return result
 
 

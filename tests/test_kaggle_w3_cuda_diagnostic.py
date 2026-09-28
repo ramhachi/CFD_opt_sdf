@@ -309,6 +309,23 @@ def test_owner_weakref_gc_schema_and_collection_bracketing():
     with pytest.raises(ValueError, match="collection boolean mismatch"):
         host.verify_owner_ownership_schema("B1", unrooted)
 
+    structural_wrapper_weakref = {
+        "strategy": "OwnedV16Diagnostic owns owner,bodies,simulation",
+        "strong_owner_reference_escaped_helper": True,
+        "weakref_created": True,
+        "weakref_before_pre_gc_observations": "alive",
+        "weakref_before_gc": "cleared",
+        "weakref_after_each_gc": ["cleared", "cleared"],
+        "weakref_after_gc": "cleared",
+        "owner_collected_during_forced_gc": False,
+        "full_gc_calls": 2,
+        "cuda_synchronize_before_gc": True,
+        "cuda_synchronize_after_gc": True,
+    }
+    structural = host.verify_owner_ownership_schema("C", structural_wrapper_weakref)
+    assert structural["registered_lifetime_contract_satisfied"] is False
+    assert structural["owner_cleared_before_forced_gc"] is True
+
 
 def test_owner_force_closure_and_registered_projections_are_host_recomputed():
     snapshot = {
@@ -478,6 +495,48 @@ def test_owner_missing_import_is_separated_from_arm_or_lifetime_failure(tmp_path
     assert set(result["owner_arm_exceptions"]) == {"A", "C", "B1", "B2"}
     assert result["exact_exception"] == exception
     assert result["runner_exception"] == wrapper_error
+
+
+def test_owner_complete_but_unbracketed_wrapper_weakrefs_stay_unresolved(tmp_path):
+    folder = tmp_path / "w3_v16_cuda_diagnostic"
+    folder.mkdir()
+    arms = []
+    observations = {
+        "A": ("alive", "alive"),
+        "C": ("cleared", "cleared"),
+        "B1": ("cleared", "cleared"),
+        "B2": ("cleared", "cleared"),
+    }
+    for arm_id, (before, after) in observations.items():
+        report_name = f"w3_v16_cuda_owner_lifetime_{arm_id}.json"
+        (folder / report_name).write_text(json.dumps({
+            "status": "completed",
+            "ownership": {
+                "weakref_before_pre_gc_observations": "alive",
+                "weakref_before_gc": before,
+                "weakref_after_gc": after,
+            },
+        }))
+        arms.append({"arm_id": arm_id, "report_path": report_name})
+    (folder / "owner_lifetime_execution.json").write_text(json.dumps({
+        "status": "captured",
+        "arms": arms,
+        "unexpected_arm_failures": [],
+    }))
+
+    result = host.classify_failure(
+        folder,
+        {"last_completed_stage": "diagnostic_report_written"},
+        {"v16_one_step_reproducer": {"cuda_solver_steps": 1}},
+    )
+
+    assert result["failure_class"] == (
+        "owner_lifetime_weakref_target_or_bracket_unresolved")
+    assert result["failed_stage"] == (
+        "owner-lifetime WeakRef target or forced-GC causal bracket")
+    assert result["owner_primal_step_reached"] is True
+    assert set(result["owner_diagnostic_detail"][
+        "arms_with_unregistered_ownership_observation"]) == {"C", "B1", "B2"}
 
 
 def test_owner_probe_world_to_flow_mapping_and_append_only_evidence_guard(tmp_path):

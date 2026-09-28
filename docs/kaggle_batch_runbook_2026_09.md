@@ -1491,3 +1491,57 @@ job SHA:
 `b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac`. The
 flow fixture, A/C/B1/B2 order, measurements, tolerances, and causal rules are
 unchanged. Submit only after the source commit pinned in the runner is pushed.
+
+### Exact version 6 result and WeakRef target limitation
+
+Version 6 completed and its exact `/6` artifacts were retrieved under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version6/`. Run the host verifier with
+the exact COMPLETE status and output paths:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version6 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 6 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version6/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version6/kaggle.log
+```
+
+The first pass found host-verifier assumptions that had not been exercised by
+completed owner arms: `julia_archive_sha256` is registered under `criteria.inputs`,
+and verified NumPy arrays need to remain internal to comparison rather than be
+serialized into JSON. The append-only host correction records those fixes and
+the exact owner diagnostic limitation. Artifact/source/runtime verification
+passed. The owner experiment itself is incomplete for causal purposes because
+the round-3 Julia code calls `WeakRef(owner)` on immutable `DeviceGridSDF`, not
+on its backing mutable `CuArray` at `owner.grid.phi`.
+
+This correction does not revise the registered measurements. A and C geometry
+arrays and final fields were exactly equal. Candidate geometry counts were 1009
+negative CPU/CUDA cells and CPU/CUDA distance difference at most
+`4.7683716e-7 m`. The normal discrepancy remained `1.3379748`. B1/B2 geometry
+also exactly matched A, and both matched A force through step 1. At step 2,
+the drag/downforce pairs were A/C `707.1370 / 847.9948`, B1
+`720.2276 / 854.9039`, B2 `712.4746 / 853.7397` solver units; final flow-field
+arrays diverged in both B runs. Because the wrapper WeakRef was already clear
+before the registered GC bracket (for C, B1 and B2), those differences do not
+prove owner collection caused the step-2 response. A/C controls match, but the
+owner-lifetime hypothesis remains unresolved.
+
+Exact version-6 hashes:
+
+- runner: `deb12c2b9a9a72993f9a8967f12385d935022306ac25b8c30cd9cd07c3e5bc4e`
+- log: `0e300babad42276fcf18f6d9b11d2b6fd5f05802e906bd9c98c5e0becabf4b95`
+- captured status: `2f547f8fea5f9f2cc6b6c1d9bf11669c39105cb8dc194699c6d6398fc068a2b1`
+- output `sha256.json`: `f4944ddac2b19b6e1ba680964ed587e81c173a3544b8f3a189bd90a6b03b46ac`
+- `DONE`: `c3ae0c1108a07ac153b0ee13893bc731b7e210607850bbb5c7956f02c3fc2525`
+- first result evidence: `68cf588200b84edf056a815e7d7f35683e113e21533a8819f641d7f17354482d`
+- host correction evidence: `ad7e930eda5aa0ade067ed8797cacf03de256c31ddb7390383460e44652b25fb`
+
+The next criteria round must make the WeakRef target explicitly
+`owner.grid.phi` and record its runtime type. Preserve the same v16 input,
+mapping, arms, full geometry, fields, force snapshots, GC sequence, tolerances,
+and causal decision rules. W3 v4 remains unqualified; this scratch result does
+not authorize a production ownership fix.
