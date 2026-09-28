@@ -26,7 +26,8 @@ minimal Julia tuple-materialization fix and regression test passed locally and
 was pushed as `5d15e72`. Immutable W4 criteria round 3 is registered at SHA-256
 `6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`; dataset
 version 2 is `ready` and its remote five-file payload passes exact hash and
-host/runner dataset checks. Kernel submission is the next step.
+host/runner dataset checks. Exact private T4 kernel `/2` is submitted and
+currently `QUEUED`; W4 measurement remains unverified.
 See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 

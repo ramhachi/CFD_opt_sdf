@@ -2079,7 +2079,18 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
   -p work/kaggle_w4_v16_dataset_round3_remote --force --unzip
 ```
 
-Kernel metadata remains private T4 and attaches this exact private dataset ID;
-the title slug equals the kernel ID. Submission and measurement have not yet
-occurred. The next kernel version is expected to be `/2`; capture the exact
-version returned by Kaggle and keep its logs/output isolated.
+Kernel metadata SHA-256 is
+`7eab12e8dfe356acdf5feec6ef41f033ff75cd3e6e02ada8b14635d3a6e123e7`; it is
+private T4, attaches this exact private dataset ID, and its title slug equals
+the kernel ID. Exact kernel
+`ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/2` was submitted with timeout 7200;
+initial status is `KernelWorkerStatus.QUEUED`, saved at
+`work/kaggle_w4_version2/status_initial.txt`. No CFD measurement or output has
+been recorded yet. Preserve logs/output under this version-specific directory.
+The submission command was:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels push -p infra/kaggle/kernel_w4 \
+  --accelerator NvidiaTeslaT4 --timeout 7200
+```
