@@ -12,6 +12,7 @@ import csv
 import hashlib
 import json
 import math
+import re
 import subprocess
 from pathlib import Path
 
@@ -364,6 +365,22 @@ def verify_force_snapshot(snapshot: dict) -> dict[str, object]:
             "repository_downforce_minus_fz": float(total[2])}
 
 
+def checkout_job_identity(folder: Path) -> tuple[str, str] | None:
+    checkout_log = folder / "git_checkout.log"
+    if not checkout_log.is_file():
+        return None
+    match = re.search(r"HEAD is now at ([0-9a-f]{7,40})", checkout_log.read_text())
+    if not match:
+        return None
+    commit = subprocess.check_output(
+        ["git", "-C", str(ROOT), "rev-parse", "--verify", f"{match.group(1)}^{{commit}}"],
+        text=True).strip()
+    source = subprocess.check_output(
+        ["git", "-C", str(ROOT), "show",
+         f"{commit}:scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"])
+    return commit, hashlib.sha256(source).hexdigest()
+
+
 def verify_report(report: dict, criteria: dict, criteria_sha: str,
                   dataset_dir: Path, runner_sha: str, fingerprint: dict,
                   runtime_observed: dict) -> dict[str, object]:
@@ -419,8 +436,15 @@ def verify_report(report: dict, criteria: dict, criteria_sha: str,
         "dataset_manifest_sha256": required_source["dataset_manifest_sha256"],
         "runner_sha256": runner_sha,
         "source_commit": identity.get("diagnostic_source_commit"),
+        "diagnostic_job_sha256": identity.get("diagnostic_job_sha256"),
         "w3_source_commit": EXPECTED_W3_SOURCE_COMMIT,
+        "w3_source_job_sha256": criteria["inputs"]["job"]["sha256"],
+        "project_sha256": criteria["inputs"]["project"]["sha256"],
+        "manifest_sha256": criteria["inputs"]["manifest"]["sha256"],
         "julia_archive_sha256": criteria["backend"]["julia_archive_sha256"],
+        "state_sha256": geometry["state_sha256"],
+        "source_surface_sha256": geometry["source_surface_sha256"],
+        "design_domain_sha256": geometry["design_domain_sha256"],
         "cuda_visible_devices": criteria["backend"]["cuda_visible_devices"],
     }
     for key, value in required_fingerprint.items():
@@ -468,6 +492,56 @@ def verify_report(report: dict, criteria: dict, criteria_sha: str,
     require(runtime.get("waterlily_backend"), "WaterLily backend identity missing")
     return {"input_identity_verified": True, "source_identity_verified": True,
             "runtime_identity_verified": True, "qualification_claimed": False}
+
+
+def verify_partial_fingerprint(fingerprint: dict, criteria: dict,
+                               criteria_sha: str, dataset_dir: Path,
+                               runner_sha: str,
+                               checkout_identity: tuple[str, str] | None) -> dict | None:
+    if not fingerprint:
+        return None
+    expected = {
+        "criteria_sha256": criteria_sha,
+        "criteria_sidecar_sha256": sha256(dataset_dir / "w3_v16_criteria.json.sha256"),
+        "dataset_id": EXPECTED_W3_DATASET_ID,
+        "dataset_manifest_sha256": sha256(dataset_dir / "w3_v16_dataset_manifest.json"),
+        "runner_sha256": runner_sha,
+        "w3_source_commit": EXPECTED_W3_SOURCE_COMMIT,
+        "w3_source_job_sha256": criteria["inputs"]["job"]["sha256"],
+        "project_sha256": criteria["inputs"]["project"]["sha256"],
+        "manifest_sha256": criteria["inputs"]["manifest"]["sha256"],
+        "julia_archive_sha256": criteria["backend"]["julia_archive_sha256"],
+        "state_sha256": criteria["geometry"]["state_sha256"],
+        "source_surface_sha256": criteria["geometry"]["source_surface_sha256"],
+        "design_domain_sha256": criteria["geometry"]["design_domain_sha256"],
+        "cuda_visible_devices": criteria["backend"]["cuda_visible_devices"],
+    }
+    for key, value in expected.items():
+        require(fingerprint.get(key) == value, f"partial diagnostic fingerprint mismatch: {key}")
+    require(checkout_identity is not None,
+            "partial diagnostic fingerprint requires a source checkout log")
+    require(fingerprint.get("source_commit") == checkout_identity[0],
+            "partial diagnostic fingerprint/source checkout commit mismatch")
+    require(fingerprint.get("diagnostic_job_sha256") == checkout_identity[1],
+            "partial diagnostic fingerprint/job checkout hash mismatch")
+    inventory = fingerprint.get("gpu_inventory", [])
+    require(len(inventory) == criteria["backend"]["gpu_count"],
+            "partial diagnostic fingerprint GPU inventory count mismatch")
+    require(all(criteria["backend"]["gpu_name"] in line
+                and criteria["backend"]["driver_version"] in line
+                for line in inventory),
+            "partial diagnostic T4 inventory/driver identity mismatch")
+    require(fingerprint.get("selected_gpu_uuid") in
+            [line.split(",")[2].strip() for line in inventory],
+            "partial diagnostic selected GPU is absent from inventory")
+    require(bool(fingerprint.get("cuda_smoke_sha256")),
+            "partial diagnostic fingerprint is missing CUDA smoke identity")
+    return {
+        "fingerprint": fingerprint,
+        "checkout_diagnostic_source_commit": checkout_identity[0],
+        "checkout_diagnostic_job_sha256": checkout_identity[1],
+        "verification": "partial source/input/backend fingerprint independently matched",
+    }
 
 
 def verify_dataset(criteria: dict, dataset_dir: Path) -> tuple[np.ndarray, dict[str, object]]:
@@ -578,7 +652,10 @@ def classify_failure(folder: Path, progress: dict,
     error_path = folder / "ERROR.txt"
     wrapper_error = error_path.read_text(errors="replace") if error_path.is_file() else ""
     exception_text = julia_log if julia_log else wrapper_error
-    if "v16_representative_probes" in julia_log and "UndefVarError" in julia_log:
+    if "compare_rows" in julia_log and "UndefVarError" in julia_log:
+        failed_stage = "representative_probe_cpu_cuda_comparison"
+        failure_class = "julia_diagnostic_float_literal_bug"
+    elif "v16_representative_probes" in julia_log and "UndefVarError" in julia_log:
         failed_stage = "representative_probe_definitions"
         failure_class = "julia_diagnostic_probe_fixture_bug"
     elif report is not None and last_completed_stage == "diagnostic_report_written":
@@ -626,6 +703,12 @@ def classify_failure(folder: Path, progress: dict,
     elif last_completed_stage == "representative_probe_definitions_completed":
         failed_stage = "first_representative_waterlily_body_probe"
         failure_class = "representative_waterlily_body_probe_cuda"
+    elif last_completed_stage and last_completed_stage.endswith(
+            "representative_probe_measurements_completed"):
+        failed_stage = last_completed_stage.replace(
+            "_representative_probe_measurements_completed",
+            "_representative_probe_cpu_cuda_comparison")
+        failure_class = "julia_diagnostic_probe_comparison"
     elif last_completed_stage and last_completed_stage.endswith("representative_probes_started"):
         failed_stage = last_completed_stage
         failure_class = "representative_waterlily_body_probe_cuda"
@@ -684,13 +767,35 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
     runtime_path = folder / "runtime_identity.json"
     fingerprint = json.loads(fingerprint_path.read_text()) if fingerprint_path.is_file() else {}
     runtime_observed = json.loads(runtime_path.read_text()) if runtime_path.is_file() else {}
+    checkout_identity = checkout_job_identity(folder)
+    diagnostic_source_commit = (
+        report["source_identity"].get("diagnostic_source_commit") if report else None
+    ) or fingerprint.get("source_commit")
+    diagnostic_job_sha = (
+        report["source_identity"].get("diagnostic_job_sha256") if report else None
+    ) or fingerprint.get("diagnostic_job_sha256")
+    if checkout_identity is not None:
+        checkout_commit, checkout_job_sha = checkout_identity
+        require(diagnostic_source_commit in (None, checkout_commit),
+                "diagnostic source commit differs from Kaggle checkout log")
+        require(diagnostic_job_sha in (None, checkout_job_sha),
+                "diagnostic Julia job hash differs from Kaggle checkout source")
+        diagnostic_source_commit = checkout_commit
+        diagnostic_job_sha = checkout_job_sha
     inventory_path = folder / "nvidia_smi.csv"
     if inventory_path.is_file() and fingerprint:
         require([line.strip() for line in inventory_path.read_text().splitlines() if line.strip()]
                 == fingerprint.get("gpu_inventory"),
                 "nvidia-smi inventory output differs from fingerprint")
-    source_identity = verify_report(report, criteria, criteria_sha, dataset_dir,
-                                    runner_sha, fingerprint, runtime_observed) if report else None
+    smoke_path = folder / "julia_smoke.log"
+    if fingerprint and smoke_path.is_file():
+        require(sha256(smoke_path) == fingerprint.get("cuda_smoke_sha256"),
+                "CUDA smoke log differs from partial diagnostic fingerprint")
+    source_identity = (verify_report(report, criteria, criteria_sha, dataset_dir,
+                                     runner_sha, fingerprint, runtime_observed)
+                       if report else verify_partial_fingerprint(
+                           fingerprint, criteria, criteria_sha, dataset_dir,
+                           runner_sha, checkout_identity))
     lattice_summary = None
     numeric_checks = None
     if report is not None:
@@ -768,11 +873,10 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "criteria_path": str(CRITERIA_PATH.relative_to(ROOT)),
         "criteria_sha256": criteria_sha,
         "source_commit": EXPECTED_W3_SOURCE_COMMIT,
-        "diagnostic_source_commit": report["source_identity"]["diagnostic_source_commit"]
-        if report else fingerprint.get("source_commit"),
-        "diagnostic_job_sha256": sha256(DIAGNOSTIC_JOB),
+        "diagnostic_source_commit": diagnostic_source_commit,
+        "diagnostic_job_sha256": diagnostic_job_sha,
         "kernel_runner_sha256": runner_sha,
-        "julia_job_sha256": sha256(DIAGNOSTIC_JOB),
+        "julia_job_sha256": diagnostic_job_sha,
         "host_verifier_sha256": sha256(Path(__file__)),
         "input_dataset_id": EXPECTED_W3_DATASET_ID,
         "input_dataset_manifest_sha256": sha256(dataset_dir / "w3_v16_dataset_manifest.json"),
@@ -792,6 +896,10 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "diagnostic_complete": complete,
         "host_artifact_verification_passed": bool(source_identity or output_manifest),
         "source_identity_verification": source_identity,
+        "partial_source_checkout_verification": {
+            "diagnostic_source_commit": checkout_identity[0],
+            "diagnostic_job_sha256": checkout_identity[1],
+        } if checkout_identity is not None else None,
         "lattice_verification": lattice_summary,
         "independent_numeric_diagnostics": numeric_checks,
         "force_snapshot_verification": verify_force_snapshots(report) if report else None,

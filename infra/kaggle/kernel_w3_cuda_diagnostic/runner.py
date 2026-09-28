@@ -23,8 +23,8 @@ SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 32
 # These two identity pins are filled from the reviewed implementation commit
 # before the private diagnostic kernel is submitted.
-DIAGNOSTIC_SOURCE_COMMIT = "9a2f0950ef9d320f7290581203e7ca102d8ef2a6"
-DIAGNOSTIC_JOB_SHA256 = "f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998"
+DIAGNOSTIC_SOURCE_COMMIT = "ca67673ccff69a0b79243c461f82158ad8e61522"
+DIAGNOSTIC_JOB_SHA256 = "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
 W3_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
 W3_SOURCE_COMMIT = "5e985fa3395a01228c18910d96e09ecbc5497628"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
@@ -253,6 +253,33 @@ def main() -> None:
         )
         if any(marker not in smoke for marker in required):
             raise RuntimeError("registered CUDA smoke identity mismatch")
+        # Preserve backend and immutable-input identity even when the Julia
+        # diagnostic itself errors before producing its report.
+        write_json(OUT / "fingerprint.json", {
+            "kernel_id": KERNEL_ID,
+            "criteria_sha256": criteria_sha,
+            "criteria_sidecar_sha256": sidecar_sha,
+            "dataset_id": DATASET_ID,
+            "dataset_manifest_sha256": dataset_manifest_sha,
+            "runner_sha256": runner_sha,
+            "source_commit": DIAGNOSTIC_SOURCE_COMMIT,
+            "diagnostic_job_sha256": DIAGNOSTIC_JOB_SHA256,
+            "w3_source_commit": W3_SOURCE_COMMIT,
+            "w3_source_job_sha256": criteria["inputs"]["job"]["sha256"],
+            "project_sha256": criteria["inputs"]["project"]["sha256"],
+            "manifest_sha256": criteria["inputs"]["manifest"]["sha256"],
+            "julia_archive_sha256": JULIA_SHA256,
+            "state_sha256": criteria["geometry"]["state_sha256"],
+            "source_surface_sha256": criteria["geometry"]["source_surface_sha256"],
+            "design_domain_sha256": criteria["geometry"]["design_domain_sha256"],
+            "gpu_inventory": gpu_rows,
+            "selected_gpu_uuid": selected_uuid,
+            "cuda_visible_devices": env["CUDA_VISIBLE_DEVICES"],
+            "platform": platform.platform(),
+            "python": platform.python_version(),
+            "input_mount_inventory": input_inventory,
+            "cuda_smoke_sha256": sha256(OUT / "julia_smoke.log"),
+        })
         job = source / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
         command([str(julia), "--startup-file=no", f"--project={project}", str(job),
                  str(raw_phi_path), str(OUT)], OUT / "w3_cuda_diagnostic.log", env=env, timeout=5400)
@@ -283,23 +310,6 @@ def main() -> None:
     report["runtime_identity"]["selected_gpu_uuid"] = selected_uuid
     report["runtime_identity"]["nvidia_driver_version"] = gpu_rows[0].split(",")[-1].strip()
     write_json(OUT / "runtime_identity.json", report["runtime_identity"])
-    write_json(OUT / "fingerprint.json", {
-        "kernel_id": KERNEL_ID,
-        "criteria_sha256": criteria_sha,
-        "criteria_sidecar_sha256": sidecar_sha,
-        "dataset_id": DATASET_ID,
-        "dataset_manifest_sha256": dataset_manifest_sha,
-        "runner_sha256": runner_sha,
-        "source_commit": DIAGNOSTIC_SOURCE_COMMIT,
-        "w3_source_commit": W3_SOURCE_COMMIT,
-        "gpu_inventory": gpu_rows,
-        "selected_gpu_uuid": selected_uuid,
-        "cuda_visible_devices": env["CUDA_VISIBLE_DEVICES"],
-        "julia_archive_sha256": JULIA_SHA256,
-        "platform": platform.platform(),
-        "python": platform.python_version(),
-        "input_mount_inventory": input_inventory,
-    })
     manifest = {
         path.name: sha256(path) for path in sorted(OUT.iterdir())
         if path.is_file() and path.name not in {"sha256.json", "DONE"}

@@ -2,6 +2,8 @@ import csv
 import hashlib
 import importlib.util
 import json
+import re
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -120,3 +122,97 @@ def test_error_classification_uses_julia_exception_after_last_checkpoint(tmp_pat
     assert result["failure_class"] == "julia_diagnostic_probe_fixture_bug"
     assert result["solver_started"] is False
     assert "UndefVarError" in result["exact_exception"]
+
+
+def test_error_classification_identifies_float_literal_in_probe_comparison(tmp_path):
+    (tmp_path / "w3_cuda_diagnostic.log").write_text(
+        "ERROR: UndefVarError: `f0` not defined\n"
+        " [6] compare_rows(cpu::Matrix{Float32}, gpu::Matrix{Float32})\n")
+
+    result = host.classify_failure(
+        tmp_path, {"last_completed_stage": "candidate_representative_probes_started"}, None)
+
+    assert result["failed_stage"] == "representative_probe_cpu_cuda_comparison"
+    assert result["failure_class"] == "julia_diagnostic_float_literal_bug"
+    assert result["solver_started"] is False
+
+
+def test_diagnostic_job_uses_valid_julia_float32_literal_suffixes():
+    source = (ROOT / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl").read_text()
+    malformed = re.search(
+        r"(?<![\w.])(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+][0-9]+f[0-9]+|f(?![0-9+\-]))",
+        source,
+        re.IGNORECASE,
+    )
+
+    assert malformed is None
+
+
+def test_checkout_job_identity_uses_exact_commit_in_kaggle_output(tmp_path):
+    commit = subprocess.check_output(
+        ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
+    job = subprocess.check_output(
+        ["git", "-C", str(ROOT), "show",
+         f"{commit}:scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"])
+    (tmp_path / "git_checkout.log").write_text(f"HEAD is now at {commit[:7]} diagnostic\n")
+
+    assert host.checkout_job_identity(tmp_path) == (
+        commit, hashlib.sha256(job).hexdigest())
+
+
+def test_partial_fingerprint_binds_backend_and_exact_source_checkout(tmp_path):
+    dataset = tmp_path / "dataset"
+    dataset.mkdir()
+    (dataset / "w3_v16_criteria.json.sha256").write_text("sidecar\n")
+    (dataset / "w3_v16_dataset_manifest.json").write_text("manifest\n")
+    criteria = {
+        "backend": {
+            "gpu_count": 2,
+            "gpu_name": "Tesla T4",
+            "driver_version": "535.0",
+            "julia_archive_sha256": "julia",
+            "cuda_visible_devices": "0",
+        },
+        "inputs": {
+            "job": {"sha256": "w3-job"},
+            "project": {"sha256": "project"},
+            "manifest": {"sha256": "manifest-julia"},
+        },
+        "geometry": {
+            "state_sha256": "state",
+            "source_surface_sha256": "surface",
+            "design_domain_sha256": "domain",
+        },
+    }
+    commit_job = ("a" * 40, "b" * 64)
+    inventory = [
+        "0, Tesla T4, GPU-a, 16000 MiB, 535.0",
+        "1, Tesla T4, GPU-b, 16000 MiB, 535.0",
+    ]
+    fingerprint = {
+        "criteria_sha256": "criteria",
+        "criteria_sidecar_sha256": hashlib.sha256(b"sidecar\n").hexdigest(),
+        "dataset_id": host.EXPECTED_W3_DATASET_ID,
+        "dataset_manifest_sha256": hashlib.sha256(b"manifest\n").hexdigest(),
+        "runner_sha256": "runner",
+        "w3_source_commit": host.EXPECTED_W3_SOURCE_COMMIT,
+        "w3_source_job_sha256": "w3-job",
+        "project_sha256": "project",
+        "manifest_sha256": "manifest-julia",
+        "julia_archive_sha256": "julia",
+        "state_sha256": "state",
+        "source_surface_sha256": "surface",
+        "design_domain_sha256": "domain",
+        "cuda_visible_devices": "0",
+        "source_commit": commit_job[0],
+        "diagnostic_job_sha256": commit_job[1],
+        "gpu_inventory": inventory,
+        "selected_gpu_uuid": "GPU-a",
+        "cuda_smoke_sha256": "smoke",
+    }
+
+    result = host.verify_partial_fingerprint(
+        fingerprint, criteria, "criteria", dataset, "runner", commit_job)
+
+    assert result["checkout_diagnostic_source_commit"] == commit_job[0]
+    assert result["checkout_diagnostic_job_sha256"] == commit_job[1]

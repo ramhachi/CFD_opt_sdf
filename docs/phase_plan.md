@@ -2949,3 +2949,54 @@ round-3 acceptance criteria, force projections, and thresholds are unchanged.
   unchanged unless a pre-measurement scientific basis justifies a new round.
   W4 criteria/dataset/measurement and formal FD remain blocked. Keep WaterLily
   as the optimization oracle and OpenFOAM as an independent physical verifier.
+
+### 2026-09-28 W3 all-zero-force CUDA implementation diagnostic versions 1-2
+
+These are private implementation diagnostics, separate from W3 qualification.
+W3 round-3 criteria, positive `+Fx` drag gate, stationarity limit, old W3 v4
+output, and qualification status were not changed.
+
+- **Implemented:** local CPU reference and private T4 diagnostic kernel scan
+  the expanded-domain candidate, ground, and union SDF; exercise representative
+  CPU/CUDA body measurements; attempt one CPU/CUDA primal step and W2b sphere
+  controls. Diagnostic-only source fixes are pinned per Kaggle kernel version.
+  The version-3 source uses Julia's valid `1f-5` Float32 threshold, saves the
+  representative CPU/CUDA rows before comparison, and fingerprints immutable
+  input/backend/source identity before entering the diagnostic job.
+- **Registered:** no new W3 qualification criteria. Diagnostic versions reuse
+  round-3 input identity only and cannot set any qualification flag.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/1` and `/2` both reached
+  terminal `KernelWorkerStatus.ERROR`; exact status, logs, outputs, and their
+  SHA-256 manifests were retrieved version-bound.
+- **Measured:** version 1 passed the T4 runtime/CUDA smoke, immutable input
+  checks, and device round-trip, then stopped in representative probe-list
+  construction at `UndefVarError: f` caused by a malformed diagnostic literal.
+  Solver steps: 0. Version 2 again passed setup, matched canonical phi hashes
+  and the `0.3499999939931499 m` margin, and constructed 10 candidate probes.
+  The candidate CPU and CUDA `WaterLily.measure` calls returned; the following
+  comparison stopped at `UndefVarError: f0` from `1e-5f0`. Probe matrices were
+  not persisted in that version; no ground/union probe, full-grid scan,
+  simulation construction, or solver step was reached. These findings do not
+  explain the earlier full W3 run's all-zero force history.
+- **Verified:** exact-version artifacts passed host output/input hash checks.
+  Version-1 and version-2 evidence plus append-only correction records are
+  [`v1`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_2026_09.json),
+  [`v1 stage correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_correction_2026_09.json),
+  [`v2`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_2026_09.json), and
+  [`v2 source identity correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_identity_correction_2026_09.json).
+  The corrections preserve the original records and clarify that v1's failing
+  stage was probe construction and that v2 executed source commit
+  `9a2f0950ef9d320f7290581203e7ca102d8ef2a6` with Julia job SHA-256
+  `f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998`.
+  The focused W3/W4/diagnostic slice passes 29 tests; Python compileall,
+  diagnostic Julia parsing, and `git diff --check` pass.
+- **Qualified:** nothing new. W3 v16 primal remains unqualified; the source of
+  its zero-force T4 history is still open. Physical profile, grid response,
+  gradient, reverse, topology, optimizer, and shape update remain unqualified
+  or disallowed. W4 and formal FD remain blocked.
+- **Open:** push the version-3 diagnostic source/runner/verifier changes, submit
+  only the private minimal diagnostic kernel, and host-verify that exact
+  version's result or failure checkpoint. Do not rerun full W3, freeze W4, or
+  start formal FD based on these diagnostics. Keep all W3 gates and force
+  projection fixed.

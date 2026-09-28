@@ -1095,8 +1095,8 @@ view is used. Stage checkpoints are written before/after each operation so an
 ERROR output identifies the last completed stage.
 
 The diagnostic runner is pinned to source commit
-`9a2f0950ef9d320f7290581203e7ca102d8ef2a6`; the Julia job SHA-256 is
-`f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998`. Before
+`ca67673ccff69a0b79243c461f82158ad8e61522`; the Julia job SHA-256 is
+`4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e`. Before
 submitting, commit and push the matching diagnostic runner, host verifier,
 metadata and tests, then use the kernel's version returned by `push` in every
 collection command:
@@ -1148,3 +1148,22 @@ and
 [`version 1 classification correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_correction_2026_09.json).
 Version 1's artifacts passed host hash/input verification; its failed stage is
 the probe fixture itself, not SDF transfer or WaterLily CUDA measurement.
+
+Diagnostic kernel version 2 also terminated with `KernelWorkerStatus.ERROR`.
+Its T4 smoke completed with Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0,
+WaterLily 1.8.0, and two Tesla T4 devices. The input/device checkpoint matched
+the registered phi hashes and measured `0.3499999939931499 m` margin. It
+constructed all 10 representative probes and entered the candidate probe
+stage. The CUDA and CPU candidate `WaterLily.measure` calls returned, then
+`compare_rows` failed on the malformed Julia token `1e-5f0` (`f0` was treated
+as an undefined name). Version 2 persisted neither probe-row matrices nor a
+completed comparison, so those numeric values are unavailable. Ground and
+combined representative probes, the full flow-grid scan, simulation
+construction, and solver steps were not reached. Its append-only host record
+and source-identity correction are
+[`version 2`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_2026_09.json)
+and
+[`version 2 identity correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version2_identity_correction_2026_09.json).
+The corrected source uses Julia Float32 scientific literal `1f-5`, checkpoints
+the CPU/CUDA candidate probe matrices before comparison, and writes a pinned
+criteria/dataset/backend/source fingerprint before attempting the measurement.
