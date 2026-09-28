@@ -172,6 +172,17 @@ def test_w4_matrix_contract_and_runner_host_metrics_agree():
     assert runner.response_analysis(metrics) == host.response_analysis(metrics)
 
 
+def test_w4_dataset_inventory_uses_registered_filenames_not_logical_input_keys():
+    criteria, *_ = fixture()
+    expected = {
+        "sdf_design_state.npz": "f" * 64,
+        "canonical_v16_phi_f4_fortran.raw": "1" * 64,
+    }
+
+    assert runner.registered_dataset_files(criteria) == expected
+    assert host.registered_dataset_files(criteria) == expected
+
+
 def test_w4_component_closure_checks_all_axes_and_projection():
     criteria, _, _, rows, _, _ = fixture()
     measurements = criteria["measurement"]

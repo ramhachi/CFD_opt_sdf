@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Implementation shell corrected; immutable registration pending | W3 round 4 is the exact prerequisite. Owner retention and per-case T10 stationarity are implemented and tested; no criteria or W4 measurement exists yet. |
+| W4 grid/domain sensitivity | Immutable round 1 preserved; superseded before computation | W3 round 4 remains the prerequisite. The runner/host filename correction and focused regression test now pass locally; commit/push and immutable round-2 registration are pending. No W4 upload or measurement has occurred. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -649,8 +649,9 @@ Current gates and immediate sequence as of 2026-09-28:
    remain pending. Formal FD remains gated on host-verified W4.
 4. **Register and run W4 grid/domain sensitivity** using the same canonical
    SDF and registered WaterLily profile. W3 round 4 is the exact prerequisite;
-   all four cases are rerun. The owner-retention and stationarity changes are
-   implemented and tested, but the immutable W4 criteria are not yet registered.
+   all four cases are rerun. Round 1 is immutable and retained, but must not be
+   measured because the pre-upload host preflight found a dataset-filename
+   contract defect. Commit/push the corrected host/runner, then register round 2.
 5. **Qualify centered-FD SDF derivatives** after W4. Centered FD is the
    permanent independent numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
@@ -3857,3 +3858,31 @@ qualification flag.
   1,109 passed, 37 failed and 4 skipped. All 37 failures are the known
   historical tests requiring ignored `work/` checkpoints, cases or solver logs
   absent from this managed worktree; no W3/W4 task test failed.
+
+### W4 round 1 pre-computation inventory defect and round 2 correction
+
+- **Implemented:** round-1 local preflight found that the runner and host
+  verifier keyed expected dataset files by logical criterion names
+  (`canonical_state_npz`, `canonical_phi_fortran_raw`) instead of each
+  registered physical filename (`sdf_design_state.npz`,
+  `canonical_v16_phi_f4_fortran.raw`). Both verifiers now derive filenames
+  from `inputs[*].path`; a focused regression test requires the runner and
+  host implementations to agree. The existing round-1 staging passes the
+  corrected local host preflight, including canonical state/phi hashes and
+  measured margin. This is a contract check only.
+- **Registered:** immutable round-1 W4 criteria remain unchanged at
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json),
+  SHA-256
+  `5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`.
+  They bind the prior verifier/runner source and are retained as historical
+  pre-computation evidence; round 2 must bind the corrected source commit.
+- **Submitted / measured / verified / qualified:** no W4 dataset has been
+  uploaded, no W4 kernel has been submitted, and no CFD measurement has run.
+  The prior host preflight failed before upload; its immutable criteria are not
+  edited. No W4 result or sensitivity claim exists.
+- **Open:** commit and push the minimal verifier/runner/test fix and this
+  status; register immutable criteria round 2 against the exact W3 round-4
+  PASS; stage round-2 data in a fresh directory; verify the Kaggle-side file
+  inventory and hashes; then submit and host-verify one exact W4 kernel
+  version. Formal FD, reverse/adjoint qualification, shape update and topology
+  birth remain out of scope.

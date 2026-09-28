@@ -221,11 +221,7 @@ def verify_dataset(criteria, criteria_sha, dataset_dir):
         raise RuntimeError("W4 dataset id mismatch")
     if manifest.get("criteria_sha256") != criteria_sha:
         raise RuntimeError("W4 dataset manifest criteria binding mismatch")
-    expected = {
-        name: entry["sha256"]
-        for name, entry in criteria["inputs"].items()
-        if entry.get("location") == "kaggle_dataset"
-    }
+    expected = registered_dataset_files(criteria)
     expected["w4_v16_criteria.json"] = criteria_sha
     expected["w4_v16_criteria.json.sha256"] = sha256(sidecar_path)
     if set(manifest.get("files", {})) != set(expected):
@@ -240,6 +236,14 @@ def verify_dataset(criteria, criteria_sha, dataset_dir):
         if manifest["files"].get(name) != expected_sha:
             raise RuntimeError(f"W4 dataset manifest hash mismatch: {name}")
     return manifest_path
+
+
+def registered_dataset_files(criteria):
+    return {
+        entry["path"]: entry["sha256"]
+        for entry in criteria["inputs"].values()
+        if entry.get("location") == "kaggle_dataset"
+    }
 
 
 def zero_level_margin_m(phi, spacing):

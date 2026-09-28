@@ -268,8 +268,7 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
             "staged W4 dataset id mismatch")
     require(manifest.get("criteria_sha256") == criteria_sha,
             "staged W4 manifest criteria binding mismatch")
-    expected = {name: entry["sha256"] for name, entry in criteria["inputs"].items()
-                if entry.get("location") == "kaggle_dataset"}
+    expected = registered_dataset_files(criteria)
     expected.update({"w4_v16_criteria.json": criteria_sha,
                      "w4_v16_criteria.json.sha256": sha256(sidecar_path)})
     require(set(manifest.get("files", {})) == set(expected),
@@ -313,6 +312,14 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
             <= geometry["phi_margin_tolerance_m"],
             "canonical W4 CPU-side measured SDF margin mismatch")
     return metadata, margin
+
+
+def registered_dataset_files(criteria: dict) -> dict[str, str]:
+    return {
+        entry["path"]: entry["sha256"]
+        for entry in criteria["inputs"].values()
+        if entry.get("location") == "kaggle_dataset"
+    }
 
 
 def read_force_rows(path: Path, measurement: dict) -> list[dict[str, float]]:

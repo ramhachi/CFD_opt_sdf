@@ -7,17 +7,15 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-Current checkpoint: the W3 full-horizon owner diagnostic confirmed a
-non-owning device-SDF lifetime defect, while leaving W3 v4's all-zero force
-root cause unresolved. The narrowly scoped structural owner fix is implemented
-and immutable W3 qualification round 4 is registered (criteria SHA-256
-`eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`). Exact
-T4 kernel version 5 passed host verification for its registered finite-box
-primal contract. W3 v4's all-zero root cause remains unresolved; physical
-profile, grid response and downstream qualification remain false. W4
-implementation preparation now includes structural owner retention and the
-inherited per-case stationarity gate; its immutable criteria remain
-unregistered and no W4 measurement has started. See
+Current checkpoint: W3 round 4 exact T4 kernel version 5 passed host
+verification for its registered finite-box primal contract. W3 v4's all-zero
+root cause remains unresolved; physical-profile, grid-response and downstream
+qualification remain false. W4 immutable criteria round 1
+(`5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`) are
+preserved but superseded before computation after a local pre-upload preflight
+found a dataset filename mapping defect. The minimal runner/host correction
+and regression test now pass locally; commit/push and immutable round-2
+registration are pending. No W4 upload, kernel or measurement exists. See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order

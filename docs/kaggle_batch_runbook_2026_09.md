@@ -751,15 +751,15 @@ reverse, isolated Poisson VJP, Flow activity analysis/mutation, timestep
 reverse, or host/device-transfer derivative. This run remains diagnostic-only
 regardless of its per-stage status.
 
-## W4 v16 resolution/domain sensitivity preparation (not registered)
+## W4 v16 resolution/domain sensitivity preparation
 
 **Historical note:** The W3-v3 failure and W3-round-3 prerequisite below are
 superseded by the exact W3 round-4 PASS recorded later in this runbook. The
-current W4 source preparation retains the owner structurally using the
-existing `OwnedV16Run` type for the complete case solve and retains the shared
-canonical device owner across all four cases. W4 is still unregistered and
-unmeasured until the source preparation commit is pushed and immutable round-1
-criteria are registered.
+initial W4 source preparation retained the owner structurally using the
+existing `OwnedV16Run` type for the complete case solve and retained the shared
+canonical device owner across all four cases. Immutable round-1 criteria were
+later registered, then superseded before computation by the preflight
+correction recorded at the end of this file.
 
 - `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
   maps and checks physical-box alignment, dimensions, solver length, and Re=80.
@@ -1927,3 +1927,43 @@ repository pytest reported 1,109 passed, 37 failed and 4 skipped. The 37
 failures are the known historical tests requiring ignored `work/` checkpoints,
 cases or solver logs absent from this managed worktree; the focused task slice
 is green.
+
+## W4 immutable round 1 retained; do not execute
+
+Immutable criteria round 1 is
+[`kaggle_w4_v16_sensitivity_criteria_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json),
+SHA-256 `5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`.
+Before upload, local host preflight exposed an implementation defect: criteria
+inputs are identified by logical keys, while the dataset manifest stores the
+registered physical `path` filenames. The runner and host verifier both now
+build their expected inventory from `entry["path"]`; a regression test checks
+both implementations. The existing round-1 stage passed this corrected local
+contract check, but its criteria bind the old source hashes. Preserve round 1
+unchanged and do not upload it. Register round 2 after committing/pushing the
+fix, and stage into a new ignored directory:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json \
+  --round 2
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json \
+  --round 2 --check
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  --state work/kaggle_w3_v16_dataset_round4/sdf_design_state.npz \
+  --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json \
+  --output work/kaggle_w4_v16_dataset_round2
+```
+
+Run the Kaggle runner contract and independent host verifier against the fresh
+round-2 stage before upload. Then publish privately, wait for `ready`,
+download the remote files into a fresh directory and compare complete
+filenames and SHA-256 values. The old round-1 local manifest SHA-256 is
+`b175b447c35fce94b13de23a73fb98a10dd1be1f499ffe5e8567ff2f26f1bd96`; it is
+not the round-2 dataset manifest. No W4 dataset upload, kernel submission or
+measurement has occurred at this checkpoint.

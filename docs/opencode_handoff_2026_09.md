@@ -73,7 +73,7 @@ an infrastructure choice, not a solver component.
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
 | Next W3 gate | W3 round 4 is closed. W4 implementation preparation is in progress; final registration is the next gate. |
-| W4 | Owner retention and the inherited per-case stationarity gate are implemented and focused-tested. Immutable criteria remain unregistered and no W4 measurement has started. Formal FD remains gated on W4 host verification. |
+| W4 | Round-1 immutable criteria are preserved but superseded before computation after a local pre-upload filename-mapping failure. The runner/host fix and regression test pass locally; commit/push and round-2 registration are pending, with no upload or W4 measurement. Formal FD remains gated on W4 host verification. |
 | Centered-FD SDF derivatives | Formal qualification remains blocked pending W4. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
