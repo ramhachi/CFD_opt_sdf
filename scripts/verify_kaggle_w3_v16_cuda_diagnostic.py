@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json"
 DIAGNOSTIC_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
 OWNER_LIFETIME_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl"
-OWNER_LIFETIME_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json"
+OWNER_LIFETIME_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
 DIAGNOSTIC_RUNNER = ROOT / "infra/kaggle/kernel_w3_cuda_diagnostic/runner.py"
 STAGE_NAME = "w3_v16_cuda_diagnostic"
 EXPECTED_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
@@ -1330,10 +1330,32 @@ def classify_failure(folder: Path, progress: dict,
     exception_text = julia_log if julia_log else wrapper_error
     owner_execution_path = folder / "owner_lifetime_execution.json"
     owner_execution = json.loads(owner_execution_path.read_text()) if owner_execution_path.is_file() else {}
+    arm_reports = {}
     if owner_execution.get("unexpected_arm_failures"):
-        failed_stage = "owner-lifetime diagnostic arm process or identity"
-        failure_class = "owner_lifetime_arm_unexpected_failure"
-        exception_text = wrapper_error or exception_text
+        for row in owner_execution.get("arms", []):
+            arm_id = row.get("arm_id")
+            report_path = folder / row.get("report_path", "")
+            if arm_id and report_path.is_file():
+                arm_reports[arm_id] = json.loads(report_path.read_text())
+        missing_import_arms = {
+            arm_id: arm_report for arm_id, arm_report in arm_reports.items()
+            if arm_report.get("status") == "operation_error"
+            and arm_report.get("last_stage") == "canonical_input_load_started"
+            and "UndefVarError" in arm_report.get("exact_exception", "")
+            and "v16_physical_profile_bodies" in arm_report.get("exact_exception", "")
+        }
+        expected_arms = {"A", "C", "B1", "B2"}
+        if (set(owner_execution.get("unexpected_arm_failures", [])) == expected_arms
+                and set(missing_import_arms) == expected_arms):
+            failed_stage = (
+                "owner-lifetime Julia import resolution before candidate body construction"
+            )
+            failure_class = "owner_lifetime_julia_missing_import"
+            exception_text = missing_import_arms["A"]["exact_exception"]
+        else:
+            failed_stage = "owner-lifetime diagnostic arm process or identity"
+            failure_class = "owner_lifetime_arm_unexpected_failure"
+            exception_text = wrapper_error or exception_text
     elif ("run_owner_lifetime_arms" in wrapper_error
           and "FileNotFoundError" in wrapper_error
           and "julia-1.12.6/bin/julia" in wrapper_error):
@@ -1424,7 +1446,7 @@ def classify_failure(folder: Path, progress: dict,
     else:
         failed_stage = "kaggle_input_or_runner_bootstrap"
         failure_class = "kaggle_input_or_runner_bootstrap"
-    return {
+    result = {
         "last_completed_stage": last_completed_stage,
         "failed_stage": failed_stage,
         "failure_class": failure_class,
@@ -1435,6 +1457,19 @@ def classify_failure(folder: Path, progress: dict,
                      "w2b_sphere_control_completed", "diagnostic_report_written"),
         "exact_exception": exception_text or None,
     }
+    if owner_execution.get("unexpected_arm_failures"):
+        arm_rows = owner_execution.get("arms", [])
+        result["owner_arm_processes_started"] = bool(arm_rows)
+        result["owner_primal_step_reached"] = any(
+            str(row.get("last_stage", "")).startswith("primal_step_")
+            for row in arm_rows)
+        result["owner_arm_exceptions"] = {
+            row["arm_id"]: arm_reports.get(row.get("arm_id"), {}).get("exact_exception")
+            for row in arm_rows if row.get("arm_id") in arm_reports
+        }
+        if wrapper_error:
+            result["runner_exception"] = wrapper_error
+    return result
 
 
 def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,

@@ -260,16 +260,16 @@ def test_partial_fingerprint_binds_backend_and_exact_source_checkout(tmp_path):
     assert result["checkout_diagnostic_job_sha256"] == commit_job[1]
 
 
-def test_owner_round2_criteria_and_job_are_immutable_and_hash_bound():
+def test_owner_round3_criteria_and_job_are_immutable_and_hash_bound():
     criteria, criteria_sha, sidecar_sha = host.load_owner_lifetime_criteria()
 
     assert criteria["immutable"] is True
     assert criteria["registered_before_computation"] is True
-    assert criteria["round"] == 2
+    assert criteria["round"] == 3
     assert criteria["inputs"]["owner_lifetime_job"]["sha256"] == host.sha256(
         host.OWNER_LIFETIME_JOB)
     assert criteria["supersedes_before_measurement"]["sha256"] == host.sha256(
-        ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09.json")
+        ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json")
     assert criteria_sha == host.sha256(host.OWNER_LIFETIME_CRITERIA_PATH)
     assert host.OWNER_LIFETIME_CRITERIA_PATH.with_suffix(
         host.OWNER_LIFETIME_CRITERIA_PATH.suffix + ".sha256").read_text().strip() == criteria_sha
@@ -433,6 +433,51 @@ def test_owner_runner_workspace_expiry_is_distinguished_from_julia_failure(tmp_p
     assert result["failure_class"] == "owner_lifetime_runner_workspace_expired"
     assert result["solver_started"] is True
     assert result["exact_exception"] == wrapper_error
+
+
+def test_owner_missing_import_is_separated_from_arm_or_lifetime_failure(tmp_path):
+    folder = tmp_path / "w3_v16_cuda_diagnostic"
+    folder.mkdir()
+    exception = (
+        "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\n"
+        "Stacktrace: owner_lifetime_job.jl:501"
+    )
+    arms = []
+    for arm_id in ("A", "C", "B1", "B2"):
+        report_name = f"w3_v16_cuda_owner_lifetime_{arm_id}.json"
+        (folder / report_name).write_text(json.dumps({
+            "status": "operation_error",
+            "last_stage": "canonical_input_load_started",
+            "exact_exception": exception,
+        }))
+        arms.append({
+            "arm_id": arm_id,
+            "classification": "unexpected_arm_failure",
+            "last_stage": "canonical_input_load_started",
+            "report_path": report_name,
+        })
+    (folder / "owner_lifetime_execution.json").write_text(json.dumps({
+        "arms": arms,
+        "unexpected_arm_failures": ["A", "C", "B1", "B2"],
+    }))
+    wrapper_error = "RuntimeError: unexpected owner-lifetime arm failure(s)"
+    (folder / "ERROR.txt").write_text(wrapper_error)
+
+    result = host.classify_failure(
+        folder,
+        {"last_completed_stage": "diagnostic_report_written"},
+        {"v16_one_step_reproducer": {"cuda_solver_steps": 1}},
+    )
+
+    assert result["failed_stage"] == (
+        "owner-lifetime Julia import resolution before candidate body construction")
+    assert result["failure_class"] == "owner_lifetime_julia_missing_import"
+    assert result["solver_started"] is True
+    assert result["owner_arm_processes_started"] is True
+    assert result["owner_primal_step_reached"] is False
+    assert set(result["owner_arm_exceptions"]) == {"A", "C", "B1", "B2"}
+    assert result["exact_exception"] == exception
+    assert result["runner_exception"] == wrapper_error
 
 
 def test_owner_probe_world_to_flow_mapping_and_append_only_evidence_guard(tmp_path):

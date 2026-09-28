@@ -1,0 +1,477 @@
+{
+  "base_diagnostic_complete": false,
+  "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+  "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+  "claim_scope": "CPU/T4 CUDA implementation-layer and owner-lifetime diagnosis only; no primal or physical qualification",
+  "created_utc_date": "2026-09-28",
+  "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+  "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+  "diagnostic_complete": false,
+  "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
+  "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+  "diagnostic_source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b",
+  "evidence_type": "diagnostic_only",
+  "exact_kaggle_log_sha256": "500306c3c4e0f7ca31dfe7a3c4191b5180ec7a8ad0fd8a154cb008a5581cb8f3",
+  "exact_kaggle_status_sha256": "2341886fe14bda95b1cf663ab933c531b25e6cba8b281d9b6fd6c4cd6d8c5f16",
+  "failure_classification": {
+    "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+    "failed_stage": "owner-lifetime Julia import resolution before candidate body construction",
+    "failure_class": "owner_lifetime_julia_missing_import",
+    "last_completed_stage": "diagnostic_report_written",
+    "owner_arm_exceptions": {
+      "A": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+      "B1": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+      "B2": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+      "C": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550"
+    },
+    "owner_arm_processes_started": true,
+    "owner_primal_step_reached": false,
+    "runner_exception": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 453, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 433, in main\n    run_owner_lifetime_arms(julia, project, source, raw_phi_path, env, runner_sha,\n  File \"/kaggle/src/script.py\", line 289, in run_owner_lifetime_arms\n    raise RuntimeError(f\"unexpected owner-lifetime arm failure(s): {unexpected}\")\nRuntimeError: unexpected owner-lifetime arm failure(s): ['A', 'C', 'B1', 'B2']\n",
+    "solver_started": true
+  },
+  "force_snapshot_verification": {
+    "v16_one_step_cpu_candidate_force_after_one_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        2.2737367544323206e-13
+      ],
+      "repository_downforce_minus_fz": 4627.170259701308,
+      "repository_drag_plus_fx": 3485.046517138383,
+      "waterlily_total_force_raw": [
+        -3485.046517138383,
+        -22.466101823903678,
+        4627.170259701308
+      ]
+    },
+    "v16_one_step_cuda_candidate_force_after_one_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        -2.2737367544323206e-13
+      ],
+      "repository_downforce_minus_fz": 4627.474694802374,
+      "repository_drag_plus_fx": 3485.132996418866,
+      "waterlily_total_force_raw": [
+        -3485.132996418866,
+        -22.258088226113315,
+        4627.474694802374
+      ]
+    },
+    "v16_solver_free_cpu_candidate_force_before_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0,
+      "repository_drag_plus_fx": -0.0,
+      "waterlily_total_force_raw": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "v16_solver_free_cuda_candidate_force_before_step": {
+      "pressure_plus_viscous_componentwise_residual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0,
+      "repository_drag_plus_fx": -0.0,
+      "waterlily_total_force_raw": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "w2b_sphere_cpu_force": {
+      "pressure_plus_viscous_componentwise_residual": [
+        1.4210854715202004e-13,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": -0.0002706325957575473,
+      "repository_drag_plus_fx": 4484.3776739777695,
+      "waterlily_total_force_raw": [
+        -4484.3776739777695,
+        0.0015777276191215606,
+        -0.0002706325957575473
+      ]
+    },
+    "w2b_sphere_cuda_force": {
+      "pressure_plus_viscous_componentwise_residual": [
+        -4.263256414560601e-14,
+        0.0,
+        0.0
+      ],
+      "repository_downforce_minus_fz": 0.0017444059673294987,
+      "repository_drag_plus_fx": 4484.377104123025,
+      "waterlily_total_force_raw": [
+        -4484.377104123025,
+        -0.0005067680752262049,
+        0.0017444059673294987
+      ]
+    }
+  },
+  "host_artifact_verification_passed": true,
+  "host_verifier_sha256": "bc8f1b98d59bc0e6d392cd0cdc147a7589bf03bdcde14542945ef97f9f510aab",
+  "independent_numeric_diagnostics": {
+    "candidate_sdf_reference": {
+      "host_cpu_max_abs_distance_error_m": 8.837890632662493e-08,
+      "host_cpu_max_normal_vector_error": 4.6359371347873865e-08,
+      "host_cuda_max_abs_distance_error_m": 4.870910643717252e-07,
+      "host_cuda_max_normal_vector_error": 1.3379748247034526,
+      "outside_design_box_count": 126720
+    },
+    "cpu_cuda_mu0_sum_max_error": 4.369999999975782e-06,
+    "cpu_cuda_sigma_max_error": 9.999999999621423e-06,
+    "cpu_ground_distance_max_error": 0.0,
+    "cpu_ground_normal_max_error": 0.0,
+    "cpu_ground_velocity_max_error": 0.0,
+    "cpu_sigma_vs_combined_distance_max_error": 0.0,
+    "cuda_sigma_vs_combined_distance_max_error": 0.0,
+    "expected_ground_support_cells": 4800,
+    "gpu_ground_distance_max_error": 0.0,
+    "gpu_ground_normal_max_error": 0.0,
+    "gpu_ground_velocity_max_error": 0.0,
+    "representative_probes": {
+      "candidate_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 3.5762788286319847e-08,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 1.4142131805419922,
+        "sign_comparison_count": 7,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "candidate_numpy_reference": {
+        "host_cpu_max_abs_distance_error_m": 0.0,
+        "host_cpu_max_normal_vector_error": 1.0000000121268613,
+        "host_cuda_max_abs_distance_error_m": 3.576278686523438e-08,
+        "host_cuda_max_normal_vector_error": 1.4142131830517806,
+        "outside_design_box_count": 6
+      },
+      "combined_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 3.5762788286319847e-08,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 1.4142131805419922,
+        "sign_comparison_count": 7,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "ground_cpu_cuda_comparison": {
+        "max_abs_distance_error_m": 0.0,
+        "max_body_velocity_error_solver_units": 0.0,
+        "max_normal_vector_error": 0.0,
+        "sign_comparison_count": 10,
+        "sign_mismatch_count_outside_1e-5_solver_unit_zero_band": 0
+      },
+      "ground_cpu_max_abs_error": 0.0,
+      "ground_gpu_max_abs_error": 0.0,
+      "world_center_probe": {
+        "expected_flow_solver": [
+          50.0,
+          24.0,
+          18.0
+        ],
+        "flow_solver": [
+          50.0,
+          24.0,
+          18.0
+        ],
+        "world_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "input_criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+  "input_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+  "input_mount_inventory": {
+    "input_root": "/kaggle/input",
+    "input_root_exists": true,
+    "top_level_entries": [
+      "dir:datasets"
+    ]
+  },
+  "julia_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+  "kaggle_status": "KernelWorkerStatus.ERROR",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+  "kernel_runner_sha256": "fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1",
+  "kernel_runner_source_path": "infra/kaggle/kernel_w3_cuda_diagnostic/runner.py",
+  "kernel_version": 5,
+  "last_completed_stage": "diagnostic_report_written",
+  "lattice_verification": {
+    "csv_sha256": "7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f",
+    "header_sha256": "27af67cd8edf7b2963a1b91e1662c5513e15104a72392c5229fa22aa40ccfc0e",
+    "host_recomputed_stats": {
+      "candidate_cpu": {
+        "bdim_band_abs_d_le_3_count": 6107,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 2481,
+        "max_sdf_solver_units": 60.0,
+        "min_sdf_solver_units": -1.0,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 2481,
+        "support_normal_magnitude_max": 1.0000000533660636,
+        "support_normal_magnitude_mean": 1.0000000005906133,
+        "support_normal_magnitude_min": 0.999999945830852
+      },
+      "candidate_gpu": {
+        "bdim_band_abs_d_le_3_count": 6107,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 2476,
+        "max_sdf_solver_units": 60.0,
+        "min_sdf_solver_units": -1.0000001,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 2476,
+        "support_normal_magnitude_max": 1.0000001114593136,
+        "support_normal_magnitude_mean": 0.9999999980688427,
+        "support_normal_magnitude_min": 0.9999998851927234
+      },
+      "combined_cpu": {
+        "bdim_band_abs_d_le_3_count": 20507,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 7281,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": -1.0,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 7281,
+        "support_normal_magnitude_max": 1.0000000533660636,
+        "support_normal_magnitude_mean": 1.0000000002012515,
+        "support_normal_magnitude_min": 0.999999945830852
+      },
+      "combined_gpu": {
+        "bdim_band_abs_d_le_3_count": 20507,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 7276,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": -1.0000001,
+        "negative_sdf_count": 1009,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 7276,
+        "support_normal_magnitude_max": 1.0000001114593136,
+        "support_normal_magnitude_mean": 0.9999999993428332,
+        "support_normal_magnitude_min": 0.9999998851927234
+      },
+      "ground_cpu": {
+        "bdim_band_abs_d_le_3_count": 14400,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 4800,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": 0.5,
+        "negative_sdf_count": 0,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 4800,
+        "support_normal_magnitude_max": 1.0,
+        "support_normal_magnitude_mean": 1.0,
+        "support_normal_magnitude_min": 1.0
+      },
+      "ground_gpu": {
+        "bdim_band_abs_d_le_3_count": 14400,
+        "finite_count": 172800,
+        "force_support_abs_d_le_1_count": 4800,
+        "max_sdf_solver_units": 35.5,
+        "min_sdf_solver_units": 0.5,
+        "negative_sdf_count": 0,
+        "sample_count": 172800,
+        "support_nonzero_normal_count": 4800,
+        "support_normal_magnitude_max": 1.0,
+        "support_normal_magnitude_mean": 1.0,
+        "support_normal_magnitude_min": 1.0
+      }
+    },
+    "row_count": 172800
+  },
+  "output_artifacts": {
+    "ERROR.txt": "01f5ccc61439cb579aba16c988da9a51381fbf6084d20033b5d0396f74b6eb81",
+    "fingerprint.json": "26c1988d192c0c224b478aa3a29c445e4456112610555f9797a4047a222189fc",
+    "git_checkout.log": "5e130b51efbcbe13f27832f78f26f7fb7e466a6f1c058a85d18f86a81c8c6bc1",
+    "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+    "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+    "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+    "instantiate.log": "c5f6dc68476c749438b895b4fc20de1383add29bcaa35e6b21d4a9cbbdbaa78d",
+    "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "nvidia_smi.csv": "70cec32dd4664ef7a29ae6869bd4748ea08579fd056199e1930e66cdc80af743",
+    "owner_lifetime_A.log": "d4ef0f924219d2dd7966b370343089c540f947dd5a8153ebbdb8a2fde981882b",
+    "owner_lifetime_A_runner.json": "309d437873ab0a601916211037f30ccbeddbea1ba80bc124ca9902a6c05d6ffb",
+    "owner_lifetime_B1.log": "31b0d9a22b58bf66853661a8862fb7b660e3676ac3a2e50bf8f0231fa7f3e28b",
+    "owner_lifetime_B1_runner.json": "735154cb6df7cf3d8fd5d8853c8ae7a1da191b2110f2a311325838c760036232",
+    "owner_lifetime_B2.log": "daf2a5a643db6df589121c9234815dcc436971be9a05cf856dbd1920ead6be26",
+    "owner_lifetime_B2_runner.json": "38bdd59aeff2fe217438c23a061e35db12a9181b975adf3298a9094d25a24918",
+    "owner_lifetime_C.log": "ab2fc4fc7e762b476c90256973720fbfc3263a807512792a5a03417dfeaf1c1a",
+    "owner_lifetime_C_runner.json": "5ed4cdadfa52da493cd04cb521678260a658f9b728943e9ba89687b7bda408ab",
+    "owner_lifetime_execution.json": "f9f210e1ac78fa8f23708ee98da2865d3a7f2723ca650a04feb51e1700cbe84e",
+    "progress.json": "49fbd4c9b825613526a4689bb1fae60b0a9bfe43db72f3a2bd3bdcbc243c4cd5",
+    "runtime_identity.json": "564b020257d0c533623fa8d54e07769c7d32ee5b4bbd5d19f1f0b3995cf30bce",
+    "v16_flow_lattice.csv": "7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f",
+    "w3_cuda_diagnostic.log": "2f050301a9d29f8dc034bc782e4950d0c8b668785135b280a8b0db5179864f2b",
+    "w3_v16_cuda_diagnostic.json": "8fc4344f7e5fbbf0361dc4bb2cbb591841aa3bfb45176a5f51343a08f2661687",
+    "w3_v16_cuda_owner_lifetime_A.json": "5da6e147c117a6584ddcae769c21c23d4e42b2be8141167b4c28273878b966f6",
+    "w3_v16_cuda_owner_lifetime_B1.json": "5da6e147c117a6584ddcae769c21c23d4e42b2be8141167b4c28273878b966f6",
+    "w3_v16_cuda_owner_lifetime_B2.json": "5da6e147c117a6584ddcae769c21c23d4e42b2be8141167b4c28273878b966f6",
+    "w3_v16_cuda_owner_lifetime_C.json": "5da6e147c117a6584ddcae769c21c23d4e42b2be8141167b4c28273878b966f6",
+    "w3_v16_cuda_owner_progress_A.json": "964b2ad55aa9a0555bdc1a36db3bc93b9c77387172e72d0200a2c9fc1919705b",
+    "w3_v16_cuda_owner_progress_B1.json": "964b2ad55aa9a0555bdc1a36db3bc93b9c77387172e72d0200a2c9fc1919705b",
+    "w3_v16_cuda_owner_progress_B2.json": "964b2ad55aa9a0555bdc1a36db3bc93b9c77387172e72d0200a2c9fc1919705b",
+    "w3_v16_cuda_owner_progress_C.json": "964b2ad55aa9a0555bdc1a36db3bc93b9c77387172e72d0200a2c9fc1919705b"
+  },
+  "output_sha256_manifest_sha256": "c95d0836fee46c74334599fd7ff00d98559495b19d26224d8cde61ad6525a91e",
+  "output_status": "ERROR",
+  "owner_lifetime_diagnostic_complete": false,
+  "owner_lifetime_experiment": {
+    "arm_host_checks": {
+      "A": {
+        "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+        "expected_lifetime_hazard": false,
+        "last_stage": "canonical_input_load_started",
+        "ownership": null
+      },
+      "B1": {
+        "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+        "expected_lifetime_hazard": false,
+        "last_stage": "canonical_input_load_started",
+        "ownership": null
+      },
+      "B2": {
+        "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+        "expected_lifetime_hazard": false,
+        "last_stage": "canonical_input_load_started",
+        "ownership": null
+      },
+      "C": {
+        "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+        "expected_lifetime_hazard": false,
+        "last_stage": "canonical_input_load_started",
+        "ownership": null
+      }
+    },
+    "arms": {
+      "A": {
+        "field_arrays": null,
+        "force_history": null,
+        "geometry_arrays": null,
+        "owner_collected_during_forced_gc": null,
+        "report": {
+          "checkpoint_values": {},
+          "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+          "failed_stage": "canonical_input_load_started",
+          "last_stage": "canonical_input_load_started",
+          "status": "operation_error"
+        },
+        "status": "incomplete_or_unexpected"
+      },
+      "B1": {
+        "field_arrays": null,
+        "force_history": null,
+        "geometry_arrays": null,
+        "owner_collected_during_forced_gc": null,
+        "report": {
+          "checkpoint_values": {},
+          "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+          "failed_stage": "canonical_input_load_started",
+          "last_stage": "canonical_input_load_started",
+          "status": "operation_error"
+        },
+        "status": "incomplete_or_unexpected"
+      },
+      "B2": {
+        "field_arrays": null,
+        "force_history": null,
+        "geometry_arrays": null,
+        "owner_collected_during_forced_gc": null,
+        "report": {
+          "checkpoint_values": {},
+          "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+          "failed_stage": "canonical_input_load_started",
+          "last_stage": "canonical_input_load_started",
+          "status": "operation_error"
+        },
+        "status": "incomplete_or_unexpected"
+      },
+      "C": {
+        "field_arrays": null,
+        "force_history": null,
+        "geometry_arrays": null,
+        "owner_collected_during_forced_gc": null,
+        "report": {
+          "checkpoint_values": {},
+          "exact_exception": "UndefVarError: `v16_physical_profile_bodies` not defined in `Main`\nSuggestion: check for spelling errors or missing imports.\nStacktrace:\n [1] main()\n   @ Main /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:501\n [2] top-level scope\n   @ /tmp/w3_cuda_diagnostic_eumljsxg/source/scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl:602\n [3] include(mod::Module, _path::String)\n   @ Base ./Base.jl:306\n [4] exec_options(opts::Base.JLOptions)\n   @ Base ./client.jl:317\n [5] _start()\n   @ Base ./client.jl:550",
+          "failed_stage": "canonical_input_load_started",
+          "last_stage": "canonical_input_load_started",
+          "status": "operation_error"
+        },
+        "status": "incomplete_or_unexpected"
+      }
+    },
+    "claim_scope": "implementation-layer owner-lifetime diagnosis only; not W3 primal qualification, target-physics qualification, or a production fix",
+    "criteria_path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json",
+    "criteria_sha256": "8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9",
+    "criteria_sidecar_sha256": "ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43",
+    "divergence_classes_by_unrooted_replicate": {},
+    "execution_status": "arm_failure",
+    "host_controls_A_C_match": false,
+    "host_verification_passed": false,
+    "host_verifier_sha256": "bc8f1b98d59bc0e6d392cd0cdc147a7589bf03bdcde14542945ef97f9f510aab",
+    "interpretation": "Control mismatch, unbracketed collection, incomplete evidence, or non-repeatable B behavior prevents a causal conclusion.",
+    "julia_job_sha256": "7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea",
+    "kernel_runner_sha256": "fbecc7093ef3fe05ca637a0bf4e4d5e993bd4beca29087b2ebd6ef02c8842ee1",
+    "owner_lifetime_hypothesis": "unresolved",
+    "qualification_flags": {
+      "grid_response_qualified": false,
+      "physical_profile_qualified": false,
+      "sdf_gradient_qualified": false,
+      "shape_update_allowed": false,
+      "topology_birth_qualified": false,
+      "waterlily_reverse_cpu_qualified": false,
+      "waterlily_reverse_cuda_qualified": false,
+      "waterlily_v16_primal_qualified": false
+    },
+    "same_divergence_class_in_both_replicates": [],
+    "source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b"
+  },
+  "owner_lifetime_host_verification_passed": false,
+  "partial_source_checkout_verification": {
+    "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+    "diagnostic_source_commit": "885ae7558012da43e6310e2ffb04db4230150f5b"
+  },
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "solver_steps_v16": 1,
+  "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "source_identity_verification": {
+    "input_identity_verified": true,
+    "qualification_claimed": false,
+    "runtime_identity_verified": true,
+    "source_identity_verified": true
+  },
+  "w2b_sign_convention_audit": {
+    "criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+    "criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47",
+    "interpretation": "sign-convention precedent only; no v16 target or force-sign diagnosis",
+    "registered_T4_drag_sign_gate": true,
+    "result_path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+    "result_sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc",
+    "time_weighted_drag_solver_units_by_cells_per_diameter": {
+      "16": 88.23605891136792,
+      "24": 204.44844285577787,
+      "32": 370.3856390591538
+    }
+  }
+}

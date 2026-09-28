@@ -14,6 +14,8 @@ Base.include(CFDSDFWaterLily,
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
 using .CFDSDFWaterLily.DeviceGridSDF
+using .CFDSDFWaterLily: build_v16_physical_profile_simulation,
+    v16_physical_profile_bodies
 
 length(ARGS) == 3 || error("usage: owner_lifetime_job.jl <phi_fortran.raw> <output_dir> <arm_id>")
 phi_raw_path, output_dir, arm_id = ARGS
@@ -25,7 +27,7 @@ const SPACING_M = 0.05f0
 const FLOW_ORIGIN_M = Float32.((-2.5, -1.2, -0.9))
 const EXPECTED_PHI_SHA256 = "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
 const EXPECTED_PHI_C_ORDER_SHA256 = "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
-const OWNER_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09.json"
+const OWNER_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
 
 json_escape(value::AbstractString) = replace(replace(replace(String(value), "\\" => "\\\\"), "\"" => "\\\""), "\n" => "\\n")
 json_value(::Nothing) = "null"

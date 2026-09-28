@@ -24,8 +24,8 @@ SOURCE_FETCH_DEPTH = 32
 # Pin the reviewed diagnostic source before submitting the private kernel.
 DIAGNOSTIC_SOURCE_COMMIT = "885ae7558012da43e6310e2ffb04db4230150f5b"
 DIAGNOSTIC_JOB_SHA256 = "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
-OWNER_LIFETIME_JOB_SHA256 = "7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea"
-OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json"
+OWNER_LIFETIME_JOB_SHA256 = "b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac"
+OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
 W3_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
 W3_SOURCE_COMMIT = "5e985fa3395a01228c18910d96e09ecbc5497628"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
