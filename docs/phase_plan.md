@@ -137,7 +137,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified; owner fix is implemented and immutable qualification round 4 is registered | Exact full-horizon diagnostic confirms the non-owning device-SDF lifetime defect but does not reproduce W3 v4's all-zero force symptom. Round 4 binds the owner-only fix and unchanged W3 thresholds. Its private dataset and exact T4 run are pending; no W3 gate is qualified yet. Runtime CUDA/CUDACore memory-type identity is established by exact `===` evidence. |
+| W3 v16 primal | Unqualified; immutable round 4 is registered, dataset version 4 is host-verified, and exact kernel version 5 is running | Owner-lifetime defect is confirmed, but W3 v4's all-zero force symptom remains unresolved. Round 4 binds only the owner fix and unchanged W3 thresholds. Wait for exact `/5` terminal status/logs/output and host verification; no W3 gate is qualified yet. |
 | W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
 | Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
@@ -644,8 +644,9 @@ Current gates and immediate sequence as of 2026-09-28:
    bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0` and the
    verified owner-diagnostic prerequisite. The registered 2% stationarity
    gate and all other measurement/acceptance conditions are unchanged from
-   round 3. Commit/push the criteria and this status, stage/upload/re-download
-   its private dataset, then submit and host-verify one exact T4 version.
+   round 3. Criteria and status are pushed. Private dataset version 4 was
+   re-downloaded and hash-verified; exact W3 kernel version 5 is running.
+   Retrieve that version's terminal artifacts and host-verify them.
 3. **Keep downstream work blocked.** W3 v16 primal and physical-profile
    qualification remain unqualified until the exact round-4 result passes the
    host verifier. W4 measurement, formal FD, gradient/reverse qualification,
@@ -3728,3 +3729,41 @@ qualification flag.
   private Kaggle dataset, compare complete file inventory and hashes, then
   submit the next exact W3 T4 version. Do not start W4 or formal FD before
   exact round-4 host verification passes.
+
+### 2026-09-28 W3 round 4 dataset verified; exact version 5 running
+
+- **Registered:** round-4 criteria remain immutable at SHA-256
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`,
+  source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`; criteria and status
+  were pushed in commit `94add3ada878c9931dfb5593c9cb32611a327d9f`.
+- **Dataset staged/submitted:** canonical dataset staging used
+  `work/kaggle_w3_v16_dataset_round4/`. Kaggle private dataset
+  `ramhachi888/cfd-opt-sdf-v16-genesis-state` reports version 4, status
+  `ready`. The five uploaded data files match the re-downloaded inventory and
+  SHA-256 values exactly. Manifest SHA-256 is
+  `995d3e3aa931f28e8fb4dadcc9cb9e17fe8235d57190a188b75939505d4eacad`;
+  host dataset audit SHA-256 is
+  `88733b10c8f62c58ab252e7982c89aa7222990d79a7f8e2a8aeb1cded19f13d0`.
+  Canonical NPZ SHA-256 is
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`,
+  C-order phi SHA-256 is
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  and Fortran-order phi SHA-256 is
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`.
+  Kaggle's metadata endpoint returns a server API envelope rather than the
+  upload `dataset-metadata.json` file; ID, owner, slug, private status, title,
+  and license were compared semantically.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/5` was pushed with a 7200-second
+  timeout. Its captured initial status is `KernelWorkerStatus.RUNNING`; the
+  status-file SHA-256 is
+  `7b50a5e1f6646832eca3f3040bc89b9931761c92f83cb599be88fd6ca4487098`.
+  The round-4 runner, Julia job, host verifier, Project and Manifest hashes
+  match both the registered values and source commit `ee6298e`.
+- **Measured / verified / qualified:** no terminal primal output or W3
+  host-verification verdict exists yet. W3 and all downstream qualification
+  flags remain false.
+- **Open:** poll only exact kernel `/5`; once terminal, save its exact status,
+  logs and output in `work/kaggle_w3_version5/`, run the host verifier against
+  round-4 criteria and the remote-verified dataset, and preserve a diagnostic
+  if any gate fails. W4 and formal FD remain blocked.

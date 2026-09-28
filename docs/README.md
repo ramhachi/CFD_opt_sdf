@@ -11,10 +11,10 @@ Current checkpoint: the W3 full-horizon owner diagnostic confirmed a
 non-owning device-SDF lifetime defect, while leaving W3 v4's all-zero force
 root cause unresolved. The narrowly scoped structural owner fix is implemented
 and immutable W3 qualification round 4 is registered (criteria SHA-256
-`eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`). The
-private input dataset and exact T4 run are pending; W3 remains unqualified and
-W4/formal FD remain blocked. See [`phase_plan.md`](phase_plan.md) for evidence
-and the current gate.
+`eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`). Private
+dataset version 4 is host-verified and exact W3 T4 kernel version 5 is running;
+W3 remains unqualified and W4/formal FD remain blocked. See
+[`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order
 

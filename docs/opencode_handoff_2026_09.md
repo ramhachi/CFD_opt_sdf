@@ -71,8 +71,8 @@ an infrastructure choice, not a solver component.
 | --- | --- |
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere capability gates have evidence; this does not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. It confirms an owner-lifetime implementation defect, but W3 v4's all-zero force root cause remains unresolved. The structural owner fix is implemented and round-4 criteria are immutably registered. |
-| Next W3 gate | Commit/push round-4 criteria, stage/upload/re-download and hash-verify the private canonical dataset, submit the next exact W3 T4 version, and host-verify it. W4 and formal FD remain blocked until W3 PASS. |
+| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. It confirms an owner-lifetime implementation defect, but W3 v4's all-zero force root cause remains unresolved. The structural owner fix and immutable round-4 criteria are in place; private dataset v4 is host-verified and W3 kernel `/5` is running. |
+| Next W3 gate | Retrieve only exact kernel `/5` terminal status/logs/output and host-verify it against round-4 criteria and remote-verified dataset. W4 and formal FD remain blocked until W3 PASS. |
 | W4 | Blocked until exact W3 host-verifier PASS; no W4 qualification criteria or measurement is registered. |
 | Centered-FD SDF derivatives | Formal qualification blocked pending W3 and W4. |
 | Production gradient backend | Undecided and unqualified. |
@@ -841,7 +841,7 @@ The following claims are forbidden until separately qualified:
 1. Work in the requested checkout and branch. Inspect `git status`, `git diff`, recent history, and the remote branch before editing; preserve unrelated work.
 2. Read `AGENTS.md`, `docs/README.md`, this handoff, `docs/phase_plan.md`, the issue ledger, and the relevant supporting contract or runbook.
 3. Treat `phase_plan.md` as the sole current roadmap/status/order authority. Use historical Stage T/S/V documents for recorded evidence only.
-4. For W3, continue with immutable primal criteria round 4: verify/commit its exact SHA, update and re-download the private input dataset, submit the next T4 kernel version, then retrieve and host-verify only that exact version. Preserve all prior diagnostic results and criteria.
+4. For W3, continue with exact kernel version `/5` under immutable primal criteria round 4. Retrieve and host-verify only that version's terminal artifacts against the remotely verified private dataset. Preserve all prior diagnostic results and criteria.
 5. Keep W4, formal centered-FD, gradient-backend qualification, optimizer update, and topology birth blocked until their explicit prerequisites in `phase_plan.md` pass.
 6. Distinguish contract, capability, numerical, target-physics, and benchmark evidence. Inspect exact immutable criteria, logs, outputs, and hashes for evidence work.
 7. For a documentation-only task, validate links and `git diff --check`; do not run a solver or Kaggle job. Follow repository `AGENTS.md` for any additional required validation.

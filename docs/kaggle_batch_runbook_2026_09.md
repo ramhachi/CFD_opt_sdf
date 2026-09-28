@@ -1794,12 +1794,46 @@ uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
   -p work/kaggle_w3_v16_dataset_round4_remote --force --unzip
 ```
 
-Before submitting a kernel, compare the complete file inventory and SHA-256
-values from the staged and re-downloaded directories (including the criteria,
-criteria sidecar, canonical NPZ, Fortran-order phi, dataset manifest and
-dataset metadata). Any mismatch is an infrastructure stop; do not submit until
-the registered bytes are present remotely. Push
+Before submitting a kernel, compare the complete uploaded data-file inventory
+and SHA-256 values from the staged and re-downloaded directories (criteria,
+criteria sidecar, canonical NPZ, Fortran-order phi and dataset manifest). The
+Kaggle metadata endpoint returns a server API envelope rather than the upload
+`dataset-metadata.json` bytes; compare its dataset ID, owner, slug, privacy,
+title and license fields semantically against the staged metadata. Any data
+file mismatch is an infrastructure stop; do not submit until the registered
+bytes are present remotely. Push
 `infra/kaggle/kernel_w3` with `--accelerator NvidiaTeslaT4 --timeout 7200`,
 record the exact version returned by Kaggle, and use only that version for
 status, logs, output and host verification. W3 remains unqualified before that
 exact host verification; W4 measurement and formal FD remain blocked.
+
+### W3 round 4 dataset version 4 verified; exact kernel version 5 submitted
+
+The private input dataset
+`ramhachi888/cfd-opt-sdf-v16-genesis-state` advanced to version 4 and reports
+`ready`. The staged and re-downloaded five-file data inventories matched
+exactly. All five SHA-256 values matched, and each payload listed in the
+dataset manifest passed independently. The canonical NPZ hash is
+`3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`; C-order
+phi hash is
+`45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`; and
+Fortran-order phi hash is
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`. The
+staged dataset manifest SHA-256 is
+`995d3e3aa931f28e8fb4dadcc9cb9e17fe8235d57190a188b75939505d4eacad`; the
+host dataset audit SHA-256 is
+`88733b10c8f62c58ab252e7982c89aa7222990d79a7f8e2a8aeb1cded19f13d0`.
+Kaggle metadata was verified semantically because its API returns a server
+metadata envelope, not the upload configuration file byte-for-byte.
+
+The exact W3 kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/5` was submitted for NvidiaTeslaT4 with
+a 7200-second timeout. Initial status is `KernelWorkerStatus.RUNNING`; captured
+status SHA-256 is
+`7b50a5e1f6646832eca3f3040bc89b9931761c92f83cb599be88fd6ca4487098`. Runner,
+Julia job, host verifier, Project and Manifest hashes equal their round-4
+criteria values and source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`.
+The run has no terminal output or host-verification verdict yet. Poll only
+version 5, preserve its exact status/log/output under
+`work/kaggle_w3_version5/`, then run the host verifier with round-4 criteria.
+Do not begin W4 or formal FD until this exact run passes host verification.
