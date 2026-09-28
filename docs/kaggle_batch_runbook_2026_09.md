@@ -1597,3 +1597,77 @@ round-4 logs/output or measurement has been recovered yet. Continue polling
 only `/7`; at terminal status, save the terminal status, exact logs and output
 to the same version-bound directory and verify them against round-4 criteria
 before interpreting the owner-lifetime hypothesis.
+
+### Owner-lifetime diagnostic version 7 exact recovery and host verification
+
+The exact private kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` completed. Its terminal
+status, exact-version logs, and output bundle are retained under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version7/`. Do not mix these with
+versions 5 or 6.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7 \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7 \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_version7
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version7 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 7 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle_status_terminal.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version7/kaggle.log \
+  --kernel-runner infra/kaggle/kernel_w3_cuda_diagnostic/runner.py
+```
+
+The verifier writes append-only
+[`version-7 primary diagnostic evidence`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json)
+(SHA-256
+`66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3`) and a
+matching `.sha256` sidecar. Host artifact verification and owner-lifetime
+diagnostic verification pass. A/C retain the backing `owner.grid.phi` WeakRef
+through both full GCs; B1/B2 clear it after registered forced GC and reproduce
+the same step-2 field/force divergence. B step-2 viscous and total raw force
+components are invalid JSON `null` observations, not finite force values; the
+host verifier records them only for this registered collected-owner phase and
+does not claim closure on those axes.
+
+The first host attempt failed before writing evidence because its verifier
+rejected these post-GC B step-2 nulls. The fixed verifier and a separate
+append-only record are covered by
+[`version-7 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json).
+Its SHA-256 is
+`53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c`.
+No measurement or criterion changed. Also preserve the exact runtime type
+string discrepancy: registered label
+`CuArray{Float32, 3, CUDA.DeviceMemory}` versus observed
+`CuArray{Float32, 3, CUDACore.DeviceMemory}`. The host verifier surfaces this
+and does not assume alias equivalence.
+
+Local correction checks were run with:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3_cuda_diagnostic.py tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m compileall src tests
+git diff --check
+```
+
+The focused slice passed 42 tests; compileall and diff checks passed. Full
+`pytest -q` reported 1,091 passed, 37 failed, and 4 skipped. The failures
+reference ignored historical `work/` artifacts (PQ checkpoints, Stage S/V
+cases, and logs) absent from this managed worktree; no W3/W4 diagnostic test
+failed.
+
+This result supports owner-lifetime sensitivity in the two-step diagnostic
+only. It does not prove the cause of W3 v4's full-horizon zero force history,
+authorize a production ownership change, or qualify W3 primal, physical
+profile, gradient, or any downstream optimization gate. All qualification
+flags remain false.

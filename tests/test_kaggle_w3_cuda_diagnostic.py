@@ -379,6 +379,31 @@ def test_owner_force_closure_and_registered_projections_are_host_recomputed():
         host._verify_owner_force(snapshot)
 
 
+def test_owner_post_gc_nonfinite_force_is_preserved_as_a_diagnostic_observation():
+    snapshot = {
+        "waterlily_pressure_force_raw": [-2.0, 0.5, 3.0],
+        "waterlily_viscous_force_raw": [None, None, None],
+        "waterlily_total_force_raw": [None, None, None],
+        "body_pressure_force": [2.0, -0.5, -3.0],
+        "body_viscous_force": [None, None, None],
+        "body_total_force": [None, None, None],
+        "registered_drag_plus_fx_body": None,
+        "registered_downforce_minus_fz_body": None,
+    }
+
+    with pytest.raises(ValueError, match="outside the registered post-GC"):
+        host._verify_owner_force(snapshot)
+
+    result = host._verify_owner_force(snapshot, allow_nonfinite_observation=True)
+
+    assert result["force_components_finite"] is False
+    assert result["nonfinite_raw_component_axes"] == {
+        "pressure": [], "viscous": [0, 1, 2], "total": [0, 1, 2],
+    }
+    assert result["component_closure_verified_axes"] == []
+    assert result["pressure_plus_viscous_residual"] == [None, None, None]
+
+
 def test_owner_a_c_controls_and_b_divergence_are_compared_by_geometry_field_force():
     criteria, _, _ = host.load_owner_lifetime_criteria()
     base = {
@@ -412,6 +437,27 @@ def test_owner_a_c_controls_and_b_divergence_are_compared_by_geometry_field_forc
     candidate["force_history"]["step1"]["waterlily_total_force_raw"][0] = 1.0
     divergence = host._owner_pair_divergences(retained, candidate, criteria)
     assert divergence == {"candidate_geometry", "simulation_fields", "force_history"}
+
+
+def test_owner_nonfinite_force_divergence_is_repeatable_between_b_replicates():
+    criteria, _, _ = host.load_owner_lifetime_criteria()
+    force_history = {
+        phase: {
+            "waterlily_pressure_force_raw": [1.0, 0.0, 0.0],
+            "waterlily_viscous_force_raw": [0.0, 0.0, 0.0],
+            "waterlily_total_force_raw": [1.0, 0.0, 0.0],
+        } for phase in ("step0_after_gc", "step1", "step2")
+    }
+    control = {"force_history": json.loads(json.dumps(force_history))}
+    b1 = {"force_history": json.loads(json.dumps(force_history))}
+    b2 = {"force_history": json.loads(json.dumps(force_history))}
+    for arm in (b1, b2):
+        arm["force_history"]["step2"]["waterlily_viscous_force_raw"] = [None] * 3
+        arm["force_history"]["step2"]["waterlily_total_force_raw"] = [None] * 3
+
+    assert host._owner_pair_divergences(control, b1, criteria) == {"force_history"}
+    assert host._owner_pair_divergences(control, b2, criteria) == {"force_history"}
+    assert host._owner_pair_divergences(b1, b2, criteria) == set()
 
 
 def test_owner_binary_bundle_hash_layout_and_field_order_are_verified(tmp_path):

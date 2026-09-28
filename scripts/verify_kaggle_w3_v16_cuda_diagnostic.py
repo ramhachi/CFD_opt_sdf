@@ -822,19 +822,75 @@ def _owner_rows_stats(rows: np.ndarray) -> dict[str, object]:
     }
 
 
-def _verify_owner_force(snapshot: dict) -> dict[str, object]:
-    pressure = np.asarray(snapshot["waterlily_pressure_force_raw"], dtype=np.float64)
-    viscous = np.asarray(snapshot["waterlily_viscous_force_raw"], dtype=np.float64)
-    total = np.asarray(snapshot["waterlily_total_force_raw"], dtype=np.float64)
-    require(pressure.shape == viscous.shape == total.shape == (3,),
-            "owner-lifetime force components must have three axes")
-    require(np.isfinite(np.concatenate((pressure, viscous, total))).all(),
-            "owner-lifetime force components are non-finite")
+def _verify_owner_force(snapshot: dict, *, allow_nonfinite_observation: bool = False
+                        ) -> dict[str, object]:
+    vector_names = (
+        "waterlily_pressure_force_raw", "waterlily_viscous_force_raw",
+        "waterlily_total_force_raw", "body_pressure_force",
+        "body_viscous_force", "body_total_force",
+    )
+    vectors = {}
+    null_axes = {}
+    for name in vector_names:
+        values = snapshot.get(name)
+        require(isinstance(values, list) and len(values) == 3,
+                f"owner-lifetime force vector must have three axes: {name}")
+        require(all(value is None or
+                    (isinstance(value, (int, float)) and not isinstance(value, bool)
+                     and math.isfinite(float(value))) for value in values),
+                f"owner-lifetime force vector has an unrecorded non-finite value: {name}")
+        null_axes[name] = [index for index, value in enumerate(values) if value is None]
+        vectors[name] = np.asarray(
+            [np.nan if value is None else float(value) for value in values],
+            dtype=np.float64)
+    pressure = vectors["waterlily_pressure_force_raw"]
+    viscous = vectors["waterlily_viscous_force_raw"]
+    total = vectors["waterlily_total_force_raw"]
+    body_pressure = vectors["body_pressure_force"]
+    body_viscous = vectors["body_viscous_force"]
+    body_total = vectors["body_total_force"]
+    nonfinite = any(null_axes.values())
+    if nonfinite:
+        require(allow_nonfinite_observation,
+                "owner-lifetime force components are non-finite outside the registered post-GC B step-2 observation")
+        for raw_name, body_name in (
+            ("waterlily_pressure_force_raw", "body_pressure_force"),
+            ("waterlily_viscous_force_raw", "body_viscous_force"),
+            ("waterlily_total_force_raw", "body_total_force"),
+        ):
+            raw = vectors[raw_name]
+            body = vectors[body_name]
+            finite = np.isfinite(raw)
+            require(null_axes[raw_name] == null_axes[body_name]
+                    and np.array_equal(body[finite], -raw[finite]),
+                    f"owner-lifetime force-on-body finite/null mask mismatch: {raw_name}")
+        closure_axes = np.isfinite(pressure) & np.isfinite(viscous) & np.isfinite(total)
+        require(np.array_equal(total[closure_axes],
+                               (pressure + viscous)[closure_axes]),
+                "owner-lifetime finite raw force components do not close")
+        drag = snapshot.get("registered_drag_plus_fx_body")
+        downforce = snapshot.get("registered_downforce_minus_fz_body")
+        require((drag is None if not np.isfinite(total[0]) else drag == -total[0])
+                and (downforce is None if not np.isfinite(total[2]) else downforce == total[2]),
+                "owner-lifetime non-finite force projection marker mismatch")
+        return {
+            "force_components_finite": False,
+            "nonfinite_observation_allowed": True,
+            "nonfinite_raw_component_axes": {
+                "pressure": null_axes["waterlily_pressure_force_raw"],
+                "viscous": null_axes["waterlily_viscous_force_raw"],
+                "total": null_axes["waterlily_total_force_raw"],
+            },
+            "component_closure_verified_axes": np.flatnonzero(closure_axes).tolist(),
+            "pressure_plus_viscous_residual": [
+                float(total[index] - pressure[index] - viscous[index])
+                if closure_axes[index] else None for index in range(3)],
+            "body_force_finite_entries_negated": True,
+            "drag_plus_fx_body": None if not np.isfinite(total[0]) else float(-total[0]),
+            "downforce_minus_fz_body": None if not np.isfinite(total[2]) else float(total[2]),
+        }
     require(np.array_equal(total, pressure + viscous),
             "owner-lifetime raw force components do not close")
-    body_pressure = np.asarray(snapshot["body_pressure_force"], dtype=np.float64)
-    body_viscous = np.asarray(snapshot["body_viscous_force"], dtype=np.float64)
-    body_total = np.asarray(snapshot["body_total_force"], dtype=np.float64)
     require(np.array_equal(body_pressure, -pressure)
             and np.array_equal(body_viscous, -viscous)
             and np.array_equal(body_total, -total),
@@ -843,6 +899,8 @@ def _verify_owner_force(snapshot: dict) -> dict[str, object]:
             and snapshot["registered_downforce_minus_fz_body"] == total[2],
             "owner-lifetime drag/downforce projection mismatch")
     return {
+        "force_components_finite": True,
+        "nonfinite_observation_allowed": False,
         "pressure_plus_viscous_residual": (total - pressure - viscous).tolist(),
         "body_force_negation_verified": True,
         "drag_plus_fx_body": float(-total[0]),
@@ -1022,9 +1080,22 @@ def _owner_pair_divergences(left: dict, right: dict, criteria: dict) -> set[str]
                 break
             for component in ("waterlily_pressure_force_raw", "waterlily_viscous_force_raw",
                               "waterlily_total_force_raw"):
-                if not _owner_close(np.asarray(left["force_history"][phase][component]),
-                                    np.asarray(right["force_history"][phase][component]),
-                                    atol_force, rtol_force):
+                a = left["force_history"][phase][component]
+                b = right["force_history"][phase][component]
+                if (not isinstance(a, list) or not isinstance(b, list)
+                        or len(a) != 3 or len(b) != 3):
+                    divergent.add("force_history")
+                    break
+                null_a = [value is None for value in a]
+                null_b = [value is None for value in b]
+                if null_a != null_b:
+                    divergent.add("force_history")
+                    break
+                finite_indices = [index for index, is_null in enumerate(null_a) if not is_null]
+                if finite_indices and not _owner_close(
+                        np.asarray([a[index] for index in finite_indices], dtype=np.float64),
+                        np.asarray([b[index] for index in finite_indices], dtype=np.float64),
+                        atol_force, rtol_force):
                     divergent.add("force_history")
                     break
             if "force_history" in divergent:
@@ -1214,7 +1285,14 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
                     f"owner-lifetime completed arm has failure stage: {arm_id}")
             force_checks = {}
             for phase, snapshot in report["force_history"].items():
-                force_checks[phase] = _verify_owner_force(snapshot)
+                allow_nonfinite = (
+                    arm_id.startswith("B") and phase == "step2"
+                    and ownership.get("owner_collected_during_forced_gc") is True
+                    and ownership_check is not None
+                    and ownership_check["registered_lifetime_contract_satisfied"]
+                )
+                force_checks[phase] = _verify_owner_force(
+                    snapshot, allow_nonfinite_observation=allow_nonfinite)
             probe_checks = _verify_owner_probe_sets(
                 report, criteria, flow_origin, criteria["fixture"]["spacing_m"])
             geometry_checks, arrays = _verify_owner_arm_artifacts(
@@ -1309,6 +1387,12 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
         }
         for arm_id, item in arm_data.items()
     }
+    observed_target_types = {
+        arm_id: item.get("report", {}).get("ownership", {}).get("weakref_target_type")
+        for arm_id, item in arm_data.items()
+    }
+    expected_target_type_label = criteria["execution"].get("weakref_target_type")
+    observed_target_type_set = set(observed_target_types.values())
     return {
         "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
         "criteria_sha256": criteria_sha,
@@ -1326,6 +1410,19 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
         "divergence_classes_by_unrooted_replicate": {
             key: sorted(value) for key, value in b_classes.items()},
         "same_divergence_class_in_both_replicates": sorted(common_divergence),
+        "weakref_target_type_observation": {
+            "registered_type_label": expected_target_type_label,
+            "observed_type_by_arm": observed_target_types,
+            "all_arms_report_same_runtime_type": (
+                len(observed_target_type_set) == 1 and None not in observed_target_type_set),
+            "observed_type_matches_registered_label": (
+                len(observed_target_type_set) == 1
+                and observed_target_type_set == {expected_target_type_label}),
+            "interpretation": (
+                "Record exact runtime type strings; a display-path mismatch is surfaced and is not "
+                "silently normalized or treated as proof of type alias equivalence."
+            ),
+        },
         "interpretation": {
             "strongly_supported": "Owner collection was bracketed by forced GC, both B replicates share a post-GC divergence/error class, and A/C controls agree.",
             "weakened": "The registered forced-GC contrast did not reproducibly change geometry, fields, or force, or the B owners remained retained.",

@@ -137,7 +137,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified; exact owner-lifetime diagnostic version 7 is running | The production W3 path has not passed its registered primal gates. Version 6 remains the latest measurement and is not causal evidence. Round 4 now weak-references the backing `owner.grid.phi` `CuArray`; version 7's first captured status is `RUNNING` and no round-4 GPU measurement exists. Retrieve only exact version 7's terminal status/logs/output and host-verify them before interpreting causality. |
+| W3 v16 primal | Unqualified; owner-lifetime diagnostic version 7 is complete and host-verified | Round 4 supports owner-lifetime sensitivity in a two-step fixture, but does not establish the cause of W3 v4's full-horizon all-zero force history. Keep production ownership and W3 primal unqualified. The captured type string differs from the immutable criteria's display-path label and is not normalized as an alias. See the append-only version-7 result and host-correction evidence below. |
 | W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
 | Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
@@ -3567,3 +3567,65 @@ qualification flag.
 - **Open:** continue checking only exact Kaggle version 7; when terminal,
   retrieve its exact logs/output and run host verification before making any
   causal interpretation.
+
+### 2026-09-28 owner-lifetime diagnostic version 7 complete; host-verified
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` reached
+  `KernelWorkerStatus.COMPLETE`. Version-bound terminal status SHA-256 is
+  `15530f04c1915580ac9ef78acb78a48b4c5dff418243add0aa9cd2620920f27a`; exact
+  Kaggle log SHA-256 is
+  `a8e9b9481de43bcdfd246e33885fa3aea9ce1d02c396fba1d35c07540e4eab88`; output
+  `sha256.json` SHA-256 is
+  `5a44a351600f56226cf07234a4ce6eb9ac8ccf426c3b2ebd98f22f2603d16adb`.
+  The run performed four isolated arms (A, C, B1, B2), each with two primal
+  steps and 172,800-point geometry scans, on a Tesla T4 with Julia 1.12.6,
+  CUDA.jl 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, and WaterLily 1.8.0.
+- **Verified:** the host verifier independently checked input/source/runtime
+  identity and every output artifact. Immutable criteria SHA-256 is
+  `58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; owner
+  job SHA-256 is
+  `3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`; runner
+  SHA-256 is
+  `5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710`; host
+  verifier SHA-256 is
+  `20484ef7d1c885d3f163ae721292181264085f13889dca94a722f2178f97ad68`. The
+  primary append-only result is
+  [`version-7 diagnostic evidence`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json),
+  SHA-256
+  `66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3`.
+  After the host correction, focused W3/W4/diagnostic tests pass 42/42 and
+  `python -m compileall src tests` passes. Repository-wide `pytest -q` reports
+  1,091 passed, 37 failed, and 4 skipped; the 37 failures read ignored
+  historical `work/` case, checkpoint, or log artifacts absent from this
+  managed checkout. `git diff --check` passes.
+- **Interpretation:** A/C retained the direct `owner.grid.phi` backing-array
+  WeakRef through both full GCs and agreed exactly in fields and force through
+  step2. B1/B2 were alive immediately before the registered forced-GC bracket,
+  cleared after both collections, agreed with controls through step1, then
+  reproduced the same simulation-field and force-history divergence class at
+  step2. Their viscous and total raw force components were JSON `null` on all
+  axes; these values remain invalid observations, so no force closure is
+  claimed on those axes. The result strongly supports owner-lifetime
+  sensitivity in this two-step fixture but does not explain W3 v4's complete
+  3,841-step all-zero force history.
+- **Host correction:** the initial verifier attempt stopped because it rejected
+  the registered post-GC B-step2 null force observations and wrote no result
+  evidence. The correction permits those nulls only under the measured B-step2
+  owner-collection bracket and checks null masks plus finite components. The
+  append-only correction record is
+  [`version-7 host correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json),
+  SHA-256
+  `53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c`.
+- **Identity limitation:** the registered type label is
+  `CuArray{Float32, 3, CUDA.DeviceMemory}`, while every arm reports the exact
+  runtime string `CuArray{Float32, 3, CUDACore.DeviceMemory}`. The primary
+  verifier records the mismatch and assumes no alias equivalence. The arms
+  still report the same observed runtime type; resolving the label is open.
+- **Qualified:** nothing new. The W3 v16 primal, physical profile, grid/domain
+  response, gradient, CPU/GPU reverse, topology, and shape update remain
+  unqualified; `shape_update_allowed=false`. No production owner-lifetime fix
+  is authorized by this diagnostic.
+- **Open:** determine the runtime type-label relationship and obtain evidence
+  for the full-horizon W3 v4 failure before applying any production ownership
+  change. W4 remains blocked on a passing host-verified W3 primal.
