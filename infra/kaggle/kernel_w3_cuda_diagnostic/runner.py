@@ -21,10 +21,11 @@ KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic"
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 32
-# These two identity pins are filled from the reviewed implementation commit
-# before the private diagnostic kernel is submitted.
-DIAGNOSTIC_SOURCE_COMMIT = "ca67673ccff69a0b79243c461f82158ad8e61522"
+# Pin the reviewed diagnostic source before submitting the private kernel.
+DIAGNOSTIC_SOURCE_COMMIT = "885ae7558012da43e6310e2ffb04db4230150f5b"
 DIAGNOSTIC_JOB_SHA256 = "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
+OWNER_LIFETIME_JOB_SHA256 = "7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea"
+OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json"
 W3_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
 W3_SOURCE_COMMIT = "5e985fa3395a01228c18910d96e09ecbc5497628"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
@@ -178,7 +179,115 @@ def fetch_source(base: Path, criteria: dict) -> Path:
     diagnostic_job = source / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
     if sha256(diagnostic_job) != DIAGNOSTIC_JOB_SHA256:
         raise RuntimeError("diagnostic Julia job SHA mismatch")
+    owner_job = source / "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl"
+    owner_criteria = source / OWNER_LIFETIME_CRITERIA_PATH
+    owner_sidecar = owner_criteria.with_suffix(owner_criteria.suffix + ".sha256")
+    if not owner_job.is_file() or sha256(owner_job) != OWNER_LIFETIME_JOB_SHA256:
+        raise RuntimeError("owner-lifetime Julia job SHA mismatch")
+    if not owner_criteria.is_file() or not owner_sidecar.is_file():
+        raise RuntimeError("owner-lifetime criteria or sidecar missing")
+    owner_criteria_sha = sha256(owner_criteria)
+    if owner_sidecar.read_text().strip() != owner_criteria_sha:
+        raise RuntimeError("owner-lifetime criteria sidecar mismatch")
+    preregistration = json.loads(owner_criteria.read_text())
+    if preregistration.get("immutable") is not True or preregistration.get("registered_before_computation") is not True:
+        raise RuntimeError("owner-lifetime criteria are not immutable preregistration")
+    if preregistration.get("inputs", {}).get("owner_lifetime_job", {}).get("sha256") != OWNER_LIFETIME_JOB_SHA256:
+        raise RuntimeError("owner-lifetime criteria/job binding mismatch")
+    if preregistration.get("inputs", {}).get("w3_criteria_sha256") != W3_CRITERIA_SHA256:
+        raise RuntimeError("owner-lifetime criteria/W3 round-3 binding mismatch")
     return source
+
+
+def classify_owner_arm(arm_id: str, returncode: int, report: dict,
+                      last_stage: str | None) -> dict:
+    ownership = report.get("ownership", {})
+    collected = ownership.get("owner_collected_during_forced_gc") is True
+    post_gc_stages = {
+        "fixed_probes_after_gc_started", "fixed_probes_after_gc_completed",
+        "full_grid_geometry_started", "full_grid_geometry_completed",
+        "measure_after_gc_started", "measure_after_gc_completed",
+        "primal_step_1_started", "primal_step_1_completed",
+        "primal_step_2_started", "primal_step_2_completed", "arm_completed",
+    }
+    hazard = arm_id.startswith("B") and collected and last_stage in post_gc_stages
+    completed = returncode == 0 and report.get("status") == "completed"
+    expected = hazard and (returncode != 0 or report.get("status") == "operation_error")
+    return {
+        "owner_collected_during_forced_gc": collected,
+        "expected_lifetime_hazard": expected,
+        "julia_caught_operation_error": report.get("status") == "operation_error",
+        "process_level_error": returncode != 0,
+        "acceptable": completed or expected,
+        "classification": "expected_unrooted_post_gc_hazard" if expected
+            else "completed" if completed else "unexpected_arm_failure",
+    }
+
+
+def run_owner_lifetime_arms(julia: Path, project: Path, source: Path,
+                            raw_phi_path: Path, env: dict[str, str],
+                            runner_sha: str, criteria_sha: str,
+                            criteria_sidecar_sha: str) -> dict:
+    job = source / "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl"
+    arm_rows = []
+    unexpected = []
+    for arm_id in ("A", "C", "B1", "B2"):
+        log_path = OUT / f"owner_lifetime_{arm_id}.log"
+        arm_env = env | {
+            "W3_OWNER_ARM_ID": arm_id,
+            "W3_OWNER_CRITERIA_SHA256": criteria_sha,
+            "W3_OWNER_CRITERIA_SIDECAR_SHA256": criteria_sidecar_sha,
+            "W3_OWNER_JOB_SHA256": OWNER_LIFETIME_JOB_SHA256,
+        }
+        args = [str(julia), "--startup-file=no", f"--project={project}",
+                str(job), str(raw_phi_path), str(OUT), arm_id]
+        print("RUN OWNER ARM", arm_id, flush=True)
+        with log_path.open("w") as handle:
+            completed = subprocess.run(args, env=arm_env, stdout=handle,
+                                       stderr=subprocess.STDOUT, timeout=1800,
+                                       check=False)
+        report_path = OUT / f"w3_v16_cuda_owner_lifetime_{arm_id}.json"
+        progress_path = OUT / f"w3_v16_cuda_owner_progress_{arm_id}.json"
+        report = json.loads(report_path.read_text()) if report_path.is_file() else {}
+        progress = json.loads(progress_path.read_text()) if progress_path.is_file() else {}
+        last_stage = report.get("last_stage", progress.get("last_stage"))
+        classification = classify_owner_arm(
+            arm_id, completed.returncode, report or progress, last_stage)
+        acceptable = classification["acceptable"]
+        if not acceptable:
+            unexpected.append(arm_id)
+        row = {
+            "arm_id": arm_id,
+            "process_returncode": completed.returncode,
+            "report_path": report_path.name if report_path.is_file() else None,
+            "report_sha256": sha256(report_path) if report_path.is_file() else None,
+            "progress_path": progress_path.name if progress_path.is_file() else None,
+            "progress_sha256": sha256(progress_path) if progress_path.is_file() else None,
+            "log_path": log_path.name,
+            "log_sha256": sha256(log_path),
+            "last_stage": last_stage,
+            **classification,
+        }
+        write_json(OUT / f"owner_lifetime_{arm_id}_runner.json", row)
+        arm_rows.append(row)
+    execution = {
+        "evidence_type": "diagnostic_only",
+        "criteria_path": OWNER_LIFETIME_CRITERIA_PATH,
+        "criteria_sha256": criteria_sha,
+        "criteria_sidecar_sha256": criteria_sidecar_sha,
+        "source_commit": DIAGNOSTIC_SOURCE_COMMIT,
+        "julia_job_sha256": OWNER_LIFETIME_JOB_SHA256,
+        "runner_sha256": runner_sha,
+        "arm_order": ["A", "C", "B1", "B2"],
+        "arms": arm_rows,
+        "unexpected_arm_failures": unexpected,
+        "status": "captured" if not unexpected else "arm_failure",
+        "qualification_evidence": False,
+    }
+    write_json(OUT / "owner_lifetime_execution.json", execution)
+    if unexpected:
+        raise RuntimeError(f"unexpected owner-lifetime arm failure(s): {unexpected}")
+    return execution
 
 
 def install_julia(base: Path) -> Path:
@@ -214,6 +323,10 @@ def main() -> None:
         base = Path(temp)
         source = fetch_source(base, criteria)
         julia = install_julia(base)
+        owner_criteria_path = source / OWNER_LIFETIME_CRITERIA_PATH
+        owner_criteria_sha = sha256(owner_criteria_path)
+        owner_criteria_sidecar_sha = sha256(
+            owner_criteria_path.with_suffix(owner_criteria_path.suffix + ".sha256"))
         env = os.environ.copy()
         env.update({
             "JULIA_NUM_THREADS": "1",
@@ -234,6 +347,9 @@ def main() -> None:
             "W3_DIAGNOSTIC_STATE_SHA256": criteria["geometry"]["state_sha256"],
             "W3_DIAGNOSTIC_SOURCE_SURFACE_SHA256": criteria["geometry"]["source_surface_sha256"],
             "W3_DIAGNOSTIC_DESIGN_DOMAIN_SHA256": criteria["geometry"]["design_domain_sha256"],
+            "W3_OWNER_CRITERIA_SHA256": owner_criteria_sha,
+            "W3_OWNER_CRITERIA_SIDECAR_SHA256": owner_criteria_sidecar_sha,
+            "W3_OWNER_JOB_SHA256": OWNER_LIFETIME_JOB_SHA256,
         })
         project = source / "julia/CFDSDFWaterLilyT4"
         command([str(julia), "--startup-file=no", f"--project={project}", "-e",
@@ -279,6 +395,10 @@ def main() -> None:
             "python": platform.python_version(),
             "input_mount_inventory": input_inventory,
             "cuda_smoke_sha256": sha256(OUT / "julia_smoke.log"),
+            "owner_lifetime_criteria_sha256": owner_criteria_sha,
+            "owner_lifetime_criteria_sidecar_sha256": owner_criteria_sidecar_sha,
+            "owner_lifetime_source_commit": DIAGNOSTIC_SOURCE_COMMIT,
+            "owner_lifetime_job_sha256": OWNER_LIFETIME_JOB_SHA256,
         })
         job = source / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
         command([str(julia), "--startup-file=no", f"--project={project}", str(job),
@@ -310,6 +430,8 @@ def main() -> None:
     report["runtime_identity"]["selected_gpu_uuid"] = selected_uuid
     report["runtime_identity"]["nvidia_driver_version"] = gpu_rows[0].split(",")[-1].strip()
     write_json(OUT / "runtime_identity.json", report["runtime_identity"])
+    run_owner_lifetime_arms(julia, project, source, raw_phi_path, env, runner_sha,
+                            owner_criteria_sha, owner_criteria_sidecar_sha)
     manifest = {
         path.name: sha256(path) for path in sorted(OUT.iterdir())
         if path.is_file() and path.name not in {"sha256.json", "DONE"}

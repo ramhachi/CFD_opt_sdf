@@ -21,6 +21,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json"
 DIAGNOSTIC_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
+OWNER_LIFETIME_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl"
+OWNER_LIFETIME_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json"
 DIAGNOSTIC_RUNNER = ROOT / "infra/kaggle/kernel_w3_cuda_diagnostic/runner.py"
 STAGE_NAME = "w3_v16_cuda_diagnostic"
 EXPECTED_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
@@ -32,10 +34,18 @@ EXPECTED_W2B_CRITERIA_SHA256 = "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd0
 BODY_NAMES = ("candidate", "ground", "combined")
 BACKENDS = ("cpu", "gpu")
 MEASURE_COMPONENTS = ("d", "nx", "ny", "nz", "vx", "vy", "vz")
+OWNER_ARM_IDS = ("A", "C", "B1", "B2")
+OWNER_GEOMETRY_ARRAYS = ("candidate_cpu", "candidate_cuda", "combined_cpu", "combined_cuda")
+OWNER_FIELD_ARRAYS = ("u", "p", "sigma", "mu0", "body_velocity")
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def require_append_only_evidence_target(target: Path, sidecar: Path) -> None:
+    require(not target.exists() and not sidecar.exists(),
+            "append-only diagnostic evidence path already exists")
 
 
 def require(condition: bool, message: str) -> None:
@@ -621,6 +631,663 @@ def verify_force_snapshots(report: dict) -> dict[str, object]:
     return result
 
 
+def _runner_pin(name: str) -> str:
+    match = re.search(rf'^{re.escape(name)} = "([^"]+)"$',
+                      DIAGNOSTIC_RUNNER.read_text(), re.MULTILINE)
+    require(match is not None, f"diagnostic runner pin missing: {name}")
+    return match.group(1)
+
+
+def load_owner_lifetime_criteria() -> tuple[dict, str, str]:
+    sidecar = OWNER_LIFETIME_CRITERIA_PATH.with_suffix(
+        OWNER_LIFETIME_CRITERIA_PATH.suffix + ".sha256")
+    require(OWNER_LIFETIME_CRITERIA_PATH.is_file() and sidecar.is_file(),
+            "owner-lifetime criteria or sidecar missing")
+    criteria_sha = sha256(OWNER_LIFETIME_CRITERIA_PATH)
+    require(sidecar.read_text().strip() == criteria_sha,
+            "owner-lifetime criteria sidecar mismatch")
+    criteria = json.loads(OWNER_LIFETIME_CRITERIA_PATH.read_text())
+    require(criteria.get("immutable") is True
+            and criteria.get("registered_before_computation") is True,
+            "owner-lifetime criteria are not immutable preregistration")
+    source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT")
+    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256")
+    require(criteria["inputs"]["owner_lifetime_job"]["sha256"] == expected_job_sha,
+            "owner-lifetime criteria/runner job pin mismatch")
+    require(criteria["inputs"]["w3_criteria_sha256"] == EXPECTED_CRITERIA_SHA256,
+            "owner-lifetime criteria/W3 round-3 binding mismatch")
+    for path, expected in (
+        (OWNER_LIFETIME_JOB, expected_job_sha),
+        (OWNER_LIFETIME_CRITERIA_PATH, criteria_sha),
+    ):
+        content = subprocess.check_output(
+            ["git", "-C", str(ROOT), "show", f"{source_commit}:{path.relative_to(ROOT)}"])
+        require(hashlib.sha256(content).hexdigest() == expected,
+                f"owner-lifetime source commit content mismatch: {path.name}")
+        require(content == path.read_bytes(),
+                f"local owner-lifetime source differs from pinned commit: {path.name}")
+    return criteria, criteria_sha, sha256(sidecar)
+
+
+def _owner_float_tolerances(criteria: dict, key: str) -> tuple[float, float]:
+    values = re.findall(r"(?<![A-Za-z])(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?",
+                        criteria["comparison"][key], re.IGNORECASE)
+    require(len(values) == 2, f"owner-lifetime tolerance syntax changed: {key}")
+    return tuple(float(value) for value in values)
+
+
+def _owner_close(left: np.ndarray, right: np.ndarray, atol: float,
+                 rtol: float) -> bool:
+    return left.shape == right.shape and bool(np.all(
+        np.abs(left.astype(np.float64) - right.astype(np.float64))
+        <= atol + rtol * np.maximum(np.abs(left), np.abs(right))))
+
+
+def verify_owner_ownership_schema(arm_id: str, ownership: dict) -> dict:
+    strategies = {
+        "A": "GC.@preserve owner",
+        "C": "OwnedV16Diagnostic owns owner,bodies,simulation",
+        "B1": "helper returns bodies,simulation,WeakRef only",
+        "B2": "helper returns bodies,simulation,WeakRef only",
+    }
+    require(arm_id in strategies and ownership.get("strategy") == strategies[arm_id]
+            and ownership.get("weakref_created") is True,
+            f"owner-lifetime ownership strategy schema mismatch: {arm_id}")
+    require(ownership.get("strong_owner_reference_escaped_helper")
+            is (arm_id in ("A", "C")),
+            f"owner-lifetime strong-owner schema mismatch: {arm_id}")
+    before = ownership.get("weakref_before_gc")
+    after = ownership.get("weakref_after_gc")
+    states = ownership.get("weakref_after_each_gc", [])
+    require(before in ("alive", "cleared") and after in ("alive", "cleared")
+            and all(state in ("alive", "cleared") for state in states),
+            f"owner-lifetime WeakRef state schema mismatch: {arm_id}")
+    calls = ownership.get("full_gc_calls", 0)
+    require(isinstance(calls, int) and 0 <= calls <= 2 and len(states) == calls,
+            f"owner-lifetime forced-GC observation schema mismatch: {arm_id}")
+    if calls == 2:
+        require(ownership.get("cuda_synchronize_before_gc") is True
+                and ownership.get("cuda_synchronize_after_gc") is True,
+                f"owner-lifetime CUDA synchronization record mismatch: {arm_id}")
+        collected = before == "alive" and after == "cleared"
+        require(ownership.get("owner_collected_during_forced_gc") is collected,
+                f"owner-lifetime owner-collection boolean mismatch: {arm_id}")
+        if arm_id in ("A", "C"):
+            require(after == "alive" and states == ["alive", "alive"],
+                    f"retained owner did not survive full GC: {arm_id}")
+    return {
+        "strategy": strategies[arm_id],
+        "weakref_before_gc": before,
+        "weakref_after_each_gc": states,
+        "weakref_after_gc": after,
+        "owner_collected_during_forced_gc": ownership.get("owner_collected_during_forced_gc"),
+        "forced_gc_calls": calls,
+    }
+
+
+def _owner_read_bundle(folder: Path, spec: dict, names: tuple[str, ...],
+                       expected_digest: str) -> dict[str, np.ndarray]:
+    path = folder / spec["artifact"]
+    require(path.is_file() and path.name == spec["artifact"],
+            f"owner-lifetime artifact missing: {spec['artifact']}")
+    require(sha256(path) == expected_digest == spec["artifact_sha256"],
+            f"owner-lifetime artifact SHA mismatch: {path.name}")
+    layout = spec.get("layout", {})
+    require(set(layout) == set(names), f"owner-lifetime artifact array inventory mismatch: {path.name}")
+    raw = path.read_bytes()
+    arrays = {}
+    ranges = []
+    for name in names:
+        entry = layout[name]
+        shape = tuple(entry["shape"])
+        offset = entry["offset_bytes"]
+        nbytes = entry["nbytes"]
+        require(entry["dtype"] == "<f4" and entry["order"] == "F"
+                and nbytes == math.prod(shape) * 4,
+                f"owner-lifetime artifact layout mismatch: {name}")
+        chunk = raw[offset:offset + nbytes]
+        require(len(chunk) == nbytes and sha256_bytes(chunk) == entry["sha256"],
+                f"owner-lifetime array SHA mismatch: {name}")
+        arrays[name] = np.frombuffer(chunk, dtype="<f4").reshape(shape, order="F").copy()
+        ranges.append((offset, offset + nbytes))
+    ranges.sort()
+    require(ranges and ranges[0][0] == 0 and ranges[-1][1] == len(raw)
+            and all(ranges[index][1] == ranges[index + 1][0]
+                    for index in range(len(ranges) - 1)),
+            f"owner-lifetime artifact has gaps or trailing bytes: {path.name}")
+    return arrays
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def _owner_rows_stats(rows: np.ndarray) -> dict[str, object]:
+    distance = rows[:, 0]
+    norms = np.linalg.norm(rows[:, 1:4].astype(np.float64), axis=1)
+    support = np.abs(distance) <= 1.0
+    return {
+        "sample_count": len(distance),
+        "finite_value_count": int(np.isfinite(distance).sum()),
+        "negative_distance_count": int((distance < 0).sum()),
+        "support_abs_d_le_1_count": int(support.sum()),
+        "bdim_abs_d_le_3_count": int((np.abs(distance) <= 3.0).sum()),
+        "min_distance_solver_units": float(distance.min()),
+        "max_distance_solver_units": float(distance.max()),
+        "nonzero_normal_count": int((norms > 0).sum()),
+        "normal_magnitude_min": float(norms.min()),
+        "normal_magnitude_max": float(norms.max()),
+        "normal_magnitude_mean": float(norms.mean()),
+        "all_values_finite": bool(np.isfinite(rows).all()),
+    }
+
+
+def _verify_owner_force(snapshot: dict) -> dict[str, object]:
+    pressure = np.asarray(snapshot["waterlily_pressure_force_raw"], dtype=np.float64)
+    viscous = np.asarray(snapshot["waterlily_viscous_force_raw"], dtype=np.float64)
+    total = np.asarray(snapshot["waterlily_total_force_raw"], dtype=np.float64)
+    require(pressure.shape == viscous.shape == total.shape == (3,),
+            "owner-lifetime force components must have three axes")
+    require(np.isfinite(np.concatenate((pressure, viscous, total))).all(),
+            "owner-lifetime force components are non-finite")
+    require(np.array_equal(total, pressure + viscous),
+            "owner-lifetime raw force components do not close")
+    body_pressure = np.asarray(snapshot["body_pressure_force"], dtype=np.float64)
+    body_viscous = np.asarray(snapshot["body_viscous_force"], dtype=np.float64)
+    body_total = np.asarray(snapshot["body_total_force"], dtype=np.float64)
+    require(np.array_equal(body_pressure, -pressure)
+            and np.array_equal(body_viscous, -viscous)
+            and np.array_equal(body_total, -total),
+            "owner-lifetime force-on-body negation mismatch")
+    require(snapshot["registered_drag_plus_fx_body"] == -total[0]
+            and snapshot["registered_downforce_minus_fz_body"] == total[2],
+            "owner-lifetime drag/downforce projection mismatch")
+    return {
+        "pressure_plus_viscous_residual": (total - pressure - viscous).tolist(),
+        "body_force_negation_verified": True,
+        "drag_plus_fx_body": float(-total[0]),
+        "downforce_minus_fz_body": float(total[2]),
+    }
+
+
+def _verify_owner_probe_sets(report: dict, criteria: dict,
+                             flow_origin: np.ndarray,
+                             spacing: float) -> dict[str, int]:
+    checked = {}
+    expected_names = {
+        "candidate_solid_min_phi", "candidate_surface_min_abs_phi",
+        "candidate_nearest_positive_phi", "registered_world_center",
+        "outside_x_low", "outside_x_high", "outside_y_low", "outside_y_high",
+        "outside_z_low", "outside_z_high",
+    }
+    for phase in ("fixed_probes_before_gc", "fixed_probes_after_gc"):
+        rows = report.get(phase)
+        if isinstance(rows, dict) and "skipped" in rows:
+            checked[phase] = 0
+            continue
+        require(isinstance(rows, dict) and set(rows) == {"candidate", "combined"},
+                f"owner-lifetime {phase} candidate/combined probes missing")
+        for body in ("candidate", "combined"):
+            records = rows[body]
+            require({row["name"] for row in records} == expected_names,
+                    f"owner-lifetime {phase}/{body} probe inventory mismatch")
+            for row in records:
+                world = np.asarray(row["world_m"], dtype=np.float32)
+                expected_solver = ((world - flow_origin.astype(np.float32))
+                                   / np.float32(spacing)).astype(np.float32)
+                require(np.allclose(row["flow_solver"], expected_solver,
+                                    rtol=0, atol=1e-5),
+                        f"owner-lifetime world/flow map mismatch: {phase}/{body}/{row['name']}")
+                for key in ("cpu_measure", "cuda_measure"):
+                    measure = np.asarray(row[key], dtype=np.float32)
+                    require(measure.shape == (7,) and np.isfinite(measure).all(),
+                            f"owner-lifetime probe measure invalid: {phase}/{body}/{row['name']}")
+        checked[phase] = sum(len(rows[body]) for body in ("candidate", "combined"))
+    return checked
+
+
+def _verify_owner_arm_artifacts(folder: Path, report: dict, manifest: dict,
+                                phi: np.ndarray, lattice: dict,
+                                criteria: dict) -> tuple[dict, dict]:
+    geometry_spec = report.get("full_grid_geometry")
+    field_spec = report.get("simulation_fields_artifact")
+    require(isinstance(geometry_spec, dict) and isinstance(field_spec, dict),
+            "completed owner-lifetime arm is missing geometry or field artifacts")
+    geometry_arrays = _owner_read_bundle(
+        folder, geometry_spec, OWNER_GEOMETRY_ARRAYS,
+        manifest.get(geometry_spec["artifact"], ""))
+    field_arrays = _owner_read_bundle(
+        folder, field_spec, OWNER_FIELD_ARRAYS,
+        manifest.get(field_spec["artifact"], ""))
+    require(all(np.isfinite(array).all() for array in geometry_arrays.values()),
+            "owner-lifetime geometry artifact contains non-finite values")
+    require(geometry_spec["flow_dims"] == criteria["fixture"]["flow_dims"]
+            and geometry_spec["sample_count"] == math.prod(criteria["fixture"]["flow_dims"]),
+            "owner-lifetime flow grid identity mismatch")
+    geometry_checks = {}
+    reported_geometry = geometry_spec["candidate_and_combined"]
+    for key, array_name in (("candidate_cpu", "candidate_cpu"),
+                            ("candidate_cuda", "candidate_cuda"),
+                            ("combined_cpu", "combined_cpu"),
+                            ("combined_cuda", "combined_cuda")):
+        rows = geometry_arrays[array_name]
+        require(rows.shape == (geometry_spec["sample_count"], 7),
+                f"owner-lifetime geometry array shape mismatch: {array_name}")
+        body, backend = key.split("_")
+        stats = _owner_rows_stats(rows)
+        for stat_key, value in stats.items():
+            reported = reported_geometry[f"{body}_{backend}"][stat_key]
+            if isinstance(value, float):
+                require(math.isclose(value, float(reported), rel_tol=2e-6, abs_tol=2e-6),
+                        f"owner-lifetime host geometry statistic mismatch: {key}/{stat_key}")
+            else:
+                require(value == reported,
+                        f"owner-lifetime host geometry statistic mismatch: {key}/{stat_key}")
+        geometry_checks[key] = stats
+    lattice_rows = lattice["raw"]
+    require(len(lattice_rows) == geometry_spec["sample_count"],
+            "owner-lifetime geometry lattice differs from registered base flow lattice")
+    cpu_candidate = geometry_arrays["candidate_cpu"]
+    cuda_candidate = geometry_arrays["candidate_cuda"]
+    normal_error = np.linalg.norm(cpu_candidate[:, 1:4] - cuda_candidate[:, 1:4], axis=1)
+    normal_summary = {
+        "max_normal_vector_error": float(normal_error.max()),
+        "max_distance_error_m": float(
+            np.max(np.abs(cpu_candidate[:, 0] - cuda_candidate[:, 0])) * criteria["fixture"]["spacing_m"]),
+    }
+    require(math.isclose(normal_summary["max_normal_vector_error"],
+                         reported_geometry["candidate_cpu_cuda_max_normal_vector_error"],
+                         rel_tol=2e-5, abs_tol=2e-5),
+            "owner-lifetime host normal-discrepancy recomputation mismatch")
+    require(math.isclose(normal_summary["max_distance_error_m"],
+                         reported_geometry["candidate_cpu_cuda_max_distance_error_m"],
+                         rel_tol=2e-5, abs_tol=2e-7),
+            "owner-lifetime host distance-discrepancy recomputation mismatch")
+    examples = reported_geometry["candidate_cpu_cuda_normal_error_examples"]
+    require(len(examples) == criteria["execution"]["normal_diagnostic_top_n"],
+            "owner-lifetime normal discrepancy examples missing")
+    flow_origin = np.asarray(criteria["fixture"]["flow_origin_m"], dtype=np.float32)
+    spacing32 = np.float32(criteria["fixture"]["spacing_m"])
+    for example in examples:
+        solver = np.asarray(example["flow_solver"], dtype=np.float32)
+        matches = np.flatnonzero(np.all(
+            np.isclose(lattice_rows[:, 3:6].astype(np.float32), solver, rtol=0, atol=1e-6), axis=1))
+        require(len(matches) == 1, "owner-lifetime normal example is not on the registered flow lattice")
+        index = int(matches[0])
+        world = (flow_origin + spacing32 * solver).astype(np.float32)
+        require(np.allclose(example["world_m"], world, rtol=0, atol=2e-6),
+                "owner-lifetime normal example world coordinate mismatch")
+        delta = float(normal_error[index])
+        require(math.isclose(delta, example["normal_vector_error"], rel_tol=2e-5, abs_tol=2e-5)
+                and np.allclose(example["cpu_normal"], cpu_candidate[index, 1:4], rtol=0, atol=2e-6)
+                and np.allclose(example["cuda_normal"], cuda_candidate[index, 1:4], rtol=0, atol=2e-6),
+                "owner-lifetime normal example does not match binary geometry artifact")
+        coord = ((world - np.asarray(criteria["inputs"]["canonical_phi_origin_m"], dtype=np.float32))
+                 / spacing32)
+        if np.all((coord >= 0) & (coord <= np.asarray(phi.shape, dtype=np.float32) - 1)):
+            base = np.minimum(np.floor(coord).astype(int), np.asarray(phi.shape) - 2)
+            expected_patch = phi[base[0]:base[0] + 2, base[1]:base[1] + 2,
+                                 base[2]:base[2] + 2].tolist()
+            require(example["interpolation_cell_1based"] == (base + 1).tolist()
+                    and np.allclose(example["local_phi_neighborhood_2x2x2"],
+                                    expected_patch, rtol=0, atol=0),
+                    "owner-lifetime normal example local phi cell mismatch")
+    field_checks = {}
+    final_fields = report["simulation_fields"]["after_step2"]
+    for name, array in field_arrays.items():
+        stats = {
+            "shape": list(array.shape),
+            "finite_count": int(np.isfinite(array).sum()),
+            "nonzero_count": int(np.count_nonzero(array)),
+            "max_abs": float(np.max(np.abs(array))),
+            "array_sha256": field_spec["layout"][name]["sha256"],
+        }
+        require(stats["shape"] == final_fields[name]["shape"]
+                and stats["finite_count"] == final_fields[name]["finite_count"]
+                and stats["nonzero_count"] == final_fields[name]["nonzero_count"]
+                and stats["array_sha256"] == final_fields[name]["array_sha256"]
+                and math.isclose(stats["max_abs"], final_fields[name]["max_abs"],
+                                 rel_tol=2e-6, abs_tol=2e-6),
+                f"owner-lifetime host field statistic mismatch: {name}")
+        field_checks[name] = stats
+    return ({"geometry": geometry_checks, "normal_discrepancy": normal_summary,
+             "normal_examples_host_checked": len(examples)},
+            {"fields_after_step2": field_checks,
+             "geometry_arrays": geometry_arrays,
+             "field_arrays": field_arrays})
+
+
+def _owner_pair_divergences(left: dict, right: dict, criteria: dict) -> set[str]:
+    atol_f, rtol_f = _owner_float_tolerances(criteria, "field_per_element_tolerance")
+    atol_force, rtol_force = _owner_float_tolerances(criteria, "force_component_tolerance")
+    atol_d = criteria["comparison"]["geometry_distance_abs_tolerance_solver_units"]
+    atol_nv = criteria["comparison"]["normal_and_velocity_component_abs_tolerance"]
+    divergent = set()
+    if left.get("geometry_arrays") and right.get("geometry_arrays"):
+        for name in ("candidate_cuda", "combined_cuda"):
+            a, b = left["geometry_arrays"][name], right["geometry_arrays"][name]
+            if (not _owner_close(a[:, 0], b[:, 0], atol_d, 0)
+                    or not _owner_close(a[:, 1:4], b[:, 1:4], atol_nv, 0)
+                    or not _owner_close(a[:, 4:7], b[:, 4:7], atol_nv, 0)):
+                divergent.add("candidate_geometry")
+                break
+    if left.get("field_arrays") and right.get("field_arrays"):
+        if any(not _owner_close(left["field_arrays"][name], right["field_arrays"][name],
+                                atol_f, rtol_f) for name in OWNER_FIELD_ARRAYS):
+            divergent.add("simulation_fields")
+    if left.get("force_history") and right.get("force_history"):
+        for phase in ("step0_after_gc", "step1", "step2"):
+            if phase not in left["force_history"] or phase not in right["force_history"]:
+                divergent.add("force_history")
+                break
+            for component in ("waterlily_pressure_force_raw", "waterlily_viscous_force_raw",
+                              "waterlily_total_force_raw"):
+                if not _owner_close(np.asarray(left["force_history"][phase][component]),
+                                    np.asarray(right["force_history"][phase][component]),
+                                    atol_force, rtol_force):
+                    divergent.add("force_history")
+                    break
+            if "force_history" in divergent:
+                break
+    return divergent
+
+
+def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
+                                     base_report: dict | None, fingerprint: dict,
+                                     runtime_observed: dict, w3_criteria: dict,
+                                     w3_criteria_sha: str, dataset_dir: Path,
+                                     phi: np.ndarray, lattice: dict | None) -> dict:
+    criteria, criteria_sha, criteria_sidecar_sha = load_owner_lifetime_criteria()
+    execution_path = folder / "owner_lifetime_execution.json"
+    if not execution_path.is_file():
+        return {
+            "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
+            "criteria_sha256": criteria_sha,
+            "criteria_sidecar_sha256": criteria_sidecar_sha,
+            "source_commit": _runner_pin("DIAGNOSTIC_SOURCE_COMMIT"),
+            "julia_job_sha256": _runner_pin("OWNER_LIFETIME_JOB_SHA256"),
+            "kernel_runner_sha256": sha256(DIAGNOSTIC_RUNNER),
+            "host_verifier_sha256": sha256(Path(__file__)),
+            "execution_status": "not_reached",
+            "arms": {},
+            "host_controls_A_C_match": None,
+            "host_verification_passed": False,
+            "owner_lifetime_hypothesis": "unresolved",
+            "divergence_classes_by_unrooted_replicate": {},
+            "same_divergence_class_in_both_replicates": [],
+            "qualification_flags": criteria["qualification_flags"],
+            "claim_scope": criteria["claim_scope"],
+        }
+    execution = json.loads(execution_path.read_text())
+    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256")
+    expected_source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT")
+    runner_sha = sha256(DIAGNOSTIC_RUNNER)
+    expected_execution = {
+        "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
+        "criteria_sha256": criteria_sha,
+        "criteria_sidecar_sha256": criteria_sidecar_sha,
+        "source_commit": expected_source_commit,
+        "julia_job_sha256": expected_job_sha,
+        "runner_sha256": runner_sha,
+        "arm_order": list(OWNER_ARM_IDS),
+        "qualification_evidence": False,
+    }
+    for key, expected in expected_execution.items():
+        require(execution.get(key) == expected,
+                f"owner-lifetime execution identity mismatch: {key}")
+    require(execution.get("status") in ("captured", "arm_failure"),
+            "owner-lifetime execution status is invalid")
+    require(fingerprint.get("owner_lifetime_criteria_sha256") == criteria_sha
+            and fingerprint.get("owner_lifetime_criteria_sidecar_sha256") == criteria_sidecar_sha
+            and fingerprint.get("owner_lifetime_source_commit") == expected_source_commit
+            and fingerprint.get("owner_lifetime_job_sha256") == expected_job_sha,
+            "owner-lifetime fingerprint identity mismatch")
+    rows = execution.get("arms", [])
+    require([row.get("arm_id") for row in rows] == list(OWNER_ARM_IDS),
+            "owner-lifetime arm order/identity mismatch")
+    source_identity = base_report.get("source_identity", {}) if base_report else {}
+    require(source_identity.get("runner_sha256") == runner_sha
+            and source_identity.get("diagnostic_source_commit") == expected_source_commit,
+            "owner-lifetime runner/source differs from the base diagnostic")
+    require(w3_criteria_sha == criteria["inputs"]["w3_criteria_sha256"]
+            and sha256(dataset_dir / "w3_v16_dataset_manifest.json")
+            == criteria["inputs"]["input_dataset_manifest_sha256"],
+            "owner-lifetime W3 dataset binding mismatch")
+    backend = criteria["fixture"]["backend"]
+    require(runtime_observed.get("selected_gpu_uuid") == fingerprint.get("selected_gpu_uuid")
+            and runtime_observed.get("cuda_visible_devices") == backend["cuda_visible_devices"]
+            and runtime_observed.get("nvidia_driver_version") == backend["driver_version"],
+            "owner-lifetime selected GPU/backend fingerprint mismatch")
+
+    arm_data = {}
+    arm_host_checks = {}
+    accepted_process_outcomes = True
+    input_identity = None
+    backend_identity = None
+    flow_origin = np.asarray(criteria["fixture"]["flow_origin_m"], dtype=np.float32)
+    expected_geometry = criteria["inputs"]
+    expected_phases = {"fixed_probes_before_gc_started", "fixed_probes_before_gc_completed",
+                       "measure_before_gc_started", "measure_before_gc_completed",
+                       "full_gc_1_started", "full_gc_1_completed",
+                       "full_gc_2_started", "full_gc_2_completed",
+                       "fixed_probes_after_gc_started", "fixed_probes_after_gc_completed",
+                       "full_grid_geometry_started", "full_grid_geometry_completed",
+                       "measure_after_gc_started", "measure_after_gc_completed",
+                       "primal_step_1_started", "primal_step_1_completed",
+                       "primal_step_2_started", "primal_step_2_completed", "arm_completed"}
+    for row in rows:
+        arm_id = row["arm_id"]
+        report_path = folder / f"w3_v16_cuda_owner_lifetime_{arm_id}.json"
+        progress_path = folder / f"w3_v16_cuda_owner_progress_{arm_id}.json"
+        runner_record_path = folder / f"owner_lifetime_{arm_id}_runner.json"
+        require(runner_record_path.is_file() and row.get("report_path")
+                == (report_path.name if report_path.is_file() else None),
+                f"owner-lifetime arm runner record/report inventory mismatch: {arm_id}")
+        runner_record = json.loads(runner_record_path.read_text())
+        require(sha256(runner_record_path) == manifest.get(runner_record_path.name)
+                and runner_record == row,
+                f"owner-lifetime runner record SHA/content mismatch: {arm_id}")
+        require(row.get("log_path") == f"owner_lifetime_{arm_id}.log"
+                and row.get("log_path") in manifest
+                and row.get("log_sha256") == manifest[row["log_path"]],
+                f"owner-lifetime exact arm log hash mismatch: {arm_id}")
+        progress = json.loads(progress_path.read_text()) if progress_path.is_file() else {}
+        report = json.loads(report_path.read_text()) if report_path.is_file() else progress
+        if progress_path.is_file():
+            require(row.get("progress_path") == progress_path.name
+                    and row.get("progress_sha256") == manifest.get(progress_path.name),
+                    f"owner-lifetime progress hash mismatch: {arm_id}")
+        if report_path.is_file():
+            require(row.get("report_sha256") == manifest.get(report_path.name),
+                    f"owner-lifetime report hash mismatch: {arm_id}")
+        require(report.get("arm_id") in (None, arm_id),
+                f"owner-lifetime report arm identity mismatch: {arm_id}")
+        if report.get("input_identity"):
+            input_identity = report["input_identity"]
+            require(input_identity.get("canonical_phi_fortran_sha256")
+                    == expected_geometry["canonical_phi_fortran_sha256"]
+                    and input_identity.get("canonical_phi_c_order_sha256")
+                    == expected_geometry["canonical_phi_c_order_sha256"]
+                    and input_identity.get("gpu_phi_roundtrip_sha256")
+                    == expected_geometry["canonical_phi_fortran_sha256"]
+                    and input_identity.get("canonical_state_sha256")
+                    == expected_geometry["canonical_state_sha256"]
+                    and input_identity.get("point_shape") == criteria["inputs"]["canonical_phi_shape"]
+                    and input_identity.get("canonical_origin_m") == criteria["inputs"]["canonical_phi_origin_m"]
+                    and input_identity.get("flow_dims") == criteria["fixture"]["flow_dims"]
+                    and np.allclose(input_identity.get("flow_origin_m"), flow_origin,
+                                    rtol=0, atol=1e-6)
+                    and math.isclose(input_identity.get("spacing_m"),
+                                     criteria["fixture"]["spacing_m"], abs_tol=1e-8),
+                    f"owner-lifetime canonical/flow identity mismatch: {arm_id}")
+            measured_margin = input_identity.get("cpu_measured_sdf_margin_m")
+            require(math.isclose(measured_margin, w3_criteria["geometry"]["expected_margin_m"],
+                                 rel_tol=0, abs_tol=1e-6),
+                    f"owner-lifetime measured SDF margin mismatch: {arm_id}")
+        if report.get("source_identity"):
+            identity = report["source_identity"]
+            require(identity.get("owner_criteria_sha256") == criteria_sha
+                    and identity.get("owner_criteria_sidecar_sha256") == criteria_sidecar_sha
+                    and identity.get("owner_job_sha256") == expected_job_sha
+                    and identity.get("diagnostic_source_commit") == expected_source_commit
+                    and identity.get("diagnostic_job_sha256") == _runner_pin("DIAGNOSTIC_JOB_SHA256")
+                    and identity.get("source_w3_job_sha256") == w3_criteria["inputs"]["job"]["sha256"]
+                    and identity.get("project_sha256") == w3_criteria["inputs"]["project"]["sha256"]
+                    and identity.get("manifest_sha256") == w3_criteria["inputs"]["manifest"]["sha256"]
+                    and identity.get("julia_archive_sha256") == backend["julia_archive_sha256"]
+                    and identity.get("runner_sha256") == runner_sha
+                    and identity.get("dataset_id") == EXPECTED_W3_DATASET_ID
+                    and identity.get("dataset_manifest_sha256") == expected_geometry["input_dataset_manifest_sha256"],
+                    f"owner-lifetime source/input identity mismatch: {arm_id}")
+        if report.get("runtime_identity"):
+            runtime = report["runtime_identity"]
+            for key, value in (
+                ("julia_version", backend["julia_version"]),
+                ("julia_threads", backend["julia_threads"]),
+                ("waterlily_version", backend["waterlily_version"]),
+                ("cuda_jl_version", backend["cuda_jl_version"]),
+                ("cuda_runtime_version", backend["cuda_runtime_version"]),
+                ("cuda_driver_api_version", backend["cuda_driver_api_version"]),
+                ("gpu_name", backend["gpu_name"]),
+                ("cuda_visible_devices", backend["cuda_visible_devices"]),
+                ("visible_gpu_count", 1),
+            ):
+                require(runtime.get(key) == value,
+                        f"owner-lifetime runtime identity mismatch: {arm_id}/{key}")
+            require(runtime.get("gpu_uuid") == runtime_observed.get("selected_gpu_uuid"),
+                    f"owner-lifetime GPU UUID mismatch: {arm_id}")
+            backend_identity = runtime
+        ownership = report.get("ownership", {})
+        ownership_check = verify_owner_ownership_schema(arm_id, ownership) if ownership else None
+        if report.get("runtime_identity") and report.get("qualification_evidence") is not False:
+            raise ValueError("owner-lifetime diagnostic incorrectly marks qualification evidence")
+        if report.get("qualification_flags"):
+            require(all(value is False for value in report["qualification_flags"].values()),
+                    f"owner-lifetime qualification flag became true: {arm_id}")
+        if report.get("status") == "completed":
+            require(report.get("last_stage") == "arm_completed"
+                    and report.get("failed_stage") is None,
+                    f"owner-lifetime completed arm has failure stage: {arm_id}")
+            ownership_states = ownership.get("weakref_after_each_gc", [])
+            if arm_id in ("A", "C"):
+                require(ownership.get("weakref_after_gc") == "alive"
+                        and ownership_states == ["alive", "alive"],
+                        f"retained owner did not survive full GC: {arm_id}")
+            force_checks = {}
+            for phase, snapshot in report["force_history"].items():
+                force_checks[phase] = _verify_owner_force(snapshot)
+            probe_checks = _verify_owner_probe_sets(
+                report, criteria, flow_origin, criteria["fixture"]["spacing_m"])
+            geometry_checks, arrays = _verify_owner_arm_artifacts(
+                folder, report, manifest, phi, lattice, criteria) if lattice is not None else ({}, {})
+            report["_host_force_checks"] = force_checks
+            arm_data[arm_id] = {
+                "status": "completed",
+                "owner_collected_during_forced_gc": ownership.get("owner_collected_during_forced_gc"),
+                "report": report,
+                "geometry_arrays": arrays.get("geometry_arrays"),
+                "field_arrays": arrays.get("field_arrays"),
+                "force_history": report.get("force_history"),
+            }
+            arm_host_checks[arm_id] = {
+                "ownership": ownership_check,
+                "probe_counts": probe_checks,
+                "force_checks": force_checks,
+                "geometry": geometry_checks,
+            }
+        else:
+            process_hazard = (arm_id.startswith("B")
+                              and row.get("expected_lifetime_hazard") is True
+                              and ownership.get("owner_collected_during_forced_gc") is True
+                              and row.get("last_stage") in expected_phases)
+            if report.get("status") == "operation_error":
+                process_hazard = process_hazard and row.get("process_returncode") == 0
+                require(report.get("exact_exception"),
+                        f"owner-lifetime Julia operation error lacks exception text: {arm_id}")
+            else:
+                process_hazard = process_hazard and row.get("process_returncode") != 0
+            require(process_hazard == (row.get("expected_lifetime_hazard") is True),
+                    f"owner-lifetime error classification is inconsistent: {arm_id}")
+            acceptable = arm_id.startswith("B") and process_hazard
+            if not acceptable:
+                accepted_process_outcomes = False
+            arm_data[arm_id] = {
+                "status": "expected_lifetime_hazard" if process_hazard else "incomplete_or_unexpected",
+                "owner_collected_during_forced_gc": ownership.get("owner_collected_during_forced_gc"),
+                "report": report,
+                "geometry_arrays": None,
+                "field_arrays": None,
+                "force_history": report.get("force_history"),
+            }
+            arm_host_checks[arm_id] = {
+                "ownership": ownership_check,
+                "expected_lifetime_hazard": process_hazard,
+                "last_stage": row.get("last_stage"),
+                "exact_exception": report.get("exact_exception"),
+            }
+
+    controls_ready = all(arm_data.get(name, {}).get("status") == "completed"
+                         for name in ("A", "C"))
+    controls_match = False
+    b_classes = {}
+    if controls_ready:
+        controls_match = not _owner_pair_divergences(arm_data["A"], arm_data["C"], criteria)
+        for arm_id in ("B1", "B2"):
+            item = arm_data[arm_id]
+            if item["status"] == "completed":
+                if not controls_match:
+                    b_classes[arm_id] = set()
+                else:
+                    b_classes[arm_id] = _owner_pair_divergences(arm_data["A"], item, criteria)
+                    b_classes[arm_id] |= _owner_pair_divergences(arm_data["C"], item, criteria)
+            elif item["status"] == "expected_lifetime_hazard":
+                b_classes[arm_id] = {"cuda_lifetime_operation_error"}
+            else:
+                b_classes[arm_id] = set()
+    b_collected = [arm_data.get(name, {}).get("owner_collected_during_forced_gc") is True
+                   for name in ("B1", "B2")]
+    common_divergence = (b_classes.get("B1", set()) & b_classes.get("B2", set()))
+    if controls_ready and controls_match and all(b_collected) and common_divergence:
+        classification = "strongly_supported"
+    elif controls_ready and controls_match and (
+            (all(arm_data.get(name, {}).get("report", {}).get("ownership", {}).get("weakref_after_gc") == "alive"
+                 for name in ("B1", "B2")))
+            or (all(b_collected) and not any(b_classes.values()))):
+        classification = "weakened"
+    else:
+        classification = "unresolved"
+    host_passed = (all(item.get("status") == "completed" for item in arm_data.values()
+                       if item.get("status") != "expected_lifetime_hazard")
+                   and all(arm_data.get(name, {}).get("status") in
+                           ("completed", "expected_lifetime_hazard") for name in OWNER_ARM_IDS)
+                   and accepted_process_outcomes)
+    return {
+        "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
+        "criteria_sha256": criteria_sha,
+        "criteria_sidecar_sha256": criteria_sidecar_sha,
+        "source_commit": expected_source_commit,
+        "julia_job_sha256": expected_job_sha,
+        "kernel_runner_sha256": runner_sha,
+        "host_verifier_sha256": sha256(Path(__file__)),
+        "execution_status": execution["status"],
+        "arms": arm_data,
+        "arm_host_checks": arm_host_checks,
+        "host_controls_A_C_match": controls_match,
+        "host_verification_passed": host_passed,
+        "owner_lifetime_hypothesis": classification,
+        "divergence_classes_by_unrooted_replicate": {
+            key: sorted(value) for key, value in b_classes.items()},
+        "same_divergence_class_in_both_replicates": sorted(common_divergence),
+        "interpretation": {
+            "strongly_supported": "Owner collection was bracketed by forced GC, both B replicates share a post-GC divergence/error class, and A/C controls agree.",
+            "weakened": "The registered forced-GC contrast did not reproducibly change geometry, fields, or force, or the B owners remained retained.",
+            "unresolved": "Control mismatch, unbracketed collection, incomplete evidence, or non-repeatable B behavior prevents a causal conclusion.",
+        }[classification],
+        "qualification_flags": criteria["qualification_flags"],
+        "claim_scope": criteria["claim_scope"],
+    }
+
+
 def audit_w2b_drag_sign_precedent() -> dict[str, object]:
     criteria_sidecar = W2B_CRITERIA_PATH.with_suffix(W2B_CRITERIA_PATH.suffix + ".sha256")
     result_sidecar = W2B_RESULT_PATH.with_suffix(W2B_RESULT_PATH.suffix + ".sha256")
@@ -659,7 +1326,13 @@ def classify_failure(folder: Path, progress: dict,
     error_path = folder / "ERROR.txt"
     wrapper_error = error_path.read_text(errors="replace") if error_path.is_file() else ""
     exception_text = julia_log if julia_log else wrapper_error
-    if "compare_rows" in julia_log and "UndefVarError" in julia_log:
+    owner_execution_path = folder / "owner_lifetime_execution.json"
+    owner_execution = json.loads(owner_execution_path.read_text()) if owner_execution_path.is_file() else {}
+    if owner_execution.get("unexpected_arm_failures"):
+        failed_stage = "owner-lifetime diagnostic arm process or identity"
+        failure_class = "owner_lifetime_arm_unexpected_failure"
+        exception_text = wrapper_error or exception_text
+    elif "compare_rows" in julia_log and "UndefVarError" in julia_log:
         failed_stage = "representative_probe_cpu_cuda_comparison"
         failure_class = "julia_diagnostic_float_literal_bug"
     elif "v16_representative_probes" in julia_log and "UndefVarError" in julia_log:
@@ -805,6 +1478,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
                            runner_sha, checkout_identity))
     lattice_summary = None
     numeric_checks = None
+    lattice = None
     if report is not None:
         lattice_path = folder / "v16_flow_lattice.csv"
         lattice_sha = sha256(lattice_path)
@@ -860,6 +1534,9 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
                 for body in BODY_NAMES for backend in BACKENDS
             },
         }
+    owner_lifetime = verify_owner_lifetime_experiment(
+        folder, output_manifest, report, fingerprint, runtime_observed,
+        criteria, criteria_sha, dataset_dir, phi, lattice)
     require(kernel_version > 0, "Kaggle kernel version must be positive")
     normalized_status = kernel_status.upper()
     require(normalized_status.endswith("COMPLETE") or normalized_status.endswith("ERROR"),
@@ -869,7 +1546,9 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
     log_sha = sha256(kaggle_log)
     status_sha = sha256(kaggle_status_file)
     failed_stage = progress.get("last_completed_stage")
-    complete = output_status == "COMPLETED" and report is not None
+    base_complete = output_status == "COMPLETED" and report is not None
+    owner_complete = owner_lifetime["host_verification_passed"]
+    complete = base_complete and owner_complete
     return {
         "evidence_type": "diagnostic_only",
         "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
@@ -901,8 +1580,11 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "last_completed_stage": failed_stage,
         "solver_steps_v16": (report.get("v16_one_step_reproducer", {}).get("cuda_solver_steps", 0)
                               if report else progress.get("one_step_reproducer", {}).get("cuda_steps", 0)),
+        "base_diagnostic_complete": base_complete,
+        "owner_lifetime_diagnostic_complete": owner_complete,
         "diagnostic_complete": complete,
-        "host_artifact_verification_passed": bool(source_identity or output_manifest),
+        "host_artifact_verification_passed": bool(source_identity and output_manifest
+                                                  and owner_complete),
         "source_identity_verification": source_identity,
         "partial_source_checkout_verification": {
             "diagnostic_source_commit": checkout_identity[0],
@@ -911,6 +1593,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "lattice_verification": lattice_summary,
         "independent_numeric_diagnostics": numeric_checks,
         "force_snapshot_verification": verify_force_snapshots(report) if report else None,
+        "owner_lifetime_experiment": owner_lifetime,
         "w2b_sign_convention_audit": audit_w2b_drag_sign_precedent(),
         "failure_classification": None if complete else classify_failure(folder, progress, report),
         "qualification_flags": {
@@ -923,7 +1606,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
             "topology_birth_qualified": False,
             "shape_update_allowed": False,
         },
-        "claim_scope": "CPU/T4 CUDA implementation-layer diagnosis only; no primal or physical qualification",
+        "claim_scope": "CPU/T4 CUDA implementation-layer and owner-lifetime diagnosis only; no primal or physical qualification",
     }
 
 
@@ -946,8 +1629,7 @@ def main() -> None:
     target = args.evidence or (ROOT / "docs/evidence" /
         f"kaggle_w3_v16_cuda_diagnostic_version{args.kernel_version}_2026_09.json")
     sidecar = target.with_suffix(target.suffix + ".sha256")
-    require(not target.exists() and not sidecar.exists(),
-            "append-only diagnostic evidence path already exists")
+    require_append_only_evidence_target(target, sidecar)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n")
     sidecar.write_text(sha256(target) + "\n")

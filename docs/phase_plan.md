@@ -3100,3 +3100,59 @@ clarification is recorded append-only in
 No force sign, threshold, measurement, or qualification state changed. The
 owner-lifetime hypothesis remains unconfirmed and the next minimum test stays
 the retained-versus-forced-GC T4 A/B described above.
+
+### 2026-09-28 diagnostic-only CUDA owner-lifetime A/B/C round 2 prepared
+
+This controlled implementation diagnostic follows the exact W3 round-3
+fixture and existing private W3 CUDA diagnostic kernel. It does not alter the
+W3 production source, round-3 criteria, force projection, T7/T10 gates, or any
+qualification flag.
+
+- **Implemented:** `scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl`
+  compares explicitly retained owner (A), structurally owned components (C),
+  and two helper-scoped unrooted replicas (B1/B2), each in a separate Julia
+  process. Every arm records forced-GC/WeakRef checkpoints, representative
+  probes, full 172,800-point candidate/combined CPU and CUDA geometry scans,
+  simulation fields, raw pressure/viscous/total force, body-force projections,
+  and two primal steps. The Kaggle runner and host verifier now capture and
+  independently check the arm artifacts and failure classes. Focused tests
+  cover immutable criteria/job hashes, owner/GC schema, force closure and
+  projections, A/C/B comparison, binary artifact order/hash, process failure
+  classification, and append-only evidence.
+- **Registered:** immutable diagnostic-only criteria round 2 is
+  [`kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json),
+  SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`; its
+  sidecar SHA-256 is
+  `ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43`. It
+  supersedes round 1 before any measurement because a representative positive
+  phi probe differed from the v3-compatible minimum-positive selection. The
+  fixture, arms, GC procedure, tolerances, and causal decision rules did not
+  change. Owner job SHA-256 is
+  `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`.
+- **Submitted:** not yet submitted at this checkpoint. The runner pins source
+  commit `885ae7558012da43e6310e2ffb04db4230150f5b`, the private diagnostic
+  Julia job SHA, and round-2 criteria path. The next work is to push the
+  reviewed implementation and submit the existing private T4 kernel.
+- **Measured:** none for owner-lifetime arms. Local Julia syntax parsing,
+  Python `compileall`, Python `py_compile`, focused owner diagnostic tests
+  (18 passed), and `git diff --check` pass. The related W3/W4/diagnostic
+  slice passes 37 tests. The required repository-wide run reports 1,086
+  passed, 37 failed, and 4 skipped; the reported failures are attempts to read
+  ignored historical `work/` artifacts absent from this managed worktree
+  (including Stage-S and Stage-V fixtures), not failures in the changed slice.
+  Remote CUDA execution is still required.
+- **Verified:** no remote owner-lifetime result exists yet. The host verifier
+  records an unresolved result if the owner experiment was not reached and
+  rejects unregistered artifact identities or a non-append-only evidence
+  target.
+- **Qualified:** nothing. This experiment can only support, weaken, or leave
+  unresolved the implementation-layer owner-lifetime hypothesis. It cannot
+  qualify W3 primal, physical profile, grid response, gradients, reverse mode,
+  topology, optimizer, or shape update.
+- **Open:** submit and collect one exact private Kaggle kernel version, then
+  host-verify its exact status, logs, output manifest, runner/job/criteria
+  identities, A/C agreement, both B collection brackets, geometry, fields,
+  forces, and process outcomes. Preserve failed outputs and append a
+  diagnostic result. Do not modify the production W3 path or restart full W3,
+  W4, or formal FD from this scratch experiment.

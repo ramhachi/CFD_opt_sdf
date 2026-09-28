@@ -1300,3 +1300,67 @@ result. The clarification record is
 (SHA-256 `8511973f3f6cc4d2b3166e15752072e83891cbc2535f35915116a39ffa8ed58c`).
 This corrects an overly cautious intermediate interpretation; the W3 force
 sign and all acceptance criteria remain untouched.
+
+### Diagnostic-only CUDA owner-lifetime A/B/C, criteria round 2
+
+The purpose of this private T4 run is to test whether the non-owning CUDA SDF
+view changes behavior after its `DeviceGridSDF`/CuArray owner becomes
+unreachable. It is an implementation diagnostic only. It does not execute a
+full horizon and cannot qualify W3, target physics, gradients, reverse mode,
+or a production fix.
+
+Round-2 immutable criteria:
+
+- path: `docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json`
+- SHA-256: `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`
+- sidecar SHA-256: `ef9df9f54f4408783a243f3b92f014722a3131da7bccc86f5b34b24100538b43`
+- source commit: `885ae7558012da43e6310e2ffb04db4230150f5b`
+- owner job SHA-256: `7fa98a26105f1a2938ab85550931a22cb1020bd27d687d6f4dedb99c1b5572ea`
+
+Round 1 was superseded before measurement because its representative
+positive-phi probe did not use the v3-compatible minimum-positive selection.
+Round 2 changes only that probe selection; fixture, arms, forced-GC procedure,
+tolerances, and causal rules stay fixed. A and C run first. B1 and B2 each run
+in a separate Julia process so an invalid-memory exit cannot remove the A/C or
+first-B evidence.
+
+After pushing the reviewed branch, submit the existing private kernel and use
+the exact version printed by `push` for every retrieval command. The next
+version is expected to be 4, but the returned number is authoritative:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3_cuda_diagnostic \
+  --accelerator NvidiaTeslaT4 --timeout 7200
+
+# Replace VERSION in both the slug and output folder with the exact push result.
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  -p work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION
+
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version VERSION \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_versionVERSION/kaggle.log
+```
+
+For a terminal `ERROR`, keep the exact status/log/output and pass
+`--kernel-status KernelWorkerStatus.ERROR`; verify that `ERROR.txt`, partial
+arm checkpoints, per-arm process logs and `sha256.json` were preserved. The
+host verifier recomputes arm identity, input and backend bindings, geometry
+and field bundle hashes/order, raw pressure/viscous/total closure, body-force
+projections, A/C agreement, both B weak-owner GC brackets, and repeated
+post-GC divergence classes. WeakRef clearing, a CUDA error, or nonzero force
+alone does not support the hypothesis. Append the result to a new evidence
+path; never replace round-1 criteria, round-2 criteria, or earlier Kaggle
+version evidence.

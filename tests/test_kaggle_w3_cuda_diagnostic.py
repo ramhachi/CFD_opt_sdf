@@ -14,6 +14,10 @@ VERIFY_PATH = ROOT / "scripts/verify_kaggle_w3_v16_cuda_diagnostic.py"
 spec = importlib.util.spec_from_file_location("w3_cuda_diagnostic_host", VERIFY_PATH)
 host = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(host)
+RUNNER_PATH = ROOT / "infra/kaggle/kernel_w3_cuda_diagnostic/runner.py"
+runner_spec = importlib.util.spec_from_file_location("w3_cuda_diagnostic_runner", RUNNER_PATH)
+runner = importlib.util.module_from_spec(runner_spec)
+runner_spec.loader.exec_module(runner)
 
 
 def lattice_rows():
@@ -254,3 +258,183 @@ def test_partial_fingerprint_binds_backend_and_exact_source_checkout(tmp_path):
 
     assert result["checkout_diagnostic_source_commit"] == commit_job[0]
     assert result["checkout_diagnostic_job_sha256"] == commit_job[1]
+
+
+def test_owner_round2_criteria_and_job_are_immutable_and_hash_bound():
+    criteria, criteria_sha, sidecar_sha = host.load_owner_lifetime_criteria()
+
+    assert criteria["immutable"] is True
+    assert criteria["registered_before_computation"] is True
+    assert criteria["round"] == 2
+    assert criteria["inputs"]["owner_lifetime_job"]["sha256"] == host.sha256(
+        host.OWNER_LIFETIME_JOB)
+    assert criteria["supersedes_before_measurement"]["sha256"] == host.sha256(
+        ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09.json")
+    assert criteria_sha == host.sha256(host.OWNER_LIFETIME_CRITERIA_PATH)
+    assert host.OWNER_LIFETIME_CRITERIA_PATH.with_suffix(
+        host.OWNER_LIFETIME_CRITERIA_PATH.suffix + ".sha256").read_text().strip() == criteria_sha
+    assert len(sidecar_sha) == 64
+
+
+def test_owner_weakref_gc_schema_and_collection_bracketing():
+    retained = {
+        "strategy": "GC.@preserve owner",
+        "strong_owner_reference_escaped_helper": True,
+        "weakref_created": True,
+        "weakref_before_gc": "alive",
+        "weakref_after_each_gc": ["alive", "alive"],
+        "weakref_after_gc": "alive",
+        "owner_collected_during_forced_gc": False,
+        "full_gc_calls": 2,
+        "cuda_synchronize_before_gc": True,
+        "cuda_synchronize_after_gc": True,
+    }
+    assert host.verify_owner_ownership_schema("A", retained)["forced_gc_calls"] == 2
+
+    unrooted = {
+        "strategy": "helper returns bodies,simulation,WeakRef only",
+        "strong_owner_reference_escaped_helper": False,
+        "weakref_created": True,
+        "weakref_before_gc": "alive",
+        "weakref_after_each_gc": ["alive", "cleared"],
+        "weakref_after_gc": "cleared",
+        "owner_collected_during_forced_gc": True,
+        "full_gc_calls": 2,
+        "cuda_synchronize_before_gc": True,
+        "cuda_synchronize_after_gc": True,
+    }
+    assert host.verify_owner_ownership_schema("B1", unrooted)[
+        "owner_collected_during_forced_gc"] is True
+    unrooted["owner_collected_during_forced_gc"] = False
+    with pytest.raises(ValueError, match="collection boolean mismatch"):
+        host.verify_owner_ownership_schema("B1", unrooted)
+
+
+def test_owner_force_closure_and_registered_projections_are_host_recomputed():
+    snapshot = {
+        "waterlily_pressure_force_raw": [-2.0, 0.5, 3.0],
+        "waterlily_viscous_force_raw": [-1.0, -0.5, 1.0],
+        "waterlily_total_force_raw": [-3.0, 0.0, 4.0],
+        "body_pressure_force": [2.0, -0.5, -3.0],
+        "body_viscous_force": [1.0, 0.5, -1.0],
+        "body_total_force": [3.0, 0.0, -4.0],
+        "registered_drag_plus_fx_body": 3.0,
+        "registered_downforce_minus_fz_body": 4.0,
+    }
+
+    result = host._verify_owner_force(snapshot)
+
+    assert result["pressure_plus_viscous_residual"] == [0.0, 0.0, 0.0]
+    assert result["drag_plus_fx_body"] == 3.0
+    assert result["downforce_minus_fz_body"] == 4.0
+    snapshot["registered_drag_plus_fx_body"] = -3.0
+    with pytest.raises(ValueError, match="projection mismatch"):
+        host._verify_owner_force(snapshot)
+
+
+def test_owner_a_c_controls_and_b_divergence_are_compared_by_geometry_field_force():
+    criteria, _, _ = host.load_owner_lifetime_criteria()
+    base = {
+        "geometry_arrays": {
+            name: np.zeros((3, 7), dtype=np.float32)
+            for name in host.OWNER_GEOMETRY_ARRAYS
+        },
+        "field_arrays": {name: np.zeros((2,), dtype=np.float32)
+                         for name in host.OWNER_FIELD_ARRAYS},
+        "force_history": {
+            phase: {
+                "waterlily_pressure_force_raw": [0.0, 0.0, 0.0],
+                "waterlily_viscous_force_raw": [0.0, 0.0, 0.0],
+                "waterlily_total_force_raw": [0.0, 0.0, 0.0],
+            } for phase in ("step0_after_gc", "step1", "step2")
+        },
+    }
+    retained = {
+        "geometry_arrays": {key: value.copy() for key, value in base["geometry_arrays"].items()},
+        "field_arrays": {key: value.copy() for key, value in base["field_arrays"].items()},
+        "force_history": json.loads(json.dumps(base["force_history"])),
+    }
+    candidate = {
+        "geometry_arrays": {key: value.copy() for key, value in base["geometry_arrays"].items()},
+        "field_arrays": {key: value.copy() for key, value in base["field_arrays"].items()},
+        "force_history": json.loads(json.dumps(base["force_history"])),
+    }
+    assert host._owner_pair_divergences(retained, candidate, criteria) == set()
+    candidate["geometry_arrays"]["candidate_cuda"][0, 0] = 1.0
+    candidate["field_arrays"]["u"][0] = 1.0
+    candidate["force_history"]["step1"]["waterlily_total_force_raw"][0] = 1.0
+    divergence = host._owner_pair_divergences(retained, candidate, criteria)
+    assert divergence == {"candidate_geometry", "simulation_fields", "force_history"}
+
+
+def test_owner_binary_bundle_hash_layout_and_field_order_are_verified(tmp_path):
+    first = np.asarray([[1.0, 2.0], [3.0, 4.0]], dtype="<f4", order="F")
+    second = np.asarray([[5.0, 6.0]], dtype="<f4", order="F")
+    first_bytes = first.tobytes(order="F")
+    second_bytes = second.tobytes(order="F")
+    path = tmp_path / "bundle.f32"
+    path.write_bytes(first_bytes + second_bytes)
+    spec = {
+        "artifact": path.name,
+        "artifact_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "layout": {
+            "first": {"offset_bytes": 0, "nbytes": len(first_bytes), "shape": [2, 2],
+                      "dtype": "<f4", "order": "F",
+                      "sha256": hashlib.sha256(first_bytes).hexdigest()},
+            "second": {"offset_bytes": len(first_bytes), "nbytes": len(second_bytes), "shape": [1, 2],
+                       "dtype": "<f4", "order": "F",
+                       "sha256": hashlib.sha256(second_bytes).hexdigest()},
+        },
+    }
+
+    arrays = host._owner_read_bundle(tmp_path, spec, ("first", "second"), spec["artifact_sha256"])
+
+    assert np.array_equal(arrays["first"], first)
+    assert np.array_equal(arrays["second"], second)
+    spec["layout"]["second"]["offset_bytes"] = 0
+    with pytest.raises(ValueError, match="array SHA mismatch"):
+        host._owner_read_bundle(tmp_path, spec, ("first", "second"), spec["artifact_sha256"])
+
+
+def test_owner_arm_failure_classification_separates_b_hazard_from_bootstrap_error():
+    collected = {"ownership": {"owner_collected_during_forced_gc": True}, "status": "running"}
+    expected = runner.classify_owner_arm("B1", 139, collected, "full_grid_geometry_started")
+    assert expected["acceptable"] is True
+    assert expected["classification"] == "expected_unrooted_post_gc_hazard"
+
+    bootstrap = {"ownership": {"owner_collected_during_forced_gc": False}, "status": "running"}
+    failed = runner.classify_owner_arm("B2", 1, bootstrap, "canonical_input_load_started")
+    assert failed["acceptable"] is False
+    assert failed["classification"] == "unexpected_arm_failure"
+    retained_crash = runner.classify_owner_arm("A", 139, collected, "primal_step_1_started")
+    assert retained_crash["acceptable"] is False
+
+
+def test_owner_probe_world_to_flow_mapping_and_append_only_evidence_guard(tmp_path):
+    criteria, _, _ = host.load_owner_lifetime_criteria()
+    origin = np.asarray(criteria["fixture"]["flow_origin_m"], dtype=np.float32)
+    spacing = criteria["fixture"]["spacing_m"]
+    world = [0.0, 0.0, 0.0]
+    solver = ((np.asarray(world, dtype=np.float32) - origin) / np.float32(spacing)).tolist()
+    names = [
+        "candidate_solid_min_phi", "candidate_surface_min_abs_phi",
+        "candidate_nearest_positive_phi", "registered_world_center",
+        "outside_x_low", "outside_x_high", "outside_y_low", "outside_y_high",
+        "outside_z_low", "outside_z_high",
+    ]
+    records = [{"name": name, "world_m": world, "flow_solver": solver,
+                "cpu_measure": [0.0] * 7, "cuda_measure": [0.0] * 7}
+               for name in names]
+    report = {
+        "fixed_probes_before_gc": {"candidate": records, "combined": records},
+        "fixed_probes_after_gc": {"candidate": records, "combined": records},
+    }
+    result = host._verify_owner_probe_sets(report, criteria, origin, spacing)
+    assert result["fixed_probes_after_gc"] == 20
+
+    target = tmp_path / "result.json"
+    sidecar = tmp_path / "result.json.sha256"
+    host.require_append_only_evidence_target(target, sidecar)
+    target.write_text("already registered\n")
+    with pytest.raises(ValueError, match="append-only"):
+        host.require_append_only_evidence_target(target, sidecar)
