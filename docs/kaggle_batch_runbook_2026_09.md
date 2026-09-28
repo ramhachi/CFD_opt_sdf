@@ -1961,10 +1961,42 @@ PYTHONPATH=src:scripts .venv/bin/python \
   --output work/kaggle_w4_v16_dataset_round2
 ```
 
-Run the Kaggle runner contract and independent host verifier against the fresh
-round-2 stage before upload. Then publish privately, wait for `ready`,
-download the remote files into a fresh directory and compare complete
-filenames and SHA-256 values. The old round-1 local manifest SHA-256 is
+The Kaggle runner contract and independent host verifier passed against the
+fresh round-2 stage before upload. The dataset was then published privately,
+reported `ready`, and downloaded into a fresh directory for complete filename
+and SHA-256 comparison. The old round-1 local manifest SHA-256 is
 `b175b447c35fce94b13de23a73fb98a10dd1be1f499ffe5e8567ff2f26f1bd96`; it is
-not the round-2 dataset manifest. W4 round 2 is registered but no W4 dataset
-upload, kernel submission or measurement has occurred at this checkpoint.
+not the round-2 dataset manifest. W4 round 2 is registered, and its private
+input dataset version 1 is now ready; no kernel submission or measurement has
+occurred.
+
+The exact version-1 upload and retrieval were:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets create -p work/kaggle_w4_v16_dataset_round2 --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets status ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets files ramhachi888/cfd-opt-sdf-v16-w4-sensitivity
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download -d ramhachi888/cfd-opt-sdf-v16-w4-sensitivity \
+  -p work/kaggle_w4_v16_dataset_round2_remote --force --unzip
+```
+
+Version 1 is private and `ready`. The server listing and downloaded five-file
+inventory match the local manifest exactly. The round-2 manifest SHA-256 is
+`3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42`; the
+remote inventory audit at
+`work/kaggle_w4_v16_dataset_round2_remote/remote_inventory_audit.json` has
+SHA-256 `20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f`.
+
+Before pushing the kernel, derive the slug from the title and compare it with
+`id` in `infra/kaggle/kernel_w4/kernel-metadata.json`. The metadata is private
+T4 and points to the exact private W4 input dataset. Its title is
+`CFD Opt SDF W4 v16 Sensitivity`, whose normalized slug is
+`cfd-opt-sdf-w4-v16-sensitivity`, matching the ID suffix. This metadata-only
+correction does not change the criteria-bound runner, solver job, verifier,
+environment or registered source inputs.
+The committed metadata SHA-256 is
+`7eab12e8dfe356acdf5feec6ef41f033ff75cd3e6e02ada8b14635d3a6e123e7`.

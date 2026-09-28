@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Immutable round 2 registered; dataset staging pending | W3 round 4 remains the exact prerequisite. Round 2 binds corrected source commit `97a5bca`; no W4 dataset upload, kernel submission, or measurement has occurred. |
+| W4 grid/domain sensitivity | Immutable round 2 registered; private input dataset ready | W3 round 4 remains the exact prerequisite. Round 2 binds source commit `97a5bca`; private dataset version 1 is ready and its remote inventory/hash check passed. Kernel submission and measurement remain open. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -3883,10 +3883,20 @@ qualification flag.
   `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`, and
   W3 host-PASS result SHA
   `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`.
-- **Submitted / measured / verified / qualified:** no W4 dataset has been
-  uploaded, no W4 kernel has been submitted, and no CFD measurement has run.
-  The prior host preflight failed before upload; its immutable criteria are not
-  edited. No W4 result or sensitivity claim exists.
+- **Submitted:** private Kaggle dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 1 reports `ready`.
+  Staging is under `work/kaggle_w4_v16_dataset_round2/`; exact download and
+  server inventory are under `work/kaggle_w4_v16_dataset_round2_remote/`.
+- **Verified:** runner-mounted inventory and independent host checks pass
+  locally. The downloaded remote inventory contains the exact five registered
+  files with matching SHA-256 values; remote NPZ/phi identity and CPU SDF
+  margin also pass. Manifest SHA-256 is
+  `3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42`; remote
+  audit SHA-256 is
+  `20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f`.
+- **Measured / qualified:** no W4 kernel has been submitted and no CFD
+  measurement or W4 result exists. The earlier host preflight failure remains
+  preserved by immutable round 1; round 1 was not edited.
 - **Validation:** source-fix commit
   `f69c56e6306d30f6e6590da898088e4af7606c00` is pushed to the canonical branch.
   Focused W4/W3/owner-regression tests pass (38); `compileall`, the required
@@ -3896,7 +3906,8 @@ qualification flag.
   failures are historical Stage T/S/V tests whose tracebacks read absent,
   ignored `work/` checkpoints, cases, meshes, or solver logs; no W3/W4 task
   test failed.
-- **Open:** stage round-2 data in a fresh directory; verify its full inventory
-  locally with the runner/host and remotely after private upload; then submit
-  and host-verify one exact W4 kernel version. Formal FD, reverse/adjoint
-  qualification, shape update and topology birth remain out of scope.
+- **Open:** submit one exact W4 kernel version from the corrected committed
+  metadata (private T4, matching title/ID slug), recover exact logs/output, and
+  run host verification. Formal FD,
+  reverse/adjoint qualification, shape update and topology birth remain out of
+  scope.
