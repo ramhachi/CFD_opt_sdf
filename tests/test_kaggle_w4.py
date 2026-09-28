@@ -271,6 +271,12 @@ def test_w4_job_structurally_retains_canonical_device_owner_for_all_cases():
     assert "GC.@preserve device_owner begin" in source
 
 
+def test_w4_job_materializes_registered_case_inventory_before_comparison():
+    source = (ROOT / "scripts/waterlily_w4_v16_sensitivity_job.jl").read_text()
+    assert "Tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS" in source
+    assert "tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS" not in source
+
+
 def test_w4_reports_w3_flow16_delta_without_inventing_repeatability_bound():
     criteria, _, metrics, _, _, _ = fixture()
     w3_result = {"raw_measurements": {

@@ -297,7 +297,7 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
 end
 
 function main()
-    tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS || error("W4 case inventory drift")
+    Tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS || error("W4 case inventory drift")
     mkpath(output_dir)
     grid, margin, phi_f_sha, phi_c_sha = load_canonical_grid(phi_raw_path)
     device_owner = device_copy(grid)
