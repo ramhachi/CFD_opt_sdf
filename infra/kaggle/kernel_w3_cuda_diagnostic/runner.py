@@ -23,8 +23,8 @@ SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
 SOURCE_FETCH_DEPTH = 32
 # These two identity pins are filled from the reviewed implementation commit
 # before the private diagnostic kernel is submitted.
-DIAGNOSTIC_SOURCE_COMMIT = "cff4ef23a958f1384e94a8764a89e81a7143e2f1"
-DIAGNOSTIC_JOB_SHA256 = "902edaf72d7f0354c5f897c4eb23a0069972c9855fb9b8c7afa0681613e251c5"
+DIAGNOSTIC_SOURCE_COMMIT = "9a2f0950ef9d320f7290581203e7ca102d8ef2a6"
+DIAGNOSTIC_JOB_SHA256 = "f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998"
 W3_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
 W3_SOURCE_COMMIT = "5e985fa3395a01228c18910d96e09ecbc5497628"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"

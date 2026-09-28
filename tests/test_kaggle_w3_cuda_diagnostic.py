@@ -104,3 +104,19 @@ def test_error_bundle_can_be_verified_as_diagnostic_only(tmp_path):
     assert manifest == {"ERROR.txt": payload_sha}
     assert len(manifest_sha) == 64
     assert status == "ERROR"
+
+
+def test_error_classification_uses_julia_exception_after_last_checkpoint(tmp_path):
+    (tmp_path / "ERROR.txt").write_text("Julia job failed\n")
+    (tmp_path / "w3_cuda_diagnostic.log").write_text(
+        "ERROR: LoadError: UndefVarError: `f` not defined in `Main`\n"
+        " [1] v16_representative_probes(grid::GridSDF)\n")
+
+    result = host.classify_failure(
+        tmp_path, {"last_completed_stage": "input_and_device_identity"}, None)
+
+    assert result["last_completed_stage"] == "input_and_device_identity"
+    assert result["failed_stage"] == "representative_probe_definitions"
+    assert result["failure_class"] == "julia_diagnostic_probe_fixture_bug"
+    assert result["solver_started"] is False
+    assert "UndefVarError" in result["exact_exception"]

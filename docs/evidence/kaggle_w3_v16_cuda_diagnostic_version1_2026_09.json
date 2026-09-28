@@ -1,0 +1,85 @@
+{
+  "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+  "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+  "claim_scope": "CPU/T4 CUDA implementation-layer diagnosis only; no primal or physical qualification",
+  "created_utc_date": "2026-09-28",
+  "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+  "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+  "diagnostic_complete": false,
+  "diagnostic_id": "w3_v16_cuda_body_force_minimal_diagnostic_2026_09",
+  "diagnostic_job_sha256": "902edaf72d7f0354c5f897c4eb23a0069972c9855fb9b8c7afa0681613e251c5",
+  "diagnostic_source_commit": null,
+  "evidence_type": "diagnostic_only",
+  "exact_kaggle_log_sha256": "0495b3a26105018645fd5f1a95493d1e9bf5b798ea18f6f9e79d4541addc7831",
+  "exact_kaggle_status_sha256": "91c0c13cf3f706b5ab00c5eebac9b337bdfd7fcf80f91b0017531e43af74bdf2",
+  "failure_classification": {
+    "exact_exception": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 319, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 257, in main\n    command([str(julia), \"--startup-file=no\", f\"--project={project}\", str(job),\n  File \"/kaggle/src/script.py\", line 55, in command\n    raise RuntimeError(f\"command exit {result.returncode}: {Path(log_path).name}\")\nRuntimeError: command exit 1: w3_cuda_diagnostic.log\n",
+    "failed_stage": "input_and_device_identity",
+    "failure_class": "sdf_device_copy_or_roundtrip",
+    "solver_started": false
+  },
+  "force_snapshot_verification": null,
+  "host_artifact_verification_passed": true,
+  "host_verifier_sha256": "b2c057436d192b904666335005bb70ec54daa665519671d572a7c84b19ad1767",
+  "independent_numeric_diagnostics": null,
+  "input_criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+  "input_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+  "input_mount_inventory": {
+    "input_root": "/kaggle/input",
+    "input_root_exists": true,
+    "top_level_entries": [
+      "dir:datasets"
+    ]
+  },
+  "julia_job_sha256": "902edaf72d7f0354c5f897c4eb23a0069972c9855fb9b8c7afa0681613e251c5",
+  "kaggle_status": "KernelWorkerStatus.ERROR",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+  "kernel_runner_sha256": "16deb4a5c35edf910f50deb48ed6a53c741bc807c789644c997aba4e894c7aee",
+  "kernel_version": 1,
+  "last_completed_stage": "input_and_device_identity",
+  "lattice_verification": null,
+  "output_artifacts": {
+    "ERROR.txt": "f3523e3694d7da49f8c92817f260737c68665ac5f8697abfb2df7f78a3f78958",
+    "git_checkout.log": "f65df6cfef37ba6db6cd217fab2643e8ad80916d7db6f4aec7257c918213e1c0",
+    "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+    "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input_dataset_manifest.json": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "input_mount_inventory.json": "1af5d82d1d5f0fac9ed47d663013eb392684b9167eb0ada3674d60fcb9a9a441",
+    "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+    "instantiate.log": "363e78a8da3b6edc21009bef905fb6eaf475468b12f7bb746eaf8c28ebffa5cd",
+    "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "nvidia_smi.csv": "ca5495194d1a02c0a9bc2eba79a73a022b00a4e1ea917a509aa7472b20c73acd",
+    "progress.json": "6a130535c8953b8a44afa7e45a07afd9924f9fed20c55d359d861f08be345fcd",
+    "w3_cuda_diagnostic.log": "1200bd7f95d576c89bf07859604dbad074210cf2a25070545059781fdc4454a5"
+  },
+  "output_sha256_manifest_sha256": "420637e8348f0db8b6e8f0939bb656a8968bd5960c6071996c4669dff69b4625",
+  "output_status": "ERROR",
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "solver_steps_v16": 0,
+  "source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628",
+  "source_identity_verification": null,
+  "w2b_sign_convention_audit": {
+    "criteria_path": "docs/evidence/kaggle_w2b_criteria_2026_09_round5.json",
+    "criteria_sha256": "32c1fb8a80658a9ea37713c477c6ededcc0808d5cbb8bbd07d91a2b83ed1eb47",
+    "interpretation": "sign-convention precedent only; no v16 target or force-sign diagnosis",
+    "registered_T4_drag_sign_gate": true,
+    "result_path": "docs/evidence/kaggle_w2b_round5_result_2026_09.json",
+    "result_sha256": "8edf0d36cb706e9f6862faf7ea44845b100c3213433e94ae334251c16c94cccc",
+    "time_weighted_drag_solver_units_by_cells_per_diameter": {
+      "16": 88.23605891136792,
+      "24": 204.44844285577787,
+      "32": 370.3856390591538
+    }
+  }
+}

@@ -1095,8 +1095,8 @@ view is used. Stage checkpoints are written before/after each operation so an
 ERROR output identifies the last completed stage.
 
 The diagnostic runner is pinned to source commit
-`cff4ef23a958f1384e94a8764a89e81a7143e2f1`; the Julia job SHA-256 is
-`902edaf72d7f0354c5f897c4eb23a0069972c9855fb9b8c7afa0681613e251c5`. Before
+`9a2f0950ef9d320f7290581203e7ca102d8ef2a6`; the Julia job SHA-256 is
+`f731d86cab15b17aaded24b8dfdbb565b1ee24e359babf0af997c974e959b998`. Before
 submitting, commit and push the matching diagnostic runner, host verifier,
 metadata and tests, then use the kernel's version returned by `push` in every
 collection command:
@@ -1134,3 +1134,17 @@ the exact partial output bundle and checkpoints are retrievable. The resulting
 evidence must keep every primal, physical, grid-response, gradient, reverse,
 topology, optimizer, and shape-update flag false. Do not start W4, formal FD,
 or another W3 qualification attempt from this diagnostic alone.
+
+The separate diagnostic kernel version 1 reached the registered input and
+device identity checkpoint on a Tesla T4, then errored while constructing the
+representative probe list, before solver-free body measurement or any solver
+step. The Julia log identified `UndefVarError: f not defined` at
+`v16_representative_probes`: one probe had the malformed Julia literal `0.0f`.
+The smallest correction is `0.0f0`; no W3 source, criteria, threshold, or force
+projection changed. The original host diagnostic and an append-only correction
+record are
+[`version 1`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_2026_09.json)
+and
+[`version 1 classification correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version1_correction_2026_09.json).
+Version 1's artifacts passed host hash/input verification; its failed stage is
+the probe fixture itself, not SDF transfer or WaterLily CUDA measurement.

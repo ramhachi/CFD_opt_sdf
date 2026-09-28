@@ -572,61 +572,97 @@ def audit_w2b_drag_sign_precedent() -> dict[str, object]:
 
 def classify_failure(folder: Path, progress: dict,
                     report: dict | None) -> dict[str, object]:
-    stage = progress.get("last_completed_stage")
-    if report is not None and stage == "diagnostic_report_written":
+    last_completed_stage = progress.get("last_completed_stage")
+    julia_log_path = folder / "w3_cuda_diagnostic.log"
+    julia_log = julia_log_path.read_text(errors="replace") if julia_log_path.is_file() else ""
+    error_path = folder / "ERROR.txt"
+    wrapper_error = error_path.read_text(errors="replace") if error_path.is_file() else ""
+    exception_text = julia_log if julia_log else wrapper_error
+    if "v16_representative_probes" in julia_log and "UndefVarError" in julia_log:
+        failed_stage = "representative_probe_definitions"
+        failure_class = "julia_diagnostic_probe_fixture_bug"
+    elif report is not None and last_completed_stage == "diagnostic_report_written":
+        failed_stage = last_completed_stage
         failure_class = "runner_output_identity_or_host_aggregation"
-    elif stage in ("w2b_sphere_control_started", "w2b_sphere_control_completed"):
+    elif last_completed_stage in ("w2b_sphere_control_started", "w2b_sphere_control_completed"):
+        failed_stage = last_completed_stage
         failure_class = "w2b_control_cuda_body_or_force"
-    elif stage == "cuda_one_step_started":
+    elif last_completed_stage == "cuda_one_step_started":
+        failed_stage = last_completed_stage
         failure_class = "first_cuda_primal_step"
-    elif stage == "cpu_one_step_started":
+    elif last_completed_stage == "cpu_one_step_started":
+        failed_stage = last_completed_stage
         failure_class = "first_cpu_primal_step"
-    elif stage in ("cpu_one_step_completed", "cuda_one_step_completed"):
+    elif last_completed_stage in ("cpu_one_step_completed", "cuda_one_step_completed"):
+        failed_stage = last_completed_stage
         failure_class = "force_integration_after_first_step"
-    elif stage == "one_step_reproducer":
+    elif last_completed_stage == "one_step_reproducer":
+        failed_stage = last_completed_stage
         failure_class = "force_integration_or_lattice_artifact_write"
-    elif stage == "cuda_measure_started":
+    elif last_completed_stage == "cuda_measure_started":
+        failed_stage = last_completed_stage
         failure_class = "WaterLily_combined_body_measure_cuda"
-    elif stage == "cpu_measure_completed":
+    elif last_completed_stage == "cpu_measure_completed":
+        failed_stage = last_completed_stage
         failure_class = "WaterLily_combined_body_measure_cuda"
-    elif stage == "cuda_simulation_constructed":
+    elif last_completed_stage == "cuda_simulation_constructed":
+        failed_stage = last_completed_stage
         failure_class = "combined_body_solver_free_measurement"
-    elif stage in ("simulation_construction_started", "cpu_simulation_constructed"):
+    elif last_completed_stage in ("simulation_construction_started", "cpu_simulation_constructed"):
+        failed_stage = last_completed_stage
         failure_class = "simulation_construction_cuda"
-    elif stage in ("cpu_combined_flow_lattice_completed", "cuda_combined_flow_lattice_completed"):
+    elif last_completed_stage in ("cpu_combined_flow_lattice_completed", "cuda_combined_flow_lattice_completed"):
+        failed_stage = last_completed_stage
         failure_class = "full_flow_lattice_composed_body_cuda"
-    elif stage in ("cpu_ground_flow_lattice_completed", "cuda_ground_flow_lattice_completed"):
+    elif last_completed_stage in ("cpu_ground_flow_lattice_completed", "cuda_ground_flow_lattice_completed"):
+        failed_stage = last_completed_stage
         failure_class = "full_flow_lattice_ground_body_cuda"
-    elif stage in ("cpu_candidate_flow_lattice_completed", "cuda_candidate_flow_lattice_completed"):
+    elif last_completed_stage in ("cpu_candidate_flow_lattice_completed", "cuda_candidate_flow_lattice_completed"):
+        failed_stage = last_completed_stage
         failure_class = "full_flow_lattice_candidate_sdf_cuda"
-    elif stage and stage.endswith("representative_probes_started"):
+    elif last_completed_stage == "representative_probe_definitions_started":
+        failed_stage = last_completed_stage
+        failure_class = "julia_diagnostic_probe_fixture_bug"
+    elif last_completed_stage == "representative_probe_definitions_completed":
+        failed_stage = "first_representative_waterlily_body_probe"
         failure_class = "representative_waterlily_body_probe_cuda"
-    elif stage and stage.endswith("representative_probes_completed"):
+    elif last_completed_stage and last_completed_stage.endswith("representative_probes_started"):
+        failed_stage = last_completed_stage
+        failure_class = "representative_waterlily_body_probe_cuda"
+    elif last_completed_stage and last_completed_stage.endswith("representative_probes_completed"):
+        failed_stage = "next_representative_body_probe_or_later"
         failure_class = "next_representative_waterlily_body_probe_cuda"
-    elif stage == "input_and_device_identity":
+    elif last_completed_stage == "input_and_device_identity":
+        failed_stage = "operation_after_input_and_device_identity"
         failure_class = "sdf_device_copy_or_roundtrip"
     elif (folder / "w3_cuda_diagnostic.log").is_file():
+        failed_stage = "julia_job_start_or_canonical_input_load"
         failure_class = "julia_job_start_or_canonical_input_load"
     elif (folder / "julia_smoke.log").is_file():
+        failed_stage = "cuda_setup_or_julia_smoke"
         failure_class = "cuda_setup_or_julia_smoke"
     elif (folder / "instantiate.log").is_file():
+        failed_stage = "julia_runtime_or_package_setup"
         failure_class = "julia_runtime_or_package_setup"
     elif any((folder / name).is_file() for name in ("git_fetch.log", "git_checkout.log")):
+        failed_stage = "source_fetch_or_hash_identity"
         failure_class = "source_fetch_or_hash_identity"
     elif (folder / "input_mount_inventory.json").is_file():
+        failed_stage = "kaggle_input_discovery_or_dataset_identity"
         failure_class = "kaggle_input_discovery_or_dataset_identity"
     else:
+        failed_stage = "kaggle_input_or_runner_bootstrap"
         failure_class = "kaggle_input_or_runner_bootstrap"
-    error_path = folder / "ERROR.txt"
     return {
-        "failed_stage": stage,
+        "last_completed_stage": last_completed_stage,
+        "failed_stage": failed_stage,
         "failure_class": failure_class,
         "solver_started": bool(report and report.get("v16_one_step_reproducer", {}).get("cuda_solver_steps", 0))
-        or stage in ("cpu_one_step_started", "cpu_one_step_completed",
+        or last_completed_stage in ("cpu_one_step_started", "cpu_one_step_completed",
                      "cuda_one_step_started", "cuda_one_step_completed",
                      "one_step_reproducer", "w2b_sphere_control_started",
                      "w2b_sphere_control_completed", "diagnostic_report_written"),
-        "exact_exception": error_path.read_text() if error_path.is_file() else None,
+        "exact_exception": exception_text or None,
     }
 
 
