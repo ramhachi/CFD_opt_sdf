@@ -9,42 +9,28 @@ the current production path.
 
 Current checkpoint: W3 round 4 exact T4 kernel version 5 passed host
 verification for its registered finite-box primal contract. W3 v4's all-zero
-root cause remains unresolved; physical-profile, grid-response and downstream
-qualification remain false. W4 immutable criteria round 1
-(`5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`) are
-preserved but superseded before computation after a local pre-upload preflight
-found a dataset filename mapping defect. The minimal runner/host correction
-and regression test pass locally and are pushed in `f69c56e`. Immutable W4
-round 2 is registered (SHA-256
-`5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`) against
-source commit `97a5bca`. Its private Kaggle dataset version 1 is `ready` and
-the downloaded remote inventory matches all registered hashes. Exact W4
-kernel version 1 failed at the pre-solver case-inventory guard with zero
-solver steps; append-only diagnostic SHA-256 is
-`30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`. A
-minimal Julia tuple-materialization fix and regression test passed locally and
-was pushed as `5d15e72`. Immutable W4 criteria round 3 is registered at SHA-256
-`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`; dataset
-version 2 is `ready` and its remote five-file payload passes exact hash and
-host/runner dataset checks. Exact private T4 kernel `/2` ran all four primal
-cases but failed registered T3/T4 integrity predicates; preserve it as
-diagnostic-only. Minimal T3/T4 implementation fixes passed validation and were
-pushed as `52a50e4`. Immutable round 4 is registered at SHA-256
-`3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`; its fresh
-private dataset stage passes local checks. Version 3 is now `ready`; the
-downloaded remote payload matches the exact five-file manifest and passes
-host/runner verification. Round 3 is not qualified; submit kernel version 3
-next.
-See
-[`phase_plan.md`](phase_plan.md) for evidence and the current gate.
+root cause remains unresolved. W4 immutable criteria round 4
+([SHA-256 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json))
+was executed by exact private T4 kernel version 3 and passed independent host
+verification. Append-only result evidence is
+[`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+SHA-256 `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+The registered four-case matrix passed T0-T10; the extended-domain fine-grid
+follow-up condition was not triggered. This qualifies only the registered
+WaterLily finite-box sensitivity matrix. OpenFOAM profile equivalence,
+absolute downforce, grid/domain convergence, gradient, reverse mode, topology,
+optimizer and shape update remain unqualified. The formal FD entry gate is
+open, but no FD measurement has started. See [`phase_plan.md`](phase_plan.md)
+for current execution order and
+[`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
+version-bound commands and artifacts.
 
 ## Fresh OpenCode read order
 
 Start with the repository root [`AGENTS.md`](../AGENTS.md), then read:
 
 1. [`opencode_handoff_2026_09.md`](opencode_handoff_2026_09.md) — concise
-   current SDF-native architecture, status, evidence boundaries, and immediate
-   blocker.
+   current SDF-native architecture, status, evidence boundaries, and next gate.
 2. [`phase_plan.md`](phase_plan.md) — the sole current roadmap, status, and
    execution-order authority.
 3. [`problem_register_2026_09.md`](problem_register_2026_09.md) — the issue

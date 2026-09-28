@@ -2225,3 +2225,185 @@ runner-mounted dataset verification pass, including canonical state/phi hashes
 and CPU margin `0.3499999939931499 m`. Submit exact kernel version 3 after
 rechecking private T4 metadata. No W4 round-4 measurement, formal FD, reverse
 qualification or shape update has started.
+
+
+### W4 round-4 kernel version 3: PASS and independent host verification
+
+This entry is the exact-version continuation of W4 round 4. It supersedes the
+prior instruction to submit the next kernel version; immutable criteria and
+round-3 diagnostics remain unchanged.
+
+- **Registered:** criteria
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json)
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`,
+  source snapshot `b9ae43b540a94b52fdb8a05051fba6f250034a6f`, exact W3 round-4
+  host-PASS prerequisite. The dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 3 was `ready`. Its
+  five-file content inventory matches the round-4 manifest SHA-256
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`; the
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`.
+  Host and runner-mounted dataset checks both passed.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3`, submitted from committed
+  `infra/kaggle/kernel_w4/kernel-metadata.json` with timeout 7200. It ended
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256
+  `80449770970ace3350548b96005931282c52a791555986628382897e930fb1af`;
+  exact `kaggle kernels logs` JSON response SHA-256
+  `380f53ba8a0ad08c5fdf7c6266ebd63d041d40d6be2ff9e7f56ffa11db7b25fe`;
+  downloaded notebook log
+  `work/kaggle_w4_version3/output/cfd-opt-sdf-w4-v16-sensitivity.log` SHA-256
+  `3f42c3a9041e8baa8c2ee248fc7cc6be71df9dabab4d5e6441b2cee057e38dee`;
+  Julia job log SHA-256
+  `86089fc236218525ec94a063f7a0be8525ddd395829ca2ce09b23015289255ea`.
+- **Exact retrieval commands:**
+
+  ```bash
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels status ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels logs ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3
+  uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+    kaggle kernels output ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3 \
+    -p work/kaggle_w4_version3/output --force
+  ```
+
+- **Dataset verifier directory:** the fresh Kaggle download and audit are kept
+  intact at `work/kaggle_w4_v16_dataset_round4_remote/`. That folder also
+  contains `remote_inventory_audit.json`, which is audit evidence rather than
+  a Kaggle dataset payload file. Passing that whole directory to the exact
+  inventory verifier correctly returns
+  `ValueError: staged W4 dataset contains unregistered files`. For host
+  verification, only the remote registered five-file content payload plus
+  `dataset-metadata.json` was copied into
+  `work/kaggle_w4_version3/dataset_payload/`; the original remote download and
+  audit remain untouched. The failed preflight stderr SHA-256 is
+  `59089d21e39da8ec4597f3010b5967278d49ef03bc13a26a7197eb0e590b8ee2`.
+  Re-run the passing host check with:
+
+  ```bash
+  PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+    scripts/verify_kaggle_w4_v16.py work/kaggle_w4_version3/output \
+    --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json \
+    --dataset-dir work/kaggle_w4_version3/dataset_payload \
+    --kernel-version 3
+  ```
+
+  Exit status is 0. Captured host verification JSON SHA-256 is
+  `77e5a2fe93c817b206a0f65a3a02039db1eb8e1fe5a387fdfcc34d12c3e384dd`; the
+  successful verifier stderr is empty. It checked all 24 files in
+  `sha256.json`, whose own SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+  Append-only result evidence is
+  [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+  SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`
+  (matching sidecar).
+- **Runtime/backend:** two Tesla T4 GPUs; selected UUID
+  `GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8`; driver `580.159.04`; CUDA driver
+  API `13.3.0`, CUDA runtime `12.8.0`, CUDA.jl `6.3.1`; Julia `1.12.6`, one
+  Julia thread; WaterLily `1.8.0`, `KernelAbstractions`. The criteria bind
+  `CUDA_VISIBLE_DEVICES=0`; the exact source-bound runner assigns this value to
+  all Julia subprocesses, although the runtime output does not separately echo
+  it. Julia archive SHA-256 is
+  `bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a`.
+- **SDF identity:** canonical NPZ SHA-256
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, state
+  SHA-256 `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa3c5a611c29f6de8`,
+  C-order phi SHA-256
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`, and
+  Fortran-order/GPU-round-trip SHA-256
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`.
+  CPU margin is `0.3499999939931499 m`, above the registered `0.15 m` gate.
+- **Measured:** all case force means below are independently recomputed physical
+  N on exact `[80,120]` endpoints; endpoint values use linear interpolation
+  followed by trapezoidal physical-time integration. Stationarity is the
+  exact-window half-split drift against the immutable maximum `0.02`, inherited
+  from the W3 round-4/W2 registered convention.
+
+  | Case | Grid | Steps | `tU/L` | Wall (s) | Peak VRAM (bytes) | Drag (N) | Downforce (N) | Cd | Drag drift | Downforce drift |
+  | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | `flow_16` | 100×48×36 | 4,808 | 120.001938 | 35.6669 | 24,934,924 | 0.336017730 | 0.353373240 | 1.050055406 | 8.1636e-6 | 4.1726e-6 |
+  | `flow_24` | 150×72×54 | 8,741 | 120.009331 | 95.8426 | 81,567,020 | 0.357619959 | 0.356747660 | 1.117562371 | 2.0596e-6 | 1.1682e-5 |
+  | `flow_32` | 200×96×72 | 13,536 | 120.005043 | 311.2219 | 184,412,116 | 0.410305278 | 0.411820160 | 1.282203995 | 1.9894e-6 | 1.4091e-6 |
+  | `domain_xplus1m_16` | 120×48×36 | 4,808 | 120.000877 | 29.8522 | 29,631,500 | 0.336375219 | 0.353220289 | 1.051172558 | 1.9810e-5 | 1.0784e-5 |
+
+  Aggregate case wall time is `472.5836008 s`; maximum case VRAM is
+  `184,412,116 bytes` of `15,636,037,632 bytes` total. All cases have finite
+  velocity, pressure and forces; all raw force CSV rows satisfy total =
+  pressure + viscous on x/y/z, and drag/downforce use the registered `+Fx` /
+  `-Fz` projections.
+- **W3 baseline comparison:** W4 `flow_16` vs W3 round 4 has zero observed
+  deltas for drag (`0.3360177299 N`), downforce (`0.3533732402 N`), Cd
+  (`1.0500554060`), both stationarity drifts, steps (`4,808`) and `tU/L`
+  (`120.0019378662`). The criteria explicitly register no numerical
+  repeatability threshold, so this is reported as a comparison only.
+- **Response:** 24→32 resolution deltas are `0.0526853195 N` drag
+  (`0.12840517` relative) and `0.0550725000 N` downforce (`0.13372949`). The
+  baseline→extended-domain deltas are `0.0003574887 N` drag (`0.00106277`
+  relative) and `0.0001529516 N` downforce (`0.00043283` relative). The domain
+  delta is below its corresponding resolution delta for both quantities;
+  extended-domain fine-grid follow-up is `false` under the registered rule.
+- **T0-T10:** all true. The host recomputed force closure, projections,
+  trapezoidal means, Cd, stationarity, response deltas and W3 comparison rather
+  than relying on the runner verdict.
+- **Qualified:** only the registered finite-box WaterLily sensitivity matrix
+  (`w4_sensitivity_matrix_passed=true`). Physical-profile equivalence,
+  absolute downforce, general stationarity qualification, grid/domain
+  convergence, gradient, reverse mode, topology, optimizer and shape update
+  remain false. WaterLily/OpenFOAM boundary equivalence is not claimed.
+- **Open:** FD entry gate is `OPEN`; this only permits separate FD
+  preregistration. Formal centered FD has not started in this work slice. W4 is
+  complete through exact host verification.
+
+#### Local regression and source-syntax validation
+
+The managed worktree has no local `.venv`; commands below used the configured
+project interpreter from `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv` while
+all tested source and working paths resolved in this worktree.
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w4.py tests/test_kaggle_w3_cuda_diagnostic.py \
+  tests/test_kaggle_w3_owner_type_probe.py
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m py_compile \
+  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
+  scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
+  scripts/verify_kaggle_w4_v16.py infra/kaggle/kernel_w4/runner.py
+julia --startup-file=no -e \
+  'Meta.parseall(read("scripts/waterlily_w4_v16_sensitivity_job.jl", String)); Meta.parseall(read("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl", String)); println("Julia parse checks passed")'
+julia --startup-file=no -e '
+  include("julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl")
+  cases = V16W4Sensitivity.V16W4_CASES
+  expected = (("flow_16", (100,48,36), 16.0, 0.2, (2.5,1.2,0.9)),
+              ("flow_24", (150,72,54), 24.0, 0.3, (2.5,1.2,0.9)),
+              ("flow_32", (200,96,72), 32.0, 0.4, (2.5,1.2,0.9)),
+              ("domain_xplus1m_16", (120,48,36), 16.0, 0.2, (3.5,1.2,0.9)))
+  @assert length(cases) == 4
+  for (case, item) in zip(cases, expected)
+    @assert (case.case_id, case.flow_dims, case.solver_length,
+             round(case.solver_viscosity,digits=1), case.physical_box_max_m) == item
+    @assert case.flow_origin_m == (-2.5,-1.2,-0.9)
+    @assert case.canonical_design_origin_m == (-1.0,-0.8,-0.6)
+    @assert case.reynolds == 80.0
+  end
+  println("4-case mapping, distinct flow/SDF origins, and Re=80 passed")'
+```
+
+The focused command passed `45` tests. Python compilation, Julia parsing, a
+standalone exact four-case mapping assertion (including distinct flow/SDF
+origins and Re=80), and `git diff --check` passed. The required full command
+was run and its log preserved:
+
+```bash
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q \
+  > work/kaggle_w4_version3/final_pytest.log 2>&1
+```
+
+It exited 1 with `1,117 passed, 37 failed, 4 skipped` in `196.88 s`. Traceback
+review found the 37 failures require ignored historical `work/` artifacts or
+prerequisites absent from this managed worktree; no W4/W3-owner test failed.
+Full pytest log SHA-256 is
+`60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.

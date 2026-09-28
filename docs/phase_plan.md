@@ -4018,3 +4018,88 @@ qualification flag.
   verifier, runner mount, canonical hashes and margin all pass.
 - **Open:** verify kernel metadata and submit the next exact private T4 kernel
   version. Preserve round-3 criteria and kernel `/2` evidence.
+
+
+### 2026-09-29 W4 round 4 exact kernel version 3 PASS and host-verified
+
+This checkpoint supersedes the preceding W4 round-4 “submit the next exact
+kernel version” status. It closes W4 host verification only; it does not start
+formal FD or any reverse/optimizer work.
+
+- **Registered:** immutable round-4 criteria remain
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`, bound
+  to source snapshot `b9ae43b540a94b52fdb8a05051fba6f250034a6f` and the exact
+  W3 round-4 host-verified PASS. No criteria, measurement window or threshold
+  changed after measurement.
+- **Submitted:** private dataset
+  `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity` version 3 was `ready`; its
+  manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`. Exact
+  private kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3` ended
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256 is
+  `80449770970ace3350548b96005931282c52a791555986628382897e930fb1af`;
+  `kaggle kernels logs` response SHA-256 is
+  `380f53ba8a0ad08c5fdf7c6266ebd63d041d40d6be2ff9e7f56ffa11db7b25fe`, and
+  downloaded Kaggle log SHA-256 is
+  `3f42c3a9041e8baa8c2ee248fc7cc6be71df9dabab4d5e6441b2cee057e38dee`.
+- **Measured:** all four cases completed to `tU/L >= 120` on the registered
+  T4 backend. Exact-window `[80,120]` time-weighted physical force results are:
+
+  | Case | Grid | Steps | `tU/L` | Wall (s) | Peak VRAM (bytes) | Drag (N) | Downforce (N) | Cd | Drag drift | Downforce drift |
+  | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | `flow_16` | 100×48×36 | 4,808 | 120.001938 | 35.6669 | 24,934,924 | 0.336017730 | 0.353373240 | 1.050055406 | 8.16e-6 | 4.17e-6 |
+  | `flow_24` | 150×72×54 | 8,741 | 120.009331 | 95.8426 | 81,567,020 | 0.357619959 | 0.356747660 | 1.117562371 | 2.06e-6 | 1.17e-5 |
+  | `flow_32` | 200×96×72 | 13,536 | 120.005043 | 311.2219 | 184,412,116 | 0.410305278 | 0.411820160 | 1.282203995 | 1.99e-6 | 1.41e-6 |
+  | `domain_xplus1m_16` | 120×48×36 | 4,808 | 120.000877 | 29.8522 | 29,631,500 | 0.336375219 | 0.353220289 | 1.051172558 | 1.98e-5 | 1.08e-5 |
+
+- **Verified:** independent host verifier
+  `scripts/verify_kaggle_w4_v16.py` (SHA-256
+  `139d45ef1edc5c7a04d250a88ce7e71710a6c07e2b10062c96db78bf86698aa0`)
+  checked 24 output-manifest files, input/source/backend identity, canonical
+  SDF hashes and margin, GPU round-trip, all raw force rows and x/y/z
+  pressure-plus-viscous closure, force projections, endpoint interpolation,
+  time-weighted force/Cd recomputation, runtime/VRAM and T0-T10. Host verifier
+  JSON SHA-256 is
+  `77e5a2fe93c817b206a0f65a3a02039db1eb8e1fe5a387fdfcc34d12c3e384dd`; the
+  output `sha256.json` manifest SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+- **Response:** host-recomputed 24→32 absolute deltas are `0.0526853195 N`
+  drag and `0.0550725000 N` downforce. The 16-cell baseline→extended-domain
+  deltas are `0.0003574887 N` drag and `0.0001529516 N` downforce. Domain
+  deltas are smaller than their corresponding resolution deltas, so the
+  registered extended-domain fine-grid follow-up is not required. W4 flow_16
+  and W3 round 4 have zero observed delta in drag, downforce, Cd, stationarity,
+  steps, and `tU/L`; the criteria did not register a numerical repeatability
+  gate, so this comparison remains descriptive.
+- **Evidence:** append-only result
+  [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+  SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`;
+  its sidecar matches. Output manifest SHA-256 is
+  `1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710`.
+- **Qualified:** `w4_sensitivity_matrix_passed=true` only for the registered
+  finite-box WaterLily sensitivity matrix. `physical_profile_equivalence_qualified`,
+  `absolute_downforce_qualified`, `stationarity_qualified`,
+  `grid_or_domain_convergence_qualified`, `gradient_qualified`,
+  `reverse_mode_qualified`, `topology_qualified`, `optimizer_qualified`, and
+  `shape_update_allowed` remain false. No OpenFOAM equivalence, absolute
+  aerodynamics or grid/domain convergence claim follows.
+- **Open:** formal FD entry gate is `OPEN` because the registered domain
+  follow-up condition is false and W3/W4 drag signs agree. Formal centered FD
+  measurement has not started; this checkpoint stops after W4 host
+  verification. W3 v4 all-zero-force root cause remains unresolved.
+- **Validation:** focused W4/W3-owner tests passed (`45 passed`); Python
+  `compileall`, the registered W4 Python `py_compile` set, Julia `Meta.parseall`,
+  the standalone four-case/Re=80/origin mapping check, and `git diff --check`
+  passed. Full repository pytest reported `1,117 passed, 37 failed, 4 skipped`
+  in `196.88 s`. Traceback review confirmed the 37 failures are historical
+  Stage T/S/V checks blocked by missing ignored `work/` artifacts (mostly
+  `FileNotFoundError`; one audit test reports the missing prerequisite); no
+  W4, W3-owner or focused task test failed. Captured log:
+  `work/kaggle_w4_version3/final_pytest.log`, SHA-256
+  `60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.

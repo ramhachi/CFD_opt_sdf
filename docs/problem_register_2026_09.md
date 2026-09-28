@@ -1,5 +1,11 @@
 # 問題台帳 — 2026-09-22
 
+> **現況（2026-09-29）:** W3 owner-fix round 4はexact T4 version 5でhost PASSし、
+> W4 immutable round 4もexact kernel version 3でhost PASSした。W3 v4 all-zero forceの
+> root causeは未解決の診断課題として残るが、現行の次gateを定義しない。W4は登録済み
+> finite-box sensitivity matrixのみ通過し、grid/domain convergence、FD、gradient、reverse、
+> topology、optimizer、shape updateは未資格。現行順序は[`phase_plan.md`](phase_plan.md)を参照する。
+>
 > **状態注記（2026-09-28）:** 本台帳は問題ごとの診断と証拠範囲を保持する。
 > Stage T/S/V に関する「現在地」や blocker の記述は、それぞれの日付と候補・契約に
 > 限る歴史的 status であり、現行の architecture や実行順ではない。現在の production

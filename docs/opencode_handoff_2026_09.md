@@ -2141,3 +2141,45 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
   registered CUDA compile/execution fixture must compare CPU/GPU SDF
   value+normal within preregistered Float32 tolerances), then W2-T4b, then
   W2b 16/24/32 cells/D.
+
+
+## 2026-09-29: W4 round 4 kernel version 3 passed host verification
+
+- **Registered:** W4 immutable round-4 criteria SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`, bound
+  to source commit `b9ae43b540a94b52fdb8a05051fba6f250034a6f` and W3 round-4
+  host-PASS evidence. The private W4 dataset version 3 is `ready`, with exact
+  five-file payload/manifest verification; manifest SHA-256
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7` and
+  remote audit SHA-256
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`.
+- **Submitted / measured:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/3` reached
+  `KernelWorkerStatus.COMPLETE`; all four cases reached `tU/L >= 120`. The
+  exact `[80,120]` physical-N means, stationarity drifts and execution data are
+  recorded in the round-4 result and runbook. Runtime identity: two Tesla T4s,
+  selected GPU UUID `GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8`, Julia 1.12.6,
+  CUDA.jl 6.3.1, runtime 12.8.0, driver API 13.3.0, WaterLily 1.8.0 and
+  `KernelAbstractions`. The registered runner assigns
+  `CUDA_VISIBLE_DEVICES=0`; this value is source-bound but is not separately
+  echoed by the runtime artifacts.
+- **Verified:** host verifier SHA-256
+  `139d45ef1edc5c7a04d250a88ce7e71710a6c07e2b10062c96db78bf86698aa0` passed
+  all T0-T10 and independently checked 24 manifested output files, all-axis
+  pressure/viscous force closure, force projections, endpoint-clipped
+  trapezoidal means, stationarity, runtime and VRAM. Append-only result:
+  `docs/evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json`,
+  SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+- **Response:** 24→32 resolution deltas are `0.0526853195 N` drag and
+  `0.0550725000 N` downforce. Baseline→extended-domain deltas are
+  `0.0003574887 N` drag and `0.0001529516 N` downforce. The extended-domain
+  fine-grid follow-up is not required under the registered comparison rule.
+  This is not a grid/domain convergence result.
+- **Qualified:** `w4_sensitivity_matrix_passed=true` for the bounded registered
+  WaterLily finite-box matrix. Physical-profile equivalence, absolute
+  downforce, general stationarity, grid/domain convergence, gradient, reverse,
+  topology, optimizer and shape update remain unqualified/false.
+- **Open:** formal FD entry gate is `OPEN`, but formal FD has not started. The
+  W3 v4 all-zero-force root cause remains unresolved. Stop this work slice at
+  W4 host verification; do not start centered FD, reverse, or a shape update.

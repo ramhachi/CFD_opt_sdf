@@ -1,0 +1,744 @@
+{
+  "absolute_downforce_qualified": false,
+  "aggregate_solver_wall_seconds": 472.5836007595062,
+  "all_T0_T10_passed": true,
+  "artifact_manifest": {
+    "W4_JOB_DONE": "8b6c56703327042593f0336a62ae46e9ac266eddc318d2910e0577a589d0c78e",
+    "domain_xplus1m_16.forces.csv": "d24d0da685f9b7661f59914a4db9c6fd4ce8499b168893b26836e2468d9c2ec2",
+    "domain_xplus1m_16.summary.json": "3b4e233a7c65f936b5d2c29a30c943d01e1a011bfab2c8d1c75951aa8048417a",
+    "execution_state.json": "dce0bff1909e6b8ec04d1fdef58752cfb4ca47bd07102beaa65c632ed1254d7d",
+    "fingerprint.json": "02d50e757dfe658c14a8a29d3b022c59e133ea9d2c045c2307dc433c241ba249",
+    "flow_16.forces.csv": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+    "flow_16.summary.json": "48b0e5e394c4ac583152b5bd193876783c12f8598041ba320bcda90c1db25b84",
+    "flow_24.forces.csv": "b65300d7361736eb334582ceb60d8993020001d6c447bb17cb87fa267aa314dc",
+    "flow_24.summary.json": "1efa158dd16ac8313ccc992305fe906021a326c30266fb8c08371fe07cbcc30e",
+    "flow_32.forces.csv": "5f73ff8a7a8fbf8bcbd436d22f7db2eb443ff865703f29af4ae398d69f4257ef",
+    "flow_32.summary.json": "9af6eba371cef45dc9c37d2143ab0e5884a0fa76db0438cdfabdbd793423dcb9",
+    "git_checkout.log": "959a358f0e1a240ef54afd1bdee3d8cf92b23976ed7ff104a177070c6d53ef66",
+    "git_fetch.log": "f787ad9fb708b5f6ad6860e5d5bf36a96a9a74bdc3bb9d7b611ee9feed4ff784",
+    "git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input_criteria.json": "3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f",
+    "input_criteria.json.sha256": "65d4827e4ce990d589ad29d41556be8d6b496d5bf4baf9a8b22079d04da0f3f5",
+    "input_dataset_manifest.json": "d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7",
+    "input_state_metadata.json": "bff9f425abdda70d2804547aecb8b48d08c847b91fe1e6da876e3f4ee41ee2a9",
+    "instantiate.log": "2a1334ed3607a21b8eef7d90fd371039f3a79edf69d3e24dc05df14d28a959b9",
+    "julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "nvidia_smi.csv": "48150debf8eaa6d76cf92dd50d806b7bb6f02cd2f8eab9a194520c9caf0d2d07",
+    "outcome.json": "acfc04ed529bd303697645a40125ba2adaf2b7405d583fe4408aa5bc1ff4cb6f",
+    "w4_v16.log": "86089fc236218525ec94a063f7a0be8525ddd395829ca2ce09b23015289255ea"
+  },
+  "artifact_manifest_path": "work/kaggle_w4_version3/output/w4_v16_sensitivity/sha256.json",
+  "artifact_manifest_sha256": "1a72ab72cf16a35e0828636c03ef86602e35d32589d28c4898aaf9c1a909b710",
+  "backend_identity": {
+    "cuda_visible_devices": {
+      "registered_value": "0",
+      "runner_subprocess_assignment": "infra/kaggle/kernel_w4/runner.py sets CUDA_VISIBLE_DEVICES from the immutable criteria before Julia instantiate, smoke, and job subprocesses",
+      "runtime_echoed_in_output": false
+    },
+    "fingerprint_sha256": "02d50e757dfe658c14a8a29d3b022c59e133ea9d2c045c2307dc433c241ba249",
+    "gpu_inventory_sha256": "48150debf8eaa6d76cf92dd50d806b7bb6f02cd2f8eab9a194520c9caf0d2d07",
+    "julia_smoke_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "observed_gpu_inventory": [
+      "0, Tesla T4, GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8, 15360 MiB, 580.159.04",
+      "1, Tesla T4, GPU-66207a1d-cd3b-efb1-7ba2-2e5d760b4512, 15360 MiB, 580.159.04"
+    ],
+    "observed_julia_smoke_markers": {
+      "CUARRAY_SMOKE": "true",
+      "CUDA_DRIVER_VERSION": "13.3.0",
+      "CUDA_FUNCTIONAL": "true",
+      "CUDA_JL_VERSION": "6.3.1",
+      "CUDA_RUNTIME_VERSION": "12.8.0",
+      "GPU_COMPUTE_CAPABILITY": "7.5.0",
+      "GPU_NAME": "Tesla T4",
+      "JULIA_VERSION": "1.12.6",
+      "KA_SMOKE": "true",
+      "WATERLILY_CUDA_EXT": "true",
+      "WATERLILY_VERSION": "1.8.0"
+    },
+    "observed_runtime_from_case_summaries": {
+      "cuda_jl_version": [
+        "6.3.1"
+      ],
+      "julia_threads": [
+        1
+      ],
+      "julia_version": [
+        "1.12.6"
+      ],
+      "waterlily_backend": [
+        "KernelAbstractions"
+      ],
+      "waterlily_version": [
+        "1.8.0"
+      ]
+    },
+    "registered_backend": {
+      "accelerator": "NvidiaTeslaT4",
+      "compute_capability": "7.5.0",
+      "cuda_driver_api_version": "13.3.0",
+      "cuda_jl_version": "6.3.1",
+      "cuda_runtime_version": "12.8.0",
+      "cuda_visible_devices": "0",
+      "driver_version": "580.159.04",
+      "gpu_count": 2,
+      "gpu_name": "Tesla T4",
+      "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "machine_shape": "NvidiaTeslaT4",
+      "waterlily_backend": "KernelAbstractions",
+      "waterlily_version": "1.8.0"
+    },
+    "selected_gpu_uuid": "GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8"
+  },
+  "canonical_sdf_identity": {
+    "canonical_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "canonical_phi_fortran_order_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "canonical_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "cpu_measured_margin_m": 0.3499999939931499,
+    "device_roundtrip_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "margin_gate_m": 0.15,
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.05
+  },
+  "case_measurements": {
+    "domain_xplus1m_16": {
+      "execution": {
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_step_seconds": 0.04786491394042969,
+        "force_samples": 601,
+        "peak_vram_bytes": 29631500,
+        "steps": 4808,
+        "t_end_reached": 120.0008773803711,
+        "t_end_target": 120.0,
+        "vram_total_bytes": 15636037632,
+        "wall_seconds": 29.85220503807068,
+        "window_samples": 200
+      },
+      "force_metrics_host_recomputed": {
+        "cd_time_weighted": 1.051172558166545,
+        "diagnostic_first_half_mean_downforce_solver": 141.28734944141047,
+        "diagnostic_first_half_mean_drag_solver": 134.5514274215501,
+        "diagnostic_second_half_mean_downforce_solver": 141.28886933459097,
+        "diagnostic_second_half_mean_drag_solver": 134.54876851935245,
+        "downforce_time_weighted_n": 0.3532202886640743,
+        "drag_time_weighted_n": 0.3363752186132944,
+        "stationarity_first_half_time_weighted_downforce_solver": 141.28735362425607,
+        "stationarity_first_half_time_weighted_drag_solver": 134.5514201392276,
+        "stationarity_relative_half_window_drift_downforce": 1.0784224433974308e-05,
+        "stationarity_relative_half_window_drift_drag": 1.9809632758297544e-05,
+        "stationarity_second_half_time_weighted_downforce_solver": 141.2888773070031,
+        "stationarity_second_half_time_weighted_drag_solver": 134.5487547514077,
+        "window_mean_downforce_solver": 141.28810938800072,
+        "window_mean_drag_solver": 134.55009797045128,
+        "window_samples": 200,
+        "window_time_weighted_downforce_solver": 141.2881154656297,
+        "window_time_weighted_drag_solver": 134.55008744531773,
+        "window_time_weighted_fx_solver": 134.55008744531773,
+        "window_time_weighted_fy_solver": -0.45181949670270366,
+        "window_time_weighted_fz_solver": -141.2881154656297,
+        "window_time_weighted_pressure_fx_solver": 91.38902094974159,
+        "window_time_weighted_pressure_fy_solver": -0.6580652446517391,
+        "window_time_weighted_pressure_fz_solver": -144.86889565341238,
+        "window_time_weighted_viscous_fx_solver": 43.16106649557603,
+        "window_time_weighted_viscous_fy_solver": 0.20624574794903575,
+        "window_time_weighted_viscous_fz_solver": 3.5807801877827607
+      },
+      "geometry": {
+        "canonical_design_spacing_m": 0.05,
+        "canonical_sdf_origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "flow_dims": [
+          120,
+          48,
+          36
+        ],
+        "flow_origin_m": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "flow_spacing_m": 0.05,
+        "physical_box_m": [
+          [
+            -2.5,
+            3.5
+          ],
+          [
+            -1.2,
+            1.2
+          ],
+          [
+            -0.9,
+            0.9
+          ]
+        ],
+        "physical_box_max_m": [
+          3.5,
+          1.2,
+          0.9
+        ],
+        "reynolds": 80.0,
+        "solver_length": 16.0,
+        "solver_time_unit_s": 0.05,
+        "solver_viscosity": 0.19999999999999996
+      },
+      "raw_force_csv_sha256": "d24d0da685f9b7661f59914a4db9c6fd4ce8499b168893b26836e2468d9c2ec2",
+      "stationarity": {
+        "downforce": 1.0784224433974308e-05,
+        "drag": 1.9809632758297544e-05,
+        "relative_half_window_drift_max": 0.02
+      },
+      "summary_sha256": "3b4e233a7c65f936b5d2c29a30c943d01e1a011bfab2c8d1c75951aa8048417a"
+    },
+    "flow_16": {
+      "execution": {
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_step_seconds": 19.031288146972656,
+        "force_samples": 601,
+        "peak_vram_bytes": 24934924,
+        "steps": 4808,
+        "t_end_reached": 120.00193786621094,
+        "t_end_target": 120.0,
+        "vram_total_bytes": 15636037632,
+        "wall_seconds": 35.666889905929565,
+        "window_samples": 200
+      },
+      "force_metrics_host_recomputed": {
+        "cd_time_weighted": 1.0500554059927338,
+        "diagnostic_first_half_mean_downforce_solver": 141.34899454001277,
+        "diagnostic_first_half_mean_drag_solver": 134.40765232580364,
+        "diagnostic_second_half_mean_downforce_solver": 141.34959595112412,
+        "diagnostic_second_half_mean_drag_solver": 134.40653467315155,
+        "downforce_time_weighted_n": 0.3533732402215731,
+        "drag_time_weighted_n": 0.3360177299176748,
+        "stationarity_first_half_time_weighted_downforce_solver": 141.349001189944,
+        "stationarity_first_half_time_weighted_drag_solver": 134.40764058816586,
+        "stationarity_relative_half_window_drift_downforce": 4.172623328584231e-06,
+        "stationarity_relative_half_window_drift_drag": 8.163573632285925e-06,
+        "stationarity_second_half_time_weighted_downforce_solver": 141.34959098731434,
+        "stationarity_second_half_time_weighted_drag_solver": 134.4065433459739,
+        "window_mean_downforce_solver": 141.34929524556844,
+        "window_mean_drag_solver": 134.40709349947758,
+        "window_samples": 200,
+        "window_time_weighted_downforce_solver": 141.34929608862922,
+        "window_time_weighted_drag_solver": 134.4070919670699,
+        "window_time_weighted_fx_solver": 134.4070919670699,
+        "window_time_weighted_fy_solver": -0.45878104979081236,
+        "window_time_weighted_fz_solver": -141.34929608862922,
+        "window_time_weighted_pressure_fx_solver": 91.25007667900528,
+        "window_time_weighted_pressure_fy_solver": -0.6650381946198055,
+        "window_time_weighted_pressure_fz_solver": -144.92899724867567,
+        "window_time_weighted_viscous_fx_solver": 43.15701528806457,
+        "window_time_weighted_viscous_fy_solver": 0.20625714482899338,
+        "window_time_weighted_viscous_fz_solver": 3.5797011600464343
+      },
+      "geometry": {
+        "canonical_design_spacing_m": 0.05,
+        "canonical_sdf_origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "flow_dims": [
+          100,
+          48,
+          36
+        ],
+        "flow_origin_m": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "flow_spacing_m": 0.05,
+        "physical_box_m": [
+          [
+            -2.5,
+            2.5
+          ],
+          [
+            -1.2,
+            1.2
+          ],
+          [
+            -0.9,
+            0.9
+          ]
+        ],
+        "physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reynolds": 80.0,
+        "solver_length": 16.0,
+        "solver_time_unit_s": 0.05,
+        "solver_viscosity": 0.19999999999999996
+      },
+      "raw_force_csv_sha256": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+      "stationarity": {
+        "downforce": 4.172623328584231e-06,
+        "drag": 8.163573632285925e-06,
+        "relative_half_window_drift_max": 0.02
+      },
+      "summary_sha256": "48b0e5e394c4ac583152b5bd193876783c12f8598041ba320bcda90c1db25b84"
+    },
+    "flow_24": {
+      "execution": {
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_step_seconds": 0.09530997276306152,
+        "force_samples": 1093,
+        "peak_vram_bytes": 81567020,
+        "steps": 8741,
+        "t_end_reached": 120.00933074951172,
+        "t_end_target": 120.0,
+        "vram_total_bytes": 15636037632,
+        "wall_seconds": 95.84255790710449,
+        "window_samples": 364
+      },
+      "force_metrics_host_recomputed": {
+        "cd_time_weighted": 1.1175623712824938,
+        "diagnostic_first_half_mean_downforce_solver": 321.0747715133699,
+        "diagnostic_first_half_mean_drag_solver": 321.85829467664166,
+        "diagnostic_second_half_mean_downforce_solver": 321.0710197645674,
+        "diagnostic_second_half_mean_drag_solver": 321.8576316252617,
+        "downforce_time_weighted_n": 0.35674766042338996,
+        "drag_time_weighted_n": 0.35761995881039804,
+        "stationarity_first_half_time_weighted_downforce_solver": 321.07476969618654,
+        "stationarity_first_half_time_weighted_drag_solver": 321.85829438536,
+        "stationarity_relative_half_window_drift_downforce": 1.168155374289611e-05,
+        "stationarity_relative_half_window_drift_drag": 2.0596414585137835e-06,
+        "stationarity_second_half_time_weighted_downforce_solver": 321.07101906591544,
+        "stationarity_second_half_time_weighted_drag_solver": 321.8576314733558,
+        "window_mean_downforce_solver": 321.07289563896865,
+        "window_mean_drag_solver": 321.8579631509517,
+        "window_samples": 364,
+        "window_time_weighted_downforce_solver": 321.07289438105096,
+        "window_time_weighted_drag_solver": 321.8579629293582,
+        "window_time_weighted_fx_solver": 321.8579629293582,
+        "window_time_weighted_fy_solver": 5.678310998826662,
+        "window_time_weighted_fz_solver": -321.07289438105096,
+        "window_time_weighted_pressure_fx_solver": 222.136465868405,
+        "window_time_weighted_pressure_fy_solver": 4.468083027620805,
+        "window_time_weighted_pressure_fz_solver": -328.04468568307107,
+        "window_time_weighted_viscous_fx_solver": 99.72149706095308,
+        "window_time_weighted_viscous_fy_solver": 1.2102279712058621,
+        "window_time_weighted_viscous_fz_solver": 6.971791302020213
+      },
+      "geometry": {
+        "canonical_design_spacing_m": 0.05,
+        "canonical_sdf_origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "flow_dims": [
+          150,
+          72,
+          54
+        ],
+        "flow_origin_m": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "flow_spacing_m": 0.03333333333333333,
+        "physical_box_m": [
+          [
+            -2.5,
+            2.5
+          ],
+          [
+            -1.2,
+            1.2
+          ],
+          [
+            -0.9,
+            0.9
+          ]
+        ],
+        "physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reynolds": 80.0,
+        "solver_length": 24.0,
+        "solver_time_unit_s": 0.03333333333333333,
+        "solver_viscosity": 0.3
+      },
+      "raw_force_csv_sha256": "b65300d7361736eb334582ceb60d8993020001d6c447bb17cb87fa267aa314dc",
+      "stationarity": {
+        "downforce": 1.168155374289611e-05,
+        "drag": 2.0596414585137835e-06,
+        "relative_half_window_drift_max": 0.02
+      },
+      "summary_sha256": "1efa158dd16ac8313ccc992305fe906021a326c30266fb8c08371fe07cbcc30e"
+    },
+    "flow_32": {
+      "execution": {
+        "finite_forces": true,
+        "finite_p": true,
+        "finite_u": true,
+        "first_step_seconds": 0.15066909790039062,
+        "force_samples": 1692,
+        "peak_vram_bytes": 184412116,
+        "steps": 13536,
+        "t_end_reached": 120.00504302978516,
+        "t_end_target": 120.0,
+        "vram_total_bytes": 15636037632,
+        "wall_seconds": 311.2219479084015,
+        "window_samples": 563
+      },
+      "force_metrics_host_recomputed": {
+        "cd_time_weighted": 1.2822039948280215,
+        "diagnostic_first_half_mean_downforce_solver": 658.9127175566724,
+        "diagnostic_first_half_mean_drag_solver": 656.4877973293445,
+        "diagnostic_second_half_mean_downforce_solver": 658.9117960340897,
+        "diagnostic_second_half_mean_drag_solver": 656.4890933857376,
+        "downforce_time_weighted_n": 0.41182016047259773,
+        "drag_time_weighted_n": 0.4103052783449669,
+        "stationarity_first_half_time_weighted_downforce_solver": 658.91272097929,
+        "stationarity_first_half_time_weighted_drag_solver": 656.4877923466277,
+        "stationarity_relative_half_window_drift_downforce": 1.409059035999522e-06,
+        "stationarity_relative_half_window_drift_drag": 1.989388613409475e-06,
+        "stationarity_second_half_time_weighted_downforce_solver": 658.9117925330207,
+        "stationarity_second_half_time_weighted_drag_solver": 656.4890983572657,
+        "window_mean_downforce_solver": 658.9122576137847,
+        "window_mean_drag_solver": 656.4884442065141,
+        "window_samples": 563,
+        "window_time_weighted_downforce_solver": 658.9122567561562,
+        "window_time_weighted_drag_solver": 656.4884453519469,
+        "window_time_weighted_fx_solver": 656.4884453519469,
+        "window_time_weighted_fy_solver": -1.9461667608284312,
+        "window_time_weighted_fz_solver": -658.9122567561562,
+        "window_time_weighted_pressure_fx_solver": 455.8694777639551,
+        "window_time_weighted_pressure_fy_solver": -3.3110483709126095,
+        "window_time_weighted_pressure_fz_solver": -668.5031789439802,
+        "window_time_weighted_viscous_fx_solver": 200.61896758799213,
+        "window_time_weighted_viscous_fy_solver": 1.3648816100841785,
+        "window_time_weighted_viscous_fz_solver": 9.590922187824521
+      },
+      "geometry": {
+        "canonical_design_spacing_m": 0.05,
+        "canonical_sdf_origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "flow_dims": [
+          200,
+          96,
+          72
+        ],
+        "flow_origin_m": [
+          -2.5,
+          -1.2,
+          -0.9
+        ],
+        "flow_spacing_m": 0.025,
+        "physical_box_m": [
+          [
+            -2.5,
+            2.5
+          ],
+          [
+            -1.2,
+            1.2
+          ],
+          [
+            -0.9,
+            0.9
+          ]
+        ],
+        "physical_box_max_m": [
+          2.5,
+          1.2,
+          0.9
+        ],
+        "reynolds": 80.0,
+        "solver_length": 32.0,
+        "solver_time_unit_s": 0.025,
+        "solver_viscosity": 0.3999999999999999
+      },
+      "raw_force_csv_sha256": "5f73ff8a7a8fbf8bcbd436d22f7db2eb443ff865703f29af4ae398d69f4257ef",
+      "stationarity": {
+        "downforce": 1.409059035999522e-06,
+        "drag": 1.989388613409475e-06,
+        "relative_half_window_drift_max": 0.02
+      },
+      "summary_sha256": "9af6eba371cef45dc9c37d2143ab0e5884a0fa76db0438cdfabdbd793423dcb9"
+    }
+  },
+  "claim_scope": "the registered v16 WaterLily finite-box resolution/domain sensitivity matrix completed, each case passed the registered stationarity and integrity gates, and its response metrics were independently recomputed",
+  "completion_markers": {
+    "DONE": {
+      "path": "work/kaggle_w4_version3/output/w4_v16_sensitivity/DONE",
+      "sha256": "135b91b8ba9431160ace93d813f65dbf1dbd0ccab13601ea33aaa60d4532ad78"
+    },
+    "W4_JOB_DONE": {
+      "path": "work/kaggle_w4_version3/output/w4_v16_sensitivity/W4_JOB_DONE",
+      "sha256": "8b6c56703327042593f0336a62ae46e9ac266eddc318d2910e0577a589d0c78e"
+    },
+    "execution_state": {
+      "solver_step_invoked": [
+        "flow_16",
+        "flow_24",
+        "flow_32",
+        "domain_xplus1m_16"
+      ],
+      "solver_step_returned": [
+        "flow_16",
+        "flow_24",
+        "flow_32",
+        "domain_xplus1m_16"
+      ],
+      "stage": "matrix_complete"
+    }
+  },
+  "criteria_immutable": true,
+  "criteria_path": "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json",
+  "criteria_round": 4,
+  "criteria_sha256": "3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f",
+  "criteria_sidecar_path": "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json.sha256",
+  "criteria_sidecar_sha256": "65d4827e4ce990d589ad29d41556be8d6b496d5bf4baf9a8b22079d04da0f3f5",
+  "dataset": {
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+    "dataset_version": 3,
+    "host_verification_payload_path": "work/kaggle_w4_version3/dataset_payload",
+    "host_verifier_dataset_passed": true,
+    "manifest_sha256": "d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7",
+    "payload_inventory_verified": true,
+    "remote_files": {
+      "canonical_v16_phi_f4_fortran.raw": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+      "sdf_design_state.npz": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+      "w4_v16_criteria.json": "3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f",
+      "w4_v16_criteria.json.sha256": "65d4827e4ce990d589ad29d41556be8d6b496d5bf4baf9a8b22079d04da0f3f5"
+    },
+    "remote_inventory_audit_path": "work/kaggle_w4_v16_dataset_round4_remote/remote_inventory_audit.json",
+    "remote_inventory_audit_sha256": "81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4",
+    "runner_mount_dataset_passed": true,
+    "status": "ready"
+  },
+  "extended_domain_fine_grid_required": false,
+  "fd_entry_gate": "OPEN",
+  "first_host_verifier_attempt": {
+    "exact_error": "ValueError: staged W4 dataset contains unregistered files",
+    "passed": false,
+    "reason": "Downloaded remote dataset directory also contained remote_inventory_audit.json; the verifier correctly rejected this non-dataset audit artifact as an unregistered file.",
+    "resolution": "Copied only the remote registered payload and Kaggle dataset metadata into dataset_payload; the original downloaded directory and audit were preserved unchanged.",
+    "return_code": 1,
+    "stderr_path": "work/kaggle_w4_version3/host_verification_first_attempt.stderr",
+    "stderr_sha256": "59089d21e39da8ec4597f3010b5967278d49ef03bc13a26a7197eb0e590b8ee2",
+    "stdout_path": "work/kaggle_w4_version3/host_verification_first_attempt.stdout",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "formal_fd_measurement_started": false,
+  "gates": {
+    "T0_registered_inputs_and_w3_pass": true,
+    "T10_stationarity": true,
+    "T1_registered_case_matrix_complete": true,
+    "T2_canonical_phi_and_margin_identity": true,
+    "T3_case_mapping_and_reynolds": true,
+    "T4_native_profile_limitation_preserved": true,
+    "T5_T4_Julia_CUDA_WaterLily_identity": true,
+    "T6_primal_completion_and_force_integrity": true,
+    "T7_host_force_recomputation": true,
+    "T8_runtime_and_vram": true,
+    "T9_exact_source_and_runner_identity": true
+  },
+  "gradient_qualified": false,
+  "grid_or_domain_convergence_qualified": false,
+  "host_verification_passed": true,
+  "host_verification_result_path": "work/kaggle_w4_version3/host_verification.json",
+  "host_verification_result_sha256": "77e5a2fe93c817b206a0f65a3a02039db1eb8e1fe5a387fdfcc34d12c3e384dd",
+  "host_verification_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "host_verifier_command": "PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python scripts/verify_kaggle_w4_v16.py work/kaggle_w4_version3/output --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json --dataset-dir work/kaggle_w4_version3/dataset_payload --kernel-version 3",
+  "host_verifier_path": "scripts/verify_kaggle_w4_v16.py",
+  "host_verifier_sha256": "139d45ef1edc5c7a04d250a88ce7e71710a6c07e2b10062c96db78bf86698aa0",
+  "input_identity": {
+    "case_module": "f191ad8f72646dbf7bcf62811c56ae1e95072350720543f79faa82477b83eab1",
+    "contract_tests": "e045e41a5db5f6147032ce0aca8ac018dd26a4affa65b55c6d6715a966f857a0",
+    "criteria_draft": "75831a9901b3c869c2b4ba0b93decfd421583943f869fa5ce41b7aa668abe6a4",
+    "criteria_registrar": "6ddd844ee5f879b36dc4e378c9ba9c83778b205f3c8bf2691df6ccf0389b324a",
+    "dataset_preparer": "a821890cfb8c1c16860cc43b087a221b6ec000b4a3726144967275938dda5cb5",
+    "device_grid": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "host_verifier": "139d45ef1edc5c7a04d250a88ce7e71710a6c07e2b10062c96db78bf86698aa0",
+    "job": "071caa246445769bd88658a8a01cabb73d28c6514e307c09ecb839c8c2ef229c",
+    "kaggle_smoke": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666",
+    "kernel_runner": "182f369c26c679d372bc0695f8d89a4959eef598d0c08506c4a00857d13ab27c",
+    "manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "owner_run_type": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe",
+    "profile_adapter": "eaae3ca4db17e2d69b73a16626ac6a99f47b85dd892cba005eb93da361403b1c",
+    "project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "w3_criteria": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+    "w3_host_verifier": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5",
+    "w3_result_evidence": "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+  },
+  "julia_job_log_path": "work/kaggle_w4_version3/output/w4_v16_sensitivity/w4_v16.log",
+  "julia_job_log_sha256": "86089fc236218525ec94a063f7a0be8525ddd395829ca2ce09b23015289255ea",
+  "kaggle_log_path": "work/kaggle_w4_version3/output/cfd-opt-sdf-w4-v16-sensitivity.log",
+  "kaggle_log_sha256": "3f42c3a9041e8baa8c2ee248fc7cc6be71df9dabab4d5e6441b2cee057e38dee",
+  "kaggle_logs_response_path": "work/kaggle_w4_version3/kaggle_logs_response.json",
+  "kaggle_logs_response_sha256": "380f53ba8a0ad08c5fdf7c6266ebd63d041d40d6be2ff9e7f56ffa11db7b25fe",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity",
+  "kernel_version": 3,
+  "kind": "kaggle_w4_v16_sensitivity_result",
+  "limitations": [
+    "This is a registered WaterLily finite-box resolution/domain sensitivity matrix result only.",
+    "It does not establish OpenFOAM equivalence, absolute aerodynamic correctness, or grid/domain convergence.",
+    "The W3 flow_16 numerical comparison has no registered numerical-repeatability gate; the observed deltas are reported without upgrading that comparison to qualification.",
+    "No formal centered FD, gradient, reverse mode, topology, optimizer, or shape update was performed."
+  ],
+  "maximum_case_peak_vram_bytes": 184412116,
+  "optimizer_qualified": false,
+  "physical_profile_equivalence_qualified": false,
+  "prerequisite_w3": {
+    "backend_identity": {
+      "accelerator": "NvidiaTeslaT4",
+      "compute_capability": "7.5.0",
+      "cuda_driver_api_version": "13.3.0",
+      "cuda_jl_version": "6.3.1",
+      "cuda_runtime_version": "12.8.0",
+      "cuda_visible_devices": "0",
+      "driver_version": "580.159.04",
+      "gpu_count": 2,
+      "gpu_name": "Tesla T4",
+      "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+      "julia_threads": 1,
+      "julia_version": "1.12.6",
+      "machine_shape": "NvidiaTeslaT4",
+      "waterlily_backend": "KernelAbstractions",
+      "waterlily_version": "1.8.0"
+    },
+    "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+    "criteria_sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+    "host_verified": true,
+    "host_verifier_sha256": "9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5",
+    "kernel_version": 5,
+    "path": "docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json",
+    "sha256": "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+  },
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_equivalence_qualified": false,
+    "reverse_mode_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_qualified": false,
+    "w4_sensitivity_matrix_passed": true
+  },
+  "recorded_at_utc": "2026-09-28T16:32:39Z",
+  "registered_before_computation": true,
+  "registered_source_commit": "b9ae43b540a94b52fdb8a05051fba6f250034a6f",
+  "response_analysis": {
+    "any_force_component_requires_extended_domain_fine_grid": false,
+    "downforce_time_weighted_n": {
+      "domain_delta_abs_n": 0.00015295155749883715,
+      "domain_delta_relative": 0.0004328328806191805,
+      "extended_domain_fine_grid_required": false,
+      "resolution_delta_abs_n": 0.05507250004920777,
+      "resolution_delta_relative": 0.13372949004246787
+    },
+    "drag_time_weighted_n": {
+      "domain_delta_abs_n": 0.00035748869561957886,
+      "domain_delta_relative": 0.0010627676351822964,
+      "extended_domain_fine_grid_required": false,
+      "resolution_delta_abs_n": 0.05268531953456884,
+      "resolution_delta_relative": 0.12840517125951598
+    }
+  },
+  "reverse_mode_qualified": false,
+  "schema_version": 1,
+  "shape_update_allowed": false,
+  "source_commit": "b9ae43b540a94b52fdb8a05051fba6f250034a6f",
+  "stationarity_qualified": false,
+  "successful_host_verification_stderr_path": "work/kaggle_w4_version3/host_verification.stderr",
+  "successful_host_verification_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "terminal_status": "KernelWorkerStatus.COMPLETE",
+  "terminal_status_path": "work/kaggle_w4_version3/status_terminal.txt",
+  "terminal_status_sha256": "80449770970ace3350548b96005931282c52a791555986628382897e930fb1af",
+  "topology_qualified": false,
+  "verdict": "PASS",
+  "verified_files": 24,
+  "vram_total_bytes": 15636037632,
+  "w3_flow16_comparison": {
+    "cd_time_weighted": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 1.0500554059927338,
+      "w4_flow_16": 1.0500554059927338
+    },
+    "downforce_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 0.3533732402215731,
+      "w4_flow_16": 0.3533732402215731
+    },
+    "drag_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 0.3360177299176748,
+      "w4_flow_16": 0.3360177299176748
+    },
+    "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+    "force_sign": {
+      "w3_round4": 1.0,
+      "w4_flow_16": 1.0
+    },
+    "force_sign_consistent": true,
+    "interpretation_if_force_sign_differs": "stop matrix interpretation and diagnose before FD",
+    "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+    "numerical_repeatability_gate_registered": false,
+    "stationarity_relative_half_window_drift_downforce": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 4.172623328584231e-06,
+      "w4_flow_16": 4.172623328584231e-06
+    },
+    "stationarity_relative_half_window_drift_drag": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_round4": 8.163573632285925e-06,
+      "w4_flow_16": 8.163573632285925e-06
+    },
+    "steps": {
+      "w3_round4": 4808,
+      "w4_flow_16": 4808
+    },
+    "t_u_l": {
+      "w3_round4": 120.00193786621094,
+      "w4_flow_16": 120.00193786621094
+    }
+  },
+  "w4_sensitivity_matrix_passed": true
+}
