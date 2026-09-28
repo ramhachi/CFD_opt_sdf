@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Immutable round 1 preserved; superseded before computation | W3 round 4 remains the prerequisite. The runner/host filename correction and focused regression test now pass locally; commit/push and immutable round-2 registration are pending. No W4 upload or measurement has occurred. |
+| W4 grid/domain sensitivity | Immutable round 1 preserved; superseded before computation | W3 round 4 remains the prerequisite. Runner/host filename correction commit `f69c56e` is pushed and the corrected local preflight passes; immutable round-2 registration and dataset staging are next. No W4 upload or measurement has occurred. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -3880,8 +3880,16 @@ qualification flag.
   uploaded, no W4 kernel has been submitted, and no CFD measurement has run.
   The prior host preflight failed before upload; its immutable criteria are not
   edited. No W4 result or sensitivity claim exists.
-- **Open:** commit and push the minimal verifier/runner/test fix and this
-  status; register immutable criteria round 2 against the exact W3 round-4
+- **Validation:** source-fix commit
+  `f69c56e6306d30f6e6590da898088e4af7606c00` is pushed to the canonical branch.
+  Focused W4/W3/owner-regression tests pass (38); `compileall`, the required
+  W4 Python `py_compile`, Julia syntax parsing and four-case mapping/Re=80
+  assertions, round-1 JSON/sidecar check, and `git diff --check` pass. The full
+  repository run reports 1,114 passed, 37 failed, and 4 skipped. The 37
+  failures are historical Stage T/S/V tests whose tracebacks read absent,
+  ignored `work/` checkpoints, cases, meshes, or solver logs; no W3/W4 task
+  test failed.
+- **Open:** register immutable criteria round 2 against the exact W3 round-4
   PASS; stage round-2 data in a fresh directory; verify the Kaggle-side file
   inventory and hashes; then submit and host-verify one exact W4 kernel
   version. Formal FD, reverse/adjoint qualification, shape update and topology

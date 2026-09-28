@@ -14,8 +14,8 @@ qualification remain false. W4 immutable criteria round 1
 (`5bdfb819ff9512dcc3ca85f8919e5cff236de4706240cbdf09a577d56183a9ea`) are
 preserved but superseded before computation after a local pre-upload preflight
 found a dataset filename mapping defect. The minimal runner/host correction
-and regression test now pass locally; commit/push and immutable round-2
-registration are pending. No W4 upload, kernel or measurement exists. See
+and regression test pass locally and are pushed in `f69c56e`; immutable
+round-2 registration is pending. No W4 upload, kernel or measurement exists. See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order

@@ -1940,7 +1940,8 @@ build their expected inventory from `entry["path"]`; a regression test checks
 both implementations. The existing round-1 stage passed this corrected local
 contract check, but its criteria bind the old source hashes. Preserve round 1
 unchanged and do not upload it. Register round 2 after committing/pushing the
-fix, and stage into a new ignored directory:
+fix (`f69c56e6306d30f6e6590da898088e4af7606c00`), and stage into a new ignored
+directory:
 
 ```bash
 PYTHONPATH=src:scripts .venv/bin/python \
