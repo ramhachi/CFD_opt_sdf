@@ -1,0 +1,62 @@
+{
+  "canonical_phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+  "canonical_phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "criteria_dataset_manifest_sha256": "ace97f8eb8e6a8866de0ce23ec35525952f5efd4391ec874df8c4e37587b3299",
+  "criteria_path": "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09_round2.json",
+  "criteria_sha256": "2a332a1e5cbbdf82ba31f684d00a8a859a5b8a460ebf767a3c6a6efd62149a79",
+  "cuda_jl_version": "6.3.1",
+  "cuda_visible_devices": "0",
+  "evidence_type": "diagnostic_only",
+  "exact_kernel_ref": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe/2",
+  "gpu_inventory": [
+    "0, Tesla T4, GPU-6cea437f-5de3-d447-0819-336c487a27fc, 15360 MiB, 580.159.04",
+    "1, Tesla T4, GPU-b529b1d4-bc0e-0121-f047-c77771fbd98c, 15360 MiB, 580.159.04"
+  ],
+  "gpu_roundtrip_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+  "host_verification_passed": true,
+  "host_verifier_sha256": "0a2cfe9fe18b7b4ef94e22d57f9758e3162fffeb6f44bafc596f711f6e383477",
+  "julia_version": "1.12.6",
+  "kaggle_log_sha256": "80cb33c2e83a6f13182d5c47da8ad07715dce75d6c003eb4f39f6fd444c93cb7",
+  "kaggle_status_sha256": "bd6f573dfde4dab85206a0eee55b868cefbe2f9405790aa793f66bbdc4c3492d",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe",
+  "kernel_version": 2,
+  "output_manifest_sha256": "4769c6fc18f4c8b4402420b2301228e16c4405a7c097a519aa0ec8a1bd84654d",
+  "qualification_flags": {
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "runtime_type_identity": {
+    "cuda_device_memory_defined": true,
+    "cuda_device_memory_is_module_binding": true,
+    "cuda_device_memory_is_parameter": true,
+    "eltype": "Float32",
+    "memory_module": {
+      "module": "CUDACore",
+      "module_fullname": "CUDACore",
+      "package_name": "CUDACore",
+      "package_uuid": "bd0ed864-bdfe-4181-a5ed-ce625a5fdea2",
+      "package_version": "6.3.1"
+    },
+    "memory_parameter": "CUDACore.DeviceMemory",
+    "memory_parameter_type": "DataType",
+    "module_device_memory_defined": true,
+    "module_device_memory_is_parameter": true,
+    "ndims": 3,
+    "size": [
+      61,
+      33,
+      25
+    ],
+    "type": "CuArray{Float32, 3, CUDACore.DeviceMemory}"
+  },
+  "selected_gpu_uuid": "GPU-6cea437f-5de3-d447-0819-336c487a27fc",
+  "solver_steps": 0,
+  "source_commit": "b30d4541553edefb08298f2a297ff4809ddf4687",
+  "w3_dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+  "waterlily_version": "1.8.0"
+}

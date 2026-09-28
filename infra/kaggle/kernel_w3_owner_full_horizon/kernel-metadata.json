@@ -1,0 +1,18 @@
+{
+  "id": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon",
+  "title": "CFD Opt SDF W3 Owner Full Horizon Diagnostic",
+  "code_file": "runner.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
