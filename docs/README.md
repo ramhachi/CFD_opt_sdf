@@ -18,8 +18,12 @@ and regression test pass locally and are pushed in `f69c56e`. Immutable W4
 round 2 is registered (SHA-256
 `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`) against
 source commit `97a5bca`. Its private Kaggle dataset version 1 is `ready` and
-the downloaded remote inventory matches all registered hashes. W4 kernel
-measurement has not started. See
+the downloaded remote inventory matches all registered hashes. Exact W4
+kernel version 1 failed at the pre-solver case-inventory guard with zero
+solver steps; append-only diagnostic SHA-256 is
+`30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`. A
+minimal Julia tuple-materialization fix and new immutable criteria round are
+required before retry. See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order

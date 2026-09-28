@@ -1967,8 +1967,8 @@ reported `ready`, and downloaded into a fresh directory for complete filename
 and SHA-256 comparison. The old round-1 local manifest SHA-256 is
 `b175b447c35fce94b13de23a73fb98a10dd1be1f499ffe5e8567ff2f26f1bd96`; it is
 not the round-2 dataset manifest. W4 round 2 is registered, and its private
-input dataset version 1 is now ready; no kernel submission or measurement has
-occurred.
+input dataset version 1 is ready. Exact kernel version 1 was submitted and
+failed before any solver step; no CFD measurement has occurred.
 
 The exact version-1 upload and retrieval were:
 
@@ -2000,3 +2000,39 @@ correction does not change the criteria-bound runner, solver job, verifier,
 environment or registered source inputs.
 The committed metadata SHA-256 is
 `7eab12e8dfe356acdf5feec6ef41f033ff75cd3e6e02ada8b14635d3a6e123e7`.
+
+## W4 round-2 kernel version 1 diagnostic
+
+Exact kernel `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/1` ended with
+`KernelWorkerStatus.ERROR`. Preserve its exact data under
+`work/kaggle_w4_version1/`; do not overwrite it. Terminal status SHA-256 is
+`f784304d00893b3509b023e2636407faa6cdcb335eebd6a2563c4504c8fc6b82`, the
+`kaggle kernels logs` response SHA-256 is
+`93464d8f48672b3ad98552d87adf9eff400a42bb219842524b7ce74d3e44d329`, and the
+downloaded output kernel log SHA-256 is
+`1079cb67af44cbc9a545d1c13143ff5404eb9085ba196f3a784574638e5cab73`. The
+output `sha256.json` SHA-256 is
+`108c3b1170afb686804bc7b0884a1e62e2fc05c731e5423889c7b01d27d7f1a9`; its 14
+payload hashes were independently checked. `ERROR.txt` SHA-256 is
+`317bba4133f08ecf29ca5fd48ea455f3042cb3ad86ad66e7afd6ccf82f0ba263`.
+
+The W4 runner passed input/source hashes, dataset inventory, Julia
+`Pkg.instantiate`, the registered Julia/CUDA/WaterLily smoke, and two-T4
+inventory. The Julia job stopped at line 300 before canonical SDF loading or
+simulation construction. It compares `tuple(case.case_id for case in
+V16W4_CASES)` with a four-string tuple; Julia's `tuple(generator)` produces a
+single-element tuple containing the generator. The correct materialization is
+`Tuple(case.case_id for case in V16W4_CASES)`. The expected IDs and case matrix
+are correct; this is a source guard implementation bug, not a criteria/input
+or infrastructure failure.
+
+`execution_state.json` reports `stage=julia_job`, empty
+`solver_step_invoked`/`solver_step_returned`, and zero solver steps. SDF/device
+transfer, WaterLily bodies/simulation, forces and all four cases were not
+reached. The host verifier rejects the incomplete output because there is no
+`DONE`, outcome, fingerprint or case data. Append-only diagnostic evidence is
+[`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
+SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`.
+Keep round-2 criteria and thresholds unchanged. Apply the minimal tuple fix and
+regression test, commit/push, then register immutable round 3, stage/publish a
+new dataset version, and submit the next exact kernel version.

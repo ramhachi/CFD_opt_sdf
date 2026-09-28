@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Immutable round 2 registered; private input dataset ready | W3 round 4 remains the exact prerequisite. Round 2 binds source commit `97a5bca`; private dataset version 1 is ready and its remote inventory/hash check passed. Kernel submission and measurement remain open. |
+| W4 grid/domain sensitivity | Round-2 kernel version 1 diagnostic; primal steps 0 | Round 2 and private input dataset version 1 remain unchanged. The exact run stopped at the Julia job's case-inventory guard before SDF load or simulation construction; a minimal source fix and new immutable round 3 are required. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -3894,9 +3894,10 @@ qualification flag.
   `3d505dfa1ee55d935f7123aa30cf8e665471e91105a5ce968f5de6aa509d7f42`; remote
   audit SHA-256 is
   `20503ff4e6492b1acc23ef46813f1999e42a86f082a93aa45b88ea8934c53b9f`.
-- **Measured / qualified:** no W4 kernel has been submitted and no CFD
-  measurement or W4 result exists. The earlier host preflight failure remains
-  preserved by immutable round 1; round 1 was not edited.
+- **Measured / qualified:** no W4 primal measurement or result exists. Exact
+  kernel version 1 was submitted, but returned `ERROR` before a solver step.
+  The earlier host preflight failure remains preserved by immutable round 1;
+  neither criteria round was edited.
 - **Validation:** source-fix commit
   `f69c56e6306d30f6e6590da898088e4af7606c00` is pushed to the canonical branch.
   Focused W4/W3/owner-regression tests pass (38); `compileall`, the required
@@ -3906,8 +3907,45 @@ qualification flag.
   failures are historical Stage T/S/V tests whose tracebacks read absent,
   ignored `work/` checkpoints, cases, meshes, or solver logs; no W3/W4 task
   test failed.
-- **Open:** submit one exact W4 kernel version from the corrected committed
-  metadata (private T4, matching title/ID slug), recover exact logs/output, and
-  run host verification. Formal FD,
-  reverse/adjoint qualification, shape update and topology birth remain out of
-  scope.
+- **Open:** preserve the version-1 diagnostic, make only the pre-solver Julia
+  tuple-materialization correction, add regression coverage, then register
+  immutable round 3 and a new private dataset version before retrying. Formal
+  FD, reverse/adjoint qualification, shape update and topology birth remain
+  out of scope.
+
+### W4 round-2 kernel version 1: pre-solver case-inventory diagnostic
+
+- **Registered:** W4 immutable round 2 remains unchanged at SHA-256
+  `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`, bound
+  to source `97a5bcaedcc8f171cda3710a763a22e6210cfbb5`; private dataset version 1
+  remains ready with its exact remote inventory verified.
+- **Submitted:** exact kernel
+  `ramhachi888/cfd-opt-sdf-w4-v16-sensitivity/1` ended with
+  `KernelWorkerStatus.ERROR`. Terminal status SHA-256 is
+  `f784304d00893b3509b023e2636407faa6cdcb335eebd6a2563c4504c8fc6b82`; exact
+  `kernels logs` response SHA-256 is
+  `93464d8f48672b3ad98552d87adf9eff400a42bb219842524b7ce74d3e44d329`; the
+  downloaded kernel log SHA-256 is
+  `1079cb67af44cbc9a545d1c13143ff5404eb9085ba196f3a784574638e5cab73`.
+- **Diagnostic:** append-only evidence is
+  [`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
+  SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`
+  (sidecar contains the same digest). Kaggle input/source identity, package
+  instantiation, Julia 1.12.6/CUDA.jl 6.3.1/WaterLily 1.8.0 CUDA smoke, and
+  two-T4 inventory passed. The Julia job failed at source line 300 with
+  `W4 case inventory drift`: `tuple(generator)` wraps the generator as one
+  tuple element, while `Tuple(generator)` materializes the four registered
+  case IDs. The corrected expression was reproduced locally against the exact
+  four IDs.
+- **Solver / host verification:** `solver_started=false`;
+  `solver_steps=0`; both `solver_step_invoked` and `solver_step_returned` are
+  empty. SDF load/device round-trip, body construction, simulation, force
+  integration and all four primal runs were not reached. The 14 payload files
+  in Kaggle's output manifest match their hashes; the full host verifier
+  rejects this incomplete output because `DONE`, `outcome.json`,
+  `fingerprint.json` and case measurements are absent. No T0-T10 gate or W4
+  result was evaluated; all qualification flags remain false.
+- **Open:** preserve version 1 as diagnostic, apply the minimal `Tuple(...)`
+  source fix, test it, push the source, register immutable round 3 and update
+  the private W4 dataset before another exact kernel version. Do not change
+  case definitions, measurement window, force semantics or thresholds.
