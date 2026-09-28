@@ -1837,3 +1837,79 @@ The run has no terminal output or host-verification verdict yet. Poll only
 version 5, preserve its exact status/log/output under
 `work/kaggle_w3_version5/`, then run the host verifier with round-4 criteria.
 Do not begin W4 or formal FD until this exact run passes host verification.
+
+### W3 round 4 exact version 5: terminal PASS and host verification
+
+Exact kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-primal/5` reached
+`KernelWorkerStatus.COMPLETE`. Its terminal status SHA-256 is
+`59e3f698703e6684b7d9e7acdb92c1c9bc593a0d02e35da6824610547e75d771`; exact
+Kaggle log SHA-256 is
+`011b878cf20ee47c70cfde67e7d636eb0f96dbcdf2fed9a08f9b3f5901f643d4`; output
+manifest SHA-256 is
+`6973f1facb6ba1b8241d97601dc4d74a17e7df91d894dcccdfde2f240391595e`.
+Recover only that exact version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  > work/kaggle_w3_version5/kaggle_status_terminal.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  > work/kaggle_w3_version5/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-v16-primal/5 \
+  -p work/kaggle_w3_version5
+```
+
+The ordinary host verifier initially reached evidence assembly but raised
+`NameError: HOST_VERIFIER is not defined`; it wrote no result. The criteria-
+bound verifier itself is unchanged at SHA-256
+`9efb97b9b80dd8fe2f9470353f4dbb3388d282acbcc8eae7fbcd2abcf5e1c9d5`. Use the
+compatibility entrypoint, which supplies only the missing path global and then
+calls that exact verifier code:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/verify_kaggle_w3_v16_host_compat.py \
+  work/kaggle_w3_version5/w3_v16 \
+  --criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --dataset-dir work/kaggle_w3_v16_dataset_round4_remote \
+  --kernel-version 5 \
+  --kaggle-log work/kaggle_w3_version5/kaggle.log \
+  --result-evidence docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json
+```
+
+Append-only PASS result is
+[`round-4 result`](evidence/kaggle_w3_v16_primal_result_round4_2026_09.json),
+SHA-256
+`d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`; its
+sidecar contains the same digest. All T0-T10 passed. The host independently
+checked all 18 manifested output files, exact input/source/backend identity,
+SDF bytes and margin, raw force CSV, three-axis pressure-plus-viscous closure,
+force projections, exact-window endpoint interpolation and time-weighted
+recomputation, positive +x drag, stationarity, completion, runtime and VRAM.
+The host-only correction is separately recorded at
+[`round-4 host correction`](evidence/kaggle_w3_v16_primal_result_round4_host_correction_2026_09.json),
+SHA-256
+`27f0f60bbfbffd111259ecb988bec9b6e8cb1f9498d3a8ba46c04c8d79bddb9b`; it
+preserves the initial verifier error log SHA and exact wrapper hash. Criteria,
+measurement and thresholds did not change.
+
+The measured exact-window time-weighted drag is `+0.3360177299 N`, downforce
+`+0.3533732402 N`, and `Cd=1.0500554060`. Drag/downforce half-window relative
+drifts are `8.16e-6` and `4.17e-6` against the registered `0.02` maximum.
+The solver ran 4,808 steps to `tU/L=120.0019378662`, taking `35.2219 s` with
+peak VRAM `24,941,544 bytes`. The permitted conclusion is the registered
+finite-box WaterLily primal integrity/force/stationarity contract only. The
+owner-lifetime defect is confirmed but W3 v4's all-zero force root cause is
+unresolved. Physical-profile equivalence, absolute downforce correctness,
+grid/domain response, gradient, reverse mode, topology, optimizer and shape
+update remain unqualified; `shape_update_allowed=false`. W4 is the next
+separate phase but was not started here, and formal FD remains gated on W4.
+Focused W3/W4/owner/reverse-diagnostic pytest passed 56 tests; `compileall`,
+`py_compile`, evidence/sidecar chain checks and `git diff --check` passed. Full
+repository pytest reported 1,109 passed, 37 failed and 4 skipped. The 37
+failures are the known historical tests requiring ignored `work/` checkpoints,
+cases or solver logs absent from this managed worktree; the focused task slice
+is green.

@@ -70,11 +70,11 @@ an infrastructure choice, not a solver component.
 | Workstream | Current state |
 | --- | --- |
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
-| WaterLily primal | W0/W1 and sphere capability gates have evidence; this does not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. It confirms an owner-lifetime implementation defect, but W3 v4's all-zero force root cause remains unresolved. The structural owner fix and immutable round-4 criteria are in place; private dataset v4 is host-verified and W3 kernel `/5` is running. |
-| Next W3 gate | Retrieve only exact kernel `/5` terminal status/logs/output and host-verify it against round-4 criteria and remote-verified dataset. W4 and formal FD remain blocked until W3 PASS. |
-| W4 | Blocked until exact W3 host-verifier PASS; no W4 qualification criteria or measurement is registered. |
-| Centered-FD SDF derivatives | Formal qualification blocked pending W3 and W4. |
+| WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
+| W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
+| Next W3 gate | W3 round 4 is closed. W4 is the next separately scoped phase; its criteria remain unregistered and it was not started in this task. |
+| W4 | Not registered or measured. The W3 prerequisite now passes, but no W4 work was started. Formal FD remains gated on W4. |
+| Centered-FD SDF derivatives | Formal qualification remains blocked pending W4. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
 | Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |
@@ -94,23 +94,22 @@ the exact full-horizon all-zero W3 v4 symptom correspondence is false. Runtime
 type identity is explicit: CUDA.jl 6.3.1's `CUDA.DeviceMemory` binding is
 identical (`===`) to the observed `CUDACore.DeviceMemory` owner type parameter.
 
-Production W3 now bundles the `DeviceGridSDF` owner, bodies, and simulation in
-`OwnedV16Run` and preserves that wrapper throughout `run_primal`. This changes
-only owner lifetime. Round-3 criteria and output remain immutable; the next W3
-qualification run must use a new criteria round and the same fixture,
-backend, forces, measurement window, and gates. All W3/W4/FD/gradient/reverse/
-topology/shape-update qualification flags remain false. The maximum normal
-discrepancy near `1.338` remains a separate open issue.
+Production W3 bundles the `DeviceGridSDF` owner, bodies, and simulation in
+`OwnedV16Run` and preserves that wrapper throughout `run_primal`; this changes
+only owner lifetime. Round 4 exact version `/5` passed the registered finite-
+box primal contract. Physical-profile equivalence, grid response, FD, gradient,
+reverse, topology and shape-update qualification remain false. The W3 v4
+all-zero root cause and maximum normal discrepancy near `1.338` remain separate
+open issues.
 
 The active order is in [`phase_plan.md` §11](phase_plan.md#11-current-sdf-native-execution-order).
-The owner-lifetime diagnostic met its preregistered production-fix gate and the
-owner-only fix is implemented. Immutable W3 round 4 now binds that source and
-the unchanged measurement/acceptance contract; its exact private T4 run and
-host verification are the next gate before W4, formal FD, a backend decision,
-a constrained update, topology birth, multi-step optimization, or independent
-Stage V verification.
-All W3/W4/FD/gradient/reverse/topology/shape-update qualification flags remain
-false. No historical evidence or criteria are rewritten by this status summary.
+The owner-lifetime diagnostic met its preregistered production-fix gate, and
+exact W3 round 4 `/5` passed host verification for the registered finite-box
+primal contract. This does not explain W3 v4's complete all-zero force history.
+Physical-profile equivalence, grid/domain response, FD, gradient/reverse,
+topology and shape update remain unqualified; `shape_update_allowed=false`.
+W4 criteria and measurement are still open and were not started in this task.
+No historical evidence or criteria are rewritten by this status summary.
 
 The dated entries below preserve chronology. Their local status and "next"
 instructions are snapshots; when they conflict with the SDF-native summary
@@ -832,7 +831,7 @@ The following claims are forbidden until separately qualified:
 - No raw clean `checkMesh` claim for the correct V0-V3 cases. Their profile qualification allows concave-cell output; raw `checkMesh` reports one failed check.
 - No claim that `execution_ready`, an OpenFOAM process exit code, a force file, or an LBM Taylor-Green pass is target-physics qualification.
 - No claim that the Brinkman surrogate is generally valid or generally impossible.
-- No claim that WaterLily W3, the GPU primal for the v16 object, or W4 is qualified.
+- No claim beyond the registered W3 finite-box primal integrity/force/stationarity contract. This result does not qualify the OpenFOAM physical profile, grid/domain response, absolute aerodynamics or W4.
 - No claim that reverse AD works as a production backend, that the SDF centered-FD gradient is qualified, or that a constrained SDF update is allowed.
 - No claim that topology birth works. The full-horizon owner-lifetime defect is confirmed, but W3 v4's exact all-zero force root cause and W3 primal qualification remain unresolved.
 
@@ -841,11 +840,11 @@ The following claims are forbidden until separately qualified:
 1. Work in the requested checkout and branch. Inspect `git status`, `git diff`, recent history, and the remote branch before editing; preserve unrelated work.
 2. Read `AGENTS.md`, `docs/README.md`, this handoff, `docs/phase_plan.md`, the issue ledger, and the relevant supporting contract or runbook.
 3. Treat `phase_plan.md` as the sole current roadmap/status/order authority. Use historical Stage T/S/V documents for recorded evidence only.
-4. For W3, continue with exact kernel version `/5` under immutable primal criteria round 4. Retrieve and host-verify only that version's terminal artifacts against the remotely verified private dataset. Preserve all prior diagnostic results and criteria.
-5. Keep W4, formal centered-FD, gradient-backend qualification, optimizer update, and topology birth blocked until their explicit prerequisites in `phase_plan.md` pass.
+4. W3 round 4 exact version `/5` is terminal and host-verified. Keep its claim limited to the registered finite-box primal contract, preserve the W3 v4 root-cause distinction, and do not rewrite any criteria or diagnostic. W4 is the next phase but was not started in this task; formal FD remains gated on W4.
+5. W4 is the next phase but was not started in the completed W3 task. Keep formal centered-FD, gradient-backend qualification, optimizer update, and topology birth pending their remaining explicit prerequisites in `phase_plan.md`.
 6. Distinguish contract, capability, numerical, target-physics, and benchmark evidence. Inspect exact immutable criteria, logs, outputs, and hashes for evidence work.
 7. For a documentation-only task, validate links and `git diff --check`; do not run a solver or Kaggle job. Follow repository `AGENTS.md` for any additional required validation.
-8. Check that only intended documentation changed and that code, criteria, evidence JSON, solver state, and qualification flags remain untouched.
+8. For documentation-only work, check that only the intended documents changed. For implementation or measurement work, preserve immutable criteria, validate every new evidence sidecar and artifact hash, and change qualification status only within the verified claim scope.
 9. Report the measured facts, source/artifact paths and hashes, evidence class, claims supported, claims not supported, and unresolved items.
 10. For an authorized documentation or implementation task, commit and push only intended files after validation, without force-pushing or overwriting another worktree's changes.
 

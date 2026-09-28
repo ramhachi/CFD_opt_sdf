@@ -136,10 +136,10 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Workstream | Current status | Evidence scope / next gate |
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
-| WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified; immutable round 4 is registered, dataset version 4 is host-verified, and exact kernel version 5 is running | Owner-lifetime defect is confirmed, but W3 v4's all-zero force symptom remains unresolved. Round 4 binds only the owner fix and unchanged W3 thresholds. Wait for exact `/5` terminal status/logs/output and host verification; no W3 gate is qualified yet. |
-| W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
-| Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
+| WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
+| W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
+| W4 grid/domain sensitivity | Not started; W3 prerequisite passed | W4 criteria remain unregistered and no W4 measurement was submitted in this task. Continue only as the next separately scoped phase. |
+| Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -635,25 +635,21 @@ Current gates and immediate sequence as of 2026-09-28:
    the retained A controls completed the horizon with finite, nonzero forces.
    This confirms an implementation lifetime defect, but not the exact W3 v4
    full-horizon all-zero symptom.
-2. **Requalify W3 with the owner-only fix.** `OwnedV16Run` retains the owner,
-   bodies and simulation through `run_primal`. Immutable W3 criteria round 4
-   is registered at
-   [`kaggle_w3_v16_primal_criteria_2026_09_round4.json`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
-   SHA-256
+2. **W3 round 4 finite-box primal contract passed.** `OwnedV16Run` retains the
+   owner, bodies and simulation through `run_primal`. Immutable criteria round
+   4 SHA-256 is
    `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`,
-   bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0` and the
-   verified owner-diagnostic prerequisite. The registered 2% stationarity
-   gate and all other measurement/acceptance conditions are unchanged from
-   round 3. Criteria and status are pushed. Private dataset version 4 was
-   re-downloaded and hash-verified; exact W3 kernel version 5 is running.
-   Retrieve that version's terminal artifacts and host-verify them.
-3. **Keep downstream work blocked.** W3 v16 primal and physical-profile
-   qualification remain unqualified until the exact round-4 result passes the
-   host verifier. W4 measurement, formal FD, gradient/reverse qualification,
-   optimizer updates and topology work remain blocked.
+   bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`. Exact
+   private kernel `/5` passed host verification for T0-T10. The supported
+   claim is only the registered WaterLily finite-box primal contract.
+3. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
+   remains unresolved. Physical-profile equivalence, grid/domain response,
+   gradient/reverse, topology, optimizer and shape update remain false. W4 is
+   the next phase after this W3 PASS, but its criteria and measurement were
+   not started in this task. Formal FD remains gated on W4.
 4. **Qualify W4 grid/domain sensitivity** using the same canonical SDF and
-   registered WaterLily profile, only after W3 PASS. W4 remains blocked and has
-   no registered qualification result.
+   registered WaterLily profile. Its W3 prerequisite now passes, but W4
+   criteria remain unregistered and no measurement was started in this task.
 5. **Qualify centered-FD SDF derivatives** after W4. Centered FD is the
    permanent independent numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
@@ -670,8 +666,10 @@ Current gates and immediate sequence as of 2026-09-28:
 10. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
     cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
 
-The status represented by this order is deliberately conservative:
-`waterlily_v16_primal_qualified=false`, `w4_qualified=false`,
+Post-round-4 status is deliberately scoped: the registered finite-box primal
+contract passed (`primal_contract_qualified=true`); its broader
+`physical_profile_qualified=false` and the W3 v4 all-zero root-cause mapping
+remains open. `w4_qualified=false`, `grid_response_qualified=false`,
 `sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
 `waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
 and `shape_update_allowed=false`. W0/W1/sphere fixtures are capability evidence
@@ -3763,7 +3761,78 @@ qualification flag.
 - **Measured / verified / qualified:** no terminal primal output or W3
   host-verification verdict exists yet. W3 and all downstream qualification
   flags remain false.
-- **Open:** poll only exact kernel `/5`; once terminal, save its exact status,
-  logs and output in `work/kaggle_w3_version5/`, run the host verifier against
-  round-4 criteria and the remote-verified dataset, and preserve a diagnostic
-  if any gate fails. W4 and formal FD remain blocked.
+- **Open:** no additional W3 run is open. W4 criteria registration is the next
+  separate phase; formal FD remains gated on W4. Do not reinterpret this W3
+  result as OpenFOAM equivalence, absolute downforce correctness, stationarity
+  beyond the registered window, grid/domain convergence, or gradient evidence.
+
+### 2026-09-28 W3 round 4 exact version 5 PASS and host-verified
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-primal/5` reached
+  `KernelWorkerStatus.COMPLETE`. Terminal status SHA-256 is
+  `59e3f698703e6684b7d9e7acdb92c1c9bc593a0d02e35da6824610547e75d771`;
+  exact Kaggle log SHA-256 is
+  `011b878cf20ee47c70cfde67e7d636eb0f96dbcdf2fed9a08f9b3f5901f643d4`;
+  output `sha256.json` SHA-256 is
+  `6973f1facb6ba1b8241d97601dc4d74a17e7df91d894dcccdfde2f240391595e`.
+  Registered criteria SHA-256 is
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`.
+- **Verified:** append-only result
+  [`round-4 result`](evidence/kaggle_w3_v16_primal_result_round4_2026_09.json)
+  SHA-256
+  `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`;
+  its sidecar contains the same digest. All T0-T10 passed. The independently
+  checked output contains 18 files plus the `DONE` marker. Backend identity is
+  two Tesla T4 GPUs, selected UUID
+  `GPU-9a967f15-342d-f7c4-fad3-2da5ddc7c609`, `CUDA_VISIBLE_DEVICES=0`, driver
+  `580.159.04`, CUDA driver API `13.3.0`, runtime `12.8.0`, Julia `1.12.6`,
+  one Julia thread, CUDA.jl `6.3.1`, WaterLily `1.8.0`, backend
+  `KernelAbstractions`.
+- **Raw measurements:** canonical state SHA-256
+  `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`, C-order
+  phi SHA-256
+  `45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785`,
+  Fortran-order/device-roundtrip phi SHA-256
+  `9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`, and
+  measured CPU margin `0.3499999939931499 m` against `0.15 m`. Flow grid is
+  `100×48×36`, flow origin `[-2.5,-1.2,-0.9] m`, canonical SDF origin
+  `[-1.0,-0.8,-0.6] m`, spacing `0.05 m`, `Re=80`, and `tU/L=120.0019378662`
+  after 4,808 steps. Velocity, pressure and candidate force history are finite;
+  601 force samples were recorded. The exact `[80,120]` window contains 200
+  samples. Host-recomputed time-weighted drag is `+0.3360177299 N`, downforce
+  is `+0.3533732402 N`, and `Cd=1.0500554060`. Half-window relative drift is
+  `8.16e-6` for drag and `4.17e-6` for downforce, below the registered `0.02`.
+  Three-axis pressure-plus-viscous force closure, projections, exact-window
+  interpolation/integration and host recomputation passed T7. Raw force CSV
+  SHA-256 is `3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb`.
+  Solver wall time is `35.2219 s`; peak VRAM is `24,941,544 bytes` out of
+  `15,636,037,632 bytes`.
+- **Host-only correction:** the first direct verifier invocation reached final
+  evidence assembly but raised `NameError: HOST_VERIFIER is not defined` and
+  wrote no result. Its exact log SHA-256 is
+  `783fd332d98f9bbbe0eb59d36ec22f4d330fde5ce87ad5404cbdb9c7c3ae9d7e`. The
+  compatibility entrypoint supplies that missing path global and invokes the
+  unchanged registered verifier; its SHA-256 is
+  `d3ee66e9b4c045d214dd420d28a19dcacd53f7f34de7da737b7b12b8531c2472`.
+  The result records the exact registered verifier SHA, which matches round 4.
+  Append-only correction evidence
+  [`round-4 host correction`](evidence/kaggle_w3_v16_primal_result_round4_host_correction_2026_09.json)
+  SHA-256 is
+  `27f0f60bbfbffd111259ecb988bec9b6e8cb1f9498d3a8ba46c04c8d79bddb9b`.
+- **Qualified:** only the registered canonical v16 primal integrity/force/
+  stationarity contract on the registered WaterLily finite-box approximation
+  passed (`primal_contract_qualified=true`). No OpenFOAM profile equivalence,
+  absolute downforce correctness, grid/domain response, gradient, reverse,
+  topology, optimizer or shape-update claim follows. The exact W3 v4 all-zero
+  force root cause remains unresolved; `shape_update_allowed=false`.
+- **Open:** W4 is the next separately scoped phase but was not started here.
+  Its immutable criteria and measurement remain open. Formal centered FD,
+  reverse qualification and all optimization work remain gated on later
+  evidence; do not run them from this W3 result alone.
+- **Validation:** focused W3/W4/owner/reverse-diagnostic pytest passed 56 tests;
+  `compileall`, host compatibility-entrypoint `py_compile`, evidence/sidecar
+  chain checks and `git diff --check` passed. Full repository pytest reported
+  1,109 passed, 37 failed and 4 skipped. All 37 failures are the known
+  historical tests requiring ignored `work/` checkpoints, cases or solver logs
+  absent from this managed worktree; no W3/W4 task test failed.
