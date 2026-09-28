@@ -156,7 +156,7 @@ function compare_rows(cpu, gpu; world_scale=Float32(1))
     value_error_m = maximum(abs.(cpu[:, 1] .- gpu[:, 1])) * world_scale
     normal_error = maximum(sqrt.(sum(abs2, cpu[:, 2:4] .- gpu[:, 2:4], dims=2)))
     velocity_error = maximum(sqrt.(sum(abs2, cpu[:, 5:7] .- gpu[:, 5:7], dims=2)))
-    sign_compared = [i for i in eachindex(cpu[:, 1]) if abs(cpu[i, 1]) > 1e-5f0]
+    sign_compared = [i for i in eachindex(cpu[:, 1]) if abs(cpu[i, 1]) > 1f-5]
     sign_mismatch = count(i -> signbit(cpu[i, 1]) != signbit(gpu[i, 1]), sign_compared)
     return Dict(
         "max_abs_distance_error_m" => value_error_m,
@@ -344,6 +344,10 @@ for (body_name, cpu_body, gpu_body) in (
     checkpoint!("$(body_name)_representative_probes_started", Dict("probe_count" => length(probe_names)))
     cpu_rows = cpu_measure_rows(cpu_body, probe_solver)
     gpu_rows = gpu_measure_rows(gpu_body, probe_solver)
+    checkpoint!("$(body_name)_representative_probe_measurements_completed", Dict(
+        "cpu_measure_rows" => cpu_rows,
+        "gpu_measure_rows" => gpu_rows,
+    ))
     probe_body_results[body_name] = Dict(
         "comparison" => compare_rows(cpu_rows, gpu_rows; world_scale=SPACING_M),
         "records" => [Dict(
