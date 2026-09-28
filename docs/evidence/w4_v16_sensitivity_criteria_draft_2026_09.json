@@ -7,8 +7,10 @@
   "registered_before_computation": false,
   "prerequisites": {
     "w3_result_must_pass_host_verification": true,
-    "w3_baseline_reuse_is_optional": true,
-    "w3_baseline_reuse_requires_exact_identity_and_fixture_semantics": true,
+    "w3_baseline_reused": false,
+    "all_four_cases_reexecuted": true,
+    "w3_flow16_comparison_required": true,
+    "w3_flow16_numerical_repeatability_gate_registered": false,
     "source_commit_must_be_pinned_after_w4_code_is_final": true,
     "backend_identity_must_be_bound_before_first_gpu_measurement": true,
     "w3_result_evidence": null
@@ -268,7 +270,33 @@
       -1.0
     ],
     "record_first_second_half_means": true,
-    "stationarity_gate": false,
+    "stationarity_gate": true,
+    "stationarity": {
+      "window_t_u_l": [
+        80.0,
+        120.0
+      ],
+      "half_windows_t_u_l": [
+        [
+          80.0,
+          100.0
+        ],
+        [
+          100.0,
+          120.0
+        ]
+      ],
+      "quantities": [
+        "drag",
+        "downforce"
+      ],
+      "mean_definition": "trapezoidal physical-time-weighted means on exact endpoint-clipped intervals",
+      "formula": "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))",
+      "relative_half_window_drift_max": 0.02,
+      "precedent": "inherited before W4 measurement from W3 round 4, which carries the registered W2 sphere convention; not selected from W3 v3 or W4 values",
+      "precedent_criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json",
+      "precedent_criteria_sha256": "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb"
+    },
     "native_waterlily_boundary_semantics_fixed": true,
     "ground_model_fixed": true,
     "force_projection_fixed": true,
@@ -293,13 +321,28 @@
     "followup_rule": "If the absolute domain delta in either time-weighted force component in N is greater than or equal to its 24-to-32 resolution delta, register and run an extended-domain fine-grid case before centered FD.",
     "is_grid_or_domain_convergence_gate": false
   },
+  "w3_flow16_comparison": {
+    "required_fields": [
+      "drag_time_weighted_n",
+      "downforce_time_weighted_n",
+      "cd_time_weighted",
+      "stationarity_relative_half_window_drift_drag",
+      "stationarity_relative_half_window_drift_downforce",
+      "steps",
+      "t_u_l",
+      "force_sign"
+    ],
+    "numerical_repeatability_gate_registered": false,
+    "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD"
+  },
   "evidence_scope": {
-    "pass_claim": "the registered v16 WaterLily finite-box resolution/domain sensitivity matrix completed and was independently recomputed",
+    "pass_claim": "the registered v16 WaterLily finite-box resolution/domain sensitivity matrix completed, each case passed the registered stationarity and integrity gates, and its response metrics were independently recomputed",
     "waterlily_is_optimization_oracle": true,
     "openfoam_is_independent_physical_verifier": true,
     "physical_profile_equivalence_qualified": false,
     "absolute_downforce_qualified": false,
     "stationarity_qualified": false,
+    "w4_sensitivity_matrix_passed": false,
     "grid_or_domain_convergence_qualified": false,
     "gradient_qualified": false,
     "reverse_mode_qualified": false,

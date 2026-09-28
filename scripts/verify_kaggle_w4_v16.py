@@ -8,6 +8,7 @@ import csv
 import hashlib
 import json
 import math
+import sys
 import subprocess
 from pathlib import Path
 
@@ -121,6 +122,33 @@ def validate_case_contract(criteria: dict) -> None:
             and "exact [80,120] endpoints" in measurement.get("primary_force_metric", "")
             and "sample the first step at or beyond" in measurement.get("force_sample_policy", ""),
             "W4 measurement-window contract drift")
+    stationarity = measurement.get("stationarity", {})
+    require(measurement.get("stationarity_gate") is True
+            and stationarity.get("window_t_u_l") == [80.0, 120.0]
+            and stationarity.get("half_windows_t_u_l") == [[80.0, 100.0], [100.0, 120.0]]
+            and stationarity.get("relative_half_window_drift_max") == 0.02
+            and stationarity.get("quantities") == ["drag", "downforce"]
+            and stationarity.get("mean_definition") ==
+                "trapezoidal physical-time-weighted means on exact endpoint-clipped intervals"
+            and stationarity.get("formula") ==
+                "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))"
+            and stationarity.get("precedent_criteria_path") ==
+                "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json"
+            and stationarity.get("precedent_criteria_sha256") ==
+                "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb",
+            "W4 registered stationarity contract drift")
+    comparison = criteria.get("w3_flow16_comparison", {})
+    require(criteria.get("prerequisites", {}).get("w3_baseline_reused") is False
+            and criteria["prerequisites"].get("all_four_cases_reexecuted") is True
+            and criteria["prerequisites"].get("w3_flow16_comparison_required") is True
+            and criteria["prerequisites"].get("w3_flow16_numerical_repeatability_gate_registered") is False
+            and comparison.get("numerical_repeatability_gate_registered") is False
+            and comparison.get("required_fields") == [
+                "drag_time_weighted_n", "downforce_time_weighted_n", "cd_time_weighted",
+                "stationarity_relative_half_window_drift_drag",
+                "stationarity_relative_half_window_drift_downforce", "steps", "t_u_l", "force_sign"]
+            and "if drag force sign differs, stop matrix interpretation" in comparison.get("interpretation_rule", ""),
+            "W4 W3-flow_16 comparison contract drift")
     backend = criteria["backend"]
     require(backend.get("accelerator") == "NvidiaTeslaT4"
             and backend.get("machine_shape") == "NvidiaTeslaT4"
@@ -346,6 +374,10 @@ def recompute_case_metrics(rows: list[dict[str, float]], case: dict,
     require(len(window) >= measurement["minimum_force_window_samples"] and first and second,
             "W4 registered force window is incomplete")
     weighted_window = _clipped_force_window(rows, start, end)
+    first_weighted_window = _clipped_force_window(
+        rows, *measurement["stationarity"]["half_windows_t_u_l"][0])
+    second_weighted_window = _clipped_force_window(
+        rows, *measurement["stationarity"]["half_windows_t_u_l"][1])
     component_columns = ["fx_solver", "fy_solver", "fz_solver", "drag_solver",
                          "downforce_solver", "pressure_fx_solver", "pressure_fy_solver",
                          "pressure_fz_solver", "viscous_fx_solver", "viscous_fy_solver",
@@ -361,6 +393,14 @@ def recompute_case_metrics(rows: list[dict[str, float]], case: dict,
         "diagnostic_first_half_mean_downforce_solver": sum(row["downforce_solver"] for row in first) / len(first),
         "diagnostic_second_half_mean_downforce_solver": sum(row["downforce_solver"] for row in second) / len(second),
     })
+    for quantity, key in (("drag", "drag_solver"), ("downforce", "downforce_solver")):
+        first_mean = _time_weighted_mean(first_weighted_window, key)
+        second_mean = _time_weighted_mean(second_weighted_window, key)
+        whole_mean = result[f"window_time_weighted_{key}"]
+        result[f"stationarity_first_half_time_weighted_{quantity}_solver"] = first_mean
+        result[f"stationarity_second_half_time_weighted_{quantity}_solver"] = second_mean
+        result[f"stationarity_relative_half_window_drift_{quantity}"] = (
+            abs(first_mean - second_mean) / max(abs(whole_mean), sys.float_info.epsilon))
     scale = case["density_kg_m3"] * case["freestream_mps"][0] ** 2 * case["flow_spacing_m"] ** 2
     result["drag_time_weighted_n"] = result["window_time_weighted_drag_solver"] * scale
     result["downforce_time_weighted_n"] = result["window_time_weighted_downforce_solver"] * scale
@@ -412,6 +452,42 @@ def response_analysis(metrics_by_case: dict) -> dict:
         for key in ("drag_time_weighted_n", "downforce_time_weighted_n")
     )
     return result
+
+
+def w3_flow16_comparison(w3_result: dict, metrics: dict, summary: dict) -> dict:
+    previous = w3_result["raw_measurements"]
+
+    def compare(w3_value: float, w4_value: float) -> dict:
+        return {
+            "w3_round4": w3_value,
+            "w4_flow_16": w4_value,
+            "delta_w4_minus_w3": w4_value - w3_value,
+            "absolute_delta": abs(w4_value - w3_value),
+            "relative_delta": (None if w3_value == w4_value == 0 else
+                               abs(w4_value - w3_value) / max(abs(w3_value), abs(w4_value))),
+        }
+
+    drag_sign_w3 = 0 if previous["drag_time_weighted_n"] == 0 else math.copysign(1, previous["drag_time_weighted_n"])
+    drag_sign_w4 = 0 if metrics["drag_time_weighted_n"] == 0 else math.copysign(1, metrics["drag_time_weighted_n"])
+    return {
+        "numerical_repeatability_gate_registered": False,
+        "force_sign_consistent": drag_sign_w3 == drag_sign_w4,
+        "force_sign": {"w3_round4": drag_sign_w3, "w4_flow_16": drag_sign_w4},
+        "drag_time_weighted_n": compare(previous["drag_time_weighted_n"], metrics["drag_time_weighted_n"]),
+        "downforce_time_weighted_n": compare(previous["downforce_time_weighted_n"], metrics["downforce_time_weighted_n"]),
+        "cd_time_weighted": compare(previous["cd_time_weighted"], metrics["cd_time_weighted"]),
+        "stationarity_relative_half_window_drift_drag": compare(
+            previous["stationarity_relative_half_window_drift_drag"],
+            metrics["stationarity_relative_half_window_drift_drag"]),
+        "stationarity_relative_half_window_drift_downforce": compare(
+            previous["stationarity_relative_half_window_drift_downforce"],
+            metrics["stationarity_relative_half_window_drift_downforce"]),
+        "steps": {"w3_round4": previous["steps"], "w4_flow_16": summary["steps"]},
+        "t_u_l": {"w3_round4": previous["t_end_reached"], "w4_flow_16": summary["t_end_reached"]},
+        "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+        "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+        "interpretation_if_force_sign_differs": "stop matrix interpretation and diagnose before FD",
+    }
 
 
 def recompute_gates(criteria: dict, summaries: dict, metrics: dict, rows: dict,
@@ -503,6 +579,13 @@ def recompute_gates(criteria: dict, summaries: dict, metrics: dict, rows: dict,
             and fingerprint.get("runner_sha256") == criteria["inputs"]["kernel_runner"]["sha256"]
             and len(fingerprint.get("criteria_sha256", "")) == 64
             and fingerprint.get("w3_result_evidence_sha256") == prereq["sha256"],
+        "T10_stationarity": all(
+            math.isfinite(metrics[case_id].get(f"stationarity_relative_half_window_drift_{quantity}", math.nan))
+            and metrics[case_id][f"stationarity_relative_half_window_drift_{quantity}"]
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
+            for case_id in CASE_IDS
+            for quantity in measurement["stationarity"]["quantities"]
+        ),
     }
     return gates
 
@@ -571,6 +654,14 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     response = response_analysis(metrics_by_case)
     require(outcome.get("response_analysis") == response,
             "W4 runner response analysis differs from host recomputation")
+    prereq = criteria["prerequisites"]["w3_result_evidence"]
+    w3_result = json.loads((ROOT / prereq["path"]).read_text())
+    baseline_comparison = w3_flow16_comparison(
+        w3_result, metrics_by_case["flow_16"], summaries["flow_16"])
+    require(outcome.get("w3_flow16_comparison") == baseline_comparison,
+            "W4 runner W3/flow_16 comparison differs from host recomputation")
+    require(outcome.get("matrix_interpretation_allowed") is baseline_comparison["force_sign_consistent"],
+            "W4 runner baseline interpretation flag differs from host recomputation")
 
     gpu_rows = [row for row in csv.reader((folder / "nvidia_smi.csv").open(newline="")) if row]
     gpu_rows = [", ".join(cell.strip() for cell in row) for row in gpu_rows]
@@ -584,6 +675,8 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     require(all(gates.values()), f"W4 registered integrity gates failed: {gates}")
     require(outcome.get("matrix_execution_complete") is True,
             "W4 outcome does not declare a complete matrix")
+    require(outcome.get("w4_sensitivity_matrix_passed") is True,
+            "W4 outcome does not declare the registered sensitivity matrix PASS")
     for flag in ("physical_profile_equivalence_qualified", "absolute_downforce_qualified",
                  "stationarity_qualified", "grid_or_domain_convergence_qualified",
                  "gradient_qualified", "reverse_mode_qualified", "topology_qualified",
@@ -594,6 +687,12 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
             and state.get("solver_step_invoked") == CASE_IDS
             and state.get("solver_step_returned") == CASE_IDS,
             "W4 solver progress markers do not establish all four case completions")
+    if not baseline_comparison["force_sign_consistent"]:
+        fd_entry_gate = "BLOCKED: W3 flow_16 drag sign disagreement; diagnose before interpretation"
+    elif response["any_force_component_requires_extended_domain_fine_grid"]:
+        fd_entry_gate = "BLOCKED: preregister extended-domain fine-grid interaction case"
+    else:
+        fd_entry_gate = "OPEN"
     return {
         "kernel_version": kernel_version,
         "criteria_sha256": criteria_sha,
@@ -605,6 +704,10 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
         "cpu_measured_sdf_margin_m": margin,
         "force_metrics": metrics_by_case,
         "response_analysis": response,
+        "w3_flow16_comparison": baseline_comparison,
+        "matrix_interpretation_allowed": baseline_comparison["force_sign_consistent"],
+        "w4_sensitivity_matrix_passed": True,
+        "fd_entry_gate": fd_entry_gate,
         "gates": gates,
         "evidence_scope": criteria["evidence_scope"],
     }

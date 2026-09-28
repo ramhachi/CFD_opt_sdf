@@ -72,8 +72,8 @@ an infrastructure choice, not a solver component.
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
-| Next W3 gate | W3 round 4 is closed. W4 is the next separately scoped phase; its criteria remain unregistered and it was not started in this task. |
-| W4 | Not registered or measured. The W3 prerequisite now passes, but no W4 work was started. Formal FD remains gated on W4. |
+| Next W3 gate | W3 round 4 is closed. W4 implementation preparation is in progress; final registration is the next gate. |
+| W4 | Owner retention and the inherited per-case stationarity gate are implemented and focused-tested. Immutable criteria remain unregistered and no W4 measurement has started. Formal FD remains gated on W4 host verification. |
 | Centered-FD SDF derivatives | Formal qualification remains blocked pending W4. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
@@ -108,8 +108,9 @@ exact W3 round 4 `/5` passed host verification for the registered finite-box
 primal contract. This does not explain W3 v4's complete all-zero force history.
 Physical-profile equivalence, grid/domain response, FD, gradient/reverse,
 topology and shape update remain unqualified; `shape_update_allowed=false`.
-W4 criteria and measurement are still open and were not started in this task.
-No historical evidence or criteria are rewritten by this status summary.
+W4 owner-retention and stationarity preparation is implemented, but criteria
+and measurement are still open. No historical evidence or criteria are
+rewritten by this status summary.
 
 The dated entries below preserve chronology. Their local status and "next"
 instructions are snapshots; when they conflict with the SDF-native summary

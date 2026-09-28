@@ -753,12 +753,13 @@ regardless of its per-stage status.
 
 ## W4 v16 resolution/domain sensitivity preparation (not registered)
 
-W3 version 3 completed the registered primal horizon but failed its T7
-positive-drag acceptance gate; expanded-domain W3 round 3 must first pass its
-exact-version host verifier. The local W4 execution shell and gated
-final-registration/staging tools are now implemented, but its draft remains
-`immutable: false` / `registered_before_computation: false`; there is no final
-criteria file or staged W4 dataset and no W4 run is authorized.
+**Historical note:** The W3-v3 failure and W3-round-3 prerequisite below are
+superseded by the exact W3 round-4 PASS recorded later in this runbook. The
+current W4 source preparation retains the owner structurally using the
+existing `OwnedV16Run` type for the complete case solve and retains the shared
+canonical device owner across all four cases. W4 is still unregistered and
+unmeasured until the source preparation commit is pushed and immutable round-1
+criteria are registered.
 
 - `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` defines the four fixed case
   maps and checks physical-box alignment, dimensions, solver length, and Re=80.
@@ -776,7 +777,9 @@ criteria file or staged W4 dataset and no W4 run is authorized.
   physical N forces, half-window diagnostics, runtime, VRAM, SDF hashes, and
   backend identity. Sampling is every eight solver steps plus a terminal force
   sample; host and Julia recomputation linearly interpolate to the exact
-  registered [80,120] endpoints before trapezoidal integration.
+  registered [80,120] endpoints before trapezoidal integration. Stationarity
+  uses exact endpoint-clipped `[80,100]` and `[100,120]` trapezoidal means and
+  the inherited 0.02 relative drift threshold for drag and downforce.
 - `infra/kaggle/kernel_w4/runner.py` discovers the criteria by filename under
   `/kaggle/input` (not a hard-coded Kaggle mount path), checks criteria,
   dataset, source commit, input hashes, W3 PASS evidence, canonical state,
@@ -786,12 +789,15 @@ criteria file or staged W4 dataset and no W4 run is authorized.
 - `scripts/verify_kaggle_w4_v16.py` independently checks the version-bound
   output, inputs, SDF hashes/margin, all raw force rows, component closure,
   projections, endpoint-clipped time-weighted means, physical N conversion,
-  runtime/VRAM, backend identity and the W3 prerequisite. It recomputes both
-  the runner's gates and the domain-versus-resolution follow-up rule.
+  runtime/VRAM, backend identity and the W3 prerequisite. It recomputes the
+  runner's T0-T10 gates, W3-round-4 versus W4-flow_16 deltas, and the
+  domain-versus-resolution follow-up rule.
 - `tests/test_kaggle_w4.py` covers runner/host gate agreement, 3-axis force
   closure, exact [80,120] endpoint interpolation, grid identity rejection,
   the extended-domain rule, the SDF margin definition, staged-file inventory,
-  and refusal to register W4 from W3 error evidence.
+  stationarity interpolation and T10 rejection, structural owner retention,
+  W3 baseline comparison without an unregistered repeatability threshold, and
+  refusal to register W4 from anything other than the exact W3 round-4 PASS.
 - `scripts/register_kaggle_w4_v16_sensitivity_2026_09.py` refuses final
   criteria without an exact host-verified W3 PASS and complete observed T4
   backend identity. It binds the W3 criteria/result and W4 source hashes.
@@ -799,34 +805,37 @@ criteria file or staged W4 dataset and no W4 run is authorized.
   W4 criteria, rechecks pinned source and canonical state/phi identities, and
   stages the exact private dataset inventory.
 - `infra/kaggle/kernel_w4/kernel-metadata.json` is private T4 metadata pointed
-  at the future W4 dataset. Do not push it while W3 is still pending.
+  at the future W4 dataset. Push only after immutable criteria and the private
+  dataset have been registered and remotely reverified.
 
-After W3 formally passes, bind both its immutable criteria file and its
-append-only result evidence. The round-3 host verifier emits
+The exact W3 round-4 PASS is the only accepted prerequisite. Bind both its
+immutable criteria file and append-only result evidence. The round-4 host
+verifier emits
 `verdict: PASS`,
 `host_verification_passed: true`, the exact W3 criteria SHA, kernel version,
 source commit, and the observed `backend_identity` (including the
 `waterlily_backend` string). Copy that backend identity into the W4 criteria;
 the W4 runner and host verifier require exact equality while recording the
 selected T4 UUID separately for each run. Then bind the exact W4
-runner/job/case module/profile/SDF adapter, Project/Manifest,
+runner/job/case module/profile/SDF adapter/owner type, Project/Manifest,
 verifier/test/metadata hashes, criteria, raw phi and canonical state. Register
-the final immutable criteria, stage the private dataset, validate the hashes,
-and only then push the W4 kernel. For the W3 round-3 result path:
+the final immutable criteria only after the owner and stationarity changes are
+committed and pushed; then stage the private dataset, validate the hashes, and
+only then push the W4 kernel. Use the W3 round-4 result paths:
 
 ```bash
 .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
-  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
-  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json
 .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
-  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json \
-  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round3_2026_09.json --check
+  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json --check
 git add docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
   docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json.sha256
 git commit -m "Register W4 v16 sensitivity criteria"
 git push origin codex/kaggle-batch-migration
 .venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py \
-  --state work/kaggle_w3_v16_dataset_round3/sdf_design_state.npz \
+  --state work/kaggle_w3_v16_dataset_round4/sdf_design_state.npz \
   --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json \
   --output work/kaggle_w4_v16_dataset
 uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \
@@ -857,10 +866,14 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/verify_kaggle_w4_v16.py \
 ```
 
 The `<VERSION>` value must be the exact version printed by `push` and kept the
-same for status, logs, output and verification. If either physical-force domain
-delta is greater than or equal to its corresponding 24-to-32 resolution delta,
-register and run the extended-domain fine-grid case before centered FD. W4
-reports sensitivity; it does not qualify convergence or the physical profile.
+same for status, logs, output and verification. W3 round-4 `flow_16` values
+must be compared with W4's separately rerun `flow_16`, reporting drag,
+downforce, Cd, stationarity, steps, tU/L, and force sign. No numerical
+repeatability threshold is registered; a force-sign disagreement stops matrix
+interpretation. If either physical-force domain delta is greater than or equal
+to its corresponding 24-to-32 resolution delta, register and run the
+extended-domain fine-grid case before centered FD. W4 reports sensitivity; it
+does not qualify convergence or the physical profile.
 
 Preparation checks (no solver/GPU measurement):
 
@@ -872,8 +885,9 @@ python3 -m pytest -q tests/test_kaggle_w4.py
 git diff --check
 ```
 
-The four-case builder, Julia parser, JSON parser and focused W4 contract tests
-pass. These checks do not run a solver and do not qualify W4.
+The case builder, Julia parser, JSON parser, focused and full Python tests,
+owner-regression slice, and `git diff --check` must pass before the source
+commit. These checks do not run a solver and do not qualify W4.
 
 ### Exact execution checkpoint: W3 round 3, kernel version 4 (2026-09-28)
 

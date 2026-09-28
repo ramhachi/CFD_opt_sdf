@@ -14,10 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 DRAFT = ROOT / "docs/evidence/w4_v16_sensitivity_criteria_draft_2026_09.json"
 OUTPUT = ROOT / "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity"
+W3_ROUND4_CRITERIA = "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json"
+W3_ROUND4_RESULT = "docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json"
 SOURCE_INPUTS = {
     "kernel_runner": ROOT / "infra/kaggle/kernel_w4/runner.py",
     "host_verifier": ROOT / "scripts/verify_kaggle_w4_v16.py",
     "job": ROOT / "scripts/waterlily_w4_v16_sensitivity_job.jl",
+    "owner_run_type": ROOT / "julia/CFDSDFWaterLily/src/OwnedV16Run.jl",
     "case_module": ROOT / "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl",
     "profile_adapter": ROOT / "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl",
     "device_grid": ROOT / "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
@@ -74,6 +77,8 @@ def load_w3_pass(criteria_path: Path, result_path: Path) -> tuple[dict, dict, st
     result = json.loads(result_path.read_text())
     criteria_rel = criteria_path.resolve().relative_to(ROOT).as_posix()
     result_rel = result_path.resolve().relative_to(ROOT).as_posix()
+    if criteria_rel != W3_ROUND4_CRITERIA or result_rel != W3_ROUND4_RESULT:
+        raise ValueError("W4 registration requires the exact W3 round-4 criteria and exact host-verified PASS result")
     if (result.get("verdict") != "PASS"
             or result.get("host_verification_passed") is not True
             or result.get("criteria_path") != criteria_rel
@@ -170,6 +175,8 @@ def build_criteria(source_commit: str, criteria_round: int,
             "w3_result_must_pass_host_verification": True,
             "w3_baseline_reused": False,
             "all_four_cases_reexecuted": True,
+            "w3_flow16_comparison_required": True,
+            "w3_flow16_numerical_repeatability_gate_registered": False,
             "w3_result_evidence": {
                 "path": w3_result_path.relative_to(ROOT).as_posix(),
                 "sha256": w3_result_sha,

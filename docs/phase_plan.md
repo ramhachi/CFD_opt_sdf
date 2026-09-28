@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Not started; W3 prerequisite passed | W4 criteria remain unregistered and no W4 measurement was submitted in this task. Continue only as the next separately scoped phase. |
+| W4 grid/domain sensitivity | Implementation shell corrected; immutable registration pending | W3 round 4 is the exact prerequisite. Owner retention and per-case T10 stationarity are implemented and tested; no criteria or W4 measurement exists yet. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -644,12 +644,13 @@ Current gates and immediate sequence as of 2026-09-28:
    claim is only the registered WaterLily finite-box primal contract.
 3. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
    remains unresolved. Physical-profile equivalence, grid/domain response,
-   gradient/reverse, topology, optimizer and shape update remain false. W4 is
-   the next phase after this W3 PASS, but its criteria and measurement were
-   not started in this task. Formal FD remains gated on W4.
-4. **Qualify W4 grid/domain sensitivity** using the same canonical SDF and
-   registered WaterLily profile. Its W3 prerequisite now passes, but W4
-   criteria remain unregistered and no measurement was started in this task.
+   gradient/reverse, topology, optimizer and shape update remain false. W4
+   implementation is prepared, but final criteria registration and measurement
+   remain pending. Formal FD remains gated on host-verified W4.
+4. **Register and run W4 grid/domain sensitivity** using the same canonical
+   SDF and registered WaterLily profile. W3 round 4 is the exact prerequisite;
+   all four cases are rerun. The owner-retention and stationarity changes are
+   implemented and tested, but the immutable W4 criteria are not yet registered.
 5. **Qualify centered-FD SDF derivatives** after W4. Centered FD is the
    permanent independent numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
@@ -2496,6 +2497,16 @@ W2b sphere resolution result remains PoC-only; W4 stays ahead of formal FD.
 
 ### W4 v16 sensitivity design draft (not yet preregistered)
 
+> **Superseded matrix note (2026-09-28):** The small-box dimensions in this
+> historical draft predate the expanded-domain W3 round-4 PASS. Do not use
+> them for registration. The current matrix is the post-round-4 matrix in
+> `julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl` and the mutable criteria
+> draft: `flow_16/24/32` use `100x48x36`, `150x72x54`, and `200x96x72` on
+> `[-2.5,2.5] x [-1.2,1.2] x [-0.9,0.9] m`; `domain_xplus1m_16` uses
+> `120x48x36` on `[-2.5,3.5] x [-1.2,1.2] x [-0.9,0.9] m`. The canonical
+> design SDF remains unchanged. All four cases are reexecuted; the W3 baseline
+> result is compared and reported separately.
+
 Prepare the W4 matrix from the W3 profile while holding the canonical v16 phi,
 its hashes, Re=80, physical force definitions, and dimensionless measurement
 window fixed. Treat the canonical design lattice (`h=0.05 m`) and WaterLily
@@ -2530,6 +2541,16 @@ its registered gates pass. Register every W4 case, thresholds, runtime/VRAM
 limits, and output contract before its first GPU measurement. Until those
 criteria exist and W4 is independently verified, centered-FD execution stays
 closed.
+
+The W4 source/harness preparation after W3 round 4 now has structural owner
+retention through the complete case solve using the existing `OwnedV16Run`
+contract, and keeps its canonical device owner reachable across all four cases.
+Each case computes exact endpoint-clipped trapezoidal means over `[80,100]`,
+`[100,120]`, and `[80,120]`; host and Kaggle runner independently recompute
+drag/downforce drift with the inherited `0.02` gate. This is the W3 round-4
+stationarity precedent, ultimately inherited from the registered W2 sphere
+convention; it was not chosen from W3 v3 or W4 measurements. This preparation
+does not register criteria or authorize measurement by itself.
 
 ### 2026-09-28 live queue recheck and W4 preparation
 

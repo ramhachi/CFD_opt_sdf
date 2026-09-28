@@ -14,9 +14,11 @@ and immutable W3 qualification round 4 is registered (criteria SHA-256
 `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`). Exact
 T4 kernel version 5 passed host verification for its registered finite-box
 primal contract. W3 v4's all-zero root cause remains unresolved; physical
-profile, grid response and downstream qualification remain false. W4 was not
-started in this task. See [`phase_plan.md`](phase_plan.md) for evidence and the
-current gate.
+profile, grid response and downstream qualification remain false. W4
+implementation preparation now includes structural owner retention and the
+inherited per-case stationarity gate; its immutable criteria remain
+unregistered and no W4 measurement has started. See
+[`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order
 

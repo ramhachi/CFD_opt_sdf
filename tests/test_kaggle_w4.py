@@ -53,11 +53,16 @@ def fixture():
                                            "path": "canonical_v16_phi_f4_fortran.raw",
                                            "sha256": "1" * 64},
         },
-        "prerequisites": {"w3_result_evidence": {
-            "path": "docs/evidence/kaggle_w3_v16_primal_result_2026_09.json",
-            "sha256": "2" * 64, "criteria_sha256": "3" * 64,
-            "kernel_version": 3, "host_verified": True,
-        }},
+        "prerequisites": {
+            "w3_baseline_reused": False,
+            "all_four_cases_reexecuted": True,
+            "w3_flow16_comparison_required": True,
+            "w3_flow16_numerical_repeatability_gate_registered": False,
+            "w3_result_evidence": {
+                "path": "docs/evidence/kaggle_w3_v16_primal_result_2026_09.json",
+                "sha256": "2" * 64, "criteria_sha256": "3" * 64,
+                "kernel_version": 3, "host_verified": True,
+            }},
     })
     criteria["measurement"].update({"minimum_force_window_samples": 4})
     criteria["backend"] = {
@@ -72,8 +77,8 @@ def fixture():
     summaries, metrics_by_case, rows_by_case = {}, {}, {}
     for case_index, case in enumerate(criteria["cases"]):
         rows = []
-        for step, time_value, offset in ((8, 80.0, 0.0), (16, 90.0, 0.1),
-                                         (24, 110.0, 0.2), (32, 120.0, 0.3)):
+        for step, time_value, offset in ((8, 80.0, 0.0), (16, 90.0, 0.002),
+                                         (24, 110.0, -0.002), (32, 120.0, 0.0)):
             drag = 2.0 + 0.1 * case_index + (0.4 if case["case_id"] == "domain_xplus1m_16" else 0) + offset
             downforce = 0.4 + 0.02 * case_index + 0.01 * offset
             rows.append({
@@ -197,6 +202,83 @@ def test_w4_trapezoidal_metric_clips_samples_to_exact_time_window():
         metrics = recompute(rows, case, criteria["measurement"])
         assert metrics["window_samples"] == 4
         assert math.isclose(metrics["window_time_weighted_drag_solver"], 100.0, abs_tol=1e-12)
+
+
+def test_w4_stationarity_uses_exact_endpoint_weighted_half_windows_and_ten_gate():
+    criteria, summaries, _, rows_by_case, gpu_rows, smoke = fixture()
+    case = criteria["cases"][0]
+    rows = rows_by_case["flow_16"]
+    for row in rows:
+        row["drag_solver"] = row["fx_solver"] = 2.0 + 0.02 * (row["t_u_l"] - 80.0)
+        row["pressure_fx_solver"] = row["drag_solver"] * 0.8
+        row["viscous_fx_solver"] = row["drag_solver"] * 0.2
+
+    runner_metrics = runner.recompute_case_metrics(rows, case, criteria["measurement"])
+    host_metrics = host.recompute_case_metrics(rows, case, criteria["measurement"])
+    assert runner_metrics == host_metrics
+    assert math.isclose(runner_metrics["stationarity_first_half_time_weighted_drag_solver"], 2.2)
+    assert math.isclose(runner_metrics["stationarity_second_half_time_weighted_drag_solver"], 2.6)
+    assert math.isclose(runner_metrics["stationarity_relative_half_window_drift_drag"], 1 / 6)
+
+    summaries["flow_16"].update(runner_metrics)
+    metrics = {case_id: runner.recompute_case_metrics(
+        rows_by_case[case_id], next(c for c in criteria["cases"] if c["case_id"] == case_id),
+        criteria["measurement"])
+        for case_id in rows_by_case}
+    gates = runner.evaluate_gates(
+        criteria, summaries, metrics, rows_by_case, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, criteria["source_commit"], criteria["inputs"]["kernel_runner"]["sha256"],
+        "4" * 64)
+    assert gates["T10_stationarity"] is False
+    fingerprint = {
+        "source_commit": criteria["source_commit"],
+        "runner_sha256": criteria["inputs"]["kernel_runner"]["sha256"],
+        "criteria_sha256": "4" * 64,
+        "w3_result_evidence_sha256": criteria["prerequisites"]["w3_result_evidence"]["sha256"],
+    }
+    host_gates = host.recompute_gates(
+        criteria, summaries, metrics, rows_by_case, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, fingerprint)
+    assert host_gates["T10_stationarity"] is False
+    assert gates == host_gates
+
+
+def test_w4_stationarity_criteria_is_frozen_to_w3_precedent():
+    criteria, *_ = fixture()
+    runner.validate_case_contract(criteria)
+    host.validate_case_contract(criteria)
+    criteria["measurement"]["stationarity"]["relative_half_window_drift_max"] = 0.03
+    for validate in (runner.validate_case_contract, host.validate_case_contract):
+        with pytest.raises((RuntimeError, ValueError), match="stationarity"):
+            validate(criteria)
+
+
+def test_w4_job_structurally_retains_canonical_device_owner_for_all_cases():
+    source = (ROOT / "scripts/waterlily_w4_v16_sensitivity_job.jl").read_text()
+    assert "OwnedV16Run(owner, bodies, sim)" in source
+    assert "GC.@preserve owned begin" in source
+    assert "GC.@preserve device_owner begin" in source
+
+
+def test_w4_reports_w3_flow16_delta_without_inventing_repeatability_bound():
+    criteria, _, metrics, _, _, _ = fixture()
+    w3_result = {"raw_measurements": {
+        "drag_time_weighted_n": metrics["flow_16"]["drag_time_weighted_n"] * 0.9,
+        "downforce_time_weighted_n": metrics["flow_16"]["downforce_time_weighted_n"] + 0.02,
+        "cd_time_weighted": metrics["flow_16"]["cd_time_weighted"] - 0.03,
+        "stationarity_relative_half_window_drift_drag": 0.001,
+        "stationarity_relative_half_window_drift_downforce": 0.002,
+        "steps": 4808,
+        "t_end_reached": 120.0019,
+    }}
+    summary = {"steps": 4808, "t_end_reached": 120.0019}
+    comparison = host.w3_flow16_comparison(w3_result, metrics["flow_16"], summary)
+    assert comparison["numerical_repeatability_gate_registered"] is False
+    assert comparison["force_sign_consistent"] is True
+    assert comparison["force_sign"] == {"w3_round4": 1.0, "w4_flow_16": 1.0}
+    assert math.isclose(comparison["drag_time_weighted_n"]["relative_delta"], 0.1 / 1.0)
+    assert comparison["steps"] == {"w3_round4": 4808, "w4_flow_16": 4808}
+    assert criteria["w3_flow16_comparison"]["numerical_repeatability_gate_registered"] is False
 
 
 def test_w4_case_mapping_gate_rejects_grid_identity_drift():

@@ -7,6 +7,7 @@ import json
 import math
 import os
 import platform
+import sys
 import subprocess
 import tempfile
 import traceback
@@ -145,6 +146,33 @@ def validate_case_contract(criteria):
             or "exact [80,120] endpoints" not in measurement.get("primary_force_metric", "")
             or "sample the first step at or beyond" not in measurement.get("force_sample_policy", "")):
         raise RuntimeError("W4 measurement-window contract drift")
+    stationarity = measurement.get("stationarity", {})
+    if (measurement.get("stationarity_gate") is not True
+            or stationarity.get("window_t_u_l") != [80.0, 120.0]
+            or stationarity.get("half_windows_t_u_l") != [[80.0, 100.0], [100.0, 120.0]]
+            or stationarity.get("relative_half_window_drift_max") != 0.02
+            or stationarity.get("quantities") != ["drag", "downforce"]
+            or stationarity.get("mean_definition") !=
+                "trapezoidal physical-time-weighted means on exact endpoint-clipped intervals"
+            or stationarity.get("formula") !=
+                "abs(mean_first - mean_second) / max(abs(mean_whole), eps(Float64))"
+            or stationarity.get("precedent_criteria_path") !=
+                "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json"
+            or stationarity.get("precedent_criteria_sha256") !=
+                "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb"):
+        raise RuntimeError("W4 registered stationarity contract drift")
+    comparison = criteria.get("w3_flow16_comparison", {})
+    if (criteria.get("prerequisites", {}).get("w3_baseline_reused") is not False
+            or criteria["prerequisites"].get("all_four_cases_reexecuted") is not True
+            or criteria["prerequisites"].get("w3_flow16_comparison_required") is not True
+            or criteria["prerequisites"].get("w3_flow16_numerical_repeatability_gate_registered") is not False
+            or comparison.get("numerical_repeatability_gate_registered") is not False
+            or comparison.get("required_fields") != [
+                "drag_time_weighted_n", "downforce_time_weighted_n", "cd_time_weighted",
+                "stationarity_relative_half_window_drift_drag",
+                "stationarity_relative_half_window_drift_downforce", "steps", "t_u_l", "force_sign"]
+            or "if drag force sign differs, stop matrix interpretation" not in comparison.get("interpretation_rule", "")):
+        raise RuntimeError("W4 W3-flow_16 comparison contract drift")
     backend = criteria["backend"]
     if (backend.get("accelerator") != "NvidiaTeslaT4"
             or backend.get("machine_shape") != "NvidiaTeslaT4"
@@ -414,6 +442,10 @@ def recompute_case_metrics(rows, case, measurement):
                                         and 0 < rows[-1]["step"] - rows[-2]["step"] < stride))):
         raise RuntimeError("W4 force samples do not follow the registered stride/terminal rule")
     weighted_window = clipped_force_window(rows, start, end)
+    first_weighted_window = clipped_force_window(
+        rows, *measurement["stationarity"]["half_windows_t_u_l"][0])
+    second_weighted_window = clipped_force_window(
+        rows, *measurement["stationarity"]["half_windows_t_u_l"][1])
     columns = ["fx_solver", "fy_solver", "fz_solver", "drag_solver", "downforce_solver",
                "pressure_fx_solver", "pressure_fy_solver", "pressure_fz_solver",
                "viscous_fx_solver", "viscous_fy_solver", "viscous_fz_solver"]
@@ -428,6 +460,14 @@ def recompute_case_metrics(rows, case, measurement):
         "diagnostic_first_half_mean_downforce_solver": sum(row["downforce_solver"] for row in first) / len(first),
         "diagnostic_second_half_mean_downforce_solver": sum(row["downforce_solver"] for row in second) / len(second),
     })
+    for quantity, key in (("drag", "drag_solver"), ("downforce", "downforce_solver")):
+        first_mean = time_weighted_mean(first_weighted_window, key)
+        second_mean = time_weighted_mean(second_weighted_window, key)
+        whole_mean = means[f"window_time_weighted_{key}"]
+        means[f"stationarity_first_half_time_weighted_{quantity}_solver"] = first_mean
+        means[f"stationarity_second_half_time_weighted_{quantity}_solver"] = second_mean
+        means[f"stationarity_relative_half_window_drift_{quantity}"] = (
+            abs(first_mean - second_mean) / max(abs(whole_mean), sys.float_info.epsilon))
     scale = (case["density_kg_m3"] * case["freestream_mps"][0] ** 2
              * case["flow_spacing_m"] ** 2)
     means["drag_time_weighted_n"] = means["window_time_weighted_drag_solver"] * scale
@@ -551,6 +591,8 @@ def main():
         rows_by_case[case_id] = rows
         metrics_by_case[case_id] = metrics
     response = response_analysis(metrics_by_case)
+    baseline_comparison = w3_flow16_comparison(
+        w3_result, metrics_by_case["flow_16"], summaries["flow_16"])
     gates = evaluate_gates(criteria, summaries, metrics_by_case, rows_by_case, margin,
                            gpu_rows, smoke, actual_commit, runner_sha, criteria_sha)
     write_json(OUT / "fingerprint.json", {
@@ -577,8 +619,11 @@ def main():
         "summaries": summaries,
         "host_recomputed_metrics": metrics_by_case,
         "response_analysis": response,
+        "w3_flow16_comparison": baseline_comparison,
+        "matrix_interpretation_allowed": baseline_comparison["force_sign_consistent"],
         "gates": gates,
         "matrix_execution_complete": all(gates.values()),
+        "w4_sensitivity_matrix_passed": all(gates.values()),
         "physical_profile_equivalence_qualified": False,
         "absolute_downforce_qualified": False,
         "stationarity_qualified": False,
@@ -624,6 +669,42 @@ def response_analysis(metrics_by_case):
         for key in ("drag_time_weighted_n", "downforce_time_weighted_n")
     )
     return result
+
+
+def w3_flow16_comparison(w3_result, metrics, summary):
+    previous = w3_result["raw_measurements"]
+
+    def compare(w3_value, w4_value):
+        return {
+            "w3_round4": w3_value,
+            "w4_flow_16": w4_value,
+            "delta_w4_minus_w3": w4_value - w3_value,
+            "absolute_delta": abs(w4_value - w3_value),
+            "relative_delta": (None if w3_value == w4_value == 0 else
+                               abs(w4_value - w3_value) / max(abs(w3_value), abs(w4_value))),
+        }
+
+    drag_sign_w3 = 0 if previous["drag_time_weighted_n"] == 0 else math.copysign(1, previous["drag_time_weighted_n"])
+    drag_sign_w4 = 0 if metrics["drag_time_weighted_n"] == 0 else math.copysign(1, metrics["drag_time_weighted_n"])
+    return {
+        "numerical_repeatability_gate_registered": False,
+        "force_sign_consistent": drag_sign_w3 == drag_sign_w4,
+        "force_sign": {"w3_round4": drag_sign_w3, "w4_flow_16": drag_sign_w4},
+        "drag_time_weighted_n": compare(previous["drag_time_weighted_n"], metrics["drag_time_weighted_n"]),
+        "downforce_time_weighted_n": compare(previous["downforce_time_weighted_n"], metrics["downforce_time_weighted_n"]),
+        "cd_time_weighted": compare(previous["cd_time_weighted"], metrics["cd_time_weighted"]),
+        "stationarity_relative_half_window_drift_drag": compare(
+            previous["stationarity_relative_half_window_drift_drag"],
+            metrics["stationarity_relative_half_window_drift_drag"]),
+        "stationarity_relative_half_window_drift_downforce": compare(
+            previous["stationarity_relative_half_window_drift_downforce"],
+            metrics["stationarity_relative_half_window_drift_downforce"]),
+        "steps": {"w3_round4": previous["steps"], "w4_flow_16": summary["steps"]},
+        "t_u_l": {"w3_round4": previous["t_end_reached"], "w4_flow_16": summary["t_end_reached"]},
+        "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+        "interpretation_rule": "report all W3 round-4 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+        "interpretation_if_force_sign_differs": "stop matrix interpretation and diagnose before FD",
+    }
 
 
 def evaluate_gates(criteria, summaries, metrics, rows, margin, gpu_rows, smoke,
@@ -719,6 +800,13 @@ def evaluate_gates(criteria, summaries, metrics, rows, margin, gpu_rows, smoke,
         "T9_exact_source_and_runner_identity": source_commit == criteria["source_commit"]
             and runner_sha == criteria["inputs"]["kernel_runner"]["sha256"]
             and len(criteria_sha) == 64,
+        "T10_stationarity": all(
+            math.isfinite(metrics[case_id].get(f"stationarity_relative_half_window_drift_{quantity}", math.nan))
+            and metrics[case_id][f"stationarity_relative_half_window_drift_{quantity}"]
+            <= measurement["stationarity"]["relative_half_window_drift_max"]
+            for case_id in expected_ids
+            for quantity in measurement["stationarity"]["quantities"]
+        ),
     }
     return gates
 

@@ -8,6 +8,8 @@ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWater
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 using WaterLily
+include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "OwnedV16Run.jl"))
+using .CFDSDFW3RunOwnership: OwnedV16Run
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "V16PhysicalProfile.jl"))
 Base.include(CFDSDFWaterLily,
@@ -70,6 +72,14 @@ function clipped_force_window(rows, start_t, end_t)
     return vcat([first_row], interior, [last_row])
 end
 
+function stationarity_metrics(rows, column)
+    first_mean = time_weighted_mean(clipped_force_window(rows, 80.0, 100.0), column, NaN)
+    second_mean = time_weighted_mean(clipped_force_window(rows, 100.0, 120.0), column, NaN)
+    whole_mean = time_weighted_mean(clipped_force_window(rows, 80.0, 120.0), column, NaN)
+    drift = abs(first_mean - second_mean) / max(abs(whole_mean), eps(Float64))
+    return first_mean, second_mean, whole_mean, drift
+end
+
 function load_canonical_grid(path)
     Base.ENDIAN_BOM == 0x04030201 || error("registered phi requires a little-endian runtime")
     bytes = read(path)
@@ -99,21 +109,12 @@ function write_force_csv(path, rows)
     end
 end
 
-function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
+function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
+    sim = owned.sim
+    bodies = owned.bodies
     validate_v16_w4_case(case)
     println("W4_CASE_STARTED ", case.case_id)
     flush(stdout)
-    candidate_grid = kernel_grid(owner)
-    candidate = GridSDFWaterLilyBody(candidate_grid,
-        Float32.(case.flow_origin_m), Float32(case.flow_spacing_m))
-    ground = V16MovingGroundBody(0.0f0, 1.0f0)
-    bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
-    sim = WaterLily.Simulation(
-        case.flow_dims, v16_native_far_field_uBC, Float32(case.solver_length);
-        U=Float32(case.solver_velocity), ν=Float32(case.solver_viscosity),
-        exitBC=true, body=bodies.combined, T=Float32, mem=CuArray,
-    )
-
     history = Vector{NTuple{13,Float64}}()
     warm_started = time()
     println("W4_SOLVER_STEP_INVOKED ", case.case_id)
@@ -163,6 +164,8 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
     downforce_mean = mean_column(window, 7)
     drag_weighted = time_weighted_mean(weighted_window, 6, drag_mean)
     downforce_weighted = time_weighted_mean(weighted_window, 7, downforce_mean)
+    drag_first_weighted, drag_second_weighted, _, drag_stationarity = stationarity_metrics(history, 6)
+    downforce_first_weighted, downforce_second_weighted, _, downforce_stationarity = stationarity_metrics(history, 7)
     area_solver = case.reference_area_m2 / case.flow_spacing_m^2
     force_scale_n = case.density_kg_m3 * case.freestream_mps^2 * case.flow_spacing_m^2
     summary = (
@@ -236,6 +239,12 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
         diagnostic_second_half_mean_drag_solver=mean_column(second_half, 6),
         diagnostic_first_half_mean_downforce_solver=mean_column(first_half, 7),
         diagnostic_second_half_mean_downforce_solver=mean_column(second_half, 7),
+        stationarity_first_half_time_weighted_drag_solver=drag_first_weighted,
+        stationarity_second_half_time_weighted_drag_solver=drag_second_weighted,
+        stationarity_relative_half_window_drift_drag=drag_stationarity,
+        stationarity_first_half_time_weighted_downforce_solver=downforce_first_weighted,
+        stationarity_second_half_time_weighted_downforce_solver=downforce_second_weighted,
+        stationarity_relative_half_window_drift_downforce=downforce_stationarity,
         cd_time_weighted=drag_weighted / (0.5 * area_solver * case.solver_velocity^2),
         drag_time_weighted_n=drag_weighted * force_scale_n,
         downforce_time_weighted_n=downforce_weighted * force_scale_n,
@@ -268,6 +277,25 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
     flush(stdout)
 end
 
+function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
+    validate_v16_w4_case(case)
+    candidate_grid = kernel_grid(owner)
+    candidate = GridSDFWaterLilyBody(candidate_grid,
+        Float32.(case.flow_origin_m), Float32(case.flow_spacing_m))
+    ground = V16MovingGroundBody(0.0f0, 1.0f0)
+    bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
+    sim = WaterLily.Simulation(
+        case.flow_dims, v16_native_far_field_uBC, Float32(case.solver_length);
+        U=Float32(case.solver_velocity), ν=Float32(case.solver_viscosity),
+        exitBC=true, body=bodies.combined, T=Float32, mem=CuArray,
+    )
+    owned = OwnedV16Run(owner, bodies, sim)
+    GC.@preserve owned begin
+        run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha,
+            roundtrip_sha, vram_total)
+    end
+end
+
 function main()
     tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS || error("W4 case inventory drift")
     mkpath(output_dir)
@@ -276,10 +304,12 @@ function main()
     roundtrip_sha = device_roundtrip_sha(device_owner)
     roundtrip_sha == EXPECTED_PHI_FORTRAN_SHA256 || error("canonical v16 GPU round-trip hash mismatch")
     vram_total = last(CUDA.memory_info())
-    for case in V16W4_CASES
-        run_case(case, device_owner, margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
-        GC.gc()
-        CUDA.synchronize()
+    GC.@preserve device_owner begin
+        for case in V16W4_CASES
+            run_case(case, device_owner, margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
+            GC.gc()
+            CUDA.synchronize()
+        end
     end
     write(joinpath(output_dir, "W4_JOB_DONE"), "All four registered W4 cases returned; host verification required.\n")
     println("W4_V16_SENSITIVITY_DONE cases=", length(V16W4_CASES))
