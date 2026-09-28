@@ -1,0 +1,149 @@
+{
+  "backend": {
+    "accelerator": "NvidiaTeslaT4",
+    "backend": "kaggle_background",
+    "compute_capability": "7.5.0",
+    "cuda_core_version": "observe from exact T4 runtime; not assumed from a type display label",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "selected_gpu_policy": "visible GPU index 0; record the selected UUID for this run",
+    "waterlily_version": "1.8.0"
+  },
+  "claim_scope": "exact registered Kaggle T4 Julia runtime identity for the backing SDF CuArray memory type; no solver or qualification claim",
+  "criteria_dataset_id": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe-criteria",
+  "criteria_id": "kaggle_w3_owner_type_probe_2026_09",
+  "evidence_type": "diagnostic_only",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe",
+  "observations": {
+    "canonical_gpu_roundtrip_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "cuda_device_memory": [
+      "isdefined(CUDA, :DeviceMemory)",
+      "=== actual memory type parameter when defined"
+    ],
+    "kernel_view_type": "record separately",
+    "memory_type": [
+      "type_parameter_object",
+      "string",
+      "parentmodule",
+      "package_uuid",
+      "package_version"
+    ],
+    "module_device_memory": [
+      "isdefined(parentmodule(memory_type), :DeviceMemory)",
+      "=== actual memory type parameter when defined"
+    ],
+    "owner_array": [
+      "typeof",
+      "eltype",
+      "ndims",
+      "size"
+    ],
+    "solver_steps": 0
+  },
+  "prior_evidence": {
+    "owner_lifetime_round4_criteria": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json",
+      "sha256": "58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e"
+    },
+    "owner_lifetime_v7_host_correction": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_host_correction_2026_09.json",
+      "sha256": "53900176b17b0f91a0513c40b531ad538ae028da0b13034244d7fe6ea939ba6c"
+    },
+    "owner_lifetime_v7_result": {
+      "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version7_2026_09.json",
+      "sha256": "66dd9396967f95ef92cb682b24ed14ac4a56345b12cfb2d38f67d4e5bbbb63c3"
+    }
+  },
+  "qualification_flags": {
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "registered_before_computation": true,
+  "schema_version": 1,
+  "source_commit": "f5373e8e4656b55de4b1902b01d29ffca24c99de",
+  "source_files": {
+    "criteria_registrar": {
+      "path": "scripts/register_kaggle_w3_owner_type_probe_2026_09.py",
+      "sha256": "a148c967b27a7c7cbda06aedcf032bbe112b3ae69fb38cbfa6e35d5cf7a3bc2a"
+    },
+    "dataset_preparer": {
+      "path": "scripts/prepare_kaggle_w3_owner_type_probe_dataset_2026_09.py",
+      "sha256": "109c144d2c615f969b7ab6610b0095b03d2bdefe9dbee4012af2855571f5d658"
+    },
+    "host_verifier": {
+      "path": "scripts/verify_kaggle_w3_owner_type_probe.py",
+      "sha256": "0a2cfe9fe18b7b4ef94e22d57f9758e3162fffeb6f44bafc596f711f6e383477"
+    },
+    "kernel_metadata": {
+      "path": "infra/kaggle/kernel_w3_owner_type_probe/kernel-metadata.json",
+      "sha256": "729569dbc3831fb3ad37ced12a41f02b83602445c9af49cd33fe4c17ba40870d"
+    },
+    "manifest": {
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "probe_job": {
+      "path": "scripts/waterlily_w3_v16_owner_type_probe_job.jl",
+      "sha256": "1a8ce428ae144cfcecca5038e354d810cc6f4950248b94e2944fb1b869ae0797"
+    },
+    "production_w3_job": {
+      "path": "scripts/waterlily_w3_v16_primal_job.jl",
+      "sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142"
+    },
+    "project": {
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "python_tests": {
+      "path": "tests/test_kaggle_w3_owner_type_probe.py",
+      "sha256": "f1fa642d258acdd7ba84a2265a7da5a35bd2e13075369898cf4828c8fb8c324c"
+    },
+    "runner": {
+      "path": "infra/kaggle/kernel_w3_owner_type_probe/runner.py",
+      "sha256": "89a960b46e9a0da0d23318fe8465d8047cf4fb06d685765fa36fd842e11c579d"
+    },
+    "t4_smoke": {
+      "path": "scripts/w0b_t4_smoke.jl",
+      "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+    }
+  },
+  "w3_input": {
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "canonical_state_npz_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "criteria_path": "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json",
+    "criteria_sha256": "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2",
+    "criteria_sidecar_sha256": "dcb5a919575f495d53e67cb950bd4f5a3326e85d9be5131e68c6c892d6a04b05",
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+    "dataset_manifest_path": "w3_v16_dataset_manifest.json",
+    "dataset_manifest_sha256": "17f0db110af5e989905e43b83ac7a003efe9b0587f127d5633b8910e7a0e8e9b",
+    "design_domain_sha256": "25c04275da0467193932f3d0f05235c49080c039c2a29e2834a9e75da7169446",
+    "phi_c_order_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+    "phi_fortran_sha256": "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7",
+    "point_shape": [
+      61,
+      33,
+      25
+    ],
+    "spacing_m": 0.05,
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
+  }
+}
