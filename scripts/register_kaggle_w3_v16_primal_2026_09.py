@@ -38,6 +38,9 @@ SMOKE = ROOT / "scripts/w0b_t4_smoke.jl"
 HOST_VERIFIER = ROOT / "scripts/verify_kaggle_w3_v16.py"
 W3_TESTS = ROOT / "tests/test_kaggle_w3.py"
 ADAPTER_TEST = ROOT / "julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl"
+OWNER_DIAGNOSTIC_RESULT = ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3.json"
+OWNER_DIAGNOSTIC_CORRECTION = ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3_host_correction.json"
+OWNER_DIAGNOSTIC_CRITERIA = ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json"
 
 SOURCE_INPUTS = {
     "kernel_runner": RUNNER,
@@ -63,6 +66,20 @@ SOURCE_INPUTS = {
     "criteria_registrar": Path(__file__).resolve(),
     "python_tests": W3_TESTS,
     "adapter_test": ADAPTER_TEST,
+    "owner_run_type": ROOT / "julia/CFDSDFWaterLily/src/OwnedV16Run.jl",
+    "device_grid_sdf": ROOT / "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl",
+    "owner_lifetime_diagnostic_criteria": OWNER_DIAGNOSTIC_CRITERIA,
+    "owner_lifetime_diagnostic_criteria_sha256": OWNER_DIAGNOSTIC_CRITERIA.with_suffix(
+        OWNER_DIAGNOSTIC_CRITERIA.suffix + ".sha256"
+    ),
+    "owner_lifetime_diagnostic_result": OWNER_DIAGNOSTIC_RESULT,
+    "owner_lifetime_diagnostic_result_sha256": OWNER_DIAGNOSTIC_RESULT.with_suffix(
+        OWNER_DIAGNOSTIC_RESULT.suffix + ".sha256"
+    ),
+    "owner_lifetime_diagnostic_host_correction": OWNER_DIAGNOSTIC_CORRECTION,
+    "owner_lifetime_diagnostic_host_correction_sha256": OWNER_DIAGNOSTIC_CORRECTION.with_suffix(
+        OWNER_DIAGNOSTIC_CORRECTION.suffix + ".sha256"
+    ),
 }
 
 
@@ -90,8 +107,8 @@ def criteria_output_path(criteria_round: int) -> Path:
 
 def build_criteria(source_commit: str, *, criteria_round: int = 1,
                    state_path: Path = STATE) -> dict:
-    if criteria_round != 3:
-        raise ValueError("new W3 registrations must use expanded-domain immutable round 3")
+    if criteria_round not in (3, 4):
+        raise ValueError("new W3 registrations must use expanded-domain immutable round 3 or 4")
     genesis = json.loads(GENESIS.read_text())
     w1 = json.loads(W1_RESULT.read_text())
     profile = json.loads(PROFILE_MANIFEST.read_text())
@@ -240,6 +257,21 @@ def build_criteria(source_commit: str, *, criteria_round: int = 1,
         "registered_source_commit": source_commit,
         "input_dataset_id": DATASET_ID,
         "source_commit": source_commit,
+        **({
+            "round_reason": "W3 round 3 failed T7 with an all-zero full-horizon force history; round 4 applies only the structural backing-owner lifetime fix authorized by the preregistered full-horizon A/B diagnostic. The exact W3 round-3 symptom mapping remains unresolved.",
+            "owner_lifetime_diagnostic_prerequisite": {
+                "criteria_path": OWNER_DIAGNOSTIC_CRITERIA.relative_to(ROOT).as_posix(),
+                "criteria_sha256": sha256(OWNER_DIAGNOSTIC_CRITERIA),
+                "result_path": OWNER_DIAGNOSTIC_RESULT.relative_to(ROOT).as_posix(),
+                "result_sha256": sha256(OWNER_DIAGNOSTIC_RESULT),
+                "host_correction_path": OWNER_DIAGNOSTIC_CORRECTION.relative_to(ROOT).as_posix(),
+                "host_correction_sha256": sha256(OWNER_DIAGNOSTIC_CORRECTION),
+                "owner_lifetime_implementation_bug_confirmed": True,
+                "production_fix_gate_met": True,
+                "w3_round3_exact_zero_force_root_cause_confirmed": False,
+                "fix_design": "OwnedV16Run structurally retains DeviceGridSDF owner, bodies and simulation; run_primal preserves that wrapper for the complete solver horizon",
+            },
+        } if criteria_round == 4 else {}),
         "inputs": inputs,
         "fixture_selection": {
             "purpose": "select a WaterLily finite-box fixture using independent OpenFOAM boundary evidence; no WaterLily/OpenFOAM numerical equivalence is asserted",

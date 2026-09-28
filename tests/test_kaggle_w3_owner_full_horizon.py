@@ -83,13 +83,17 @@ def test_production_fix_requires_natural_collection_and_replicated_same_corrupti
     assert HOST.production_fix_gate(False, [corruption, dict(corruption)]) is False
 
 
-def test_w3_v4_production_job_remains_byte_identical_and_arm_order_is_fixed():
+def test_w3_owner_fix_roots_owner_through_primal_and_preserves_registered_force_path():
     import json
     import re
 
     criteria = json.loads((ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json").read_text())
+    owner_criteria = json.loads((ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json").read_text())
     job = ROOT / "scripts/waterlily_w3_v16_primal_job.jl"
-    assert HOST.sha256(job) == criteria["inputs"]["job"]["sha256"]
+    registered_v4_job_sha = criteria["inputs"]["job"]["sha256"]
+    assert owner_criteria["comparison_production_source"]["production_job_sha256"] == registered_v4_job_sha
+    assert owner_criteria["comparison_production_source"]["same_as_immutable_w3_round3_job"] is True
+    assert HOST.sha256(job) != registered_v4_job_sha
     production = job.read_text()
     diagnostic = (ROOT / "scripts/waterlily_w3_v16_owner_full_horizon_job.jl").read_text()
     for constant in ("T_END", "BURN_IN", "SAMPLE_EVERY"):
@@ -106,6 +110,24 @@ def test_w3_v4_production_job_remains_byte_identical_and_arm_order_is_fixed():
     assert "total = pressure + viscous" in diagnostic
     assert "downforce = -total[3]" in production
     assert "Float64(-total[3])" in diagnostic
+    ownership_module = (ROOT / "julia/CFDSDFWaterLily/src/OwnedV16Run.jl").read_text()
+    assert "struct OwnedV16Run{O,B,S}" in ownership_module
+    assert "owner::O" in ownership_module and "bodies::B" in ownership_module and "sim::S" in ownership_module
+    assert "using .CFDSDFW3RunOwnership: OwnedV16Run" in production
+    assert "GC.@preserve owned" in production
+    assert "owned_run = OwnedV16Run(device_owner, bodies, sim)" in production
+    assert "summary = run_primal(owned_run; vram_total)" in production
+    for key, constant in (("state_sha256", "EXPECTED_STATE_SHA256"),
+                          ("phi_c_order_sha256", "EXPECTED_PHI_C_ORDER_SHA256"),
+                          ("phi_fortran_sha256", "EXPECTED_PHI_FORTRAN_SHA256")):
+        assert criteria["geometry"][key] in production
+        assert f"const {constant}" in production
+    assert "bodies = v16_physical_profile_bodies(device_grid; T = Float32)" in production
+    assert "sim = build_v16_physical_profile_simulation(bodies; T = Float32, mem = CuArray)" in production
+    assert "drag = total[1]" in production
+    assert "downforce = -total[3]" in production
+    device_grid_api = (ROOT / "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl").read_text()
+    assert "owning `DeviceGridSDF` (and its CuArray) must stay alive" in device_grid_api
     import runpy
     runner = runpy.run_path(str(ROOT / "infra/kaggle/kernel_w3_owner_full_horizon/runner.py"))
     assert runner["ARMS"] == ("A-natural", "A-forced", "B-natural-1", "B-natural-2", "B-forced-1", "B-forced-2")
@@ -162,6 +184,17 @@ def test_round_reason_separates_slug_retry_from_harness_correction():
     assert "Round 2 was frozen but never submitted" in registrar["round_reason"](3)
     assert "target horizon" in registrar["round_reason"](3)
     assert registrar["output_for_round"](3).name == "kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json"
+
+
+def test_qualification_flags_are_read_from_registered_output_schema():
+    criteria = {"evidence_output": {"qualification_flags": {
+        "waterlily_v16_primal_qualified": False,
+        "shape_update_allowed": False,
+    }}}
+    assert HOST.registered_qualification_flags(criteria) == {
+        "waterlily_v16_primal_qualified": False,
+        "shape_update_allowed": False,
+    }
 
 
 def test_runner_enforces_per_arm_and_kernel_time_limits():

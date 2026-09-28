@@ -1671,3 +1671,73 @@ only. It does not prove the cause of W3 v4's full-horizon zero force history,
 authorize a production ownership change, or qualify W3 primal, physical
 profile, gradient, or any downstream optimization gate. All qualification
 flags remain false.
+
+### Full-horizon owner diagnostic round 3, exact kernel version 2
+
+The current exact private kernel is
+`ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2`. It completed
+under immutable criteria
+[`round 3`](evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json),
+SHA-256 `2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000`.
+The version-bound status, Kaggle logs and output are stored in
+`work/kaggle_w3_owner_full_horizon_version2/`; do not mix them with version 1
+or any W3 primal kernel version.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels status ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels logs ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2 \
+  > work/kaggle_w3_owner_full_horizon_version2/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels output ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2 \
+  -p work/kaggle_w3_owner_full_horizon_version2
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_owner_full_horizon.py \
+  work/kaggle_w3_owner_full_horizon_version2/w3_owner_full_horizon \
+  --criteria docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json \
+  --criteria-dataset-dir work/kaggle_w3_owner_full_horizon_dataset_round3_remote \
+  --w3-dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --actual-kernel-id ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic \
+  --kernel-version 2 \
+  --status work/kaggle_w3_owner_full_horizon_version2/kaggle_status_terminal.txt \
+  --log work/kaggle_w3_owner_full_horizon_version2/kaggle.log \
+  --record-evidence
+```
+
+Exact terminal status is `KernelWorkerStatus.COMPLETE`; status SHA-256
+`b460246279ec24d862be48d472007531d1b16c7e49584c98fe9fc862fdd28c35`, exact
+Kaggle log SHA-256
+`763c53bfd5b5fe234da74e2a475ca8dc1a7b73d7befa46566b9a640e7a4ac239`, and
+output `sha256.json` SHA-256
+`58b7265cfe8f9e53997683e966ec00fadc5d9986ab83201472a03ab5b692324c`. The
+host result evidence is
+[`round-3 result`](evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3.json),
+SHA-256 `72e887e02b406b964bf7b6c617dcf111fc51dc9e1d275fc827689e80e29c9aeb`.
+
+The first host attempt ended with `KeyError: qualification_flags` while
+assembling evidence: the immutable schema places the field at
+`evidence_output.qualification_flags`. No result was written by that attempt.
+The corrected host reader writes the registered output flags and records its
+own hash mismatch against the criteria-bound host verifier. This host-only
+correction did not alter criteria, measurement data, thresholds, or Kaggle
+output. Its append-only evidence is
+[`round-3 host correction`](evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3_host_correction.json),
+SHA-256 `a56590757b46b176102d7c3e92517bbac57d7d9740ca41036c72fd28bbe29ccb`.
+The registered verifier SHA is
+`c38a6547ec75929c131c449a1a0b449a6b1d4d467c2af9696e60c1d1eec6bc84`; the
+corrected local verifier SHA is
+`8e46de364be46b54dc8a52d347a64a45b265e7068ffff653965b48be36b53153`. Keep
+both values visible; they are not the same hash.
+
+The result confirms the registered owner-lifetime production-fix gate, but
+does not reproduce W3 v4's exact all-zero force history. A-natural/A-forced
+retained the owner and completed 4,808 steps with finite, nonzero force; their
+601 samples matched. Both B-natural replicas observed collection at step 1.
+The first sampled non-finite force occurred at step 16 (`tU/L=0.3506548703`)
+and step 128 (`tU/L=3.0178484917`); registered velocity/pressure snapshots
+were finite. Therefore the lifetime contract is a confirmed implementation
+defect, while the exact v4 all-zero root cause remains open. The production
+fix uses `OwnedV16Run` to retain the backing owner and preserve that run bundle
+through `run_primal`; a new immutable W3 round is required before the next
+T4 qualification attempt. W4 and formal FD remain blocked.

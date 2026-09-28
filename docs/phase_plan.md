@@ -137,7 +137,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified; owner-lifetime diagnostic version 7 is complete and host-verified | Round 4 supports owner-lifetime sensitivity in a two-step fixture, but does not establish the cause of W3 v4's full-horizon all-zero force history. Keep production ownership and W3 primal unqualified. The captured type string differs from the immutable criteria's display-path label and is not normalized as an alias. See the append-only version-7 result and host-correction evidence below. |
+| W3 v16 primal | Unqualified; exact full-horizon owner diagnostic is host-verified and production owner fix is implemented | Round-3 owner diagnostic confirms the non-owning device-SDF lifetime bug and meets its production-fix gate. It does not reproduce W3 v4's all-zero force symptom. New W3 qualification criteria and a T4 run are pending; no W3 gate is qualified yet. Runtime CUDA/CUDACore memory-type identity is established by exact `===` evidence. |
 | W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
 | Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
@@ -3626,6 +3626,72 @@ qualification flag.
   response, gradient, CPU/GPU reverse, topology, and shape update remain
   unqualified; `shape_update_allowed=false`. No production owner-lifetime fix
   is authorized by this diagnostic.
-- **Open:** determine the runtime type-label relationship and obtain evidence
-  for the full-horizon W3 v4 failure before applying any production ownership
-  change. W4 remains blocked on a passing host-verified W3 primal.
+- **Open:** freeze a new immutable W3 qualification round against the committed
+  structural owner fix, update and remotely re-verify the private dataset, then
+  submit and host-verify the exact T4 kernel version. W4 remains blocked on a
+  passing host-verified W3 primal.
+
+### 2026-09-28 full-horizon owner diagnostic closed; W3 owner fix implemented
+
+- **Measured:** exact private kernel
+  `ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2` reached
+  `KernelWorkerStatus.COMPLETE` on the registered two-T4 Kaggle inventory,
+  selected UUID `GPU-594bac6d-f97e-246d-4962-065f751ba972`, Julia 1.12.6,
+  CUDA.jl/CUDACore 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, and
+  WaterLily 1.8.0. Registered criteria SHA-256 is
+  `2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000`;
+  source commit `a8ce5a8104b8d115ed9d706257f0e0b5956c7db3`; exact log SHA-256
+  `763c53bfd5b5fe234da74e2a475ca8dc1a7b73d7befa46566b9a640e7a4ac239`;
+  terminal status SHA-256
+  `b460246279ec24d862be48d472007531d1b16c7e49584c98fe9fc862fdd28c35`;
+  output `sha256.json` SHA-256
+  `58b7265cfe8f9e53997683e966ec00fadc5d9986ab83201472a03ab5b692324c`.
+- **Verified:** A-natural and A-forced each retained the backing owner and
+  completed 4,808 steps to `tU/L=120.0019378662`, with finite, nonzero forces;
+  their 601 force samples matched exactly. B-natural-1 and B-natural-2 both
+  observed the backing `owner.grid.phi` WeakRef clear at step 1 and completed
+  the horizon. Their first sampled non-finite force was step 16 at
+  `tU/L=0.3506548703` and step 128 at `tU/L=3.0178484917`, respectively.
+  The registered first-collection and endpoint velocity/pressure snapshots
+  remained finite. The type probe result
+  [`owner type round 2`](evidence/kaggle_w3_owner_type_probe_result_2026_09.json)
+  SHA-256 `91667c7dc783bd7f8f05dd8b2b596ec6242c2c887f60c8f7d142f4c53ea67fb6`
+  confirms `CUDA.DeviceMemory === CUDACore.DeviceMemory` on the exact Julia
+  1.12.6/CUDA.jl 6.3.1 T4 runtime.
+- **Host correction:** the first local verifier attempt completed artifact and
+  arm validation but stopped at final evidence assembly with
+  `KeyError: qualification_flags`; the immutable schema stores the flags under
+  `evidence_output`. The corrected host verifier reads that registered
+  location and records its actual hash versus the registered hash. It does not
+  change the criteria, measurement, or thresholds. Primary result evidence
+  SHA-256 is `72e887e02b406b964bf7b6c617dcf111fc51dc9e1d275fc827689e80e29c9aeb`;
+  host-correction evidence SHA-256 is
+  `a56590757b46b176102d7c3e92517bbac57d7d9740ca41036c72fd28bbe29ccb`.
+  The corrected verifier hash differs from the criteria-bound verifier hash;
+  this discrepancy is explicitly recorded in the correction evidence.
+- **Interpretation:** the preregistered rule classifies this as
+  `owner_lifetime_implementation_bug_confirmed_exact_v4_zero_force_symptom_unresolved`
+  and sets `production_fix_gate_met=true`. It does not reproduce W3 v4's
+  complete all-zero force history: B forces became non-finite rather than
+  remaining finite exact zero. Owner lifetime is the confirmed defect; the
+  exact v4 symptom's complete root cause remains open.
+- **Implemented:** `OwnedV16Run` holds the owner, body tuple, and simulation;
+  production `run_primal` preserves that wrapper for its entire solver call.
+  Geometry/source hashes, grid, profile, force projection, burn-in, sample
+  stride, runtime and acceptance thresholds are unchanged. A CPU adapter test
+  forces GC and verifies the wrapper still strongly retains its owner. Focused
+  W2b/W3/W4/diagnostic pytest: 62 passed; Julia adapter test: 16 checks passed
+  with no solver step; W3 Julia syntax, Python compileall, py_compile, and
+  `git diff --check` pass. Full pytest: 1,109 passed, 37 failed, 4 skipped;
+  all 37 failures read ignored historical `work/` artifacts absent from this
+  managed worktree.
+- **Registered:** not yet. New immutable W3 qualification round 4 will bind
+  this owner fix and the exact owner diagnostic prerequisite after the source
+  commit is pushed. Existing round-3 criteria/evidence remain unchanged.
+- **Submitted / qualified:** no new W3 qualification kernel has been
+  submitted, and W3 remains unqualified. W4, formal FD, gradient/reverse,
+  topology, optimizer, and shape update remain blocked/false.
+- **Open:** commit and push the tested source, diagnostic result/correction,
+  and status refresh; register W3 round 4; stage/upload/re-download and verify
+  its private dataset; submit the next exact W3 T4 kernel version. Do not
+  start W4 or formal FD before exact host-verified W3 PASS.

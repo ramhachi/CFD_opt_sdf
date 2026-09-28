@@ -4,6 +4,7 @@
 #        julia/CFDSDFWaterLily/test/test_v16_physical_profile_adapter.jl
 
 include(joinpath(@__DIR__, "..", "src", "CFDSDFWaterLily.jl"))
+include(joinpath(@__DIR__, "..", "src", "OwnedV16Run.jl"))
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 using WaterLily
@@ -81,6 +82,13 @@ check("expanded_flow_grid_and_reynolds", CFDSDFWaterLily.V16_PROFILE_CELL_DIMS =
       CFDSDFWaterLily.V16_PROFILE_REYNOLDS == 80.0)
 
 sim = CFDSDFWaterLily.build_v16_physical_profile_simulation(bodies)
+owner_probe = Ref(:device_owner)
+owner_weakref = WeakRef(owner_probe)
+owned_run_probe = CFDSDFW3RunOwnership.OwnedV16Run(owner_probe, bodies, sim)
+owner_probe = nothing
+GC.gc(true)
+check("structural_run_bundle_retains_device_owner",
+      owner_weakref.value === owned_run_probe.owner)
 check("registered_solver_scaling", sim.L == 16.0f0 && sim.U == 1.0f0 &&
       sim.flow.ν == 0.2f0 && sim.flow.exitBC &&
       size(sim.flow.p)[1:3] == (102,50,38))

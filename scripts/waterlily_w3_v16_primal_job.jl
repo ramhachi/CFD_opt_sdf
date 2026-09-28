@@ -13,6 +13,8 @@ include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "CFDSDFWater
 using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 using WaterLily
+include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "OwnedV16Run.jl"))
+using .CFDSDFW3RunOwnership: OwnedV16Run
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "V16PhysicalProfile.jl"))
 
@@ -197,6 +199,12 @@ function run_primal(sim, bodies; vram_total)
     )
 end
 
+function run_primal(owned::OwnedV16Run; vram_total)
+    GC.@preserve owned begin
+        run_primal(owned.sim, owned.bodies; vram_total)
+    end
+end
+
 function run_w3_primal()
     mkpath(output_dir)
     canonical, margin, phi_fortran_sha, phi_c_order_sha = load_canonical_grid(phi_raw_path)
@@ -206,9 +214,10 @@ function run_w3_primal()
     device_grid = kernel_grid(device_owner)
     bodies = v16_physical_profile_bodies(device_grid; T = Float32)
     sim = build_v16_physical_profile_simulation(bodies; T = Float32, mem = CuArray)
+    owned_run = OwnedV16Run(device_owner, bodies, sim)
     fingerprint = runtime_fingerprint()
     vram_total = last(CUDA.memory_info())
-    summary = run_primal(sim, bodies; vram_total)
+    summary = run_primal(owned_run; vram_total)
 
     csv_path = joinpath(output_dir, "v16.forces.csv")
     write_force_csv(csv_path, summary.history)

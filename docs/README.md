@@ -7,6 +7,12 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
+Current checkpoint: the W3 full-horizon owner diagnostic confirmed a
+non-owning device-SDF lifetime bug and authorized the narrowly scoped owner
+fix. W3 remains unqualified until a new immutable qualification round passes;
+W4 and formal FD remain blocked. See [`phase_plan.md`](phase_plan.md) for the
+exact evidence and next gate.
+
 ## Fresh OpenCode read order
 
 Start with the repository root [`AGENTS.md`](../AGENTS.md), then read:

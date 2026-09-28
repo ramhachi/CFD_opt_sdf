@@ -31,6 +31,15 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text())
 
 
+def registered_qualification_flags(criteria: dict[str, Any]) -> dict[str, bool]:
+    flags = criteria.get("qualification_flags")
+    if flags is None:
+        flags = criteria.get("evidence_output", {}).get("qualification_flags")
+    if not isinstance(flags, dict):
+        raise ValueError("qualification flags are missing from immutable criteria")
+    return flags
+
+
 def read_csv(path: Path) -> list[dict[str, float]]:
     with Path(path).open(newline="") as handle:
         reader = csv.DictReader(handle)
@@ -520,7 +529,7 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
                 "qualification": False,
             },
             "qualification": False,
-            "qualification_flags": criteria["qualification_flags"],
+            "qualification_flags": registered_qualification_flags(criteria),
             "claim_scope": "exact-version diagnostic artifact provenance only; no owner-lifetime conclusion or solver qualification",
         }
     require(fingerprint_path.is_file() and execution_path.is_file(), "runtime fingerprint or execution record missing")
@@ -632,6 +641,10 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
         "source_commit": criteria["source_commit"],
         "runner_sha256": fingerprint["runner_sha256"],
         "host_verifier_sha256": sha256(Path(host_verifier_path)),
+        "host_verifier_sha256_registered": criteria["source_files"]["host_verifier"]["sha256"],
+        "host_verifier_sha256_matches_registration": (
+            sha256(Path(host_verifier_path)) == criteria["source_files"]["host_verifier"]["sha256"]
+        ),
         "observed_backend_identity": {
             "gpu_inventory": gpu_rows,
             "selected_gpu_uuid": fingerprint["selected_gpu_uuid"],
@@ -643,8 +656,9 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
         "arms": arms,
         "causal_decision": decision,
         "host_verification_passed": status_name == "COMPLETE",
+        "host_artifact_verification_passed": status_name == "COMPLETE",
         "qualification": False,
-        "qualification_flags": criteria["qualification_flags"],
+        "qualification_flags": registered_qualification_flags(criteria),
         "claim_scope": "owner-lifetime diagnostic only; no W3 primal, OpenFOAM equivalence, physical profile, gradient, reverse mode, topology, optimizer, or shape update qualification",
     }
     return evidence

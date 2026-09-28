@@ -71,8 +71,8 @@ an infrastructure choice, not a solver component.
 | --- | --- |
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere capability gates have evidence; this does not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified. Version 6 is the latest completed measurement; its owner-lifetime result remains unresolved. Exact round-4 diagnostic version 7 is running, with no new GPU measurement yet. |
-| Next W3 diagnosis | Retrieve only exact version 7's terminal status/logs/output and host-verify round 4. The round-4 job weak-references backing `owner.grid.phi` and records its path/type; do not change production code without causal evidence. |
+| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. Its preregistered gate confirms an owner-lifetime implementation bug; the exact W3 v4 all-zero force symptom remains unresolved. The structural production owner fix is implemented, but the new W3 criteria round and GPU run are pending. |
+| Next W3 gate | Freeze round-4 criteria after the owner-fix source commit, stage and remotely verify the private canonical input dataset, run the next exact W3 T4 version, and host-verify it. W4 and formal FD remain blocked until W3 PASS. |
 | W4 | Blocked until exact W3 host-verifier PASS; no W4 qualification criteria or measurement is registered. |
 | Centered-FD SDF derivatives | Formal qualification blocked pending W3 and W4. |
 | Production gradient backend | Undecided and unqualified. |
@@ -80,23 +80,27 @@ an infrastructure choice, not a solver component.
 | Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |
 | Stage V | Independent body-fitted verifier; registered v16 physical profile and two-domain result apply only to that candidate/profile. |
 
-Version 6's four A/C/B1/B2 arms each completed two primal steps and had
-identical geometry arrays (1,009 candidate negative cells). A and C ended with
-byte-identical flow fields. B1/B2 matched A through step 1, then diverged in
-step-2 fields and force; the pre-existing maximum normal discrepancy remained
-about `1.338`. The GC evidence is not causal: the diagnostic weak-referenced
-the immutable `DeviceGridSDF` wrapper, and the wrapper references for C/B1/B2
-were already clear before the registered bracket. It did not test whether
-`owner.grid.phi`'s backing `CuArray` was collected. Diagnose that array directly
-before concluding whether owner lifetime explains the divergence. Immutable
-owner-lifetime round-4 criteria are registered at SHA-256
-`58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`. Exact
-private Kaggle version 7 was submitted with the registered T4 runtime; its
-first captured status is `KernelWorkerStatus.RUNNING` (SHA-256
-`172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`). No
-round-4 logs, output, or measurement has been recovered. At terminal status,
-verify that exact version against round-4 criteria before interpreting the
-owner-lifetime hypothesis.
+The exact full-horizon diagnostic is
+`ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2`, under immutable
+criteria round 3 (SHA-256
+`2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000`). Both
+retained A controls completed 4,808 steps to `tU/L=120.00194` with finite,
+nonzero force history. Both natural-GC B replicates observed the backing
+`owner.grid.phi` WeakRef clear at step 1 and later developed non-finite force
+components; first sampled non-finite force was step 16 (`tU/L=0.35065`) and
+step 128 (`tU/L=3.01785`). Velocity/pressure snapshots remained finite. The
+registered conclusion is `owner_lifetime_implementation_bug_confirmed`, while
+the exact full-horizon all-zero W3 v4 symptom correspondence is false. Runtime
+type identity is explicit: CUDA.jl 6.3.1's `CUDA.DeviceMemory` binding is
+identical (`===`) to the observed `CUDACore.DeviceMemory` owner type parameter.
+
+Production W3 now bundles the `DeviceGridSDF` owner, bodies, and simulation in
+`OwnedV16Run` and preserves that wrapper throughout `run_primal`. This changes
+only owner lifetime. Round-3 criteria and output remain immutable; the next W3
+qualification run must use a new criteria round and the same fixture,
+backend, forces, measurement window, and gates. All W3/W4/FD/gradient/reverse/
+topology/shape-update qualification flags remain false. The maximum normal
+discrepancy near `1.338` remains a separate open issue.
 
 The active order is in [`phase_plan.md` §11](phase_plan.md#11-current-sdf-native-execution-order).
 The sequence starts with W3 zero-force root-cause diagnosis, allows a production

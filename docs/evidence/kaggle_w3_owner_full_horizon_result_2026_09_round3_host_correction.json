@@ -1,0 +1,60 @@
+{
+  "claim_scope": "corrected host-side evidence assembly for the exact diagnostic-only owner-lifetime result; no W3 primal, physics, gradient, reverse, topology, optimizer, or shape-update qualification",
+  "corrected_host_verifier_sha256": "8e46de364be46b54dc8a52d347a64a45b265e7068ffff653965b48be36b53153",
+  "correction": {
+    "artifact_verification": "passed on corrected host verifier",
+    "causal_diagnostic_verification": "passed on corrected host verifier",
+    "change": "read qualification flags from the immutable registered evidence_output object, while retaining compatibility with top-level criteria; explicitly record actual versus criteria-bound host verifier SHA",
+    "criteria_or_kaggle_output_changed": false,
+    "focused_tests": "14 passed before final repository-wide validation",
+    "host_result_evidence_written": true,
+    "host_verifier_registered_hash_gate": "not an exact hash match; surfaced as false and disclosed here rather than normalized away",
+    "measurement_or_acceptance_threshold_changed": false,
+    "status": "implemented_and_reverified"
+  },
+  "created_utc_date": "2026-09-28",
+  "criteria_or_measurement_changed": false,
+  "criteria_path": "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json",
+  "criteria_sha256": "2b28c0284833cdc3b360fe2f55e6babb435394b69ea001fcb677fe94c5b40000",
+  "criteria_sidecar_sha256": "9520e4887f5c1e33a5b578ea99e3358ee4746a61e1e15f11207b93d5f0acaad1",
+  "diagnostic_id": "kaggle_w3_owner_full_horizon_2026_09_round3",
+  "diagnostic_result_scope": {
+    "interpretation": "The registered A/B natural-GC rule supports repairing the non-owning view lifetime contract; the observed B failure is non-finite force corruption, not W3 v4\u2019s all-zero force history, so that exact root cause remains unresolved.",
+    "owner_lifetime_implementation_bug_confirmed": true,
+    "production_fix_gate_met": true,
+    "qualification": false,
+    "qualification_flags": {
+      "grid_response_qualified": false,
+      "physical_profile_qualified": false,
+      "sdf_gradient_qualified": false,
+      "shape_update_allowed": false,
+      "topology_birth_qualified": false,
+      "waterlily_reverse_cpu_qualified": false,
+      "waterlily_reverse_cuda_qualified": false,
+      "waterlily_v16_primal_qualified": false
+    },
+    "w3_v4_exact_zero_force_symptom_correspondence": false
+  },
+  "evidence_type": "diagnostic_host_verification_correction",
+  "exact_kaggle_log_sha256": "763c53bfd5b5fe234da74e2a475ca8dc1a7b73d7befa46566b9a640e7a4ac239",
+  "exact_kernel_ref": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic/2",
+  "initial_host_verification_attempt": {
+    "cause": "immutable criteria store qualification_flags under evidence_output.qualification_flags, while the original verifier read only a top-level criteria.qualification_flags",
+    "failure": "KeyError: qualification_flags",
+    "failure_class": "host_verifier_final_evidence_assembly_schema_mismatch",
+    "kaggle_run_affected": false,
+    "measurement_or_gate_evaluation_affected": false,
+    "result_evidence_written_by_failed_attempt": false,
+    "stage": "after exact artifact, criteria, source, runtime, and arm validation; while copying qualification flags into final evidence",
+    "status": "failed_before_result_evidence_write"
+  },
+  "kernel_runner_sha256": "2bad91827e6e7d502b0aea2d700dd14b6daf13622b107068b2bf025103209537",
+  "output_sha256_manifest_sha256": "58b7265cfe8f9e53997683e966ec00fadc5d9986ab83201472a03ab5b692324c",
+  "registered_host_verifier_sha256": "c38a6547ec75929c131c449a1a0b449a6b1d4d467c2af9696e60c1d1eec6bc84",
+  "registered_host_verifier_sha_matches": false,
+  "related_result_path": "docs/evidence/kaggle_w3_owner_full_horizon_result_2026_09_round3.json",
+  "related_result_sha256": "72e887e02b406b964bf7b6c617dcf111fc51dc9e1d275fc827689e80e29c9aeb",
+  "source_commit": "a8ce5a8104b8d115ed9d706257f0e0b5956c7db3",
+  "terminal_status": "COMPLETE",
+  "terminal_status_sha256": "b460246279ec24d862be48d472007531d1b16c7e49584c98fe9fc862fdd28c35"
+}

@@ -196,6 +196,7 @@ def test_force_csv_requires_all_13_columns(tmp_path):
 
 def test_round3_registration_is_expanded_domain_and_append_only():
     assert registrar.criteria_output_path(3).name == "kaggle_w3_v16_primal_criteria_2026_09_round3.json"
+    assert registrar.criteria_output_path(4).name == "kaggle_w3_v16_primal_criteria_2026_09_round4.json"
     with pytest.raises(ValueError, match="expanded-domain"):
         registrar.build_criteria("a" * 40, criteria_round=2)
 
