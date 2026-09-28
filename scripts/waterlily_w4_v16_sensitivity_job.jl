@@ -205,7 +205,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         side_top_tangential_boundary="WaterLily native tangential zero-Neumann",
         x_max_boundary="WaterLily convective exit",
         pressure_boundary="WaterLily projection pressure; no per-patch freestreamPressure input",
-        ground_model="moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s",
+        ground_model="moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
         force_integration_body="canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
         force_projection_semantics="drag=+Fx; downforce=-Fz",
         source_profile_equivalent=false,

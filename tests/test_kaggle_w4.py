@@ -97,7 +97,7 @@ def fixture():
             "flow_dims": case["flow_dims"],
             "flow_origin_m": criteria["geometry"]["baseline_flow_origin_m"],
             "canonical_sdf_origin_m": criteria["geometry"]["canonical_sdf_origin_m"],
-            "physical_box_max_m": case["physical_box_m"][1],
+            "physical_box_max_m": [axis[1] for axis in case["physical_box_m"]],
             "flow_spacing_m": case["flow_spacing_m"],
             "solver_length": case["solver_length"],
             "solver_time_unit_s": case["solver_time_unit_s"],
@@ -307,6 +307,74 @@ def test_w4_case_mapping_gate_rejects_grid_identity_drift():
         criteria["inputs"]["kernel_runner"]["sha256"], "4" * 64,
     )
     assert gates["T3_case_mapping_and_reynolds"] is False
+
+
+def test_w4_case_mapping_gate_checks_xyz_box_max_vector_in_runner_and_host():
+    criteria, summaries, metrics, rows, gpu_rows, smoke = fixture()
+    fingerprint = {
+        "source_commit": criteria["source_commit"],
+        "runner_sha256": criteria["inputs"]["kernel_runner"]["sha256"],
+        "criteria_sha256": "4" * 64,
+        "w3_result_evidence_sha256": criteria["prerequisites"]["w3_result_evidence"]["sha256"],
+    }
+
+    runner_gates = runner.evaluate_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, criteria["source_commit"],
+        criteria["inputs"]["kernel_runner"]["sha256"], "4" * 64,
+    )
+    host_gates = host.recompute_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, fingerprint,
+    )
+    assert runner_gates["T3_case_mapping_and_reynolds"] is True
+    assert host_gates["T3_case_mapping_and_reynolds"] is True
+    assert all(summary["physical_box_max_m"] == [axis[1] for axis in case["physical_box_m"]]
+               for case in criteria["cases"]
+               for summary in [summaries[case["case_id"]]])
+
+    summaries["domain_xplus1m_16"]["physical_box_max_m"] = [3.5, 1.2]
+    runner_gates = runner.evaluate_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, criteria["source_commit"],
+        criteria["inputs"]["kernel_runner"]["sha256"], "4" * 64,
+    )
+    host_gates = host.recompute_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, fingerprint,
+    )
+    assert runner_gates["T3_case_mapping_and_reynolds"] is False
+    assert host_gates["T3_case_mapping_and_reynolds"] is False
+    assert runner_gates == host_gates
+
+
+def test_w4_ground_descriptor_matches_registered_semantics_exactly():
+    criteria, summaries, metrics, rows, gpu_rows, smoke = fixture()
+    fingerprint = {
+        "source_commit": criteria["source_commit"],
+        "runner_sha256": criteria["inputs"]["kernel_runner"]["sha256"],
+        "criteria_sha256": "4" * 64,
+        "w3_result_evidence_sha256": criteria["prerequisites"]["w3_result_evidence"]["sha256"],
+    }
+    job = (ROOT / "scripts/waterlily_w4_v16_sensitivity_job.jl").read_text()
+    expected = criteria["profile_semantics"]["ground_model"]
+    assert f'ground_model="{expected}"' in job
+
+    wrong = "moving planar half-space at world z=-0.9 m on the expanded flow-domain bottom, with +x wall velocity 1 m/s"
+    for summary in summaries.values():
+        summary["ground_model"] = wrong
+    runner_gates = runner.evaluate_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, criteria["source_commit"],
+        criteria["inputs"]["kernel_runner"]["sha256"], "4" * 64,
+    )
+    host_gates = host.recompute_gates(
+        criteria, summaries, metrics, rows, criteria["geometry"]["phi_expected_margin_m"],
+        gpu_rows, smoke, fingerprint,
+    )
+    assert runner_gates["T4_native_profile_limitation_preserved"] is False
+    assert host_gates["T4_native_profile_limitation_preserved"] is False
+    assert runner_gates == host_gates
 
 
 def test_w4_criteria_contract_rejects_changed_case_matrix():

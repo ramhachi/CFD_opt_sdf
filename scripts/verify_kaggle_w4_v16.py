@@ -522,7 +522,7 @@ def recompute_gates(criteria: dict, summaries: dict, metrics: dict, rows: dict,
             s.get("case_id") == cid and s.get("flow_dims") == case["flow_dims"]
             and s.get("flow_origin_m") == geometry["baseline_flow_origin_m"]
             and s.get("canonical_sdf_origin_m") == geometry["canonical_sdf_origin_m"]
-            and s.get("physical_box_max_m") == case["physical_box_m"][1]
+            and s.get("physical_box_max_m") == [axis[1] for axis in case["physical_box_m"]]
             and math.isclose(s.get("flow_spacing_m", math.nan), case["flow_spacing_m"], rel_tol=0, abs_tol=1e-12)
             and math.isclose(s.get("solver_length", math.nan), case["solver_length"], rel_tol=0, abs_tol=1e-12)
             and math.isclose(s.get("solver_time_unit_s", math.nan), case["solver_time_unit_s"], rel_tol=0, abs_tol=1e-12)
