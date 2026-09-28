@@ -31,8 +31,10 @@ cases but failed registered T3/T4 integrity predicates; preserve it as
 diagnostic-only. Minimal T3/T4 implementation fixes passed validation and were
 pushed as `52a50e4`. Immutable round 4 is registered at SHA-256
 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`; its fresh
-private dataset stage passes local checks. Publishing dataset version 3 is next.
-Round 3 is not qualified.
+private dataset stage passes local checks. Version 3 is now `ready`; the
+downloaded remote payload matches the exact five-file manifest and passes
+host/runner verification. Round 3 is not qualified; submit kernel version 3
+next.
 See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 

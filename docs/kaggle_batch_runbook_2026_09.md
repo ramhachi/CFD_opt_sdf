@@ -2215,8 +2215,13 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/register_kaggle_w4_v16_sensitivi
 PYTHONPATH=src:scripts .venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json --output work/kaggle_w4_v16_dataset_round4
 ```
 
-Next, commit/push the immutable round-4 criteria and this status update, then
-publish version 3 of the existing private W4 dataset. Download it into a fresh
-directory and require exact inventory/hash agreement before submitting the
-next kernel version. No W4 round-4 measurement, formal FD, reverse
+The immutable round-4 criteria and status update are committed and pushed.
+Private dataset version 3 reports ready; its downloaded five-file payload
+exactly matches manifest SHA-256
+`d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and the
+remote inventory audit SHA-256 is
+`81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`. Host and
+runner-mounted dataset verification pass, including canonical state/phi hashes
+and CPU margin `0.3499999939931499 m`. Submit exact kernel version 3 after
+rechecking private T4 metadata. No W4 round-4 measurement, formal FD, reverse
 qualification or shape update has started.

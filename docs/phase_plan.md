@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Round-3 kernel `/2` completed four primals but failed registered T3/T4 implementation gates; round 4 preregistered and dataset stage verified | Round-3 diagnostic SHA `cde5c72b…` preserves exact logs/output and host-recomputed raw forces. T3/T4 fixes were pushed in `52a50e4`; criteria round 4 SHA `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` binds source `b9ae43b` and exact W3 round-4 PASS. Round-3 and round-4 frozen measurement/case/threshold contracts match. Fresh local stage passes host and runner checks; dataset version 3 upload pending. Round 3 remains unqualified. |
+| W4 grid/domain sensitivity | Round-3 kernel `/2` completed four primals but failed registered T3/T4 implementation gates; round 4 preregistered and dataset stage verified | Round-3 diagnostic SHA `cde5c72b…` preserves exact logs/output and host-recomputed raw forces. T3/T4 fixes were pushed in `52a50e4`; criteria round 4 SHA `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` binds source `b9ae43b` and exact W3 round-4 PASS. Round-3 and round-4 frozen measurement/case/threshold contracts match. Fresh local stage passes host and runner checks; private dataset version 3 is ready and remote hashes match; kernel submit pending. Round 3 remains unqualified. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -4008,6 +4008,13 @@ qualification flag.
   `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`.
   Canonical state/phi hashes are unchanged and measured CPU margin is
   `0.3499999939931499 m`.
-- **Open:** publish private dataset version 3, download it to a fresh directory
-  and verify the exact inventory/hashes before submitting another exact kernel
+- **Submitted:** private dataset `ramhachi888/cfd-opt-sdf-v16-w4-sensitivity`
+  version 3 reports `ready`. The downloaded five-file payload exactly matches
+  the round-4 manifest; manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`, and
+  remote inventory audit SHA-256 is
+  `81a477314cf7a34f8f157a703ed11b63f912747e0c82446c61d327044ad687e4`.
+- **Verified:** remote inventory, criteria/sidecar, NPZ/raw phi, host dataset
+  verifier, runner mount, canonical hashes and margin all pass.
+- **Open:** verify kernel metadata and submit the next exact private T4 kernel
   version. Preserve round-3 criteria and kernel `/2` evidence.
