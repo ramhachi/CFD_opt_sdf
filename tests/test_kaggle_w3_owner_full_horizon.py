@@ -161,6 +161,7 @@ def test_round_reason_separates_slug_retry_from_harness_correction():
     assert "title-derived Kaggle slug" in registrar["round_reason"](2)
     assert "Round 2 was frozen but never submitted" in registrar["round_reason"](3)
     assert "target horizon" in registrar["round_reason"](3)
+    assert registrar["output_for_round"](3).name == "kaggle_w3_owner_full_horizon_criteria_2026_09_round3.json"
 
 
 def test_runner_enforces_per_arm_and_kernel_time_limits():

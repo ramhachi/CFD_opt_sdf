@@ -353,7 +353,7 @@ def build(source_commit: str, round_number: int) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-commit", required=True)
-    parser.add_argument("--round", type=int, choices=(1, 2), required=True)
+    parser.add_argument("--round", type=int, choices=(1, 2, 3), required=True)
     args = parser.parse_args()
     output = output_for_round(args.round)
     sidecar = output.with_suffix(output.suffix + ".sha256")
