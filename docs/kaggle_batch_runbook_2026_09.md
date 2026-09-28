@@ -2033,14 +2033,18 @@ reached. The host verifier rejects the incomplete output because there is no
 `DONE`, outcome, fingerprint or case data. Append-only diagnostic evidence is
 [`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
 SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`.
-Keep round-2 criteria and thresholds unchanged. The minimal tuple fix is now
-implemented in the working tree with a regression test. Focused W4/W3/owner
+Keep round-2 criteria and thresholds unchanged. The minimal tuple fix and
+regression test are committed and pushed. Focused W4/W3/owner
 pytest passed 39 tests; `compileall`, targeted Python `py_compile`, Julia job
 syntax parsing and an executable case-ID/dimension/Re=80 check passed. The full
 repository pytest reports 1,115 passed, 37 failed and 4 skipped; the 37
-  failures are historical tests requiring ignored `work/` artifacts absent from
-  this managed worktree. The source fix was committed and pushed as `5d15e72`.
-  Register immutable round 3, stage a fresh local dataset directory, publish a new version of the existing private
-dataset ID and verify its downloaded inventory/hashes before submitting the
-next exact kernel version. Do not change case definitions, measurement
+failures are historical tests requiring ignored `work/` artifacts absent from
+this managed worktree. The source fix was committed and pushed as `5d15e72`.
+Immutable round 3 is now registered at SHA-256
+`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`, binding
+source snapshot `6d4608f39d2937ced96dd934b6be1cf61b4aa150`, exact W3 round-4
+host-PASS, and the observed T4 cohort. Stage a fresh local dataset directory,
+publish a new version of the existing private dataset ID, then download and
+verify its exact inventory/hashes before submitting the next exact kernel
+version. Do not change case definitions, measurement
 window, force semantics or thresholds.

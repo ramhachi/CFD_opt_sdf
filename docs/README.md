@@ -23,7 +23,9 @@ kernel version 1 failed at the pre-solver case-inventory guard with zero
 solver steps; append-only diagnostic SHA-256 is
 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`. A
 minimal Julia tuple-materialization fix and regression test passed locally and
-was pushed as `5d15e72`; immutable round 3 registration is pending before retry.
+was pushed as `5d15e72`. Immutable W4 criteria round 3 is registered at SHA-256
+`6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`; dataset
+staging and upload are pending before retry.
 See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
