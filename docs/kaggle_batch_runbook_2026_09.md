@@ -1049,3 +1049,88 @@ the scratch CUDA.jl 6.2.1 / Enzyme / WaterLily PR #285 environment must remain
 isolated from production W2/W3/W4 dependencies. Exact artifact identities and
 the failure boundary are in
 [`reverse spike version-3 diagnostic`](evidence/kaggle_enzyme_reverse_spike_version3_diagnostic_2026_09.json).
+
+### W3 v4 all-zero force: CPU/T4 implementation diagnostic
+
+W3 round-3 version 4 reached the registered end time with finite fields but
+recorded an exactly zero three-axis force history. That run remains
+unqualified. Preserve its criteria SHA
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`, force
+projection, and thresholds. The following job is a separate private diagnostic
+kernel; it reuses the exact round-3 W3 input dataset but has no W3 acceptance
+gates and never creates qualification evidence.
+
+The CPU-only reference is reproducible without CUDA:
+
+```bash
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  scripts/waterlily_w3_v16_cpu_diagnostic_reference.jl \
+  work/kaggle_w3_v16_dataset_round3/canonical_v16_phi_f4_fortran.raw \
+  work/w3_v4_cuda_diagnostic_cpu_reference
+```
+
+It scans all `100x48x36` WaterLily pressure-cell centers for the candidate and
+candidate-plus-ground SDF, records the combined-body CPU `measure!` fields, and
+advances one CPU step. In the 2026-09-28 run, canonical phi SHA-256 was
+`9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7`, measured
+margin was `0.3499999939931499 m`, candidate negative/support counts were
+`1009/2481`, and combined negative/support counts were `1009/7281` (support
+means `|d|<=1` solver unit). Initial force was zero; after one CPU step at
+`t=0.015625`, raw WaterLily pressure and viscous force vectors were respectively
+`[-3375.1481610226565,-22.193702077892354,4640.059766063432]` and
+`[-109.8979301765703,-0.2722819617444081,-12.88964694003107]`. This is a
+one-step CPU diagnostic, not a sign, stationarity, or physical-profile result.
+The output log and text result are ignored files under `work/`; their recorded
+SHA-256 values at this checkout are `a1036a1e31aef5737ed75584a970f9436cdba88c11d4597c4efd357057c37fb1` and
+`4b8694cf537d37d2decd653f9debfd23f759b4fd94397616222c04d594cdf42e`.
+
+This host has no `nvidia-smi`, and its T4 Julia environment does not have the
+CUDA package instantiated. Do not interpret the CPU reference as a CUDA check.
+Use the private Kaggle T4 diagnostic kernel, which performs: representative
+world-to-solver probes; a complete CPU/CUDA flow-grid scan of candidate,
+ground, and combined distance/normal/velocity; solver-free combined-body
+`measure!`; one v16 CPU and CUDA step; and one-step W2b sphere controls. The
+device owner remains strongly referenced while the non-owning `CuDeviceArray`
+view is used. Stage checkpoints are written before/after each operation so an
+ERROR output identifies the last completed stage.
+
+The diagnostic runner is pinned to source commit
+`cff4ef23a958f1384e94a8764a89e81a7143e2f1`; the Julia job SHA-256 is
+`902edaf72d7f0354c5f897c4eb23a0069972c9855fb9b8c7afa0681613e251c5`. Before
+submitting, commit and push the matching diagnostic runner, host verifier,
+metadata and tests, then use the kernel's version returned by `push` in every
+collection command:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p infra/kaggle/kernel_w3_cuda_diagnostic \
+  --accelerator NvidiaTeslaT4 --timeout 7200
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels status \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle_status.txt
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels logs \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  > work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle.log
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels output \
+  ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/VERSION \
+  -p work/kaggle_w3_v16_cuda_diagnostic_versionVERSION
+PYTHONPATH=src:scripts python3 scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_diagnostic_versionVERSION \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version VERSION --kernel-status COMPLETE_OR_ERROR \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_diagnostic_versionVERSION/kaggle.log
+```
+
+Replace both `VERSION` placeholders with the exact positive version number and
+`COMPLETE_OR_ERROR` with its terminal status. The verifier checks the
+version-bound status/log captures and output manifest; criteria/dataset/source
+hashes; the full 172,800-row CSV and WaterLily cell-center coordinate order;
+CPU and CUDA statistics for all three bodies; force component closure and
+projection; and an independent NumPy trilinear SDF value/gradient reference.
+It records CPU/CUDA disagreement as diagnostic output rather than changing a
+W3 threshold. A Kaggle ERROR can still produce a host-verified diagnostic if
+the exact partial output bundle and checkpoints are retrievable. The resulting
+evidence must keep every primal, physical, grid-response, gradient, reverse,
+topology, optimizer, and shape-update flag false. Do not start W4, formal FD,
+or another W3 qualification attempt from this diagnostic alone.
