@@ -644,7 +644,8 @@ def main() -> int:
                       kernel_version=args.kernel_version, status_path=args.status,
                       log_path=args.log, host_verifier_path=Path(__file__))
     if args.record_evidence:
-        output = args.criteria.parent / "kaggle_w3_owner_full_horizon_result_2026_09.json"
+        round_number = read_json(args.criteria).get("round", 1)
+        output = args.criteria.parent / f"kaggle_w3_owner_full_horizon_result_2026_09_round{round_number}.json"
         sidecar = output.with_suffix(output.suffix + ".sha256")
         require(not output.exists() and not sidecar.exists(), "refusing to overwrite owner diagnostic evidence")
         payload = json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n"

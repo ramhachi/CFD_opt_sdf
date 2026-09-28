@@ -14,7 +14,7 @@ W3_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_r
 W3_DATASET_DIR = ROOT / "work/kaggle_w3_v16_dataset_round3"
 TYPE_RESULT_PATH = ROOT / "docs/evidence/kaggle_w3_owner_type_probe_result_2026_09.json"
 TYPE_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_owner_type_probe_criteria_2026_09_round2.json"
-KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon"
+KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic"
 JULIA_ARCHIVE_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 OUTPUT = ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09.json"
 
@@ -167,6 +167,9 @@ def build(source_commit: str, round_number: int) -> dict:
         "type_probe_round2_criteria": evidence_ref(TYPE_CRITERIA_PATH.relative_to(ROOT).as_posix()),
         "type_probe_round2_result": evidence_ref(TYPE_RESULT_PATH.relative_to(ROOT).as_posix()),
     }
+    if round_number > 1:
+        previous["owner_full_horizon_round1_criteria"] = evidence_ref(
+            "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09.json")
     dataset_id = "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
     if round_number > 1:
         dataset_id += f"-round{round_number}"
@@ -185,6 +188,9 @@ def build(source_commit: str, round_number: int) -> dict:
         "kernel_version": 1 if round_number == 1 else round_number,
         "criteria_dataset_id": dataset_id,
         "claim_scope": "test whether backing CuArray owner collection reproduces the W3 v4 all-zero force history on the exact registered full-horizon WaterLily path; no primal qualification",
+        "round_reason": None if round_number == 1 else (
+            "round 1 was submitted under the title-derived Kaggle slug, which differed from the registered kernel-metadata id; "
+            "round 2 binds the exact observed slug and changes no solver semantics, thresholds, arms, inputs, or measurement rules"),
         "type_probe_prerequisite": {
             "criteria_id": type_criteria["criteria_id"],
             "criteria_path": TYPE_CRITERIA_PATH.relative_to(ROOT).as_posix(),

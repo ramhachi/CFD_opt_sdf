@@ -162,3 +162,16 @@ def test_dataset_title_stays_within_kaggle_metadata_limit(tmp_path: Path):
     metadata = json.loads((tmp_path / "dataset/dataset-metadata.json").read_text())
     assert len(metadata["title"]) <= 50
     assert manifest["dataset_id"] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
+
+
+def test_kernel_slug_and_round2_dataset_source_are_registered_together():
+    import json
+    import re
+    import runpy
+
+    metadata = json.loads((ROOT / "infra/kaggle/kernel_w3_owner_full_horizon/kernel-metadata.json").read_text())
+    registrar = runpy.run_path(str(ROOT / "scripts/register_kaggle_w3_owner_full_horizon_2026_09.py"))
+    slug = re.sub(r"[^a-z0-9]+", "-", metadata["title"].lower()).strip("-")
+    assert metadata["id"] == f"ramhachi888/{slug}"
+    assert metadata["id"] == registrar["KERNEL_ID"]
+    assert metadata["dataset_sources"][-1] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round2"
