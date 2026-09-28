@@ -3000,3 +3000,82 @@ output, and qualification status were not changed.
   version's result or failure checkpoint. Do not rerun full W3, freeze W4, or
   start formal FD based on these diagnostics. Keep all W3 gates and force
   projection fixed.
+
+### 2026-09-28 W3 all-zero-force CUDA implementation diagnostic version 3
+
+This checkpoint supersedes the versions 1-2 diagnostic progress entry. It
+does not change the immutable W3 round-3 criteria or qualify the W3 primal.
+
+- **Implemented:** the private diagnostic job scans all 172,800 pressure-cell
+  centers for candidate, ground, and combined SDFs on CPU and T4 CUDA; runs
+  solver-free body measurements; constructs v16 CPU/CUDA simulations; takes
+  one primal step on each; and runs a one-step sphere control. The owner of the
+  non-owning CUDA SDF view is explicitly rooted during this diagnostic. The
+  host verifier now returns geometry-contract checks, accepts the observed
+  Float32 representation of pinned flow origin/spacing within representation
+  roundoff, maps the report's CUDA naming correctly, and uses a diagnostic
+  recomputation tolerance of `5e-8 m` for CPU/CUDA distance arithmetic.
+- **Registered:** no new qualification criteria or thresholds. W3 round-3
+  criteria remain SHA-256
+  `f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`.
+- **Submitted:** private diagnostic kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/3` reached
+  `KernelWorkerStatus.COMPLETE`. Exact status SHA-256 is
+  `e728d1ce05074fee394cf33e6f060f6a09a02868dbd21c289b90701744c0f763`; exact
+  Kaggle log SHA-256 is
+  `4113bfa739c118ec231681e27a2fed95388e2b0f25aef1f720f37c35ede2d216`.
+- **Measured:** runtime was Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0,
+  CUDA driver API 13.3.0, NVIDIA driver 580.159.04, WaterLily 1.8.0 on
+  `KernelAbstractions`; the selected device was a Tesla T4
+  (`GPU-d5fd398c-ae72-ef9e-54ae-c229cf2ea025`). The expanded flow grid was
+  `100x48x36`, with flow origin `[-2.5,-1.2,-0.9] m`; the unchanged canonical
+  SDF remained `61x33x25` at `[-1,-0.8,-0.6] m`. Candidate CPU/CUDA negative
+  cell counts were `1009/1009`, support counts (`|d|<=1` solver unit) were
+  `2481/2476`, and distance sign mismatches outside the zero band were zero.
+  The maximum CPU/CUDA candidate distance difference was
+  `4.76837158203125e-7 m`. The ground scan matched its registered plane.
+  At initial state both candidate force snapshots were zero; after one step,
+  CPU and CUDA repository-projected drag were `3485.0465` and `3485.1330`
+  solver units, respectively. Raw total force vectors were
+  `[-3485.0465,-22.4661,4627.1703]` and
+  `[-3485.1330,-22.2581,4627.4747]`; pressure-plus-viscous closure held on all
+  three axes to floating-point roundoff. The CUDA candidate normal comparison
+  still has a maximum vector error of `1.338` against the independent NumPy
+  reference; pointwise normal/gradient parity is not qualified by this scan.
+- **Verified:** the exact output manifest, inputs, source/job/runner identity,
+  full lattice CSV, host-recomputed SDF statistics, force closure, and exact
+  Kaggle status/log were independently checked. The append-only host record is
+  [`v3 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json);
+  the interpretation/source-audit supplement is
+  [`v3 interpretation`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_interpretation_2026_09.json).
+  Focused W3/W4/diagnostic tests pass (30), Python compileall and py_compile
+  pass, the diagnostic Julia job parses, and `git diff --check` passes. The
+  repository-wide pytest run reports 1,079 passed, 37 failed, and 4 skipped;
+  the inspected failures are `FileNotFoundError` for historical, ignored
+  `work/` artifacts absent from this managed worktree. The focused changed
+  slice passes.
+- **Interpretation:** the full W3 v4 T4 run still completed 3,841 steps at
+  `tU/L=120.015625` with every total, pressure, and viscous force component
+  exactly zero, and T7 failed. The diagnostic's nonzero one-step CUDA force
+  shows that the candidate geometry and force path can produce a nonzero
+  response when the CUDA grid owner remains rooted. The pinned W3 source
+  creates `device_owner`, derives a non-owning `CuDeviceArray` view, builds the
+  bodies/simulation, then does not explicitly preserve the owner during
+  `run_primal`; the adapter contract says the owner must remain live while a
+  kernel uses that view. Premature owner collection is therefore a strong
+  source-level hypothesis, but no forced-GC retained/unrooted A/B has yet
+  confirmed it. The full-horizon zero-force cause remains unlocalized.
+- **Qualified:** nothing new. W3 remains unqualified; physical profile, grid
+  response, gradient, CPU/GPU reverse, topology, optimizer, and shape update
+  remain false. W4 and formal FD remain blocked. Force sign and registered
+  thresholds remain unchanged.
+- **Open:** the next minimum experiment is a diagnostic-only T4 A/B with the
+  exact same round-3 fixture and backend: one arm explicitly roots the owner
+  through body measurement and a tiny number of steps; the other constructs
+  view-backed objects in a helper scope, forces full GC before measurement,
+  and records a weak reference to the owner. Record whether collection
+  occurred, fixed-point/full-grid geometry summaries, fields, force components,
+  and exact identities. Treat a difference as support for the hypothesis
+  only if it repeats and coincides with confirmed owner collection. Do not
+  launch another full W3, W4, or FD measurement before that diagnosis and a
+  new immutable qualification round if source changes.

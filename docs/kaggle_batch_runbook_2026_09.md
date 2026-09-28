@@ -1167,3 +1167,115 @@ and
 The corrected source uses Julia Float32 scientific literal `1f-5`, checkpoints
 the CPU/CUDA candidate probe matrices before comparison, and writes a pinned
 criteria/dataset/backend/source fingerprint before attempting the measurement.
+
+### W3 all-zero-force CUDA implementation diagnostic, exact kernel version 3
+
+Version 3 of the private diagnostic kernel completed on Kaggle T4 and was
+retrieved and host-verified by exact kernel version. It is diagnostic-only; it
+does not reuse a W3 acceptance decision or qualify any physics/gradient claim.
+The immutable W3 round-3 criteria remain SHA-256
+`f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2`.
+
+Exact local capture paths:
+
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle_status.txt`
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle.log`
+- `work/kaggle_w3_v16_cuda_diagnostic_version3/w3_v16_cuda_diagnostic/`
+
+Captured status is `KernelWorkerStatus.COMPLETE`, SHA-256
+`e728d1ce05074fee394cf33e6f060f6a09a02868dbd21c289b90701744c0f763`; exact
+Kaggle log SHA-256 is
+`4113bfa739c118ec231681e27a2fed95388e2b0f25aef1f720f37c35ede2d216`. The
+output manifest SHA-256 is
+`f37511b67b0a08dbf9bbcb05723df4efed39f396fe4b296044079862619c9721`, and the
+raw 172,800-row lattice CSV SHA-256 is
+`7ce428a9b0ede9b76abadb8578930acd9e34e1fc3e499c2e5e553aec8eeed02f`.
+
+Re-run the exact host verification from the repository root:
+
+~~~bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_diagnostic_version3 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 3 \
+  --kernel-status KernelWorkerStatus.COMPLETE \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_diagnostic_version3/kaggle.log
+~~~
+
+The resulting append-only records are
+[`v3 host diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_2026_09.json)
+and
+[`v3 interpretation and source audit`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_interpretation_2026_09.json).
+The host diagnostic evidence SHA-256 is
+`e0c9f1ee5bff1f07fb6daf268924b55e6b78fb61863d5620afc93dc11191f3cb`; its
+recorded verifier SHA-256 is
+`e600e8faaa6c7131e68444cfe61b605c9124b3791420c0a2901494ecc240835e`.
+
+The observed runtime was a Tesla T4 (`GPU-d5fd398c-ae72-ef9e-54ae-c229cf2ea025`),
+Julia 1.12.6, CUDA.jl 6.3.1, CUDA runtime 12.8.0, CUDA driver API 13.3.0,
+NVIDIA driver 580.159.04, and WaterLily 1.8.0 / `KernelAbstractions`. The
+unchanged canonical SDF is `61x33x25`, origin `[-1,-0.8,-0.6] m`; the flow
+lattice is `100x48x36`, origin `[-2.5,-1.2,-0.9] m`. CPU/CUDA candidate
+negative-distance counts are 1009 each, support counts at `|d|<=1` solver unit
+are 2481 and 2476, and there are no distance-sign mismatches outside the zero
+band. Candidate distance maximum absolute CPU/CUDA difference is
+`4.76837158203125e-7 m`. The ground field matches its analytic distance,
+normal, and velocity values.
+
+The candidate's initial force snapshot is zero before any step, as expected
+from the initial state. After one step at `t=0.015625`, repository-projected
+CPU/CUDA drag is `3485.046517/3485.132996` solver units and downforce is
+`4627.170260/4627.474695` solver units. Raw force components satisfy
+`total = pressure + viscous` on all axes to floating-point roundoff. This
+one-step response is not a time-window statistic or W3 qualification. The
+independent CUDA normal comparison has a maximum vector error of about 1.338;
+distance agreement does not imply normal or gradient qualification.
+
+Source audit: the pinned full W3 job at
+`5e985fa3395a01228c18910d96e09ecbc5497628` creates `device_owner`, derives the
+kernel-safe view with `kernel_grid(device_owner)`, builds the body/simulation,
+then calls `run_primal` without an explicit `GC.@preserve` for the owner. The
+`DeviceGridSDF` contract documents that this view is non-owning and its
+`DeviceGridSDF`/CuArray owner must outlive every kernel use. Diagnostic v3
+keeps the owner rooted through the CUDA checks and gets nonzero force after a
+step. This makes owner lifetime the leading source-level hypothesis for the
+old all-zero full run, but does not prove that the owner was collected or that
+it caused the zero history. The diagnostic did not force GC in a controlled
+retained-versus-unrooted comparison and did not execute a long horizon.
+
+The full W3 version-4 outcome is unchanged: 3,841 steps, `tU/L=120.015625`,
+and all total/pressure/viscous force components signed zero; T7 failed and W3
+remains unqualified. Do not flip the force sign, relax thresholds, start W4,
+or run formal FD from this diagnostic. The next minimum investigation is a
+diagnostic-only T4 owner-lifetime A/B on the same frozen fixture: retain the
+owner with `GC.@preserve` in one arm, build the view-backed objects in a helper
+scope and force full GC in the other, then record weak-owner collection, fixed
+geometry checks, fields, and force after only a tiny number of steps. Only a
+repeatable difference coincident with actual owner collection would confirm
+the lifetime hypothesis. Preserve all qualification flags as false.
+
+Local checks for the v3 evidence/verifier update:
+
+~~~bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  -m pytest -q tests/test_kaggle_w3_cuda_diagnostic.py tests/test_kaggle_w3.py tests/test_kaggle_w4.py
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m py_compile \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  infra/kaggle/kernel_w3_cuda_diagnostic/runner.py
+julia --startup-file=no --project=julia/CFDSDFWaterLily \
+  -e 'Meta.parseall(read("scripts/waterlily_w3_v16_cuda_diagnostic_job.jl", String)); println("diagnostic Julia syntax parsed")'
+git diff --check
+~~~
+
+The focused slice passed 30 tests. Python compileall/py_compile, Julia syntax
+parsing, JSON plus evidence-sidecar verification, and `git diff --check` passed.
+The full suite command was `PYTHONPATH=src:scripts
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q` and
+reported 1,079 passed, 37 failed, 4 skipped. Failures inspected in that run
+were `FileNotFoundError` for historical inputs under ignored `work/` folders
+not present in this managed worktree; for example, the Stage-S FD test lacks
+`work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv`.
+The changed W3/W4/diagnostic slice had no failures.

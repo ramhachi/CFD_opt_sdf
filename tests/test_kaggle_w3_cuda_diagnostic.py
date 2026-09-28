@@ -66,6 +66,44 @@ def test_numpy_reference_recomputes_candidate_distance_and_normal(tmp_path):
     assert result["host_cpu_max_abs_distance_error_m"] == pytest.approx(0.0, abs=1e-7)
 
 
+def test_geometry_contract_returns_independent_ground_and_sdf_checks():
+    candidate = np.asarray([
+        [0.5, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [1.5, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    ], dtype=np.float32)
+    ground = np.asarray([
+        [0.5, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0],
+        [0.5, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0],
+    ], dtype=np.float32)
+    combined = candidate.copy()
+    lattice = {
+        "raw": np.asarray([[1, 1, 1, 0.5, 0.5, 0.5],
+                           [2, 1, 1, 1.5, 0.5, 0.5]], dtype=np.float64),
+        "candidate_cpu": candidate,
+        "candidate_gpu": candidate.copy(),
+        "ground_cpu": ground,
+        "ground_gpu": ground.copy(),
+        "combined_cpu": combined,
+        "combined_gpu": combined.copy(),
+        "cpu_sigma": combined[:, 0].copy(),
+        "gpu_sigma": combined[:, 0].copy(),
+        "cpu_mu0_sum": np.zeros(2, dtype=np.float32),
+        "gpu_mu0_sum": np.zeros(2, dtype=np.float32),
+    }
+    x = np.arange(5, dtype=np.float32) * np.float32(0.05)
+    phi = np.broadcast_to(x[:, None, None], (5, 3, 3)).copy()
+    criteria = {
+        "geometry": {"canonical_sdf_origin_m": [0.0, 0.0, 0.0], "spacing_m": 0.05},
+        "profile_adapter": {"cell_dims": [2, 1, 1], "flow_origin_m": [0.0, 0.0, 0.0]},
+    }
+
+    checks = host.verify_geometry_contract(lattice, criteria, phi)
+
+    assert checks["expected_ground_support_cells"] == 2
+    assert checks["cpu_sigma_vs_combined_distance_max_error"] == 0
+    assert checks["candidate_sdf_reference"]["host_cpu_max_abs_distance_error_m"] == pytest.approx(0)
+
+
 def test_force_snapshot_checks_component_closure_and_projection():
     snapshot = {
         "waterlily_pressure_force_raw": [-2.0, 0.5, 3.0],

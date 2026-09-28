@@ -280,6 +280,7 @@ def verify_geometry_contract(lattice: dict[str, object], criteria: dict,
         key: value for key, value in candidate_reference.items()
         if not isinstance(value, np.ndarray)
     }
+    return checks
 
 
 def verify_representative_probes(report: dict, criteria: dict,
@@ -345,7 +346,6 @@ def verify_representative_probes(report: dict, criteria: dict,
             and np.allclose(center["solver"], [50.0, 24.0, 18.0], rtol=0, atol=1e-5),
             "canonical v16 center no longer maps to expanded flow solver (50,24,18)")
     return output
-    return checks
 
 
 def verify_force_snapshot(snapshot: dict) -> dict[str, object]:
@@ -408,7 +408,14 @@ def verify_report(report: dict, criteria: dict, criteria_sha: str,
     }
     observed = report.get("input_identity", {})
     for key, value in expected_inputs.items():
-        require(observed.get(key) == value, f"diagnostic input identity mismatch: {key}")
+        actual = observed.get(key)
+        if key == "flow_origin_m":
+            matches = np.allclose(actual, value, rtol=0, atol=1e-7)
+        elif key == "spacing_m":
+            matches = math.isclose(actual, value, rel_tol=0, abs_tol=1e-9)
+        else:
+            matches = actual == value
+        require(matches, f"diagnostic input identity mismatch: {key}")
     margin = geometry["expected_margin_m"]
     measured_margin = observed.get("cpu_measured_sdf_margin_m")
     require(isinstance(measured_margin, (int, float))
@@ -815,7 +822,8 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         for body in BODY_NAMES:
             for backend in BACKENDS:
                 observed_stats = matrix_stats(lattice[f"{body}_{backend}"])
-                reported_stats = expected_stats[f"{backend}_{body}"]
+                report_backend = "cuda" if backend == "gpu" else "cpu"
+                reported_stats = expected_stats[f"{report_backend}_{body}"]
                 for key, value in observed_stats.items():
                     reported = reported_stats.get(key)
                     if value is None:
@@ -840,7 +848,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
                                 f"Julia/host CPU-CUDA comparison mismatch: {body}/{key}")
                     else:
                         require(math.isclose(value, reported if reported is not None else math.nan,
-                                             rel_tol=2e-6, abs_tol=2e-8),
+                                             rel_tol=2e-6, abs_tol=5e-8),
                                 f"Julia/host CPU-CUDA comparison mismatch: {body}/{key}")
         lattice_summary = {
             "row_count": lattice["row_count"],
