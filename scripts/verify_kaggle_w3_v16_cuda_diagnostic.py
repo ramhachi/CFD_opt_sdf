@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round3.json"
 DIAGNOSTIC_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
 OWNER_LIFETIME_JOB = ROOT / "scripts/waterlily_w3_v16_cuda_owner_lifetime_job.jl"
-OWNER_LIFETIME_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
+OWNER_LIFETIME_CRITERIA_PATH = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json"
 DIAGNOSTIC_RUNNER = ROOT / "infra/kaggle/kernel_w3_cuda_diagnostic/runner.py"
 STAGE_NAME = "w3_v16_cuda_diagnostic"
 EXPECTED_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
@@ -651,6 +651,22 @@ def load_owner_lifetime_criteria(
     require(criteria.get("immutable") is True
             and criteria.get("registered_before_computation") is True,
             "owner-lifetime criteria are not immutable preregistration")
+    require(criteria.get("round") == 4
+            and criteria.get("criteria_id") == "kaggle_w3_v16_cuda_owner_lifetime_2026_09_round4",
+            "owner-lifetime criteria round/id mismatch")
+    superseded = criteria.get("supersedes_before_measurement", {})
+    round3_criteria = ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
+    require(superseded.get("path") == str(round3_criteria.relative_to(ROOT))
+            and superseded.get("sha256") == sha256(round3_criteria),
+            "owner-lifetime round-4 supersession binding mismatch")
+    execution = criteria.get("execution", {})
+    gc_policy = execution.get("unrooted_gc_policy", {})
+    require(execution.get("weakref_target_path") == "owner.grid.phi"
+            and execution.get("weakref_target_type") == "CuArray{Float32, 3, CUDA.DeviceMemory}"
+            and gc_policy.get("automatic_gc_disabled_until_forced_gc") is True
+            and gc_policy.get("automatic_gc_must_be_enabled_before_each_forced_gc") is True
+            and gc_policy.get("automatic_gc_disabled_between_forced_gc_calls") is True,
+            "owner-lifetime round-4 WeakRef/GC execution contract mismatch")
     source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT", runner_path)
     expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256", runner_path)
     require(criteria["inputs"]["owner_lifetime_job"]["sha256"] == expected_job_sha,
@@ -697,6 +713,11 @@ def verify_owner_ownership_schema(arm_id: str, ownership: dict) -> dict:
     require(ownership.get("strong_owner_reference_escaped_helper")
             is (arm_id in ("A", "C")),
             f"owner-lifetime strong-owner schema mismatch: {arm_id}")
+    target_type = ownership.get("weakref_target_type")
+    require(ownership.get("weakref_target_path") == "owner.grid.phi"
+            and isinstance(target_type, str) and target_type.startswith("CuArray{")
+            and ownership.get("owner_type") == target_type,
+            f"owner-lifetime WeakRef does not target the backing CuArray: {arm_id}")
     before = ownership.get("weakref_before_gc")
     after = ownership.get("weakref_after_gc")
     states = ownership.get("weakref_after_each_gc", [])
@@ -713,6 +734,12 @@ def verify_owner_ownership_schema(arm_id: str, ownership: dict) -> dict:
         collected = before == "alive" and after == "cleared"
         require(ownership.get("owner_collected_during_forced_gc") is collected,
                 f"owner-lifetime owner-collection boolean mismatch: {arm_id}")
+        if arm_id.startswith("B"):
+            require(ownership.get("unrooted_automatic_gc_disabled_until_forced_gc") is True
+                    and ownership.get("automatic_gc_was_enabled_before_unrooted_bracket") is True
+                    and ownership.get("automatic_gc_reenabled_before_each_forced_gc")
+                    == [True, True],
+                    f"owner-lifetime unrooted forced-GC schedule mismatch: {arm_id}")
     if arm_id in ("A", "C"):
         lifetime_contract_satisfied = (
             before == "alive" and after == "alive" and states == ["alive", "alive"]
@@ -726,6 +753,8 @@ def verify_owner_ownership_schema(arm_id: str, ownership: dict) -> dict:
         "strategy": strategies[arm_id],
         "weakref_before_pre_gc_observations": ownership.get(
             "weakref_before_pre_gc_observations"),
+        "weakref_target_path": ownership.get("weakref_target_path"),
+        "weakref_target_type": target_type,
         "weakref_before_gc": before,
         "weakref_after_each_gc": states,
         "weakref_after_gc": after,
@@ -1303,10 +1332,13 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
             "unresolved": "Control mismatch, unbracketed collection, incomplete evidence, or non-repeatable B behavior prevents a causal conclusion.",
         }[classification],
         "weakref_target_assessment": (
-            "The pinned round-3 Julia job weak-references the DeviceGridSDF wrapper, "
-            "not owner.grid.phi (the backing CuArray); its clearing does not directly "
-            "establish backing CuArray collection. Round 4 must weak-reference the CuArray."
-            if criteria.get("round") == 3 else None
+            "The pinned round-3 Julia job weak-referenced the DeviceGridSDF wrapper, "
+            "not the backing CuArray at owner.grid.phi; its clearing did not establish "
+            "backing-array collection."
+            if criteria.get("round") == 3 else
+            "Round 4 weak-references owner.grid.phi directly and records its runtime type; "
+            "the host schema verifies both against the registered CuArray target."
+            if criteria.get("round") == 4 else None
         ),
         "qualification_flags": criteria["qualification_flags"],
         "claim_scope": criteria["claim_scope"],
@@ -1382,9 +1414,9 @@ def classify_failure(folder: Path, progress: dict,
                 "arms_with_unregistered_ownership_observation": failed_brackets,
                 "interpretation": (
                     "All arm processes completed, but the registered owner WeakRef/GC "
-                    "bracket was not satisfied. Round-3 source weak-references the "
-                    "DeviceGridSDF wrapper instead of the backing CuArray; these states "
-                    "cannot establish backing CuArray collection or owner-lifetime causality."
+                    "observation bracket was not satisfied. Check the recorded WeakRef "
+                    "target path/type and per-arm forced-GC schedule; these states do not "
+                    "establish owner-lifetime causality."
                 ),
             }
     if owner_diagnostic_detail is not None:

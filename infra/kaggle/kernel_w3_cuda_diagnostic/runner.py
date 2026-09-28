@@ -24,8 +24,8 @@ SOURCE_FETCH_DEPTH = 32
 # Pin the reviewed diagnostic source before submitting the private kernel.
 DIAGNOSTIC_SOURCE_COMMIT = "22137e2c7e15e4bb4f62806e29e221a5965f64b2"
 DIAGNOSTIC_JOB_SHA256 = "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e"
-OWNER_LIFETIME_JOB_SHA256 = "b952aae000f6a2047b050ca5d46bd8fdd1a5c320ebc222bd380b70c0924c8cac"
-OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
+OWNER_LIFETIME_JOB_SHA256 = "3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212"
+OWNER_LIFETIME_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json"
 W3_CRITERIA_SHA256 = "f5bf4faab65fa7ed31957323508daf27ce961ee03f0f0ca396558cdda33c20d2"
 W3_SOURCE_COMMIT = "5e985fa3395a01228c18910d96e09ecbc5497628"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
@@ -192,6 +192,17 @@ def fetch_source(base: Path, criteria: dict) -> Path:
     preregistration = json.loads(owner_criteria.read_text())
     if preregistration.get("immutable") is not True or preregistration.get("registered_before_computation") is not True:
         raise RuntimeError("owner-lifetime criteria are not immutable preregistration")
+    execution = preregistration.get("execution", {})
+    gc_policy = execution.get("unrooted_gc_policy", {})
+    if (preregistration.get("round") != 4
+            or preregistration.get("criteria_id") != "kaggle_w3_v16_cuda_owner_lifetime_2026_09_round4"
+            or execution.get("weakref_target_path") != "owner.grid.phi"
+            or execution.get("weakref_target_type") != "CuArray{Float32, 3, CUDA.DeviceMemory}"
+            or gc_policy.get("automatic_gc_disabled_until_forced_gc") is not True
+            or gc_policy.get("automatic_gc_must_be_enabled_before_each_forced_gc") is not True
+            or gc_policy.get("automatic_gc_disabled_between_forced_gc_calls") is not True
+            or gc_policy.get("forced_gc_calls") != 2):
+        raise RuntimeError("owner-lifetime round-4 execution criteria mismatch")
     if preregistration.get("inputs", {}).get("owner_lifetime_job", {}).get("sha256") != OWNER_LIFETIME_JOB_SHA256:
         raise RuntimeError("owner-lifetime criteria/job binding mismatch")
     if preregistration.get("inputs", {}).get("w3_criteria_sha256") != W3_CRITERIA_SHA256:

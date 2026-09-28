@@ -27,8 +27,6 @@ const SPACING_M = 0.05f0
 const FLOW_ORIGIN_M = Float32.((-2.5, -1.2, -0.9))
 const EXPECTED_PHI_SHA256 = "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
 const EXPECTED_PHI_C_ORDER_SHA256 = "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
-const OWNER_CRITERIA_PATH = "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json"
-
 json_escape(value::AbstractString) = replace(replace(replace(String(value), "\\" => "\\\\"), "\"" => "\\\""), "\n" => "\\n")
 json_value(::Nothing) = "null"
 json_value(value::Bool) = value ? "true" : "false"
@@ -87,15 +85,23 @@ end
 # Keep the helper boundary real: B must not return a strong owner/view reference.
 Base.@noinline function build_unrooted_components(canonical)
     owner, device_grid, bodies, sim, roundtrip_sha = build_components(canonical)
-    owner_weakref = WeakRef(owner)
+    owner_weakref = WeakRef(owner.grid.phi)
     info = Dict(
         "owner_type" => string(typeof(owner.grid.phi)),
+        "weakref_target_path" => "owner.grid.phi",
+        "weakref_target_type" => string(typeof(owner.grid.phi)),
         "kernel_view_type" => string(typeof(device_grid.phi)),
         "owner_array_isbits" => isbitstype(typeof(owner.grid.phi)),
         "kernel_view_isbits" => isbitstype(typeof(device_grid.phi)),
         "candidate_body_isbits" => isbitstype(typeof(bodies.candidate)),
         "gpu_phi_roundtrip_sha256" => roundtrip_sha,
+        "unrooted_automatic_gc_disabled_until_forced_gc" => true,
     )
+    # Suppress only automatic GC until the registered forced-GC bracket.
+    # The owner itself is not returned and remains unrooted.
+    gc_was_enabled = GC.enable(false)
+    gc_was_enabled || error("automatic GC was already disabled before unrooted bracket")
+    info["automatic_gc_was_enabled_before_unrooted_bracket"] = gc_was_enabled
     return bodies, sim, owner_weakref, info
 end
 
@@ -386,12 +392,17 @@ function run_observations!(canonical, cpu_bodies, gpu_bodies, sim, weak, strateg
     for gc_index in 1:2
         stage = "full_gc_$(gc_index)_started"
         checkpoint!(stage)
+        strategy == "unrooted" && GC.enable(true)
         GC.gc(true)
         CUDA.synchronize()
         REPORT["ownership"]["full_gc_calls"] = gc_index
-        push!(REPORT["ownership"]["weakref_after_each_gc"], owner_weak_state(weak))
+        weak_state = owner_weak_state(weak)
+        strategy == "unrooted" && push!(
+            REPORT["ownership"]["automatic_gc_reenabled_before_each_forced_gc"], true)
+        strategy == "unrooted" && gc_index == 1 && GC.enable(false)
+        push!(REPORT["ownership"]["weakref_after_each_gc"], weak_state)
         checkpoint!("full_gc_$(gc_index)_completed", Dict(
-            "weakref_state" => owner_weak_state(weak),
+            "weakref_state" => weak_state,
             "cuda_synchronize_after_gc" => true,
         ))
     end
@@ -547,6 +558,8 @@ function main()
             arm_id == "C" ? "OwnedV16Diagnostic owns owner,bodies,simulation" :
             "helper returns bodies,simulation,WeakRef only",
         "owner_type" => nothing,
+        "weakref_target_path" => nothing,
+        "weakref_target_type" => nothing,
         "kernel_view_type" => nothing,
         "owner_array_isbits" => nothing,
         "kernel_view_isbits" => nothing,
@@ -555,6 +568,8 @@ function main()
         "weakref_before_gc" => nothing,
         "weakref_after_each_gc" => Any[],
         "weakref_after_gc" => nothing,
+        "automatic_gc_reenabled_before_each_forced_gc" => Any[],
+        "unrooted_automatic_gc_disabled_until_forced_gc" => false,
         "owner_collected_during_forced_gc" => false,
         "full_gc_calls" => 0,
         "cuda_synchronize_before_gc" => false,
@@ -569,11 +584,13 @@ function main()
         owner, device_grid, bodies, sim, roundtrip = build_components(canonical)
         REPORT["input_identity"]["gpu_phi_roundtrip_sha256"] = roundtrip
         REPORT["ownership"]["owner_type"] = string(typeof(owner.grid.phi))
+        REPORT["ownership"]["weakref_target_path"] = "owner.grid.phi"
+        REPORT["ownership"]["weakref_target_type"] = string(typeof(owner.grid.phi))
         REPORT["ownership"]["kernel_view_type"] = string(typeof(device_grid.phi))
         REPORT["ownership"]["owner_array_isbits"] = isbitstype(typeof(owner.grid.phi))
         REPORT["ownership"]["kernel_view_isbits"] = isbitstype(typeof(device_grid.phi))
         REPORT["ownership"]["candidate_body_isbits"] = isbitstype(typeof(bodies.candidate))
-        weak = WeakRef(owner)
+        weak = WeakRef(owner.grid.phi)
         GC.@preserve owner begin
             run_observations!(canonical, cpu_bodies, bodies, sim, weak, "retained")
         end
@@ -582,18 +599,23 @@ function main()
         owned = OwnedV16Diagnostic(owner, bodies, sim)
         REPORT["input_identity"]["gpu_phi_roundtrip_sha256"] = roundtrip
         REPORT["ownership"]["owner_type"] = string(typeof(owned.owner.grid.phi))
+        REPORT["ownership"]["weakref_target_path"] = "owner.grid.phi"
+        REPORT["ownership"]["weakref_target_type"] = string(typeof(owned.owner.grid.phi))
         REPORT["ownership"]["kernel_view_type"] = string(typeof(device_grid.phi))
         REPORT["ownership"]["owner_array_isbits"] = isbitstype(typeof(owned.owner.grid.phi))
         REPORT["ownership"]["kernel_view_isbits"] = isbitstype(typeof(device_grid.phi))
         REPORT["ownership"]["candidate_body_isbits"] = isbitstype(typeof(owned.bodies.candidate))
-        weak = WeakRef(owned.owner)
+        weak = WeakRef(owned.owner.grid.phi)
         GC.@preserve owned begin
             run_observations!(canonical, cpu_bodies, owned.bodies, owned.sim, weak, "owned")
         end
     else
         bodies, sim, weak, info = build_unrooted_components(canonical)
         REPORT["input_identity"]["gpu_phi_roundtrip_sha256"] = info["gpu_phi_roundtrip_sha256"]
-        for key in ("owner_type", "kernel_view_type", "owner_array_isbits", "kernel_view_isbits", "candidate_body_isbits")
+        for key in ("owner_type", "weakref_target_path", "weakref_target_type",
+                    "kernel_view_type", "owner_array_isbits", "kernel_view_isbits",
+                    "candidate_body_isbits", "unrooted_automatic_gc_disabled_until_forced_gc",
+                    "automatic_gc_was_enabled_before_unrooted_bracket")
             REPORT["ownership"][key] = info[key]
         end
         run_observations!(canonical, cpu_bodies, bodies, sim, weak, "unrooted")
@@ -612,4 +634,6 @@ catch error
         "failed_stage" => REPORT["failed_stage"],
         "exception" => REPORT["exact_exception"],
     )))
+finally
+    GC.enable(true)
 end

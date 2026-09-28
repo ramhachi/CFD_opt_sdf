@@ -260,16 +260,26 @@ def test_partial_fingerprint_binds_backend_and_exact_source_checkout(tmp_path):
     assert result["checkout_diagnostic_job_sha256"] == commit_job[1]
 
 
-def test_owner_round3_criteria_and_job_are_immutable_and_hash_bound():
+def test_owner_round4_criteria_and_job_are_immutable_and_hash_bound():
     criteria, criteria_sha, sidecar_sha = host.load_owner_lifetime_criteria()
 
     assert criteria["immutable"] is True
     assert criteria["registered_before_computation"] is True
-    assert criteria["round"] == 3
+    assert criteria["round"] == 4
     assert criteria["inputs"]["owner_lifetime_job"]["sha256"] == host.sha256(
         host.OWNER_LIFETIME_JOB)
     assert criteria["supersedes_before_measurement"]["sha256"] == host.sha256(
-        ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round2.json")
+        ROOT / "docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round3.json")
+    assert criteria["execution"]["weakref_target_path"] == "owner.grid.phi"
+    assert criteria["execution"]["weakref_target_type"] == (
+        "CuArray{Float32, 3, CUDA.DeviceMemory}")
+    assert criteria["execution"]["unrooted_gc_policy"][
+        "automatic_gc_disabled_until_forced_gc"] is True
+    assert criteria["execution"]["unrooted_gc_policy"][
+        "automatic_gc_must_be_enabled_before_each_forced_gc"] is True
+    assert runner.OWNER_LIFETIME_CRITERIA_PATH.endswith("round4.json")
+    assert runner.OWNER_LIFETIME_JOB_SHA256 == criteria["inputs"][
+        "owner_lifetime_job"]["sha256"]
     assert criteria_sha == host.sha256(host.OWNER_LIFETIME_CRITERIA_PATH)
     assert host.OWNER_LIFETIME_CRITERIA_PATH.with_suffix(
         host.OWNER_LIFETIME_CRITERIA_PATH.suffix + ".sha256").read_text().strip() == criteria_sha
@@ -281,6 +291,9 @@ def test_owner_weakref_gc_schema_and_collection_bracketing():
         "strategy": "GC.@preserve owner",
         "strong_owner_reference_escaped_helper": True,
         "weakref_created": True,
+        "owner_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
+        "weakref_target_path": "owner.grid.phi",
+        "weakref_target_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
         "weakref_before_gc": "alive",
         "weakref_after_each_gc": ["alive", "alive"],
         "weakref_after_gc": "alive",
@@ -295,16 +308,30 @@ def test_owner_weakref_gc_schema_and_collection_bracketing():
         "strategy": "helper returns bodies,simulation,WeakRef only",
         "strong_owner_reference_escaped_helper": False,
         "weakref_created": True,
+        "owner_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
+        "weakref_target_path": "owner.grid.phi",
+        "weakref_target_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
         "weakref_before_gc": "alive",
         "weakref_after_each_gc": ["alive", "cleared"],
         "weakref_after_gc": "cleared",
         "owner_collected_during_forced_gc": True,
         "full_gc_calls": 2,
+        "unrooted_automatic_gc_disabled_until_forced_gc": True,
+        "automatic_gc_was_enabled_before_unrooted_bracket": True,
+        "automatic_gc_reenabled_before_each_forced_gc": [True, True],
         "cuda_synchronize_before_gc": True,
         "cuda_synchronize_after_gc": True,
     }
     assert host.verify_owner_ownership_schema("B1", unrooted)[
         "owner_collected_during_forced_gc"] is True
+    unrooted["weakref_target_path"] = "owner"
+    with pytest.raises(ValueError, match="WeakRef does not target"):
+        host.verify_owner_ownership_schema("B1", unrooted)
+    unrooted["weakref_target_path"] = "owner.grid.phi"
+    unrooted["automatic_gc_reenabled_before_each_forced_gc"] = [True, False]
+    with pytest.raises(ValueError, match="GC schedule mismatch"):
+        host.verify_owner_ownership_schema("B1", unrooted)
+    unrooted["automatic_gc_reenabled_before_each_forced_gc"] = [True, True]
     unrooted["owner_collected_during_forced_gc"] = False
     with pytest.raises(ValueError, match="collection boolean mismatch"):
         host.verify_owner_ownership_schema("B1", unrooted)
@@ -313,6 +340,9 @@ def test_owner_weakref_gc_schema_and_collection_bracketing():
         "strategy": "OwnedV16Diagnostic owns owner,bodies,simulation",
         "strong_owner_reference_escaped_helper": True,
         "weakref_created": True,
+        "owner_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
+        "weakref_target_path": "owner.grid.phi",
+        "weakref_target_type": "CuArray{Float32, 3, CUDA.DeviceMemory}",
         "weakref_before_pre_gc_observations": "alive",
         "weakref_before_gc": "cleared",
         "weakref_after_each_gc": ["cleared", "cleared"],
