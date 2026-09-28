@@ -110,7 +110,7 @@ function v16_representative_probes(grid)
         ("outside_y_low", (0.0f0, -0.85f0, 0.0f0)),
         ("outside_y_high", (0.0f0, 0.85f0, 0.0f0)),
         ("outside_z_low", (0.0f0, 0.0f0, -0.65f0)),
-        ("outside_z_high", (0.0f0, 0.0f, 0.65f0)),
+        ("outside_z_high", (0.0f0, 0.0f0, 0.65f0)),
     ]
 end
 
