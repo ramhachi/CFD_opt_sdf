@@ -338,6 +338,7 @@ for (body_name, cpu_body, gpu_body) in (
     ("ground", cpu_bodies.ground, gpu_bodies.ground),
     ("combined", cpu_bodies.combined, gpu_bodies.combined),
 )
+    checkpoint!("$(body_name)_representative_probes_started", Dict("probe_count" => length(probe_names)))
     cpu_rows = cpu_measure_rows(cpu_body, probe_solver)
     gpu_rows = gpu_measure_rows(gpu_body, probe_solver)
     probe_body_results[body_name] = Dict(
@@ -401,11 +402,13 @@ checkpoint!("solver_free_measurement", Dict(
 cpu_step_times = Float64[]
 gpu_step_times = Float64[]
 for _ in 1:TINY_REPETITIONS
+    checkpoint!("cpu_one_step_started", Dict("step" => length(cpu_step_times) + 1))
     start = time()
     WaterLily.sim_step!(cpu_sim)
     push!(cpu_step_times, time() - start)
     checkpoint!("cpu_one_step_completed", Dict("steps" => length(cpu_step_times),
         "sim_time" => Float64(WaterLily.sim_time(cpu_sim))))
+    checkpoint!("cuda_one_step_started", Dict("step" => length(gpu_step_times) + 1))
     start = time()
     WaterLily.sim_step!(gpu_sim)
     CUDA.synchronize()
