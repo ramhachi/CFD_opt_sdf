@@ -2179,3 +2179,44 @@ and `git diff --check` pass. Full pytest reports 1,117 passed, 37 failed and 4
 skipped; all 37 failures require ignored historical `work/` artifacts absent
 from this managed worktree. Register immutable round 4 and a new private
 dataset version before the next exact kernel measurement.
+
+### W4 immutable criteria round 4 and local dataset stage
+
+Round 3's exact T3/T4 gate failures and kernel version 2 output remain diagnostic
+evidence. Do not edit round-3 criteria. After correcting the box-maximum
+predicate in both runner and host verifier and aligning the job's report-only
+ground descriptor, immutable round 4 was registered before another measurement:
+
+- Criteria:
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`
+  (sidecar matches).
+- Source snapshot:
+  `b9ae43b540a94b52fdb8a05051fba6f250034a6f`.
+- The registrar bound exact W3 round-4 criteria/result and host-PASS. An
+  independent comparison against round 3 confirms cases, geometry,
+  measurement, profile semantics, scope, response analysis, backend and W3
+  prerequisite are unchanged. Only immutable round/source/input hashes
+  advance.
+- Fresh stage:
+  `work/kaggle_w4_v16_dataset_round4/`; the preparer passed host source/state
+  checks, and both host verifier and runner-mount checks passed.
+- Dataset manifest SHA-256:
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`.
+- Criteria SHA is `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`;
+  canonical NPZ and Fortran raw hashes are unchanged from the registered v16
+  state, and CPU measured margin is `0.3499999939931499 m`.
+
+Registration and stage commands:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/register_kaggle_w4_v16_sensitivity_2026_09.py --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json --round 4 --check
+PYTHONPATH=src:scripts .venv/bin/python scripts/prepare_kaggle_w4_v16_dataset_2026_09.py --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz --criteria docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json --output work/kaggle_w4_v16_dataset_round4
+```
+
+Next, commit/push the immutable round-4 criteria and this status update, then
+publish version 3 of the existing private W4 dataset. Download it into a fresh
+directory and require exact inventory/hash agreement before submitting the
+next kernel version. No W4 round-4 measurement, formal FD, reverse
+qualification or shape update has started.

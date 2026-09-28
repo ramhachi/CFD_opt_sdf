@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Round-3 kernel `/2` completed four primals but failed registered T3/T4 implementation gates; no W4 qualification | Exact criteria SHA `6cbe15769a8728c4f3ceba165ef75d6d11543c633c6651daafb8d6c901f8dfc6`; dataset version 2 and source/input identities verified. Diagnostic SHA `cde5c72b…` preserves exact logs/output and host-recomputed raw forces. T3 box-maximum indexing and T4 ground-descriptor wording fixes with regressions were pushed in `52a50e4`; focused 41 tests pass, full suite 1,117 pass/37 missing-`work/` failures/4 skipped. Immutable round 4 and dataset version 3 are pending; round 3 remains unqualified. |
+| W4 grid/domain sensitivity | Round-3 kernel `/2` completed four primals but failed registered T3/T4 implementation gates; round 4 preregistered and dataset stage verified | Round-3 diagnostic SHA `cde5c72b…` preserves exact logs/output and host-recomputed raw forces. T3/T4 fixes were pushed in `52a50e4`; criteria round 4 SHA `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` binds source `b9ae43b` and exact W3 round-4 PASS. Round-3 and round-4 frozen measurement/case/threshold contracts match. Fresh local stage passes host and runner checks; dataset version 3 upload pending. Round 3 remains unqualified. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -3996,6 +3996,18 @@ qualification flag.
   Full pytest reports 1,117 passed, 37 failed and 4 skipped. All 37 failures
   require ignored historical `work/` artifacts absent from this managed
   worktree; no W4/W3 test failed.
-- **Open:** register immutable round 4 against exact W3 round-4 PASS, publish
-  and re-download a new private dataset version, then run the exact matrix
-  again. Preserve round-3 criteria and kernel `/2` evidence.
+- **Registered:** immutable round 4 is
+  [`kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json),
+  SHA-256 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`,
+  bound to source `b9ae43b540a94b52fdb8a05051fba6f250034a6f` and exact W3
+  round-4 host PASS. Cases, physical conditions, time window, force semantics,
+  stationarity limit and response follow-up rule equal round 3 exactly.
+- **Implemented / local stage verified:** fresh inputs are staged at
+  `work/kaggle_w4_v16_dataset_round4/`. Host and runner-mount checks pass;
+  manifest SHA-256 is
+  `d5093b23be0a26c5cf5ce1030e42189a71b58f834160bcbd15c272d00561e8a7`.
+  Canonical state/phi hashes are unchanged and measured CPU margin is
+  `0.3499999939931499 m`.
+- **Open:** publish private dataset version 3, download it to a fresh directory
+  and verify the exact inventory/hashes before submitting another exact kernel
+  version. Preserve round-3 criteria and kernel `/2` evidence.
