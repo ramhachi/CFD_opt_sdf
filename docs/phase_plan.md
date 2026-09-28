@@ -3436,8 +3436,12 @@ qualification flag.
   `5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710`; the
   source checkout to be used by the pinned runner is commit
   `ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07`.
-- **Submitted:** no round-4 Kaggle run yet. The exact diagnostic kernel
-  version 7 is to be submitted only after the source-pin commit is pushed.
+- **Submitted:** after source-pin commit `dec3e2f0728ba03df2d3951d6c5972bdb41c7d1a`
+  was pushed, private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` was submitted with the
+  registered T4 runtime. Its first exact-version status was
+  `KernelWorkerStatus.RUNNING`; the captured status file SHA-256 is
+  `172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`.
 - **Measured:** no round-4 GPU observations exist. Version 6 remains the latest
   measurement and its owner-lifetime result remains unresolved; it does not
   explain W3 v4's 3,841-step all-zero force history.
@@ -3452,6 +3456,6 @@ qualification flag.
 - **Qualified:** nothing new. W3 v4 remains failed/unqualified; WaterLily
   primal, physical profile, grid response, gradient, reverse, topology,
   optimizer, and shape update remain unqualified.
-- **Open:** push the round-4 source/runner pin; submit and retrieve exact
-  Kaggle version 7; then run host verification before making any causal
-  interpretation.
+- **Open:** continue checking only exact Kaggle version 7; when terminal,
+  retrieve its exact logs/output and run host verification before making any
+  causal interpretation.
