@@ -328,7 +328,10 @@ checkpoint!("input_and_device_identity", Dict(
     "device_kernel_view_type" => string(typeof(device_grid.phi)),
 ))
 
+checkpoint!("representative_probe_definitions_started", Dict("stage" => "world-space probe construction"))
 probe_definitions = v16_representative_probes(canonical)
+checkpoint!("representative_probe_definitions_completed",
+    Dict("probe_count" => length(probe_definitions)))
 probe_names = first.(probe_definitions)
 probe_world = last.(probe_definitions)
 probe_solver = flow_point.(probe_world)
