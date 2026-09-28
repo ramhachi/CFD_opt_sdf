@@ -1741,3 +1741,65 @@ defect, while the exact v4 all-zero root cause remains open. The production
 fix uses `OwnedV16Run` to retain the backing owner and preserve that run bundle
 through `run_primal`; a new immutable W3 round is required before the next
 T4 qualification attempt. W4 and formal FD remain blocked.
+
+### W3 production owner fix: immutable qualification round 4 registered
+
+W3 round 4 applies only the structural `OwnedV16Run` owner-retention fix. Its
+immutable criteria are
+[`kaggle_w3_v16_primal_criteria_2026_09_round4.json`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
+SHA-256
+`eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`; the
+sidecar contains the same digest. The source commit is
+`ee6298e843e130b121d918ca9a321b707dcd4ae0`. The criteria preregister the owner
+diagnostic criteria/result/correction identities and preserve round-3 W3
+geometry, force, backend, runtime, thresholds and claims. The drag/downforce
+2% stationarity limit is inherited from the already registered W2 sphere
+capability convention; it was not chosen from W3 v3/v4 measurements. W3 v4's
+all-zero force root cause remains unresolved.
+
+The round-4 registration check passed before any round-4 primal computation:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_w3_v16_primal_2026_09.py --round 4 --check
+python3 -m json.tool \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json >/dev/null
+shasum -a 256 docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json
+git diff --check
+```
+
+After committing and pushing the exact criteria and documentation, stage the
+canonical state into a new work directory; do not reuse or overwrite the
+round-3 stage or a downloaded version-bound run. The source state remains the
+registered canonical v16 NPZ:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_w3_dataset_2026_09.py \
+  work/kaggle_w3_v16_dataset_round3/sdf_design_state.npz \
+  docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
+  work/kaggle_w3_v16_dataset_round4
+```
+
+Verify the staged dataset manifest and full staged inventory first. Then use
+the existing private dataset ID and retrieve its just-published version into
+a fresh directory:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_w3_v16_dataset_round4 \
+  -m "W3 v16 owner lifetime fix immutable criteria round 4" --dir-mode zip
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets download -d ramhachi888/cfd-opt-sdf-v16-genesis-state \
+  -p work/kaggle_w3_v16_dataset_round4_remote --force --unzip
+```
+
+Before submitting a kernel, compare the complete file inventory and SHA-256
+values from the staged and re-downloaded directories (including the criteria,
+criteria sidecar, canonical NPZ, Fortran-order phi, dataset manifest and
+dataset metadata). Any mismatch is an infrastructure stop; do not submit until
+the registered bytes are present remotely. Push
+`infra/kaggle/kernel_w3` with `--accelerator NvidiaTeslaT4 --timeout 7200`,
+record the exact version returned by Kaggle, and use only that version for
+status, logs, output and host verification. W3 remains unqualified before that
+exact host verification; W4 measurement and formal FD remain blocked.

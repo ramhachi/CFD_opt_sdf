@@ -137,7 +137,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified; exact full-horizon owner diagnostic is host-verified and production owner fix is implemented | Round-3 owner diagnostic confirms the non-owning device-SDF lifetime bug and meets its production-fix gate. It does not reproduce W3 v4's all-zero force symptom. New W3 qualification criteria and a T4 run are pending; no W3 gate is qualified yet. Runtime CUDA/CUDACore memory-type identity is established by exact `===` evidence. |
+| W3 v16 primal | Unqualified; owner fix is implemented and immutable qualification round 4 is registered | Exact full-horizon diagnostic confirms the non-owning device-SDF lifetime defect but does not reproduce W3 v4's all-zero force symptom. Round 4 binds the owner-only fix and unchanged W3 thresholds. Its private dataset and exact T4 run are pending; no W3 gate is qualified yet. Runtime CUDA/CUDACore memory-type identity is established by exact `===` evidence. |
 | W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
 | Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
@@ -628,24 +628,28 @@ are retained historical plans; neither controls current execution.
 
 Current gates and immediate sequence as of 2026-09-28:
 
-1. **Complete the W3 CUDA/full-run zero-force root-cause diagnosis.** Exact
-   owner-lifetime diagnostic version 7 runs immutable round-4 criteria against
-   the backing `owner.grid.phi` `CuArray`; its first captured status is
-   `KernelWorkerStatus.RUNNING` (status SHA-256
-   `172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`). No
-   round-4 measurement exists yet. Check only exact version 7, retrieve its
-   terminal status/logs/output to the version-bound directory, and host-verify
-   against round 4 before interpreting causality. Version 6 remains the latest
-   completed measurement and is unresolved: it weak-referenced the immutable
-   `DeviceGridSDF` wrapper rather than the backing array. Preserve round 4's
-   fixture, arms, probes, tolerances, and causal rules.
-2. **Make a production fix only after causal evidence.** Do not alter the
-   production W3 path, force convention, or thresholds based on the current
-   diagnostic alone.
-3. **Run a new immutable W3 qualification round** after the diagnosis is resolved
-   and any evidence-supported production correction is made. W3 v16 primal and
-   physical-profile qualification remain unqualified until the exact result
-   passes the host verifier.
+1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
+   diagnostic `/2` completed and passed host verification under immutable
+   criteria round 3. The backing `owner.grid.phi` owner was collected at step 1
+   in both natural-GC B replicas; each later developed non-finite forces while
+   the retained A controls completed the horizon with finite, nonzero forces.
+   This confirms an implementation lifetime defect, but not the exact W3 v4
+   full-horizon all-zero symptom.
+2. **Requalify W3 with the owner-only fix.** `OwnedV16Run` retains the owner,
+   bodies and simulation through `run_primal`. Immutable W3 criteria round 4
+   is registered at
+   [`kaggle_w3_v16_primal_criteria_2026_09_round4.json`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
+   SHA-256
+   `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`,
+   bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0` and the
+   verified owner-diagnostic prerequisite. The registered 2% stationarity
+   gate and all other measurement/acceptance conditions are unchanged from
+   round 3. Commit/push the criteria and this status, stage/upload/re-download
+   its private dataset, then submit and host-verify one exact T4 version.
+3. **Keep downstream work blocked.** W3 v16 primal and physical-profile
+   qualification remain unqualified until the exact round-4 result passes the
+   host verifier. W4 measurement, formal FD, gradient/reverse qualification,
+   optimizer updates and topology work remain blocked.
 4. **Qualify W4 grid/domain sensitivity** using the same canonical SDF and
    registered WaterLily profile, only after W3 PASS. W4 remains blocked and has
    no registered qualification result.
@@ -3695,3 +3699,32 @@ qualification flag.
   and status refresh; register W3 round 4; stage/upload/re-download and verify
   its private dataset; submit the next exact W3 T4 kernel version. Do not
   start W4 or formal FD before exact host-verified W3 PASS.
+
+### 2026-09-28 W3 owner-fix qualification round 4 registered
+
+- **Implemented:** the production W3 run now structurally retains its CUDA SDF
+  owner with `OwnedV16Run` for the full `run_primal` lifetime. The fix changes
+  owner reachability only; canonical SDF bytes, grid/profile, force signs,
+  measurement window, sampling, runtime limit and thresholds are unchanged.
+- **Registered:** immutable W3 round-4 criteria are
+  [`round 4`](evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json),
+  SHA-256
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb`;
+  sidecar SHA-256 is the same. The registrar `--round 4 --check` passed.
+  Criteria bind production source commit
+  `ee6298e843e130b121d918ca9a321b707dcd4ae0`, the owner-diagnostic criteria,
+  result and host correction by their registered hashes, and the existing W3
+  measurement contract. The unchanged 2% drag/downforce half-window drift gate
+  is inherited from registered W2 sphere capability precedent.
+- **Submitted:** no W3 round-4 kernel has been submitted at this checkpoint.
+- **Measured / verified:** no round-4 primal measurement or host-verification
+  result exists yet.
+- **Qualified:** W3 remains unqualified. This round does not qualify physical
+  profile equivalence, absolute aerodynamics, grid/domain response, gradients,
+  reverse mode, topology, optimizer, or shape update. All corresponding flags
+  remain false.
+- **Open:** commit/push the immutable criteria and status, stage the canonical
+  input dataset in a new ignored work directory, publish and re-download the
+  private Kaggle dataset, compare complete file inventory and hashes, then
+  submit the next exact W3 T4 version. Do not start W4 or formal FD before
+  exact round-4 host verification passes.

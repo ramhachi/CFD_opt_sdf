@@ -71,8 +71,8 @@ an infrastructure choice, not a solver component.
 | --- | --- |
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere capability gates have evidence; this does not qualify the v16 aerodynamic primal. |
-| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. Its preregistered gate confirms an owner-lifetime implementation bug; the exact W3 v4 all-zero force symptom remains unresolved. The structural production owner fix is implemented, but the new W3 criteria round and GPU run are pending. |
-| Next W3 gate | Freeze round-4 criteria after the owner-fix source commit, stage and remotely verify the private canonical input dataset, run the next exact W3 T4 version, and host-verify it. W4 and formal FD remain blocked until W3 PASS. |
+| W3 v16 primal | Unqualified. Exact owner full-horizon diagnostic `/2` is complete and host-verified. It confirms an owner-lifetime implementation defect, but W3 v4's all-zero force root cause remains unresolved. The structural owner fix is implemented and round-4 criteria are immutably registered. |
+| Next W3 gate | Commit/push round-4 criteria, stage/upload/re-download and hash-verify the private canonical dataset, submit the next exact W3 T4 version, and host-verify it. W4 and formal FD remain blocked until W3 PASS. |
 | W4 | Blocked until exact W3 host-verifier PASS; no W4 qualification criteria or measurement is registered. |
 | Centered-FD SDF derivatives | Formal qualification blocked pending W3 and W4. |
 | Production gradient backend | Undecided and unqualified. |
@@ -103,11 +103,12 @@ topology/shape-update qualification flags remain false. The maximum normal
 discrepancy near `1.338` remains a separate open issue.
 
 The active order is in [`phase_plan.md` §11](phase_plan.md#11-current-sdf-native-execution-order).
-The sequence starts with W3 zero-force root-cause diagnosis, allows a production
-fix only after causal evidence, then requires a new immutable W3 qualification
-round after diagnosis and any warranted correction before W4, formal FD, a
-backend decision, a constrained update, topology birth, multi-step optimization,
-and independent Stage V verification.
+The owner-lifetime diagnostic met its preregistered production-fix gate and the
+owner-only fix is implemented. Immutable W3 round 4 now binds that source and
+the unchanged measurement/acceptance contract; its exact private T4 run and
+host verification are the next gate before W4, formal FD, a backend decision,
+a constrained update, topology birth, multi-step optimization, or independent
+Stage V verification.
 All W3/W4/FD/gradient/reverse/topology/shape-update qualification flags remain
 false. No historical evidence or criteria are rewritten by this status summary.
 
@@ -833,14 +834,14 @@ The following claims are forbidden until separately qualified:
 - No claim that the Brinkman surrogate is generally valid or generally impossible.
 - No claim that WaterLily W3, the GPU primal for the v16 object, or W4 is qualified.
 - No claim that reverse AD works as a production backend, that the SDF centered-FD gradient is qualified, or that a constrained SDF update is allowed.
-- No claim that topology birth works or that the owner-lifetime hypothesis is confirmed. Version 6 remains unresolved because its WeakRef observed the wrapper rather than `owner.grid.phi`.
+- No claim that topology birth works. The full-horizon owner-lifetime defect is confirmed, but W3 v4's exact all-zero force root cause and W3 primal qualification remain unresolved.
 
 ## Fresh-Session Checklist
 
 1. Work in the requested checkout and branch. Inspect `git status`, `git diff`, recent history, and the remote branch before editing; preserve unrelated work.
 2. Read `AGENTS.md`, `docs/README.md`, this handoff, `docs/phase_plan.md`, the issue ledger, and the relevant supporting contract or runbook.
 3. Treat `phase_plan.md` as the sole current roadmap/status/order authority. Use historical Stage T/S/V documents for recorded evidence only.
-4. For W3, continue with only exact owner-lifetime diagnostic version 7. At terminal status, retrieve and host-verify its version-bound artifacts against round-4 criteria. Do not make a production change until causal evidence supports it.
+4. For W3, continue with immutable primal criteria round 4: verify/commit its exact SHA, update and re-download the private input dataset, submit the next T4 kernel version, then retrieve and host-verify only that exact version. Preserve all prior diagnostic results and criteria.
 5. Keep W4, formal centered-FD, gradient-backend qualification, optimizer update, and topology birth blocked until their explicit prerequisites in `phase_plan.md` pass.
 6. Distinguish contract, capability, numerical, target-physics, and benchmark evidence. Inspect exact immutable criteria, logs, outputs, and hashes for evidence work.
 7. For a documentation-only task, validate links and `git diff --check`; do not run a solver or Kaggle job. Follow repository `AGENTS.md` for any additional required validation.
