@@ -1545,3 +1545,43 @@ The next criteria round must make the WeakRef target explicitly
 mapping, arms, full geometry, fields, force snapshots, GC sequence, tolerances,
 and causal decision rules. W3 v4 remains unqualified; this scratch result does
 not authorize a production ownership fix.
+
+### Owner-lifetime diagnostic round 4 preregistration
+
+Round 4 is registered but has not been submitted or measured. Its immutable
+criteria file is
+`docs/evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json`
+(SHA-256
+`58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; sidecar
+SHA-256
+`0637966ce609c452797241e42498e6503a02dde6ba09298b93e692ac5373f3c0`). The
+registered owner Julia job SHA-256 is
+`3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`. The
+kernel runner SHA-256 is
+`5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710` and pins
+source commit `ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07`, containing the exact
+job, criteria, and sidecar.
+
+This round corrects only the observation method exposed by exact version 6:
+all arms WeakRef `owner.grid.phi` (the backing `CuArray`) and record its path
+and type. B1/B2 disable automatic GC after constructing the unrooted objects
+and WeakRef, check that automatic GC had been enabled, keep it disabled through
+pre-GC observations, enable it immediately before each registered `GC.gc(true)`,
+disable it between the two forced collections, then leave it enabled. A/C use
+the same two explicit collections while their registered owner retention is
+active. Inputs, arm order, solver work, force and field probes, comparison
+tolerances, and causal decision rules are unchanged. This is diagnostic-only;
+it changes no W3 production code or criterion.
+
+Local preregistration checks completed: 40 focused W3/W4/diagnostic tests
+passed; Python `compileall` and targeted `py_compile` passed; the Julia owner
+job parsed; criteria JSON/sidecar SHA verification and `git diff --check`
+passed. Repository-wide pytest completed with 1,089 passed, 37 failed, and 4
+skipped. The 37 failures are the known historical tests that need ignored
+`work/` checkpoints, logs, and case files absent from this managed checkout;
+the focused W3/W4/diagnostic slice is green. Do not submit version 7 until the
+source-pin commit is pushed. At terminal status, retrieve status, logs and
+output for exact kernel
+`ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/7` and verify the exact version
+against this round-4 criteria before interpreting the owner-lifetime
+hypothesis.

@@ -3408,3 +3408,50 @@ qualification flag.
   for A/C/B and record the weak-reference target path/type explicitly. Keep the
   same fixture, process isolation, GC procedure, force/field/geometry probes,
   tolerances and causal rules; rerun only after that immutable round is pushed.
+
+### 2026-09-28 owner-lifetime diagnostic round 4 preregistered; not submitted
+
+- **Implemented:** the diagnostic now weak-references the backing
+  `owner.grid.phi` `CuArray` directly for A/C/B1/B2 and records the target path
+  and runtime type. B1/B2 disable automatic GC at the noinline helper boundary
+  after creating the WeakRef, verify GC was initially enabled, and re-enable it
+  immediately before each of the two registered full collections. Automatic GC
+  is disabled again between the two forced collections and remains enabled
+  after the second. The existing shared body/simulation path, arm order, full
+  geometry scan, field/force snapshots, fixture, tolerances, and causal rules
+  are unchanged. No production W3 source, force convention, or acceptance gate
+  changed.
+- **Registered:** immutable criteria
+  [`round 4`](evidence/kaggle_w3_v16_cuda_owner_lifetime_criteria_2026_09_round4.json)
+  SHA-256
+  `58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`; sidecar
+  SHA-256
+  `0637966ce609c452797241e42498e6503a02dde6ba09298b93e692ac5373f3c0`. It
+  supersedes round 3 only because v6 showed that `WeakRef(owner)` targeted the
+  immutable wrapper and B's references cleared before the registered GC
+  bracket. The W3 fixture, owner hypotheses, acceptance thresholds, and
+  causal decision rules are not relaxed. Owner job SHA-256 is
+  `3676babc3b7516690a813acb84fa324a46a75e8b98b39c447b755394a80c6212`; the
+  runner SHA-256 is
+  `5e004a1e32529271b1b45a7f65086e173ca8246b5df57e8ea127b40f834ea710`; the
+  source checkout to be used by the pinned runner is commit
+  `ffb5cc7edc4d3a598d420ef6c065d10c5c8bbc07`.
+- **Submitted:** no round-4 Kaggle run yet. The exact diagnostic kernel
+  version 7 is to be submitted only after the source-pin commit is pushed.
+- **Measured:** no round-4 GPU observations exist. Version 6 remains the latest
+  measurement and its owner-lifetime result remains unresolved; it does not
+  explain W3 v4's 3,841-step all-zero force history.
+- **Verified:** focused W3/W4/diagnostic tests pass 40/40; Python `compileall`,
+  targeted `py_compile`, Julia `Meta.parseall` of the owner job, criteria JSON
+  and sidecar verification, and `git diff --check` pass. These are local
+  contract checks only. Repository-wide pytest completed with 1,089 passed,
+  37 failed, and 4 skipped. The 37 failures match the known managed-worktree
+  limitation: historical PQ/Stage S/V tests read ignored `work/` checkpoints,
+  logs, and case files absent from this checkout. The changed W3/W4/diagnostic
+  slice passes independently.
+- **Qualified:** nothing new. W3 v4 remains failed/unqualified; WaterLily
+  primal, physical profile, grid response, gradient, reverse, topology,
+  optimizer, and shape update remain unqualified.
+- **Open:** push the round-4 source/runner pin; submit and retrieve exact
+  Kaggle version 7; then run host verification before making any causal
+  interpretation.
