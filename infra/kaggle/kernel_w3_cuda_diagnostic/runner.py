@@ -403,35 +403,37 @@ def main() -> None:
         job = source / "scripts/waterlily_w3_v16_cuda_diagnostic_job.jl"
         command([str(julia), "--startup-file=no", f"--project={project}", str(job),
                  str(raw_phi_path), str(OUT)], OUT / "w3_cuda_diagnostic.log", env=env, timeout=5400)
-    report_path = OUT / "w3_v16_cuda_diagnostic.json"
-    lattice_path = OUT / "v16_flow_lattice.csv"
-    if not report_path.is_file() or not lattice_path.is_file():
-        raise RuntimeError("Julia diagnostic outputs are incomplete")
-    report = json.loads(report_path.read_text())
-    expected_identity = {
-        "criteria_sha256": criteria_sha,
-        "w3_source_commit": W3_SOURCE_COMMIT,
-        "diagnostic_source_commit": DIAGNOSTIC_SOURCE_COMMIT,
-        "diagnostic_job_sha256": DIAGNOSTIC_JOB_SHA256,
-        "source_w3_job_sha256": criteria["inputs"]["job"]["sha256"],
-        "project_sha256": criteria["inputs"]["project"]["sha256"],
-        "manifest_sha256": criteria["inputs"]["manifest"]["sha256"],
-        "julia_archive_sha256": JULIA_SHA256,
-        "runner_sha256": runner_sha,
-        "criteria_sidecar_sha256": sidecar_sha,
-        "dataset_id": DATASET_ID,
-        "dataset_manifest_sha256": dataset_manifest_sha,
-    }
-    if any(report["source_identity"].get(key) != value for key, value in expected_identity.items()):
-        raise RuntimeError("Julia diagnostic output source identity differs from runner inputs")
-    if report["input_identity"].get("canonical_state_sha256") != criteria["geometry"]["state_sha256"]:
-        raise RuntimeError("Julia diagnostic output canonical state identity mismatch")
-    report["runtime_identity"]["observed_gpu_inventory"] = gpu_rows
-    report["runtime_identity"]["selected_gpu_uuid"] = selected_uuid
-    report["runtime_identity"]["nvidia_driver_version"] = gpu_rows[0].split(",")[-1].strip()
-    write_json(OUT / "runtime_identity.json", report["runtime_identity"])
-    run_owner_lifetime_arms(julia, project, source, raw_phi_path, env, runner_sha,
-                            owner_criteria_sha, owner_criteria_sidecar_sha)
+        report_path = OUT / "w3_v16_cuda_diagnostic.json"
+        lattice_path = OUT / "v16_flow_lattice.csv"
+        if not report_path.is_file() or not lattice_path.is_file():
+            raise RuntimeError("Julia diagnostic outputs are incomplete")
+        report = json.loads(report_path.read_text())
+        expected_identity = {
+            "criteria_sha256": criteria_sha,
+            "w3_source_commit": W3_SOURCE_COMMIT,
+            "diagnostic_source_commit": DIAGNOSTIC_SOURCE_COMMIT,
+            "diagnostic_job_sha256": DIAGNOSTIC_JOB_SHA256,
+            "source_w3_job_sha256": criteria["inputs"]["job"]["sha256"],
+            "project_sha256": criteria["inputs"]["project"]["sha256"],
+            "manifest_sha256": criteria["inputs"]["manifest"]["sha256"],
+            "julia_archive_sha256": JULIA_SHA256,
+            "runner_sha256": runner_sha,
+            "criteria_sidecar_sha256": sidecar_sha,
+            "dataset_id": DATASET_ID,
+            "dataset_manifest_sha256": dataset_manifest_sha,
+        }
+        if any(report["source_identity"].get(key) != value for key, value in expected_identity.items()):
+            raise RuntimeError("Julia diagnostic output source identity differs from runner inputs")
+        if report["input_identity"].get("canonical_state_sha256") != criteria["geometry"]["state_sha256"]:
+            raise RuntimeError("Julia diagnostic output canonical state identity mismatch")
+        report["runtime_identity"]["observed_gpu_inventory"] = gpu_rows
+        report["runtime_identity"]["selected_gpu_uuid"] = selected_uuid
+        report["runtime_identity"]["nvidia_driver_version"] = gpu_rows[0].split(",")[-1].strip()
+        write_json(OUT / "runtime_identity.json", report["runtime_identity"])
+        run_owner_lifetime_arms(julia, project, source, raw_phi_path, env, runner_sha,
+                                owner_criteria_sha, owner_criteria_sidecar_sha)
+        # The Julia executable and fetched project live in this temporary
+        # directory, so all arm subprocesses must finish before it is removed.
     manifest = {
         path.name: sha256(path) for path in sorted(OUT.iterdir())
         if path.is_file() and path.name not in {"sha256.json", "DONE"}

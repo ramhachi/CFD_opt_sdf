@@ -393,7 +393,8 @@ def checkout_job_identity(folder: Path) -> tuple[str, str] | None:
 
 def verify_report(report: dict, criteria: dict, criteria_sha: str,
                   dataset_dir: Path, runner_sha: str, fingerprint: dict,
-                  runtime_observed: dict) -> dict[str, object]:
+                  runtime_observed: dict,
+                  runner_path: Path = DIAGNOSTIC_RUNNER) -> dict[str, object]:
     require(report.get("evidence_type") == "diagnostic_only"
             and report.get("qualification_evidence") is False,
             "CUDA output incorrectly claims qualification")
@@ -466,8 +467,7 @@ def verify_report(report: dict, criteria: dict, criteria_sha: str,
     }
     for key, value in required_fingerprint.items():
         require(fingerprint.get(key) == value, f"diagnostic fingerprint mismatch: {key}")
-    diagnostic_commit = DIAGNOSTIC_RUNNER.read_text().split(
-        'DIAGNOSTIC_SOURCE_COMMIT = "', 1)[1].split('"', 1)[0]
+    diagnostic_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT", runner_path)
     require(identity.get("diagnostic_source_commit") == diagnostic_commit,
         "diagnostic source commit mismatch")
     source_job = subprocess.check_output(
@@ -631,14 +631,15 @@ def verify_force_snapshots(report: dict) -> dict[str, object]:
     return result
 
 
-def _runner_pin(name: str) -> str:
+def _runner_pin(name: str, runner_path: Path = DIAGNOSTIC_RUNNER) -> str:
     match = re.search(rf'^{re.escape(name)} = "([^"]+)"$',
-                      DIAGNOSTIC_RUNNER.read_text(), re.MULTILINE)
+                      runner_path.read_text(), re.MULTILINE)
     require(match is not None, f"diagnostic runner pin missing: {name}")
     return match.group(1)
 
 
-def load_owner_lifetime_criteria() -> tuple[dict, str, str]:
+def load_owner_lifetime_criteria(
+        runner_path: Path = DIAGNOSTIC_RUNNER) -> tuple[dict, str, str]:
     sidecar = OWNER_LIFETIME_CRITERIA_PATH.with_suffix(
         OWNER_LIFETIME_CRITERIA_PATH.suffix + ".sha256")
     require(OWNER_LIFETIME_CRITERIA_PATH.is_file() and sidecar.is_file(),
@@ -650,8 +651,8 @@ def load_owner_lifetime_criteria() -> tuple[dict, str, str]:
     require(criteria.get("immutable") is True
             and criteria.get("registered_before_computation") is True,
             "owner-lifetime criteria are not immutable preregistration")
-    source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT")
-    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256")
+    source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT", runner_path)
+    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256", runner_path)
     require(criteria["inputs"]["owner_lifetime_job"]["sha256"] == expected_job_sha,
             "owner-lifetime criteria/runner job pin mismatch")
     require(criteria["inputs"]["w3_criteria_sha256"] == EXPECTED_CRITERIA_SHA256,
@@ -996,17 +997,18 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
                                      base_report: dict | None, fingerprint: dict,
                                      runtime_observed: dict, w3_criteria: dict,
                                      w3_criteria_sha: str, dataset_dir: Path,
-                                     phi: np.ndarray, lattice: dict | None) -> dict:
-    criteria, criteria_sha, criteria_sidecar_sha = load_owner_lifetime_criteria()
+                                     phi: np.ndarray, lattice: dict | None,
+                                     runner_path: Path = DIAGNOSTIC_RUNNER) -> dict:
+    criteria, criteria_sha, criteria_sidecar_sha = load_owner_lifetime_criteria(runner_path)
     execution_path = folder / "owner_lifetime_execution.json"
     if not execution_path.is_file():
         return {
             "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
             "criteria_sha256": criteria_sha,
             "criteria_sidecar_sha256": criteria_sidecar_sha,
-            "source_commit": _runner_pin("DIAGNOSTIC_SOURCE_COMMIT"),
-            "julia_job_sha256": _runner_pin("OWNER_LIFETIME_JOB_SHA256"),
-            "kernel_runner_sha256": sha256(DIAGNOSTIC_RUNNER),
+            "source_commit": _runner_pin("DIAGNOSTIC_SOURCE_COMMIT", runner_path),
+            "julia_job_sha256": _runner_pin("OWNER_LIFETIME_JOB_SHA256", runner_path),
+            "kernel_runner_sha256": sha256(runner_path),
             "host_verifier_sha256": sha256(Path(__file__)),
             "execution_status": "not_reached",
             "arms": {},
@@ -1019,9 +1021,9 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
             "claim_scope": criteria["claim_scope"],
         }
     execution = json.loads(execution_path.read_text())
-    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256")
-    expected_source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT")
-    runner_sha = sha256(DIAGNOSTIC_RUNNER)
+    expected_job_sha = _runner_pin("OWNER_LIFETIME_JOB_SHA256", runner_path)
+    expected_source_commit = _runner_pin("DIAGNOSTIC_SOURCE_COMMIT", runner_path)
+    runner_sha = sha256(runner_path)
     expected_execution = {
         "criteria_path": str(OWNER_LIFETIME_CRITERIA_PATH.relative_to(ROOT)),
         "criteria_sha256": criteria_sha,
@@ -1130,7 +1132,7 @@ def verify_owner_lifetime_experiment(folder: Path, manifest: dict,
                     and identity.get("owner_criteria_sidecar_sha256") == criteria_sidecar_sha
                     and identity.get("owner_job_sha256") == expected_job_sha
                     and identity.get("diagnostic_source_commit") == expected_source_commit
-                    and identity.get("diagnostic_job_sha256") == _runner_pin("DIAGNOSTIC_JOB_SHA256")
+                    and identity.get("diagnostic_job_sha256") == _runner_pin("DIAGNOSTIC_JOB_SHA256", runner_path)
                     and identity.get("source_w3_job_sha256") == w3_criteria["inputs"]["job"]["sha256"]
                     and identity.get("project_sha256") == w3_criteria["inputs"]["project"]["sha256"]
                     and identity.get("manifest_sha256") == w3_criteria["inputs"]["manifest"]["sha256"]
@@ -1332,6 +1334,12 @@ def classify_failure(folder: Path, progress: dict,
         failed_stage = "owner-lifetime diagnostic arm process or identity"
         failure_class = "owner_lifetime_arm_unexpected_failure"
         exception_text = wrapper_error or exception_text
+    elif ("run_owner_lifetime_arms" in wrapper_error
+          and "FileNotFoundError" in wrapper_error
+          and "julia-1.12.6/bin/julia" in wrapper_error):
+        failed_stage = "owner-lifetime arm Julia process launch before A"
+        failure_class = "owner_lifetime_runner_workspace_expired"
+        exception_text = wrapper_error
     elif "compare_rows" in julia_log and "UndefVarError" in julia_log:
         failed_stage = "representative_probe_cpu_cuda_comparison"
         failure_class = "julia_diagnostic_float_literal_bug"
@@ -1431,7 +1439,9 @@ def classify_failure(folder: Path, progress: dict,
 
 def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
                    kernel_status: str, kaggle_log: Path,
-                   kaggle_status_file: Path) -> dict[str, object]:
+                   kaggle_status_file: Path,
+                   kernel_runner: Path = DIAGNOSTIC_RUNNER) -> dict[str, object]:
+    kernel_runner = kernel_runner.resolve()
     criteria, criteria_sha = load_criteria()
     folder = locate_stage(output_dir)
     output_manifest, output_manifest_sha, output_status = verify_output_files(folder)
@@ -1442,7 +1452,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "last_completed_stage": "input_or_runtime_setup_before_julia_checkpoint"
     }
     report = json.loads(report_path.read_text()) if report_path.is_file() else None
-    runner_sha = sha256(DIAGNOSTIC_RUNNER)
+    runner_sha = sha256(kernel_runner)
     fingerprint_path = folder / "fingerprint.json"
     runtime_path = folder / "runtime_identity.json"
     fingerprint = json.loads(fingerprint_path.read_text()) if fingerprint_path.is_file() else {}
@@ -1472,7 +1482,8 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         require(sha256(smoke_path) == fingerprint.get("cuda_smoke_sha256"),
                 "CUDA smoke log differs from partial diagnostic fingerprint")
     source_identity = (verify_report(report, criteria, criteria_sha, dataset_dir,
-                                     runner_sha, fingerprint, runtime_observed)
+                                     runner_sha, fingerprint, runtime_observed,
+                                     kernel_runner)
                        if report else verify_partial_fingerprint(
                            fingerprint, criteria, criteria_sha, dataset_dir,
                            runner_sha, checkout_identity))
@@ -1536,7 +1547,7 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         }
     owner_lifetime = verify_owner_lifetime_experiment(
         folder, output_manifest, report, fingerprint, runtime_observed,
-        criteria, criteria_sha, dataset_dir, phi, lattice)
+        criteria, criteria_sha, dataset_dir, phi, lattice, kernel_runner)
     require(kernel_version > 0, "Kaggle kernel version must be positive")
     normalized_status = kernel_status.upper()
     require(normalized_status.endswith("COMPLETE") or normalized_status.endswith("ERROR"),
@@ -1563,6 +1574,8 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "diagnostic_source_commit": diagnostic_source_commit,
         "diagnostic_job_sha256": diagnostic_job_sha,
         "kernel_runner_sha256": runner_sha,
+        "kernel_runner_source_path": str(kernel_runner.relative_to(ROOT))
+        if kernel_runner.is_relative_to(ROOT) else str(kernel_runner),
         "julia_job_sha256": diagnostic_job_sha,
         "host_verifier_sha256": sha256(Path(__file__)),
         "input_dataset_id": EXPECTED_W3_DATASET_ID,
@@ -1583,8 +1596,8 @@ def build_evidence(output_dir: Path, dataset_dir: Path, *, kernel_version: int,
         "base_diagnostic_complete": base_complete,
         "owner_lifetime_diagnostic_complete": owner_complete,
         "diagnostic_complete": complete,
-        "host_artifact_verification_passed": bool(source_identity and output_manifest
-                                                  and owner_complete),
+        "host_artifact_verification_passed": bool(source_identity and output_manifest),
+        "owner_lifetime_host_verification_passed": owner_complete,
         "source_identity_verification": source_identity,
         "partial_source_checkout_verification": {
             "diagnostic_source_commit": checkout_identity[0],
@@ -1619,13 +1632,16 @@ def main() -> None:
     parser.add_argument("--kernel-status", required=True)
     parser.add_argument("--kaggle-log", required=True, type=Path)
     parser.add_argument("--kaggle-status-file", required=True, type=Path)
+    parser.add_argument("--kernel-runner", type=Path, default=DIAGNOSTIC_RUNNER,
+                        help="exact runner source uploaded for this kernel version")
     parser.add_argument("--evidence", type=Path)
     args = parser.parse_args()
     evidence = build_evidence(args.output_dir, args.dataset_dir,
                               kernel_version=args.kernel_version,
                               kernel_status=args.kernel_status,
                               kaggle_log=args.kaggle_log,
-                              kaggle_status_file=args.kaggle_status_file)
+                              kaggle_status_file=args.kaggle_status_file,
+                              kernel_runner=args.kernel_runner)
     target = args.evidence or (ROOT / "docs/evidence" /
         f"kaggle_w3_v16_cuda_diagnostic_version{args.kernel_version}_2026_09.json")
     sidecar = target.with_suffix(target.suffix + ".sha256")

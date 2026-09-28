@@ -410,6 +410,31 @@ def test_owner_arm_failure_classification_separates_b_hazard_from_bootstrap_erro
     assert retained_crash["acceptable"] is False
 
 
+def test_owner_runner_workspace_expiry_is_distinguished_from_julia_failure(tmp_path):
+    folder = tmp_path / "w3_v16_cuda_diagnostic"
+    folder.mkdir()
+    (folder / "w3_cuda_diagnostic.log").write_text(
+        "W3_V16_CUDA_DIAGNOSTIC_DONE solver_steps_v16=1\n")
+    wrapper_error = (
+        "Traceback (most recent call last):\n"
+        "  File \"/kaggle/src/script.py\", in run_owner_lifetime_arms\n"
+        "FileNotFoundError: [Errno 2] No such file or directory: "
+        "'/tmp/w3/julia-1.12.6/bin/julia'\n"
+    )
+    (folder / "ERROR.txt").write_text(wrapper_error)
+
+    result = host.classify_failure(
+        folder,
+        {"last_completed_stage": "diagnostic_report_written"},
+        {"v16_one_step_reproducer": {"cuda_solver_steps": 1}},
+    )
+
+    assert result["failed_stage"] == "owner-lifetime arm Julia process launch before A"
+    assert result["failure_class"] == "owner_lifetime_runner_workspace_expired"
+    assert result["solver_started"] is True
+    assert result["exact_exception"] == wrapper_error
+
+
 def test_owner_probe_world_to_flow_mapping_and_append_only_evidence_guard(tmp_path):
     criteria, _, _ = host.load_owner_lifetime_criteria()
     origin = np.asarray(criteria["fixture"]["flow_origin_m"], dtype=np.float32)

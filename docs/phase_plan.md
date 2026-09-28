@@ -3101,6 +3101,69 @@ No force sign, threshold, measurement, or qualification state changed. The
 owner-lifetime hypothesis remains unconfirmed and the next minimum test stays
 the retained-versus-forced-GC T4 A/B described above.
 
+### 2026-09-28 owner-lifetime diagnostic kernel version 4: runner workspace error
+
+This entry supersedes the preceding `RUNNING` checkpoint for exact kernel
+version 4. It preserves both that version's original evidence and a
+host-verification correction; neither is a W3 or owner-lifetime pass.
+
+- **Implemented:** version 4 successfully passed dataset/input identity,
+  Julia 1.12.6 package setup, CUDA smoke, T4 inventory, canonical SDF device
+  round-trip, CPU/CUDA geometry scan, and the existing one-step W3 diagnostic.
+  The owner-lifetime A/C/B process sequence did not start. `run_owner_lifetime_arms`
+  attempted to launch A only after leaving the `TemporaryDirectory` that held
+  Julia and the fetched project. A minimal runner correction now keeps base
+  output validation and all four arm subprocesses within that directory's
+  lifetime. The host verifier accepts an explicit exact-version runner source
+  and distinguishes this wrapper failure from Julia/WaterLily failures.
+- **Registered:** round-2 owner criteria remain byte-identical and unchanged:
+  SHA-256
+  `8530e084ed33807b67b175f2234266cae34f74ccf510ea31130a199f30a0bec9`.
+  The v4 failure occurred before any owner arm measurement, so no owner
+  observation or acceptance threshold was changed.
+- **Submitted:** private kernel
+  `ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic/4` reached
+  `KernelWorkerStatus.ERROR`. T4 identity was 2 × Tesla T4, selected UUID
+  `GPU-7685ef41-8af8-4f82-39ba-0609f744d9ba`, Julia 1.12.6, CUDA.jl 6.3.1,
+  runtime 12.8.0, driver API 13.3.0, and WaterLily 1.8.0.
+- **Measured:** the separate base diagnostic completed one v16 CUDA step at
+  `t=0.015625`; its projected candidate drag was `3485.132996` solver units
+  after that step. This reproduces a tiny one-step observation only. Owner A
+  was not spawned, so owner solver steps are zero and there are no A/C/B
+  geometry, field, force, GC, or normal-comparison measurements.
+- **Verified:** the first append-only record is
+  [`version 4 diagnostic`](evidence/kaggle_w3_v16_cuda_diagnostic_version4_2026_09.json),
+  SHA-256
+  `c3bf3b4e64503996cde1e138d56dbe448b0fccef03cbe945d687f9c653a54480`.
+  Its correction is
+  [`version 4 runner correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json),
+  SHA-256
+  `5928c8388ae455376a1ed055802f86b4a307ccf238b05acc0e8201b104d6766c`.
+  The correction verified source/input/backend identity and the complete
+  output manifest, then classified the exact exception as
+  `owner_lifetime_runner_workspace_expired` at Julia process launch before A.
+  Kaggle log SHA-256 is
+  `cb474ff4890348dd2f15de7d2a7506c5b127030f838b0416e4868642948d8862`,
+  status SHA-256 is
+  `b0fc55f87e13b86a9fb93993640d490630b7ee3606d09b5f4ef2970e757344c7`,
+  output SHA-manifest SHA-256 is
+  `a2984ba02b056999b1a73bc3ec26ac835d14db91acb7dd9fe1644987cf4f8488`, and
+  `ERROR.txt` SHA-256 is
+  `f3dc9101d5880c49027a197e9d330befb4a5f6cd34f94e67846dfceed2127575`.
+  The exact uploaded v4 runner is recovered from commit `6fe9752` and has SHA-256
+  `609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`.
+  The overall owner diagnostic is incomplete and its hypothesis remains
+  unresolved.
+- **Qualified:** nothing. W3 v4 remains failed/unqualified; no W3 gate,
+  physical profile, grid response, gradient, reverse, topology, optimizer, or
+  shape-update status changed. The v4 one-step sample does not establish a
+  cause for the full W3 v4 all-zero force history.
+- **Open:** submit a new diagnostic kernel version with only the workspace
+  lifetime correction and the host verifier update. Reuse the unchanged
+  registered owner criteria, then retrieve exact logs/output and verify the
+  A/C controls plus both B collection brackets. No production fix or new W3
+  qualification run is authorized by version 4.
+
 ### 2026-09-28 diagnostic-only CUDA owner-lifetime A/B/C round 2 prepared
 
 This controlled implementation diagnostic follows the exact W3 round-3

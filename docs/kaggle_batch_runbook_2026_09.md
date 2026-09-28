@@ -1362,3 +1362,57 @@ post-GC divergence classes. WeakRef clearing, a CUDA error, or nonzero force
 alone does not support the hypothesis. Append the result to a new evidence
 path; never replace round-1 criteria, round-2 criteria, or earlier Kaggle
 version evidence.
+
+### Exact version 4 terminal error and host-verification correction
+
+Exact version 4 returned `KernelWorkerStatus.ERROR`. Retrieve results as
+above; captured local files are under
+`work/kaggle_w3_v16_cuda_owner_lifetime_version4/`. Kaggle's
+`kernels pull .../4` request returned HTTP 403, so the version-specific runner
+was reconstructed from the commit that had been pushed immediately before
+submission:
+
+```bash
+git show 6fe9752:infra/kaggle/kernel_w3_cuda_diagnostic/runner.py \
+  > work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py
+shasum -a 256 work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py
+```
+
+The runner hash is
+`609a86f40424a83ab4ed870d1fe2c321c9c0994ff5e27077e821c01457f36378`, matching
+the immutable `fingerprint.json` downloaded from version 4. Pass this exact
+runner file to the host verifier when re-verifying the historical version;
+the current runner will change for the corrected retry:
+
+```bash
+PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python \
+  scripts/verify_kaggle_w3_v16_cuda_diagnostic.py \
+  work/kaggle_w3_v16_cuda_owner_lifetime_version4 \
+  --dataset-dir work/kaggle_w3_v16_dataset_round3 \
+  --kernel-version 4 \
+  --kernel-status KernelWorkerStatus.ERROR \
+  --kaggle-status-file work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle_status.txt \
+  --kaggle-log work/kaggle_w3_v16_cuda_owner_lifetime_version4/kaggle.log \
+  --kernel-runner work/kaggle_w3_v16_cuda_owner_lifetime_version4/kernel_source/runner.py \
+  --evidence docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json
+```
+
+The exact terminal evidence is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_2026_09.json` and its
+append-only classification/verification correction is
+`docs/evidence/kaggle_w3_v16_cuda_diagnostic_version4_runner_correction_2026_09.json`.
+Exact status/log/output-manifest/`ERROR.txt` hashes are recorded in the
+correction evidence. Input, source, runtime, device round-trip, full base flow
+lattice, and base one-step artifacts verify. The error happened in the wrapper
+when it tried to spawn owner arm A after the Julia binary's temporary directory
+had already been removed. Thus base v16 CUDA diagnostic reached one step, but
+the owner experiment reached zero arms; this is neither an owner-lifetime
+observation nor evidence against the hypothesis.
+
+The retry runner now validates the base output and runs A/C/B1/B2 before
+leaving the Julia `TemporaryDirectory`. The error-classification test also
+checks the exact missing-executable failure. The owner criteria round 2,
+fixture, tolerances, and arm procedure stay unchanged because version 4 did
+not launch an owner arm or produce an owner measurement. Use the exact new
+kernel version and current runner hash for the retry, preserving version 4 and
+both version-4 evidence files unchanged.
