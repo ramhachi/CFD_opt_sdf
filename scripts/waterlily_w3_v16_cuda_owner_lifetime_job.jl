@@ -101,9 +101,17 @@ function representative_probes(grid)
     phi = grid.phi
     solid_idx = CartesianIndices(phi)[argmin(vec(phi))]
     surface_idx = CartesianIndices(phi)[argmin(abs.(vec(phi)))]
-    positive_idx = findfirst(value -> value > 0.0f0, phi)
-    positive_idx === nothing && error("canonical phi has no positive sample")
-    positive_ci = CartesianIndices(phi)[positive_idx]
+    positive_linear = 0
+    positive_value = Inf32
+    for linear_index in eachindex(phi)
+        value = phi[linear_index]
+        if 0.0f0 < value < positive_value
+            positive_value = value
+            positive_linear = linear_index
+        end
+    end
+    positive_linear > 0 || error("canonical phi has no positive sample")
+    positive_ci = CartesianIndices(phi)[positive_linear]
     world(index) = ntuple(axis -> Float32(grid.origin[axis] + (index[axis] - 1) * grid.h[axis]), 3)
     return [
         ("candidate_solid_min_phi", world(solid_idx)),
