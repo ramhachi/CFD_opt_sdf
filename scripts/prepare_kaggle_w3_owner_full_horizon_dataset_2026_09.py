@@ -9,6 +9,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+DATASET_TITLE = "W3 Owner Full Horizon Diagnostic"
 
 
 def sha256(path: Path) -> str:
@@ -68,7 +69,7 @@ def stage(criteria_path: Path, output_dir: Path) -> dict:
         checked_copy(source, output_dir / name, digest)
     (output_dir / "dataset-metadata.json").write_text(json.dumps({
         "id": dataset_id,
-        "title": f"CFD Opt SDF W3 Owner Full Horizon Diagnostic Criteria {criteria.get('round', 1)}",
+        "title": DATASET_TITLE,
         "licenses": [{"name": "other"}],
     }, indent=2, sort_keys=True) + "\n")
     manifest = {

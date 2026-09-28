@@ -150,3 +150,15 @@ def test_runner_enforces_per_arm_and_kernel_time_limits():
         assert "budget is exhausted" in str(error)
     else:
         raise AssertionError("exhausted kernel budget was accepted")
+
+
+def test_dataset_title_stays_within_kaggle_metadata_limit(tmp_path: Path):
+    import json
+    import runpy
+
+    prepare = runpy.run_path(str(ROOT / "scripts/prepare_kaggle_w3_owner_full_horizon_dataset_2026_09.py"))
+    criteria_path = ROOT / "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09.json"
+    manifest = prepare["stage"](criteria_path, tmp_path / "dataset")
+    metadata = json.loads((tmp_path / "dataset/dataset-metadata.json").read_text())
+    assert len(metadata["title"]) <= 50
+    assert manifest["dataset_id"] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
