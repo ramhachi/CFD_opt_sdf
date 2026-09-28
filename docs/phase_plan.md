@@ -1,66 +1,61 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-22
+Date: 2026-09-28
 Status: authoritative
-Scope: generic rigid-object external aerodynamics with topology change
-Architecture decision: adopted on 2026-09-09
+Scope: generic rigid-object aerodynamic topology and shape optimization
+Architecture decision: SDF-native production research direction adopted on 2026-09-26
 
 This is the only implementation roadmap for the project. Historical
-body-fitted, parametric, and front-wing-specific work is capability evidence,
-not a second development plan. The front wing remains the final complex
-benchmark; it does not define the product architecture.
+density/Brinkman, B-spline, body-fitted, and front-wing-specific work is
+retained capability and evidence context, not a second development plan. The
+front wing remains a later complex benchmark; it does not define the product
+architecture.
 
-## September 2026 cross-platform implementation
+## Current SDF-native production research direction
 
-The accepted [32 GB development design](development_plan_2026_09.md) and
-[critical architecture review](architecture_review_2026_09.md) specify the
-Mac/Windows extension. This page remains the authoritative progress record.
-The existing G1–G4 gates below remain mandatory; the P0–P5 milestones in the
-design are work packages, not substitutes for those gates.
+The current design state is a bounded Cartesian signed-distance field `phi`.
+The WaterLily immersed-boundary fixed-grid solver is being qualified as a
+candidate low-cost primal and optimization oracle. Body-fitted OpenFOAM remains
+the independent Stage V verifier. The old Stage T/S/V work and its evidence are
+preserved, but the density-to-iso-surface-to-B-spline sequence is no longer the
+production optimization route.
 
-The project adopts this architecture as its production direction: one shared
-ProblemSpec and evidence contract, density/Brinkman topology exploration, SDF
-sharp-interface refinement, and independent body-fitted verification. Backend
-promotion remains conditional on the numerical and physical gates below. In
-particular, adopting the architecture does not promote the current periodic
-LBM probe to a target-aerodynamics solver.
+The earlier [32 GB development design](development_plan_2026_09.md) and
+[cross-platform architecture review](architecture_review_2026_09.md) remain
+supporting history. Their CPU/Metal D2Q9 Taylor–Green probe has no aerodynamic
+walls, force integration, SDF coupling, adjoint, or 3D support, and is not part
+of the current production solver path.
 
-The `main` snapshot immediately before this decision is preserved as
-`artifact/pre-cross-platform-architecture-2026-09-09` at commit `fdc1053`.
+Kaggle is an execution substrate for reproducible T4 batch runs, exact
+source/runtime binding, and evidence capture. Colab-to-Kaggle migration is an
+infrastructure decision; Kaggle is not a solver or optimizer component in the
+architecture below. Operational details are in
+[`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md).
 
-The first implementation adds bounded `research` commands for runtime
-inspection, STL/declared-feature preflight, and a periodic D2Q9 Taylor–Green
-reference with an optional Apple Silicon Metal backend. These are P0/P1
-foundations. CPU execution is portable; Metal acceleration requires Apple
-Silicon. Windows CUDA acceleration is still pending. A working RTX 4070 Ti
-must be qualified against its separate VRAM budget, not 32 GB host RAM.
-
-The geometry preflight checks only its explicitly listed subset. Periodic
-LBM has no wall treatment, force integration, SDF coupling, adjoint, or 3D
-support. Neither its passing benchmark nor a successful OpenFOAM process
-qualifies target aerodynamics or a complete optimization pipeline.
-
-The current execution order is maintained only in [section 11](#11-immediate-execution-order).
-The early cross-platform steps above remain product-level gates; they do not
-override the measured PQ0/PQ1 state or the next issue-driven slice.
-
-See [cross-platform commands and evidence](cross_platform_research.md).
+The current gate order is maintained only in
+[section 11](#11-current-sdf-native-execution-order). Older plans linked from
+this page are subordinate historical context and do not replace that order.
 
 ## 1. Product objective
 
-Build a configuration-driven optimizer that can add, remove, join, and split
-material inside a bounded design domain for an arbitrary STL-defined rigid
-object, subject to aerodynamic, geometric, connectivity, and manufacturing
-constraints.
+Build a configuration-driven optimizer for an arbitrary rigid object whose
+canonical design state is a bounded Cartesian SDF `phi`. It must support
+material addition and removal, merging and splitting components, and shape
+refinement under aerodynamic, geometric, connectivity, and manufacturing
+constraints. Continuous SDF deformation does not by itself create a detached
+new solid; topology birth therefore requires an explicit nucleation or other
+birth mechanism, which remains a separate unqualified research slot.
 
 The first supported product profile is deliberately bounded:
 
 - incompressible low-Mach external flow;
 - steady or quasi-steady analysis;
 - one rigid material;
-- STL-only geometry roles;
-- uniform Cartesian fixed-grid topology optimization;
-- SDF extraction/refinement followed by body-fitted verification.
+- STL geometry roles for exchange and verification;
+- bounded Cartesian SDF design state;
+- immersed-boundary fixed-grid primal and qualified gradient path;
+- geometry, connectivity, and manufacturing hard gates;
+- independent body-fitted verification.
 
 Compressible flow, fully unsteady flow, fluid-structure interaction, free
 surfaces, and production AMR are future capability profiles.
@@ -72,27 +67,53 @@ ProblemSpec v2
   geometry roles + flow cases + responses + constraints + topology policy
         |
         v
-Geometry and resolution preflight
+Geometry / domain / resolution preflight
         |
         v
-OpenFOAM case compilation + requested/generated manifest
+Canonical Cartesian SDF phi
         |
         v
-Stage T: fixed-grid density/Brinkman topology optimization
+WaterLily immersed-boundary fixed-grid primal (candidate)
         |
         v
-Density iso-surface -> SDF rebuild
+Primal and grid/domain numerical qualification
         |
         v
-Stage S: sharp-interface SDF refinement
+Centered finite-difference gradient oracle
         |
         v
-Stage V: body-fitted RANS verification
+Qualified production gradient backend
+  (reverse AD / discrete adjoint / other method; decision pending)
+        |
+        v
+Constrained SDF update
+        |
+        v
+Explicit topology birth / nucleation when required
+        |
+        v
+SDF reinitialization + geometry / connectivity / manufacturing hard gates
+        |
+        v
+Independent body-fitted OpenFOAM Stage V verification
 ```
 
-The Stage T design variable is the cell density field `rho`. STL is an input
-surface or a derived exchange/verification artifact; it is not the main
-topology design variable.
+The canonical optimization variable is SDF `phi` (`phi < 0` is solid,
+`phi > 0` is fluid). STL and body-fitted meshes are derived artifacts for
+exchange, geometry checks, or independent verification. The SDF volume
+contract is registered; optimizer-side enforcement is still pending.
+
+The explicit topology-birth slot may use a topological derivative, nucleation
+operator, a retained density/Brinkman proposer, or another explicit birth
+operator. No candidate has been selected or qualified. A topology policy that
+defines disconnected-component and root-connectivity rules is required before
+Birth-0.
+
+WaterLily remains in qualification. Centered FD is the permanent independent
+numerical gradient oracle; it is not the production gradient backend. Reverse
+AD, discrete adjoint, and other gradient methods remain candidates until
+qualified against that oracle. A WaterLily scratch reverse experiment is not
+an adoption decision.
 
 ## 3. Evidence rules
 
@@ -111,6 +132,29 @@ validation. An `execution_ready` ProblemSpec means the declarations are
 complete; it does not mean the mesh, fields, solver, or result are qualified.
 
 ## 4. Current position
+
+| Workstream | Current status | Evidence scope / next gate |
+| --- | --- | --- |
+| Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
+| WaterLily fixed-grid primal | Candidate primal/oracle under qualification | W0/W1 and the analytic/sampled sphere capability gates have evidence. These fixtures do not qualify the v16 aerodynamic primal. |
+| W3 v16 primal | Unqualified; exact owner-lifetime diagnostic version 7 is running | The production W3 path has not passed its registered primal gates. Version 6 remains the latest measurement and is not causal evidence. Round 4 now weak-references the backing `owner.grid.phi` `CuArray`; version 7's first captured status is `RUNNING` and no round-4 GPU measurement exists. Retrieve only exact version 7's terminal status/logs/output and host-verify them before interpreting causality. |
+| W4 grid/domain sensitivity | Blocked | No W4 qualification criteria or measurement may proceed until an exact W3 result passes host verification. A draft execution shell is not W4 evidence. |
+| Centered-FD SDF gradient oracle | Blocked | Permanent independent numerical oracle; formal SDF directional-FD qualification waits for W3 and W4. |
+| Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
+| Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
+| Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
+| Geometry / connectivity / manufacturing gates | Required at every update | Genesis and adapter checks are bounded contract evidence; the complete evolving-shape gate set is not qualified. |
+| Stage V body-fitted OpenFOAM | Retained as independent verifier | The registered v16 physical profile and same-profile two-domain comparison passed for that candidate/profile. This is not grid-independent, high-Re, or full-vehicle qualification. |
+| Historical Stage T density/Brinkman | Retained capability and evidence | Not the current production optimization path. Its optimizer, artifacts, and candidate-generation research may inform a future topology-birth proposer, which is not selected. |
+| Historical Stage S / Work F | Retained derivative and geometry evidence | The B-spline/Work F route is not the current SDF production update path. |
+| Kaggle / Colab | Execution infrastructure | Used for exact-source GPU batches and evidence capture; neither is a solver or optimizer architecture component. |
+
+### Historical density/Brinkman Stage T and B-spline Stage S status snapshot (through 2026-09-25)
+
+The following table preserves the earlier Stage T/S/V status and evidence
+record. Its architecture and execution-order language is superseded by
+sections 1, 2, and 11 and the current SDF-native addenda below; its historical
+measurements and verdicts remain scoped to their original artifacts.
 
 | Workstream | Status | Current evidence and gap |
 | --- | --- | --- |
@@ -422,6 +466,12 @@ The next qualification slice is deliberately one factor at a time:
 5. resume cross-fidelity ranking only after the body-fitted downforce reference passes. No FSAE
    full-vehicle or high-Re claim inherits qualification from this laminar reduced case.
 
+> **Scope note (2026-09-28):** Sections 5–8 retain common ProblemSpec/geometry
+> contracts and earlier OpenFOAM qualification detail. OpenFOAM case compilation
+> and the G2 physical checks serve the later independent Stage V verifier; they
+> are not the current WaterLily primal or optimization path. The current W3/W4,
+> FD, gradient, update, and topology order is only in section 11.
+
 ## 5. G1 — generic problem and artifact contract
 
 Status: complete.
@@ -547,50 +597,99 @@ Generic acceptance requires at least three geometry families, three-grid
 evidence, filtered-random gradient checks, grey-density reporting,
 extracted-geometry constraint status, and reproducibility metadata.
 
-## 9. Stage T — production topology optimizer
+## 9. Retained density/Brinkman Stage T assets
 
-Begin production T work only after G2 runtime qualification and the relevant
-G3/G4 gates pass.
+Stage T density/Brinkman optimization is not the current production path. Keep
+its research results as historical capability evidence and preserve its
+candidate-generation, Python optimizer, artifact, and provenance infrastructure
+for possible reuse. A density/Brinkman method may later be evaluated as one
+candidate topology-birth proposer, but no such role or backend is currently
+selected. It is not a mandatory SDF handoff or an active execution workstream.
 
-Implementation order:
+## 10. Retained Stage S evidence and current Stage V role
 
-1. Qualify real-run semantic bindings for the implemented fail-closed native
-   v2 primal/sensitivity writer.
-2. Generic response/objective/aggregate derivative assembly.
-3. Production analytic/adjoint nominal and eroded connectivity derivatives.
-4. Filter/projection continuation with explicit chain-rule metadata.
-5. Nonlinear iteration with primal re-evaluation, acceptance/rollback, move
-   bounds, checkpoints, resume, and deterministic artifacts.
-6. GCMMA or equivalent constrained backend behind the existing optimizer
-   interface.
-7. Mesh epochs and conservative state/gradient transfer only after the uniform
-   fixed-grid profile is qualified.
+The old B-spline / Work F Stage S route is retained as historical geometry and
+derivative-qualification evidence. It is not the production SDF shape-update
+path, and its K=16 campaign remains frozen; do not resume it as the current
+optimizer.
 
-The existing projected-gradient and linearized SLSQP backends validate
-plumbing; they are not the production nonlinear optimizer.
+Body-fitted OpenFOAM Stage V remains in the production architecture as an
+independent verifier and cross-fidelity judge. It is not the optimization
+engine. Existing physical-profile and domain-comparison evidence applies only
+to its registered candidate and conditions; it does not establish
+grid-independent downforce, high-Re or full-vehicle qualification.
 
-## 10. Stage S and Stage V
+## 11. Current SDF-native execution order
 
-Stage S implementation order:
+`phase_plan.md` is the sole current roadmap and order authority. The older
+[`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
+and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
+are retained historical plans; neither controls current execution.
 
-1. Quantify density-to-surface/SDF fidelity.
-2. Use body-fitted-first refinement as the baseline.
-3. Select ghost-node IBM or cut-cell research backend only after an explicit
-   accuracy, adjoint, and implementation-cost comparison.
-4. Add Hamilton–Jacobi updates, reinitialization, curvature control, and
-   output-based adaptation.
+Current gates and immediate sequence as of 2026-09-28:
 
-Stage V acceptance requires three-grid body-fitted RANS evidence, pressure and
-skin-friction decomposition, force/moment agreement, mesh-quality checks, and
-cross-fidelity comparison with Stage T/Stage S.
+1. **Complete the W3 CUDA/full-run zero-force root-cause diagnosis.** Exact
+   owner-lifetime diagnostic version 7 runs immutable round-4 criteria against
+   the backing `owner.grid.phi` `CuArray`; its first captured status is
+   `KernelWorkerStatus.RUNNING` (status SHA-256
+   `172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`). No
+   round-4 measurement exists yet. Check only exact version 7, retrieve its
+   terminal status/logs/output to the version-bound directory, and host-verify
+   against round 4 before interpreting causality. Version 6 remains the latest
+   completed measurement and is unresolved: it weak-referenced the immutable
+   `DeviceGridSDF` wrapper rather than the backing array. Preserve round 4's
+   fixture, arms, probes, tolerances, and causal rules.
+2. **Make a production fix only after causal evidence.** Do not alter the
+   production W3 path, force convention, or thresholds based on the current
+   diagnostic alone.
+3. **Run a new immutable W3 qualification round** after the diagnosis is resolved
+   and any evidence-supported production correction is made. W3 v16 primal and
+   physical-profile qualification remain unqualified until the exact result
+   passes the host verifier.
+4. **Qualify W4 grid/domain sensitivity** using the same canonical SDF and
+   registered WaterLily profile, only after W3 PASS. W4 remains blocked and has
+   no registered qualification result.
+5. **Qualify centered-FD SDF derivatives** after W4. Centered FD is the
+   permanent independent numerical gradient oracle.
+6. **Select a production gradient backend** only after comparing candidate
+   reverse AD, discrete-adjoint, or other methods against the qualified FD
+   oracle. No production backend is selected or qualified.
+7. **Take the first constrained SDF update** only after the primal, grid/domain,
+   gradient, SDF-volume, and geometry hard gates pass.
+8. **Qualify topology birth** as a separate mechanism. Register SDFTopologyPolicy
+   v1 before Birth-0; the method (topological derivative, nucleation, a retained
+   density/Brinkman proposer, or another explicit operator) is not selected.
+9. **Run multi-step optimization** only after the one-step and topology gates
+   pass, with reinitialization and geometry/connectivity/manufacturing gates
+   applied to every accepted shape.
+10. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
+    cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
 
-## 11. Immediate execution order
+The status represented by this order is deliberately conservative:
+`waterlily_v16_primal_qualified=false`, `w4_qualified=false`,
+`sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
+`waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
+and `shape_update_allowed=false`. W0/W1/sphere fixtures are capability evidence
+only. The registered v16 Stage V profile and two-domain comparison do not imply
+grid-independent or target-vehicle downforce qualification.
 
-The adopted architecture plan is
+Kaggle and Colab provide reproducible execution, exact source/runtime binding,
+and evidence capture. They remain outside the solver/optimizer architecture.
+
+### Historical Stage T/S/V execution record (retained; not current instructions)
+
+The following dated campaign notes preserve their original reasoning and
+measurements. Their roadmap and "next step" language is historical. Use the
+current order above for all new work; do not infer a current Stage T campaign
+or old Stage S execution from this record.
+
+
+The historical Stage T/S/V architecture plan is
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md).
-The current post-PQ3.3 execution detail is
+The historical post-PQ3.3 Stage T-to-Stage S execution detail is
 [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md).
-Both retain Stage T -> Stage S -> Stage V and are subordinate to this roadmap.
+Both retain their original Stage T -> Stage S -> Stage V record; neither is
+current execution guidance. Follow the SDF-native order in section 11.
 
 Current status on 2026-09-23 (historical snapshot; the dated addenda under
 items 5--6 carry the later v12--v16, baseline v2 and Work F records):
@@ -626,7 +725,7 @@ items 5--6 carry the later v12--v16, baseline v2 and Work F records):
   preregistered domain/boundary factor remains unrun.
 - No optimizer-generated candidate has `ready_for_stage_s=true`.
 
-Execute in this order:
+Historical execution order at that snapshot (superseded; do not use as the current roadmap):
 
 1. **PQ3.3a — semantic re-materialization.** Without more CFD, reconstruct
    `rho_design`, `rho_filtered`, `rho_projection` and `beta_solver` from the
@@ -1346,18 +1445,27 @@ sharp-interface solver must not be used to bypass PQ0.1--PQ5.
 
 ## 12. Document authority
 
-- `docs/phase_plan.md`: only roadmap and status source.
+- `docs/phase_plan.md`: only current roadmap, status, and execution order.
+- `docs/problem_register_2026_09.md`: issue ledger; it does not set roadmap order.
 - `docs/problem_contract_v2.md`: authoritative user problem schema.
-- `docs/fixed_grid_data_contract_v2.md`: authoritative Stage T artifact schema.
-- `docs/fixed_grid_backend_decision.md`: selected-backend decision record.
-- `docs/downforce_optimization_architecture_plan_2026_09.md`: adopted detailed
-  downforce implementation and qualification plan, subordinate to this roadmap.
-- `docs/stage_t_to_stage_s_bridge_plan_2026_09.md`: current post-PQ3.3 bridge
-  plan and gate detail, subordinate to this roadmap.
+- `docs/fixed_grid_data_contract_v2.md`: retained Stage T artifact schema; it
+  does not define the canonical SDF design state.
+- `docs/CFD_opt_sdf_SDF_native_handoff/00_HANDOFF_MASTER.md`: frozen supporting
+  architecture rationale, subordinate to this roadmap.
+- `docs/downforce_optimization_architecture_plan_2026_09.md` and
+  `docs/stage_t_to_stage_s_bridge_plan_2026_09.md`: historical Stage T/S/V
+  plans and evidence context; neither defines current execution order.
+- `docs/kaggle_batch_runbook_2026_09.md`: execution procedure only.
 - `docs/git_branching_strategy.md`: repository workflow.
 
 If another document conflicts with this roadmap, this file wins and the
-conflicting document must be corrected or removed.
+conflicting current-status or execution-order wording must be corrected. Keep
+historical measurements, artifact interpretations, and their recorded scope.
+
+The dated sections following this authority statement preserve the chronology
+of implementation and evidence. Their local "next" notes are snapshots, not
+current instructions, when they conflict with sections 1, 2, 4, or 11. The
+current W3 owner-lifetime state is the latest dated entry below.
 
 ## 2026-09-25 physical-profile correction registered (solver-free)
 
@@ -3409,7 +3517,7 @@ qualification flag.
   same fixture, process isolation, GC procedure, force/field/geometry probes,
   tolerances and causal rules; rerun only after that immutable round is pushed.
 
-### 2026-09-28 owner-lifetime diagnostic round 4 preregistered; not submitted
+### 2026-09-28 owner-lifetime diagnostic round 4 submitted; version 7 running
 
 - **Implemented:** the diagnostic now weak-references the backing
   `owner.grid.phi` `CuArray` directly for A/C/B1/B2 and records the target path

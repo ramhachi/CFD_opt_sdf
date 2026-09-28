@@ -6,6 +6,12 @@ manifest と controlled-run outcome に保存した実測値に限定する。�
 正本は [`phase_plan.md`](phase_plan.md)、問題台帳の正本は
 [`problem_register_2026_09.md`](problem_register_2026_09.md) である。
 
+> **Snapshot note (2026-09-28):** This page preserves the September 26 state
+> and plan before the later W3 owner-lifetime diagnostics. Its Stage S/K=16
+> next steps are superseded by the SDF-native order in `phase_plan.md` §11.
+> For current W3/W4/FD/gradient/topology/shape-update status, use the roadmap
+> and its latest dated entry.
+
 ## 完了したこと
 
 v2 moving-ground/freestream physical profile の qualification を実装し、solver

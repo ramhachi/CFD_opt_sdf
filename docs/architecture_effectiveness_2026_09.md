@@ -1,5 +1,10 @@
 # 採用アーキテクチャ有効性スパイク
 
+> **状態注記（2026-09-28）:** 本書は2026-09-10時点のStage T/S/V構成を対象にした
+> historical evidence report である。ここに書かれた「採用」「次の投資先」は当時の判断を
+> 保存するもので、current architecture や実行順ではない。現在の SDF-native path と gate
+> status は [`phase_plan.md`](phase_plan.md) を参照する。
+
 実施日: 2026-09-10  
 対象 commit: `9c55edd76534ba138026bbc9bc4c49e2e21a0886`  
 判定: **アーキテクチャは研究開発方針として維持する。ただし、全体の有効性は未実証であり、production へは昇格させない。**
@@ -29,7 +34,7 @@ ProblemSpec / geometry gates
 | SDF refinement 後も body-fitted CFD で改善するか | **未実証** | sharp-interface refinement solver が未完成で、Stage T 候補と Stage V の因果も接続されていない |
 | 32GB Mac/Windowsで高速になるか | **未実証** | Mac の小規模 Docker 実行だけを確認した。Windows RTX 4070 Ti、CUDA、対象規模、peak memory、time-to-improved-feasible-design は未測定 |
 
-今回得られた肯定材料は、Stage T の局所的な数値制御に限られる。それでも、density/Brinkman をトポロジー生成に残し、SDF を形状精緻化に使い、body-fitted CFD で独立監査する責務分担を捨てる理由は生じていない。次の投資先は新しい高速ソルバではなく、現在切れている Stage T -> Stage S -> Stage V の最小実証経路である。
+今回得られた肯定材料は、Stage T の局所的な数値制御に限られる。当時の判断として、density/Brinkman をトポロジー生成に残し、SDF を形状精緻化に使い、body-fitted CFD で独立監査する責務分担を維持し、新しい高速ソルバよりも Stage T -> Stage S -> Stage V の最小実証経路を次の投資先に置いた。この提案は当時の記録であり、現在の研究方針・実行順は `phase_plan.md` に従う。
 
 ## 3. 実験条件
 

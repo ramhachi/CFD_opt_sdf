@@ -1,11 +1,19 @@
 # 問題台帳 — 2026-09-22
 
+> **状態注記（2026-09-28）:** 本台帳は問題ごとの診断と証拠範囲を保持する。
+> Stage T/S/V に関する「現在地」や blocker の記述は、それぞれの日付と候補・契約に
+> 限る歴史的 status であり、現行の architecture や実行順ではない。現在の production
+> research direction は bounded Cartesian SDF `phi` を canonical design state とする
+> SDF-native path で、W3 owner-lifetime diagnosis が未解決の immediate blocker である。
+> W4、formal FD、gradient backend、shape update、topology birth の gate status と順序は
+> [`phase_plan.md`](phase_plan.md) を参照する。P22/P23 は現行 SDF-native issue である。
+
 作業スライス単位の記録（`p0_openfoam_closed_loop_2026_09.md`、
 `stage_t_optimizer_diagnosis_2026_09.md`、`docs/evidence/*.json`）を、
 **問題単位**へ横断整理したもの。正本ロードマップは`phase_plan.md`であり、
 実行順序はそちらが決める。
 
-## 要約
+## Historical Stage T/S/V summary snapshot (2026-09-22)
 
 T→S→Vのパイプラインは実機OpenFOAMで一周し、Stage Tは初めて実設計を生成した。
 その後、DF0--DF6のcompiler、transform、受理制御、抽出、検証algebra、robust prototypeが
@@ -15,11 +23,11 @@ resume を実 OpenFOAM の bounded closed loopとして統合し、PQ3は3 accep
 Stage V downforce referenceはまだ資格化されていない。
 
 一方、**このアーキテクチャが成立する条件そのもの（安い代理モデルが、実際の optimizer
-reachable set で応答値と候補順位を十分に保存すること）は、現時点で資格化されていない。**
+reachable set で応答値と候補順位を十分に保存すること）は、2026-09-22時点で資格化されていない。**
 WP6-2 の8形状では downforce の解像可能な反転がなく、候補別bandによる再判定後も25組で
 反転0だった。P18は固定形状diagnosticとして閉じたが、production optimizerの一般的な
 裏付けには使えない。PQ1は細 source grid で Path B に進んだが5% gateは未達である。
-現在の主要blockerは、P6の残るdesign/source-grid coupling、P16のdownforce Stage V数値不確かさ、
+当時の主要blockerは、P6の残るdesign/source-grid coupling、P16のdownforce Stage V数値不確かさ、
 P19のprojected-volume/geometry-field意味論、P20のStage S entry測定である。
 
 ただし初期の否定的所見は、**未資格の参照（P12）と未収束の随伴（P13）の上に乗っていた**ため、

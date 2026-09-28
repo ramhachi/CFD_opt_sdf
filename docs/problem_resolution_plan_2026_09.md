@@ -4,6 +4,12 @@
 - 対象: `docs/problem_register_2026_09.md` で整理された P1–P10
 - 用途: 実装担当（Claudeを含む）へ渡す、具体的な修正・検証指示
 
+> **状態注記（2026-09-28）:** 本書は、旧 density/Brinkman Stage T、B-spline Stage S、
+> body-fitted Stage V 経路に関する歴史的な診断・修復記録である。現在の production
+> research roadmap は、canonical SDF `phi` と WaterLily primal qualification を中心とする
+> [`phase_plan.md`](phase_plan.md) にある。本書の当時の「現在」「次の作業」は証拠の由来を
+> 保存するために残しているが、現行 architecture や execution order を定義しない。
+
 ## 1. 結論
 
 採用済みの全体構成、すなわち

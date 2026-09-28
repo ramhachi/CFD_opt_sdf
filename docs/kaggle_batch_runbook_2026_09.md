@@ -7,6 +7,12 @@ and the numeric K0 contract is
 The existing Colab evidence remains a reference. No sampled-sphere, v16, or
 optimizer result follows from K0 or W1g alone.
 
+Kaggle is an execution substrate for reproducible GPU batches, exact
+source/runtime binding, and evidence capture. It is not a solver or optimizer
+component in the SDF-native architecture. This runbook records operational
+procedures and result history; `phase_plan.md` alone sets the current
+architecture, gate status, and execution order.
+
 K0-A–F passed on 2026-09-27. Version 1 was the GPU inventory smoke; version 2
 ran the Julia environment, analytic sphere and dual-process checks. W1g
 version 3 completed as a diagnostic, but was not accepted because the fixture
@@ -1546,7 +1552,7 @@ mapping, arms, full geometry, fields, force snapshots, GC sequence, tolerances,
 and causal decision rules. W3 v4 remains unqualified; this scratch result does
 not authorize a production ownership fix.
 
-### Owner-lifetime diagnostic round 4 preregistration
+### Owner-lifetime diagnostic round 4 submitted; version 7 running
 
 Round 4 is registered. Its immutable
 criteria file is

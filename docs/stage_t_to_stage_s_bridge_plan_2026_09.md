@@ -2,7 +2,7 @@
 
 Date: 2026-09-22
 
-Status: adopted detailed plan; `phase_plan.md` §11 に従う
+Status: historical detailed plan; current work follows `phase_plan.md` §11
 
 Evidence baseline: commit `db20610` までの登録済み実行結果
 Scope: reduced laminar downforce problem における、Stage T の終端候補作成、
@@ -12,6 +12,11 @@ Scope: reduced laminar downforce problem における、Stage T の終端候補�
 次の高コスト実行を開始する条件を固定する。ロードマップと進捗の正本は
 [`phase_plan.md`](phase_plan.md)、問題台帳は
 [`problem_register_2026_09.md`](problem_register_2026_09.md) である。
+
+> **状態注記（2026-09-28）:** 本書は density/Brinkman Stage T から旧 Stage S へ渡す
+> historical bridge 計画と evidence を保存する。SDF-native path が現在の production
+> research direction であり、Stage T → Stage S の実行順は現行計画ではない。
+> 現在の architecture、gate status、execution order は `phase_plan.md` を参照する。
 
 ## 1. 結論
 
@@ -52,7 +57,7 @@ checkpoint/resume、projected-volume inequality を一つのループで動か�
 | PQ2 | 未着手 | Stage V downforce 数値参照 | Stage T bridge と並行可能 |
 | PQ5 / PQ6 | 未着手 | 独立検証 / production・target-physics | Stage S 後 |
 
-現行の authoritative plan は PQ0–PQ6 までを定義している。ユーザー提供の進捗にある
+当時参照していた authoritative plan は PQ0–PQ6 までを定義していた。ユーザー提供の進捗にある
 `PQ7` は現行 `phase_plan.md` では未定義であるため、この計画では新しい意味を割り当てない。
 
 ## 3. 実装と実行から分かったこと

@@ -2,6 +2,12 @@
 
 Status: extraction executed; **composite Stage S entry gate = false**（discreteness が阻害）; Stage S not started。
 
+> **Status note (2026-09-28):** This is a historical Stage T-to-Stage S
+> extraction record for its registered PQ3 candidate. It preserves that
+> candidate's measured gate result; it does not define the current production
+> path or execution order. Current architecture and status are in
+> [`phase_plan.md`](phase_plan.md).
+
 > 2026-09-22 追記: 本文の途中で `ready_for_stage_s` を局所抽出判定の意味で使っていた箇所は、Codex レビュー（PQ4.0）を受けて合成判定へ修正済み。最終判定は `stage_s_entry_v1` の論理積で、現 candidate は **false**。`extraction_profile_pass` は 0.2/0.3 で true（別フィールド）。
 
 ## 実行

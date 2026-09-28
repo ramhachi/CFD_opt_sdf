@@ -1,13 +1,14 @@
 # OpenCode Handoff: CFD2026_09
 
-Status: repository-local working memory for a fresh OpenCode session
-Snapshot date: 2026-09-22
-Scope: generic rigid-object external aerodynamics with density/Brinkman topology,
-SDF handoff/refinement, and independent body-fitted verification
+Status: current repository-local working memory for a fresh session
+Snapshot date: 2026-09-28
+Scope: generic rigid-object aerodynamic topology and shape optimization with a
+canonical bounded Cartesian SDF `phi`, candidate WaterLily primal qualification,
+explicit topology-birth research, and independent body-fitted verification
 
-This document externalizes the current implementation context. It is not a
-second roadmap. Read it with the authoritative documents below; do not replace
-their decisions with this summary.
+This document summarizes the current implementation context. It is not a
+second roadmap. `phase_plan.md` is the sole authority for current status and
+execution order. Older Stage T/S/V material below is retained evidence context.
 
 ## Read Order and Authority
 
@@ -15,24 +16,103 @@ For a fresh terminal, read in this order:
 
 1. [`../AGENTS.md`](../AGENTS.md) for repository-local OpenCode rules.
 2. [`README.md`](README.md) for the documentation map and compatibility policy.
-3. [`phase_plan.md`](phase_plan.md) for the sole roadmap, status, and execution order.
-4. [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md) for the current post-PQ3.3 execution detail.
-5. [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md) for the adopted detailed downforce architecture.
-6. [`problem_register_2026_09.md`](problem_register_2026_09.md) for the P1-P20 issue ledger and artifact semantics.
-7. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md) for detailed implementation slices and older resolution instructions.
-8. [`problem_contract_v2.md`](problem_contract_v2.md) and [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) for schemas.
+3. [`phase_plan.md`](phase_plan.md) for the sole current roadmap, status, and execution order.
+4. [`CFD_opt_sdf_SDF_native_handoff/00_HANDOFF_MASTER.md`](CFD_opt_sdf_SDF_native_handoff/00_HANDOFF_MASTER.md) for frozen supporting SDF-native architecture rationale.
+5. [`problem_register_2026_09.md`](problem_register_2026_09.md) for the issue ledger, including P22/P23.
+6. [`problem_contract_v2.md`](problem_contract_v2.md) and [`fixed_grid_data_contract_v2.md`](fixed_grid_data_contract_v2.md) for ProblemSpec and retained Stage T artifact semantics.
+7. [`colab_t4_batch_worker_plan_2026_09_26.md`](colab_t4_batch_worker_plan_2026_09_26.md) and [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for GPU execution infrastructure and operations.
+8. [`problem_resolution_plan_2026_09.md`](problem_resolution_plan_2026_09.md), [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md), and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md) for historical Stage T/S/V diagnoses and evidence, not current instructions.
 9. [`git_branching_strategy.md`](git_branching_strategy.md) for branch workflow.
 
 The authority split is intentional:
 
-- `docs/phase_plan.md` remains the sole roadmap, status, and execution-order authority.
-- `docs/problem_register_2026_09.md` remains the issue ledger, including P1-P20 and the measured contradictions.
-- `docs/problem_resolution_plan_2026_09.md` is a detailed implementation record, subordinate to the latest phase-plan order.
+- `docs/phase_plan.md` is the sole current roadmap, status, and execution-order authority.
+- `docs/problem_register_2026_09.md` is the issue ledger, including the measured contradictions and SDF issues P22/P23.
+- The older Stage T/S/V plans below are retained diagnostic and capability records, not current architecture or execution order.
 - `docs/problem_contract_v2.md` is the user/problem schema authority.
-- `docs/fixed_grid_data_contract_v2.md` is the Stage T artifact-schema authority.
+- `docs/fixed_grid_data_contract_v2.md` defines retained Stage T artifact semantics; it does not make density the current canonical design variable.
 - `docs/evidence/*.json` is machine-readable evidence; prose must not broaden its scope.
 
-**2026-09-23 current addendum:** Preflight v5 corrected the b=4 objective-state
+## Current SDF-native architecture and status (2026-09-28)
+
+The product objective is a generic aerodynamic topology and shape optimizer
+whose canonical variable is bounded Cartesian SDF `phi` (`phi < 0` solid,
+`phi > 0` fluid). It must support material addition/removal, merging/splitting,
+and shape refinement. Since continuous SDF deformation does not create a new
+detached component by itself, a separate topology-birth mechanism is required;
+no birth method has been selected or qualified.
+
+```text
+ProblemSpec v2
+  -> geometry / domain / resolution preflight
+  -> canonical Cartesian SDF phi
+  -> WaterLily immersed-boundary fixed-grid primal (candidate)
+  -> primal and grid/domain qualification
+  -> centered-FD gradient oracle
+  -> qualified production gradient backend (decision pending)
+  -> constrained SDF update
+  -> explicit topology birth / nucleation when required
+  -> SDF reinitialization + geometry/connectivity/manufacturing hard gates
+  -> independent body-fitted OpenFOAM Stage V verification
+```
+
+WaterLily is a candidate cheap primal/optimization oracle and remains in
+qualification. Centered FD is the permanent independent numerical gradient
+oracle; reverse AD, discrete adjoint, or another method may become a production
+backend only after qualification against it. The Enzyme/reverse scratch work
+does not select a backend. OpenFOAM Stage V remains an independent verifier,
+not the optimizer.
+
+Kaggle is an execution substrate for reproducible T4 batches, exact
+source/runtime binding, and evidence capture. The Colab-to-Kaggle migration is
+an infrastructure choice, not a solver component.
+
+| Workstream | Current state |
+| --- | --- |
+| Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
+| WaterLily primal | W0/W1 and sphere capability gates have evidence; this does not qualify the v16 aerodynamic primal. |
+| W3 v16 primal | Unqualified. Version 6 is the latest completed measurement; its owner-lifetime result remains unresolved. Exact round-4 diagnostic version 7 is running, with no new GPU measurement yet. |
+| Next W3 diagnosis | Retrieve only exact version 7's terminal status/logs/output and host-verify round 4. The round-4 job weak-references backing `owner.grid.phi` and records its path/type; do not change production code without causal evidence. |
+| W4 | Blocked until exact W3 host-verifier PASS; no W4 qualification criteria or measurement is registered. |
+| Centered-FD SDF derivatives | Formal qualification blocked pending W3 and W4. |
+| Production gradient backend | Undecided and unqualified. |
+| Constrained SDF update | Blocked; `shape_update_allowed=false`. |
+| Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |
+| Stage V | Independent body-fitted verifier; registered v16 physical profile and two-domain result apply only to that candidate/profile. |
+
+Version 6's four A/C/B1/B2 arms each completed two primal steps and had
+identical geometry arrays (1,009 candidate negative cells). A and C ended with
+byte-identical flow fields. B1/B2 matched A through step 1, then diverged in
+step-2 fields and force; the pre-existing maximum normal discrepancy remained
+about `1.338`. The GC evidence is not causal: the diagnostic weak-referenced
+the immutable `DeviceGridSDF` wrapper, and the wrapper references for C/B1/B2
+were already clear before the registered bracket. It did not test whether
+`owner.grid.phi`'s backing `CuArray` was collected. Diagnose that array directly
+before concluding whether owner lifetime explains the divergence. Immutable
+owner-lifetime round-4 criteria are registered at SHA-256
+`58867bf2e68e989200edb39b401f8db2f52df340db2d84534853dad01679530e`. Exact
+private Kaggle version 7 was submitted with the registered T4 runtime; its
+first captured status is `KernelWorkerStatus.RUNNING` (SHA-256
+`172bce72b56e63812fe433424e62e85da4677860437b57b598d5db11ec53048c`). No
+round-4 logs, output, or measurement has been recovered. At terminal status,
+verify that exact version against round-4 criteria before interpreting the
+owner-lifetime hypothesis.
+
+The active order is in [`phase_plan.md` §11](phase_plan.md#11-current-sdf-native-execution-order).
+The sequence starts with W3 zero-force root-cause diagnosis, allows a production
+fix only after causal evidence, then requires a new immutable W3 qualification
+round after diagnosis and any warranted correction before W4, formal FD, a
+backend decision, a constrained update, topology birth, multi-step optimization,
+and independent Stage V verification.
+All W3/W4/FD/gradient/reverse/topology/shape-update qualification flags remain
+false. No historical evidence or criteria are rewritten by this status summary.
+
+The dated entries below preserve chronology. Their local status and "next"
+instructions are snapshots; when they conflict with the SDF-native summary
+above, use the latest dated evidence and the current execution order in
+`phase_plan.md`.
+
+**Historical 2026-09-23 Stage T addendum:** Preflight v5 corrected the b=4 objective-state
 carryover into b=8 and the cached-noise-repeat error. It found that b=8 trial
 improvement was real but the centered Path B minus perturbation crossed an
 exact design box face. Preflight v6 freezes those face cells during Phase 2;
@@ -93,7 +173,12 @@ current feature branch. Explicit review-only, no-edit, or no-push instructions
 are exceptions. Never force-push, reset, checkout, or overwrite unrelated work.
 Inspect status and diff before any later implementation work.
 
-## Exact Current Architecture
+## Historical Stage T/S/V Architecture Snapshot (2026-09-22; superseded)
+
+The following architecture and implementation description records the former
+density/Brinkman Stage T -> SDF/Stage S -> Stage V route. It is retained for
+historical evidence and infrastructure context, not as the current production
+architecture.
 
 **2026-09-22 addendum 7 (PQ3.3 complete; Stage S entry still closed).** The live
 baseline before this planning update is `db20610`, pushed on
@@ -315,7 +400,12 @@ hashes and artifact paths that support the label:
 a capability or contract result must never be reported as target-physics
 validation.
 
-## Verified Current State
+## Historical Stage T/S/V Evidence Snapshot (retained; not current status)
+
+The following facts and measurements belong to the former density/Brinkman
+Stage T and B-spline Stage S line. They remain valid only within their
+recorded candidate and evidence scope; consult the current SDF-native summary
+above and `phase_plan.md` for present status.
 
 ### Contract and canonical loop
 
@@ -428,7 +518,7 @@ This historical failure is now caught before meshing by the fixed ProblemSpec
 far-field binding and `stage_v_clearance_v1` preflight. The evidence remains a
 useful negative fixture; do not "fix" it by relaxing mesh thresholds.
 
-## Implemented Versus Missing
+## Historical Stage T/S/V Capability Snapshot (retained)
 
 ### Implemented or measured
 
@@ -465,7 +555,11 @@ useful negative fixture; do not "fix" it by relaxing mesh thresholds.
   robust-three-field closed-loop integration, target-Re/full-vehicle evidence,
   and Windows RTX 4070 Ti CUDA/VRAM qualification.
 
-## P1-P20 Issue Ledger Summary
+## Historical P1-P20 Stage T/S/V Issue Snapshot (retained)
+
+This table is not the current issue summary. The live issue ledger, including
+SDF volume and topology-policy issues P22/P23, is
+[`problem_register_2026_09.md`](problem_register_2026_09.md).
 
 The detailed and current issue statuses are in
 [`problem_register_2026_09.md`](problem_register_2026_09.md). The issues that
@@ -496,7 +590,10 @@ control the immediate work are:
   operating point. Do not call it RANS or extrapolate it to FSAE high-Re vehicle
   aerodynamics.
 
-## Issue-Driven Next Implementation Plan
+## Historical Stage T/S/V Next-Work Snapshot (superseded)
+
+The following instructions preserve the former plan and do not define current
+work. Follow `phase_plan.md` §11 for the SDF-native execution order.
 
 The latest `phase_plan.md` order controls. The post-PQ3.3 bridge criteria are in
 [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md);
@@ -730,25 +827,22 @@ The following claims are forbidden until separately qualified:
 - No raw clean `checkMesh` claim for the correct V0-V3 cases. Their profile qualification allows concave-cell output; raw `checkMesh` reports one failed check.
 - No claim that `execution_ready`, an OpenFOAM process exit code, a force file, or an LBM Taylor-Green pass is target-physics qualification.
 - No claim that the Brinkman surrogate is generally valid or generally impossible.
+- No claim that WaterLily W3, the GPU primal for the v16 object, or W4 is qualified.
+- No claim that reverse AD works as a production backend, that the SDF centered-FD gradient is qualified, or that a constrained SDF update is allowed.
+- No claim that topology birth works or that the owner-lifetime hypothesis is confirmed. Version 6 remains unresolved because its WeakRef observed the wrapper rather than `owner.grid.phi`.
 
 ## Fresh-Session Checklist
 
-1. `cd /Users/sota/projects/FomulaTMU/CFD2026_09`.
-2. Read `AGENTS.md`, then the handoff and the authoritative documents in the order above.
-3. Run `git status --short --branch`, `git log -1 --oneline --decorate`, and inspect the current diff.
-4. Confirm the issue ID and evidence class for the requested slice before editing.
-5. Confirm whether the task is contract, capability, numerical, target-physics, or benchmark work.
-6. Inspect the relevant JSON, raw logs, hashes, and current implementation before changing code.
-7. For the immediate slice (WP1, implemented 2026-09-20): the Stage V path now
-   binds `grid.domain_bounds_m` and runs the `stage_v_clearance_v1` pre-mesh
-   preflight; new solver work starts at WP's next slice — re-qualify the correct
-   candidate under the fixed domain, then the predeclared local-refinement grid
-   study (WP3).
-8. Add or update the smallest relevant tests, including fail-closed and no-launch behavior.
-9. Run the smallest relevant test, then `.venv/bin/python -m compileall src tests`, `.venv/bin/python -m pytest -q`, and `git diff --check` when the task requires full validation.
-10. Check that only intended files changed and that no evidence JSON or authoritative decision was overwritten.
-11. Report measured facts, artifact paths/hashes, evidence class, claims allowed, claims still forbidden, and any uncertainty.
-12. For an authorized implementation or documentation task, commit and push only the intended files after validation, unless an explicit review-only, no-edit, or no-push instruction applies.
+1. Work in the requested checkout and branch. Inspect `git status`, `git diff`, recent history, and the remote branch before editing; preserve unrelated work.
+2. Read `AGENTS.md`, `docs/README.md`, this handoff, `docs/phase_plan.md`, the issue ledger, and the relevant supporting contract or runbook.
+3. Treat `phase_plan.md` as the sole current roadmap/status/order authority. Use historical Stage T/S/V documents for recorded evidence only.
+4. For W3, continue with only exact owner-lifetime diagnostic version 7. At terminal status, retrieve and host-verify its version-bound artifacts against round-4 criteria. Do not make a production change until causal evidence supports it.
+5. Keep W4, formal centered-FD, gradient-backend qualification, optimizer update, and topology birth blocked until their explicit prerequisites in `phase_plan.md` pass.
+6. Distinguish contract, capability, numerical, target-physics, and benchmark evidence. Inspect exact immutable criteria, logs, outputs, and hashes for evidence work.
+7. For a documentation-only task, validate links and `git diff --check`; do not run a solver or Kaggle job. Follow repository `AGENTS.md` for any additional required validation.
+8. Check that only intended documentation changed and that code, criteria, evidence JSON, solver state, and qualification flags remain untouched.
+9. Report the measured facts, source/artifact paths and hashes, evidence class, claims supported, claims not supported, and unresolved items.
+10. For an authorized documentation or implementation task, commit and push only intended files after validation, without force-pushing or overwriting another worktree's changes.
 
 ## Completion and Reporting Template
 
