@@ -28,7 +28,9 @@ was pushed as `5d15e72`. Immutable W4 criteria round 3 is registered at SHA-256
 version 2 is `ready` and its remote five-file payload passes exact hash and
 host/runner dataset checks. Exact private T4 kernel `/2` ran all four primal
 cases but failed registered T3/T4 integrity predicates; preserve it as
-diagnostic-only and fix those checks under a new immutable criteria round.
+diagnostic-only. Minimal T3/T4 implementation fixes passed validation and were
+pushed as `52a50e4`; immutable round 4 registration and dataset version 3 are
+next. Round 3 is not qualified.
 See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 

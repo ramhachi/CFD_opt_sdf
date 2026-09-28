@@ -2170,7 +2170,12 @@ N downforce. The registered extended-domain fine-grid follow-up condition is
 not triggered by these diagnostic values. FD remains blocked because this
 round has no host PASS.
 
-Keep round-3 criteria and kernel version 2 evidence unchanged. Correct the
-duplicate T3 predicate and report-only T4 ground descriptor, add regression
-tests for runner/host parity, then commit/push and register immutable round 4
-plus a new private dataset version before another kernel measurement.
+Keep round-3 criteria and kernel version 2 evidence unchanged. The duplicate
+T3 predicate and report-only T4 ground descriptor are fixed in source commit
+`52a50e488cb01f93c971dc29b5fc29f1670e36a5`, with regression coverage for both
+runner/host parity and rejection of incorrect values. Focused W4/W3/owner tests
+passed 41; `compileall`, targeted Python `py_compile`, Julia `Meta.parseall`,
+and `git diff --check` pass. Full pytest reports 1,117 passed, 37 failed and 4
+skipped; all 37 failures require ignored historical `work/` artifacts absent
+from this managed worktree. Register immutable round 4 and a new private
+dataset version before the next exact kernel measurement.
