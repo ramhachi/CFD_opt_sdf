@@ -121,6 +121,18 @@ def force_integrals(rows: list[dict[str, float]]) -> dict[str, float]:
     }
 
 
+def raw_force_rows_finite(rows: list[dict[str, float]]) -> bool:
+    return bool(rows) and all(math.isfinite(row[key]) for row in rows for key in FORCE_HEADER[2:])
+
+
+def validate_kernel_identity(criteria_kernel_id: str, observed_kernel_id: str) -> None:
+    if not observed_kernel_id or observed_kernel_id != criteria_kernel_id:
+        raise ValueError(
+            f"actual Kaggle kernel id {observed_kernel_id!r} differs from immutable criteria id "
+            f"{criteria_kernel_id!r}"
+        )
+
+
 def force_closure(rows: list[dict[str, float]], criteria: dict) -> dict[str, Any]:
     atol = criteria["causal_decision_rules"]["force_component_absolute_tolerance"]
     rtol = criteria["causal_decision_rules"]["force_component_relative_tolerance"]
@@ -220,8 +232,7 @@ def summarize_arm(root: Path, arm_id: str, criteria: dict) -> dict[str, Any]:
     result["force_row_count_matches_summary"] = len(rows) == summary.get("force_rows")
     result["force_steps_strictly_increasing"] = strictly_increasing([row["step"] for row in rows])
     result["force_times_strictly_increasing"] = strictly_increasing([row["t_u_l"] for row in rows])
-    result["all_raw_force_components_finite"] = bool(rows) and all(
-        math.isfinite(row[key]) for row in rows for key in FORCE_HEADER[2:])
+    result["all_raw_force_components_finite"] = raw_force_rows_finite(rows)
     result["force_history_exact_zero"] = exact_zero_history(rows)
     result["component_closure"] = force_closure(rows, criteria)
     result["force_samples_bracket_window"] = bool(rows) and rows[0]["t_u_l"] <= 80 and rows[-1]["t_u_l"] >= 120
@@ -238,16 +249,23 @@ def summarize_arm(root: Path, arm_id: str, criteria: dict) -> dict[str, Any]:
     result["registered_window_sample_count"] = len(window_rows)
     result["minimum_registered_window_sample_count_met"] = (
         len(window_rows) >= criteria["measurement"]["minimum_window_samples"])
-    try:
-        result["host_force_integrals"] = force_integrals(rows)
-    except (ValueError, ZeroDivisionError) as error:
-        result["host_force_integrals_error"] = str(error)
+    if result["all_raw_force_components_finite"]:
+        try:
+            result["host_force_integrals"] = force_integrals(rows)
+        except (ValueError, ZeroDivisionError) as error:
+            result["host_force_integrals_error"] = str(error)
+    else:
+        result["host_force_integrals_error"] = "raw force rows include nonfinite values; window integration is undefined"
     progress_path = arm_dir / "progress.csv"
     progress = read_numeric_csv(progress_path) if progress_path.is_file() else []
     result["progress_rows"] = len(progress)
     progress_steps = [int(row["step"]) for row in progress]
     result["progress_steps_contiguous"] = progress_steps == list(range(1, len(progress_steps) + 1))
     result["progress_rows_match_summary"] = len(progress) == summary.get("solver_steps")
+    step_limit = criteria["measurement"].get("max_solver_steps_safety_limit")
+    result["solver_step_safety_limit_met"] = (
+        step_limit is None or not progress_steps or max(progress_steps) <= step_limit
+    )
     transitions = [int(row["step"]) for previous, row in zip(progress, progress[1:])
                    if previous["owner_weakref_alive"] == 1.0 and row["owner_weakref_alive"] == 0.0]
     if progress and progress[0]["owner_weakref_alive"] == 0.0 and summary.get("owner_alive_at_setup_return") is True:
@@ -426,7 +444,7 @@ def classify_arms(arms: dict[str, dict[str, Any]], criteria: dict) -> dict[str, 
 
 
 def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
-           w3_dataset_dir: Path, kernel_version: int, status_path: Path,
+           w3_dataset_dir: Path, actual_kernel_id: str, kernel_version: int, status_path: Path,
            log_path: Path, host_verifier_path: Path) -> dict[str, Any]:
     criteria_path = Path(criteria_path)
     criteria_sha = sha256(criteria_path)
@@ -436,6 +454,7 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
     require(criteria.get("immutable") is True and criteria.get("registered_before_computation") is True,
             "full-horizon criteria were not preregistered")
     require(criteria.get("evidence_type") == "diagnostic_only", "criteria evidence class mismatch")
+    validate_kernel_identity(criteria["kernel_id"], actual_kernel_id)
     require(kernel_version == criteria.get("kernel_version"), "exact Kaggle kernel version differs from criteria")
     criteria_manifest_path = Path(criteria_dataset_dir) / "w3_owner_full_horizon_dataset_manifest.json"
     criteria_manifest = read_json(criteria_manifest_path)
@@ -483,8 +502,9 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
                 "result_sha256": type_result_sha,
                 "runtime_type_identity": identity,
             },
-            "kernel_id": criteria["kernel_id"], "kernel_version": kernel_version,
-            "exact_kernel_ref": f"{criteria['kernel_id']}/{kernel_version}",
+            "kernel_id": criteria["kernel_id"], "observed_kernel_id": actual_kernel_id,
+            "kernel_version": kernel_version,
+            "exact_kernel_ref": f"{actual_kernel_id}/{kernel_version}",
             "terminal_status": status_name,
             "kaggle_status_sha256": sha256(Path(status_path)),
             "kaggle_log_sha256": log_sha,
@@ -564,6 +584,8 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
         require(runtime.get("gpu_uuid") == fingerprint["selected_gpu_uuid"],
                 f"{arm_id} selected GPU UUID mismatch")
         require(summary.get("flow_dims") == criteria["fixture"]["flow_dims"], f"{arm_id} flow dimensions mismatch")
+        require(item.get("solver_step_safety_limit_met") is True,
+                f"{arm_id} exceeded the registered solver-step safety limit")
         require(summary.get("flow_origin_m") == criteria["fixture"]["flow_origin_m"], f"{arm_id} flow origin mismatch")
         require(summary.get("canonical_sdf_origin_m") == criteria["fixture"]["canonical_sdf_origin_m"],
                 f"{arm_id} canonical SDF origin mismatch")
@@ -599,8 +621,9 @@ def verify(download: Path, *, criteria_path: Path, criteria_dataset_dir: Path,
         "w3_input_dataset_id": criteria["w3_input"]["dataset_id"],
         "w3_input_dataset_manifest_sha256": sha256(w3_manifest_path),
         "kernel_id": criteria["kernel_id"],
+        "observed_kernel_id": actual_kernel_id,
         "kernel_version": kernel_version,
-        "exact_kernel_ref": f"{criteria['kernel_id']}/{kernel_version}",
+        "exact_kernel_ref": f"{actual_kernel_id}/{kernel_version}",
         "terminal_status": status_name,
         "kaggle_status_sha256": sha256(Path(status_path)),
         "kaggle_log_sha256": log_sha,
@@ -633,6 +656,7 @@ def main() -> int:
     parser.add_argument("--criteria", required=True, type=Path)
     parser.add_argument("--criteria-dataset-dir", required=True, type=Path)
     parser.add_argument("--w3-dataset-dir", required=True, type=Path)
+    parser.add_argument("--actual-kernel-id", required=True)
     parser.add_argument("--kernel-version", required=True, type=int)
     parser.add_argument("--status", required=True, type=Path)
     parser.add_argument("--log", required=True, type=Path)
@@ -641,6 +665,7 @@ def main() -> int:
     evidence = verify(args.download, criteria_path=args.criteria,
                       criteria_dataset_dir=args.criteria_dataset_dir,
                       w3_dataset_dir=args.w3_dataset_dir,
+                      actual_kernel_id=args.actual_kernel_id,
                       kernel_version=args.kernel_version, status_path=args.status,
                       log_path=args.log, host_verifier_path=Path(__file__))
     if args.record_evidence:

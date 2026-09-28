@@ -135,6 +135,32 @@ def test_diagnostic_buffers_match_registered_snapshot_count_and_have_no_undefine
     assert "FIELD_EVERY" not in job
     assert "FIELD_DIAGNOSTIC_CAPACITY = 2" in job
     assert "CANDIDATE_PROBE_CAPACITY = 4 * FIELD_DIAGNOSTIC_CAPACITY" in job
+    assert "const MAX_STEPS = 6000" in job
+    assert "owner_lost = !alive && capture.first_collected_step == step" in job
+    assert "row count $count exceeds buffer capacity" in job
+
+
+def test_host_verifier_handles_nonfinite_corruption_and_exact_kernel_slug():
+    bad = force_row(24, 0.5, math.nan, math.nan, math.nan,
+                    p=(math.nan, math.nan, math.nan), v=(math.nan, math.nan, math.nan))
+    assert HOST.raw_force_rows_finite([bad]) is False
+    assert HOST.raw_force_rows_finite([force_row(8, 80.0, 1.0, 0.0, -1.0)]) is True
+    HOST.validate_kernel_identity("ramhachi888/expected-slug", "ramhachi888/expected-slug")
+    try:
+        HOST.validate_kernel_identity("ramhachi888/expected-slug", "ramhachi888/actual-slug")
+    except ValueError as error:
+        assert "differs from immutable criteria id" in str(error)
+    else:
+        raise AssertionError("kernel slug mismatch was not rejected")
+
+
+def test_round_reason_separates_slug_retry_from_harness_correction():
+    import runpy
+
+    registrar = runpy.run_path(str(ROOT / "scripts/register_kaggle_w3_owner_full_horizon_2026_09.py"))
+    assert "title-derived Kaggle slug" in registrar["round_reason"](2)
+    assert "Round 2 was frozen but never submitted" in registrar["round_reason"](3)
+    assert "target horizon" in registrar["round_reason"](3)
 
 
 def test_runner_enforces_per_arm_and_kernel_time_limits():
@@ -164,7 +190,7 @@ def test_dataset_title_stays_within_kaggle_metadata_limit(tmp_path: Path):
     assert manifest["dataset_id"] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
 
 
-def test_kernel_slug_and_round2_dataset_source_are_registered_together():
+def test_kernel_slug_and_round3_dataset_source_are_registered_together():
     import json
     import re
     import runpy
@@ -174,4 +200,4 @@ def test_kernel_slug_and_round2_dataset_source_are_registered_together():
     slug = re.sub(r"[^a-z0-9]+", "-", metadata["title"].lower()).strip("-")
     assert metadata["id"] == f"ramhachi888/{slug}"
     assert metadata["id"] == registrar["KERNEL_ID"]
-    assert metadata["dataset_sources"][-1] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round2"
+    assert metadata["dataset_sources"][-1] == "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round3"

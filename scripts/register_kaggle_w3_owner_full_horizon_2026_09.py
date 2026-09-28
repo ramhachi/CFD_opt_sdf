@@ -70,6 +70,25 @@ def output_for_round(round_number: int) -> Path:
         f"kaggle_w3_owner_full_horizon_criteria_2026_09_round{round_number}.json")
 
 
+def round_reason(round_number: int) -> str | None:
+    if round_number == 1:
+        return None
+    if round_number == 2:
+        return (
+            "round 1 was submitted under the title-derived Kaggle slug, which differed from the registered kernel-metadata id; "
+            "round 2 binds the observed slug and changes no solver semantics, thresholds, arms, inputs, or measurement rules"
+        )
+    if round_number == 3:
+        return (
+            "round 1 terminal output is preserved as an infrastructure identity diagnostic because its actual title-derived "
+            "Kaggle slug differed from the immutable criteria kernel id. That diagnostic also exposed a narrow owner-diagnostic "
+            "artifact-capacity issue in the forced-GC control and a host-verifier nonfinite-serialization gap. Round 2 was frozen "
+            "but never submitted. Round 3 fixes those harness/reporting defects and raises only the per-arm safety step ceiling; "
+            "it keeps the same W3 fixture, six arms, solver, force semantics, target horizon, thresholds, causal gate, and input bytes"
+        )
+    raise ValueError(f"unsupported owner full-horizon criteria round: {round_number}")
+
+
 def f32(value: float) -> float:
     return struct.unpack("<f", struct.pack("<f", value))[0]
 
@@ -170,6 +189,11 @@ def build(source_commit: str, round_number: int) -> dict:
     if round_number > 1:
         previous["owner_full_horizon_round1_criteria"] = evidence_ref(
             "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09.json")
+    if round_number > 2:
+        previous["owner_full_horizon_round1_slug_mismatch_diagnostic"] = evidence_ref(
+            "docs/evidence/kaggle_w3_owner_full_horizon_result_2026_09_round1_slug_mismatch_diagnostic.json")
+        previous["owner_full_horizon_round2_criteria"] = evidence_ref(
+            "docs/evidence/kaggle_w3_owner_full_horizon_criteria_2026_09_round2.json")
     dataset_id = "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria"
     if round_number > 1:
         dataset_id += f"-round{round_number}"
@@ -185,12 +209,10 @@ def build(source_commit: str, round_number: int) -> dict:
         "source_branch": "codex/kaggle-batch-migration",
         "source_files": files,
         "kernel_id": KERNEL_ID,
-        "kernel_version": 1 if round_number == 1 else round_number,
+        "kernel_version": 1 if round_number == 1 else 2,
         "criteria_dataset_id": dataset_id,
         "claim_scope": "test whether backing CuArray owner collection reproduces the W3 v4 all-zero force history on the exact registered full-horizon WaterLily path; no primal qualification",
-        "round_reason": None if round_number == 1 else (
-            "round 1 was submitted under the title-derived Kaggle slug, which differed from the registered kernel-metadata id; "
-            "round 2 binds the exact observed slug and changes no solver semantics, thresholds, arms, inputs, or measurement rules"),
+        "round_reason": round_reason(round_number),
         "type_probe_prerequisite": {
             "criteria_id": type_criteria["criteria_id"],
             "criteria_path": TYPE_CRITERIA_PATH.relative_to(ROOT).as_posix(),
@@ -300,6 +322,8 @@ def build(source_commit: str, round_number: int) -> dict:
             "cuda_memory_sampling": "after warm-up, every 50 steps, and at full-horizon endpoint",
             "per_arm_runtime_limit_s": 1800,
             "kernel_runtime_limit_s": 7200,
+            "max_solver_steps_safety_limit": 6000,
+            "max_solver_steps_semantics": "execution watchdog only; target horizon remains tU/L >= 120.0 and acceptance thresholds are unchanged",
         },
         "causal_decision_rules": {
             "force_component_absolute_tolerance": w3_criteria["measurement"]["force_component_absolute_tolerance"],

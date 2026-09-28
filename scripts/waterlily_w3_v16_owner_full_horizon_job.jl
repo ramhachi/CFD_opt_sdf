@@ -25,12 +25,15 @@ const ARM_ID = ARGS[3]
 ARM_ID in ("A-natural", "A-forced", "B-natural-1", "B-natural-2", "B-forced-1", "B-forced-2") ||
     error("unknown owner-lifetime arm: $ARM_ID")
 mkpath(OUTPUT_DIR)
+const CURRENT_STAGE = Ref("initialization")
+const LAST_PROGRESS_STEP = Ref(0)
+const LAST_PROGRESS_T_U_L = Ref(0.0)
 
 const T_END = 120.0
 const BURN_IN = 80.0
 const SAMPLE_EVERY = 8
 const MEMORY_EVERY = 50
-const MAX_STEPS = 5000
+const MAX_STEPS = 6000
 const FIELD_DIAGNOSTIC_CAPACITY = 2
 const CANDIDATE_PROBE_CAPACITY = 4 * FIELD_DIAGNOSTIC_CAPACITY
 const MEMORY_SAMPLE_CAPACITY = MAX_STEPS ÷ MEMORY_EVERY + 4
@@ -252,6 +255,8 @@ function record_progress!(capture, buffers, step, sim, weak)
     buffers.progress[capture.progress_count, 1] = step
     buffers.progress[capture.progress_count, 2] = Float64(sim_time(sim))
     buffers.progress[capture.progress_count, 3] = alive ? 1.0 : 0.0
+    LAST_PROGRESS_STEP[] = step
+    LAST_PROGRESS_T_U_L[] = Float64(sim_time(sim))
     if !alive && capture.last_owner_alive && capture.first_collected_step == 0
         capture.first_collected_step = step
     end
@@ -334,6 +339,7 @@ function prepare_capture()
 end
 
 function run_solver_steps!(capture, buffers, sim, bodies, weak, setup_owner_alive, gc_suppressed_at_setup)
+    CURRENT_STAGE[] = "solver_warmup"
     warm_started = time()
     WaterLily.sim_step!(sim)
     first_step_seconds = time() - warm_started
@@ -351,12 +357,14 @@ function run_solver_steps!(capture, buffers, sim, bodies, weak, setup_owner_aliv
             capture_diagnostics!(capture, buffers, step, sim, bodies, weak;
                 reason="after_forced_owner_collection")
         end
+        capture.last_owner_alive = alive_after_gc
     elseif !alive
         capture_diagnostics!(capture, buffers, step, sim, bodies, weak;
             reason=setup_owner_alive ? "owner_collection_during_warmup_step1" :
                 "owner_collection_before_or_during_warmup_step1")
     end
     wall_started = time()
+    CURRENT_STAGE[] = "solver_horizon"
     while WaterLily.sim_time(sim) < T_END
         WaterLily.sim_step!(sim)
         step += 1
@@ -374,8 +382,7 @@ function run_solver_steps!(capture, buffers, sim, bodies, weak, setup_owner_aliv
             record_memory!(capture, buffers, step)
         end
         alive = record_progress!(capture, buffers, step, sim, weak)
-        owner_lost = capture.progress_count >= 2 &&
-            buffers.progress[capture.progress_count - 1, 3] == 1.0 && !alive
+        owner_lost = !alive && capture.first_collected_step == step
         if owner_lost
             capture_diagnostics!(capture, buffers, step, sim, bodies, weak;
                 reason="first_observed_owner_collection")
@@ -384,6 +391,7 @@ function run_solver_steps!(capture, buffers, sim, bodies, weak, setup_owner_aliv
                 reason="full_horizon_endpoint")
         end
     end
+    CURRENT_STAGE[] = "solver_complete"
     return first_step_seconds, wall_started, step
 end
 
@@ -530,7 +538,9 @@ function run_horizon!(capture, sim, bodies, weak, setup_owner_alive, owner_guard
         "physical_profile_qualified" => false,
         "claim_scope" => "diagnostic-only full-horizon owner-lifetime comparison; no W3 primal, physical-profile, gradient, or shape-update qualification",
     )
+    CURRENT_STAGE[] = "artifact_serialization"
     write_arm_outputs(report, capture, buffers)
+    CURRENT_STAGE[] = "complete"
     println("W3_OWNER_FULL_HORIZON_ARM ", ARM_ID, " ", json_value(Dict(
         "status" => report["status"], "solver_steps" => report["solver_steps"],
         "t_u_l_reached" => report["t_u_l_reached"],
@@ -549,6 +559,7 @@ function write_force_csv(path, rows)
 end
 
 function write_matrix_csv(path, header, matrix, count)
+    0 <= count <= size(matrix, 1) || error("$path row count $count exceeds buffer capacity $(size(matrix, 1))")
     open(path, "w") do io
         println(io, header)
         for i in 1:count
@@ -585,11 +596,14 @@ function write_arm_outputs(report, capture, buffers)
 end
 
 function main()
+    CURRENT_STAGE[] = "canonical_input_load"
     prior_gc_state = GC.enable(true)
     canonical, phi_sha, c_sha, margin = load_canonical_grid(PHI_PATH)
+    CURRENT_STAGE[] = "gpu_buffer_setup"
     buffers = prepare_buffers(canonical)
     capture = prepare_capture()
     forced_arm = occursin("forced", ARM_ID)
+    CURRENT_STAGE[] = "simulation_construction"
     if startswith(ARM_ID, "A-")
         owned, gc_was_enabled = build_owned(canonical, forced_arm)
         setup_owner_alive = owned.weakref.value !== nothing
@@ -605,10 +619,15 @@ end
 try
     main()
 catch err
+    failure_stage = CURRENT_STAGE[]
+    solver_started = LAST_PROGRESS_STEP[] > 0
+    failure_status = failure_stage == "artifact_serialization" ? "artifact_error" : "setup_error"
     write_json(joinpath(OUTPUT_DIR, "arm_summary.json"), Dict(
-        "arm_id" => ARM_ID, "status" => "setup_error",
+        "arm_id" => ARM_ID, "status" => failure_status,
+        "failure_stage" => failure_stage,
         "exact_exception" => sprint(showerror, err, catch_backtrace()),
-        "solver_started" => false, "solver_steps" => 0, "qualification" => false,
+        "solver_started" => solver_started, "solver_steps" => LAST_PROGRESS_STEP[],
+        "t_u_l_reached" => LAST_PROGRESS_T_U_L[], "qualification" => false,
         "claim_scope" => "diagnostic-only full-horizon owner-lifetime comparison; no qualification"))
     println("W3_OWNER_FULL_HORIZON_ARM_ERROR ", ARM_ID, " ", sprint(showerror, err, catch_backtrace()))
 end
