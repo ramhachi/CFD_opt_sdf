@@ -1,0 +1,87 @@
+{
+  "corrected_force_semantics": {
+    "body_pressure_force": "-WaterLily.pressure_force",
+    "body_total_force": "body_pressure_force + body_viscous_force = -WaterLily raw total",
+    "body_viscous_force": "-WaterLily.viscous_force",
+    "equivalent_projection_from_saved_raw": "drag=-Fx_WaterLily_raw; downforce=+Fz_WaterLily_raw",
+    "registered_projection": "drag=+Fx_body_total; downforce=-Fz_body_total",
+    "waterlily_raw": "WaterLily.pressure_force/viscous_force return values as saved by diagnostic raw_force_snapshot"
+  },
+  "correction_id": "w3_v16_cuda_diagnostic_version3_force_projection_clarification_2026_09",
+  "created_utc_date": "2026-09-28",
+  "criteria_changed": false,
+  "evidence_type": "append_only_force_projection_definition_correction",
+  "measurement_changed": false,
+  "parent_interpretation": {
+    "path": "docs/evidence/kaggle_w3_v16_cuda_diagnostic_version3_interpretation_2026_09.json",
+    "sha256": "1c34cf47035378f0581c35b6292a31240f75dbe2ac8f7ca5771144ed81f58f88"
+  },
+  "qualification_flags": {
+    "grid_response_qualified": false,
+    "physical_profile_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "waterlily_v16_primal_qualified": false
+  },
+  "source_identity": {
+    "body_force_wrapper_lines": "29,36,43",
+    "body_force_wrapper_path": "julia/CFDSDFWaterLily/src/Forces.jl",
+    "body_force_wrapper_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "diagnostic_job_sha256": "4c080a72f48754c758ee999a38b7d7b83737dd01d2fe7573f4b164d7f0e1ce4e",
+    "diagnostic_raw_snapshot_lines": "220-229",
+    "diagnostic_source_commit": "ca67673ccff69a0b79243c461f82158ad8e61522",
+    "host_verifier_force_mapping": "scripts/verify_kaggle_w3_v16_cuda_diagnostic.py:351-364",
+    "registered_w3_job_path": "scripts/waterlily_w3_v16_primal_job.jl",
+    "registered_w3_job_sha256": "5fc5e1006e8f39ccde40a7820665f1ab03cae9e062762a59fc6585e395e8f142",
+    "registered_w3_projection_lines": "134-138",
+    "registered_w3_source_commit": "5e985fa3395a01228c18910d96e09ecbc5497628"
+  },
+  "unchanged_conclusions": {
+    "force_sign_changed": false,
+    "next_minimum_diagnostic": "retained-versus-forced-GC owner-lifetime T4 A/B with same frozen fixture and only a tiny number of steps",
+    "owner_lifetime_root_cause_confirmed": false,
+    "thresholds_changed": false,
+    "w3_round3_T7": false,
+    "w3_v16_primal_qualified": false,
+    "w3_v4_all_zero_full_history": true,
+    "waterlily_openfoam_equivalence_claimed": false
+  },
+  "v3_one_step_projection_restatement": {
+    "candidate_cpu_body_total": [
+      3485.046517138383,
+      22.466101823903678,
+      -4627.170259701308
+    ],
+    "candidate_cpu_waterlily_raw_total": [
+      -3485.046517138383,
+      -22.466101823903678,
+      4627.170259701308
+    ],
+    "candidate_cuda_body_total": [
+      3485.132996418866,
+      22.258088226113315,
+      -4627.474694802374
+    ],
+    "candidate_cuda_waterlily_raw_total": [
+      -3485.132996418866,
+      -22.258088226113315,
+      4627.474694802374
+    ],
+    "interpretation": "The diagnostic's positive one-step projected drag is consistent with the registered W3 body-force convention; it is valid as a one-step implementation observation, not a [80,120] time-weighted result, stationarity result, or W3 qualification.",
+    "registered_downforce_minus_fz_body_cpu_cuda": [
+      4627.170259701308,
+      4627.474694802374
+    ],
+    "registered_drag_plus_fx_body_cpu_cuda": [
+      3485.046517138383,
+      3485.132996418866
+    ]
+  },
+  "w2_sign_precedent": {
+    "interpretation": "W2b positive sampled-sphere drag uses the same body-force convention. The round-5 sign gate remains a precedent only and is not v16 target physics.",
+    "wrapper_semantics": "CFDSDFWaterLily.pressure_force_on_body and viscous_force_on_body negate the WaterLily raw force before W2b time-history storage."
+  }
+}

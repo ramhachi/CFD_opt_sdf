@@ -3079,3 +3079,24 @@ does not change the immutable W3 round-3 criteria or qualify the W3 primal.
   only if it repeats and coincides with confirmed owner collection. Do not
   launch another full W3, W4, or FD measurement before that diagnosis and a
   new immutable qualification round if source changes.
+
+### 2026-09-28 W3 diagnostic force-projection clarification
+
+The diagnostic CSV names retain the unmodified WaterLily API force as
+`waterlily_*_force_raw`; these components have the opposite sign from the
+repository's force-on-body vectors. The registered W3 job negates the
+WaterLily pressure and viscous vectors first, then applies
+`drag=+Fx_body_total` and `downforce=-Fz_body_total`. The diagnostic snapshot
+stores raw WaterLily force, so its equivalent projected values are
+`drag=-Fx_WaterLily_raw` and `downforce=+Fz_WaterLily_raw`. The W2b
+`pressure_force_on_body`/`viscous_force_on_body` wrappers use the same negation.
+
+Therefore the v3 one-step projected drag of `3485.0465/3485.1330` solver units
+on CPU/CUDA is consistent with the registered body-force sign convention. It
+is a valid one-step implementation observation, but it is not an exact-window
+time-weighted result, a stationarity result, or W3 qualification. This
+clarification is recorded append-only in
+[`v3 force-projection correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_force_projection_correction_2026_09.json).
+No force sign, threshold, measurement, or qualification state changed. The
+owner-lifetime hypothesis remains unconfirmed and the next minimum test stays
+the retained-versus-forced-GC T4 A/B described above.

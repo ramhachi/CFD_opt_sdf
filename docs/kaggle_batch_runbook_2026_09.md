@@ -1279,3 +1279,24 @@ were `FileNotFoundError` for historical inputs under ignored `work/` folders
 not present in this managed worktree; for example, the Stage-S FD test lacks
 `work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv`.
 The changed W3/W4/diagnostic slice had no failures.
+
+### Force projection interpretation for diagnostic snapshots
+
+The diagnostic snapshot saves the direct WaterLily API vectors under
+`waterlily_pressure_force_raw`, `waterlily_viscous_force_raw`, and
+`waterlily_total_force_raw`. The registered W3 job first negates the two raw
+vectors to form force-on-body components, then computes
+`drag=+Fx_body_total` and `downforce=-Fz_body_total`. Thus, when starting from
+the diagnostic's unmodified WaterLily raw vector, the equivalent projections
+are `drag=-Fx_raw` and `downforce=+Fz_raw`. The diagnostic host verifier checks
+this mapping explicitly. W2b's `pressure_force_on_body` and
+`viscous_force_on_body` helpers use the same negation.
+
+The v3 candidate's one-step positive projected drag is therefore consistent
+with the registered W3 body-force convention. It remains a one-step snapshot,
+not the registered `[80,120]` time-weighted force measurement or a qualification
+result. The clarification record is
+[`v3 force-projection correction`](evidence/kaggle_w3_v16_cuda_diagnostic_version3_force_projection_correction_2026_09.json)
+(SHA-256 `8511973f3f6cc4d2b3166e15752072e83891cbc2535f35915116a39ffa8ed58c`).
+This corrects an overly cautious intermediate interpretation; the W3 force
+sign and all acceptance criteria remain untouched.
