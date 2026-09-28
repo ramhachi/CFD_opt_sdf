@@ -1928,7 +1928,7 @@ failures are the known historical tests requiring ignored `work/` checkpoints,
 cases or solver logs absent from this managed worktree; the focused task slice
 is green.
 
-## W4 immutable round 1 retained; do not execute
+## W4 immutable round 1 retained; round 2 registered
 
 Immutable criteria round 1 is
 [`kaggle_w4_v16_sensitivity_criteria_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09.json),
@@ -1939,16 +1939,16 @@ registered physical `path` filenames. The runner and host verifier both now
 build their expected inventory from `entry["path"]`; a regression test checks
 both implementations. The existing round-1 stage passed this corrected local
 contract check, but its criteria bind the old source hashes. Preserve round 1
-unchanged and do not upload it. Register round 2 after committing/pushing the
-fix (`f69c56e6306d30f6e6590da898088e4af7606c00`), and stage into a new ignored
-directory:
+unchanged and do not upload it. The filename fix is pushed in source commit
+`f69c56e6306d30f6e6590da898088e4af7606c00`. Immutable round 2 is now
+registered at
+[`kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round2.json),
+SHA-256 `5e41ffd790b64638659136bfba5b0abfda7325c3578f15fe4d16fa610a7123da`,
+source commit `97a5bcaedcc8f171cda3710a763a22e6210cfbb5`. Registrar check
+passed against exact W3 round-4 criteria/result. Stage into a new ignored
+directory only:
 
 ```bash
-PYTHONPATH=src:scripts .venv/bin/python \
-  scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
-  --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
-  --w3-result docs/evidence/kaggle_w3_v16_primal_result_round4_2026_09.json \
-  --round 2
 PYTHONPATH=src:scripts .venv/bin/python \
   scripts/register_kaggle_w4_v16_sensitivity_2026_09.py \
   --w3-criteria docs/evidence/kaggle_w3_v16_primal_criteria_2026_09_round4.json \
@@ -1966,5 +1966,5 @@ round-2 stage before upload. Then publish privately, wait for `ready`,
 download the remote files into a fresh directory and compare complete
 filenames and SHA-256 values. The old round-1 local manifest SHA-256 is
 `b175b447c35fce94b13de23a73fb98a10dd1be1f499ffe5e8567ff2f26f1bd96`; it is
-not the round-2 dataset manifest. No W4 dataset upload, kernel submission or
-measurement has occurred at this checkpoint.
+not the round-2 dataset manifest. W4 round 2 is registered but no W4 dataset
+upload, kernel submission or measurement has occurred at this checkpoint.
