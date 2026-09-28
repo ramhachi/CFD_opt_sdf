@@ -22,8 +22,9 @@ the downloaded remote inventory matches all registered hashes. Exact W4
 kernel version 1 failed at the pre-solver case-inventory guard with zero
 solver steps; append-only diagnostic SHA-256 is
 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`. A
-minimal Julia tuple-materialization fix and new immutable criteria round are
-required before retry. See
+minimal Julia tuple-materialization fix and regression test passed locally and
+was pushed as `5d15e72`; immutable round 3 registration is pending before retry.
+See
 [`phase_plan.md`](phase_plan.md) for evidence and the current gate.
 
 ## Fresh OpenCode read order

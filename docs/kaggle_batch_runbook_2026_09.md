@@ -2033,6 +2033,14 @@ reached. The host verifier rejects the incomplete output because there is no
 `DONE`, outcome, fingerprint or case data. Append-only diagnostic evidence is
 [`kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_version1_diagnostic_2026_09.json),
 SHA-256 `30e4a3444e07570cff70ad40feff653ffe9858e30d7eea693213d09b610a8df3`.
-Keep round-2 criteria and thresholds unchanged. Apply the minimal tuple fix and
-regression test, commit/push, then register immutable round 3, stage/publish a
-new dataset version, and submit the next exact kernel version.
+Keep round-2 criteria and thresholds unchanged. The minimal tuple fix is now
+implemented in the working tree with a regression test. Focused W4/W3/owner
+pytest passed 39 tests; `compileall`, targeted Python `py_compile`, Julia job
+syntax parsing and an executable case-ID/dimension/Re=80 check passed. The full
+repository pytest reports 1,115 passed, 37 failed and 4 skipped; the 37
+  failures are historical tests requiring ignored `work/` artifacts absent from
+  this managed worktree. The source fix was committed and pushed as `5d15e72`.
+  Register immutable round 3, stage a fresh local dataset directory, publish a new version of the existing private
+dataset ID and verify its downloaded inventory/hashes before submitting the
+next exact kernel version. Do not change case definitions, measurement
+window, force semantics or thresholds.

@@ -73,7 +73,7 @@ an infrastructure choice, not a solver component.
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
 | Next W3 gate | W3 round 4 is closed. W4 implementation preparation is in progress; final registration is the next gate. |
-| W4 | Round-1 criteria are preserved; round 2 is registered (SHA `5e41ffd…`) and its private dataset version 1 is `ready` with exact remote hashes. Exact kernel version 1 failed before SDF load/simulation at a Julia tuple-generator case guard; zero solver steps. Diagnostic SHA `30e4a344…`; fix the source guard and preregister round 3 before retry. Formal FD remains gated on W4 host verification. |
+| W4 | Round-1/round-2 criteria are preserved; round 2 (SHA `5e41ffd…`) binds private dataset version 1, whose exact remote hashes pass. Kernel `/1` failed before SDF load/simulation due to `tuple(generator)`; zero solver steps. Diagnostic SHA `30e4a344…`. Minimal `Tuple(...)` fix and regression pass locally (39 focused tests), pushed as `5d15e72`; round-3 preregistration and a new dataset version remain. Formal FD remains gated on W4 host verification. |
 | Centered-FD SDF derivatives | Formal qualification remains blocked pending W4. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |

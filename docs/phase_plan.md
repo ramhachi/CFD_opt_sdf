@@ -138,7 +138,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Round-2 kernel version 1 diagnostic; primal steps 0 | Round 2 and private input dataset version 1 remain unchanged. The exact run stopped at the Julia job's case-inventory guard before SDF load or simulation construction; a minimal source fix and new immutable round 3 are required. |
+| W4 grid/domain sensitivity | Round-2 version-1 diagnostic preserved; source fix pushed | Commit `5d15e72` fixes Julia case-ID tuple materialization; focused W4/W3/owner tests pass. Immutable round-3 registration is pending. Round-2 criteria and its dataset remain unchanged. |
 | Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
@@ -3945,7 +3945,17 @@ qualification flag.
   rejects this incomplete output because `DONE`, `outcome.json`,
   `fingerprint.json` and case measurements are absent. No T0-T10 gate or W4
   result was evaluated; all qualification flags remain false.
-- **Open:** preserve version 1 as diagnostic, apply the minimal `Tuple(...)`
-  source fix, test it, push the source, register immutable round 3 and update
-  the private W4 dataset before another exact kernel version. Do not change
-  case definitions, measurement window, force semantics or thresholds.
+- **Implemented:** `scripts/waterlily_w4_v16_sensitivity_job.jl` now uses
+  `Tuple(case.case_id for case in V16W4_CASES)` before comparing the four
+  registered case IDs. A focused regression test prevents reintroducing
+  `tuple(generator)`.
+- **Validation:** focused W4/W3/owner pytest passed 39 tests; `compileall`,
+  targeted Python `py_compile`, Julia job `Meta.parseall`, and an executable
+  four-case ID/dimension/Re=80 assertion pass. Full repository pytest reported
+  1,115 passed, 37 failed and 4 skipped. All 37 failures are the known
+  historical Stage T/S/V tests requiring ignored `work/` checkpoints, meshes,
+  cases or solver logs absent from this managed worktree; no W4/W3 test failed.
+- **Open:** register immutable W4 criteria round 3 against exact W3 round-4 PASS
+  and publish a new private
+  W4 input dataset version before retrying. Round-1/round-2 criteria and
+  version-1 diagnostic remain unchanged.
