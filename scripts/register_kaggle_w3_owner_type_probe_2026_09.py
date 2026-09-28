@@ -29,7 +29,8 @@ def build(source_commit: str, round_number: int) -> dict:
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     if source_commit != head:
         raise ValueError("source commit must equal the checked-out HEAD")
-    if subprocess.check_output(["git", "diff", "--quiet", "HEAD", "--"], cwd=ROOT).returncode:
+    if subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=ROOT,
+                      check=False).returncode != 0:
         raise ValueError("tracked source tree must be clean before criteria registration")
     w3_sha = sha256(W3_CRITERIA)
     w3_criteria = json.loads(W3_CRITERIA.read_text())
