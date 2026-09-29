@@ -42,6 +42,8 @@ const FORCE_COLUMNS = ("step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
     "pressure_fz_solver", "viscous_fx_solver", "viscous_fy_solver", "viscous_fz_solver")
 const EPSILONS = (0.0005, 0.001, 0.0025, 0.005, 0.01)
 const DIRECTIONS = ("D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026")
+# INFRA-01 solver-free preflight: run every real pre-solver step, stop before the first sim_step!.
+const PREFLIGHT = get(ENV, "FD_PREFLIGHT_STOP_BEFORE_SIM_STEP", "0") == "1"
 
 json_string(value::AbstractString) = "\"" * replace(value, "\\" => "\\\\", "\"" => "\\\"", "\n" => "\\n") * "\""
 json_value(value::Bool) = value ? "true" : "false"
@@ -169,6 +171,11 @@ end
 function measure_fresh_run(run, vram_total)
     validate_v16_w4_case(FLOW_CASE)
     grid, phi, margin, c_sha, f_sha = load_cpu_grid(run)
+    if PREFLIGHT && !CUDA.functional() # CPU-only host: last reachable boundary
+        println("FD_PREFLIGHT_CPU_BOUNDARY ", run.run_id)
+        flush(stdout)
+        return nothing
+    end
     owner = device_copy(grid)
     roundtrip_sha = device_roundtrip_sha(owner)
     roundtrip_sha == f_sha || error("$(run.run_id): device phi round-trip SHA mismatch")
@@ -181,6 +188,11 @@ function measure_fresh_run(run, vram_total)
         ν=Float32(FLOW_CASE.solver_viscosity), exitBC=true, body=bodies.combined,
         T=Float32, mem=CuArray)
     owned = OwnedV16Run(owner, bodies, sim)
+    if PREFLIGHT
+        println("FD_PREFLIGHT_PRE_SIM_STEP ", run.run_id)
+        flush(stdout)
+        return nothing
+    end
     summary = nothing
     GC.@preserve owned begin
         println("FD_RUN_STARTED ", run.run_id)
@@ -319,17 +331,22 @@ function main()
     CUDA_VISIBLE == "0" || error("registered single-T4 visibility must be CUDA_VISIBLE_DEVICES=0")
     runtime = Dict{String,Any}()
     total_started = time()
-    vram_total = last(CUDA.memory_info())
+    vram_total = PREFLIGHT && !CUDA.functional() ? 0 : last(CUDA.memory_info())
     println("FD_MATRIX_STARTED runs=", length(queue))
     flush(stdout)
     for run in queue
         summary = measure_fresh_run(run, vram_total)
+        summary === nothing && continue # preflight stop
         runtime[run.run_id] = summary.wall_seconds
         GC.gc()
         CUDA.synchronize()
         if sum(values(runtime)) > 7200.0
             error("registered aggregate FD solver wall time limit exceeded")
         end
+    end
+    if PREFLIGHT
+        println("FD_PREFLIGHT_DONE runs=", length(queue))
+        return
     end
     total_wall = time() - total_started
     open(joinpath(output_dir, "matrix_summary.json"), "w") do io

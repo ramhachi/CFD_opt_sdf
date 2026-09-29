@@ -718,17 +718,24 @@ def verify_runner(w4_result, criteria, criteria_sha, manifest, input_hashes, dir
     return output
 
 
-def run_main():
+def run_main(*, input_root=Path("/kaggle/input"), source_url=SOURCE_URL, source_ref=SOURCE_REF,
+             preflight_julia=None):
+    """Production entry point.
+
+    ``preflight_julia`` (a local Julia binary) selects the INFRA-01 solver-free preflight: every
+    pre-solver step below runs unchanged, the GPU/Julia-download/T4-smoke steps that need a T4 host
+    are skipped, and the Julia job stops before its first sim_step!.
+    """
     OUT.mkdir(parents=True, exist_ok=True)
     set_stage("criteria_discovery")
-    dataset_dir = discover_dataset()
+    dataset_dir = discover_dataset(input_root)
     criteria, criteria_sha = read_criteria(dataset_dir)
     (OUT / "input_criteria.json").write_bytes((dataset_dir / CRITERIA_NAME).read_bytes())
     (OUT / "input_criteria.json.sha256").write_text(criteria_sha + "\n")
-    inventory = [{"path": path.relative_to(Path("/kaggle/input")).as_posix(), "is_file": path.is_file(),
+    inventory = [{"path": path.relative_to(input_root).as_posix(), "is_file": path.is_file(),
                   "size_bytes": path.stat().st_size if path.is_file() else None,
                   "sha256": sha256(path) if path.is_file() else None}
-                 for path in sorted(Path("/kaggle/input").rglob("*"))]
+                 for path in sorted(Path(input_root).rglob("*"))]
     write_json(OUT / "input_mount_inventory.json", inventory)
     dataset_manifest, input_hashes = verify_dataset(criteria, criteria_sha, dataset_dir)
     (OUT / "input_dataset_manifest.json").write_bytes((dataset_dir / MANIFEST_NAME).read_bytes())
@@ -738,7 +745,7 @@ def run_main():
         source = base / "source"
         set_stage("source_fetch")
         command(["git", "init", "-q", str(source)], OUT / "git_init.log")
-        command(["git", "-C", str(source), "fetch", "--depth", "24", SOURCE_URL, SOURCE_REF],
+        command(["git", "-C", str(source), "fetch", "--depth", "24", source_url, source_ref],
                 OUT / "git_fetch.log", timeout=900)
         command(["git", "-C", str(source), "checkout", "--detach", criteria["source_commit"]],
                 OUT / "git_checkout.log")
@@ -751,12 +758,17 @@ def run_main():
         (state, dirs, directions_audit, perturbation_preflight,
          state_info) = host_input_preflight(source, dataset_dir, criteria)
         write_json(OUT / "input_state_and_direction_identity.json", state_info)
-        gpu_rows, selected_uuid = gpu_inventory(criteria)
-        julia = install_julia(base, backend_expected["julia_archive_sha256"])
+        if preflight_julia is None:
+            gpu_rows, selected_uuid = gpu_inventory(criteria)
+            julia = install_julia(base, backend_expected["julia_archive_sha256"])
+        else:
+            gpu_rows, selected_uuid, julia = [], "", Path(preflight_julia)
         env = os.environ.copy()
         env.update({"JULIA_NUM_THREADS": str(backend_expected["julia_threads"]),
                     "CUDA_VISIBLE_DEVICES": backend_expected["cuda_visible_devices"],
                     "FD_SELECTED_GPU_UUID": selected_uuid})
+        if preflight_julia is not None:
+            env["FD_PREFLIGHT_STOP_BEFORE_SIM_STEP"] = "1"
         project = source / "julia/CFDSDFWaterLilyT4"
         set_stage("project_instantiate")
         command([str(julia), "--startup-file=no", f"--project={project}", "-e",
@@ -765,10 +777,12 @@ def run_main():
             entry = criteria["inputs"][name]
             if sha256(project / Path(entry["path"]).name) != entry["sha256"]:
                 raise RuntimeError(f"FD Julia {name} changed during Pkg.instantiate")
-        set_stage("t4_smoke")
-        smoke = command([str(julia), "--startup-file=no", f"--project={project}",
-                         str(source / criteria["inputs"]["kaggle_smoke"]["path"])],
-                        OUT / "julia_smoke.log", env=env, timeout=1200)
+        smoke = ""
+        if preflight_julia is None:
+            set_stage("t4_smoke")
+            smoke = command([str(julia), "--startup-file=no", f"--project={project}",
+                             str(source / criteria["inputs"]["kaggle_smoke"]["path"])],
+                            OUT / "julia_smoke.log", env=env, timeout=1200)
         markers = ("W0B_SMOKE_DONE", "CUDA_FUNCTIONAL true",
             f"GPU_COMPUTE_CAPABILITY {backend_expected['compute_capability']}",
             f"CUDA_DRIVER_VERSION {backend_expected['cuda_driver_api_version']}",
@@ -777,7 +791,7 @@ def run_main():
             f"CUDA_JL_VERSION {backend_expected['cuda_jl_version']}",
             f"WATERLILY_VERSION {backend_expected['waterlily_version']}",
             f"GPU_NAME {backend_expected['gpu_name']}", "NO_SOLVER_STEP")
-        if any(marker not in smoke for marker in markers):
+        if preflight_julia is None and any(marker not in smoke for marker in markers):
             raise RuntimeError("registered T4 no-solver smoke identity mismatch")
         queue_path = write_run_queue(base, dataset_dir, criteria)
         set_stage("julia_job", solver_step_invoked=[], solver_step_returned=[])
@@ -786,6 +800,15 @@ def run_main():
                  str(dataset_dir), str(queue_path), str(OUT)], OUT / "fd_v16.log", env=env,
                 timeout=criteria["measurement"]["aggregate_kernel_timeout_s"])
     log_text = (OUT / "fd_v16.log").read_text(errors="replace")
+    if preflight_julia is not None:
+        stops = [line.split()[-1] for line in log_text.splitlines()
+                 if line.startswith(("FD_PREFLIGHT_CPU_BOUNDARY ", "FD_PREFLIGHT_PRE_SIM_STEP "))]
+        if (stops != criteria["run_order"] or "FD_SOLVER_STEP_INVOKED" in log_text
+                or "FD_PREFLIGHT_DONE runs=33" not in log_text):
+            raise RuntimeError("FD preflight did not stop before sim_step! for the exact registered run order")
+        set_stage("preflight_boundary_reached", solver_started=False, run_count=len(stops))
+        return {"stage": STATE["stage"], "run_count": len(stops), "criteria_sha256": criteria_sha,
+                "source_commit": actual_commit, "boundary": "CPU" if "FD_PREFLIGHT_CPU_BOUNDARY" in log_text else "PRE_SIM_STEP"}
     invoked = [line.split()[-1] for line in log_text.splitlines() if line.startswith("FD_SOLVER_STEP_INVOKED ")]
     returned = [line.split()[-1] for line in log_text.splitlines() if line.startswith("FD_SOLVER_STEP_RETURNED ")]
     if invoked != criteria["run_order"] or returned != invoked:
