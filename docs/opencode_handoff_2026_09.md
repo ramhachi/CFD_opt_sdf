@@ -1,7 +1,7 @@
 # OpenCode Handoff: CFD2026_09
 
 Status: current repository-local working memory for a fresh session
-Snapshot date: 2026-09-28
+Snapshot date: 2026-09-29
 Scope: generic rigid-object aerodynamic topology and shape optimization with a
 canonical bounded Cartesian SDF `phi`, candidate WaterLily primal qualification,
 explicit topology-birth research, and independent body-fitted verification
@@ -33,7 +33,7 @@ The authority split is intentional:
 - `docs/fixed_grid_data_contract_v2.md` defines retained Stage T artifact semantics; it does not make density the current canonical design variable.
 - `docs/evidence/*.json` is machine-readable evidence; prose must not broaden its scope.
 
-## Current SDF-native architecture and status (2026-09-28)
+## Current SDF-native architecture and status (2026-09-29)
 
 The product objective is a generic aerodynamic topology and shape optimizer
 whose canonical variable is bounded Cartesian SDF `phi` (`phi < 0` solid,
@@ -72,9 +72,9 @@ an infrastructure choice, not a solver component.
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
-| Next W3 gate | W3 round 4 is closed. W4 implementation preparation is in progress; final registration is the next gate. |
-| W4 | Round-1/round-2 criteria and kernel `/1` diagnostic SHA `30e4a344…` are preserved. Round 3 (SHA `6cbe1576…`) and dataset version 2 were verified before exact kernel `/2` ran four primals and ended `ERROR` at T3/T4. Append-only diagnostic SHA `cde5c72b…`. Minimal box-maximum and ground-descriptor fixes with regressions are pushed as `52a50e4`; full suite 1,117 PASS/37 missing-`work/` failures/4 skipped. Round 4 is registered at SHA `3efc8133…` against source `b9ae43b`; fresh local dataset stage passes host and runner checks. Private dataset version 3 is ready with remote hashes verified; submit kernel version 3 next. W4 round 3 is not qualified; formal FD remains gated on host-verified W4 PASS. |
-| Centered-FD SDF derivatives | Formal qualification remains blocked pending W4. |
+| Next gate | W3 round 4 and W4 round 4 are closed. The next gate is separate immutable centered-FD criteria registration; no formal FD measurement has started. |
+| W4 | Immutable round 4 (SHA `3efc8133…`, source `b9ae43b`) ran exact private T4 kernel `/3`; dataset version 3 inventory was verified. Independent host verification passed T0-T10 for all four cases, including exact-window stationarity. Append-only result SHA `87a88178…`. The extended-domain fine-grid follow-up was not triggered. This qualifies only the registered finite-box sensitivity matrix, not grid/domain convergence or physical aerodynamics. |
+| Centered-FD SDF derivatives | Entry gate open after W4 host PASS; formal FD criteria and measurement remain unstarted. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
 | Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |

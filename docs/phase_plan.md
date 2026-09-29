@@ -1,6 +1,6 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-28
+Date: 2026-09-29
 Status: authoritative
 Scope: generic rigid-object aerodynamic topology and shape optimization
 Architecture decision: SDF-native production research direction adopted on 2026-09-26
@@ -138,8 +138,8 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Round-3 kernel `/2` completed four primals but failed registered T3/T4 implementation gates; round 4 preregistered and dataset stage verified | Round-3 diagnostic SHA `cde5c72b…` preserves exact logs/output and host-recomputed raw forces. T3/T4 fixes were pushed in `52a50e4`; criteria round 4 SHA `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` binds source `b9ae43b` and exact W3 round-4 PASS. Round-3 and round-4 frozen measurement/case/threshold contracts match. Fresh local stage passes host and runner checks; private dataset version 3 is ready and remote hashes match; kernel submit pending. Round 3 remains unqualified. |
-| Centered-FD SDF gradient oracle | Blocked pending W4 | Permanent independent numerical oracle; formal SDF directional-FD qualification follows W4 host-verified PASS. |
+| W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
+| Centered-FD SDF gradient oracle | Entry gate open; formal measurement not started | W4 host verification passed and the extended-domain follow-up condition is false. Register separate immutable FD criteria before any measurement. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -626,7 +626,7 @@ grid-independent downforce, high-Re or full-vehicle qualification.
 and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
 are retained historical plans; neither controls current execution.
 
-Current gates and immediate sequence as of 2026-09-28:
+Current gates and immediate sequence as of 2026-09-29:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
    diagnostic `/2` completed and passed host verification under immutable
@@ -642,18 +642,26 @@ Current gates and immediate sequence as of 2026-09-28:
    bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`. Exact
    private kernel `/5` passed host verification for T0-T10. The supported
    claim is only the registered WaterLily finite-box primal contract.
-3. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
-   remains unresolved. Physical-profile equivalence, grid/domain response,
-   gradient/reverse, topology, optimizer and shape update remain false. W4
-   implementation is prepared, but final criteria registration and measurement
-   remain pending. Formal FD remains gated on host-verified W4.
-4. **Register and run W4 grid/domain sensitivity** using the same canonical
-   SDF and registered WaterLily profile. W3 round 4 is the exact prerequisite;
-   all four cases are rerun. Round 1 is immutable and retained, but must not be
-   measured because the pre-upload host preflight found a dataset-filename
-   contract defect. Commit/push the corrected host/runner, then register round 2.
-5. **Qualify centered-FD SDF derivatives** after W4. Centered FD is the
-   permanent independent numerical gradient oracle.
+3. **W4 round-4 finite-box sensitivity matrix passed.** Immutable criteria
+   `3efc8133…` bound source `b9ae43b`, exact W3 round-4 PASS, and the registered
+   four-case matrix. Private dataset version 3 was remotely inventory-verified;
+   exact private kernel `/3` completed, and the independent host verifier passed
+   T0-T10. The append-only result is
+   [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
+   SHA-256 `87a88178…`. All four cases passed the 2% exact-window stationarity
+   gate; the domain response was below the 24-to-32 resolution response for
+   both drag and downforce, so no extended-domain fine-grid follow-up is
+   required. This does not qualify grid/domain convergence or physical
+   aerodynamics.
+4. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
+   remains unresolved. Physical-profile equivalence, absolute downforce,
+   grid/domain convergence, gradient/reverse, topology, optimizer and shape
+   update remain false. Do not modify historical W3/W4 criteria or evidence.
+5. **Prepare formal centered-FD qualification.** The entry gate is open, but no
+   formal FD measurement has started. Register separate immutable criteria
+   (including a perturbation-direction contract and epsilon ladder) before
+   running any centered differences. Centered FD remains the permanent
+   independent numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
    reverse AD, discrete-adjoint, or other methods against the qualified FD
    oracle. No production backend is selected or qualified.
@@ -668,15 +676,19 @@ Current gates and immediate sequence as of 2026-09-28:
 10. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
     cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
 
-Post-round-4 status is deliberately scoped: the registered finite-box primal
-contract passed (`primal_contract_qualified=true`); its broader
-`physical_profile_qualified=false` and the W3 v4 all-zero root-cause mapping
-remains open. `w4_qualified=false`, `grid_response_qualified=false`,
+Post-round-4 status remains deliberately scoped: W3's registered finite-box
+primal contract passed (`primal_contract_qualified=true`), and the W4
+registered finite-box sensitivity matrix passed
+(`w4_sensitivity_matrix_passed=true`). The W3 v4 all-zero force root-cause
+mapping remains open. `physical_profile_qualified=false`,
+`absolute_downforce_qualified=false`,
+`grid_or_domain_convergence_qualified=false`,
 `sdf_gradient_qualified=false`, `waterlily_reverse_cpu_qualified=false`,
 `waterlily_reverse_cuda_qualified=false`, `topology_birth_qualified=false`,
 and `shape_update_allowed=false`. W0/W1/sphere fixtures are capability evidence
-only. The registered v16 Stage V profile and two-domain comparison do not imply
-grid-independent or target-vehicle downforce qualification.
+only. The registered v16 Stage V profile, its two-domain comparison, and the
+WaterLily W4 sensitivity matrix do not imply grid-independent or target-vehicle
+downforce qualification.
 
 Kaggle and Colab provide reproducible execution, exact source/runtime binding,
 and evidence capture. They remain outside the solver/optimizer architecture.
