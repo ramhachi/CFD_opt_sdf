@@ -300,7 +300,7 @@ function run_w3_primal()
         "x_max_boundary\":\"WaterLily convective exit\",\"" *
         "side_top_normal_velocity\":\"zero\",\"" *
         "side_top_tangential_condition\":\"zero-Neumann\"}\n")
-    println("W3_V16_PRIMAL_DONE ", result)
+    println("W3_$(uppercase(STATE_LABEL))_PRIMAL_DONE ", result)
 end
 
 run_w3_primal()

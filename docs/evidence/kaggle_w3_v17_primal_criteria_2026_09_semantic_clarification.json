@@ -1,0 +1,16 @@
+{
+  "clarifies": {
+    "path": "docs/evidence/kaggle_w3_v17_primal_criteria_2026_09.json",
+    "sha256": "00af9ed92111b48a69d0eebebfa143db7e23c7caee322bb88cdb6ac36ff2e608"
+  },
+  "criteria_modified": false,
+  "field": "measurement.force_integration_body",
+  "future_rounds": "scripts/register_kaggle_w3_v17_primal_2026_09.py now writes the v17 label",
+  "immutable": true,
+  "intended_meaning": "canonical v17 candidate GridSDF only; do not integrate the auxiliary moving-ground half-space",
+  "kind": "append_only_semantic_clarification",
+  "measurement_changed": false,
+  "reason": "The v17 registrar inherited this label string from the v16 round-4 contract. The executed job integrates the candidate body built from the criteria-bound v17 state (T1 binds the v17 state/phi hashes), so only the label is stale; no measurement, gate or threshold changes.",
+  "registered_text": "canonical v16 candidate GridSDF only; do not integrate the auxiliary moving-ground half-space",
+  "schema_version": 1
+}

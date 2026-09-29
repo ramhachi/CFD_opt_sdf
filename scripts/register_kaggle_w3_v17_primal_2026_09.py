@@ -74,6 +74,9 @@ def build_criteria(source_commit: str) -> dict:
         "expected_margin_source": "host numpy zero-level margin of the v17 genesis phi, computed at registration before any solver run",
     })
     criteria["profile_adapter"]["point_shape"] = grid["point_shape"]
+    criteria["measurement"]["force_integration_body"] = (
+        f"canonical {LABEL} candidate GridSDF only; do not integrate the auxiliary moving-ground half-space"
+    )
     inputs = criteria["inputs"]
     inputs["canonical_state_npz"] = {"path": "sdf_design_state.npz", "sha256": genesis["state"]["state_file_sha256"],
                                      "location": "kaggle_dataset"}
