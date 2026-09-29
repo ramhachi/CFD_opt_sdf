@@ -36,11 +36,16 @@ inventory passed the runner's exact local host-input preflight before GPU
 inventory. Verification evidence is
 [`sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json),
 SHA-256 `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
-The exact round-3 kernel `/2` was submitted with the registered 14,400-second
-timeout and returned `KernelWorkerStatus.RUNNING`; solver start/progress and
-host verdict are not yet known. Submission checkpoint evidence is
-[`sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json),
-SHA-256 `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+The exact round-3 kernel `/2` ended in `ERROR` after starting the Julia job,
+but before any solver step. It hit a run-queue self-copy path error at
+`waterlily_sdf_directional_fd_v16_job.jl:304`; host verification failed closed
+because no `DONE` marker exists. The exact diagnostic is
+[`sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json),
+SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`,
+with detailed failure analysis in
+[`sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json),
+SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`.
+Formal FD, gradient, reverse, optimizer and shape update remain unqualified.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for

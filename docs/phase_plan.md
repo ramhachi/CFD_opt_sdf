@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 2 exact kernel `/1` failed during runner host-input preflight; no primal step began | Round-2 criteria SHA `150a6023…` and dataset v2 remain preserved. Kaggle output identifies an unimported `phi_sha256` `NameError` while writing canonical input identity, before GPU inventory, Julia setup, CUDA smoke, or `sim_step!`. Host diagnostic SHA `1c39d569…`; fix the source, preserve this round, and register round 3 without changing the measurement contract. No FD/gradient qualification is granted. |
+| Centered-FD SDF directional oracle | Round 3 exact kernel `/2` ended `ERROR` in Julia job initialization before a primal step | Round-3 criteria SHA `45fb570b…`, dataset v3, and diagnostic SHA `4044e4f0…` remain preserved. CUDA T4 smoke passed; Julia failed at a same-path copy of the run queue before `CUDA.memory_info()` or `sim_step!`. Host verifier failed closed on the missing `DONE` marker. Fix only the input/output queue path collision and preregister round 4 with unchanged measurement fields. No FD/gradient qualification is granted. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -4469,3 +4469,67 @@ its exact kernel `/1` diagnostic remain immutable.
   verify its output with the host verifier, and append a round-3 result or
   diagnostic. Stop at that verification boundary; reverse/adjoint, optimizer,
   shape update, and topology birth remain outside this work slice.
+
+### 2026-09-29 FD round-3 kernel `/2` terminal pre-primal diagnostic
+
+This terminal checkpoint supersedes only the earlier `/2` `RUNNING` status.
+The round-3 criteria, round-2 diagnostic, and round-3 dataset verification
+evidence remain immutable.
+
+- **Registered:** exact round-3 criteria file SHA-256
+  `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  canonical SHA-256
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`,
+  source commit `9978eb4f19c716b9666c50c18261738edd978e4f`; private dataset
+  version 3 was ready and its 37 registered files matched by path/size/SHA.
+- **Submitted:** Kaggle returned exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/2`; it ended in
+  `KernelWorkerStatus.ERROR` after about 328 seconds. Status SHA-256
+  `87263620a40ab44e2deafcb0d99b5b15a7b0de047373bde7d6402e645d104174`.
+- **Reached:** registered source commit was fetched and checked out. The full
+  33-row run queue was read and validated; canonical NPZ/C/F hashes, CPU margin,
+  masks, three directions and 30 perturbations were emitted. Julia project
+  instantiate passed. The no-solver T4 smoke passed with Julia 1.12.6,
+  CUDA.jl 6.3.1, CUDA runtime 12.8.0, driver API 13.3.0, WaterLily 1.8.0 and
+  Tesla T4 inventory.
+- **Failure locus:** exact `fd_v16.log` SHA-256
+  `4632902eed4ebc6aad21f0100b4c81a13a7e9c883a5625d8351dbdda1dd2c3f8`
+  reports `ArgumentError: 'src' and 'dst' refer to the same file/dir. This is
+  not supported.` The registered Julia job attempted to copy
+  `/kaggle/working/sdf_directional_fd_v16/run_queue.tsv` onto itself at line
+  304, before `CUDA.memory_info()`, body/simulation construction, or the first
+  `sim_step!`. Runner state is `stage=julia_job`, `solver_started=false`, with
+  empty invoked/returned step lists and no Julia run/step markers. This is a
+  Julia job pre-primal harness initialization failure, not package resolution,
+  CUDA initialization, SDF transfer, WaterLily construction, force integration,
+  or long-horizon integration.
+- **Exact artifacts:** round-3 diagnostic
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json`,
+  SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`;
+  exact `ERROR.txt` SHA-256
+  `968da5e0f673790b2c250b60da07025c177525cb52a4ddc48ca868762c9a0dcf`;
+  output `sha256.json` file SHA-256
+  `51e1d939d4aeee1bb9eb1be6137be113f785252517de27d18ba4b6ba48a7be1f`;
+  downloaded Kaggle kernel log SHA-256
+  `b77bf9f207be08236ed90d9b4ed155257b7b936fdbac3cbbd87297ceccbd024d`;
+  Kaggle logs-command response SHA-256
+  `0201d4054bff91dea7f6ee03d8f1a9fc09e03d126bd6c976cc57db30af4e1822`;
+  download response SHA-256
+  `cb6330b63a951b06a3bf48da889f8cd555a0e1f79a14f04a7016c03add533c7d`.
+  The output manifest is consistent; there are no force CSVs or `DONE` marker.
+- **Host verified:** the strict verifier was run against exact dataset version 3
+  and kernel `/2`; it failed closed before gate evaluation with
+  `ValueError: FD Kaggle output has no DONE marker`. The verifier correctly
+  grants no PASS. Append-only failure analysis
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`,
+  SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`,
+  binds the exact Julia exception, stage and hashes.
+- **Qualified:** FD oracle, flow16 FD, full gradient, reverse, optimizer,
+  topology and shape update remain false. Round 3 is a pre-primal diagnostic;
+  it is not a measurement result.
+- **Open:** preserve this terminal diagnostic, move only the queue input file
+  to the already available temporary `base` directory so it differs from
+  `OUT/run_queue.tsv`, add a focused regression, validate and push the source,
+  then register immutable round 4 against this exact round-3 diagnostic. Keep
+  the 33-run contract, thresholds and all measurement semantics unchanged.
+  Do not retry round 3 or submit a new kernel under its criteria.

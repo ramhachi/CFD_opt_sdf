@@ -2746,3 +2746,50 @@ Current operational state:
   content and the output file list is empty; solver start/progress is unknown.
   Stop after exact-version host verification and append a round-3 result or
   diagnostic.
+
+## 2026-09-29: FD round-3 kernel `/2` terminal pre-primal failure
+
+This section supersedes the preceding checkpoint's `RUNNING` status. Exact
+kernel `/2` ended in `ERROR`; the run did not reach a primal step.
+
+- **Execution:** source fetch/checkout to registered commit
+  `9978eb4f19c716b9666c50c18261738edd978e4f`, Julia instantiate, GPU inventory,
+  and the registered no-solver CUDA/T4 smoke completed. CPU canonical identity
+  preflight emitted state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, C/F
+  phi hashes, margin `0.3499999939931499 m`, four masks, three directions and
+  30 perturbations. Julia validated the 33-row queue before failing.
+- **Failure:** `fd_v16.log` SHA-256
+  `4632902eed4ebc6aad21f0100b4c81a13a7e9c883a5625d8351dbdda1dd2c3f8`
+  reports `ArgumentError: 'src' and 'dst' refer to the same file/dir. This is
+  not supported.` `queue_path` and `run_queue_summary` both resolve to
+  `/kaggle/working/sdf_directional_fd_v16/run_queue.tsv`; the self-copy is at
+  Julia job line 304, before `CUDA.memory_info()` and before the first
+  `sim_step!`. Execution state has `stage=julia_job`,
+  `solver_started=false`, `solver_step_invoked=[]`, and
+  `solver_step_returned=[]`.
+- **Host verifier:** the exact round-3 criteria, dataset version 3, and kernel
+  `/2` were passed to `verify_kaggle_sdf_directional_fd_v16.py`. It returned
+  exit 1 and failed closed before evaluating gates because `DONE` is absent.
+  The output SHA manifest is consistent, contains no force CSVs, and has no
+  `DONE` marker.
+- **Evidence:** main append-only diagnostic
+  [`sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json)
+  SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`;
+  detailed failure analysis
+  [`sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json)
+  SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`.
+  `ERROR.txt` SHA-256 is
+  `968da5e0f673790b2c250b60da07025c177525cb52a4ddc48ca868762c9a0dcf`;
+  output `sha256.json` SHA-256 is
+  `51e1d939d4aeee1bb9eb1be6137be113f785252517de27d18ba4b6ba48a7be1f`;
+  downloaded Kaggle log SHA-256 is
+  `b77bf9f207be08236ed90d9b4ed155257b7b936fdbac3cbbd87297ceccbd024d`;
+  status SHA-256 is
+  `87263620a40ab44e2deafcb0d99b5b15a7b0de047373bde7d6402e645d104174`.
+- **Next:** do not retry round 3 or alter its thresholds. Change only the
+  runner's queue input path to a file under its existing temporary `base`
+  directory; retain `OUT/run_queue.tsv` as the Julia job's output snapshot.
+  Add a focused path-separation regression, validate, commit/push, and register
+  immutable round 4 bound to the round-3 `/2` diagnostic. FD/gradient/reverse/
+  optimizer/topology/shape-update flags remain false.
