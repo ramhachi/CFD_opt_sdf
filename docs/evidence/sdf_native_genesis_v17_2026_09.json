@@ -1,0 +1,113 @@
+{
+  "claims_not_supported": [
+    "no WaterLily primal, FD oracle, SDF gradient, optimizer or physical qualification",
+    "the census is at design-cell centers, not at WaterLily flow sample points",
+    "v16 qualification evidence (W1-W4, FD rounds) does not transfer to v17"
+  ],
+  "claims_supported": [
+    "v17 is the registered v16 source surface sampled at h/2 with the same resampling code that reproduces v16 bit-for-bit at h",
+    "the force-band trilinear gradient census of v16 and v17 at design-cell centers"
+  ],
+  "environment": {
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "trimesh": "5.1.0"
+  },
+  "evidence_class": "contract_and_capability",
+  "existing_evidence_modified": false,
+  "flags": {
+    "registered": true,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false
+  },
+  "force_band_gradient_gate": {
+    "v16_reference": {
+      "cells_gradient_below_1e-6": 66,
+      "cells_gradient_below_threshold": 66,
+      "flat_gradient_threshold": 0.25,
+      "force_band_cells": 2470,
+      "force_band_m": 0.05,
+      "gradient_quantiles": {
+        "0.01": 1.1551730740130387e-07,
+        "0.05": 0.43301268836933215,
+        "0.5": 0.9999998364068082,
+        "0.95": 1.0000000745058089
+      },
+      "near_zero_nodes_abs_phi_below_1e-7": 1344,
+      "verdict": "fail"
+    },
+    "v17": {
+      "cells_gradient_below_1e-6": 0,
+      "cells_gradient_below_threshold": 3,
+      "flat_gradient_threshold": 0.25,
+      "force_band_cells": 19376,
+      "force_band_m": 0.05,
+      "gradient_quantiles": {
+        "0.01": 0.43301248337579396,
+        "0.05": 0.7071064650852013,
+        "0.5": 0.9999999089185524,
+        "0.95": 1.0000000894069672
+      },
+      "near_zero_nodes_abs_phi_below_1e-7": 5370,
+      "verdict": "fail"
+    }
+  },
+  "genesis_id": "sdf_native_genesis_v17_2026_09",
+  "grid_identity": {
+    "cell_shape": [
+      120,
+      64,
+      48
+    ],
+    "location": "point",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "point_shape": [
+      121,
+      65,
+      49
+    ],
+    "spacing_m": 0.025
+  },
+  "immutable": true,
+  "issue": "#43",
+  "kind": "sdf_native_genesis_v17",
+  "lineage": {
+    "handoff_manifest_sha256": "a79135e33b9869b356050984f04e209a3210e4dc4b11d160e45fc82d839952c7",
+    "source_density_vti_sha256": "8497ad175167d75385f8ea4757a7a068741bea4dd9a75685ab3fecf0592207bd",
+    "surface_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "v16_genesis_evidence": {
+      "path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+      "sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670"
+    }
+  },
+  "mask_point_counts": {
+    "design": 107415,
+    "fixed_solid": 0,
+    "forbidden": 0,
+    "root": 0
+  },
+  "mask_projection_policy": "v16_handoff_mask_projection_v1",
+  "mask_refinement": "source cell masks repeated 2x per axis, then projected with the v16 genesis policies",
+  "motivation": "#36: v16 has 66 force-band cells with near-zero trilinear gradient from 1-cell-thick plates whose faces lie on h=0.05 nodes",
+  "reproduction_gate_refine_1_vs_v16": {
+    "bitwise_equal": true,
+    "max_abs_difference_m": 0.0
+  },
+  "schema_version": 1,
+  "solver_started": false,
+  "state": {
+    "phi_f4_fortran_path": "work/sdf_native_genesis_v17/canonical_v17_phi_f4_fortran.raw",
+    "phi_f4_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "phi_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+    "state_file_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "state_path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "supersedes_for_fd": "sdf_native_genesis_v16_2026_09 (v16 is unchanged and remains valid history)"
+}

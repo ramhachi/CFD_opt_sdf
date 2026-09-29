@@ -15,11 +15,12 @@ using .CFDSDFWaterLily.GridSDFBody
 Base.include(CFDSDFWaterLily, joinpath(SRC, "V16PhysicalProfile.jl"))
 include(joinpath(@__DIR__, "sdf_native_fd04_regularized_body.jl"))
 
-const SHAPE = (61, 33, 25)
+const SHAPE = Tuple(parse.(Int, split(get(ENV, "FD04_SHAPE", "61,33,25"), ",")))
+const HD = parse(Float64, get(ENV, "FD04_H", "0.05"))  # design-lattice spacing [m]
 const DIRECTIONS = ("D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026")
 const EPSILONS = ("0p0005", "0p0025", "0p0100")
 read_phi(path) = reshape(copy(reinterpret(Float32, read(path))), SHAPE)
-make_grid(phi) = GridSDF(phi; origin = (-1.0, -0.8, -0.6), h = (0.05, 0.05, 0.05),
+make_grid(phi) = GridSDF(phi; origin = (-1.0, -0.8, -0.6), h = (HD, HD, HD),
     outside_value = 3.0, margin_m = 0.15)
 
 function run_case(phi, variant, t_end, w0)
