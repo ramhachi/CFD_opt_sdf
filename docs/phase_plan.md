@@ -4447,17 +4447,25 @@ its exact kernel `/1` diagnostic remain immutable.
   `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, C/F
   phi identity, four masks, three directions, and 30 perturbations, and stopped
   before `gpu_inventory()`.
-- **Submitted / measured / verified:** only round-2 kernel `/1` exists and is
-  preserved as `ERROR`; `solver_started=false`, Julia/CUDA were not reached,
-  and no `sim_step!` or FD measurement occurred. Round-3 dataset staging,
-  remote upload/verification, and kernel submission have not started.
+- **Submitted:** the exact registered private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/2` was returned by
+  Kaggle and is `KernelWorkerStatus.RUNNING` (observed at
+  `2026-09-29T07:56:16Z`). The push used the registered 14,400-second timeout.
+  Append-only submission checkpoint
+  `docs/evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`
+  has SHA-256
+  `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+- **Measured / verified:** solver start/progress is not yet observable from
+  the current status/log/output response; do not infer `solver_started` from
+  `RUNNING`. No terminal logs/output or host verdict are available yet. Round-2
+  kernel `/1` remains preserved as `ERROR` with `solver_started=false`.
 - **Qualified:** all FD-oracle, field-gradient, reverse, optimizer, topology,
   and shape-update flags remain false.
 - **Source commit:** runner, tests, registrar round-3 support, and mutable
   draft identity are committed and pushed as
   `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. The source tree is clean at that
   commit before the current documentation update.
-- **Open:** commit the dataset verification evidence/current-status update,
-  then submit the unique private T4 kernel using the registered criteria. Use
-  the actual returned version and collect only that exact version's status,
-  logs, and output for host verification.
+- **Open:** collect terminal status, logs, and output for exact kernel `/2`,
+  verify its output with the host verifier, and append a round-3 result or
+  diagnostic. Stop at that verification boundary; reverse/adjoint, optimizer,
+  shape update, and topology birth remain outside this work slice.

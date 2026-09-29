@@ -2697,8 +2697,8 @@ Current operational state:
 
 - **Implemented / pushed:** runner scope repair, executable regression,
   round-3 registrar, and round-3 draft metadata are in source commit
-  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. Current-status documentation is
-  being updated before immutable registration.
+  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`; immutable criteria and dataset
+  verification were later committed and pushed as separate evidence updates.
 - **Registered:** immutable round 3 is now registered. Its criteria path is
   `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json`, file
   SHA `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
@@ -2734,7 +2734,15 @@ Current operational state:
   canonical C/F hashes, CPU margin `0.3499999939931499 m`, four masks, three
   directions, and 30 perturbations. `gpu_inventory()` was not called.
 
-- **Open:** commit this dataset verification evidence/status update, then
-  submit the unique private retry kernel on T4 and collect the actual returned
-  version. Never assume `/2`; bind status, logs, output, and host verification
-  to the exact returned version. Stop after exact-version host verification.
+- **Submitted:** exact private T4 kernel `/2` was returned successfully and is
+  `KernelWorkerStatus.RUNNING` (submission checkpoint observed at
+  `2026-09-29T07:56:16Z`). Push used the registered 14,400-second timeout.
+  Append-only checkpoint evidence
+  [`sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json)
+  SHA-256 is
+  `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+- **Open:** keep monitoring only exact `/2`, then collect its terminal status,
+  logs, and output and run the host verifier. The current logs response has no
+  content and the output file list is empty; solver start/progress is unknown.
+  Stop after exact-version host verification and append a round-3 result or
+  diagnostic.

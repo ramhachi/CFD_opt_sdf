@@ -36,7 +36,12 @@ inventory passed the runner's exact local host-input preflight before GPU
 inventory. Verification evidence is
 [`sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json),
 SHA-256 `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
-No round-3 kernel has been submitted and no FD measurement has started. See
+The exact round-3 kernel `/2` was submitted with the registered 14,400-second
+timeout and returned `KernelWorkerStatus.RUNNING`; solver start/progress and
+host verdict are not yet known. Submission checkpoint evidence is
+[`sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json),
+SHA-256 `379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629`.
+See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
 version-bound commands and artifacts.
