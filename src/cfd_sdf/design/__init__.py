@@ -15,6 +15,16 @@ from .sdf_state import (
     SDFStateError,
     sdf_state_sha256,
 )
+from .topology_policy import (
+    SDF_TOPOLOGY_POLICY_ID,
+    SDF_TOPOLOGY_POLICY_SCHEMA_VERSION,
+    SDFTopologyAdmissibility,
+    SDFTopologyFeatureMetrics,
+    SDFTopologyPolicy,
+    SDFTopologyPolicyError,
+    classify_topology_events,
+    evaluate_sdf_topology_transition,
+)
 
 __all__ = [
     "DEFAULT_REINITIALIZATION_POLICY_ID",
@@ -28,4 +38,12 @@ __all__ = [
     "sdf_state_sha256",
     "sdf_state_from_handoff",
     "persist_genesis_report",
+    "SDF_TOPOLOGY_POLICY_ID",
+    "SDF_TOPOLOGY_POLICY_SCHEMA_VERSION",
+    "SDFTopologyAdmissibility",
+    "SDFTopologyFeatureMetrics",
+    "SDFTopologyPolicy",
+    "SDFTopologyPolicyError",
+    "classify_topology_events",
+    "evaluate_sdf_topology_transition",
 ]

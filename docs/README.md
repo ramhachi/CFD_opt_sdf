@@ -69,6 +69,9 @@ Start here in a new terminal, after reading the repository root
 - [`fsae_readiness_execution_plan.md`](fsae_readiness_execution_plan.md)
   — implementation packages, evidence gates, replacement policy, and the
   entry conditions for the later FSAE full-vehicle problem.
+- [`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md)
+  — registered SDF topology-policy semantics, immutable registration hash,
+  and the unresolved v16 Birth-0 inputs.
 - [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
   — adopted post-PQ1 plan for retaining T -> S -> V while closing the
   nonlinear volume/oracle/FD-bracket path, bounding the remaining Stage T
