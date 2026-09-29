@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 1 preserved as unsubmitted diagnostic; immutable round 2 registered before measurement | Round 2 criteria SHA `150a6023…` (canonical `91756109…`) binds source `178792e…`, the unique kernel slug, unchanged dataset ID, exact W3/W4 PASS evidence, and the unchanged round-1 measurement contract. Round 1 SHA `ad0bd7dc…` remains unchanged. Private dataset v1 is ready but contains round-1 criteria; create and verify v2 before submitting. No FD measurement has started; this qualifies no gradient field. |
+| Centered-FD SDF directional oracle | Round 2 exact kernel `/1` failed during runner host-input preflight; no primal step began | Round-2 criteria SHA `150a6023…` and dataset v2 remain preserved. Kaggle output identifies an unimported `phi_sha256` `NameError` while writing canonical input identity, before GPU inventory, Julia setup, CUDA smoke, or `sim_step!`. Host diagnostic SHA `1c39d569…`; fix the source, preserve this round, and register round 3 without changing the measurement contract. No FD/gradient qualification is granted. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -4316,3 +4316,70 @@ immutable round 2 before any FD primal ran:
 - **Open:** commit this append-only round-2 criteria record, prepare the exact
   dataset from round 2, publish and remotely verify the new version, then
   submit one exact private T4 kernel and collect/host-verify that exact version.
+
+### 2026-09-29 FD round-2 kernel version 1 host-preflight diagnostic
+
+This entry supersedes the preceding round-2 registered checkpoint's
+“dataset v2 and the new kernel do not yet exist” status. Round 2 remains
+immutable and unchanged. Private dataset version 2 is `ready`; its remote
+38-file payload was downloaded and all names, sizes and SHA-256 values matched
+the round-2 local manifest. The remote inventory audit SHA-256 is
+`223876dcef040be82ab80f5e6036220da38d21232efd1a0c134c928126b56e26`.
+
+Exact private kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/1` ended in
+`KernelWorkerStatus.ERROR`. Kaggle fetched and checked out exact source commit
+`178792e9065df87d87ea1d445baaedace404304e`; dataset criteria, sidecar and
+manifest were present and verified by the runner. The runner reached
+`host_input_preflight`, then raised:
+
+```text
+NameError: name 'phi_sha256' is not defined
+```
+
+The missing import occurs while assembling the canonical state identity
+summary in `run_main`, before GPU inventory, Julia installation, CUDA smoke,
+Julia job start or the first `sim_step!`. Runner execution state records
+`solver_started=false`, an empty invoked-step list and stage
+`host_input_preflight`. This is a runner/source integration failure, not an FD
+measurement or a numerical gate result.
+
+Exact captured artifacts (all under ignored `work/`):
+
+- Status file SHA-256:
+  `88172e3e7f3b67a7250a9e2621f23f0a57ac32d8d14122897884eb065196cfc9`.
+- `kaggle kernels logs` response SHA-256:
+  `f9dfe268c59efc836d6cd72641b459fca4f69cb538b62f85dc100096b2174563`.
+- Downloaded raw kernel log SHA-256:
+  `00e2811704d8bb560bf938b0b52ffd3e1ee36107f22ab025ecbf247ab76fb710`.
+- `ERROR.txt` SHA-256:
+  `1311692cc5419f0d4ac45682d1a43bf4514f516942fa32abcff21fd059fb1ca2`.
+- Runner output manifest SHA-256:
+  `41bbafba85e9ebea4a8d2726db574d1a45ef67b978c1fb58eb69d5311187812f`; all
+  downloaded output files matched it.
+- Execution-state SHA-256:
+  `86bf0ed3e5b0d3f97dcfc913240b0e86f054f6b4c6699d579a0429108c17b5e2`.
+- Mount inventory SHA-256:
+  `73e3dc66c814f380c7e78f44060541200fbbd42eb463eb3a763edddb5498b0a5`.
+- Output-download command capture SHA-256:
+  `041f94f82ed412b8b91716a737964c50dbeaeb9793d2cda4d4ef2f3b4862ed2e`.
+- Host verifier rejected the incomplete output for missing `DONE` and wrote
+  append-only diagnostic
+  [`sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json),
+  file/sidecar SHA-256
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+
+- **Implemented:** round-2 runner source was the registered source; its missing
+  `phi_sha256` import is isolated. No fix has been applied yet.
+- **Registered:** round 2 criteria and dataset v2 remain immutable/preserved.
+- **Submitted:** exact kernel `/1` ended `ERROR`; exact status, logs and output
+  are recovered. No subsequent kernel version exists yet.
+- **Measured / verified:** no Julia/CUDA setup, GPU inventory, solver step,
+  FD response or host PASS occurred. The host diagnostic keeps all
+  qualification flags false.
+- **Qualified:** directional oracle, gradient field, reverse mode, optimizer,
+  topology and shape update remain false.
+- **Open:** add the missing import and a regression test; validate, commit/push
+  the minimal fix, preregister round 3 against this diagnostic and unchanged
+  numerical contract, upload/verify dataset v3, submit the next exact kernel
+  version, and resume host verification.

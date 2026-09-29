@@ -2609,3 +2609,45 @@ exact version to become `ready`, download it, and compare every path/hash to
 the manifest. Only after the remote match, push and execute the exact new
 private T4 kernel slug with the registered 14,400 second timeout. Stop after
 exact-version host verification.
+
+## 2026-09-29: FD round-2 kernel `/1` failed before Julia or CUDA
+
+This entry supersedes the immediately preceding round-2 registered checkpoint
+that said dataset v2 and a kernel did not yet exist. Round 2 remains immutable.
+
+- Dataset version 2 is `ready`; 38 remote files were compared with the
+  round-2 stage and manifest, and every path, size and SHA-256 matched. Remote
+  inventory audit SHA-256:
+  `223876dcef040be82ab80f5e6036220da38d21232efd1a0c134c928126b56e26`.
+- Exact kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/1` ended in
+  `KernelWorkerStatus.ERROR`.
+- Kaggle source fetch and checkout succeeded at registered commit
+  `178792e9065df87d87ea1d445baaedace404304e`. Runner verified the dataset
+  manifest then failed at stage `host_input_preflight` while assembling the
+  canonical state identity because `phi_sha256` is not imported in the Python
+  runner. It did not reach GPU inventory, Julia install, CUDA smoke, Julia job
+  or `sim_step!`. `execution_state.json` has `solver_started=false`, no
+  invoked solver steps and that exact stage.
+- Captured hashes:
+  - exact status: `88172e3e7f3b67a7250a9e2621f23f0a57ac32d8d14122897884eb065196cfc9`
+  - Kaggle logs response: `f9dfe268c59efc836d6cd72641b459fca4f69cb538b62f85dc100096b2174563`
+  - downloaded raw kernel log: `00e2811704d8bb560bf938b0b52ffd3e1ee36107f22ab025ecbf247ab76fb710`
+  - `ERROR.txt`: `1311692cc5419f0d4ac45682d1a43bf4514f516942fa32abcff21fd059fb1ca2`
+  - consistent output `sha256.json`:
+    `41bbafba85e9ebea4a8d2726db574d1a45ef67b978c1fb58eb69d5311187812f`
+  - output download capture:
+    `041f94f82ed412b8b91716a737964c50dbeaeb9793d2cda4d4ef2f3b4862ed2e`
+- The host verifier refused to report PASS because the output correctly lacks a
+  `DONE` marker. It wrote append-only diagnostic
+  [`sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json),
+  file/sidecar SHA-256
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+
+This is a Python runner integration defect, not a solver measurement. Do not
+change round-2 criteria or thresholds, and do not count `/1` as a measurement.
+Next add the single missing `phi_sha256` import and a regression test, validate
+and commit/push the source fix, preregister round 3 bound to this diagnostic
+and unchanged measurement fields, publish/verify dataset version 3, and submit
+the next exact kernel version. All FD/gradient qualification flags remain
+false.
