@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,3 +102,42 @@ def verify_backend_identity(observed: dict[str, str], *, root: Path = ROOT) -> d
         "observed": dict(observed),
         "mismatches": mismatches,
     }
+
+
+KAGGLE_EXACT_FIELDS = (
+    "gpu_name",
+    "compute_capability",
+    "cuda_jl_version",
+    "waterlily_version",
+    "julia_version",
+    "cuda_runtime_version",
+    "cuda_driver_api_version",
+)
+_GPU_UUID = re.compile(r"GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+
+def verify_kaggle_backend_identity(observed: dict, backend: dict) -> dict[str, object]:
+    """Compare an observed Kaggle T4 identity against a registered `backend` block.
+
+    Kaggle rotates the physical GPU per run, so the UUID is never compared with a
+    registered value: it must only be well-formed, unique, and in the inventory.
+    The NVIDIA driver is matched by the registered pattern.
+    """
+    mismatches: list[dict[str, str]] = []
+
+    def check(field: str, ok: bool, expected: object) -> None:
+        if not ok:
+            mismatches.append({"field": field, "expected": str(expected), "observed": str(observed.get(field))})
+
+    for field in KAGGLE_EXACT_FIELDS:
+        check(field, str(observed.get(field)) == str(backend[field]), backend[field])
+    check("driver_version", re.fullmatch(backend["driver_version_pattern"], str(observed.get("driver_version"))) is not None,
+          backend["driver_version_pattern"])
+    for field in ("memory_total_mib", "project_sha256", "manifest_sha256"):
+        check(field, observed.get(field) == backend[field], backend[field])
+    inventory = list(observed.get("inventory_uuids") or [])
+    uuid = str(observed.get("gpu_uuid"))
+    check("gpu_uuid", _GPU_UUID.fullmatch(uuid) is not None and uuid in inventory
+          and len(set(inventory)) == len(inventory), "well-formed, unique, in inventory")
+    check("gpu_count", len(inventory) >= backend["gpu_count_min"], f">={backend['gpu_count_min']}")
+    return {"pass": not mismatches, "observed": dict(observed), "mismatches": mismatches}
