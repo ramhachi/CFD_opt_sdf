@@ -17,7 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 CRITERIA = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09.json"
 DATASET_DIR = ROOT / "work/kaggle_w3_v16_dataset"
 RUNNER = ROOT / "infra/kaggle/kernel_w3/runner.py"
-OUTPUT_NAME = "w3_v16"
+
+
+def state_label(criteria: dict) -> str:
+    """Canonical-state label; historical v16 criteria predate the field."""
+    return criteria["geometry"].get("state_label", "v16")
 
 
 def sha256(path: Path) -> str:
@@ -87,21 +91,22 @@ def verify_registered_source(criteria: dict) -> bool:
 
 
 def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tuple[dict, float]:
-    criteria_file = dataset_dir / "w3_v16_criteria.json"
+    label = state_label(criteria)
+    criteria_file = dataset_dir / f"w3_{label}_criteria.json"
     criteria_sidecar = criteria_file.with_suffix(criteria_file.suffix + ".sha256")
     require(criteria_file.is_file() and sha256(criteria_file) == criteria_sha,
             "staged W3 criteria differs from local preregistration")
     require(criteria_sidecar.is_file() and criteria_sidecar.read_text().strip() == criteria_sha,
             "staged W3 criteria sidecar differs from local preregistration")
-    manifest_path = dataset_dir / "w3_v16_dataset_manifest.json"
+    manifest_path = dataset_dir / f"w3_{label}_dataset_manifest.json"
     manifest = json.loads(manifest_path.read_text())
     require(manifest.get("dataset_id") == criteria["input_dataset_id"],
             "staged W3 dataset id mismatch")
     require(manifest.get("criteria_sha256") == criteria_sha,
             "staged W3 dataset manifest criteria binding mismatch")
     expected_dataset_names = {
-        "sdf_design_state.npz", "w3_v16_criteria.json",
-        "w3_v16_criteria.json.sha256", "canonical_v16_phi_f4_fortran.raw",
+        "sdf_design_state.npz", f"w3_{label}_criteria.json",
+        f"w3_{label}_criteria.json.sha256", criteria["inputs"]["canonical_phi_fortran_raw"]["path"],
     }
     require(set(manifest.get("files", {})) == expected_dataset_names,
             "staged W3 dataset file inventory mismatch")
@@ -109,9 +114,9 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
     state_path = dataset_dir / criteria["inputs"]["canonical_state_npz"]["path"]
     raw_path = dataset_dir / criteria["inputs"]["canonical_phi_fortran_raw"]["path"]
     require(sha256(state_path) == criteria["inputs"]["canonical_state_npz"]["sha256"],
-            "staged canonical v16 NPZ hash mismatch")
+            "staged canonical NPZ hash mismatch")
     require(sha256(raw_path) == criteria["inputs"]["canonical_phi_fortran_raw"]["sha256"],
-            "staged canonical v16 Fortran phi hash mismatch")
+            "staged canonical Fortran phi hash mismatch")
     for name, expected in manifest["files"].items():
         path = dataset_dir / name
         require(path.is_file() and sha256(path) == expected,
@@ -121,20 +126,20 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
         metadata = json.loads(str(archive["metadata"].item()))
         phi = np.asarray(archive["phi"], dtype="<f4")
     geometry = criteria["geometry"]
-    require(list(phi.shape) == geometry["point_shape"], "canonical v16 phi shape mismatch")
-    require(np.isfinite(phi).all(), "canonical v16 phi contains non-finite values")
+    require(list(phi.shape) == geometry["point_shape"], "canonical phi shape mismatch")
+    require(np.isfinite(phi).all(), "canonical phi contains non-finite values")
     require(metadata.get("state_sha256") == geometry["state_sha256"],
-            "canonical v16 state metadata hash mismatch")
+            "canonical state metadata hash mismatch")
     require(metadata.get("source_sha256") == geometry["source_surface_sha256"],
-            "canonical v16 source-surface lineage mismatch")
+            "canonical source-surface lineage mismatch")
     require(metadata.get("shape") == geometry["point_shape"]
             and metadata.get("origin_m") == geometry["canonical_sdf_origin_m"]
             and metadata.get("spacing_m") == geometry["spacing_m"],
-            "canonical v16 world-grid metadata mismatch")
+            "canonical world-grid metadata mismatch")
     phi_c = hashlib.sha256(np.ascontiguousarray(phi, dtype="<f4").tobytes(order="C")).hexdigest()
     phi_f = hashlib.sha256(np.asarray(phi, dtype="<f4", order="F").tobytes(order="F")).hexdigest()
-    require(phi_c == geometry["phi_c_order_sha256"], "canonical v16 C-order phi hash mismatch")
-    require(phi_f == geometry["phi_fortran_sha256"], "canonical v16 Fortran phi hash mismatch")
+    require(phi_c == geometry["phi_c_order_sha256"], "canonical C-order phi hash mismatch")
+    require(phi_f == geometry["phi_fortran_sha256"], "canonical Fortran phi hash mismatch")
     require(raw_path.read_bytes() == np.asarray(phi, dtype="<f4", order="F").tobytes(order="F"),
             "staged raw phi bytes differ from canonical NPZ")
 
@@ -145,7 +150,7 @@ def verify_dataset(criteria: dict, criteria_sha: str, dataset_dir: Path) -> tupl
     iy = np.broadcast_to(gaps[1][None, :, None], phi.shape)
     iz = np.broadcast_to(gaps[2][None, None, :], phi.shape)
     solid = phi < 0
-    require(solid.any(), "canonical v16 phi has no solid samples")
+    require(solid.any(), "canonical phi has no solid samples")
     margin = float(np.min(np.minimum(np.minimum(ix, iy), iz)[solid] + phi[solid]))
     return metadata, margin
 
@@ -411,7 +416,8 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     criteria, criteria_sha = load_criteria(criteria_path)
     source_ok = verify_registered_source(criteria)
     metadata, margin = verify_dataset(criteria, criteria_sha, dataset_dir)
-    folder = download / OUTPUT_NAME if (download / OUTPUT_NAME).is_dir() else download
+    label = state_label(criteria)
+    folder = download / f"w3_{label}" if (download / f"w3_{label}").is_dir() else download
     file_count, output_manifest_sha = verify_output_files(folder)
     artifact_manifest = json.loads((folder / "sha256.json").read_text())
     kaggle_log_sha = None
@@ -419,7 +425,7 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
         kaggle_log_path = Path(kaggle_log_path)
         require(kaggle_log_path.is_file(), "exact-version Kaggle log is missing")
         kaggle_log_sha = sha256(kaggle_log_path)
-    summary = json.loads((folder / "v16.summary.json").read_text())
+    summary = json.loads((folder / f"{label}.summary.json").read_text())
     outcome = json.loads((folder / "outcome.json").read_text())
     fingerprint = json.loads((folder / "fingerprint.json").read_text())
     measurement = criteria["measurement"]
@@ -443,7 +449,7 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
             and fingerprint.get("source_commit") == criteria["source_commit"],
             "W3 source commit mismatch")
     require((folder / "input_dataset_manifest.json").read_bytes()
-            == (dataset_dir / "w3_v16_dataset_manifest.json").read_bytes(),
+            == (dataset_dir / f"w3_{label}_dataset_manifest.json").read_bytes(),
             "W3 run input dataset manifest differs from staged dataset")
     output_metadata = json.loads((folder / "input_state_metadata.json").read_text())
     require(output_metadata == metadata, "W3 run input state metadata differs from canonical NPZ")
@@ -473,7 +479,7 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
     )
     smoke_ok = all(marker in smoke for marker in smoke_markers)
 
-    force_path = folder / "v16.forces.csv"
+    force_path = folder / f"{label}.forces.csv"
     require(sha256(force_path) == summary.get("force_csv_sha256"),
             "W3 force CSV hash mismatch")
     rows = read_force_rows(force_path, measurement)

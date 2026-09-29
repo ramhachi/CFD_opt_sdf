@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Run the registered v16 WaterLily first-primal gate on Kaggle T4."""
+"""Run the registered canonical-SDF WaterLily first-primal gate on Kaggle T4.
+
+The canonical-state label (v16, v17, ...) comes from the attached dataset's
+``w3_<label>_criteria.json``; all state identity comes from that criteria file.
+"""
 
 import csv
 import hashlib
@@ -15,9 +19,8 @@ import urllib.request
 from pathlib import Path
 
 
-STAGE = "w3_v16"
-OUT = Path("/kaggle/working") / STAGE
-DATASET_ID = "ramhachi888/cfd-opt-sdf-v16-genesis-state"
+LABEL = "v16"  # replaced by the discovered criteria label before any output is written
+OUT = Path("/kaggle/working") / f"w3_{LABEL}"
 INPUT_ROOT = Path("/kaggle/input")
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
@@ -59,7 +62,7 @@ def command(args, log_path, *, env=None, timeout=3600):
 
 def discover_dataset(input_root=INPUT_ROOT):
     input_root = Path(input_root)
-    matches = sorted(path for path in input_root.rglob("w3_v16_criteria.json")
+    matches = sorted(path for path in input_root.rglob("w3_*_criteria.json")
                      if path.is_file()) if input_root.is_dir() else []
     if len(matches) != 1:
         raise RuntimeError(
@@ -68,8 +71,16 @@ def discover_dataset(input_root=INPUT_ROOT):
     return matches[0].parent, matches[0]
 
 
+def set_label(label):
+    global LABEL, OUT
+    LABEL = label
+    OUT = Path("/kaggle/working") / f"w3_{label}"
+
+
 def read_criteria(input_root=INPUT_ROOT):
     input_root = Path(input_root)
+    dataset_dir, criteria_path = discover_dataset(input_root)
+    set_label(criteria_path.name[len("w3_"):-len("_criteria.json")])
     OUT.mkdir(parents=True, exist_ok=True)
     top_level_entries = (
         sorted(f"{ 'dir' if path.is_dir() else 'file' }:{path.name}"
@@ -81,7 +92,6 @@ def read_criteria(input_root=INPUT_ROOT):
         "input_root_exists": input_root.is_dir(),
         "top_level_entries": top_level_entries,
     })
-    dataset_dir, criteria_path = discover_dataset(input_root)
     sidecar = criteria_path.with_suffix(criteria_path.suffix + ".sha256")
     if not sidecar.is_file():
         raise RuntimeError("registered W3 criteria SHA sidecar missing from the attached private dataset")
@@ -91,24 +101,26 @@ def read_criteria(input_root=INPUT_ROOT):
     criteria = json.loads(criteria_path.read_text())
     if criteria.get("immutable") is not True or criteria.get("registered_before_computation") is not True:
         raise RuntimeError("W3 criteria are not immutable preregistration")
-    if criteria.get("input_dataset_id") != DATASET_ID:
+    if criteria["geometry"].get("state_label", "v16") != LABEL:
+        raise RuntimeError("W3 criteria state label does not match the staged criteria file name")
+    if not str(criteria.get("input_dataset_id", "")).startswith("ramhachi888/"):
         raise RuntimeError("W3 criteria dataset identity mismatch")
     return criteria, expected, dataset_dir, criteria_path
 
 
 def verify_dataset_manifest(criteria, criteria_sha, dataset_dir):
     dataset_dir = Path(dataset_dir)
-    manifest_path = dataset_dir / "w3_v16_dataset_manifest.json"
+    manifest_path = dataset_dir / f"w3_{LABEL}_dataset_manifest.json"
     manifest = json.loads(manifest_path.read_text())
-    if manifest.get("dataset_id") != DATASET_ID:
+    if manifest.get("dataset_id") != criteria["input_dataset_id"]:
         raise RuntimeError("W3 input dataset manifest id mismatch")
     if manifest.get("criteria_sha256") != criteria_sha:
         raise RuntimeError("W3 input dataset manifest criteria binding mismatch")
     expected_names = {
         "sdf_design_state.npz": criteria["inputs"]["canonical_state_npz"]["sha256"],
-        "canonical_v16_phi_f4_fortran.raw": criteria["inputs"]["canonical_phi_fortran_raw"]["sha256"],
-        "w3_v16_criteria.json": criteria_sha,
-        "w3_v16_criteria.json.sha256": sha256(dataset_dir / "w3_v16_criteria.json.sha256"),
+        criteria["inputs"]["canonical_phi_fortran_raw"]["path"]: criteria["inputs"]["canonical_phi_fortran_raw"]["sha256"],
+        f"w3_{LABEL}_criteria.json": criteria_sha,
+        f"w3_{LABEL}_criteria.json.sha256": sha256(dataset_dir / f"w3_{LABEL}_criteria.json.sha256"),
     }
     for name, expected_sha in expected_names.items():
         path = dataset_dir / name
@@ -147,34 +159,34 @@ def verify_dataset_state(criteria, dataset_dir):
     entry = criteria["inputs"]["canonical_state_npz"]
     state_path = dataset_dir / entry["path"]
     if sha256(state_path) != entry["sha256"]:
-        raise RuntimeError("canonical v16 SDF NPZ hash mismatch")
+        raise RuntimeError("canonical SDF NPZ hash mismatch")
     expected = criteria["geometry"]
     with np.load(state_path, allow_pickle=False) as archive:
         metadata = json.loads(str(archive["metadata"].item()))
         phi = np.asarray(archive["phi"], dtype="<f4")
     if metadata.get("state_sha256") != expected["state_sha256"]:
-        raise RuntimeError("canonical v16 SDF state identity mismatch")
+        raise RuntimeError("canonical SDF state identity mismatch")
     if metadata.get("phi_sha256") != expected["phi_c_order_sha256"]:
-        raise RuntimeError("canonical v16 SDF metadata phi identity mismatch")
+        raise RuntimeError("canonical SDF metadata phi identity mismatch")
     if metadata.get("source_sha256") != expected["source_surface_sha256"]:
-        raise RuntimeError("canonical v16 SDF source-surface binding mismatch")
+        raise RuntimeError("canonical SDF source-surface binding mismatch")
     if metadata.get("shape") != expected["point_shape"]:
-        raise RuntimeError("canonical v16 SDF shape mismatch")
+        raise RuntimeError("canonical SDF shape mismatch")
     if (metadata.get("origin_m") != expected["canonical_sdf_origin_m"]
             or metadata.get("spacing_m") != expected["spacing_m"]):
-        raise RuntimeError("canonical v16 SDF lattice identity mismatch")
+        raise RuntimeError("canonical SDF lattice identity mismatch")
     if phi.shape != tuple(expected["point_shape"]) or not np.isfinite(phi).all():
-        raise RuntimeError("canonical v16 SDF array shape/finiteness mismatch")
+        raise RuntimeError("canonical SDF array shape/finiteness mismatch")
     c_order_bytes = np.ascontiguousarray(phi, dtype="<f4").tobytes(order="C")
     fortran_bytes = np.asarray(phi, dtype="<f4", order="F").tobytes(order="F")
     if sha256_bytes(c_order_bytes) != expected["phi_c_order_sha256"]:
-        raise RuntimeError("canonical v16 C-order phi bytes mismatch")
-    raw_path = OUT / "canonical_v16_phi_f4_fortran.raw"
+        raise RuntimeError("canonical C-order phi bytes mismatch")
+    raw_path = OUT / criteria["inputs"]["canonical_phi_fortran_raw"]["path"]
     raw_path.write_bytes(fortran_bytes)
     if sha256(raw_path) != expected["phi_fortran_sha256"]:
-        raise RuntimeError("canonical v16 Fortran-order phi bytes mismatch")
+        raise RuntimeError("canonical Fortran-order phi bytes mismatch")
     if sha256(dataset_dir / criteria["inputs"]["canonical_phi_fortran_raw"]["path"]) != expected["phi_fortran_sha256"]:
-        raise RuntimeError("staged canonical v16 Fortran-order phi input mismatch")
+        raise RuntimeError("staged canonical Fortran-order phi input mismatch")
     return state_path, raw_path, metadata
 
 
@@ -452,7 +464,6 @@ def evaluate_gates(criteria, summary, rows, source_commit, runner_sha, criteria_
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
     criteria, criteria_sha, dataset_dir, criteria_path = read_criteria()
     dataset_manifest_path = verify_dataset_manifest(criteria, criteria_sha, dataset_dir)
     runner_sha = sha256(Path(__file__))
@@ -472,8 +483,17 @@ def main():
             raise RuntimeError("W3 T4 manifest hash mismatch")
         julia = install_julia(base)
         env = os.environ.copy()
+        geometry = criteria["geometry"]
         env.update({"JULIA_NUM_THREADS": "1", "CUDA_VISIBLE_DEVICES": "0",
-                    "W3_SELECTED_GPU_UUID": selected_uuid})
+                    "W3_SELECTED_GPU_UUID": selected_uuid,
+                    "W3_STATE_LABEL": LABEL,
+                    "W3_STATE_SHA256": geometry["state_sha256"],
+                    "W3_PHI_C_ORDER_SHA256": geometry["phi_c_order_sha256"],
+                    "W3_PHI_FORTRAN_SHA256": geometry["phi_fortran_sha256"],
+                    "W3_SOURCE_SURFACE_SHA256": geometry["source_surface_sha256"],
+                    "W3_POINT_SHAPE": ",".join(str(v) for v in geometry["point_shape"]),
+                    "W3_SDF_SPACING_M": repr(float(geometry["spacing_m"])),
+                    "W3_EXPECTED_MARGIN_M": repr(float(geometry["expected_margin_m"]))})
         command([str(julia), "--startup-file=no", f"--project={project}", "-e",
                  "using Pkg; Pkg.instantiate()"], OUT / "instantiate.log",
                 env=env, timeout=1800)
@@ -495,10 +515,10 @@ def main():
             raise RuntimeError("W3 registered T4 CUDA smoke mismatch")
         job = source / "scripts/waterlily_w3_v16_primal_job.jl"
         command([str(julia), "--startup-file=no", f"--project={project}", str(job),
-                 str(raw_phi_path), str(OUT)], OUT / "w3_v16.log", env=env, timeout=5400)
+                 str(raw_phi_path), str(OUT)], OUT / f"w3_{LABEL}.log", env=env, timeout=5400)
 
-    summary_path = OUT / "v16.summary.json"
-    csv_path = OUT / "v16.forces.csv"
+    summary_path = OUT / f"{LABEL}.summary.json"
+    csv_path = OUT / f"{LABEL}.forces.csv"
     if not summary_path.is_file() or not csv_path.is_file():
         raise RuntimeError("W3 job output files are incomplete")
     summary = json.loads(summary_path.read_text())
@@ -514,7 +534,7 @@ def main():
     write_json(OUT / "fingerprint.json", {
         "criteria_sha256": criteria_sha,
         "criteria_path": criteria_path.name,
-        "dataset_id": DATASET_ID,
+        "dataset_id": criteria["input_dataset_id"],
         "state_npz_sha256": sha256(state_path),
         "runner_sha256": runner_sha,
         "source_commit": criteria["source_commit"],
@@ -528,7 +548,7 @@ def main():
     write_json(OUT / "outcome.json", {
         "criteria_sha256": criteria_sha,
         "source_commit": criteria["source_commit"],
-        "dataset_id": DATASET_ID,
+        "dataset_id": criteria["input_dataset_id"],
         "state_npz_sha256": sha256(state_path),
         "selected_gpu_uuid": selected_uuid,
         "summary": summary,
@@ -545,8 +565,8 @@ def main():
         if path.is_file() and path.name not in {"sha256.json", "DONE"}
     }
     write_json(OUT / "sha256.json", manifest)
-    (OUT / "DONE").write_text("Kaggle W3 v16 registered first-primal gates completed; verify retrieved SHA-256 files\n")
-    print("KAGGLE_W3_V16_DONE", json.dumps(gates, sort_keys=True), flush=True)
+    (OUT / "DONE").write_text(f"Kaggle W3 {LABEL} registered first-primal gates completed; verify retrieved SHA-256 files\n")
+    print(f"KAGGLE_W3_{LABEL.upper()}_DONE", json.dumps(gates, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":

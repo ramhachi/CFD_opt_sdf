@@ -70,16 +70,19 @@ union for the flow solver. `grid` must be the CPU-gated canonical v16 SDF;
 device copies are derived only after this constructor has accepted it.
 """
 function v16_physical_profile_bodies(grid::GridSDF; T = Float32,
-                                     flow_origin_m = V16_PROFILE_FLOW_ORIGIN_M)
-    grid.shape == V16_PROFILE_POINT_SHAPE ||
-        throw(ArgumentError("v16 SDF point shape drift: $(grid.shape)"))
+                                     flow_origin_m = V16_PROFILE_FLOW_ORIGIN_M,
+                                     point_shape = V16_PROFILE_POINT_SHAPE,
+                                     sdf_spacing_m = V16_PROFILE_SPACING_M)
+    # The design-lattice shape/spacing are canonical-state identity (v16 by default);
+    # the flow spacing and solver map stay V16_PROFILE_SPACING_M.
+    grid.shape == Tuple(point_shape) ||
+        throw(ArgumentError("canonical SDF point shape drift: $(grid.shape)"))
     # DeviceGridSDF stores map fields as Float32. Compare at that declared
     # precision so the registered Float64 origin survives the intentional
     # CPU -> CUDA representation without a false identity failure.
     Tuple(Float32.(grid.origin)) == Tuple(Float32.(V16_CANONICAL_SDF_ORIGIN_M)) ||
         throw(ArgumentError("v16 SDF origin drift: $(grid.origin)"))
-    Tuple(Float32.(grid.h)) == Tuple(Float32.((V16_PROFILE_SPACING_M,
-        V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))) ||
+    Tuple(Float32.(grid.h)) == Tuple(Float32.((sdf_spacing_m, sdf_spacing_m, sdf_spacing_m))) ||
         throw(ArgumentError("v16 SDF spacing drift: $(grid.h)"))
 
     candidate = GridSDFWaterLilyBody(
