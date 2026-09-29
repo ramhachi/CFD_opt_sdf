@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 4 immutable criteria registered; no new dataset or kernel run | Exact criteria file SHA `ace4e539…`, canonical SHA `949d998b…`, bound source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Contract is machine-identical to round 3. The one-path queue fix writes input under the runner's temporary base directory while Julia snapshots to `OUT/run_queue.tsv`. Round-3 `/2` remains a preserved pre-primal failure; round 4 has not been submitted or measured. No FD/gradient qualification is granted. |
+| Centered-FD SDF directional oracle | Round 5 exact T4 kernel `/4` executed all 33 fresh primals, then failed runner gates and strict host verification | Dataset v5 exact inventory and host-input preflight passed. T0-T5, T8-T9, and runner T12 passed; T6-T7 failed because six integrated pressure/viscous metrics are omitted from each per-run summary, and T10-T11 failed the registered 5% plateau gate in all six direction/response combinations. Kernel `/4` ended `ERROR`; `FD_JOB_DONE` exists but `DONE` does not. Strict host verification failed closed at the missing marker. Append-only diagnostic and raw-CSV postmortem are recorded below. All FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -626,7 +626,7 @@ grid-independent downforce, high-Re or full-vehicle qualification.
 and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
 are retained historical plans; neither controls current execution.
 
-Current gates and immediate sequence as of 2026-09-29:
+Current gates and immediate sequence as of 2026-09-29 after FD round 5:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
    diagnostic `/2` completed and passed host verification under immutable
@@ -657,22 +657,17 @@ Current gates and immediate sequence as of 2026-09-29:
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **Prepare formal centered-FD qualification.** The FD entry gate is open.
-   Immutable directional-FD round 4 is registered at
-   [`sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json),
-   file/sidecar SHA-256
-   `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`,
-   canonical criteria SHA-256
-   `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`,
-   source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Its 3 directions,
-   30 perturbations, 33-run order, all force/window/stationarity/noise/plateau
-   rules, gates, and claims are machine-identical to round 3. Round 4 only
-   changes source identity, round metadata, and supersession linkage to the
-   exact round-3 `/2` queue self-copy diagnostic. Dataset v4 is not yet staged
-   or uploaded; no new kernel has been submitted and no FD primal has run.
-   Prepare the next dataset version and exact-version T4 execution under this
-   immutable registration. Centered FD remains the permanent independent
-   numerical gradient oracle.
+5. **Repair the FD runner/host-verifier contract before another execution.**
+   Round 5 is terminal failed evidence; preserve its immutable criteria,
+   dataset v5, exact kernel `/4`, outputs, and diagnostics. The source fix must
+   reconcile the six integrated pressure/viscous metrics between runner
+   `outcome.json` and per-run summaries, and the host verifier must compare the
+   agreed schema. Also repair the statically identified `evaluate()` name
+   shadowing before it can be reached. Investigate the measured non-plateau
+   directional responses under the unchanged registered 5% threshold; do not
+   relabel them as qualified or edit rounds 1-5. Register any retry as a new
+   immutable round with fresh 33-run outputs. Centered FD remains the permanent
+   independent numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
    reverse AD, discrete-adjoint, or other methods against the qualified FD
    oracle. No production backend is selected or qualified.
@@ -703,6 +698,71 @@ downforce qualification.
 
 Kaggle and Colab provide reproducible execution, exact source/runtime binding,
 and evidence capture. They remain outside the solver/optimizer architecture.
+
+### 2026-09-29 FD round-5 dataset v5 and exact kernel `/4` terminal FAIL
+
+Round 5 kept the registered 3 directions, 30 perturbations, 33-run order, T4
+backend, and numeric criteria unchanged. Exact private dataset version 5 was
+remote-inventory verified and its mounted host-input preflight passed before
+GPU discovery. The dataset verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+The source/criteria identity remained bound to commit
+`a07bba2fd1dcf0d3d28b211eef58d91309a24a75` and criteria file SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`.
+
+Exact private T4 kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/4` ended in
+`KernelWorkerStatus.ERROR`. Its log records 33/33 solver calls returned to
+`tU/L >= 120`; `FD_JOB_DONE` is present and the outer `DONE` marker is absent.
+The runner gates were T0-T5 PASS, T6-T7 FAIL, T8-T9 PASS, T10-T11 FAIL, and
+runner T12 PASS. Aggregate solver wall time was `970.7994556427002 s` against
+the registered `7200 s` limit. The strict exact-version host verifier failed
+closed with `ValueError: FD Kaggle output has no DONE marker`; this is not a
+host PASS.
+
+Two append-only records separate terminal status from diagnostic recomputation:
+
+- Strict kernel diagnostic
+  [`sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json),
+  SHA-256 `0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8`.
+- Raw CSV postmortem
+  [`sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json),
+  SHA-256 `e17ae5eb9aabd1f29d92638756197dcafe5fd3b44802f84e93605ef7d1e56dcb`.
+
+The diagnostic postmortem independently parsed all 33 force CSVs, checked all
+87 output-manifest hashes, verified force-component closure and physics
+identity for all runs, and recomputed 660 metrics that matched the runner's
+`outcome.json`. All 14 recomputed fields present in each per-run summary also
+matched. Each summary omits the same six integrated pressure/viscous fields
+that `close_summary()` compares. In the pinned runner, that schema mismatch
+makes the shared summary comparison false in both T6 and T7. Separately, the
+registered response-resolution check found all five epsilons resolved for each
+direction/response and stable signs over the selected first three epsilons,
+but the maximum plateau deviations were:
+
+| Direction | Drag derivative at selected epsilons (`N/m`) | Drag max deviation | Downforce derivative (`N/m`) | Downforce max deviation |
+| --- | --- | ---: | --- | ---: |
+| D0 interface offset | `-5.009319, -2.517892, -1.034651` | `98.95%` | `-0.197284, -0.071772, -0.020327` | `174.87%` |
+| D1 filtered seed 11 | `4.265878, 2.030319, 0.688382` | `110.11%` | `2.095685, 1.075749, 0.465460` | `94.81%` |
+| D2 filtered seed 2026 | `0.810939, 0.483772, 0.289585` | `67.63%` | `2.881399, 1.567029, 0.784102` | `83.88%` |
+
+All six deviations exceed the unchanged 5% plateau limit, so T10 and T11
+remain genuine measurement failures even after accounting for the summary
+schema problem. The three repeated baselines were identical: drag
+`0.3360177299176748 N`, downforce `0.3533732402215731 N`; each registered
+noise floor is `1e-8 N`. Maximum relative half-window stationarity drift was
+`3.25496e-5` for drag and `1.91534e-5` for downforce. These are diagnostics
+for this registered finite-box run only.
+
+Strict host verification stopped before raw-run verification. Static review
+also found that its raw-summary check expects those six missing component
+integrals, and `evaluate()` shadows the helper name `runner_metrics_match`
+before the first call in that function. Neither static issue caused the
+recorded missing-`DONE` rejection. Any repair or retry belongs to a new
+immutable round; do not change criteria or qualification flags. Directional
+FD, gradient, reverse, optimizer, topology, and shape update remain false;
+`shape_update_allowed=false`.
 
 ### Historical Stage T/S/V execution record (retained; not current instructions)
 

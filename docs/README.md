@@ -7,9 +7,16 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-Current checkpoint: W3 round 4 exact T4 kernel version 5 passed host
-verification for its registered finite-box primal contract. W3 v4's all-zero
-root cause remains unresolved. W4 immutable criteria round 4
+Latest execution checkpoint: FD round 5 exact private T4 kernel `/4` ran all
+33 fresh primals but ended in `KernelWorkerStatus.ERROR`; the strict host
+verifier failed closed because `DONE` is absent. The diagnostic-only raw CSV
+postmortem confirms T6/T7 summary-schema failures and T10/T11 failure of the
+registered 5% derivative plateau. See the
+[`round-5 kernel diagnostic`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json)
+and [`raw CSV postmortem`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json).
+No FD or gradient qualification is granted. W3 round 4 exact T4 kernel version
+5 passed host verification for its registered finite-box primal contract.
+W3 v4's all-zero root cause remains unresolved. W4 immutable criteria round 4
 ([SHA-256 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json))
 was executed by exact private T4 kernel version 3 and passed independent host
 verification. Append-only result evidence is
@@ -73,13 +80,16 @@ diagnostic is
 SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`.
 Round 4 and its `/3` outputs remain failed evidence; the formal FD oracle,
 gradient, reverse, optimizer, topology and shape update remain unqualified.
-An append-only round-5 criteria record is locally preregistered against the
-source-lifetime repair; its criteria SHA-256 is
-`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`. A local
-dataset v5 candidate has passed source and host-input checks with all 35
-physical inputs byte-identical to the verified v4 stage. It has not been
-uploaded, and no new kernel has been submitted while the dataset-versioning
-decision is pending.
+Round 5 criteria remain immutable at SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`. Private
+dataset v5 passed exact remote inventory and host-input checks. Kernel `/4`
+produced 33 completed fresh runs but no outer `DONE` marker; the recorded
+runner gates include genuine directional plateau failures as well as a summary
+schema defect. The append-only dataset verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+All FD, gradient, reverse, optimizer, topology, and shape-update qualification
+flags remain false; `shape_update_allowed=false`.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for

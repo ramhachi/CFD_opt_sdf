@@ -2925,3 +2925,55 @@ must produce fresh outputs for the complete 33-run order. Never reuse `/3`
 outputs or submit a different backend. Stop after exact-version host
 verification; all broader gradient, optimizer, topology and shape-update
 claims remain false unless independently qualified.
+
+## 2026-09-29: FD round-5 dataset v5 verified; exact kernel `/4` failed
+
+This terminal update supersedes the candidate-only and pending-versioning
+instructions above. Dataset v5 was appended to the private input dataset;
+versions 1-4 were preserved. The exact version-qualified remote inventory and
+mounted host-input preflight passed, with 38 downloaded files matching the
+candidate by path, size and SHA-256. The verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+The exact criteria file SHA is
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`; source
+commit is `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. No numerical criterion
+changed from round 4.
+
+The registered private T4 kernel
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/4` was submitted
+with the registered 14,400-second timeout. Its submission evidence is
+[`sdf_directional_fd_v16_round5_kernel4_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_submission_2026_09.json),
+SHA-256 `99821a6dd43fbad74637a3c4db31ed45284f3f9215c57d8c592bff45dfcb03ce`.
+The exact version ended `KernelWorkerStatus.ERROR` after all 33 registered
+primal calls returned at or beyond `tU/L=120`. `FD_JOB_DONE` exists; the
+outer `DONE` marker does not. Aggregate solver wall time was
+`970.7994556427002 s` against `7200 s`.
+
+The runner gates were T0-T5 PASS, T6-T7 FAIL, T8-T9 PASS, T10-T11 FAIL, and
+runner T12 PASS. Strict host verification exited nonzero with
+`ValueError: FD Kaggle output has no DONE marker`; no host PASS or formal FD
+result exists. Preserve the strict diagnostic
+[`sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json),
+SHA-256 `0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8`.
+
+The separate diagnostic-only raw CSV postmortem is
+[`sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json),
+SHA-256 `e17ae5eb9aabd1f29d92638756197dcafe5fd3b44802f84e93605ef7d1e56dcb`.
+It confirms all 87 downloaded output files against the runner SHA manifest,
+all 33 CSV sampling and physics-identity checks, sampled force-component
+closure, and all 660 CSV-recomputed metrics against `outcome.json`. Per-run
+summaries omit six integrated pressure/viscous force fields that the pinned
+runner's `close_summary()` requires, explaining T6/T7. The strict host
+verifier's raw-summary contract has the same schema mismatch, and its later
+`evaluate()` path has a statically identified helper-name shadowing issue;
+neither was reached in the strict round-5 invocation.
+
+The CSV recomputation also confirms all five epsilon pairs were resolved for
+all three directions and both responses, but every selected three-epsilon
+plateau exceeded the unchanged 5% deviation limit. This is an independent
+measured T10/T11 failure, not explained by the summary mismatch. Preserve all
+rounds 1-5 unchanged. Any runner/verifier repair and retry must use a new
+immutable round with fresh 33-run outputs. FD, gradient, reverse, optimizer,
+topology, and shape-update qualification remain false; keep
+`shape_update_allowed=false`.
