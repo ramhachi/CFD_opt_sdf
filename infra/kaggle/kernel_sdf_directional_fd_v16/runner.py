@@ -22,7 +22,7 @@ import numpy as np
 STAGE = "sdf_directional_fd_v16"
 OUT = Path("/kaggle/working") / STAGE
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
-SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
+SOURCE_REF = "refs/heads/exp/fd-02-round4"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 CRITERIA_NAME = "sdf_directional_fd_v16_criteria.json"
 MANIFEST_NAME = "sdf_directional_fd_v16_dataset_manifest.json"
@@ -144,8 +144,9 @@ def verify_dataset(criteria, criteria_sha: str, dataset_dir: Path) -> tuple[dict
     return manifest, {name: sha256(dataset_dir / name) for name in sorted(expected)}
 
 
-def verify_prerequisites(source: Path, criteria: dict) -> dict:
+def verify_prerequisites(source: Path, criteria: dict) -> tuple[dict, dict]:
     prereq = criteria["prerequisites"]
+    w4_result = None
     for key in ("w3", "w4"):
         info = prereq[key]
         criteria_path = source / info["criteria_path"]
@@ -158,6 +159,7 @@ def verify_prerequisites(source: Path, criteria: dict) -> dict:
                     else result.get("backend_identity", {}).get("registered_backend") != info["backend_identity"])):
             raise RuntimeError(f"exact {key.upper()} prerequisite is not host-verified PASS")
         if key == "w4":
+            w4_result = result
             observation = result.get("backend_identity", {})
             observation_sha = sha256_bytes(json.dumps(
                 observation, sort_keys=True, separators=(",", ":"), allow_nan=False).encode())
@@ -169,7 +171,9 @@ def verify_prerequisites(source: Path, criteria: dict) -> dict:
                 raise RuntimeError("W4 FD entry or observed-backend prerequisite does not match registration")
     if prereq["w3"]["backend_identity"] != prereq["w4"]["backend_identity"]:
         raise RuntimeError("W3/W4 prerequisite runtime identities differ")
-    return prereq["w4"]["backend_identity"]
+    if w4_result is None:
+        raise RuntimeError("exact W4 prerequisite result was not loaded")
+    return prereq["w4"]["backend_identity"], w4_result
 
 
 def verify_source(source: Path, criteria: dict) -> Path:
@@ -560,7 +564,7 @@ def classify_response(pairs, baseline_median, noise_floor):
         "plateau_signs": signs, "sign_stable": stable, "plateau_pass": passed}
 
 
-def verify_runner(source, criteria, criteria_sha, manifest, input_hashes, dirs_audit,
+def verify_runner(w4_result, criteria, criteria_sha, manifest, input_hashes, dirs_audit,
                   summaries, rows_by_run, metrics_by_run, gpu_rows, selected_uuid, smoke,
                   actual_commit, runner_sha):
     run_ids = list(criteria["run_order"])
@@ -609,8 +613,7 @@ def verify_runner(source, criteria, criteria_sha, manifest, input_hashes, dirs_a
                 pairs, baseline[response]["median"], baseline[response]["noise_floor"])
     drag_pass = all(direction_results[d]["drag"]["plateau_pass"] for d in EXPECTED_DIRECTIONS)
     downforce_pass = all(direction_results[d]["downforce"]["plateau_pass"] for d in EXPECTED_DIRECTIONS)
-    w4 = json.loads((source / criteria["prerequisites"]["w4"]["result_path"]).read_text())
-    w4_flow16 = w4["case_measurements"]["flow_16"]["force_metrics_host_recomputed"]
+    w4_flow16 = w4_result["case_measurements"]["flow_16"]["force_metrics_host_recomputed"]
     reference_drag = w4_flow16["drag_time_weighted_n"]
     reference_down = w4_flow16["downforce_time_weighted_n"]
     baseline_crosscheck = {
@@ -743,7 +746,7 @@ def run_main():
         if actual_commit != criteria["source_commit"]:
             raise RuntimeError("exact registered FD source commit mismatch")
         verify_source(source, criteria)
-        backend_expected = verify_prerequisites(source, criteria)
+        backend_expected, w4_result = verify_prerequisites(source, criteria)
         set_stage("host_input_preflight")
         (state, dirs, directions_audit, perturbation_preflight,
          state_info) = host_input_preflight(source, dataset_dir, criteria)
@@ -813,7 +816,7 @@ def run_main():
     STATE["stage"] = "host_inside_runner_recompute"
     write_json(OUT / "execution_state.json", STATE)
     runner_sha = sha256(Path(__file__))
-    outcome = verify_runner(source, criteria, criteria_sha, dataset_manifest, input_hashes,
+    outcome = verify_runner(w4_result, criteria, criteria_sha, dataset_manifest, input_hashes,
         perturbation_preflight, summaries, rows_by_run, metrics_by_run, gpu_rows, selected_uuid,
         smoke, actual_commit, runner_sha)
     write_json(OUT / "outcome.json", outcome)

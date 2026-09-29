@@ -4595,3 +4595,119 @@ or primal measurement.
 - **Open:** prepare and remotely verify the next dataset version against
   round-4 criteria before submitting an exact T4 kernel. Preserve the round-3
   criteria and diagnostic; do not modify any measurement threshold.
+
+### 2026-09-29 FD round-4 dataset verification and exact kernel `/3` submission
+
+This checkpoint supersedes the preceding round-4 preregistration section's
+dataset-not-uploaded and kernel-not-submitted state. Round-4 criteria remain
+immutable and unchanged; this is an execution checkpoint, not a primal result.
+
+- **Dataset v4:** private dataset
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle` reports `ready`. The
+  redownloaded inventory contains 38 files (37 registered payload files plus
+  the manifest). Every downloaded file matches the staged file by path, size
+  and SHA-256, and the authenticated Kaggle file listing matches all names and
+  sizes. Remote inventory SHA-256 is
+  `ec9871eeaf6b95dec7f82b4a5eae902b649dd27cb6c81b1262cb450ec01738b5`; listing
+  SHA-256 is
+  `71b4a458676157f8172b152a0b0c9ccbe5093a639d02b4451dc737ccc10b770e`.
+- **Host input preflight:** round-4 criteria and all 32 pinned source inputs,
+  including the exact W3/W4 host-PASS prerequisites, verified. The downloaded
+  dataset passed canonical state identity, C/F `phi` hashes, mask hashes,
+  three direction hashes and all 30 perturbation checks. Canonical state SHA is
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`; its
+  measured CPU margin is `0.3499999939931499 m`. Host GPU inventory was not
+  called. Append-only dataset verification evidence is
+  [`sdf_directional_fd_v16_dataset_round4_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round4_verification_2026_09.json),
+  file SHA-256
+  `e3f4fecde25f4161595deda684a2db7a9bd5d83298d299cf22f4745dda4831aa`,
+  sidecar-file SHA-256
+  `a6c306c572597d60217acb4f6150c79da67fe89a57d151f60de6790761a59c81`.
+- **Submitted:** exact private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/3` was submitted
+  with the registered 14,400-second timeout. The append-only submission
+  checkpoint is
+  [`sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json),
+  file SHA-256
+  `7906199306835e1da529b52313e7f27b7e18bf3665c091e6c4d099b340ee52bb`,
+  sidecar-file SHA-256
+  `af200d5aa3aced2e178b00fbef13ed96a2156c012962004b6cc1b10c19a153cb`.
+  Exact-version status was `RUNNING` at `2026-09-29T09:35:27Z`; its logs
+  response contained one newline byte. An earlier queued snapshot is preserved
+  with its provenance, but its exact observation time was not captured. Solver
+  start/progress remains unknown from these status and log responses.
+- **Measured / verified:** no terminal kernel output has been collected, no
+  primal measurement has been host-verified, and no round-4 result or
+  diagnostic is yet recorded. Continue monitoring only exact `/3`; after it
+  reaches a terminal state, collect that version's status, logs and output and
+  run the registered host verifier. Do not submit a substitute version.
+- **Qualified:** directional-FD oracle, flow16 FD, full gradient field, reverse
+  mode, optimizer, topology and shape update remain unqualified; all registered
+  qualification flags remain false.
+
+### 2026-09-29 FD round-4 kernel `/3` terminal host-recompute failure
+
+This checkpoint supersedes the prior `/3` `RUNNING` observation. Keep the
+round-4 criteria and the exact `/3` terminal artifacts unchanged. Its 33
+primal outputs are execution evidence from a failed runner invocation, not a
+host-verified FD result and not a reusable fresh-primal run.
+
+- **Exact terminal evidence:** private T4 kernel
+  `ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/3` ended in
+  `KernelWorkerStatus.ERROR` at `2026-09-29T09:51:47Z`. Kaggle terminal-log
+  SHA-256 is
+  `60c5b6d95f7522b8f868293424d3e5a78a99abe63030863c0e93157f7f185a3e`;
+  exact status SHA-256 is
+  `a41990c17fc9854c822b3459124dfa5b3139aed4edea17bfc51ee2eb92ee7836`.
+  The immutable download contains 33 force CSVs, 33 summary JSONs, all 33
+  ordered start/finish/step-invoked/step-returned markers, and no `DONE` file.
+  The output SHA manifest is consistent. Aggregate solver wall time was
+  `988.253036737442 s`; total job wall time was `1064.1104481220245 s`.
+  These counts and timings describe completed calls only; they do not establish
+  the registered output gates or a qualification result.
+- **Host verification:** strict verification of those exact `/3` artifacts
+  exited 1 with `ValueError: FD Kaggle output has no DONE marker`. The
+  append-only diagnostic is
+  [`sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json),
+  SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`;
+  its sidecar file SHA-256 is
+  `01fe41f9c0dac90b43c64aacf75462af2fb2874143654f460bb72a48e7b47f4d`. The
+  downloaded output-manifest file SHA-256 is
+  `b23ed08c5692076d7532a210678d86a319cb1e2e098bd1643fb86cb15e4ec498`; the
+  Kaggle output-download command response SHA-256 is
+  `867001bb057671a403ff6e2fcec0b387466774d31256f9c91575c03bed5dea5f`.
+- **Failure cause:** the exact source commit
+  `8bf88756791213ac75b3c36ab6316323653d5c9a` includes the registered W4 result
+  at SHA-256
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+  Dataset v4's exact files, manifest and API listing were verified; source
+  identity checks and the W3/W4 prerequisite checks passed in the kernel.
+  In `infra/kaggle/kernel_sdf_directional_fd_v16/runner.py`, the `source`
+  checkout lived inside `TemporaryDirectory`. The code left that context after
+  Julia completed, then called `verify_runner(source, ...)`, which tried to
+  reopen the W4 JSON beneath the now-deleted source directory. The resulting
+  `FileNotFoundError` happened at `host_inside_runner_recompute`, after all 33
+  solver calls.
+- **Local repair:** the runner now retains the already SHA-verified W4 result
+  object in memory and passes it into `verify_runner`, so final recomputation no
+  longer reads from a deleted temporary path. A focused regression copies the
+  W3/W4 prerequisite files into a temporary checkout, verifies them, removes
+  that checkout, and confirms the parsed W4 result remains usable. Round-5
+  registrar plumbing binds the exact round-4 `/3` failure and requires its
+  33-run evidence, but asserts that its outputs cannot satisfy a fresh run.
+  Round-5 inputs retain the same state, masks, three directions, 30
+  perturbations, 33-run order, T4 backend and numeric thresholds; no scientific
+  criterion is changed. Focused FD tests passed (`22 passed`); `compileall
+  src tests scripts` and `git diff --check` passed. Full pytest reported
+  `1,151 passed, 37 failed, 4 skipped` in `199.91 s`; the 37 failures are
+  existing tests requiring ignored `work/` evidence absent from this worktree,
+  including PQ0/PQ3 and Stage S/V fixtures. No FD test failed.
+- **Dataset/run gate:** local preparation of a candidate dataset v5 may update
+  only the append-only round-5 criteria, sidecar and manifest/source identity;
+  all canonical arrays must remain byte-identical to verified v4. Uploading v5
+  and submitting a new kernel remain gated on explicit user direction. Do not
+  overwrite/relabel `/3`, modify rounds 1–4, or reuse `/3` outputs for a new
+  33-primal execution.
+- **Qualified:** round 4 remains failed, and the directional-FD oracle,
+  flow16 FD, field gradient, reverse mode, optimizer, topology and shape update
+  remain false. `shape_update_allowed=false` remains a hard stop.

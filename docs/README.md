@@ -53,9 +53,26 @@ an executable regression. Immutable FD round 4 is registered at
 canonical SHA `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`)
 and binds source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Machine
 comparison confirms the entire measurement contract remains identical to
-round 3. Dataset v4 is not uploaded and no round-4 kernel is submitted or
-measured. Formal FD, gradient, reverse, optimizer and shape update remain
-unqualified.
+round 3. Private dataset v4 is `ready`; all 38 downloaded files match the
+staged paths, sizes and hashes, and the exact Kaggle listing agrees. Host
+source and input preflight passed for the 32 pinned source inputs, W3/W4
+prerequisites, canonical state, three directions and 30 perturbations. Evidence
+is
+[`sdf_directional_fd_v16_dataset_round4_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round4_verification_2026_09.json),
+SHA-256 `e3f4fecde25f4161595deda684a2db7a9bd5d83298d299cf22f4745dda4831aa`.
+Exact private T4 kernel `/3` was submitted with the registered 14,400-second
+timeout. Its submission checkpoint is
+[`sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json),
+SHA-256 `7906199306835e1da529b52313e7f27b7e18bf3665c091e6c4d099b340ee52bb`.
+The exact version later ended in `KernelWorkerStatus.ERROR`. All 33 registered
+primal calls returned, but runner-side recomputation failed after its temporary
+source checkout was removed. The strict host verifier failed closed because
+`DONE` is absent; no FD result passed verification. Append-only terminal
+diagnostic is
+[`sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json),
+SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`.
+Round 4 and its `/3` outputs remain failed evidence; the formal FD oracle,
+gradient, reverse, optimizer, topology and shape update remain unqualified.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
