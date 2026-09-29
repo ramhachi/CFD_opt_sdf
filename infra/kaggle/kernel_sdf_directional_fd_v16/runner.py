@@ -261,7 +261,51 @@ def verify_canonical_and_preflight(source: Path, dataset_dir: Path, criteria: di
         details.append({"case_id": case_id,
                         "sign_change_node_count": int(np.count_nonzero((child.phi < 0) != (state.phi < 0))),
                         "zero_level_margin_m": ident["zero_level_margin_m"]})
-    return state, dirs, audit, details
+    canonical_identity = {
+        "canonical_phi_c_order_sha256": c_sha,
+        "canonical_phi_fortran_sha256": f_sha,
+        "canonical_margin_m": margin,
+        "mask_sha256": mask_hashes,
+    }
+    return state, dirs, audit, details, canonical_identity
+
+
+def build_state_identity_payload(state, state_npz_sha256: str, canonical_identity: dict,
+                                 direction_audit: dict, perturbation_preflight: list) -> dict:
+    required_identity = {
+        "canonical_phi_c_order_sha256",
+        "canonical_phi_fortran_sha256",
+        "canonical_margin_m",
+        "mask_sha256",
+    }
+    required_masks = {"design_mask", "fixed_solid_mask", "forbidden_mask", "root_mask"}
+    if (not required_identity.issubset(canonical_identity)
+            or set(canonical_identity["mask_sha256"]) != required_masks):
+        raise RuntimeError("canonical host-input identity payload is incomplete")
+    return {
+        **state.to_dict(),
+        "state_npz_sha256": state_npz_sha256,
+        **canonical_identity,
+        "direction_audit": direction_audit,
+        "perturbation_preflight": perturbation_preflight,
+    }
+
+
+def host_input_preflight(source: Path, dataset_dir: Path, criteria: dict):
+    """Finish all CPU input identity checks and payload assembly before GPU discovery."""
+    state, directions, direction_audit, perturbations, canonical_identity = (
+        verify_canonical_and_preflight(source, dataset_dir, criteria)
+    )
+    state_path = dataset_dir / criteria["inputs"]["canonical_state_npz"]["path"]
+    state_info = build_state_identity_payload(
+        state,
+        sha256(state_path),
+        canonical_identity,
+        direction_audit,
+        perturbations,
+    )
+    json.dumps(state_info, sort_keys=True, allow_nan=False)
+    return state, directions, direction_audit, perturbations, state_info
 
 
 def gpu_inventory(criteria: dict):
@@ -681,15 +725,8 @@ def run_main():
         verify_source(source, criteria)
         backend_expected = verify_prerequisites(source, criteria)
         set_stage("host_input_preflight")
-        state, dirs, directions_audit, perturbation_preflight = verify_canonical_and_preflight(
-            source, dataset_dir, criteria)
-        state_info = {**state.to_dict(), "state_npz_sha256": sha256(dataset_dir / criteria["inputs"]["canonical_state_npz"]["path"]),
-                      "canonical_phi_c_order_sha256": phi_sha256(state.phi, order="C"),
-                      "canonical_phi_fortran_sha256": phi_sha256(state.phi, order="F"),
-                      "canonical_margin_m": zero_level_margin_m(state.phi, state.spacing_m),
-                      "mask_sha256": mask_hashes,
-                      "direction_audit": directions_audit,
-                      "perturbation_preflight": perturbation_preflight}
+        (state, dirs, directions_audit, perturbation_preflight,
+         state_info) = host_input_preflight(source, dataset_dir, criteria)
         write_json(OUT / "input_state_and_direction_identity.json", state_info)
         gpu_rows, selected_uuid = gpu_inventory(criteria)
         julia = install_julia(base, backend_expected["julia_archive_sha256"])

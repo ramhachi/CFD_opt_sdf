@@ -43,9 +43,17 @@ ROUND1_CRITERIA = "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.
 ROUND1_SUBMISSION_DIAGNOSTIC = (
     "docs/evidence/sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json"
 )
+ROUND2_CRITERIA = "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json"
+ROUND2_KERNEL1_DIAGNOSTIC = (
+    "docs/evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json"
+)
 ROUND1_CRITERIA_FILE_SHA256 = "ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6"
 ROUND1_CRITERIA_CANONICAL_SHA256 = "a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c"
 ROUND1_SUBMISSION_DIAGNOSTIC_SHA256 = "3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8"
+ROUND2_CRITERIA_FILE_SHA256 = "150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b"
+ROUND2_CRITERIA_CANONICAL_SHA256 = "91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa"
+ROUND2_KERNEL1_DIAGNOSTIC_SHA256 = "1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a"
+ROUND2_SOURCE_COMMIT = "178792e9065df87d87ea1d445baaedace404304e"
 RETRY_KERNEL_ID = DATASET_ID + "-kernel"
 RETRY_KERNEL_TITLE = "CFD Opt SDF v16 Directional FD Oracle Kernel"
 SOURCE_PATHS = {
@@ -74,6 +82,8 @@ SOURCE_PATHS = {
     "w4_result": W4_RESULT,
     "w4_host_verifier": "scripts/verify_kaggle_w4_v16.py",
     "round1_submission_diagnostic": ROUND1_SUBMISSION_DIAGNOSTIC,
+    "round2_criteria": ROUND2_CRITERIA,
+    "round2_kernel1_diagnostic": ROUND2_KERNEL1_DIAGNOSTIC,
 }
 BACKEND_KEYS = (
     "accelerator", "machine_shape", "gpu_count", "gpu_name", "driver_version",
@@ -198,21 +208,100 @@ def load_round1_submission_retry_binding() -> dict:
     }
 
 
-def assert_same_measurement_contract(round2: dict, round1: dict) -> None:
+def load_round2_preflight_retry_binding() -> dict:
+    criteria_path = ROOT / ROUND2_CRITERIA
+    criteria_sidecar = criteria_path.with_suffix(criteria_path.suffix + ".sha256")
+    diagnostic_path = ROOT / ROUND2_KERNEL1_DIAGNOSTIC
+    diagnostic_sidecar = diagnostic_path.with_suffix(diagnostic_path.suffix + ".sha256")
+    if not all(path.is_file() for path in (
+            criteria_path, criteria_sidecar, diagnostic_path, diagnostic_sidecar)):
+        raise ValueError("round-2 immutable criteria and kernel diagnostic must be preserved")
+    criteria_sha = sha256(criteria_path)
+    diagnostic_sha = sha256(diagnostic_path)
+    if (criteria_sha != ROUND2_CRITERIA_FILE_SHA256
+            or criteria_sidecar.read_text().strip() != criteria_sha
+            or diagnostic_sha != ROUND2_KERNEL1_DIAGNOSTIC_SHA256
+            or diagnostic_sidecar.read_text().strip() != diagnostic_sha):
+        raise ValueError("round-2 criteria or kernel diagnostic identity changed")
+
+    criteria = json.loads(criteria_path.read_text())
+    diagnostic = json.loads(diagnostic_path.read_text())
+    execution = diagnostic.get("runner_execution_state", {})
+    julia = diagnostic.get("julia_progress_markers", {})
+    expected_status = f'{RETRY_KERNEL_ID}/1 has status "KernelWorkerStatus.ERROR"'
+    if (criteria.get("criteria_round") != 2
+            or criteria.get("immutable") is not True
+            or criteria.get("registered_before_computation") is not True
+            or criteria.get("status") != "registered_not_run"
+            or criteria.get("formal_measurement_started") is not False
+            or criteria.get("source_commit") != ROUND2_SOURCE_COMMIT
+            or criteria.get("registered_source_commit") != ROUND2_SOURCE_COMMIT
+            or criteria.get("criteria_sha256") != ROUND2_CRITERIA_CANONICAL_SHA256
+            or criteria.get("kernel_id") != RETRY_KERNEL_ID
+            or criteria.get("input_dataset_id") != DATASET_ID
+            or diagnostic.get("kind") != "sdf_directional_fd_flow16_diagnostic"
+            or diagnostic.get("criteria_path") != ROUND2_CRITERIA
+            or diagnostic.get("criteria_sha256") != criteria_sha
+            or diagnostic.get("source_commit") != ROUND2_SOURCE_COMMIT
+            or diagnostic.get("dataset_id") != DATASET_ID
+            or diagnostic.get("dataset_version") != 2
+            or diagnostic.get("kernel_id") != RETRY_KERNEL_ID
+            or diagnostic.get("kernel_version") != 1
+            or diagnostic.get("terminal_status") != expected_status
+            or diagnostic.get("host_verification_passed") is not False
+            or diagnostic.get("host_verifier_error") != "ValueError: FD Kaggle output has no DONE marker"
+            or diagnostic.get("output_manifest_consistent") is not True
+            or execution.get("stage") != "host_input_preflight"
+            or execution.get("solver_started") is not False
+            or execution.get("solver_step_invoked") != []
+            or execution.get("solver_step_returned") != []
+            or "NameError: name 'phi_sha256' is not defined" not in execution.get("failure", "")
+            or any(julia.get(key) != [] for key in (
+                "run_started", "run_finished", "solver_step_invoked", "solver_step_returned"))
+            or diagnostic.get("runner_outcome") is not None
+            or diagnostic.get("sdf_directional_fd_oracle_qualified") is not False
+            or diagnostic.get("sdf_directional_fd_flow16_qualified") is not False
+            or diagnostic.get("sdf_gradient_field_qualified") is not False
+            or diagnostic.get("gradient_qualified") is not False
+            or diagnostic.get("reverse_mode_qualified") is not False
+            or diagnostic.get("optimizer_qualified") is not False
+            or diagnostic.get("shape_update_allowed") is not False):
+        raise ValueError("round-2 is not the exact preserved pre-solver host-input failure")
+
+    return {
+        "criteria_path": ROUND2_CRITERIA,
+        "criteria_file_sha256": criteria_sha,
+        "criteria_canonical_sha256": criteria["criteria_sha256"],
+        "kernel1_diagnostic_path": ROUND2_KERNEL1_DIAGNOSTIC,
+        "kernel1_diagnostic_sha256": diagnostic_sha,
+        "kernel_id": RETRY_KERNEL_ID,
+        "kernel_version": 1,
+        "solver_started": False,
+        "solver_step_invoked": [],
+        "solver_step_returned": [],
+        "reason": (
+            "round 2 exact kernel /1 failed before GPU, Julia, or solver measurement because the "
+            "registered Python runner referenced canonical host-preflight identity values outside "
+            "the scope that created them."
+        ),
+    }
+
+
+def assert_same_measurement_contract(candidate: dict, registered: dict) -> None:
     fields = (
         "criteria_id", "input_dataset_id", "geometry", "responses", "directions",
         "perturbation", "measurement", "noise_and_plateau", "gates", "claims",
         "backend", "direction_audit", "direction_inventory", "perturbation_inventory",
         "run_order", "input_dataset_files",
     )
-    changed = [field for field in fields if round2.get(field) != round1.get(field)]
+    changed = [field for field in fields if candidate.get(field) != registered.get(field)]
     if changed:
-        raise ValueError("round-2 retry changed the registered measurement contract: " + ", ".join(changed))
+        raise ValueError("retry changed the registered measurement contract: " + ", ".join(changed))
 
 
 def build_criteria(*, state_path: Path, round_number: int) -> dict:
-    if round_number not in (1, 2):
-        raise ValueError("only directional-FD criteria rounds 1 and 2 are defined")
+    if round_number not in (1, 2, 3):
+        raise ValueError("only directional-FD criteria rounds 1, 2, and 3 are defined")
     (w3_criteria, w3_result, w4_criteria, w4_result,
      w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha) = load_prerequisites()
     observed_w4_backend = w4_result["backend_identity"]
@@ -240,14 +329,18 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
             or draft.get("status") != "mutable_draft_no_measurement"):
         raise ValueError("criteria draft must remain mutable and unmeasured")
     kernel_metadata = json.loads((ROOT / SOURCE_PATHS["kernel_metadata"]).read_text())
-    expected_kernel_id = RETRY_KERNEL_ID if round_number == 2 else DATASET_ID
+    expected_kernel_id = DATASET_ID if round_number == 1 else RETRY_KERNEL_ID
     if (draft.get("criteria_round") != round_number
             or draft.get("kernel_id") != expected_kernel_id
             or kernel_metadata.get("id") != expected_kernel_id
             or kernel_metadata.get("dataset_sources") != [DATASET_ID]
-            or (round_number == 2 and kernel_metadata.get("title") != RETRY_KERNEL_TITLE)):
+            or (round_number >= 2 and kernel_metadata.get("title") != RETRY_KERNEL_TITLE)):
         raise ValueError("draft round, unique kernel slug/title, and kernel metadata do not agree")
-    retry_binding = load_round1_submission_retry_binding() if round_number == 2 else None
+    supersession_binding = (
+        load_round1_submission_retry_binding() if round_number == 2
+        else load_round2_preflight_retry_binding() if round_number == 3
+        else None
+    )
     directions = generate_directions(state)
     direction_audit = validate_directions(state, directions)
     direction_inputs, direction_records = {}, {}
@@ -407,10 +500,11 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
         "source_tree_commit": source_commit,
         "formal_measurement_started": False,
     })
-    if retry_binding is not None:
-        final["supersedes"] = retry_binding
-        round1 = json.loads((ROOT / ROUND1_CRITERIA).read_text())
-        assert_same_measurement_contract(final, round1)
+    if supersession_binding is not None:
+        final["supersedes"] = supersession_binding
+        predecessor_path = ROUND1_CRITERIA if round_number == 2 else ROUND2_CRITERIA
+        predecessor = json.loads((ROOT / predecessor_path).read_text())
+        assert_same_measurement_contract(final, predecessor)
     final["criteria_sha256"] = json_hash(final)
     return final
 
@@ -437,12 +531,12 @@ def write_or_check(round_number: int, state_path: Path, check: bool) -> str:
         current_commit = subprocess.check_output(
             ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
         ).strip()
-        historical_round1 = criteria.get("criteria_round") == 1 and criteria.get("source_commit") != current_commit
+        historical_source = criteria.get("source_commit") != current_commit
         for name, entry in criteria["inputs"].items():
             if entry.get("location") == "source_repo":
                 if git_blob_sha(criteria["source_commit"], entry["path"]) != entry["sha256"]:
                     raise SystemExit(f"registered source input changed: {name}")
-                if not historical_round1 and sha256(ROOT / entry["path"]) != entry["sha256"]:
+                if not historical_source and sha256(ROOT / entry["path"]) != entry["sha256"]:
                     raise SystemExit(f"checked-out source input changed: {name}")
         return digest
     if output.exists() or sidecar.exists():

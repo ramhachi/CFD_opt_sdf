@@ -1,8 +1,12 @@
+import ast
+import builtins
 import hashlib
 import importlib.util
 import json
+import symtable
 from argparse import Namespace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -61,10 +65,10 @@ def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flo
     assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
 
 
-def test_round2_kernel_identity_avoids_the_input_dataset_slug_collision():
+def test_round3_kernel_identity_keeps_the_unique_slug_and_input_dataset_separate():
     draft = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
     metadata = json.loads((ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/kernel-metadata.json").read_text())
-    assert draft["criteria_round"] == 2
+    assert draft["criteria_round"] == 3
     assert draft["input_dataset_id"] == registrar.DATASET_ID
     assert metadata["dataset_sources"] == [registrar.DATASET_ID]
     assert metadata["id"] == draft["kernel_id"]
@@ -85,6 +89,109 @@ def test_round2_retry_binding_preserves_round1_and_rejects_contract_changes():
     round2["perturbation"]["epsilon_ladder_m"][0] *= 2
     with pytest.raises(ValueError, match="changed the registered measurement contract"):
         registrar.assert_same_measurement_contract(round2, round1)
+
+
+def test_round3_retry_binds_exact_round2_pre_solver_diagnostic():
+    binding = registrar.load_round2_preflight_retry_binding()
+    assert binding["criteria_file_sha256"] == registrar.ROUND2_CRITERIA_FILE_SHA256
+    assert binding["criteria_canonical_sha256"] == registrar.ROUND2_CRITERIA_CANONICAL_SHA256
+    assert binding["kernel1_diagnostic_sha256"] == registrar.ROUND2_KERNEL1_DIAGNOSTIC_SHA256
+    assert binding["kernel_id"] == registrar.RETRY_KERNEL_ID
+    assert binding["kernel_version"] == 1
+    assert binding["solver_started"] is False
+    assert binding["solver_step_invoked"] == []
+    assert binding["solver_step_returned"] == []
+    assert "before GPU, Julia, or solver measurement" in binding["reason"]
+
+
+def test_round3_measurement_contract_equals_round2_and_rejects_threshold_changes():
+    round2 = json.loads((ROOT / registrar.ROUND2_CRITERIA).read_text())
+    round3 = json.loads(json.dumps(round2))
+    round3.update({
+        "criteria_round": 3,
+        "source_commit": "a" * 40,
+        "registered_source_commit": "a" * 40,
+        "kernel_id": registrar.RETRY_KERNEL_ID,
+    })
+    registrar.assert_same_measurement_contract(round3, round2)
+    round3["measurement"]["stationarity_relative_half_window_drift_max"] = 0.03
+    with pytest.raises(ValueError, match="changed the registered measurement contract"):
+        registrar.assert_same_measurement_contract(round3, round2)
+
+
+def test_runner_state_identity_payload_constructs_all_canonical_hashes_and_masks():
+    state = SimpleNamespace(to_dict=lambda: {
+        "state_sha256": "state", "point_shape": [61, 33, 25],
+    })
+    canonical_identity = {
+        "canonical_phi_c_order_sha256": "c" * 64,
+        "canonical_phi_fortran_sha256": "f" * 64,
+        "canonical_margin_m": 0.35,
+        "mask_sha256": {
+            "design_mask": "1" * 64,
+            "fixed_solid_mask": "2" * 64,
+            "forbidden_mask": "3" * 64,
+            "root_mask": "4" * 64,
+        },
+    }
+    direction_audit = {"direction_sha256": {"D0": "5" * 64}}
+    perturbation_preflight = [{"case_id": "D0_eps_0p0005m__plus", "zero_level_margin_m": 0.3}]
+
+    payload = runner.build_state_identity_payload(
+        state, "6" * 64, canonical_identity, direction_audit, perturbation_preflight,
+    )
+
+    assert payload["canonical_phi_c_order_sha256"] == "c" * 64
+    assert payload["canonical_phi_fortran_sha256"] == "f" * 64
+    assert payload["canonical_margin_m"] == pytest.approx(0.35)
+    assert payload["mask_sha256"] == canonical_identity["mask_sha256"]
+    assert set(payload["mask_sha256"]) == {
+        "design_mask", "fixed_solid_mask", "forbidden_mask", "root_mask",
+    }
+    assert payload["direction_audit"] == direction_audit
+    assert payload["perturbation_preflight"] == perturbation_preflight
+    json.dumps(payload, allow_nan=False)
+
+
+def test_run_main_completes_host_input_identity_before_gpu_inventory():
+    source = (ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py").read_text()
+    tree = ast.parse(source)
+    run_main = next(node for node in tree.body
+                    if isinstance(node, ast.FunctionDef) and node.name == "run_main")
+    calls = [node for node in ast.walk(run_main)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)]
+    preflight = next(node for node in calls if node.func.id == "host_input_preflight")
+    gpu = next(node for node in calls if node.func.id == "gpu_inventory")
+    assert preflight.lineno < gpu.lineno
+    assert "state_info) = host_input_preflight" in source
+    assert "write_json(OUT / \"input_state_and_direction_identity.json\", state_info)" in source
+    assert "mask_hashes" not in {
+        node.id for node in ast.walk(run_main)
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
+    }
+
+
+def test_runner_has_no_unbound_global_references_in_function_scopes():
+    runner_path = ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py"
+    table = symtable.symtable(runner_path.read_text(), str(runner_path), "exec")
+    module_names = set(table.get_identifiers())
+    runtime_supplied = {"__file__"}
+    unresolved = []
+
+    def visit(scope):
+        if scope is not table:
+            for symbol in scope.get_symbols():
+                name = symbol.get_name()
+                if (symbol.is_referenced() and symbol.is_global()
+                        and name not in module_names
+                        and name not in dir(builtins)
+                        and name not in runtime_supplied):
+                    unresolved.append((scope.get_name(), name))
+        for child in scope.get_children():
+            visit(child)
+
+    visit(table)
+    assert unresolved == []
 
 
 def test_runner_and_host_use_independent_but_matching_centered_fd_arithmetic():
