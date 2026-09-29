@@ -61,6 +61,32 @@ def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flo
     assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
 
 
+def test_round2_kernel_identity_avoids_the_input_dataset_slug_collision():
+    draft = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
+    metadata = json.loads((ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/kernel-metadata.json").read_text())
+    assert draft["criteria_round"] == 2
+    assert draft["input_dataset_id"] == registrar.DATASET_ID
+    assert metadata["dataset_sources"] == [registrar.DATASET_ID]
+    assert metadata["id"] == draft["kernel_id"]
+    assert metadata["id"] != registrar.DATASET_ID
+    assert metadata["title"] == "CFD Opt SDF v16 Directional FD Oracle Kernel"
+    assert metadata["is_private"] is True
+    assert metadata["enable_gpu"] is True
+    assert metadata["machine_shape"] == "NvidiaTeslaT4"
+
+
+def test_round2_retry_binding_preserves_round1_and_rejects_contract_changes():
+    binding = registrar.load_round1_submission_retry_binding()
+    assert binding["criteria_file_sha256"] == registrar.ROUND1_CRITERIA_FILE_SHA256
+    assert binding["submission_diagnostic_sha256"] == registrar.ROUND1_SUBMISSION_DIAGNOSTIC_SHA256
+    round1 = json.loads((ROOT / registrar.ROUND1_CRITERIA).read_text())
+    round2 = json.loads(json.dumps(round1))
+    registrar.assert_same_measurement_contract(round2, round1)
+    round2["perturbation"]["epsilon_ladder_m"][0] *= 2
+    with pytest.raises(ValueError, match="changed the registered measurement contract"):
+        registrar.assert_same_measurement_contract(round2, round1)
+
+
 def test_runner_and_host_use_independent_but_matching_centered_fd_arithmetic():
     baseline = 0.336
     noise = 1e-8
@@ -326,7 +352,7 @@ def test_failed_run_diagnostic_is_append_only_and_keeps_qualification_false(tmp_
         kaggle_log_file=log,
         verification_output=verification,
         diagnostic_path=diagnostic,
-        kernel_id="ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+        kernel_id="ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel",
         kernel_version=1,
         dataset_version=1,
     )

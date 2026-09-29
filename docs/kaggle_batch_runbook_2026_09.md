@@ -2511,7 +2511,7 @@ not uploaded. Round 1 criteria remain immutable and unmeasured:
   SHA-256
   `e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c`. It
   reports that the requested title is already used by a dataset. The kernel
-  ID equals the input dataset ID, so round 1 cannot use this Kaggle slug.
+ID equals the input dataset ID, so round 1 cannot use this Kaggle slug.
 - Kernel search after the failure returned `Not found`; captured output SHA-256
   is `493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b`.
 - Append-only diagnostic evidence:
@@ -2525,3 +2525,38 @@ ID/title to a distinct slug, preregister immutable round 2 against the updated
 source commit and the same measurement contract, create a new version of the
 same private dataset ID containing the round-2 criteria, redownload and
 reverify its complete hashes, then submit the exact T4 kernel version.
+
+## 2026-09-29: FD round-2 unique-kernel-slug retry implemented
+
+Kaggle's `SaveKernel` 409 occurs before version creation because round 1's
+kernel slug is identical to its input dataset slug. Preserve the round-1
+criteria SHA and sidecar unchanged. The retry metadata now uses:
+
+```text
+kernel ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel
+title:     CFD Opt SDF v16 Directional FD Oracle Kernel
+dataset:  ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle
+```
+
+The registrar's round-2 path validates the exact round-1 criteria and
+submission-diagnostic hashes, records that diagnostic in its source inputs,
+and rejects any change to the registered measurement contract, including all
+responses, directions, perturbations, order, gates, backend, noise and plateau
+rules. It also requires the new kernel ID to differ from the same private
+dataset ID. This keeps the W3/W4 source and runtime, the FD solver job, and all
+numerical acceptance conditions unchanged.
+
+**Current state:** round 2 is implemented locally but not registered. Focused
+FD tests passed (`24 passed`); `compileall`, `py_compile`, both metadata JSON
+parses and `git diff --check` passed. Full `pytest -q --tb=short` reported
+`1,141 passed, 37 failed, 4 skipped` in `205.73 s`; all 37 failures reference
+ignored historical Stage T/S/V `work/` artifacts absent from this worktree, and
+none are FD tests. The captured log is
+`work/sdf_directional_fd_v16_round2_retry_implementation/full_pytest.log`,
+SHA-256
+`c15194356f71c095af09cac4767fe15fad139c20ec7a5d3ac44c19a8868662f1`. No FD
+solver step has run. Commit and push these source changes. Only then run
+registrar `--round 2` from the clean pushed branch, upload a new version of
+the existing private dataset ID, verify every remote file hash, and submit
+the exact private T4 kernel. Do not modify round 1 or any measurement
+threshold.

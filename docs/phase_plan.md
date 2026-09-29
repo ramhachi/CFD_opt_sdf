@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 1 immutable criteria registered; submission rejected before kernel creation; preparing a new-slug retry round | Criteria SHA `ad0bd7dc…` binds source `d0ac7163…`, exact W3/W4 PASS evidence, 3 directions and 30 perturbations. Private dataset v1 is ready and its remote payload matches; Kaggle rejected the same-slug kernel with HTTP 409 before creating a kernel version. Preserve round 1 and preregister a distinct kernel slug for round 2. No FD measurement has started; this qualifies no gradient field. |
+| Centered-FD SDF directional oracle | Round 1 immutable criteria preserved after a pre-kernel HTTP 409; round-2 unique-slug retry implemented, not yet registered | Round 1 SHA `ad0bd7dc…` remains unchanged. A new kernel ID ending `-kernel` resolves the Kaggle namespace collision; the registrar binds the round-1 diagnostic and rejects any change to its measurement contract. Focused validation passed 24 tests. Commit/push this source first, then register round 2 and create/verify private dataset version 2. No FD measurement has started; this qualifies no gradient field. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -4235,3 +4235,37 @@ SHA-256 `3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8`.
   version, verify it, then submit and verify that exact kernel version.
 
 Do not edit or reuse round-1 criteria to accommodate the submission failure.
+
+### 2026-09-29 centered directional-FD round 2 retry implementation
+
+The Kaggle API conflict was isolated to a kernel ID/title that reused the
+input dataset slug. The round-1 registered source, criteria, sidecar and
+dataset version remain preserved. The minimal retry changes the kernel ID to
+`ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel` and uses title
+`CFD Opt SDF v16 Directional FD Oracle Kernel`; its input dataset ID and source
+remain unchanged.
+
+- **Implemented:** the metadata and mutable draft use the distinct kernel ID.
+  The registrar accepts round 2 only when round-1 criteria/sidecars and the
+  no-measurement HTTP 409 diagnostic match their exact hashes. It binds that
+  diagnostic into round-2 source inputs and machine-checks that geometry,
+  responses, directions, all 30 perturbations, run order, force/stationarity,
+  noise and plateau rules, backend, gates and dataset payload are identical to
+  round 1.
+- **Registered:** round 1 remains immutable and `registered_not_run`; round 2
+  is not yet registered. No existing evidence file was changed.
+- **Submitted:** private dataset version 1 remains `ready` and host-side
+  inventory/hash verified. Round-2 dataset version and kernel do not yet exist.
+- **Measured / verified:** focused FD validation passed 24 tests; Python
+  compileall, py_compile, JSON parsing and `git diff --check` passed. No Julia
+  or GPU measurement was launched. Full pytest reported `1,141 passed,
+  37 failed, 4 skipped` in `205.73 s`. All 37 failures are historical
+  Stage T/S/V checks that require ignored `work/` artifacts absent from this
+  managed worktree; no FD test failed. Full log SHA-256:
+  `c15194356f71c095af09cac4767fe15fad139c20ec7a5d3ac44c19a8868662f1` at
+  `work/sdf_directional_fd_v16_round2_retry_implementation/full_pytest.log`.
+- **Qualified:** directional FD, field gradient, reverse mode, optimizer and
+  shape update remain false/unqualified.
+- **Open:** run the full suite, commit/push the retry source, register immutable
+  round 2 from that clean source commit, stage and remotely verify dataset v2,
+  then submit and host-verify one exact private T4 kernel version.
