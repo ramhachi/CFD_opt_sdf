@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "kaggle_kernel_submission_infrastructure_diagnostic",
+  "status": "diagnostic_only_no_kernel_version",
+  "criteria_round": 1,
+  "criteria_path": "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.json",
+  "criteria_file_sha256": "ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6",
+  "criteria_canonical_sha256": "a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c",
+  "criteria_source_commit": "d0ac7163d86b4f5db5ba99c8113c767669365312",
+  "registered_kernel_metadata_sha256": "4f4ae9214b5ae45fbfe5a1c8f350e21b9ace1efaef3278bc17d17773545af2e6",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+  "submission": {
+    "attempts_reaching_kaggle": 5,
+    "accelerator": "NvidiaTeslaT4",
+    "timeout_seconds": 14400,
+    "all_attempts_http_status": 409,
+    "latest_response_body_path": "work/kaggle_sdf_directional_fd_dataset_round1_remote/kernel_push_409_response_body.json",
+    "latest_response_body_sha256": "e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c",
+    "exact_message": "The requested title \"CFD Opt SDF v16 Directional FD Oracle\" is already in use by a dataset. Please choose another title.",
+    "kernel_version_created": false,
+    "kernel_search_output_path": "work/kaggle_sdf_directional_fd_dataset_round1_remote/kernel_search_after_409.txt",
+    "kernel_search_output_sha256": "493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b"
+  },
+  "dataset": {
+    "version": 1,
+    "status": "ready",
+    "remote_inventory_sha256": "2d96fe73571447415ad184676672a0505beea8123074ae7d0f2f7e7b8c154b2c",
+    "remote_hash_audit_sha256": "0b7cc597766a6d95dd262a0bd4f27435d2da5d87ef6aec0e70a66e6a87b5774e",
+    "payload_hashes_match_local_manifest": true
+  },
+  "solver_started": false,
+  "solver_steps": 0,
+  "cuda_initialized": false,
+  "measurement_started": false,
+  "host_verification_started": false,
+  "failure_stage": "Kaggle SaveKernel request rejected before kernel version creation",
+  "classification": "platform title/slug namespace conflict: immutable round-1 kernel ID is identical to the registered input dataset ID",
+  "criteria_or_thresholds_changed": false,
+  "next_action": "Preserve round 1 and preregister round 2 with a distinct kernel ID/title; keep the same registered dataset ID and measurement contract."
+}

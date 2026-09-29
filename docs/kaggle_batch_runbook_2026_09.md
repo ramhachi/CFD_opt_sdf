@@ -2491,3 +2491,37 @@ and compare its complete inventory/hash set to the local manifest. Do not
 submit a kernel until that remote comparison passes. There is still no FD
 dataset version, kernel version, solver measurement, host verification, or
 qualification result.
+
+## 2026-09-29: round-1 FD kernel submission conflict
+
+This checkpoint supersedes only the preceding sentence that the FD dataset is
+not uploaded. Round 1 criteria remain immutable and unmeasured:
+
+- Criteria file/sidecar SHA-256:
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`.
+- Private dataset version 1 is `ready`. Its complete 38-file remote payload was
+  downloaded and matched byte-for-byte against the registered hashes. Remote
+  inventory SHA-256 is
+  `2d96fe73571447415ad184676672a0505beea8123074ae7d0f2f7e7b8c154b2c`; audit
+  SHA-256 is
+  `0b7cc597766a6d95dd262a0bd4f27435d2da5d87ef6aec0e70a66e6a87b5774e`.
+- Kaggle kernel submission returned HTTP 409 five times before creating any
+  version. The exact latest response body is saved at
+  `work/kaggle_sdf_directional_fd_dataset_round1_remote/kernel_push_409_response_body.json`,
+  SHA-256
+  `e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c`. It
+  reports that the requested title is already used by a dataset. The kernel
+  ID equals the input dataset ID, so round 1 cannot use this Kaggle slug.
+- Kernel search after the failure returned `Not found`; captured output SHA-256
+  is `493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b`.
+- Append-only diagnostic evidence:
+  [`sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json),
+  SHA-256
+  `3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8`.
+
+No solver process, CUDA initialization, `sim_step!`, FD measurement, or host
+result verification began. Do not alter round 1. Next, change only the kernel
+ID/title to a distinct slug, preregister immutable round 2 against the updated
+source commit and the same measurement contract, create a new version of the
+same private dataset ID containing the round-2 criteria, redownload and
+reverify its complete hashes, then submit the exact T4 kernel version.

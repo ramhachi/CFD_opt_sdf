@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 1 immutable criteria registered; formal measurement not started | Criteria SHA `ad0bd7dc…` binds source `d0ac7163…`, exact W3/W4 PASS evidence, 3 directions and 30 perturbations. Stage and remotely verify the private dataset before submission. This qualifies no gradient field. |
+| Centered-FD SDF directional oracle | Round 1 immutable criteria registered; submission rejected before kernel creation; preparing a new-slug retry round | Criteria SHA `ad0bd7dc…` binds source `d0ac7163…`, exact W3/W4 PASS evidence, 3 directions and 30 perturbations. Private dataset v1 is ready and its remote payload matches; Kaggle rejected the same-slug kernel with HTTP 409 before creating a kernel version. Preserve round 1 and preregister a distinct kernel slug for round 2. No FD measurement has started; this qualifies no gradient field. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -4200,3 +4200,38 @@ rerun from the clean pushed branch. No measurement occurred in that attempt.
   ignored historical `work/` ProblemSpec, STL, checkpoint, mesh, or solver
   artifacts missing from this managed worktree. Full log SHA-256:
   `17bb1c99705602b5c9dd5d499ffa3595d3cdf94cdb859c3b2de64123f0c8fd6f`.
+
+### 2026-09-29 centered directional-FD round 1 submission diagnostic
+
+Immutable FD criteria round 1 remains unchanged and unmeasured. The private
+input dataset version 1 is `ready`; its 38-file remote inventory and hashes
+match the local manifest. Five kernel submission requests using the registered
+kernel ID returned HTTP 409 before a kernel version was created. The exact
+latest Kaggle response body is preserved under ignored `work/` with SHA-256
+`e4e5bd0dd4f0f27f19783d675a1483c8301817d2f4c9c25fe5676f234e452d7c`; its
+message says the requested title is already in use by a dataset. The exact
+post-failure kernel search returned `Not found` (SHA-256
+`493fda53120050f85836032324409be6c6484f90a0755ae0c6a673ba7626818b`).
+
+The submitted kernel ID equals the registered input dataset ID. This is a
+Kaggle title/slug namespace conflict, not a solver or criteria failure. The
+append-only diagnostic is
+[`sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round1_kernel_submission_diagnostic_2026_09.json),
+SHA-256 `3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8`.
+
+- **Implemented:** round-1 source, runner, verifier, frozen directions and
+  perturbations are unchanged.
+- **Registered:** round 1 criteria and its sidecar are unchanged; its exact
+  kernel slug cannot be submitted because of the API conflict.
+- **Submitted:** no kernel version was created. Dataset version 1 is ready and
+  remotely hash-verified.
+- **Measured / verified:** no solver, CUDA, or host-result verification ran.
+  `formal_measurement_started=false`, `solver_started=false`, and
+  `solver_steps=0` remain true.
+- **Qualified:** no FD or gradient qualification is granted.
+- **Open:** minimally change only the kernel ID/title to a unique slug, add
+  immutable round-2 criteria binding that metadata/source commit and the
+  unchanged dataset ID and measurement contract, publish a new dataset
+  version, verify it, then submit and verify that exact kernel version.
+
+Do not edit or reuse round-1 criteria to accommodate the submission failure.
