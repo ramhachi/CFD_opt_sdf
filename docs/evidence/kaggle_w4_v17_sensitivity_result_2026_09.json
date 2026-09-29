@@ -1,0 +1,893 @@
+{
+  "all_T0_T10_passed": true,
+  "backend_identity": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_version": "580.159.04",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "canonical_state_label": "v17",
+  "case_measurements": {
+    "domain_xplus1m_16": {
+      "cd": 0.6968020855920912,
+      "peak_vram_bytes": 30971732,
+      "pressure_downforce_n": 0.263966178306033,
+      "pressure_drag_n": 0.1389456846117503,
+      "stationarity_downforce": 1.931151438726814e-05,
+      "stationarity_drag": 8.180727173181173e-06,
+      "total_downforce_n": 0.2541322971618747,
+      "total_drag_n": 0.2229766673894692,
+      "viscous_downforce_n": -0.009833881144157909,
+      "viscous_drag_n": 0.08403098277771893,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 30.58216404914856
+    },
+    "flow_16": {
+      "cd": 0.6974296090291332,
+      "peak_vram_bytes": 26266712,
+      "pressure_downforce_n": 0.26331334201650736,
+      "pressure_drag_n": 0.13915353820461226,
+      "stationarity_downforce": 6.270294424455297e-06,
+      "stationarity_drag": 2.552230739831499e-06,
+      "total_downforce_n": 0.25348179281038835,
+      "total_drag_n": 0.22317747488932263,
+      "viscous_downforce_n": -0.009831549206119188,
+      "viscous_drag_n": 0.0840239366847104,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 36.61096000671387
+    },
+    "flow_24": {
+      "cd": 1.0197419991440002,
+      "peak_vram_bytes": 82933788,
+      "pressure_downforce_n": 0.3384200439274342,
+      "pressure_drag_n": 0.22442633378891408,
+      "stationarity_downforce": 6.318076238432448e-06,
+      "stationarity_drag": 1.1799257372460531e-06,
+      "total_downforce_n": 0.33102903147696705,
+      "total_drag_n": 0.32631743972608007,
+      "viscous_downforce_n": -0.007391012450467173,
+      "viscous_drag_n": 0.10189110593716566,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 102.02298402786255
+    },
+    "flow_32": {
+      "cd": 1.0937555453923413,
+      "peak_vram_bytes": 185732892,
+      "pressure_downforce_n": 0.36753374355438995,
+      "pressure_drag_n": 0.23875843714754397,
+      "stationarity_downforce": 1.3259964868573419e-05,
+      "stationarity_drag": 1.9391644625124175e-05,
+      "total_downforce_n": 0.3612606925010376,
+      "total_drag_n": 0.3500017745255492,
+      "viscous_downforce_n": -0.006273051053352025,
+      "viscous_drag_n": 0.11124333737800497,
+      "vram_total_bytes": 15636037632,
+      "wall_seconds": 339.9213979244232
+    }
+  },
+  "claim_scope": "the registered canonical v17 SDF finite-box resolution/domain sensitivity matrix completed and satisfied the registered integrity and stationarity contract",
+  "cpu_measured_sdf_margin_m": 0.3499999939931499,
+  "criteria_path": "docs/evidence/w4_v17_criteria.json",
+  "criteria_sha256": "5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-w4-sensitivity",
+  "dataset_inventory_files": {
+    "canonical_v17_phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "sdf_design_state.npz": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "w4_v17_criteria.json": "5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01",
+    "w4_v17_criteria.json.sha256": "4d586592207a75a8e1db185f713090e295e31979505e54b577384ce39f4cea54",
+    "w4_v17_dataset_manifest.json": "74835c6e5a0873c621d69fcd5e10afde7a54e5924f8fc5a30afdc3414af84782"
+  },
+  "dataset_inventory_sha256": "d3cbdfb385f443e5f8b413fc07675d79f319250b8e01bb617476041c651bc6fb",
+  "dataset_manifest_sha256": "74835c6e5a0873c621d69fcd5e10afde7a54e5924f8fc5a30afdc3414af84782",
+  "dataset_version": 1,
+  "evidence_scope": {
+    "absolute_downforce_qualified": false,
+    "claim_scope": "the registered canonical v17 SDF finite-box resolution/domain sensitivity matrix completed and satisfied the registered integrity and stationarity contract",
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "openfoam_is_independent_physical_verifier": true,
+    "optimizer_qualified": false,
+    "pass_claim": "the registered v16 WaterLily finite-box resolution/domain sensitivity matrix completed, each case passed the registered stationarity and integrity gates, and its response metrics were independently recomputed",
+    "physical_profile_equivalence_qualified": false,
+    "reverse_mode_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_qualified": false,
+    "w4_sensitivity_matrix_passed": false,
+    "waterlily_is_optimization_oracle": true
+  },
+  "fd05_execution_authorized": false,
+  "fd_entry_gate": "OPEN",
+  "force_metrics": {
+    "domain_xplus1m_16": {
+      "cd_time_weighted": 0.6968020855920912,
+      "diagnostic_first_half_mean_downforce_solver": 101.65193533122088,
+      "diagnostic_first_half_mean_drag_solver": 89.19103247399158,
+      "diagnostic_second_half_mean_downforce_solver": 101.65389383376923,
+      "diagnostic_second_half_mean_drag_solver": 89.19030454020985,
+      "downforce_time_weighted_n": 0.2541322971618747,
+      "drag_time_weighted_n": 0.2229766673894692,
+      "pressure_downforce_time_weighted_n": 0.263966178306033,
+      "pressure_drag_time_weighted_n": 0.1389456846117503,
+      "stationarity_first_half_time_weighted_downforce_solver": 101.65193732884731,
+      "stationarity_first_half_time_weighted_drag_solver": 89.19103177804409,
+      "stationarity_relative_half_window_drift_downforce": 1.931151438726814e-05,
+      "stationarity_relative_half_window_drift_drag": 8.180727173181173e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 101.65390040065247,
+      "stationarity_second_half_time_weighted_drag_solver": 89.19030213353133,
+      "viscous_downforce_time_weighted_n": -0.009833881144157909,
+      "viscous_drag_time_weighted_n": 0.08403098277771893,
+      "window_mean_downforce_solver": 101.65291458249507,
+      "window_mean_drag_solver": 89.19066850710071,
+      "window_samples": 200,
+      "window_time_weighted_downforce_solver": 101.65291886474986,
+      "window_time_weighted_drag_solver": 89.19066695578766,
+      "window_time_weighted_fx_solver": 89.19066695578766,
+      "window_time_weighted_fy_solver": -0.7090315639877259,
+      "window_time_weighted_fz_solver": -101.65291886474986,
+      "window_time_weighted_pressure_fx_solver": 55.57827384470011,
+      "window_time_weighted_pressure_fy_solver": -0.9225568088666641,
+      "window_time_weighted_pressure_fz_solver": -105.58647132241317,
+      "window_time_weighted_viscous_fx_solver": 33.61239311108757,
+      "window_time_weighted_viscous_fy_solver": 0.21352524487893856,
+      "window_time_weighted_viscous_fz_solver": 3.9335524576631626
+    },
+    "flow_16": {
+      "cd_time_weighted": 0.6974296090291332,
+      "diagnostic_first_half_mean_downforce_solver": 101.39239995677002,
+      "diagnostic_first_half_mean_drag_solver": 89.27110361920954,
+      "diagnostic_second_half_mean_downforce_solver": 101.39303793900413,
+      "diagnostic_second_half_mean_drag_solver": 89.27087476759847,
+      "downforce_time_weighted_n": 0.25348179281038835,
+      "drag_time_weighted_n": 0.22317747488932263,
+      "pressure_downforce_time_weighted_n": 0.26331334201650736,
+      "pressure_drag_time_weighted_n": 0.13915353820461226,
+      "stationarity_first_half_time_weighted_downforce_solver": 101.39239924306088,
+      "stationarity_first_half_time_weighted_drag_solver": 89.27110387581138,
+      "stationarity_relative_half_window_drift_downforce": 6.270294424455297e-06,
+      "stationarity_relative_half_window_drift_drag": 2.552230739831499e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 101.39303500524974,
+      "stationarity_second_half_time_weighted_drag_solver": 89.27087603564664,
+      "viscous_downforce_time_weighted_n": -0.009831549206119188,
+      "viscous_drag_time_weighted_n": 0.0840239366847104,
+      "window_mean_downforce_solver": 101.39271894788708,
+      "window_mean_drag_solver": 89.270989193404,
+      "window_samples": 200,
+      "window_time_weighted_downforce_solver": 101.39271712415531,
+      "window_time_weighted_drag_solver": 89.27098995572904,
+      "window_time_weighted_fx_solver": 89.27098995572904,
+      "window_time_weighted_fy_solver": -0.7203916680117939,
+      "window_time_weighted_fz_solver": -101.39271712415531,
+      "window_time_weighted_pressure_fx_solver": 55.661415281844896,
+      "window_time_weighted_pressure_fy_solver": -0.9339216173710401,
+      "window_time_weighted_pressure_fz_solver": -105.32533680660292,
+      "window_time_weighted_viscous_fx_solver": 33.609574673884154,
+      "window_time_weighted_viscous_fy_solver": 0.21352994935924632,
+      "window_time_weighted_viscous_fz_solver": 3.9326196824476747
+    },
+    "flow_24": {
+      "cd_time_weighted": 1.0197419991440002,
+      "diagnostic_first_half_mean_downforce_solver": 297.9270669922006,
+      "diagnostic_first_half_mean_drag_solver": 293.68552303191467,
+      "diagnostic_second_half_mean_downforce_solver": 297.92518523437764,
+      "diagnostic_second_half_mean_drag_solver": 293.68586940169047,
+      "downforce_time_weighted_n": 0.33102903147696705,
+      "drag_time_weighted_n": 0.32631743972608007,
+      "pressure_downforce_time_weighted_n": 0.3384200439274342,
+      "pressure_drag_time_weighted_n": 0.22442633378891408,
+      "stationarity_first_half_time_weighted_downforce_solver": 297.92706948926644,
+      "stationarity_first_half_time_weighted_drag_solver": 293.68552248981626,
+      "stationarity_relative_half_window_drift_downforce": 6.318076238432448e-06,
+      "stationarity_relative_half_window_drift_drag": 1.1799257372460531e-06,
+      "stationarity_second_half_time_weighted_downforce_solver": 297.92518716927424,
+      "stationarity_second_half_time_weighted_drag_solver": 293.68586901712735,
+      "viscous_downforce_time_weighted_n": -0.007391012450467173,
+      "viscous_drag_time_weighted_n": 0.10189110593716566,
+      "window_mean_downforce_solver": 297.9261261132891,
+      "window_mean_drag_solver": 293.68569621680257,
+      "window_samples": 364,
+      "window_time_weighted_downforce_solver": 297.92612832927034,
+      "window_time_weighted_drag_solver": 293.6856957534721,
+      "window_time_weighted_fx_solver": 293.6856957534721,
+      "window_time_weighted_fy_solver": 5.380644381524499,
+      "window_time_weighted_fz_solver": -297.92612832927034,
+      "window_time_weighted_pressure_fx_solver": 201.98370041002266,
+      "window_time_weighted_pressure_fy_solver": 4.330067776243185,
+      "window_time_weighted_pressure_fz_solver": -304.5780395346908,
+      "window_time_weighted_viscous_fx_solver": 91.7019953434491,
+      "window_time_weighted_viscous_fy_solver": 1.050576605281313,
+      "window_time_weighted_viscous_fz_solver": 6.651911205420456
+    },
+    "flow_32": {
+      "cd_time_weighted": 1.0937555453923413,
+      "diagnostic_first_half_mean_downforce_solver": 578.013278791644,
+      "diagnostic_first_half_mean_drag_solver": 559.997413951337,
+      "diagnostic_second_half_mean_downforce_solver": 578.0209414734009,
+      "diagnostic_second_half_mean_drag_solver": 560.0082707529164,
+      "downforce_time_weighted_n": 0.3612606925010376,
+      "drag_time_weighted_n": 0.3500017745255492,
+      "pressure_downforce_time_weighted_n": 0.36753374355438995,
+      "pressure_drag_time_weighted_n": 0.23875843714754397,
+      "stationarity_first_half_time_weighted_downforce_solver": 578.0132757583874,
+      "stationarity_first_half_time_weighted_drag_solver": 559.9974095528544,
+      "stationarity_relative_half_window_drift_downforce": 1.3259964868573419e-05,
+      "stationarity_relative_half_window_drift_drag": 1.9391644625124175e-05,
+      "stationarity_second_half_time_weighted_downforce_solver": 578.020940244933,
+      "stationarity_second_half_time_weighted_drag_solver": 560.008268928902,
+      "viscous_downforce_time_weighted_n": -0.006273051053352025,
+      "viscous_drag_time_weighted_n": 0.11124333737800497,
+      "window_mean_downforce_solver": 578.0171101325224,
+      "window_mean_drag_solver": 560.0028423521267,
+      "window_samples": 564,
+      "window_time_weighted_downforce_solver": 578.0171080016601,
+      "window_time_weighted_drag_solver": 560.0028392408786,
+      "window_time_weighted_fx_solver": 560.0028392408786,
+      "window_time_weighted_fy_solver": -1.0379045983509494,
+      "window_time_weighted_fz_solver": -578.0171080016601,
+      "window_time_weighted_pressure_fx_solver": 382.0134994360703,
+      "window_time_weighted_pressure_fy_solver": -2.0381103567165915,
+      "window_time_weighted_pressure_fz_solver": -588.0539896870238,
+      "window_time_weighted_viscous_fx_solver": 177.9893398048079,
+      "window_time_weighted_viscous_fy_solver": 1.0002057583656436,
+      "window_time_weighted_viscous_fz_solver": 10.036881685363237
+    }
+  },
+  "gates": {
+    "T0_registered_inputs_and_w3_pass": true,
+    "T10_stationarity": true,
+    "T1_registered_case_matrix_complete": true,
+    "T2_canonical_phi_and_margin_identity": true,
+    "T3_case_mapping_and_reynolds": true,
+    "T4_native_profile_limitation_preserved": true,
+    "T5_T4_Julia_CUDA_WaterLily_identity": true,
+    "T6_primal_completion_and_force_integrity": true,
+    "T7_host_force_recomputation": true,
+    "T8_runtime_and_vram": true,
+    "T9_exact_source_and_runner_identity": true
+  },
+  "host_verification_passed": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity",
+  "kernel_version": 1,
+  "kind": "kaggle_w4_v17_sensitivity_result",
+  "matrix_interpretation_allowed": true,
+  "output_manifest_sha256": "c19eef6a90c7a99408ce8639a42dd1138ee7d00666697dc4b6b491ef19c8ebbb",
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_qualified": false,
+    "reverse_mode_qualified": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "stationarity_qualified": false,
+    "topology_birth_qualified": false
+  },
+  "registered_source_commit": "4c20787c1ab55ea45f98631e6e78ba6d5502a1a2",
+  "response_analysis": {
+    "any_force_component_requires_extended_domain_fine_grid": false,
+    "downforce_time_weighted_n": {
+      "domain_delta_abs_n": 0.0006505043514863362,
+      "domain_delta_relative": 0.0025597075175060663,
+      "domain_delta_relative_percent": 0.25597075175060663,
+      "extended_domain_fine_grid_required": false,
+      "flow16_to_flow24_delta_abs_n": 0.0775472386665787,
+      "flow16_to_flow24_delta_relative_percent": 23.426114114699462,
+      "resolution_delta_abs_n": 0.030231661024070544,
+      "resolution_delta_relative": 0.08368378196579944,
+      "resolution_delta_relative_percent": 8.368378196579943
+    },
+    "drag_time_weighted_n": {
+      "domain_delta_abs_n": 0.0002008074998534337,
+      "domain_delta_relative": 0.0008997659819971412,
+      "domain_delta_relative_percent": 0.08997659819971413,
+      "extended_domain_fine_grid_required": false,
+      "flow16_to_flow24_delta_abs_n": 0.10313996483675744,
+      "flow16_to_flow24_delta_relative_percent": 31.607248734035178,
+      "resolution_delta_abs_n": 0.02368433479946913,
+      "resolution_delta_relative": 0.06766918491077603,
+      "resolution_delta_relative_percent": 6.766918491077603
+    },
+    "force_component_deltas": {
+      "downforce_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 0.0006505043514863362,
+          "delta_to_minus_from_n": 0.0006505043514863362,
+          "from_case": "flow_16",
+          "from_n": 0.25348179281038835,
+          "relative_delta_percent": 0.25597075175060663,
+          "to_case": "domain_xplus1m_16",
+          "to_n": 0.2541322971618747
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.0775472386665787,
+          "delta_to_minus_from_n": 0.0775472386665787,
+          "from_case": "flow_16",
+          "from_n": 0.25348179281038835,
+          "relative_delta_percent": 23.426114114699462,
+          "to_case": "flow_24",
+          "to_n": 0.33102903147696705
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.030231661024070544,
+          "delta_to_minus_from_n": 0.030231661024070544,
+          "from_case": "flow_24",
+          "from_n": 0.33102903147696705,
+          "relative_delta_percent": 8.368378196579943,
+          "to_case": "flow_32",
+          "to_n": 0.3612606925010376
+        }
+      },
+      "drag_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 0.0002008074998534337,
+          "delta_to_minus_from_n": -0.0002008074998534337,
+          "from_case": "flow_16",
+          "from_n": 0.22317747488932263,
+          "relative_delta_percent": 0.08997659819971413,
+          "to_case": "domain_xplus1m_16",
+          "to_n": 0.2229766673894692
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.10313996483675744,
+          "delta_to_minus_from_n": 0.10313996483675744,
+          "from_case": "flow_16",
+          "from_n": 0.22317747488932263,
+          "relative_delta_percent": 31.607248734035178,
+          "to_case": "flow_24",
+          "to_n": 0.32631743972608007
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.02368433479946913,
+          "delta_to_minus_from_n": 0.02368433479946913,
+          "from_case": "flow_24",
+          "from_n": 0.32631743972608007,
+          "relative_delta_percent": 6.766918491077603,
+          "to_case": "flow_32",
+          "to_n": 0.3500017745255492
+        }
+      },
+      "pressure_downforce_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 0.0006528362895256157,
+          "delta_to_minus_from_n": 0.0006528362895256157,
+          "from_case": "flow_16",
+          "from_n": 0.26331334201650736,
+          "relative_delta_percent": 0.24731815784700287,
+          "to_case": "domain_xplus1m_16",
+          "to_n": 0.263966178306033
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.07510670191092683,
+          "delta_to_minus_from_n": 0.07510670191092683,
+          "from_case": "flow_16",
+          "from_n": 0.26331334201650736,
+          "relative_delta_percent": 22.193337321069436,
+          "to_case": "flow_24",
+          "to_n": 0.3384200439274342
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.029113699626955758,
+          "delta_to_minus_from_n": 0.029113699626955758,
+          "from_case": "flow_24",
+          "from_n": 0.3384200439274342,
+          "relative_delta_percent": 7.9213678029667305,
+          "to_case": "flow_32",
+          "to_n": 0.36753374355438995
+        }
+      },
+      "pressure_drag_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 0.0002078535928619618,
+          "delta_to_minus_from_n": -0.0002078535928619618,
+          "from_case": "flow_16",
+          "from_n": 0.13915353820461226,
+          "relative_delta_percent": 0.14936996611349726,
+          "to_case": "domain_xplus1m_16",
+          "to_n": 0.1389456846117503
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.08527279558430181,
+          "delta_to_minus_from_n": 0.08527279558430181,
+          "from_case": "flow_16",
+          "from_n": 0.13915353820461226,
+          "relative_delta_percent": 37.99589564409398,
+          "to_case": "flow_24",
+          "to_n": 0.22442633378891408
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.014332103358629888,
+          "delta_to_minus_from_n": 0.014332103358629888,
+          "from_case": "flow_24",
+          "from_n": 0.22442633378891408,
+          "relative_delta_percent": 6.002763098073546,
+          "to_case": "flow_32",
+          "to_n": 0.23875843714754397
+        }
+      },
+      "viscous_downforce_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 2.3319380387208655e-06,
+          "delta_to_minus_from_n": -2.3319380387208655e-06,
+          "from_case": "flow_16",
+          "from_n": -0.009831549206119188,
+          "relative_delta_percent": 0.023713303064540475,
+          "to_case": "domain_xplus1m_16",
+          "to_n": -0.009833881144157909
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.002440536755652015,
+          "delta_to_minus_from_n": 0.002440536755652015,
+          "from_case": "flow_16",
+          "from_n": -0.009831549206119188,
+          "relative_delta_percent": 24.823521751109347,
+          "to_case": "flow_24",
+          "to_n": -0.007391012450467173
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.0011179613971151478,
+          "delta_to_minus_from_n": 0.0011179613971151478,
+          "from_case": "flow_24",
+          "from_n": -0.007391012450467173,
+          "relative_delta_percent": 15.125957432861359,
+          "to_case": "flow_32",
+          "to_n": -0.006273051053352025
+        }
+      },
+      "viscous_drag_time_weighted_n": {
+        "flow16_to_extended_domain16": {
+          "absolute_delta_n": 7.046093008528098e-06,
+          "delta_to_minus_from_n": 7.046093008528098e-06,
+          "from_case": "flow_16",
+          "from_n": 0.0840239366847104,
+          "relative_delta_percent": 0.008385113175656433,
+          "to_case": "domain_xplus1m_16",
+          "to_n": 0.08403098277771893
+        },
+        "flow16_to_flow24": {
+          "absolute_delta_n": 0.017867169252455253,
+          "delta_to_minus_from_n": 0.017867169252455253,
+          "from_case": "flow_16",
+          "from_n": 0.0840239366847104,
+          "relative_delta_percent": 17.53555336171697,
+          "to_case": "flow_24",
+          "to_n": 0.10189110593716566
+        },
+        "flow24_to_flow32": {
+          "absolute_delta_n": 0.009352231440839312,
+          "delta_to_minus_from_n": 0.009352231440839312,
+          "from_case": "flow_24",
+          "from_n": 0.10189110593716566,
+          "relative_delta_percent": 8.407003656372174,
+          "to_case": "flow_32",
+          "to_n": 0.11124333737800497
+        }
+      }
+    },
+    "relative_delta_definition": "100 * abs(to - from) / max(abs(from), abs(to)); null only when both values are zero"
+  },
+  "selected_gpu_uuid": "GPU-60b1962f-5794-a6d8-c8a7-10da53c14b67",
+  "source_commit": "4c20787c1ab55ea45f98631e6e78ba6d5502a1a2",
+  "state_identity": {
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "cell_shape": [
+      120,
+      64,
+      48
+    ],
+    "design_lattice_spacing_m": 0.025,
+    "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "point_shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "state_label": "v17",
+    "state_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "terminal_log_sha256": "f68a2f79c37b8a345270e5629923874db1bfed09310393164e7599c448b1cb44",
+  "terminal_status": "KernelWorkerStatus.COMPLETE",
+  "v16_w4_diagnostic_comparison": {
+    "cases": {
+      "domain_xplus1m_16": {
+        "cd": {
+          "absolute_delta": 0.35437047257445375,
+          "delta_v17_minus_v16": -0.35437047257445375,
+          "relative_delta_percent": 33.71192196955243,
+          "w4_v16_round4": 1.051172558166545,
+          "w4_v17": 0.6968020855920912
+        },
+        "peak_vram_bytes": {
+          "absolute_delta": 1340232,
+          "delta_v17_minus_v16": 1340232,
+          "relative_delta_percent": 4.327274948653178,
+          "w4_v16_round4": 29631500,
+          "w4_v17": 30971732
+        },
+        "pressure_downforce_n": {
+          "absolute_delta": 0.09820606082749805,
+          "delta_v17_minus_v16": -0.09820606082749805,
+          "relative_delta_percent": 27.115844401119322,
+          "w4_v16_round4": 0.362172239133531,
+          "w4_v17": 0.263966178306033
+        },
+        "pressure_drag_n": {
+          "absolute_delta": 0.08952686776260371,
+          "delta_v17_minus_v16": -0.08952686776260371,
+          "relative_delta_percent": 39.18495540589631,
+          "w4_v16_round4": 0.22847255237435402,
+          "w4_v17": 0.1389456846117503
+        },
+        "stationarity_downforce": {
+          "absolute_delta": 8.527289953293832e-06,
+          "delta_v17_minus_v16": 8.527289953293832e-06,
+          "relative_delta_percent": 44.1565057109958,
+          "w4_v16_round4": 1.0784224433974308e-05,
+          "w4_v17": 1.931151438726814e-05
+        },
+        "stationarity_drag": {
+          "absolute_delta": 1.162890558511637e-05,
+          "delta_v17_minus_v16": -1.162890558511637e-05,
+          "relative_delta_percent": 58.70328706747701,
+          "w4_v16_round4": 1.9809632758297544e-05,
+          "w4_v17": 8.180727173181173e-06
+        },
+        "total_downforce_n": {
+          "absolute_delta": 0.0990879915021996,
+          "delta_v17_minus_v16": -0.0990879915021996,
+          "relative_delta_percent": 28.052746312213106,
+          "w4_v16_round4": 0.3532202886640743,
+          "w4_v17": 0.2541322971618747
+        },
+        "total_drag_n": {
+          "absolute_delta": 0.1133985512238252,
+          "delta_v17_minus_v16": -0.1133985512238252,
+          "relative_delta_percent": 33.71192196955243,
+          "w4_v16_round4": 0.3363752186132944,
+          "w4_v17": 0.2229766673894692
+        },
+        "viscous_downforce_n": {
+          "absolute_delta": 0.0008819306747010047,
+          "delta_v17_minus_v16": -0.0008819306747010047,
+          "relative_delta_percent": 8.968286902927845,
+          "w4_v16_round4": -0.008951950469456904,
+          "w4_v17": -0.009833881144157909
+        },
+        "viscous_drag_n": {
+          "absolute_delta": 0.023871683461221163,
+          "delta_v17_minus_v16": -0.023871683461221163,
+          "relative_delta_percent": 22.12334902676048,
+          "w4_v16_round4": 0.1079026662389401,
+          "w4_v17": 0.08403098277771893
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.7299590110778809,
+          "delta_v17_minus_v16": 0.7299590110778809,
+          "relative_delta_percent": 2.3868782140621723,
+          "w4_v16_round4": 29.85220503807068,
+          "w4_v17": 30.58216404914856
+        }
+      },
+      "flow_16": {
+        "cd": {
+          "absolute_delta": 0.35262579696360064,
+          "delta_v17_minus_v16": -0.35262579696360064,
+          "relative_delta_percent": 33.581637211821636,
+          "w4_v16_round4": 1.0500554059927338,
+          "w4_v17": 0.6974296090291332
+        },
+        "peak_vram_bytes": {
+          "absolute_delta": 1331788,
+          "delta_v17_minus_v16": 1331788,
+          "relative_delta_percent": 5.070250132563223,
+          "w4_v16_round4": 24934924,
+          "w4_v17": 26266712
+        },
+        "pressure_downforce_n": {
+          "absolute_delta": 0.09900915110518188,
+          "delta_v17_minus_v16": -0.09900915110518188,
+          "relative_delta_percent": 27.326250228668187,
+          "w4_v16_round4": 0.36232249312168924,
+          "w4_v17": 0.26331334201650736
+        },
+        "pressure_drag_n": {
+          "absolute_delta": 0.08897165349290095,
+          "delta_v17_minus_v16": -0.08897165349290095,
+          "relative_delta_percent": 39.00123999057261,
+          "w4_v16_round4": 0.22812519169751322,
+          "w4_v17": 0.13915353820461226
+        },
+        "stationarity_downforce": {
+          "absolute_delta": 2.097671095871066e-06,
+          "delta_v17_minus_v16": 2.097671095871066e-06,
+          "relative_delta_percent": 33.45410843372465,
+          "w4_v16_round4": 4.172623328584231e-06,
+          "w4_v17": 6.270294424455297e-06
+        },
+        "stationarity_drag": {
+          "absolute_delta": 5.611342892454426e-06,
+          "delta_v17_minus_v16": -5.611342892454426e-06,
+          "relative_delta_percent": 68.73635426355756,
+          "w4_v16_round4": 8.163573632285925e-06,
+          "w4_v17": 2.552230739831499e-06
+        },
+        "total_downforce_n": {
+          "absolute_delta": 0.09989144741118477,
+          "delta_v17_minus_v16": -0.09989144741118477,
+          "relative_delta_percent": 28.267971663205326,
+          "w4_v16_round4": 0.3533732402215731,
+          "w4_v17": 0.25348179281038835
+        },
+        "total_drag_n": {
+          "absolute_delta": 0.11284025502835218,
+          "delta_v17_minus_v16": -0.11284025502835218,
+          "relative_delta_percent": 33.58163721182163,
+          "w4_v16_round4": 0.3360177299176748,
+          "w4_v17": 0.22317747488932263
+        },
+        "viscous_downforce_n": {
+          "absolute_delta": 0.0008822963060031008,
+          "delta_v17_minus_v16": -0.0008822963060031008,
+          "relative_delta_percent": 8.974133043589475,
+          "w4_v16_round4": -0.008949252900116087,
+          "w4_v17": -0.009831549206119188
+        },
+        "viscous_drag_n": {
+          "absolute_delta": 0.023868601535451048,
+          "delta_v17_minus_v16": -0.023868601535451048,
+          "relative_delta_percent": 22.12256929830094,
+          "w4_v16_round4": 0.10789253822016145,
+          "w4_v17": 0.0840239366847104
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.9440701007843018,
+          "delta_v17_minus_v16": 0.9440701007843018,
+          "relative_delta_percent": 2.5786543172076732,
+          "w4_v16_round4": 35.666889905929565,
+          "w4_v17": 36.61096000671387
+        }
+      },
+      "flow_24": {
+        "cd": {
+          "absolute_delta": 0.0978203721384936,
+          "delta_v17_minus_v16": -0.0978203721384936,
+          "relative_delta_percent": 8.75301232863064,
+          "w4_v16_round4": 1.1175623712824938,
+          "w4_v17": 1.0197419991440002
+        },
+        "peak_vram_bytes": {
+          "absolute_delta": 1366768,
+          "delta_v17_minus_v16": 1366768,
+          "relative_delta_percent": 1.6480231193587829,
+          "w4_v16_round4": 81567020,
+          "w4_v17": 82933788
+        },
+        "pressure_downforce_n": {
+          "absolute_delta": 0.026074051275978116,
+          "delta_v17_minus_v16": -0.026074051275978116,
+          "relative_delta_percent": 7.15349072017944,
+          "w4_v16_round4": 0.3644940952034123,
+          "w4_v17": 0.3384200439274342
+        },
+        "pressure_drag_n": {
+          "absolute_delta": 0.02239196162042481,
+          "delta_v17_minus_v16": -0.02239196162042481,
+          "relative_delta_percent": 9.072245468387415,
+          "w4_v16_round4": 0.2468182954093389,
+          "w4_v17": 0.22442633378891408
+        },
+        "stationarity_downforce": {
+          "absolute_delta": 5.363477504463662e-06,
+          "delta_v17_minus_v16": -5.363477504463662e-06,
+          "relative_delta_percent": 45.91407635071959,
+          "w4_v16_round4": 1.168155374289611e-05,
+          "w4_v17": 6.318076238432448e-06
+        },
+        "stationarity_drag": {
+          "absolute_delta": 8.797157212677304e-07,
+          "delta_v17_minus_v16": -8.797157212677304e-07,
+          "relative_delta_percent": 42.71208066973581,
+          "w4_v16_round4": 2.0596414585137835e-06,
+          "w4_v17": 1.1799257372460531e-06
+        },
+        "total_downforce_n": {
+          "absolute_delta": 0.025718628946422906,
+          "delta_v17_minus_v16": -0.025718628946422906,
+          "relative_delta_percent": 7.20919344387568,
+          "w4_v16_round4": 0.35674766042338996,
+          "w4_v17": 0.33102903147696705
+        },
+        "total_drag_n": {
+          "absolute_delta": 0.03130251908431797,
+          "delta_v17_minus_v16": -0.03130251908431797,
+          "relative_delta_percent": 8.753012328630643,
+          "w4_v16_round4": 0.35761995881039804,
+          "w4_v17": 0.32631743972608007
+        },
+        "viscous_downforce_n": {
+          "absolute_delta": 0.00035542232955528604,
+          "delta_v17_minus_v16": 0.00035542232955528604,
+          "relative_delta_percent": 4.588205279568049,
+          "w4_v16_round4": -0.007746434780022459,
+          "w4_v17": -0.007391012450467173
+        },
+        "viscous_drag_n": {
+          "absolute_delta": 0.008910557463893326,
+          "delta_v17_minus_v16": -0.008910557463893326,
+          "relative_delta_percent": 8.041898641575957,
+          "w4_v16_round4": 0.11080166340105899,
+          "w4_v17": 0.10189110593716566
+        },
+        "wall_seconds": {
+          "absolute_delta": 6.180426120758057,
+          "delta_v17_minus_v16": 6.180426120758057,
+          "relative_delta_percent": 6.057876251757327,
+          "w4_v16_round4": 95.84255790710449,
+          "w4_v17": 102.02298402786255
+        }
+      },
+      "flow_32": {
+        "cd": {
+          "absolute_delta": 0.18844844943568018,
+          "delta_v17_minus_v16": -0.18844844943568018,
+          "relative_delta_percent": 14.697228381428982,
+          "w4_v16_round4": 1.2822039948280215,
+          "w4_v17": 1.0937555453923413
+        },
+        "peak_vram_bytes": {
+          "absolute_delta": 1320776,
+          "delta_v17_minus_v16": 1320776,
+          "relative_delta_percent": 0.7111158318689185,
+          "w4_v16_round4": 184412116,
+          "w4_v17": 185732892
+        },
+        "pressure_downforce_n": {
+          "absolute_delta": 0.05028074328559773,
+          "delta_v17_minus_v16": -0.05028074328559773,
+          "relative_delta_percent": 12.034226880422645,
+          "w4_v16_round4": 0.4178144868399877,
+          "w4_v17": 0.36753374355438995
+        },
+        "pressure_drag_n": {
+          "absolute_delta": 0.046159986454928026,
+          "delta_v17_minus_v16": -0.046159986454928026,
+          "relative_delta_percent": 16.201123771249005,
+          "w4_v16_round4": 0.284918423602472,
+          "w4_v17": 0.23875843714754397
+        },
+        "stationarity_downforce": {
+          "absolute_delta": 1.1850905832573897e-05,
+          "delta_v17_minus_v16": 1.1850905832573897e-05,
+          "relative_delta_percent": 89.37358394260123,
+          "w4_v16_round4": 1.409059035999522e-06,
+          "w4_v17": 1.3259964868573419e-05
+        },
+        "stationarity_drag": {
+          "absolute_delta": 1.74022560117147e-05,
+          "delta_v17_minus_v16": 1.74022560117147e-05,
+          "relative_delta_percent": 89.74100107614397,
+          "w4_v16_round4": 1.989388613409475e-06,
+          "w4_v17": 1.9391644625124175e-05
+        },
+        "total_downforce_n": {
+          "absolute_delta": 0.050559467971560135,
+          "delta_v17_minus_v16": -0.050559467971560135,
+          "relative_delta_percent": 12.277074515618411,
+          "w4_v16_round4": 0.41182016047259773,
+          "w4_v17": 0.3612606925010376
+        },
+        "total_drag_n": {
+          "absolute_delta": 0.06030350381941768,
+          "delta_v17_minus_v16": -0.06030350381941768,
+          "relative_delta_percent": 14.697228381428989,
+          "w4_v16_round4": 0.4103052783449669,
+          "w4_v17": 0.3500017745255492
+        },
+        "viscous_downforce_n": {
+          "absolute_delta": 0.0002787246859616982,
+          "delta_v17_minus_v16": -0.0002787246859616982,
+          "relative_delta_percent": 4.443207676633857,
+          "w4_v16_round4": -0.005994326367390327,
+          "w4_v17": -0.006273051053352025
+        },
+        "viscous_drag_n": {
+          "absolute_delta": 0.01414351736449014,
+          "delta_v17_minus_v16": -0.01414351736449014,
+          "relative_delta_percent": 11.279904415448051,
+          "w4_v16_round4": 0.1253868547424951,
+          "w4_v17": 0.11124333737800497
+        },
+        "wall_seconds": {
+          "absolute_delta": 28.69945001602173,
+          "delta_v17_minus_v16": 28.69945001602173,
+          "relative_delta_percent": 8.442966577350523,
+          "w4_v16_round4": 311.2219479084015,
+          "w4_v17": 339.9213979244232
+        }
+      }
+    },
+    "diagnostic_only": true,
+    "interpretation": "The canonical SDF states differ; this cross-state comparison does not transfer v16 results or qualify physical-force accuracy or grid convergence.",
+    "kind": "w4_v17_vs_v16_round4_cross_state_diagnostic",
+    "qualification_gate": false,
+    "reference_criteria_path": "docs/evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json",
+    "reference_criteria_sha256": "3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f",
+    "reference_result_path": "docs/evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json",
+    "reference_result_sha256": "87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae",
+    "relative_delta_definition": "100 * abs(v17 - v16) / max(abs(v16), abs(v17)); null only when both values are zero"
+  },
+  "verdict": "PASS",
+  "verified_files": 24,
+  "w3_flow16_comparison": {
+    "cd_time_weighted": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_v17": 0.6974296090291332,
+      "w4_flow_16": 0.6974296090291332
+    },
+    "downforce_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_v17": 0.25348179281038835,
+      "w4_flow_16": 0.25348179281038835
+    },
+    "drag_time_weighted_n": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_v17": 0.22317747488932263,
+      "w4_flow_16": 0.22317747488932263
+    },
+    "force_projection_semantics": "drag=+Fx; downforce=-Fz",
+    "force_sign": {
+      "w3_v17": 1.0,
+      "w4_flow_16": 1.0
+    },
+    "force_sign_consistent": true,
+    "interpretation_if_force_sign_differs": "stop matrix interpretation and diagnose before FD",
+    "interpretation_rule": "report all W3 v17 to W4 flow_16 deltas; if drag force sign differs, stop matrix interpretation and diagnose before FD",
+    "numerical_repeatability_gate_registered": false,
+    "stationarity_relative_half_window_drift_downforce": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_v17": 6.270294424455297e-06,
+      "w4_flow_16": 6.270294424455297e-06
+    },
+    "stationarity_relative_half_window_drift_drag": {
+      "absolute_delta": 0.0,
+      "delta_w4_minus_w3": 0.0,
+      "relative_delta": 0.0,
+      "w3_v17": 2.552230739831499e-06,
+      "w4_flow_16": 2.552230739831499e-06
+    },
+    "steps": {
+      "w3_v17": 4816,
+      "w4_flow_16": 4816
+    },
+    "t_u_l": {
+      "w3_v17": 120.02102661132812,
+      "w4_flow_16": 120.02102661132812
+    }
+  },
+  "w4_sensitivity_matrix_passed": true
+}

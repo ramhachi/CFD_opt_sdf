@@ -137,9 +137,9 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | --- | --- | --- |
 | Canonical design state | SDF `phi` | Bounded Cartesian SDF is the canonical optimization variable. The genesis and sampled-volume contract are registered; optimizer-side volume enforcement is still pending. |
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
-| W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
-| W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 5 exact T4 kernel `/4` executed all 33 fresh primals, then failed runner gates and strict host verification | Dataset v5 exact inventory and host-input preflight passed. T0-T5, T8-T9, and runner T12 passed; T6-T7 failed because six integrated pressure/viscous metrics are omitted from each per-run summary, and T10-T11 failed the registered 5% plateau gate in all six direction/response combinations. Kernel `/4` ended `ERROR`; `FD_JOB_DONE` exists but `DONE` does not. Strict host verification failed closed at the missing marker. Append-only diagnostic and raw-CSV postmortem are recorded below. All FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
+| W3 primal | v16 round 4 and v17 round 1 registered finite-box primal contracts PASS; broader physical qualification remains false | v16 exact kernel `/5` and v17 exact kernel `/1` passed their own host-verified T0-T10 contracts. The v17 result is bound to its own state and criteria; neither result qualifies physical aerodynamics. The unresolved W3 v4 all-zero root cause is not retroactively closed. |
+| W4 grid/domain sensitivity | v16 round 4 and canonical v17 round 1 sensitivity matrices passed exact-version host verification | v17 criteria SHA `5eceb62c…`, result SHA `25297c46…`, source `4c20787c`. Private dataset v1 inventory and exact kernel `/1` were verified; all four cases passed T0-T10. Resolution changes are large (flow16→24: drag 31.61%, downforce 23.43%; flow24→32: 6.77%, 8.37%), while the x+1 m domain change is below 0.26%. This remains finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
+| Centered-FD SDF directional oracle | v16 round 5 terminal FAIL; v17 FD-05 not registered or run | Round 5 exact T4 kernel `/4` executed all 33 fresh primals, then failed runner gates and strict host verification. T6-T7 had a summary schema mismatch, and T10-T11 failed the registered 5% plateau gate in all six direction/response combinations. W4 v17 opens the prerequisite entry gate but explicitly does not authorize FD-05; await the user's decision. All FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -626,9 +626,9 @@ grid-independent downforce, high-Re or full-vehicle qualification.
 and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
 are retained historical plans; neither controls current execution.
 
-**2026-09-30 checkpoint (supersedes the FD items below where they conflict):** FD-04 (#36) traced the FD-02 non-smoothness to 66 flat force-band cells in canonical v16 (1-cell-thick plates on h=0.05 nodes). Genesis v17 (#43, h=0.025, same source surface) removes them; W3 v17 passed T0-T10 on Kaggle T4 (drag 0.223 N / downforce 0.253 N, v16 values do not transfer). v17 is the adopted canonical state. Next: W4 v17, then FD-05 (#37) under a new perturbation contract. See [`session_handoff_2026_09_30.md`](session_handoff_2026_09_30.md).
+**2026-09-30 checkpoint (supersedes the FD items below where they conflict):** FD-04 (#36) traced the FD-02 non-smoothness to 66 flat force-band cells in canonical v16 (1-cell-thick plates on h=0.05 nodes). Genesis v17 (#43, h=0.025, same source surface) removes those exact-zero-gradient cells; W3 v17 passed its registered T0-T10 contract, and W4 v17 passed the registered four-case sensitivity contract on Kaggle T4. W4 shows a large response to flow resolution and a small response to the tested x+ domain extension; it does not establish convergence. v17 is the adopted canonical state. FD-05 (#37) remains unregistered and unrun; W4's `fd05_execution_authorized=false` means stop here and await the user's decision. See [`session_handoff_2026_09_30.md`](session_handoff_2026_09_30.md) and [`issues/43_result.md`](issues/43_result.md).
 
-Current gates and immediate sequence as of 2026-09-29 after FD round 5:
+Current gates and immediate sequence as of 2026-09-30 after W4 v17:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
    diagnostic `/2` completed and passed host verification under immutable
@@ -644,50 +644,64 @@ Current gates and immediate sequence as of 2026-09-29 after FD round 5:
    bound to source commit `ee6298e843e130b121d918ca9a321b707dcd4ae0`. Exact
    private kernel `/5` passed host verification for T0-T10. The supported
    claim is only the registered WaterLily finite-box primal contract.
-3. **W4 round-4 finite-box sensitivity matrix passed.** Immutable criteria
-   `3efc8133…` bound source `b9ae43b`, exact W3 round-4 PASS, and the registered
-   four-case matrix. Private dataset version 3 was remotely inventory-verified;
-   exact private kernel `/3` completed, and the independent host verifier passed
-   T0-T10. The append-only result is
-   [`kaggle_w4_v16_sensitivity_result_round4_2026_09.json`](evidence/kaggle_w4_v16_sensitivity_result_round4_2026_09.json),
-   SHA-256 `87a88178…`. All four cases passed the 2% exact-window stationarity
-   gate; the domain response was below the 24-to-32 resolution response for
-   both drag and downforce, so no extended-domain fine-grid follow-up is
-   required. This does not qualify grid/domain convergence or physical
+3. **W4 v16 round 4 and canonical v17 round 1 finite-box sensitivity matrices
+   passed.** The v16 round-4 record remains immutable and historical. W4 v17
+   criteria SHA-256 is
+   `5eceb62c17e347679cdadc88c68266e7fe00b392da40a8029ed3544a002e0f01`,
+   tied to source commit `4c20787c1ab55ea45f98631e6e78ba6d5502a1a2` and W3
+   v17 PASS. Private dataset version 1's five-file remote inventory was
+   verified (inventory SHA-256
+   `d3cbdfb385f443e5f8b413fc07675d79f319250b8e01bb617476041c651bc6fb`);
+   exact private kernel `/1` completed. Strict host verification at the exact
+   registered source commit passed T0-T10. The append-only result is
+   [`kaggle_w4_v17_sensitivity_result_2026_09.json`](evidence/kaggle_w4_v17_sensitivity_result_2026_09.json),
+   SHA-256 `25297c4646d048050974d6beccbb90ac672c910eeb558a99c1006226bdd59933`.
+   All four cases passed the 2% stationarity gate. Flow16→24 changed total drag
+   by `+0.103140 N` (`31.61%`) and downforce by `+0.077547 N` (`23.43%`);
+   flow24→32 changed them by `+0.023684 N` (`6.77%`) and `+0.030232 N`
+   (`8.37%`). Extending x+ by 1 m changed drag by `-0.000201 N` (`0.09%`)
+   and downforce by `+0.000651 N` (`0.26%`). Pressure and viscous splits are
+   recorded in the issue result and machine-readable evidence. These are
+   sensitivity observations, not grid/domain convergence or physical
    aerodynamics.
 4. **Keep broader qualification scoped.** The W3 v4 all-zero force root cause
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **Repair the FD runner/host-verifier contract before another execution.**
-   Round 5 is terminal failed evidence; preserve its immutable criteria,
-   dataset v5, exact kernel `/4`, outputs, and diagnostics. The source fix must
-   reconcile the six integrated pressure/viscous metrics between runner
-   `outcome.json` and per-run summaries, and the host verifier must compare the
-   agreed schema. Also repair the statically identified `evaluate()` name
-   shadowing before it can be reached. Investigate the measured non-plateau
-   directional responses under the unchanged registered 5% threshold; do not
-   relabel them as qualified or edit rounds 1-5. Register any retry as a new
-   immutable round with fresh 33-run outputs. Centered FD remains the permanent
-   independent numerical gradient oracle.
-6. **Select a production gradient backend** only after comparing candidate
+5. **Stop before FD-05 and await the user's decision.** W4 v17 reports
+   `fd_entry_gate=OPEN` but `fd05_execution_authorized=false`; the open
+   prerequisite gate is not an execution authorization. Do not select a flow
+   resolution from this sensitivity matrix and do not register or run #37
+   automatically. The current matrix still has 6.77% drag and 8.37% downforce
+   changes from flow24 to flow32, so it does not demonstrate grid convergence.
+6. **Repair the FD runner/host-verifier contract before a future authorized
+   execution.** Round 5 is terminal failed evidence; preserve its immutable
+   criteria, dataset v5, exact kernel `/4`, outputs, and diagnostics. The source
+   fix must reconcile the six integrated pressure/viscous metrics between
+   runner `outcome.json` and per-run summaries, and the host verifier must
+   compare the agreed schema. Also repair the statically identified `evaluate()`
+   name shadowing before it can be reached. Investigate the measured
+   non-plateau directional responses under the unchanged registered 5% threshold;
+   do not relabel them as qualified or edit rounds 1-5. Register any retry as a
+   new immutable round with fresh 33-run outputs. Centered FD remains the
+   permanent independent numerical gradient oracle.
+7. **Select a production gradient backend** only after comparing candidate
    reverse AD, discrete-adjoint, or other methods against the qualified FD
    oracle. No production backend is selected or qualified.
-7. **Take the first constrained SDF update** only after the primal, grid/domain,
+8. **Take the first constrained SDF update** only after the primal, grid/domain,
    gradient, SDF-volume, and geometry hard gates pass.
-8. **Qualify topology birth** as a separate mechanism. Register SDFTopologyPolicy
+9. **Qualify topology birth** as a separate mechanism. Register SDFTopologyPolicy
    v1 before Birth-0; the method (topological derivative, nucleation, a retained
    density/Brinkman proposer, or another explicit operator) is not selected.
-9. **Run multi-step optimization** only after the one-step and topology gates
+10. **Run multi-step optimization** only after the one-step and topology gates
    pass, with reinitialization and geometry/connectivity/manufacturing gates
    applied to every accepted shape.
-10. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
+11. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
     cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
 
-Post-round-4 status remains deliberately scoped: W3's registered finite-box
-primal contract passed (`primal_contract_qualified=true`), and the W4
-registered finite-box sensitivity matrix passed
-(`w4_sensitivity_matrix_passed=true`). The W3 v4 all-zero force root-cause
+Post-W4-v17 status remains deliberately scoped: W3 v16 and v17 registered finite-box
+primal contracts passed, and W4 v16 and v17 registered finite-box sensitivity
+matrices passed (`w4_sensitivity_matrix_passed=true`). The W3 v4 all-zero force root-cause
 mapping remains open. `physical_profile_qualified=false`,
 `absolute_downforce_qualified=false`,
 `grid_or_domain_convergence_qualified=false`,
@@ -700,6 +714,31 @@ downforce qualification.
 
 Kaggle and Colab provide reproducible execution, exact source/runtime binding,
 and evidence capture. They remain outside the solver/optimizer architecture.
+
+### 2026-09-30 W4 canonical v17 exact kernel `/1` PASS
+
+See [`issues/43_result.md`](issues/43_result.md) for the four-case force and
+pressure/viscous tables, pairwise deltas, the diagnostic-only comparison with
+W4 v16, and all artifact hashes. The registered result SHA-256 is
+`25297c4646d048050974d6beccbb90ac672c910eeb558a99c1006226bdd59933`;
+the strict host verifier passed T0-T10 at the registered source commit.
+
+The normal verifier CLI's first attempt failed closed because the optional
+`remote_inventory_sha256` parameter shadows the helper with the same name. The
+unchanged verifier function was then run at the same source commit through an
+external driver that supplied the existing hash helper as that parameter; the
+full host recomputation passed. This invocation issue is preserved in
+[`kaggle_w4_v17_sensitivity_host_cli_attempt_diagnostic_2026_09.json`](evidence/kaggle_w4_v17_sensitivity_host_cli_attempt_diagnostic_2026_09.json)
+(SHA-256 `6a520b17db979021bca68f345bc5f99f71f4204f3eeda30aa7df58247c5e8508`)
+and should be repaired before the verifier's next CLI use. No W4 source,
+criteria, threshold, or output was changed after registration.
+
+W4 v17 observed `flow16→flow24` and `flow24→flow32` response changes of
+`31.61%/23.43%` and `6.77%/8.37%` for drag/downforce, respectively, and a
+`0.09%/0.26%` change for the tested x+ domain extension. These support
+resolution sensitivity in the registered cases, not convergence, absolute
+force accuracy, or physical-profile qualification. `fd05_execution_authorized`
+is false; FD-05 remains unregistered and unrun pending the user's decision.
 
 ### 2026-09-29 FD round-5 dataset v5 and exact kernel `/4` terminal FAIL
 

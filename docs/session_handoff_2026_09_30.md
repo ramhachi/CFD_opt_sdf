@@ -35,14 +35,22 @@ v16 の過去の criteria もそのまま動く。v17 用の registrar は `scri
 
 ## 3. 次の作業 (推奨順)
 
-1. **W4 v17**: flow 16 / 24 / 32 と領域の sensitivity。drag の不足が flow 解像度で縮むかを N ベースで測る。
-   W3 と同じ方法で criteria から v17 を読む形に汎用化する (`scripts/waterlily_w4_v16_sensitivity_job.jl` などに v16 がハードコードされている)。
-2. **FD-05 (#37)**: v17 の状態で FD を再登録する。
-   - ε の絶対値と判定基準は v16 と同じにする。
-   - ただし、ε/h の比と方向ベクトルの台 (narrow band = h) が変わるため、**摂動の契約は新しいもの**として登録する。
-3. **体積の基準値**: v16 の `V_phi_0` は v17 で測り直す (OPT-01 の前に必須)。
-4. **gate 定義の改訂 (#29)**: 力に効く帯の勾配 gate を v2 にし、帯の端にある固体内部の medial axis を除外する。
-   v17 は現行の閾値 0.25 で 3 セルが fail と記録済み。
+1. **W4 v17 sensitivity completed PASS.** Kaggle T4 exact kernel `/1` passed
+   host verification T0-T10 against source `4c20787c`; four cases and the
+   flow/domain response are recorded in [`issues/43_result.md`](issues/43_result.md)
+   and `phase_plan.md`. This does not qualify grid convergence or physical
+   forces.
+2. **FD-05 (#37) requires an explicit user decision.** The W4 result has
+   `fd_entry_gate=OPEN` but `fd05_execution_authorized=false`. Its 24→32
+   response remains 6.77% drag / 8.37% downforce, so do not choose the FD
+   oracle grid from W4 alone. No FD-05 criteria, dataset, or kernel was made.
+3. **Volume reference:** remeasure v17 `V_phi_0` before OPT-01.
+4. **Gate definition revision (#29):** make force-band gradient gate v2 and
+   exclude the solid-interior medial axis at the band edge. Three v17 cells
+   remain below the current 0.25 threshold.
+5. Before the next W4 verifier CLI use, fix the `remote_inventory_sha256`
+   parameter/helper shadowing recorded with the W4 host-verification evidence.
+
 
 ## 4. 未 merge のブランチ (2026-09-29 に途中で止めた WIP。中間報告は各ブランチの `docs/issues/*_interim.md`)
 
