@@ -107,3 +107,25 @@ SHA を再計算していない)。
   `mkphi_canonical_raw.py`, `bench_cpu_step.jl` (WIP。絶対パス固定、証跡/sidecar 無し、テスト無し。
   最終成果物の `scripts/sdf_native_fd04_*` に置き換える予定で、WIP のまま確定成果として扱わないこと)。
   `bench_cpu_step.jl` と `mkphi_canonical_raw.py` は scratchpad の絶対パスを参照する。
+
+## 5. 追記: 因果検証 (CPU Julia、2026-09-29)
+
+入力は登録済み round-5 dataset v5 (canonical phi と 30 摂動 phi の生データ、読み取りのみ)。
+bridge 本体は変更していない。診断用に `n = g/max(|g|, TAU)`、`TAU=0.1` の body を別ファイルで用意した
+(`scripts/sdf_native_fd04_regularized_body.jl`)。TAU は結果を見る前に固定し、二峰性分布の空白帯に置いた。
+
+- 圧力固定 (`scripts/sdf_native_fd04_frozen_pressure_response.jl`、baseline flow の t=3,8 の圧力場を固定):
+  raw の D1/D2 は pair signal が ε に比例しない (D1 Fx: 1.44→1.04、ε を 20 倍にしても)。
+  reg では ε に比例する (D1 Fz: 0.112/0.561/2.235 = 1:5:20)。幾何経路だけで非平滑性が再現し、法線正則化で消える。
+- フル解析 (`scripts/sdf_native_fd04_full_response.jl`、t=0..2、平均窓 1..2、BDIM と力積分の両方で body を置換):
+  raw D0 Fx は -2.15/-2.20/-1.95 と ε に依存しない (round 5 の D0 drag 一定と同型)。reg では
+  D1 Fz 0.067/0.323/1.258、D2 Fz 0.128/0.664/2.613 と概ね ε に比例する。baseline の力の変化は小さい (Fx 144.69→144.42)。
+- 生データ: `docs/evidence/sdf_native_fd04_{frozen,full}_response_2026_09.csv` (+ `.sha256`)。
+
+限界: 短い時間幅 (登録窓 80..120 ではない)、CPU Float32、各 1 run で noise floor 未測定。qualified FD の主張はしない。
+
+判定: 分類 (b) が機構として支持される。ほぼ零勾配 (canonical phi の節点整列・量子化構造が原因) を
+bridge が無正則化で正規化するため、摂動で法線が O(1) 回転し、力応答が非平滑になる。
+対策候補: (1) canonical phi を真の SDF として作り直す/再初期化 (#28) して |∇phi|≈1 にする、
+(2) bridge 法線に正則化を入れる (primal 演算子が変わるので W1〜W3 の再 qualification が必要)。
+#37 は ε を変えるだけでは直らない。(1) か (2) を実施した上で再登録する必要がある。
