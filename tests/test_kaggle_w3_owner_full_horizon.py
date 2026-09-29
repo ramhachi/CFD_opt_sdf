@@ -122,7 +122,7 @@ def test_w3_owner_fix_roots_owner_through_primal_and_preserves_registered_force_
                           ("phi_fortran_sha256", "EXPECTED_PHI_FORTRAN_SHA256")):
         assert criteria["geometry"][key] in production
         assert f"const {constant}" in production
-    assert "bodies = v16_physical_profile_bodies(device_grid; T = Float32)" in production
+    assert "bodies = v16_physical_profile_bodies(device_grid; T = Float32,\n        point_shape = SDF_POINT_SHAPE, sdf_spacing_m = SDF_SPACING_M)" in production
     assert "sim = build_v16_physical_profile_simulation(bodies; T = Float32, mem = CuArray)" in production
     assert "drag = total[1]" in production
     assert "downforce = -total[3]" in production
