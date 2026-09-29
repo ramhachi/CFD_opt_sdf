@@ -1,0 +1,64 @@
+# セッション引き継ぎ: 2026-09-29〜30 (SDF-native / v17)
+
+新しいエージェント (Claude、Codex、OpenCode など) 向けの現状メモ。
+実行順序の正式な記録は `docs/phase_plan.md` §11、課題台帳は GitHub issues。
+このファイルは、それらを読む前に押さえておくべき要点をまとめたもの。
+
+## 1. ブランチ運用 (ユーザー決定)
+
+- 統合先は `codex/kaggle-batch-migration`。`main` は 9/11 で止まっており、現時点で統合には使わない。
+- merge は `--no-ff` のみ。rebase / squash / force-push はしない。
+  登録済みの criteria や証跡が source commit SHA に結び付いているため、履歴を書き換えると壊れる。
+- 共有ドキュメント (`phase_plan.md`、`README.md`、`problem_register_2026_09.md`、`opencode_handoff_2026_09.md`) は、統合担当だけがまとめて更新する。
+  issue ごとの作業結果は `docs/issues/<番号>_*.md` に書く。
+- 既存の evidence JSON / sidecar と閾値は書き換えない。訂正は append-only のファイルで行う。
+- Colab は撤退済みで、GPU の実行は Kaggle T4 のみ (CLI 認証済み、ユーザー名 `ramhachi888`)。
+- OpenFOAM のコードは撤去する方針。
+  - 復元元は tag `archive/pre-openfoam-removal-2026-09-29`。
+  - `docs/evidence/` は残す (ユーザー決定)。
+  - 撤去作業のブランチは中間状態で**壊れている**ので、merge 禁止 (§4)。
+- サブエージェントを起動するときは、`model: "sonnet"` を明示する (ユーザー指定)。
+
+## 2. 技術的な到達点 (2026-09-30)
+
+| 項目 | 状態 | 記録 |
+|---|---|---|
+| FD-02 round 5 | fail-closed | #16 (close 済み) |
+| FD-04 診断 (#36) | 原因を特定: v16 の薄板の面が h = 0.05 の節点に乗り、66 セルで勾配 ≈ 0。bridge の `n = g/|g|` が不安定になる | `docs/issues/36_interim.md` |
+| genesis v17 (#43) | 登録済み。h = 0.025、121×65×49。同じコードを h = 0.05 で走らせると v16 とビット単位で一致 | `docs/issues/43_result.md`、`evidence/sdf_native_genesis_v17_2026_09.json` |
+| v17 のローカル FD | 今の bridge のまま ε に比例 (CPU の短時間計算。正式な判定ではない) | 同上 |
+| W3 v17 (Kaggle) | **PASS** (T0〜T10)。drag 0.223 N / downforce 0.253 N (v16 は 0.336 / 0.353) | `docs/issues/43_w3_result.md`、`evidence/kaggle_w3_v17_primal_result_2026_09.json` |
+| v16 と v17 の差 | 減少は圧力成分が中心。v16 の drag が Stage V に近いのは偶然の打ち消し合いという仮説 (未検証)。**方針は v17 を採用** | `43_w3_result.md` の追記 |
+
+W3 の一連の処理 (job、runner、verifier、dataset 準備) は、canonical state のラベル、形状、間隔、hash を criteria から読むように汎用化した。
+v16 の過去の criteria もそのまま動く。v17 用の registrar は `scripts/register_kaggle_w3_v17_primal_2026_09.py`。
+
+## 3. 次の作業 (推奨順)
+
+1. **W4 v17**: flow 16 / 24 / 32 と領域の sensitivity。drag の不足が flow 解像度で縮むかを N ベースで測る。
+   W3 と同じ方法で criteria から v17 を読む形に汎用化する (`scripts/waterlily_w4_v16_sensitivity_job.jl` などに v16 がハードコードされている)。
+2. **FD-05 (#37)**: v17 の状態で FD を再登録する。
+   - ε の絶対値と判定基準は v16 と同じにする。
+   - ただし、ε/h の比と方向ベクトルの台 (narrow band = h) が変わるため、**摂動の契約は新しいもの**として登録する。
+3. **体積の基準値**: v16 の `V_phi_0` は v17 で測り直す (OPT-01 の前に必須)。
+4. **gate 定義の改訂 (#29)**: 力に効く帯の勾配 gate を v2 にし、帯の端にある固体内部の medial axis を除外する。
+   v17 は現行の閾値 0.25 で 3 セルが fail と記録済み。
+
+## 4. 未 merge のブランチ (2026-09-29 に途中で止めた WIP。中間報告は各ブランチの `docs/issues/*_interim.md`)
+
+| ブランチ | 状態 |
+|---|---|
+| `feat/issue-28-sdf-reinit` | 演算子は実装済み。契約 doc のハッシュが古い。v16 の問題の解決策ではないと判明 (#28 のコメント参照) |
+| `feat/issue-29-geom-gates` | 12 種の gate を実装したが、**一度も実行していない** |
+| `feat/issue-17-19-infra-preflight` | 設計メモと、未検証の runner / job の差分のみ |
+| `chore/remove-openfoam` | **壊れた中間状態で merge 禁止**。219 ファイルを削除済みだが、`cli.py` の import が未修正 |
+| `feat/issue-42-w0b-kaggle` | WIP。#42 の前提はほぼ既に満たされている (Kaggle の W1g round 2 は PASS 済み)。close してよいか要判断 |
+
+## 5. 既知の落とし穴
+
+- **登録は codex ブランチの clean な HEAD でのみ可能**。registrar がブランチ名を検査し、Kaggle の runner は codex から depth 16 で source を取得する。
+- **host 検証は、登録した source commit を取り出した worktree で行う**。登録後にファイルを直すと、source の hash 検査で止まる。
+- **W3 の verifier には既存バグがある** (`HOST_VERIFIER` が未定義)。`scripts/verify_kaggle_w3_v16_host_compat.py` を経由して実行する (v16 round 4 と同じ)。
+- **全 pytest のベースライン失敗は 37 件**。gitignore された `work/` の fixture がないことによるもので、Stage V / OpenFOAM 系が中心。検証は「新規の失敗が 0」で判定する。
+- Kaggle の kernel は、`infra/kaggle/kernel_w3_v17/kernel-metadata.json` と `infra/kaggle/kernel_w3/runner.py` を一時フォルダにコピーして push する。
+- **Kaggle 上の力は solver 単位**。N への換算係数は ρU²h² = 0.0025 (h = flow 格子 0.05)。報告と判定は N ベースで行う (ユーザー方針)。

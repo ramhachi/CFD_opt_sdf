@@ -626,6 +626,8 @@ grid-independent downforce, high-Re or full-vehicle qualification.
 and [`stage_t_to_stage_s_bridge_plan_2026_09.md`](stage_t_to_stage_s_bridge_plan_2026_09.md)
 are retained historical plans; neither controls current execution.
 
+**2026-09-30 checkpoint (supersedes the FD items below where they conflict):** FD-04 (#36) traced the FD-02 non-smoothness to 66 flat force-band cells in canonical v16 (1-cell-thick plates on h=0.05 nodes). Genesis v17 (#43, h=0.025, same source surface) removes them; W3 v17 passed T0-T10 on Kaggle T4 (drag 0.223 N / downforce 0.253 N, v16 values do not transfer). v17 is the adopted canonical state. Next: W4 v17, then FD-05 (#37) under a new perturbation contract. See [`session_handoff_2026_09_30.md`](session_handoff_2026_09_30.md).
+
 Current gates and immediate sequence as of 2026-09-29 after FD round 5:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
