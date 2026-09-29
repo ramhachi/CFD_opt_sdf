@@ -197,6 +197,9 @@ framing.
 - [`colab_mcp_runbook_2026_09.md`](colab_mcp_runbook_2026_09.md) —
   operational Colab MCP guidance. It describes execution infrastructure and
   does not set architecture or gate order.
+- [`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md)
+  — P22-01's frozen differentiable volume rule, registered v16 sharp reference,
+  mask ownership, units, and software-evidence boundary.
 
 ## Compatibility policy
 

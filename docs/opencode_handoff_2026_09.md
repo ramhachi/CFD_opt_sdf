@@ -2187,3 +2187,62 @@ margin gate, world<->solver map), then W2/W2b. No solver run yet; flags false.
 - **Open:** formal FD entry gate is `OPEN`, but formal FD has not started. The
   W3 v4 all-zero-force root cause remains unresolved. Stop this work slice at
   W4 host verification; do not start centered FD, reverse, or a shape update.
+
+## 2026-09-29: P22-01 differentiable volume primitive (isolated issue branch)
+
+- Implemented on `feat/issue-27-p22-volume-gradient`; no shape update, optimizer
+  admission, PR, issue comment, or merge was performed. P22 remains open.
+- Frozen API contract `sdf_native_smoothed_volume_v1`, static hash
+  `56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969`, uses
+  all eight-node center means and one-sided cosine transition width `epsilon=h`.
+  The reference is `V_phi_0=0.12612500000000004 m^3` from registered v16
+  genesis sharp evidence SHA-256
+  `0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce`; legacy
+  Stage T `Vmax` is excluded. Fixed, forbidden, non-design, and independently
+  root-owned nodes retain their phi contribution and receive zero derivative.
+- The API reports smooth `g_V` separately from signed sharp `V_phi-V_phi_0`,
+  positive sharp violation, and sharp feasibility. At finite width the
+  one-sided smooth volume can undercount sharp volume, so `g_V <= 0` is not a
+  feasibility certificate or optimizer admission rule. Acceptance requires
+  the sharp registered gate independently. No shape update or hard-gate claim
+  follows from these software checks.
+- Focused checks:
+  `PYTHONPATH=<issue-worktree>/src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_sdf_native_volume_semantics.py tests/test_sdf_native_smoothed_volume.py`
+  — 21 passed. Focused compileall passed.
+- Required repository checks used the primary checkout's ignored venv because
+  this worktree has no `.venv`; `PYTHONPATH` was set to this issue worktree's
+  `src` so imports came from the tested branch:
+  `.venv/bin/python -m compileall src tests` — passed;
+  `.venv/bin/python -m pytest -q` — 37 failed, 1053 passed, 4 skipped in
+  199.82 s; `git diff --check` — passed. All failing tests depend on absent
+  ignored `work/` files below (23 distinct paths); no P22 focused test failed.
+  Full-suite log: `/tmp/cfd2026-09-issue27-full-pytest.log`.
+- Missing ignored full-suite inputs in this isolated worktree:
+  `work/pq0_2_smoke/project_downforce_volume.yaml`;
+  `work/pq3_3b_campaign_v14/checkpoints/rho_0005.npy`;
+  `work/pq3_3b_campaign_v15/checkpoints/state_0010.json`;
+  `work/pq3_3b_margin_masks/topology_state.json`;
+  `work/pq4_1_v16_state/beta_solver.vti`;
+  `work/pq4_1_v16_state_v2/beta_solver.vti`;
+  `work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl`;
+  `work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv`;
+  `work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425`;
+  `work/stage_s_work_f_v1/adjoint/base/system/optimisationDict`;
+  `work/stage_s_work_f_v1/baseline/V1/case_metadata.json`;
+  `work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/boundary`;
+  `work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/points`;
+  `work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl`;
+  `work/stage_s_work_f_v1/baseline/V1/postProcessing/forceCoeffs/0/coefficient.dat`;
+  `work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__minus/stage_v_qualification.json`;
+  `work/stage_s_work_f_v1/tools/moveControlPoints`;
+  `work/stage_sv_laminar/case_a_coarse/log.simpleFoam`;
+  `work/stage_sv_laminar/project_matched_re_laminar.yaml`;
+  `work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml`;
+  `work/stage_v_domain_boundary_factor_2026_09/top_pressure_outlet/V2/stage_v_qualification.json`;
+  `work/stage_v_domain_continuation_2026_09/specs/geometry/design_domain.stl`;
+  `work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/system/snappyHexMeshDict`.
+- The ignored registered v16 genesis NPZ `work/sdf_native_genesis_v16/sdf_design_state.npz`
+  is also absent in this worktree. Its physical state artifact was not loaded
+  or reconstructed; tests bind the immutable registered metadata only. Evidence
+  class is contract/software plus synthetic numerical fixtures, not physical
+  qualification or optimizer validation.
