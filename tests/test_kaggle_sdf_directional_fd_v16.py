@@ -1,0 +1,353 @@
+import hashlib
+import importlib.util
+import json
+from argparse import Namespace
+from pathlib import Path
+
+import pytest
+
+from cfd_sdf.gradients.directional_fd import registered_run_order
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, ROOT / path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+runner = load_module(
+    "fd_runner",
+    "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py",
+)
+verifier = load_module(
+    "fd_host_verifier",
+    "scripts/verify_kaggle_sdf_directional_fd_v16.py",
+)
+preparer = load_module(
+    "fd_dataset_preparer",
+    "scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py",
+)
+registrar = load_module(
+    "fd_criteria_registrar",
+    "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
+)
+
+
+def test_runner_and_registered_contract_share_exact_33_run_order():
+    assert tuple(runner.EXPECTED_RUN_ORDER) == registered_run_order()
+    assert tuple(verifier.EXPECTED_RUNS) == registered_run_order()
+    assert len(runner.EXPECTED_RUN_ORDER) == 33
+
+
+def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flow16():
+    _, w3_result, _, w4_result, w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha = (
+        registrar.load_prerequisites()
+    )
+    backend = w4_result["backend_identity"]["registered_backend"]
+    observation = w4_result["backend_identity"]
+    assert w3_criteria_sha == "eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb"
+    assert w3_result_sha == "d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8"
+    assert w4_criteria_sha == "3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f"
+    assert w4_result_sha == "87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae"
+    assert backend == w3_result["backend_identity"]
+    assert observation["selected_gpu_uuid"] == "GPU-85734d21-bc25-4f5b-2d90-2b22393f3dc8"
+    flow16 = w4_result["case_measurements"]["flow_16"]["force_metrics_host_recomputed"]
+    assert flow16["drag_time_weighted_n"] == pytest.approx(0.3360177299176748)
+    assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
+
+
+def test_runner_and_host_use_independent_but_matching_centered_fd_arithmetic():
+    baseline = 0.336
+    noise = 1e-8
+    slopes = (2.0, 2.02, 1.98, 2.0, 2.01)
+    pairs = [
+        {
+            "epsilon_m": epsilon,
+            "plus_response": baseline + epsilon * slope,
+            "minus_response": baseline - epsilon * slope,
+        }
+        for epsilon, slope in zip(runner.EXPECTED_EPSILONS, slopes)
+    ]
+    runner_result = runner.classify_response(
+        pairs, baseline_median=baseline, noise_floor=noise
+    )
+    host_result = verifier.host_classify_pairs(
+        [{"epsilon_m": p["epsilon_m"], "plus_response_n": p["plus_response"],
+          "minus_response_n": p["minus_response"]} for p in pairs],
+        baseline,
+        noise,
+    )
+    assert runner_result["plateau_pass"] is True
+    assert host_result["plateau_pass"] is True
+    assert runner_result["resolved_epsilon_m"] == host_result["resolved_epsilon_m"]
+    assert runner_result["plateau_epsilon_m"] == host_result["plateau_epsilon_m"]
+    assert runner_result["reference_derivative_n_per_m"] == pytest.approx(
+        host_result["reference_derivative_n_per_m"]
+    )
+    assert runner_result["plateau_relative_deviations"] == pytest.approx(
+        host_result["plateau_relative_deviations"]
+    )
+
+
+def test_unresolved_classifier_outputs_are_json_safe_and_fail_closed():
+    baseline = 0.336
+    pairs = [{
+        "epsilon_m": epsilon,
+        "plus_response": baseline,
+        "minus_response": baseline,
+    } for epsilon in runner.EXPECTED_EPSILONS]
+    runner_result = runner.classify_response(
+        pairs, baseline_median=baseline, noise_floor=1e-8
+    )
+    host_result = verifier.host_classify_pairs(
+        [{"epsilon_m": p["epsilon_m"], "plus_response_n": p["plus_response"],
+          "minus_response_n": p["minus_response"]} for p in pairs],
+        baseline,
+        1e-8,
+    )
+    for result in (runner_result, host_result):
+        assert result["resolved_count"] == 0
+        assert result["plateau_pass"] is False
+        assert result["reference_derivative_n_per_m"] is None
+        assert result["directional_noise_equivalent_n_per_m"] is None
+        assert result["plateau_max_relative_deviation"] is None
+        json.dumps(result, allow_nan=False)
+
+
+def test_runner_and_host_exact_window_endpoint_interpolation_match():
+    rows = []
+    for index, time_value in enumerate(range(79, 122, 2)):
+        fx = 2.0 + 0.01 * time_value
+        fy = -0.5 + 0.002 * time_value
+        fz = -4.0 + 0.03 * time_value
+        pressure = (0.8 * fx, 0.8 * fy, 0.8 * fz)
+        viscous = (0.2 * fx, 0.2 * fy, 0.2 * fz)
+        rows.append({
+            "step": float(index * 8),
+            "t_u_l": float(time_value),
+            "fx_solver": fx,
+            "fy_solver": fy,
+            "fz_solver": fz,
+            "drag_solver": fx,
+            "downforce_solver": -fz,
+            "pressure_fx_solver": pressure[0],
+            "pressure_fy_solver": pressure[1],
+            "pressure_fz_solver": pressure[2],
+            "viscous_fx_solver": viscous[0],
+            "viscous_fy_solver": viscous[1],
+            "viscous_fz_solver": viscous[2],
+        })
+    criteria = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
+    runner.force_rows_contract(rows, criteria["measurement"])
+    assert runner.force_components_close(rows, criteria["measurement"])
+    runner_metrics = runner.recompute_metrics(rows, criteria)
+    host_metrics = verifier.recompute_run_metrics(rows, criteria)
+    assert runner_metrics.keys() == host_metrics.keys()
+    for key, value in host_metrics.items():
+        assert runner_metrics[key] == pytest.approx(value, rel=1e-14, abs=1e-14)
+    assert host_metrics["window_time_weighted_fx_solver"] == pytest.approx(3.0)
+    assert host_metrics["window_time_weighted_drag_solver"] == pytest.approx(3.0)
+    assert host_metrics["window_time_weighted_downforce_solver"] == pytest.approx(1.0)
+
+
+def test_minimum_force_window_samples_and_full_flow_physics_identity_are_hard_gates():
+    criteria = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
+    flow = criteria["geometry"]["flow_case"]
+    summary = {
+        "run_id": "baseline_A",
+        "phi_margin_m": criteria["geometry"]["canonical_phi_margin_m"],
+        "phi_margin_gate_m": criteria["geometry"]["margin_gate_m"],
+        "point_shape": criteria["geometry"]["point_shape"],
+        "canonical_sdf_origin_m": criteria["geometry"]["canonical_sdf_origin_m"],
+        "flow_origin_m": flow["flow_origin_m"],
+        "flow_dims": flow["flow_dims"],
+        "flow_spacing_m": flow["flow_spacing_m"],
+        "solver_length": flow["solver_length"],
+        "solver_viscosity": flow["solver_viscosity"],
+        "solver_velocity": flow["solver_velocity"],
+        "solver_time_unit_s": flow["solver_time_unit_s"],
+        "reynolds": flow["reynolds"],
+        "density_kg_m3": flow["density_kg_m3"],
+        "dynamic_viscosity_pa_s": flow["dynamic_viscosity_pa_s"],
+        "freestream_mps": flow["freestream_mps"],
+        "reference_length_m": flow["reference_length_m"],
+        "reference_area_m2": flow["reference_area_m2"],
+        "canonical_design_spacing_m": criteria["geometry"]["design_spacing_m"],
+        "candidate_body_mapping": flow["candidate_body_mapping"],
+        "sdf_outside_value_m": criteria["geometry"]["outside_value_m"],
+        "moving_ground_solver_plane": flow["moving_ground_solver_plane"],
+        "moving_ground_world_plane_m": flow["moving_ground_world_plane_m"],
+        "moving_ground_velocity_mps": flow["moving_ground_velocity_mps"],
+        "force_window_t_u_l": criteria["measurement"]["force_window_t_u_l"],
+        "stationarity_half_windows_t_u_l": criteria["measurement"]["stationarity_half_windows_t_u_l"],
+        "sample_every_solver_steps": criteria["measurement"]["force_sample_every_solver_steps"],
+        "physical_box_m": flow["physical_box_m"],
+        "native_velocity_boundary": flow["native_velocity_boundary"],
+        "side_top_tangential_boundary": flow["side_top_tangential_boundary"],
+        "x_plus_boundary": flow["x_plus_boundary"],
+        "pressure_boundary": flow["pressure_boundary"],
+        "ground_model": flow["ground_model"],
+        "force_integration_body": flow["force_integration_body"],
+        "force_projection_semantics": flow["force_projection_semantics"],
+        "source_profile_equivalent": flow["source_profile_equivalent"],
+        "physical_profile_qualified": flow["physical_profile_qualified"],
+    }
+    assert runner.run_summary_contract(summary, criteria) is True
+    assert verifier.host_physics_identity(summary, criteria) is True
+    summary["phi_margin_m"] += 5e-7
+    assert runner.run_summary_contract(summary, criteria) is True
+    assert verifier.host_physics_identity(summary, criteria) is True
+    summary["phi_margin_m"] += 2e-6
+    assert runner.run_summary_contract(summary, criteria) is False
+    assert verifier.host_physics_identity(summary, criteria) is False
+    summary["phi_margin_m"] = criteria["geometry"]["canonical_phi_margin_m"]
+    summary["flow_origin_m"] = summary["canonical_sdf_origin_m"]
+    assert runner.run_summary_contract(summary, criteria) is False
+    assert verifier.host_physics_identity(summary, criteria) is False
+
+    rows = []
+    for step, time_value in zip((0, 8, 16, 24), (79.0, 81.0, 119.0, 121.0)):
+        fx, fy, fz = 3.0, -0.3, -1.0
+        rows.append({
+            "step": float(step), "t_u_l": time_value,
+            "fx_solver": fx, "fy_solver": fy, "fz_solver": fz,
+            "drag_solver": fx, "downforce_solver": -fz,
+            "pressure_fx_solver": 0.8 * fx, "pressure_fy_solver": 0.8 * fy,
+            "pressure_fz_solver": 0.8 * fz, "viscous_fx_solver": 0.2 * fx,
+            "viscous_fy_solver": 0.2 * fy, "viscous_fz_solver": 0.2 * fz,
+        })
+    with pytest.raises(RuntimeError, match="too few raw samples"):
+        runner.force_rows_contract(rows, criteria["measurement"])
+    with pytest.raises(ValueError, match="too few raw samples"):
+        verifier.validate_sample_stride(rows, criteria)
+
+
+def test_host_runner_manifest_requires_exact_payload_inventory(tmp_path):
+    output = tmp_path / "fd_output"
+    output.mkdir()
+    (output / "artifact.txt").write_text("fixed\n")
+    manifest = {"artifact.txt": hashlib.sha256(b"fixed\n").hexdigest()}
+    (output / "sha256.json").write_text(json.dumps(manifest))
+    (output / "DONE").write_text("complete\n")
+    hashes, manifest_sha = verifier.verify_output_files(output)
+    assert hashes == manifest
+    assert manifest_sha == hashlib.sha256((output / "sha256.json").read_bytes()).hexdigest()
+    (output / "unexpected.txt").write_text("extra\n")
+    with pytest.raises(ValueError, match="inventory"):
+        verifier.verify_output_files(output)
+
+
+def test_host_runtime_verifier_binds_the_registered_julia_archive_sha(tmp_path):
+    backend = {
+        "gpu_count": 2,
+        "gpu_name": "Tesla T4",
+        "driver_version": "580.159.04",
+        "compute_capability": "7.5",
+        "cuda_driver_api_version": "13.3.0",
+        "cuda_runtime_version": "12.8.0",
+        "cuda_jl_version": "6.3.1",
+        "julia_version": "1.12.6",
+        "julia_threads": 1,
+        "waterlily_version": "1.8.0",
+        "waterlily_backend": "KernelAbstractions.CUDABackend()",
+        "cuda_visible_devices": "0",
+        "julia_archive_sha256": "a" * 64,
+    }
+    criteria = {
+        "backend": backend,
+        "source_commit": "b" * 40,
+        "input_dataset_id": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+        "inputs": {"kernel_runner": {"sha256": "c" * 64}},
+    }
+    output = tmp_path
+    (output / "nvidia_smi.csv").write_text(
+        "0, Tesla T4, GPU-0, 580.159.04\n1, Tesla T4, GPU-1, 580.159.04\n"
+    )
+    (output / "input_criteria.json").write_text("registered criteria\n")
+    (output / "input_dataset_manifest.json").write_text("registered manifest\n")
+    (output / "julia_smoke.log").write_text(
+        "W0B_SMOKE_DONE\nCUDA_FUNCTIONAL true\nGPU_COMPUTE_CAPABILITY 7.5\n"
+        "CUDA_DRIVER_VERSION 13.3.0\nCUDA_RUNTIME_VERSION 12.8.0\n"
+        "JULIA_VERSION 1.12.6\nCUDA_JL_VERSION 6.3.1\n"
+        "WATERLILY_VERSION 1.8.0\nGPU_NAME Tesla T4\nNO_SOLVER_STEP\n"
+    )
+    gpu_rows = ["0, Tesla T4, GPU-0, 580.159.04", "1, Tesla T4, GPU-1, 580.159.04"]
+    fingerprint = {
+        "criteria_sha256": hashlib.sha256((output / "input_criteria.json").read_bytes()).hexdigest(),
+        "source_commit": criteria["source_commit"],
+        "kernel_runner_sha256": criteria["inputs"]["kernel_runner"]["sha256"],
+        "dataset_id": criteria["input_dataset_id"],
+        "dataset_manifest_sha256": hashlib.sha256(
+            (output / "input_dataset_manifest.json").read_bytes()
+        ).hexdigest(),
+        "julia_archive_sha256": backend["julia_archive_sha256"],
+        "gpu_inventory": gpu_rows,
+        "backend_expected": backend,
+        "selected_gpu_uuid": "GPU-0",
+    }
+    (output / "runtime_fingerprint.json").write_text(json.dumps(fingerprint))
+    verifier.verify_runtime(criteria, output, {})
+
+    fingerprint["julia_archive_sha256"] = "d" * 64
+    (output / "runtime_fingerprint.json").write_text(json.dumps(fingerprint))
+    with pytest.raises(ValueError, match="runtime fingerprint source/backend identity"):
+        verifier.verify_runtime(criteria, output, {})
+
+
+def test_failed_run_diagnostic_is_append_only_and_keeps_qualification_false(tmp_path):
+    output = tmp_path / "output"
+    output.mkdir()
+    (output / "execution_state.json").write_text(json.dumps({
+        "stage": "julia_job", "solver_step_invoked": ["baseline_A"],
+        "solver_step_returned": [], "solver_started": True,
+    }))
+    (output / "fd_v16.log").write_text(
+        "FD_RUN_STARTED baseline_A\nFD_SOLVER_STEP_INVOKED baseline_A\n"
+    )
+    (output / "ERROR.txt").write_text("synthetic fixture failure\n")
+    files = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+             for path in output.iterdir()}
+    (output / "sha256.json").write_text(json.dumps(files, sort_keys=True))
+    status = tmp_path / "status.txt"
+    status.write_text("KernelWorkerStatus.ERROR\n")
+    log = tmp_path / "kaggle.log"
+    log.write_text("exact version log\n")
+    verification = tmp_path / "host.json"
+    diagnostic = tmp_path / "fd-diagnostic.json"
+    args = Namespace(
+        criteria=ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json",
+        output=output,
+        status_file=status,
+        kaggle_log_file=log,
+        verification_output=verification,
+        diagnostic_path=diagnostic,
+        kernel_id="ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+        kernel_version=1,
+        dataset_version=1,
+    )
+    path, digest = verifier.write_diagnostic(args, RuntimeError("exact test failure"))
+    result = json.loads(path.read_text())
+    assert result["host_verification_passed"] is False
+    assert result["runner_execution_state"]["solver_started"] is True
+    assert result["julia_progress_markers"]["solver_step_invoked"] == ["baseline_A"]
+    assert result["output_manifest_consistent"] is True
+    assert result["sdf_directional_fd_oracle_qualified"] is False
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
+    assert path.with_suffix(path.suffix + ".sha256").read_text().strip() == digest
+    with pytest.raises(FileExistsError, match="append-only"):
+        verifier.write_diagnostic(args, RuntimeError("retry cannot overwrite"))
+
+
+def test_dataset_preparer_rejects_mutable_draft_even_with_valid_sidecar(tmp_path):
+    source = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json"
+    criteria = tmp_path / "criteria.json"
+    criteria.write_bytes(source.read_bytes())
+    digest = hashlib.sha256(criteria.read_bytes()).hexdigest()
+    criteria.with_suffix(criteria.suffix + ".sha256").write_text(digest + "\n")
+    with pytest.raises(ValueError, match="immutable premeasurement"):
+        preparer.stage(Path("unused-state.npz"), criteria, tmp_path / "dataset")

@@ -4115,3 +4115,49 @@ formal FD or any reverse/optimizer work.
   W4, W3-owner or focused task test failed. Captured log:
   `work/kaggle_w4_version3/final_pytest.log`, SHA-256
   `60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.
+
+## 2026-09-29: centered directional-FD oracle implementation status
+
+This checkpoint advances the FD work from the W4 entry gate without starting a
+measurement. It supersedes the preceding statement that the task stops at W4
+verification, while preserving W3/W4 evidence and all qualification limits.
+
+- **Implemented locally:** solver-neutral scalar directional-FD contracts;
+  three deterministic frozen directions; the five-level epsilon ladder; all
+  30 direct `phi0 +/- epsilon*d` states and margin preflight; a 33-run fixed
+  order; fresh WaterLily `flow_16` primals with retained CUDA SDF ownership;
+  raw three-axis pressure/viscous/total force capture; endpoint-clipped
+  trapezoidal physical-force recomputation; stationarity/noise/plateau rules;
+  Kaggle runner, host verifier, dataset preparer, and mutable criteria draft.
+- **Prerequisite verified:** W3 round 4 criteria/result SHAs remain
+  `eeae43e8930f1dc4bb8d3a1099edce76e75390fba24176c9ad70c8248ac1eebb` /
+  `d00949d0ea2f2ddcd222f0f376449d9d7aba9b634a650cf75822c640b9e6f4a8`; W4
+  round 4 criteria/result SHAs remain
+  `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f` /
+  `87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae`.
+  The FD entry gate is open and W4 says no extended-domain fine-grid follow-up
+  is required.
+- **Registered:** no immutable FD criteria round exists yet. The checked-in
+  draft remains mutable and measurement thresholds are not frozen.
+- **Submitted / measured:** no FD private dataset or kernel has been created
+  or submitted; no FD solver step has run.
+- **Host verified:** prerequisite W3/W4 evidence only. FD outputs, host report,
+  and result evidence do not exist.
+- **Qualified:** `sdf_directional_fd_oracle_qualified=false`,
+  `sdf_directional_fd_flow16_qualified=false`,
+  `sdf_gradient_field_qualified=false`, `gradient_qualified=false`,
+  `reverse_mode_qualified=false`, and `shape_update_allowed=false`.
+- **Open:** commit and push the validated source/harness; only then freeze
+  criteria, stage and remotely verify the private dataset, submit the exact T4
+  kernel version, and host-verify that exact version. Stop after the FD host
+  result. Do not run reverse/adjoint, optimization, or shape updates in this
+  work item.
+- **Validation:** 22 focused FD tests passed. Python `compileall src tests
+  scripts`, runner `py_compile`, Julia parse plus exact flow_16 dims/origin/
+  Re=80 assertion, both JSON parses, 30 canonical-state perturbation
+  regenerations, and canonical margin checks passed. Full pytest reported
+  `1,139 passed, 37 failed, 4 skipped` in `206.53 s`; the FD tests passed in
+  that run. The 37 failures are pre-existing Stage T/S/V tests blocked by
+  ignored historical `work/` ProblemSpec, STL, checkpoint, mesh, or solver
+  artifacts missing from this managed worktree. Full log SHA-256:
+  `17bb1c99705602b5c9dd5d499ffa3595d3cdf94cdb859c3b2de64123f0c8fd6f`.

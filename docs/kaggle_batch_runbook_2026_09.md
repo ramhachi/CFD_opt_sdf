@@ -2407,3 +2407,54 @@ review found the 37 failures require ignored historical `work/` artifacts or
 prerequisites absent from this managed worktree; no W4/W3-owner test failed.
 Full pytest log SHA-256 is
 `60bdff0c767d3e043847d04ea072371cffd47f875dabed89c5c5af33284406b8`.
+
+## 2026-09-29: centered directional-FD oracle, implementation not registered
+
+The W3 round-4 and W4 round-4 host-PASS results open the formal FD entry gate.
+The new FD workflow is being prepared against the canonical v16 SDF and the
+registered WaterLily `flow_16` finite-box primal. Its mutable draft is
+`docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json`; it is not
+an immutable criteria file and cannot be used to launch a measurement.
+
+**Implemented locally:** the solver-neutral directional-FD contract, D0
+interface-offset plus D1/D2 filtered seeded directions, five epsilon levels,
+30 frozen perturbations, three interleaved fresh baselines, Julia T4 job,
+Kaggle runner, exact-version host verifier, and dataset preparation/criteria
+registration scripts. Every primal records full x/y/z pressure and viscous
+force components, `drag=+Fx`, `downforce=-Fz`, exact-window time-weighted
+physical forces, and the inherited 2% half-window stationarity gate.
+
+**Validation:** the two focused FD test files passed `22` tests. Python
+`compileall src tests scripts` and runner `py_compile` passed; Julia
+`Meta.parseall` plus the exact flow_16 dims/origin/Re=80 assertion passed;
+both JSON files parsed; the canonical state regenerated the registered three
+direction hashes and all 30 perturbations, with minimum measured margin
+`0.33999999370425943 m`. The full command
+`PYTHONPATH=src:scripts /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q`
+reported `1,139 passed, 37 failed, 4 skipped` in `206.53 s`; none of the 37
+failures were in either FD test file. The failures are existing Stage T/S/V
+tests blocked by ignored `work/` inputs absent from this managed worktree
+(missing ProblemSpec YAML, STL, checkpoints, meshes and solver artifacts).
+Captured log SHA-256:
+`17bb1c99705602b5c9dd5d499ffa3595d3cdf94cdb859c3b2de64123f0c8fd6f`.
+
+**Current status:**
+
+- Implemented in the worktree; focused validation currently passes 22 tests.
+- Prerequisites read and SHA-checked: W3 round-4 criteria/result
+  `eeae43e8…` / `d00949d0…`; W4 round-4 criteria/result
+  `3efc8133…` / `87a88178…`.
+- Immutable FD criteria: not registered.
+- Private FD dataset: not staged or uploaded.
+- FD kernel: not submitted.
+- FD solver measurement: not started; no `sim_step!` has been invoked for FD.
+- Host FD verification/evidence: not present; directional-oracle and gradient
+  qualification flags remain false.
+
+**Next:** commit and push the validated source/harness first. Run the
+registrar only from a clean, pushed canonical branch. Then stage the
+dataset, upload it privately, wait for `ready`, download the exact remote
+version and verify its full file inventory and hashes. Submit only after that
+comparison passes. Record the exact kernel version returned by Kaggle and use
+that same version for status, logs, and output retrieval; never substitute
+`latest`. Stop after the independent host verifier and append-only evidence.
