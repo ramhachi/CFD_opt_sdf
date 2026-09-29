@@ -311,6 +311,16 @@ def test_runner_has_no_unbound_global_references_in_function_scopes():
     assert unresolved == []
 
 
+def test_host_evaluate_does_not_shadow_runner_metric_comparator():
+    verifier_path = ROOT / "scripts/verify_kaggle_sdf_directional_fd_v16.py"
+    tree = ast.parse(verifier_path.read_text())
+    evaluate = next(node for node in tree.body
+                    if isinstance(node, ast.FunctionDef) and node.name == "evaluate")
+    assigned_names = {node.id for node in ast.walk(evaluate)
+                      if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)}
+    assert "runner_metrics_match" not in assigned_names
+
+
 def test_runner_and_host_use_independent_but_matching_centered_fd_arithmetic():
     baseline = 0.336
     noise = 1e-8
@@ -398,11 +408,33 @@ def test_runner_and_host_exact_window_endpoint_interpolation_match():
     runner_metrics = runner.recompute_metrics(rows, criteria)
     host_metrics = verifier.recompute_run_metrics(rows, criteria)
     assert runner_metrics.keys() == host_metrics.keys()
+    assert set(verifier.REQUIRED_WINDOW_COMPONENT_METRICS) <= host_metrics.keys()
     for key, value in host_metrics.items():
         assert runner_metrics[key] == pytest.approx(value, rel=1e-14, abs=1e-14)
+    assert verifier.runner_metrics_match(host_metrics, host_metrics, 1e-14)
     assert host_metrics["window_time_weighted_fx_solver"] == pytest.approx(3.0)
     assert host_metrics["window_time_weighted_drag_solver"] == pytest.approx(3.0)
     assert host_metrics["window_time_weighted_downforce_solver"] == pytest.approx(1.0)
+
+
+def test_host_runner_metric_integrity_requires_all_pressure_viscous_window_integrals():
+    metrics = {key: float(index + 1)
+               for index, key in enumerate(verifier.REQUIRED_WINDOW_COMPONENT_METRICS)}
+    summary = dict(metrics)
+    assert verifier.runner_metrics_match(summary, metrics, 1e-12)
+
+    for key in verifier.REQUIRED_WINDOW_COMPONENT_METRICS:
+        missing_summary = dict(summary)
+        del missing_summary[key]
+        assert not verifier.runner_metrics_match(missing_summary, metrics, 1e-12)
+
+        missing_metrics = dict(metrics)
+        del missing_metrics[key]
+        assert not verifier.runner_metrics_match(summary, missing_metrics, 1e-12)
+
+        changed_summary = dict(summary)
+        changed_summary[key] += 1.0
+        assert not verifier.runner_metrics_match(changed_summary, metrics, 1e-12)
 
 
 def test_minimum_force_window_samples_and_full_flow_physics_identity_are_hard_gates():

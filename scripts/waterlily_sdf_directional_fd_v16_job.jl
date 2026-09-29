@@ -220,9 +220,16 @@ function measure_fresh_run(run, vram_total)
         window_sample_count = count(row -> BURN_IN <= row[2] <= T_END, history)
         drag, drag_first, drag_second, drag_drift = window_stats(history, 6)
         down, down_first, down_second, down_drift = window_stats(history, 7)
-        fx = tw_mean(clipped_window(history, 80.0, 120.0), 3)
-        fy = tw_mean(clipped_window(history, 80.0, 120.0), 4)
-        fz = tw_mean(clipped_window(history, 80.0, 120.0), 5)
+        force_window = clipped_window(history, BURN_IN, T_END)
+        fx = tw_mean(force_window, 3)
+        fy = tw_mean(force_window, 4)
+        fz = tw_mean(force_window, 5)
+        pressure_fx = tw_mean(force_window, 8)
+        pressure_fy = tw_mean(force_window, 9)
+        pressure_fz = tw_mean(force_window, 10)
+        viscous_fx = tw_mean(force_window, 11)
+        viscous_fy = tw_mean(force_window, 12)
+        viscous_fz = tw_mean(force_window, 13)
         force_scale = FLOW_CASE.density_kg_m3 * FLOW_CASE.freestream_mps^2 * FLOW_CASE.flow_spacing_m^2
         area_solver = FLOW_CASE.reference_area_m2 / FLOW_CASE.flow_spacing_m^2
         csv_path = joinpath(output_dir, run.run_id * ".forces.csv")
@@ -278,6 +285,12 @@ function measure_fresh_run(run, vram_total)
             window_time_weighted_fx_solver=fx, window_time_weighted_fy_solver=fy,
             window_time_weighted_fz_solver=fz, window_time_weighted_drag_solver=drag,
             window_time_weighted_downforce_solver=down,
+            window_time_weighted_pressure_fx_solver=pressure_fx,
+            window_time_weighted_pressure_fy_solver=pressure_fy,
+            window_time_weighted_pressure_fz_solver=pressure_fz,
+            window_time_weighted_viscous_fx_solver=viscous_fx,
+            window_time_weighted_viscous_fy_solver=viscous_fy,
+            window_time_weighted_viscous_fz_solver=viscous_fz,
             drag_time_weighted_n=drag * force_scale, downforce_time_weighted_n=down * force_scale,
             cd_time_weighted=drag / (0.5 * area_solver * FLOW_CASE.solver_velocity^2),
             stationarity_first_half_time_weighted_drag_solver=drag_first,
