@@ -73,6 +73,13 @@ diagnostic is
 SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`.
 Round 4 and its `/3` outputs remain failed evidence; the formal FD oracle,
 gradient, reverse, optimizer, topology and shape update remain unqualified.
+An append-only round-5 criteria record is locally preregistered against the
+source-lifetime repair; its criteria SHA-256 is
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`. A local
+dataset v5 candidate has passed source and host-input checks with all 35
+physical inputs byte-identical to the verified v4 stage. It has not been
+uploaded, and no new kernel has been submitted while the dataset-versioning
+decision is pending.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for

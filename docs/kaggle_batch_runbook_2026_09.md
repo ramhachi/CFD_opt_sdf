@@ -2847,3 +2847,81 @@ State separation:
 - **Open:** stage and upload a new dataset version, redownload and verify its
   exact inventory, then submit and verify only the returned exact kernel
   version. Do not edit the immutable criteria or reuse round 3's `/2`.
+
+## 2026-09-29: FD round-5 source-lifetime retry candidate
+
+Round 4's exact T4 kernel `/3` ended in `ERROR` after all 33 primal calls. The
+strict host verifier failed closed because there is no `DONE` marker. The
+registered W4 result was present at source commit
+`8bf88756791213ac75b3c36ab6316323653d5c9a`; the runner read it only after the
+`TemporaryDirectory` containing the source checkout had been removed. See the
+round-4 `/3` diagnostic in `phase_plan.md`. Preserve `/3` as failed evidence
+and run all 33 primals afresh under the fixed source if a successor execution
+is authorized.
+
+The source-lifetime repair retains the verified W4 result object in memory for
+the runner's final recomputation. Round-5 immutable criteria are locally
+registered at
+`docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json`, SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`, canonical
+criteria SHA-256
+`afb87dc75538c1970cc332711ae638f33fe417df68e018e61f70824e77b7a4ac`, source
+commit `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. It preserves round-4's
+3 directions, 30 perturbations, 33-run order, exact T4 backend, force window,
+stationarity, runtime limits, baseline-noise rule, resolution factor, plateau
+and every numeric gate. No prior criteria were edited.
+
+Candidate dataset directory:
+`work/kaggle_sdf_directional_fd_dataset_round5/`. Its manifest SHA-256 is
+`c2aa1360263d04bd8d61d9079b7d3e644fd35e2551d1715d91bf0199e09f003e`. All 35
+physical input files are byte-identical to the verified round-4 staged inputs;
+only the criteria, sidecar and manifest/source identity change. Local source,
+W3/W4 prerequisite, dataset inventory and host-input checks passed without
+GPU discovery. Candidate verification record:
+`docs/evidence/sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json`,
+SHA-256
+`079581ea1f9df6cca37b44223b1f0f1d79f9c961569daf70d29a56ef833235ae`.
+
+**Do not run the following upload or kernel commands until the user's choice
+about creating a new dataset version is explicit.** After approval, first
+reconfirm round-5 criteria and local candidate checks:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py --round 5 --check
+
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py \
+  --criteria docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json \
+  --state work/kaggle_sdf_directional_fd_dataset_round4/sdf_design_state.npz \
+  --output work/kaggle_sdf_directional_fd_dataset_round5
+```
+
+Only then create the next version of the existing private input dataset ID;
+preserve versions 1–4 and record the exact returned version:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle datasets version -p work/kaggle_sdf_directional_fd_dataset_round5 \
+  -m "Append round-5 FD criteria; preserve all registered physical inputs" \
+  --dir-mode zip
+```
+
+Wait for the exact dataset version to become `ready`, download that exact
+version, and compare its complete mounted inventory, manifest, path, size and
+SHA-256 values to the local candidate. Require the same source commit and
+unchanged 35 physical input hashes before submitting a kernel. Then push only
+the registered private T4 kernel with the 14,400-second timeout:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 \
+  kaggle kernels push -p infra/kaggle/kernel_sdf_directional_fd_v16 \
+  --accelerator NvidiaTeslaT4 --timeout 14400
+```
+
+Record the exact kernel version returned by Kaggle and use only that exact
+version for status, logs, output download and host verification. The new run
+must produce fresh outputs for the complete 33-run order. Never reuse `/3`
+outputs or submit a different backend. Stop after exact-version host
+verification; all broader gradient, optimizer, topology and shape-update
+claims remain false unless independently qualified.

@@ -4688,7 +4688,7 @@ host-verified FD result and not a reusable fresh-primal run.
   reopen the W4 JSON beneath the now-deleted source directory. The resulting
   `FileNotFoundError` happened at `host_inside_runner_recompute`, after all 33
   solver calls.
-- **Local repair:** the runner now retains the already SHA-verified W4 result
+- **Local repair / registration:** the runner now retains the already SHA-verified W4 result
   object in memory and passes it into `verify_runner`, so final recomputation no
   longer reads from a deleted temporary path. A focused regression copies the
   W3/W4 prerequisite files into a temporary checkout, verifies them, removes
@@ -4702,12 +4702,31 @@ host-verified FD result and not a reusable fresh-primal run.
   `1,151 passed, 37 failed, 4 skipped` in `199.91 s`; the 37 failures are
   existing tests requiring ignored `work/` evidence absent from this worktree,
   including PQ0/PQ3 and Stage S/V fixtures. No FD test failed.
-- **Dataset/run gate:** local preparation of a candidate dataset v5 may update
-  only the append-only round-5 criteria, sidecar and manifest/source identity;
-  all canonical arrays must remain byte-identical to verified v4. Uploading v5
-  and submitting a new kernel remain gated on explicit user direction. Do not
-  overwrite/relabel `/3`, modify rounds 1–4, or reuse `/3` outputs for a new
-  33-primal execution.
+- **Round 5 preregistration:** immutable criteria are locally registered at
+  [`sdf_directional_fd_v16_criteria_2026_09_round5.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json),
+  file/sidecar-content SHA-256
+  `2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`,
+  canonical criteria SHA-256
+  `afb87dc75538c1970cc332711ae638f33fe417df68e018e61f70824e77b7a4ac`,
+  bound source commit `a07bba2fd1dcf0d3d28b211eef58d91309a24a75`. It supersedes
+  the exact round-4 `/3` failure evidence without editing round 4.
+- **Local dataset v5 candidate:** staged at
+  `work/kaggle_sdf_directional_fd_dataset_round5/`. All 35 canonical-state,
+  phi, direction and perturbation inputs are byte-identical to the locally
+  staged v4 inputs whose manifest SHA matches the remote-verified round-4
+  record. Exact criteria, source inputs, W3/W4 prerequisites, canonical state,
+  three directions and 30 perturbations passed host checks against a simulated
+  mounted inventory; GPU discovery was not called. Candidate manifest SHA-256
+  is `c2aa1360263d04bd8d61d9079b7d3e644fd35e2551d1715d91bf0199e09f003e`.
+  Append-only local-stage record
+  [`sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_candidate_verification_2026_09.json)
+  SHA-256 is
+  `079581ea1f9df6cca37b44223b1f0f1d79f9c961569daf70d29a56ef833235ae`.
+- **Dataset/run gate:** dataset v5 has not been uploaded or remotely verified,
+  and no successor kernel has been submitted. Both remain gated on the user's
+  explicit answer about versioning the append-only registration/source identity
+  update. Do not overwrite/relabel `/3`, modify rounds 1–4, or reuse `/3`
+  outputs for a new 33-primal execution.
 - **Qualified:** round 4 remains failed, and the directional-FD oracle,
   flow16 FD, field gradient, reverse mode, optimizer, topology and shape update
   remain false. `shape_update_allowed=false` remains a hard stop.
