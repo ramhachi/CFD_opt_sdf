@@ -7,9 +7,16 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-Current checkpoint: W3 round 4 exact T4 kernel version 5 passed host
-verification for its registered finite-box primal contract. W3 v4's all-zero
-root cause remains unresolved. W4 immutable criteria round 4
+Latest execution checkpoint: FD round 5 exact private T4 kernel `/4` ran all
+33 fresh primals but ended in `KernelWorkerStatus.ERROR`; the strict host
+verifier failed closed because `DONE` is absent. The diagnostic-only raw CSV
+postmortem confirms T6/T7 summary-schema failures and T10/T11 failure of the
+registered 5% derivative plateau. See the
+[`round-5 kernel diagnostic`](evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json)
+and [`raw CSV postmortem`](evidence/sdf_directional_fd_v16_round5_kernel4_postmortem_2026_09.json).
+No FD or gradient qualification is granted. W3 round 4 exact T4 kernel version
+5 passed host verification for its registered finite-box primal contract.
+W3 v4's all-zero root cause remains unresolved. W4 immutable criteria round 4
 ([SHA-256 `3efc8133c8d1b7d306041ee3f49ec5a708024f189095bdb0f13646fe329b578f`](evidence/kaggle_w4_v16_sensitivity_criteria_2026_09_round4.json))
 was executed by exact private T4 kernel version 3 and passed independent host
 verification. Append-only result evidence is
@@ -53,9 +60,36 @@ an executable regression. Immutable FD round 4 is registered at
 canonical SHA `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`)
 and binds source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Machine
 comparison confirms the entire measurement contract remains identical to
-round 3. Dataset v4 is not uploaded and no round-4 kernel is submitted or
-measured. Formal FD, gradient, reverse, optimizer and shape update remain
-unqualified.
+round 3. Private dataset v4 is `ready`; all 38 downloaded files match the
+staged paths, sizes and hashes, and the exact Kaggle listing agrees. Host
+source and input preflight passed for the 32 pinned source inputs, W3/W4
+prerequisites, canonical state, three directions and 30 perturbations. Evidence
+is
+[`sdf_directional_fd_v16_dataset_round4_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round4_verification_2026_09.json),
+SHA-256 `e3f4fecde25f4161595deda684a2db7a9bd5d83298d299cf22f4745dda4831aa`.
+Exact private T4 kernel `/3` was submitted with the registered 14,400-second
+timeout. Its submission checkpoint is
+[`sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json),
+SHA-256 `7906199306835e1da529b52313e7f27b7e18bf3665c091e6c4d099b340ee52bb`.
+The exact version later ended in `KernelWorkerStatus.ERROR`. All 33 registered
+primal calls returned, but runner-side recomputation failed after its temporary
+source checkout was removed. The strict host verifier failed closed because
+`DONE` is absent; no FD result passed verification. Append-only terminal
+diagnostic is
+[`sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json`](evidence/sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json),
+SHA-256 `f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8`.
+Round 4 and its `/3` outputs remain failed evidence; the formal FD oracle,
+gradient, reverse, optimizer, topology and shape update remain unqualified.
+Round 5 criteria remain immutable at SHA-256
+`2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17`. Private
+dataset v5 passed exact remote inventory and host-input checks. Kernel `/4`
+produced 33 completed fresh runs but no outer `DONE` marker; the recorded
+runner gates include genuine directional plateau failures as well as a summary
+schema defect. The append-only dataset verification record is
+[`sdf_directional_fd_v16_dataset_round5_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json),
+SHA-256 `fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e`.
+All FD, gradient, reverse, optimizer, topology, and shape-update qualification
+flags remain false; `shape_update_allowed=false`.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for

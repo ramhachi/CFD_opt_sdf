@@ -60,6 +60,16 @@ ROUND3_FAILURE_ANALYSIS = (
 ROUND3_DATASET_VERIFICATION = (
     "docs/evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json"
 )
+ROUND4_CRITERIA = "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json"
+ROUND4_KERNEL3_SUBMISSION = (
+    "docs/evidence/sdf_directional_fd_v16_round4_kernel3_submission_2026_09.json"
+)
+ROUND4_KERNEL3_DIAGNOSTIC = (
+    "docs/evidence/sdf_directional_fd_v16_round4_kernel3_diagnostic_2026_09.json"
+)
+ROUND4_DATASET_VERIFICATION = (
+    "docs/evidence/sdf_directional_fd_v16_dataset_round4_verification_2026_09.json"
+)
 ROUND1_CRITERIA_FILE_SHA256 = "ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6"
 ROUND1_CRITERIA_CANONICAL_SHA256 = "a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c"
 ROUND1_SUBMISSION_DIAGNOSTIC_SHA256 = "3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8"
@@ -74,6 +84,12 @@ ROUND3_KERNEL2_DIAGNOSTIC_SHA256 = "4044e4f01508590f622e89194427af47c599d00959cf
 ROUND3_FAILURE_ANALYSIS_SHA256 = "faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596"
 ROUND3_DATASET_VERIFICATION_SHA256 = "aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c"
 ROUND3_SOURCE_COMMIT = "9978eb4f19c716b9666c50c18261738edd978e4f"
+ROUND4_CRITERIA_FILE_SHA256 = "ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd"
+ROUND4_CRITERIA_CANONICAL_SHA256 = "949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9"
+ROUND4_KERNEL3_SUBMISSION_SHA256 = "7906199306835e1da529b52313e7f27b7e18bf3665c091e6c4d099b340ee52bb"
+ROUND4_KERNEL3_DIAGNOSTIC_SHA256 = "f53ce0cf2784db810cdec39ba05448795010210e5e39e664810ae9f84527ded8"
+ROUND4_DATASET_VERIFICATION_SHA256 = "e3f4fecde25f4161595deda684a2db7a9bd5d83298d299cf22f4745dda4831aa"
+ROUND4_SOURCE_COMMIT = "8bf88756791213ac75b3c36ab6316323653d5c9a"
 RETRY_KERNEL_ID = DATASET_ID + "-kernel"
 RETRY_KERNEL_TITLE = "CFD Opt SDF v16 Directional FD Oracle Kernel"
 SOURCE_PATHS = {
@@ -436,6 +452,128 @@ def load_round3_pre_primal_retry_binding() -> dict:
     }
 
 
+def load_round4_host_recompute_lifetime_failure_binding() -> dict:
+    paths = {
+        "criteria": ROUND4_CRITERIA,
+        "submission": ROUND4_KERNEL3_SUBMISSION,
+        "diagnostic": ROUND4_KERNEL3_DIAGNOSTIC,
+        "dataset_verification": ROUND4_DATASET_VERIFICATION,
+    }
+    expected = {
+        "criteria": ROUND4_CRITERIA_FILE_SHA256,
+        "submission": ROUND4_KERNEL3_SUBMISSION_SHA256,
+        "diagnostic": ROUND4_KERNEL3_DIAGNOSTIC_SHA256,
+        "dataset_verification": ROUND4_DATASET_VERIFICATION_SHA256,
+    }
+    files = {name: ROOT / path for name, path in paths.items()}
+    sidecars = {name: path.with_suffix(path.suffix + ".sha256") for name, path in files.items()}
+    if not all(path.is_file() for path in (*files.values(), *sidecars.values())):
+        raise ValueError("round-4 criteria and terminal evidence with sidecars must be preserved")
+    digests = {name: sha256(path) for name, path in files.items()}
+    if (any(digests[name] != expected[name] for name in paths)
+            or any(sidecars[name].read_text().strip() != digests[name] for name in paths)):
+        raise ValueError("round-4 criteria or terminal evidence identity changed")
+
+    criteria = json.loads(files["criteria"].read_text())
+    submission = json.loads(files["submission"].read_text())
+    diagnostic = json.loads(files["diagnostic"].read_text())
+    dataset = json.loads(files["dataset_verification"].read_text())
+    execution = diagnostic.get("runner_execution_state", {})
+    progress = diagnostic.get("julia_progress_markers", {})
+    run_order = criteria.get("run_order")
+    exact_kernel = f"{RETRY_KERNEL_ID}/3"
+    failure = execution.get("failure", "")
+    committed_w4_result_sha = git_blob_sha(ROUND4_SOURCE_COMMIT, W4_RESULT)
+    committed_runner_sha = git_blob_sha(
+        ROUND4_SOURCE_COMMIT, "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py")
+    if (criteria.get("criteria_round") != 4
+            or criteria.get("immutable") is not True
+            or criteria.get("registered_before_computation") is not True
+            or criteria.get("status") != "registered_not_run"
+            or criteria.get("formal_measurement_started") is not False
+            or criteria.get("criteria_sha256") != ROUND4_CRITERIA_CANONICAL_SHA256
+            or criteria.get("source_commit") != ROUND4_SOURCE_COMMIT
+            or criteria.get("registered_source_commit") != ROUND4_SOURCE_COMMIT
+            or criteria.get("kernel_id") != RETRY_KERNEL_ID
+            or criteria.get("input_dataset_id") != DATASET_ID
+            or criteria.get("prerequisites", {}).get("w4", {}).get("result_sha256")
+                != "87a881784dd42ef9c2c43ee78be761e8165e727f01df7d544765006d9c1b2fae"
+            or committed_w4_result_sha != criteria["prerequisites"]["w4"]["result_sha256"]
+            or committed_runner_sha != criteria["inputs"]["kernel_runner"]["sha256"]
+            or diagnostic.get("kind") != "sdf_directional_fd_flow16_diagnostic"
+            or diagnostic.get("criteria_path") != ROUND4_CRITERIA
+            or diagnostic.get("criteria_sha256") != digests["criteria"]
+            or diagnostic.get("source_commit") != ROUND4_SOURCE_COMMIT
+            or diagnostic.get("dataset_id") != DATASET_ID
+            or diagnostic.get("dataset_version") != 4
+            or diagnostic.get("kernel_id") != RETRY_KERNEL_ID
+            or diagnostic.get("kernel_version") != 3
+            or diagnostic.get("terminal_status") != f'{exact_kernel} has status "KernelWorkerStatus.ERROR"'
+            or diagnostic.get("host_verification_passed") is not False
+            or diagnostic.get("host_verifier_error") != "ValueError: FD Kaggle output has no DONE marker"
+            or diagnostic.get("output_manifest_consistent") is not True
+            or diagnostic.get("runner_outcome") is not None
+            or execution.get("stage") != "host_inside_runner_recompute"
+            or execution.get("solver_started") is not True
+            or progress.get("run_started") != run_order
+            or progress.get("run_finished") != run_order
+            or progress.get("solver_step_invoked") != run_order
+            or progress.get("solver_step_returned") != run_order
+            or len(run_order or []) != 33
+            or "FileNotFoundError" not in failure
+            or criteria["prerequisites"]["w4"]["result_path"] not in failure
+            or "verify_runner(source" not in failure
+            or submission.get("exact_kernel_ref") != exact_kernel
+            or submission.get("registered_criteria_path") != ROUND4_CRITERIA
+            or submission.get("registered_source_commit") != ROUND4_SOURCE_COMMIT
+            or submission.get("criteria_file_sha256") != digests["criteria"]
+            or submission.get("dataset_version") != 4
+            or submission.get("kernel_version") != 3
+            or submission.get("timeout_seconds") != 14400
+            or submission.get("terminal_status_observed") is not False
+            or dataset.get("dataset_version") != 4
+            or dataset.get("downloaded_from_current_version_number") != 4
+            or dataset.get("criteria_file_sha256") != digests["criteria"]
+            or dataset.get("all_paths_sizes_and_sha256_match") is not True
+            or dataset.get("host_input_preflight_passed") is not True
+            or dataset.get("registered_source_commit") != ROUND4_SOURCE_COMMIT
+            or dataset.get("source_repo_input_count") != 32
+            or dataset.get("direction_count") != 3
+            or dataset.get("perturbation_count") != 30
+            or dataset.get("host_gpu_inventory_called") is not False):
+        raise ValueError("round-4 is not the exact 33-run W4 prerequisite lifetime failure")
+
+    return {
+        "criteria_path": ROUND4_CRITERIA,
+        "criteria_file_sha256": digests["criteria"],
+        "criteria_canonical_sha256": criteria["criteria_sha256"],
+        "kernel3_submission_path": ROUND4_KERNEL3_SUBMISSION,
+        "kernel3_submission_sha256": digests["submission"],
+        "kernel3_diagnostic_path": ROUND4_KERNEL3_DIAGNOSTIC,
+        "kernel3_diagnostic_sha256": digests["diagnostic"],
+        "dataset_verification_path": ROUND4_DATASET_VERIFICATION,
+        "dataset_verification_sha256": digests["dataset_verification"],
+        "kernel_id": RETRY_KERNEL_ID,
+        "kernel_version": 3,
+        "dataset_version": 4,
+        "solver_started": True,
+        "solver_step_invoked": list(run_order),
+        "solver_step_returned": list(run_order),
+        "completed_primal_count": len(run_order),
+        "failure_stage": execution["stage"],
+        "host_verifier_error": diagnostic["host_verifier_error"],
+        "output_manifest_sha256": diagnostic["output_manifest_sha256"],
+        "measurement_thresholds_changed": False,
+        "prior_outputs_reusable_as_fresh_primal_run": False,
+        "reason": (
+            "Round-4 exact kernel /3 completed all 33 fresh primal calls, then failed during "
+            "runner-side host recomputation because verify_runner read the W4 result from the "
+            "source tree after its TemporaryDirectory had been deleted. Preserve /3 as failed; "
+            "a successor run must recompute all 33 primals under the fixed source."
+        ),
+    }
+
+
 def assert_same_measurement_contract(candidate: dict, registered: dict) -> None:
     fields = (
         "criteria_id", "input_dataset_id", "geometry", "responses", "directions",
@@ -449,8 +587,8 @@ def assert_same_measurement_contract(candidate: dict, registered: dict) -> None:
 
 
 def build_criteria(*, state_path: Path, round_number: int) -> dict:
-    if round_number not in (1, 2, 3, 4):
-        raise ValueError("only directional-FD criteria rounds 1, 2, 3, and 4 are defined")
+    if round_number not in (1, 2, 3, 4, 5):
+        raise ValueError("only directional-FD criteria rounds 1, 2, 3, 4, and 5 are defined")
     (w3_criteria, w3_result, w4_criteria, w4_result,
      w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha) = load_prerequisites()
     observed_w4_backend = w4_result["backend_identity"]
@@ -490,6 +628,7 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
         2: load_round1_submission_retry_binding,
         3: load_round2_preflight_retry_binding,
         4: load_round3_pre_primal_retry_binding,
+        5: load_round4_host_recompute_lifetime_failure_binding,
     }[round_number]
     if callable(supersession_binding):
         supersession_binding = supersession_binding()
@@ -567,8 +706,9 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
         raise ValueError("all 30 perturbations must pass the preregistered SDF margin preflight")
 
     branch = subprocess.check_output(["git", "-C", str(ROOT), "branch", "--show-current"], text=True).strip()
-    if branch != "codex/kaggle-batch-migration":
-        raise ValueError(f"criteria must be registered from the canonical branch, got {branch}")
+    expected_branch = "codex/kaggle-batch-migration" if round_number <= 4 else "exp/fd-02-round4"
+    if branch != expected_branch:
+        raise ValueError(f"round-{round_number} criteria must be registered from {expected_branch}, got {branch}")
     status = subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain"], text=True)
     if status.strip():
         raise ValueError("source/harness commit must be clean before immutable FD registration")
@@ -658,6 +798,7 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
             2: ROUND1_CRITERIA,
             3: ROUND2_CRITERIA,
             4: ROUND3_CRITERIA,
+            5: ROUND4_CRITERIA,
         }[round_number]
         predecessor = json.loads((ROOT / predecessor_path).read_text())
         assert_same_measurement_contract(final, predecessor)

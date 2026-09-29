@@ -72,9 +72,9 @@ an infrastructure choice, not a solver component.
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
-| Next gate | W3 round 4 and W4 round 4 are closed. FD round 3 kernel `/2` remains a preserved pre-primal diagnostic. The one-path queue input fix is pushed, and immutable FD round 4 is registered (file SHA `ace4e539…`, canonical SHA `949d998b…`, source `8bf8875`). Its measurement contract equals round 3. Dataset v4 and a new kernel are not yet submitted. |
+| Next gate | W3 round 4 and W4 round 4 are closed. FD round 5 exact dataset v5 and kernel `/4` are terminal FAIL evidence: all 33 fresh primals returned, but runner T6/T7 summary comparisons and T10/T11 plateau gates failed. Strict host verification failed closed because `DONE` is absent. Preserve rounds 1-5 and repair the runner/host-verifier contract before registering a new immutable round. |
 | W4 | Immutable round 4 (SHA `3efc8133…`, source `b9ae43b`) ran exact private T4 kernel `/3`; dataset version 3 inventory was verified. Independent host verification passed T0-T10 for all four cases, including exact-window stationarity. Append-only result SHA `87a88178…`. The extended-domain fine-grid follow-up was not triggered. This qualifies only the registered finite-box sensitivity matrix, not grid/domain convergence or physical aerodynamics. |
-| Centered-FD SDF derivatives | Entry gate open after W4 host PASS. Round-3 immutable criteria, dataset v3 and exact `/2` failure are preserved. Round 4 is immutable and registered against that diagnostic, with 3 directions, 30 perturbations, and 33 runs unchanged. Dataset v4, kernel submission, FD measurement, and host verification are still open. All FD/gradient/reverse qualification flags remain false. |
+| Centered-FD SDF derivatives | W4 host PASS opened the entry gate. Round 5 preserved the 3-direction, 30-perturbation, 33-run T4 contract and completed all 33 primals, but exact kernel `/4` ended `ERROR`. Dataset v5 inventory passed; strict host verification failed on the absent `DONE` marker. Raw postmortem finds all 33 sampled force-closure and common-summary checks pass, but T10/T11 fail the registered 5% plateau. No FD/gradient/reverse qualification is granted. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
 | Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |
@@ -109,9 +109,12 @@ primal contract. This does not explain W3 v4's complete all-zero force history.
 Physical-profile equivalence, grid/domain response, FD, gradient/reverse,
 topology and shape update remain unqualified; `shape_update_allowed=false`.
 W4 criteria and measurement are closed for the registered finite-box
-sensitivity matrix. Immutable FD round 4 is registered, but its dataset and
-measurement remain open. No historical evidence or criteria are rewritten by
-this status summary.
+sensitivity matrix. FD round 5 is terminal failed evidence; its criteria and
+outputs are preserved, and its result does not qualify directional FD. The
+append-only kernel diagnostic SHA is `0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8`;
+the raw CSV postmortem SHA is
+`e17ae5eb9aabd1f29d92638756197dcafe5fd3b44802f84e93605ef7d1e56dcb`. No
+historical evidence or criteria are rewritten by this status summary.
 
 The dated entries below preserve chronology. Their local status and "next"
 instructions are snapshots; when they conflict with the SDF-native summary

@@ -3,6 +3,7 @@ import builtins
 import hashlib
 import importlib.util
 import json
+import shutil
 import symtable
 import tempfile
 from argparse import Namespace
@@ -66,10 +67,29 @@ def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flo
     assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
 
 
-def test_round4_kernel_identity_keeps_the_unique_slug_and_input_dataset_separate():
+def test_loaded_w4_result_survives_source_temporary_directory_cleanup():
+    criteria = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json").read_text())
+    with tempfile.TemporaryDirectory(prefix="fd_prerequisite_source_") as temporary:
+        source = Path(temporary) / "source"
+        for info in criteria["prerequisites"].values():
+            for key in ("criteria_path", "result_path"):
+                relative = Path(info[key])
+                destination = source / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, destination)
+        backend, w4_result = runner.verify_prerequisites(source, criteria)
+
+    assert not source.exists()
+    assert backend == criteria["prerequisites"]["w4"]["backend_identity"]
+    flow16 = w4_result["case_measurements"]["flow_16"]["force_metrics_host_recomputed"]
+    assert flow16["drag_time_weighted_n"] == pytest.approx(0.3360177299176748)
+    assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
+
+
+def test_round5_kernel_identity_keeps_the_unique_slug_and_input_dataset_separate():
     draft = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
     metadata = json.loads((ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/kernel-metadata.json").read_text())
-    assert draft["criteria_round"] == 4
+    assert draft["criteria_round"] == 5
     assert draft["input_dataset_id"] == registrar.DATASET_ID
     assert metadata["dataset_sources"] == [registrar.DATASET_ID]
     assert metadata["id"] == draft["kernel_id"]
@@ -149,6 +169,34 @@ def test_round4_measurement_contract_equals_round3_and_rejects_any_gate_change()
     round4["noise_and_plateau"]["resolution_factor"] = 21.0
     with pytest.raises(ValueError, match="changed the registered measurement contract"):
         registrar.assert_same_measurement_contract(round4, round3)
+
+
+def test_round5_retries_only_round4_runner_lifetime_failure_without_reusing_results():
+    binding = registrar.load_round4_host_recompute_lifetime_failure_binding()
+    assert binding["criteria_file_sha256"] == registrar.ROUND4_CRITERIA_FILE_SHA256
+    assert binding["kernel3_submission_sha256"] == registrar.ROUND4_KERNEL3_SUBMISSION_SHA256
+    assert binding["kernel3_diagnostic_sha256"] == registrar.ROUND4_KERNEL3_DIAGNOSTIC_SHA256
+    assert binding["dataset_verification_sha256"] == registrar.ROUND4_DATASET_VERIFICATION_SHA256
+    assert binding["kernel_version"] == 3
+    assert binding["dataset_version"] == 4
+    assert binding["completed_primal_count"] == 33
+    assert len(binding["solver_step_invoked"]) == 33
+    assert binding["solver_started"] is True
+    assert binding["prior_outputs_reusable_as_fresh_primal_run"] is False
+    assert binding["measurement_thresholds_changed"] is False
+
+    round4 = json.loads((ROOT / registrar.ROUND4_CRITERIA).read_text())
+    round5 = json.loads(json.dumps(round4))
+    round5.update({
+        "criteria_round": 5,
+        "source_commit": "c" * 40,
+        "registered_source_commit": "c" * 40,
+        "source_tree_commit": "c" * 40,
+    })
+    registrar.assert_same_measurement_contract(round5, round4)
+    round5["measurement"]["run_wall_time_limit_s"] = 1799.0
+    with pytest.raises(ValueError, match="changed the registered measurement contract"):
+        registrar.assert_same_measurement_contract(round5, round4)
 
 
 def test_run_queue_input_is_outside_the_julia_output_snapshot_path():
@@ -263,6 +311,16 @@ def test_runner_has_no_unbound_global_references_in_function_scopes():
     assert unresolved == []
 
 
+def test_host_evaluate_does_not_shadow_runner_metric_comparator():
+    verifier_path = ROOT / "scripts/verify_kaggle_sdf_directional_fd_v16.py"
+    tree = ast.parse(verifier_path.read_text())
+    evaluate = next(node for node in tree.body
+                    if isinstance(node, ast.FunctionDef) and node.name == "evaluate")
+    assigned_names = {node.id for node in ast.walk(evaluate)
+                      if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)}
+    assert "runner_metrics_match" not in assigned_names
+
+
 def test_runner_and_host_use_independent_but_matching_centered_fd_arithmetic():
     baseline = 0.336
     noise = 1e-8
@@ -350,11 +408,33 @@ def test_runner_and_host_exact_window_endpoint_interpolation_match():
     runner_metrics = runner.recompute_metrics(rows, criteria)
     host_metrics = verifier.recompute_run_metrics(rows, criteria)
     assert runner_metrics.keys() == host_metrics.keys()
+    assert set(verifier.REQUIRED_WINDOW_COMPONENT_METRICS) <= host_metrics.keys()
     for key, value in host_metrics.items():
         assert runner_metrics[key] == pytest.approx(value, rel=1e-14, abs=1e-14)
+    assert verifier.runner_metrics_match(host_metrics, host_metrics, 1e-14)
     assert host_metrics["window_time_weighted_fx_solver"] == pytest.approx(3.0)
     assert host_metrics["window_time_weighted_drag_solver"] == pytest.approx(3.0)
     assert host_metrics["window_time_weighted_downforce_solver"] == pytest.approx(1.0)
+
+
+def test_host_runner_metric_integrity_requires_all_pressure_viscous_window_integrals():
+    metrics = {key: float(index + 1)
+               for index, key in enumerate(verifier.REQUIRED_WINDOW_COMPONENT_METRICS)}
+    summary = dict(metrics)
+    assert verifier.runner_metrics_match(summary, metrics, 1e-12)
+
+    for key in verifier.REQUIRED_WINDOW_COMPONENT_METRICS:
+        missing_summary = dict(summary)
+        del missing_summary[key]
+        assert not verifier.runner_metrics_match(missing_summary, metrics, 1e-12)
+
+        missing_metrics = dict(metrics)
+        del missing_metrics[key]
+        assert not verifier.runner_metrics_match(summary, missing_metrics, 1e-12)
+
+        changed_summary = dict(summary)
+        changed_summary[key] += 1.0
+        assert not verifier.runner_metrics_match(changed_summary, metrics, 1e-12)
 
 
 def test_minimum_force_window_samples_and_full_flow_physics_identity_are_hard_gates():

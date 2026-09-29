@@ -1,0 +1,1698 @@
+{
+  "baseline_noise": {
+    "downforce": {
+      "max": 0.3533732402215731,
+      "median": 0.3533732402215731,
+      "min": 0.3533732402215731,
+      "noise_floor": 1e-08,
+      "span": 0.0,
+      "values_by_run": {
+        "baseline_A": 0.3533732402215731,
+        "baseline_B": 0.3533732402215731,
+        "baseline_C": 0.3533732402215731
+      }
+    },
+    "drag": {
+      "max": 0.3360177299176748,
+      "median": 0.3360177299176748,
+      "min": 0.3360177299176748,
+      "noise_floor": 1e-08,
+      "span": 0.0,
+      "values_by_run": {
+        "baseline_A": 0.3360177299176748,
+        "baseline_B": 0.3360177299176748,
+        "baseline_C": 0.3360177299176748
+      }
+    }
+  },
+  "created_at_utc": "2026-09-29T12:13:43.945151+00:00",
+  "directional_fd_recomputed_from_raw_csv": {
+    "D0_interface_offset": {
+      "downforce": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": -0.19728401788449146,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": 0.0007986363776602001,
+            "even_to_odd_ratio": 4.048155477692048,
+            "minus_response_n": 0.35387120041934544,
+            "pair_signal_n": 0.00019728401788449146,
+            "plateau_relative_deviation": 1.748744675389687,
+            "plus_response_n": 0.35367391640146095,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -0.07177240565514609,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": 0.0007038291269745311,
+            "even_to_odd_ratio": 4.90320145012491,
+            "minus_response_n": 0.35379692719071554,
+            "pair_signal_n": 0.00014354481131029218,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.35365338237940525,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -0.020326676094051255,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": 6.531454410430015e-06,
+            "even_to_odd_ratio": 0.06426485452131046,
+            "minus_response_n": 0.35342732263901344,
+            "pair_signal_n": 0.00010163338047025627,
+            "plateau_relative_deviation": 0.7167898176394226,
+            "plus_response_n": 0.3533256892585432,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.036449267218924275,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.002210226945135174,
+            "even_to_odd_ratio": 6.063844663487872,
+            "minus_response_n": 0.3520858804129109,
+            "pair_signal_n": 0.00036449267218924275,
+            "plus_response_n": 0.35245037308510013,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.020388803425791524,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.01068090260014709,
+            "even_to_odd_ratio": 26.19305894782406,
+            "minus_response_n": 0.34782890088724167,
+            "pair_signal_n": 0.0004077760685158305,
+            "plus_response_n": 0.3482366769557575,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 1.748744675389687,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          1.748744675389687,
+          0.0,
+          0.7167898176394226
+        ],
+        "plateau_signs": [
+          -1,
+          -1,
+          -1
+        ],
+        "reference_derivative_n_per_m": -0.07177240565514609,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      },
+      "drag": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": -5.00931883599226,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": -0.003980728005698597,
+            "even_to_odd_ratio": 0.7946645314522255,
+            "minus_response_n": 0.33653202533282167,
+            "pair_signal_n": 0.00500931883599226,
+            "plateau_relative_deviation": 0.9894888302863065,
+            "plus_response_n": 0.3315227064968294,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -2.51789241524486,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": -0.004058192169595354,
+            "even_to_odd_ratio": 0.805870843612018,
+            "minus_response_n": 0.336506526248122,
+            "pair_signal_n": 0.00503578483048972,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.3314707414176323,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -1.034650680746596,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": -0.0046126620029860455,
+            "even_to_odd_ratio": 0.8916365859166272,
+            "minus_response_n": 0.3362980256180483,
+            "pair_signal_n": 0.00517325340373298,
+            "plateau_relative_deviation": 0.589080663461954,
+            "plus_response_n": 0.3311247722143153,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -0.5032831584714237,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.006175730182685912,
+            "even_to_odd_ratio": 1.2270885839778343,
+            "minus_response_n": 0.335446280618689,
+            "pair_signal_n": 0.005032831584714237,
+            "plus_response_n": 0.33041344903397474,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": -0.26581953709516604,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.013100229231899907,
+            "even_to_odd_ratio": 2.464120842105352,
+            "minus_response_n": 0.3321258106726765,
+            "pair_signal_n": 0.005316390741903321,
+            "plus_response_n": 0.32680941993077317,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 0.9894888302863065,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          0.9894888302863065,
+          0.0,
+          0.589080663461954
+        ],
+        "plateau_signs": [
+          -1,
+          -1,
+          -1
+        ],
+        "reference_derivative_n_per_m": -2.51789241524486,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      }
+    },
+    "D1_filtered_seed11": {
+      "downforce": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": 2.095685255472435,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": -0.004694781804511772,
+            "even_to_odd_ratio": 2.2402132153444088,
+            "minus_response_n": 0.349978006691581,
+            "pair_signal_n": 0.0020956852554724348,
+            "plateau_relative_deviation": 0.9481175367641002,
+            "plus_response_n": 0.35207369194705346,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 1.0757488785576308,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": -0.0046644464710270395,
+            "even_to_odd_ratio": 2.1679996902628202,
+            "minus_response_n": 0.34996526810750195,
+            "pair_signal_n": 0.0021514977571152616,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.3521167658646172,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.4654595330855438,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": -0.004601230857023464,
+            "even_to_odd_ratio": 1.9770701983572152,
+            "minus_response_n": 0.34990897596034753,
+            "pair_signal_n": 0.002327297665427719,
+            "plateau_relative_deviation": 0.5673158091415962,
+            "plus_response_n": 0.35223627362577525,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.26236687832085215,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.004740485852842591,
+            "even_to_odd_ratio": 1.8068156633115038,
+            "minus_response_n": 0.34969116290354757,
+            "pair_signal_n": 0.0026236687832085215,
+            "plus_response_n": 0.3523148316867561,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.15967146080128058,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.00553365394118166,
+            "even_to_odd_ratio": 1.7328249874498798,
+            "minus_response_n": 0.3490096986429695,
+            "pair_signal_n": 0.0031934292160256117,
+            "plus_response_n": 0.3522031278589951,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 0.9481175367641002,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          0.9481175367641002,
+          0.0,
+          0.5673158091415962
+        ],
+        "plateau_signs": [
+          1,
+          1,
+          1
+        ],
+        "reference_derivative_n_per_m": 1.0757488785576308,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      },
+      "drag": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": 4.265877660801887,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": -0.0008069016993823563,
+            "even_to_odd_ratio": 0.18915256449962922,
+            "minus_response_n": 0.3334813402375827,
+            "pair_signal_n": 0.004265877660801887,
+            "plateau_relative_deviation": 1.1010873998210162,
+            "plus_response_n": 0.3377472178983846,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 2.03031899632794,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": -0.000786415761639514,
+            "even_to_odd_ratio": 0.1936680302607214,
+            "minus_response_n": 0.3335942030405271,
+            "pair_signal_n": 0.00406063799265588,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.337654841033183,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.6883817624981359,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": -0.0007743269572394462,
+            "even_to_odd_ratio": 0.22497021258361508,
+            "minus_response_n": 0.3339096120328097,
+            "pair_signal_n": 0.0034419088124906794,
+            "plateau_relative_deviation": 0.6609489623339231,
+            "plus_response_n": 0.3373515208453004,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.24576350338748054,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.0009149055390759164,
+            "even_to_odd_ratio": 0.3722707100384388,
+            "minus_response_n": 0.3343314596311995,
+            "pair_signal_n": 0.0024576350338748054,
+            "plus_response_n": 0.3367890946650743,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.019789690190921694,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.0014548694111108373,
+            "even_to_odd_ratio": 3.675826647802306,
+            "minus_response_n": 0.3350923983102102,
+            "pair_signal_n": 0.0003957938038184339,
+            "plus_response_n": 0.33548819211402864,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 1.1010873998210162,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          1.1010873998210162,
+          0.0,
+          0.6609489623339231
+        ],
+        "plateau_signs": [
+          1,
+          1,
+          1
+        ],
+        "reference_derivative_n_per_m": 2.03031899632794,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      }
+    },
+    "D2_filtered_seed2026": {
+      "downforce": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": 2.8813987631301496,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": -0.004251138798768039,
+            "even_to_odd_ratio": 1.4753732989563375,
+            "minus_response_n": 0.34980697144062406,
+            "pair_signal_n": 0.0028813987631301496,
+            "plateau_relative_deviation": 0.8387658074593988,
+            "plus_response_n": 0.3526883702037542,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 1.5670286838275205,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": -0.004234044221881006,
+            "even_to_odd_ratio": 1.3509785320391232,
+            "minus_response_n": 0.3496891894268051,
+            "pair_signal_n": 0.003134057367655041,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.35282324679446014,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.7841018447731773,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": -0.004247257466223453,
+            "even_to_odd_ratio": 1.083343316824382,
+            "minus_response_n": 0.34928935687652846,
+            "pair_signal_n": 0.003920509223865887,
+            "plateau_relative_deviation": 0.49962508480828693,
+            "plus_response_n": 0.35320986610039434,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.516679888883681,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.004559755353735762,
+            "even_to_odd_ratio": 0.8825107095976575,
+            "minus_response_n": 0.3485099631002868,
+            "pair_signal_n": 0.00516679888883681,
+            "plus_response_n": 0.3536767619891236,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.38532789212627205,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.006016359290028417,
+            "even_to_odd_ratio": 0.7806804818656696,
+            "minus_response_n": 0.34651178165529617,
+            "pair_signal_n": 0.007706557842525441,
+            "plus_response_n": 0.3542183394978216,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 0.8387658074593988,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          0.8387658074593988,
+          0.0,
+          0.49962508480828693
+        ],
+        "plateau_signs": [
+          1,
+          1,
+          1
+        ],
+        "reference_derivative_n_per_m": 1.5670286838275205,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      },
+      "drag": {
+        "all_epsilon_results": [
+          {
+            "centered_derivative_n_per_m": 0.8109387582886929,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0005,
+            "even_nonlinearity_n": -0.0007607687391070206,
+            "even_to_odd_ratio": 0.9381334056747453,
+            "minus_response_n": 0.335231876168977,
+            "pair_signal_n": 0.0008109387582886929,
+            "plateau_relative_deviation": 0.6762843744818412,
+            "plus_response_n": 0.3360428149272657,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.4837715906881035,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.001,
+            "even_nonlinearity_n": -0.0007212372171799819,
+            "even_to_odd_ratio": 0.7454315539220832,
+            "minus_response_n": 0.33517333971839675,
+            "pair_signal_n": 0.000967543181376207,
+            "plateau_relative_deviation": 0.0,
+            "plus_response_n": 0.33614088289977295,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.2895848032454018,
+            "directional_noise_equivalent_n_per_m": 2e-05,
+            "epsilon_m": 0.0025,
+            "even_nonlinearity_n": -0.0006370769287079581,
+            "even_to_odd_ratio": 0.439993343275049,
+            "minus_response_n": 0.3349752294452073,
+            "pair_signal_n": 0.001447924016227009,
+            "plateau_relative_deviation": 0.4014018003134407,
+            "plus_response_n": 0.3364231534614343,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.22234842294321933,
+            "epsilon_m": 0.005,
+            "even_nonlinearity_n": -0.0006772562002892446,
+            "even_to_odd_ratio": 0.30459231116840174,
+            "minus_response_n": 0.3345673597028141,
+            "pair_signal_n": 0.0022234842294321933,
+            "plus_response_n": 0.3367908439322463,
+            "resolved": true
+          },
+          {
+            "centered_derivative_n_per_m": 0.1848202188628134,
+            "epsilon_m": 0.01,
+            "even_nonlinearity_n": -0.0013006213907672537,
+            "even_to_odd_ratio": 0.35186123000229386,
+            "minus_response_n": 0.33351921703366305,
+            "pair_signal_n": 0.0036964043772562682,
+            "plus_response_n": 0.3372156214109193,
+            "resolved": true
+          }
+        ],
+        "directional_noise_equivalent_n_per_m": 2e-05,
+        "plateau_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025
+        ],
+        "plateau_max_relative_deviation": 0.6762843744818412,
+        "plateau_pass": false,
+        "plateau_relative_deviations": [
+          0.6762843744818412,
+          0.0,
+          0.4014018003134407
+        ],
+        "plateau_signs": [
+          1,
+          1,
+          1
+        ],
+        "reference_derivative_n_per_m": 0.4837715906881035,
+        "resolved_count": 5,
+        "resolved_epsilon_m": [
+          0.0005,
+          0.001,
+          0.0025,
+          0.005,
+          0.01
+        ],
+        "sign_stable": true
+      }
+    }
+  },
+  "evidence_class": "diagnostic_only",
+  "execution": {
+    "aggregate_solver_wall_seconds": 970.7994556427002,
+    "all_33_primals_reached_t_u_l_120": true,
+    "error_marker_present": true,
+    "fd_job_done_marker_present": true,
+    "outer_done_marker_present": false,
+    "output_files_in_manifest": 87,
+    "output_files_sha_failures": [],
+    "output_files_sha_verified": 87,
+    "output_hash_manifest_sha256": "b4e009e516cff83ca362ca9585990df65336ed8e6a8264a3efdb0eca0c1c58d0",
+    "registered_aggregate_solver_wall_limit_seconds": 7200.0,
+    "run_order_count": 33,
+    "solver_step_invoked_returned_started_finished": {
+      "run_finished": {
+        "count": 0,
+        "ordered_exact_match": false
+      },
+      "run_started": {
+        "count": 0,
+        "ordered_exact_match": false
+      },
+      "solver_step_invoked": {
+        "count": 33,
+        "ordered_exact_match": true
+      },
+      "solver_step_returned": {
+        "count": 33,
+        "ordered_exact_match": true
+      }
+    }
+  },
+  "failure_analysis": {
+    "T10_T11_directional_plateau_failure": {
+      "observed": "All five registered epsilon pairs are above the registered 20x baseline-noise resolution threshold, and each direction/response has stable sign over the selected first three resolved epsilons. Every direction/response fails the registered 5% plateau-deviation limit.",
+      "required_max_relative_deviation": 0.05,
+      "values_are_in_directional_fd_recomputed_from_raw_csv": true
+    },
+    "T6_T7_runner_summary_schema_mismatch": {
+      "effect": "runner.py close_summary compares every recomputed field using summary.get(key, NaN), so the six absent fields make the shared comparison false. T6 includes that comparison in all_integrity; T7 repeats the same comparison. Raw sampled force closure, finite CSVs, exact-window force metrics and runtime stationarity passed the supplemental checks.",
+      "evidence_scope": "Observed output/schema plus static source inspection; no source or criteria was edited in round 5.",
+      "missing_fields": [
+        "window_time_weighted_pressure_fx_solver",
+        "window_time_weighted_pressure_fy_solver",
+        "window_time_weighted_pressure_fz_solver",
+        "window_time_weighted_viscous_fx_solver",
+        "window_time_weighted_viscous_fy_solver",
+        "window_time_weighted_viscous_fz_solver"
+      ],
+      "observed": "All 33 summary JSONs omit the same six time-window-integrated pressure/viscous force fields, while outcome.json host_recomputed_metrics contains them. The 660 metrics independently recomputed from CSV match outcome.json; the 14 fields common to each summary match too. All 33 runner_summary_contract checks, sampled force closures, finite-field flags, window-sample counts, and CSV hashes passed; close_summary failed for all 33."
+    },
+    "host_verifier_followup_static_findings": [
+      {
+        "description": "If the strict verifier reached raw summary verification, its helper currently compares all recomputed component-window metrics against each per-run summary despite the six fields being absent. Separately, evaluate calls runner_metrics_match before a later assignment makes that name local, which would raise UnboundLocalError if execution reaches evaluate.",
+        "execution_status": "Neither path was reached in round 5: strict verification stopped at the missing DONE marker. These are follow-up static findings, not the cause of the recorded strict-verifier error.",
+        "locations": [
+          "scripts/verify_kaggle_sdf_directional_fd_v16.py: verify_run_summaries compares all recomputed metrics to summary JSON",
+          "scripts/verify_kaggle_sdf_directional_fd_v16.py: evaluate calls runner_metrics_match before assigning a local with the same name"
+        ],
+        "path": "scripts/verify_kaggle_sdf_directional_fd_v16.py"
+      }
+    ],
+    "next_round_boundary": "Preserve rounds 1-5 and this FAIL evidence. Any source/schema/verifier repair and retry requires a new immutable round; keep all registered scientific thresholds unchanged unless separately preregistered."
+  },
+  "kind": "sdf_directional_fd_v16_round5_kernel4_postmortem",
+  "qualification_flags": {
+    "absolute_downforce_qualified": false,
+    "gradient_qualified": false,
+    "grid_or_domain_convergence_qualified": false,
+    "optimizer_qualified": false,
+    "physical_profile_equivalence_qualified": false,
+    "reverse_mode_qualified": false,
+    "sdf_directional_fd_flow16_qualified": false,
+    "sdf_directional_fd_oracle_qualified": false,
+    "sdf_gradient_field_qualified": false,
+    "shape_update_allowed": false,
+    "topology_qualified": false
+  },
+  "qualification_statement": "No host PASS or directional-FD qualification is granted. The strict host verifier remains FAIL because the exact kernel output has no DONE marker. This supplementary record recomputes raw CSV metrics to localize failed gates; it does not override the registered outcome or criteria.",
+  "raw_csv_host_recomputation": {
+    "all_660_raw_recomputed_metrics_match_runner_outcome": true,
+    "all_common_summary_metrics_match_raw_recomputation": true,
+    "all_csv_finite_monotonic_and_registered_stride_pass": true,
+    "all_physics_identity_checks_pass": true,
+    "all_sampled_force_component_closure_pass": true,
+    "exact_window_sample_count_min_max": [
+      200,
+      201
+    ],
+    "host_verifier_script_sha256": "53259a31920ba5d17442e5f0ba0cab60a37945ba0dfdc08c69b88cddece3471b",
+    "max_stationarity_relative_half_window_drift": {
+      "downforce": 1.915339859572526e-05,
+      "drag": 3.254955245707509e-05
+    },
+    "maximum_absolute_component_closure_deltas": {
+      "downforce_vs_minus_fz": 0.0,
+      "drag_vs_fx": 0.0,
+      "pressure_viscous_fx": 1.4210854715202004e-14,
+      "pressure_viscous_fy": 2.220446049250313e-16,
+      "pressure_viscous_fz": 1.4210854715202004e-14
+    },
+    "method": "scripts/verify_kaggle_sdf_directional_fd_v16.py parse_force_csv, validate_sample_stride, recompute_run_metrics, force_components_close, host_physics_identity, host_baseline_noise and host_classify_pairs helpers; exact criteria round 5",
+    "per_run": {
+      "D0_interface_offset__eps_0p0005m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "3e74dd57d4b60a09066ddf5af4c71abd06831c2ec9adc3ebde8c49d16bba21c1",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "e2c9733ace71ce61834fe085c780767cefd606e656092d2a3f1456270405efd0",
+        "t_end_reached": 120.00343322753906,
+        "wall_seconds": 28.557058095932007
+      },
+      "D0_interface_offset__eps_0p0005m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "d5a7e727a399b26ba233c6228576969b2d7d128a1fb9cdda9c36df80ff230ea4",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "15c888664434ac6d6b4be94573c3cdedef1a28c7be8c506b72544001100e985a",
+        "t_end_reached": 120.02204132080078,
+        "wall_seconds": 28.511229038238525
+      },
+      "D0_interface_offset__eps_0p0010m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "b1644d8f8398c70a10d6a568b5a7643d341f2884cbcaac8afc54069bcfe0b69b",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "b26873306c2572cf58bd5d075e324c96d75b765a854672aa19944ba0f3d83e28",
+        "t_end_reached": 120.023681640625,
+        "wall_seconds": 28.943604946136475
+      },
+      "D0_interface_offset__eps_0p0010m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "435d60df0c746b88a63ec0c3a20041be78f6414a4ada6a7cfeab269fa61a7e17",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "245f210b5168a326b6a65ad092b7f90549e7e1e05172247eedfca968e17198e2",
+        "t_end_reached": 120.00100708007812,
+        "wall_seconds": 29.158541917800903
+      },
+      "D0_interface_offset__eps_0p0025m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "2ec8d003c741f0bd07c9d06ebea6b25868708ebe88d6ebdffdf02c1da7627404",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "87e39ee7ee167a233d548aeb970b4aeef3b64cb085571f54a990b6354bd69445",
+        "t_end_reached": 120.01800537109375,
+        "wall_seconds": 29.190186023712158
+      },
+      "D0_interface_offset__eps_0p0025m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 5.551115123125783e-17,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "e7878f5024e0f5aab64d86787c62b9f528e42475695c236fe35776f69b480015",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "2e2602bb9c8210b60aaa7eec1b6e98f60c9c7ab72ec9e45255662c4a249c2b1e",
+        "t_end_reached": 120.01695251464844,
+        "wall_seconds": 29.008538961410522
+      },
+      "D0_interface_offset__eps_0p0050m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "b9a0e89e2c1b903accf28cd9e01add74995706e238d8bb7e6a636cadb8ce7148",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "cbb67c3bcdfac972d904dc9c8dfe7754f8c0e63b7370e4da4c2a1d33da3573d4",
+        "t_end_reached": 120.01469421386719,
+        "wall_seconds": 29.060901880264282
+      },
+      "D0_interface_offset__eps_0p0050m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 2.220446049250313e-16,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "cd3e4c17efffcac91fed9de77872870d9d977ea62552a7d1da991805b10b9f5f",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "d8b1070e0b11c847dd6da6473558cf65519c099faf25f59939f6070ceb8459de",
+        "t_end_reached": 120.00980377197266,
+        "wall_seconds": 29.001790046691895
+      },
+      "D0_interface_offset__eps_0p0100m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "95abd4f93b67968e3d0d2b3d5e486f72f7e8e370d1fe5bc12093a931c6079ffa",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "f1326e4a33237c44cd7b8bbf02864d100791c4852697c6c5e01fa2e45c67807d",
+        "t_end_reached": 120.022705078125,
+        "wall_seconds": 29.11573600769043
+      },
+      "D0_interface_offset__eps_0p0100m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "982fdcd77d77cd1022991400743a320a20339f7f876e8ae50ebd2dde0dc66233",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "0b73b1503d9400b408976e8b04bdabd1d46990abca4cd365af996160f53138f5",
+        "t_end_reached": 120.0046157836914,
+        "wall_seconds": 29.141743898391724
+      },
+      "D1_filtered_seed11__eps_0p0005m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "b152429569c097387b0d01100d9e9bcb27dca708a266bb1ad4a795095c1778ba",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "65285a594ddbb74b5fa4021d8b750bdacf09f36fd5c00028e66c2805c552e7ec",
+        "t_end_reached": 120.00773620605469,
+        "wall_seconds": 29.39260506629944
+      },
+      "D1_filtered_seed11__eps_0p0005m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 5.551115123125783e-17,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "80c4bbba9f901318094fbe4237a8b1988c0ab2342af41ace40ad54634cf04dae",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "686fac679cd21f4b93c6da9070d647d17f5a5d8769579cda3f46e55e121f73dd",
+        "t_end_reached": 120.0045166015625,
+        "wall_seconds": 29.353332996368408
+      },
+      "D1_filtered_seed11__eps_0p0010m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "e720833152b5ccd91be84ee9aa7c11b61a927dfa203e350d3e16ab6fc4f55404",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "75bcf3861c40eb7ed7c330bcd5e9123d8787fb807f5a9c8f54c86a75d6e10e3e",
+        "t_end_reached": 120.01493072509766,
+        "wall_seconds": 29.345857858657837
+      },
+      "D1_filtered_seed11__eps_0p0010m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "b7d0c09c35b70fefa5454516b4d4f35b793d500d1393b8da30a03318f8ff6227",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "12bd9f386ac08384a4b9d06c1dc893e707c6499e975b72f339240bcb5f086d4e",
+        "t_end_reached": 120.02142333984375,
+        "wall_seconds": 29.592012882232666
+      },
+      "D1_filtered_seed11__eps_0p0025m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "a57fbd5c1588e6cb7aac774d4bfc5be789886b73a6b2865a506f8f7c1be677e3",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "f3747925e528feef6ea4f35996d40bc6fa13cdf504395f19a470627fad626dd8",
+        "t_end_reached": 120.01078033447266,
+        "wall_seconds": 29.31359601020813
+      },
+      "D1_filtered_seed11__eps_0p0025m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "bae840bac154aa4a67a4f45ae133a8adca846996e585025751bd103e45a451d6",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "449e7e7e5ae05c41d1a43449408775665b502e9e17b397ad4deb14f74c54dc9f",
+        "t_end_reached": 120.02189636230469,
+        "wall_seconds": 29.4883770942688
+      },
+      "D1_filtered_seed11__eps_0p0050m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "340a2fcae66c505baaed935feac1e4b63b5766edcc84526bc6553fea82a6bbc2",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "1082fae1c38235250f5c5a4ae78a2c13fa5d822685cecb4d64429cf71796773c",
+        "t_end_reached": 120.02386474609375,
+        "wall_seconds": 29.664785146713257
+      },
+      "D1_filtered_seed11__eps_0p0050m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "81643d684cdf7b018a834b234d051fa6821de61d9d973071c9a97350a702f9f6",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "a2e7e82f4727c147a6d4fb6460f63a46706cefa08c38abf13bdac9a8f70a43c3",
+        "t_end_reached": 120.00041198730469,
+        "wall_seconds": 29.527620792388916
+      },
+      "D1_filtered_seed11__eps_0p0100m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "8fe832f866cb07f879b83d28e2f4087e9f6452034395f3545166e797ac2b6899",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "1963ae3edbaf111feb1fe6e3e348064dcab1da5b2d0d2f6576da3c47971c9bcd",
+        "t_end_reached": 120.00300598144531,
+        "wall_seconds": 29.391796827316284
+      },
+      "D1_filtered_seed11__eps_0p0100m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "14efa4ea288800a569a5907b7d821f86240fe4d492d21668f35bf74d652aaf74",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "1b7ebbdbae87aac68af1d389bcd8e2f6b701e4ad108cb23fe7db384b208a8aa1",
+        "t_end_reached": 120.02042388916016,
+        "wall_seconds": 29.22651505470276
+      },
+      "D2_filtered_seed2026__eps_0p0005m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "9f34fb349729766f88cc02d47c0c22336be13779ea0a622aa8305e319d4c9d80",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "d95dc284d52cf7909935f8b5aef9be776c0b43bb80339b1e2a4b8234f636340b",
+        "t_end_reached": 120.00187683105469,
+        "wall_seconds": 29.166587114334106
+      },
+      "D2_filtered_seed2026__eps_0p0005m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "c650d14b868be9ce2bb54f5d5afc0ebf0ccb6b948f558154a12fbc2806f857c7",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "4885c1ef1c392b0dff4bf78bc145234029d5bd8a062a81125f9b02325967dc0b",
+        "t_end_reached": 120.02006530761719,
+        "wall_seconds": 29.61201786994934
+      },
+      "D2_filtered_seed2026__eps_0p0010m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "0948b14fd10c399d8bba325be86ce3f580afb4676fd9de2e40b51f0906562fe7",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "695b36f3d2ee6f0ae959739812bff3fe0db818164104a80d99d22266263dbb96",
+        "t_end_reached": 120.01844787597656,
+        "wall_seconds": 29.149383068084717
+      },
+      "D2_filtered_seed2026__eps_0p0010m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "160226a7d630e30622ca3c3c7ecbff66a950b674eef2868139aa6bd77314fe2f",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "3dcd807828afccd1570150e7acc8e482e6a5c1af48963fa577650e5bcfcf5f43",
+        "t_end_reached": 120.01856231689453,
+        "wall_seconds": 29.312586069107056
+      },
+      "D2_filtered_seed2026__eps_0p0025m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 5.551115123125783e-17,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "31164e16053ca2f88987e6f80a2ded48492730294912af8ae8fbae1aa881b471",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "557c18c6ff3e9811ce8486638b7e53ebc5b4194c8f83f4f53e5d64e97934bd1d",
+        "t_end_reached": 120.0110092163086,
+        "wall_seconds": 29.25468111038208
+      },
+      "D2_filtered_seed2026__eps_0p0025m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "5e59e527e69ab8e2b3a579a403568e150ef84a1176d98a29f1fa903acbf42203",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "3972f1cc34c97f57a41910ea542650eeb345d0635975927165cc449ac8fd51ee",
+        "t_end_reached": 120.01322174072266,
+        "wall_seconds": 28.741415977478027
+      },
+      "D2_filtered_seed2026__eps_0p0050m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "9d38d2c26659845a67256fb46ddf5ff3c4fb5705a64739924a48306cce846f5a",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "f7c54077870ae4234492e194cc3bd1868f5d8325d4b7bebde6f7a90300fadc2b",
+        "t_end_reached": 120.01872253417969,
+        "wall_seconds": 28.75940203666687
+      },
+      "D2_filtered_seed2026__eps_0p0050m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "878416e16461a284efdbb38c5768548fde64fa4d24721f37ec0055b6ce7043d1",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "6c4b3bf14420f66ec30246288a0f91f12e1644c2f1100a73d9a2941f9f2f07dc",
+        "t_end_reached": 120.02446746826172,
+        "wall_seconds": 29.017919063568115
+      },
+      "D2_filtered_seed2026__eps_0p0100m__minus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "57c401ae1c280cc399b6d01eb98217e13e63682fd8230354b8cb2ebab3ba2a5a",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "1d0207601a2fe3685390b84cb23a45d38a0bc3ce5176ec2d3339d87450a27f95",
+        "t_end_reached": 120.0015640258789,
+        "wall_seconds": 30.355854988098145
+      },
+      "D2_filtered_seed2026__eps_0p0100m__plus": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "fa9054dd38d49301ad1fd4c01c69f2c71c59415749c8e39dd171fcb95d6dde86",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 201,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "c9bff5b57834d14d05cdebb8a8709cbe9e70a25b8bc49155ce02eec226384443",
+        "t_end_reached": 120.01190185546875,
+        "wall_seconds": 28.98609185218811
+      },
+      "baseline_A": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "4f48706c16161d3b9310a0fc1b8218d68502fa7b2eaf353dfa58f14629bbee0c",
+        "t_end_reached": 120.00193786621094,
+        "wall_seconds": 35.272794008255005
+      },
+      "baseline_B": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "3d3751039666211865ffb3a3c3a52ce45a2ca614f94a2b582c34e62bb1c0cba5",
+        "t_end_reached": 120.00193786621094,
+        "wall_seconds": 29.44606304168701
+      },
+      "baseline_C": {
+        "component_closure_max_abs_delta": {
+          "downforce_vs_minus_fz": 0.0,
+          "drag_vs_fx": 0.0,
+          "pressure_viscous_fx": 1.4210854715202004e-14,
+          "pressure_viscous_fy": 0.0,
+          "pressure_viscous_fz": 1.4210854715202004e-14
+        },
+        "component_closure_passed": true,
+        "csv_samples_finite_and_monotonic": true,
+        "force_csv_sha256": "3e53ad09fd3d88bf1d8c71feb5f5de9dad05efcc5dce3dcbd54d19f89f5ff5bb",
+        "force_csv_sha_matches_output_manifest": true,
+        "physics_identity_passed": true,
+        "runner_outcome_metrics_match_raw_host_recompute": true,
+        "sample_count_exact_window": 200,
+        "sample_stride_rule_passed": true,
+        "summary_common_metrics_match_raw_host_recompute": true,
+        "summary_missing_recomputed_metric_keys": [
+          "window_time_weighted_pressure_fx_solver",
+          "window_time_weighted_pressure_fy_solver",
+          "window_time_weighted_pressure_fz_solver",
+          "window_time_weighted_viscous_fx_solver",
+          "window_time_weighted_viscous_fy_solver",
+          "window_time_weighted_viscous_fz_solver"
+        ],
+        "summary_sha256": "12fc321096170ff64fc55280b5712f86d110af2c4f54dd22614dca2bcc2a7b82",
+        "t_end_reached": 120.00193786621094,
+        "wall_seconds": 29.738828897476196
+      }
+    },
+    "per_run_summary_fields_missing_from_recomputed_metric_set": [
+      "window_time_weighted_pressure_fx_solver",
+      "window_time_weighted_pressure_fy_solver",
+      "window_time_weighted_pressure_fz_solver",
+      "window_time_weighted_viscous_fx_solver",
+      "window_time_weighted_viscous_fy_solver",
+      "window_time_weighted_viscous_fz_solver"
+    ],
+    "raw_recomputed_metric_comparisons": 660,
+    "run_count": 33,
+    "stationarity_relative_half_window_drift_limit": 0.02
+  },
+  "registration": {
+    "criteria_canonical_sha256": "afb87dc75538c1970cc332711ae638f33fe417df68e018e61f70824e77b7a4ac",
+    "criteria_file_sha256": "2aad32922b2746d9ee7b170b590673779e60f032b238c29d1bc7ca6b2779ee17",
+    "criteria_path": "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json",
+    "dataset_id": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+    "dataset_manifest_sha256": null,
+    "dataset_remote_verification_path": "docs/evidence/sdf_directional_fd_v16_dataset_round5_verification_2026_09.json",
+    "dataset_remote_verification_sha256": "fe6159799cd23a4b44d83b5b89b616159a9f128cb34c0a373b0d0f4e981af55e",
+    "dataset_version": 5,
+    "kernel_id": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel",
+    "kernel_version": 4,
+    "source_commit": "a07bba2fd1dcf0d3d28b211eef58d91309a24a75",
+    "source_kernel_runner_sha256": "77c889e07c6b1cd6ea338430698b60cc67333ead488cace1fdb614b5b6916308",
+    "status_sha256": "cb0fbcad9151623d965a0782f979f0061c5e234ab8de4db44830eb8dbd16c04b",
+    "strict_kernel_diagnostic_path": "docs/evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json",
+    "strict_kernel_diagnostic_sha256": "0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8",
+    "terminal_log_sha256": "e1f72f4a664138354d1f51338d2fd5afe6040365a96889f03ad3cdbc3a791e3d",
+    "terminal_status": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel/4 has status \"KernelWorkerStatus.ERROR\""
+  },
+  "runner_integrity_subcheck_audit": {
+    "close_summary_fail": 33,
+    "close_summary_pass": 0,
+    "finite_field_pass": 33,
+    "force_closure_pass": 33,
+    "raw_sha_pass": 33,
+    "run_summary_contract_fail": 0,
+    "run_summary_contract_pass": 33,
+    "window_sample_pass": 33
+  },
+  "runner_registered_gates": {
+    "T0_exact_W3_W4_prerequisites_and_FD_entry_gate": true,
+    "T10_drag_directional_resolution_sign_and_plateau": false,
+    "T11_downforce_directional_resolution_sign_and_plateau": false,
+    "T12_source_dataset_kernel_runtime_VRAM_and_artifact_integrity": true,
+    "T1_canonical_state_phi_masks_and_margin_identity": true,
+    "T2_direction_generation_identity_and_nonduplication": true,
+    "T3_all_30_perturbation_identities_and_preflight": true,
+    "T4_exact_backend_and_runtime_identity": true,
+    "T5_all_33_fresh_primal_runs_complete_to_tU_L_120": true,
+    "T6_finite_fields_forces_component_closure_and_projection": false,
+    "T7_host_recomputed_exact_window_responses_match_runner": false,
+    "T8_all_run_stationarity": true,
+    "T9_three_baseline_noise_measurement": true
+  },
+  "schema_version": 1,
+  "strict_host_verification": {
+    "error": "ValueError: FD Kaggle output has no DONE marker",
+    "host_verification_report": null,
+    "passed": false
+  },
+  "w4_flow16_baseline_crosscheck": {
+    "downforce_delta_n": 0.0,
+    "drag_delta_n": 0.0,
+    "drag_sign_consistent": true,
+    "fd_baseline_median_downforce_n": 0.3533732402215731,
+    "fd_baseline_median_drag_n": 0.3360177299176748,
+    "numerical_tolerance_gate_registered": false,
+    "w4_flow16_downforce_n": 0.3533732402215731,
+    "w4_flow16_drag_n": 0.3360177299176748
+  }
+}

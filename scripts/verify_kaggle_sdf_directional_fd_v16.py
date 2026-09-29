@@ -39,6 +39,13 @@ FORCE_COLUMNS = [
     "downforce_solver", "pressure_fx_solver", "pressure_fy_solver",
     "pressure_fz_solver", "viscous_fx_solver", "viscous_fy_solver", "viscous_fz_solver",
 ]
+REQUIRED_WINDOW_COMPONENT_METRICS = tuple(
+    f"window_time_weighted_{component}_solver"
+    for component in (
+        "pressure_fx", "pressure_fy", "pressure_fz",
+        "viscous_fx", "viscous_fy", "viscous_fz",
+    )
+)
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -402,6 +409,9 @@ def force_components_close(rows, criteria):
 
 
 def runner_metrics_match(summary, metrics, tolerance):
+    if any(key not in summary or key not in metrics
+           for key in REQUIRED_WINDOW_COMPONENT_METRICS):
+        return False
     return all(math.isclose(float(summary.get(key, math.nan)), value,
                             rel_tol=tolerance, abs_tol=1e-10) for key, value in metrics.items())
 
@@ -732,7 +742,7 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
     runner_gates = runner_outcome.get("gates", {})
     compared_gate_names = set(gates) - {"T12_source_dataset_kernel_runtime_VRAM_and_artifact_integrity"}
     runner_metrics = runner_outcome.get("host_recomputed_metrics", {})
-    runner_metrics_match = set(runner_metrics) == set(metrics) and all(
+    runner_outcome_metrics_match = set(runner_metrics) == set(metrics) and all(
         set(runner_metrics[run]) == set(metrics[run])
         and all(math.isclose(float(runner_metrics[run][key]), metrics[run][key],
                              rel_tol=measurement["host_recompute_relative_tolerance"], abs_tol=1e-10)
@@ -747,7 +757,7 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
         and runner_outcome.get("criteria_sha256") == criteria["criteria_sha256"]
         and runner_outcome.get("source_commit") == criteria["source_commit"]
         and runner_outcome.get("dataset_manifest_sha256") == input_result["dataset_manifest_sha256"]
-        and runner_metrics_match
+        and runner_outcome_metrics_match
     )
     gates["T12_source_dataset_kernel_runtime_VRAM_and_artifact_integrity"] = (
         gates["T12_source_dataset_kernel_runtime_VRAM_and_artifact_integrity"] and runner_gate_match
