@@ -1,4 +1,4 @@
-# W4 v16 flow-grid and finite-box domain sensitivity matrix.
+# W4 flow-grid and finite-box domain sensitivity matrix.
 # Uses one unchanged canonical design SDF on four registered WaterLily grids.
 
 using CUDA
@@ -25,13 +25,31 @@ using .CFDSDFWaterLily.V16W4Sensitivity
 length(ARGS) == 2 || error("usage: waterlily_w4_v16_sensitivity_job.jl <phi_fortran.raw> <output_dir>")
 phi_raw_path, output_dir = ARGS
 
-const EXPECTED_STATE_SHA256 = "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
-const EXPECTED_PHI_C_ORDER_SHA256 = "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
-const EXPECTED_PHI_FORTRAN_SHA256 = "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
-const EXPECTED_SOURCE_STL_SHA256 = "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
-const REQUIRED_MARGIN_M = 0.15
-const EXPECTED_MARGIN_M = 0.3499999939931499
-const MARGIN_TOL_M = 1e-6
+env_tuple(name, ::Type{T}, fallback) where {T} =
+    haskey(ENV, name) ? Tuple(parse.(T, split(ENV[name], ","))) : fallback
+
+const CANONICAL_STATE_LABEL = get(ENV, "W4_CANONICAL_STATE_LABEL", "v16")
+const EXPECTED_STATE_SHA256 = get(ENV, "W4_STATE_SHA256",
+    "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8")
+const EXPECTED_STATE_NPZ_SHA256 = get(ENV, "W4_STATE_NPZ_SHA256",
+    "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe")
+const EXPECTED_PHI_C_ORDER_SHA256 = get(ENV, "W4_PHI_C_ORDER_SHA256",
+    "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785")
+const EXPECTED_PHI_FORTRAN_SHA256 = get(ENV, "W4_PHI_FORTRAN_SHA256",
+    "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7")
+const EXPECTED_SOURCE_STL_SHA256 = get(ENV, "W4_SOURCE_SURFACE_SHA256",
+    "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11")
+const CANONICAL_POINT_SHAPE = env_tuple("W4_POINT_SHAPE", Int, V16_PROFILE_POINT_SHAPE)
+const CANONICAL_CELL_SHAPE = env_tuple("W4_CELL_SHAPE", Int,
+    ntuple(i -> V16_PROFILE_POINT_SHAPE[i] - 1, 3))
+const CANONICAL_ORIGIN_M = env_tuple("W4_CANONICAL_ORIGIN_M", Float64,
+    V16_CANONICAL_SDF_ORIGIN_M)
+const CANONICAL_DESIGN_SPACING_M = parse(Float64,
+    get(ENV, "W4_CANONICAL_DESIGN_SPACING_M", string(V16_PROFILE_SPACING_M)))
+const REQUIRED_MARGIN_M = parse(Float64, get(ENV, "W4_MARGIN_GATE_M", "0.15"))
+const EXPECTED_MARGIN_M = parse(Float64,
+    get(ENV, "W4_EXPECTED_MARGIN_M", "0.3499999939931499"))
+const MARGIN_TOL_M = parse(Float64, get(ENV, "W4_MARGIN_TOLERANCE_M", "1e-6"))
 const T_END = 120.0
 const BURN_IN = 80.0
 const SAMPLE_EVERY = 8
@@ -83,19 +101,21 @@ end
 function load_canonical_grid(path)
     Base.ENDIAN_BOM == 0x04030201 || error("registered phi requires a little-endian runtime")
     bytes = read(path)
-    length(bytes) == prod(V16_PROFILE_POINT_SHAPE) * sizeof(Float32) ||
-        error("canonical v16 phi byte length mismatch")
+    length(bytes) == prod(CANONICAL_POINT_SHAPE) * sizeof(Float32) ||
+        error("canonical $(CANONICAL_STATE_LABEL) phi byte length mismatch")
     bytes2hex(sha256(bytes)) == EXPECTED_PHI_FORTRAN_SHA256 ||
-        error("canonical v16 Fortran-order phi source hash mismatch")
-    phi = reshape(copy(reinterpret(Float32, bytes)), V16_PROFILE_POINT_SHAPE)
+        error("canonical $(CANONICAL_STATE_LABEL) Fortran-order phi source hash mismatch")
+    phi = reshape(copy(reinterpret(Float32, bytes)), CANONICAL_POINT_SHAPE)
     c_order_sha = bytes2hex(sha256(reinterpret(UInt8, vec(permutedims(phi, (3, 2, 1))))))
-    c_order_sha == EXPECTED_PHI_C_ORDER_SHA256 || error("canonical v16 C-order phi hash mismatch")
-    margin = zero_level_margin_m(phi, V16_CANONICAL_SDF_ORIGIN_M,
-        (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))
+    c_order_sha == EXPECTED_PHI_C_ORDER_SHA256 ||
+        error("canonical $(CANONICAL_STATE_LABEL) C-order phi hash mismatch")
+    margin = zero_level_margin_m(phi, CANONICAL_ORIGIN_M,
+        (CANONICAL_DESIGN_SPACING_M, CANONICAL_DESIGN_SPACING_M, CANONICAL_DESIGN_SPACING_M))
     abs(margin - EXPECTED_MARGIN_M) <= MARGIN_TOL_M ||
-        error("canonical v16 CPU-side SDF margin drift: $margin")
-    grid = GridSDF(phi; origin=V16_CANONICAL_SDF_ORIGIN_M,
-        h=(V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M),
+        error("canonical $(CANONICAL_STATE_LABEL) CPU-side SDF margin drift: $margin")
+    grid = GridSDF(phi; origin=CANONICAL_ORIGIN_M,
+        h=(CANONICAL_DESIGN_SPACING_M, CANONICAL_DESIGN_SPACING_M,
+            CANONICAL_DESIGN_SPACING_M),
         outside_value=3.0, margin_m=REQUIRED_MARGIN_M)
     return grid, margin, bytes2hex(sha256(reinterpret(UInt8, vec(phi)))), c_order_sha
 end
@@ -112,7 +132,8 @@ end
 function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
     sim = owned.sim
     bodies = owned.bodies
-    validate_v16_w4_case(case)
+    validate_w4_case(case; canonical_design_origin_m=CANONICAL_ORIGIN_M,
+        canonical_design_spacing_m=CANONICAL_DESIGN_SPACING_M)
     println("W4_CASE_STARTED ", case.case_id)
     flush(stdout)
     history = Vector{NTuple{13,Float64}}()
@@ -177,6 +198,9 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         canonical_sdf_origin_m=case.canonical_design_origin_m,
         physical_box_max_m=case.physical_box_max_m,
         canonical_design_spacing_m=case.canonical_design_spacing_m,
+        canonical_state_label=CANONICAL_STATE_LABEL,
+        canonical_design_point_shape=CANONICAL_POINT_SHAPE,
+        canonical_design_cell_shape=CANONICAL_CELL_SHAPE,
         solver_length=case.solver_length,
         solver_time_unit_s=case.solver_time_unit_s,
         solver_velocity=case.solver_velocity,
@@ -188,6 +212,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         reference_length_m=case.reference_length_m,
         reference_area_m2=case.reference_area_m2,
         state_sha256=EXPECTED_STATE_SHA256,
+        state_npz_sha256=EXPECTED_STATE_NPZ_SHA256,
         source_surface_sha256=EXPECTED_SOURCE_STL_SHA256,
         phi_c_order_sha256=phi_c_sha,
         phi_fortran_sha256=phi_f_sha,
@@ -206,7 +231,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         x_max_boundary="WaterLily convective exit",
         pressure_boundary="WaterLily projection pressure; no per-patch freestreamPressure input",
         ground_model="moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
-        force_integration_body="canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        force_integration_body="canonical $(CANONICAL_STATE_LABEL) candidate GridSDF only; exclude auxiliary moving-ground half-space",
         force_projection_semantics="drag=+Fx; downforce=-Fz",
         source_profile_equivalent=false,
         physical_profile_qualified=false,
@@ -248,6 +273,14 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         cd_time_weighted=drag_weighted / (0.5 * area_solver * case.solver_velocity^2),
         drag_time_weighted_n=drag_weighted * force_scale_n,
         downforce_time_weighted_n=downforce_weighted * force_scale_n,
+        pressure_drag_time_weighted_n=time_weighted_mean(weighted_window, 8,
+            mean_column(window, 8)) * force_scale_n,
+        viscous_drag_time_weighted_n=time_weighted_mean(weighted_window, 11,
+            mean_column(window, 11)) * force_scale_n,
+        pressure_downforce_time_weighted_n=-time_weighted_mean(weighted_window, 10,
+            mean_column(window, 10)) * force_scale_n,
+        viscous_downforce_time_weighted_n=-time_weighted_mean(weighted_window, 13,
+            mean_column(window, 13)) * force_scale_n,
         peak_vram_bytes=peak_vram,
         vram_total_bytes=vram_total,
     )
@@ -273,12 +306,13 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
         end
         print(io, ",\"force_csv_sha256\":\"", csv_sha, "\"}\n")
     end
-    println("W4_V16_CASE_DONE ", case.case_id, " ", read(summary_path, String))
+    println("W4_$(uppercase(CANONICAL_STATE_LABEL))_CASE_DONE ", case.case_id, " ", read(summary_path, String))
     flush(stdout)
 end
 
 function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
-    validate_v16_w4_case(case)
+    validate_w4_case(case; canonical_design_origin_m=CANONICAL_ORIGIN_M,
+        canonical_design_spacing_m=CANONICAL_DESIGN_SPACING_M)
     candidate_grid = kernel_grid(owner)
     candidate = GridSDFWaterLilyBody(candidate_grid,
         Float32.(case.flow_origin_m), Float32(case.flow_spacing_m))
@@ -297,22 +331,26 @@ function run_case(case, owner, phi_margin, phi_f_sha, phi_c_sha, roundtrip_sha, 
 end
 
 function main()
-    Tuple(case.case_id for case in V16W4_CASES) == EXPECTED_CASE_IDS || error("W4 case inventory drift")
+    cases = w4_cases(CANONICAL_ORIGIN_M, CANONICAL_DESIGN_SPACING_M)
+    Tuple(case.case_id for case in cases) == EXPECTED_CASE_IDS || error("W4 case inventory drift")
+    all(case -> case.canonical_design_origin_m == CANONICAL_ORIGIN_M
+        && case.canonical_design_spacing_m == CANONICAL_DESIGN_SPACING_M, cases) ||
+        error("W4 flow grid and canonical design lattice identities were mixed")
     mkpath(output_dir)
     grid, margin, phi_f_sha, phi_c_sha = load_canonical_grid(phi_raw_path)
     device_owner = device_copy(grid)
     roundtrip_sha = device_roundtrip_sha(device_owner)
-    roundtrip_sha == EXPECTED_PHI_FORTRAN_SHA256 || error("canonical v16 GPU round-trip hash mismatch")
+    roundtrip_sha == EXPECTED_PHI_FORTRAN_SHA256 || error("canonical $(CANONICAL_STATE_LABEL) GPU round-trip hash mismatch")
     vram_total = last(CUDA.memory_info())
     GC.@preserve device_owner begin
-        for case in V16W4_CASES
+        for case in cases
             run_case(case, device_owner, margin, phi_f_sha, phi_c_sha, roundtrip_sha, vram_total)
             GC.gc()
             CUDA.synchronize()
         end
     end
     write(joinpath(output_dir, "W4_JOB_DONE"), "All four registered W4 cases returned; host verification required.\n")
-    println("W4_V16_SENSITIVITY_DONE cases=", length(V16W4_CASES))
+    println("W4_$(uppercase(CANONICAL_STATE_LABEL))_SENSITIVITY_DONE cases=", length(cases))
     flush(stdout)
 end
 
