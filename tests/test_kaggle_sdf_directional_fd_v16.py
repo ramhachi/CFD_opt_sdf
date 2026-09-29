@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import symtable
+import tempfile
 from argparse import Namespace
 from pathlib import Path
 from types import SimpleNamespace
@@ -65,10 +66,10 @@ def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flo
     assert flow16["downforce_time_weighted_n"] == pytest.approx(0.3533732402215731)
 
 
-def test_round3_kernel_identity_keeps_the_unique_slug_and_input_dataset_separate():
+def test_round4_kernel_identity_keeps_the_unique_slug_and_input_dataset_separate():
     draft = json.loads((ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text())
     metadata = json.loads((ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/kernel-metadata.json").read_text())
-    assert draft["criteria_round"] == 3
+    assert draft["criteria_round"] == 4
     assert draft["input_dataset_id"] == registrar.DATASET_ID
     assert metadata["dataset_sources"] == [registrar.DATASET_ID]
     assert metadata["id"] == draft["kernel_id"]
@@ -117,6 +118,74 @@ def test_round3_measurement_contract_equals_round2_and_rejects_threshold_changes
     round3["measurement"]["stationarity_relative_half_window_drift_max"] = 0.03
     with pytest.raises(ValueError, match="changed the registered measurement contract"):
         registrar.assert_same_measurement_contract(round3, round2)
+
+
+def test_round4_retry_binds_exact_round3_pre_primal_queue_failure():
+    binding = registrar.load_round3_pre_primal_retry_binding()
+    assert binding["criteria_file_sha256"] == registrar.ROUND3_CRITERIA_FILE_SHA256
+    assert binding["criteria_canonical_sha256"] == registrar.ROUND3_CRITERIA_CANONICAL_SHA256
+    assert binding["kernel2_diagnostic_sha256"] == registrar.ROUND3_KERNEL2_DIAGNOSTIC_SHA256
+    assert binding["failure_analysis_sha256"] == registrar.ROUND3_FAILURE_ANALYSIS_SHA256
+    assert binding["kernel_id"] == registrar.RETRY_KERNEL_ID
+    assert binding["kernel_version"] == 2
+    assert binding["dataset_version"] == 3
+    assert binding["solver_started"] is False
+    assert binding["solver_step_invoked"] == []
+    assert binding["solver_step_returned"] == []
+    assert binding["copy_source"] == binding["copy_destination"]
+    assert "before any primal step" in binding["reason"]
+
+
+def test_round4_measurement_contract_equals_round3_and_rejects_any_gate_change():
+    round3 = json.loads((ROOT / registrar.ROUND3_CRITERIA).read_text())
+    round4 = json.loads(json.dumps(round3))
+    round4.update({
+        "criteria_round": 4,
+        "source_commit": "b" * 40,
+        "registered_source_commit": "b" * 40,
+        "source_tree_commit": "b" * 40,
+    })
+    registrar.assert_same_measurement_contract(round4, round3)
+    round4["noise_and_plateau"]["resolution_factor"] = 21.0
+    with pytest.raises(ValueError, match="changed the registered measurement contract"):
+        registrar.assert_same_measurement_contract(round4, round3)
+
+
+def test_run_queue_input_is_outside_the_julia_output_snapshot_path():
+    with tempfile.TemporaryDirectory(prefix="fd_queue_base_") as base_text, \
+            tempfile.TemporaryDirectory(prefix="fd_queue_output_") as output_text, \
+            tempfile.TemporaryDirectory(prefix="fd_queue_dataset_") as dataset_text:
+        base = Path(base_text)
+        output = Path(output_text)
+        dataset = Path(dataset_text)
+        (dataset / "canonical.raw").write_bytes(b"canonical")
+        (dataset / "perturbed.raw").write_bytes(b"perturbed")
+        criteria = {
+            "run_order": ["baseline_A", "D0_eps_0p0010m__plus"],
+            "inputs": {"canonical_phi_fortran_raw": {
+                "path": "canonical.raw", "sha256": "a" * 64,
+            }},
+            "geometry": {"canonical_state_sha256": "b" * 64},
+            "perturbation_inventory": [{
+                "case_id": "D0_eps_0p0010m__plus",
+                "dataset_path": "perturbed.raw",
+                "phi_file_sha256": "c" * 64,
+                "state_sha256": "d" * 64,
+                "direction_id": "D0",
+                "epsilon_m": 0.001,
+                "sign": 1,
+            }],
+        }
+
+        queue_path = runner.write_run_queue(base, dataset, criteria)
+        julia_output_snapshot = output / "run_queue.tsv"
+
+        assert queue_path == base / "run_queue.tsv"
+        assert queue_path != julia_output_snapshot
+        assert queue_path.read_text().splitlines() == [
+            f"baseline_A\t{dataset / 'canonical.raw'}\t{'a' * 64}\t{'b' * 64}\t\t0\t0",
+            f"D0_eps_0p0010m__plus\t{dataset / 'perturbed.raw'}\t{'c' * 64}\t{'d' * 64}\tD0\t0.001\t1",
+        ]
 
 
 def test_runner_state_identity_payload_constructs_all_canonical_hashes_and_masks():

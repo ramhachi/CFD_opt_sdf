@@ -341,6 +341,26 @@ def install_julia(base: Path, expected_sha: str) -> Path:
     return julia
 
 
+def write_run_queue(base: Path, dataset_dir: Path, criteria: dict) -> Path:
+    """Write the registered queue outside OUT so Julia can snapshot it safely."""
+    queue_path = Path(base) / "run_queue.tsv"
+    with queue_path.open("w") as handle:
+        for run_id in criteria["run_order"]:
+            if run_id.startswith("baseline_"):
+                input_item = criteria["inputs"]["canonical_phi_fortran_raw"]
+                state_hash = criteria["geometry"]["canonical_state_sha256"]
+                direction_id, eps, sign = "", 0, 0
+            else:
+                item = next(row for row in criteria["perturbation_inventory"]
+                            if row["case_id"] == run_id)
+                input_item = {"path": item["dataset_path"], "sha256": item["phi_file_sha256"]}
+                state_hash = item["state_sha256"]
+                direction_id, eps, sign = item["direction_id"], item["epsilon_m"], item["sign"]
+            handle.write("\t".join((run_id, str(Path(dataset_dir) / input_item["path"]),
+                input_item["sha256"], state_hash, direction_id, str(eps), str(sign))) + "\n")
+    return queue_path
+
+
 def parse_force_csv(path: Path) -> list[dict[str, float]]:
     with path.open(newline="") as handle:
         reader = csv.DictReader(handle)
@@ -756,18 +776,7 @@ def run_main():
             f"GPU_NAME {backend_expected['gpu_name']}", "NO_SOLVER_STEP")
         if any(marker not in smoke for marker in markers):
             raise RuntimeError("registered T4 no-solver smoke identity mismatch")
-        queue_path = OUT / "run_queue.tsv"
-        with queue_path.open("w") as handle:
-            for run_id in criteria["run_order"]:
-                if run_id.startswith("baseline_"):
-                    input_item = criteria["inputs"]["canonical_phi_fortran_raw"]
-                    state_hash, direction_id, eps, sign = criteria["geometry"]["canonical_state_sha256"], "", 0, 0
-                else:
-                    item = next(row for row in criteria["perturbation_inventory"] if row["case_id"] == run_id)
-                    input_item = {"path": item["dataset_path"], "sha256": item["phi_file_sha256"]}
-                    state_hash, direction_id, eps, sign = item["state_sha256"], item["direction_id"], item["epsilon_m"], item["sign"]
-                handle.write("\t".join((run_id, str(dataset_dir / input_item["path"]), input_item["sha256"],
-                    state_hash, direction_id, str(eps), str(sign))) + "\n")
+        queue_path = write_run_queue(base, dataset_dir, criteria)
         set_stage("julia_job", solver_step_invoked=[], solver_step_returned=[])
         job = source / criteria["inputs"]["julia_job"]["path"]
         command([str(julia), "--startup-file=no", f"--project={project}", str(job),

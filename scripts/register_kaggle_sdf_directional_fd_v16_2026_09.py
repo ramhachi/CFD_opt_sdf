@@ -47,6 +47,19 @@ ROUND2_CRITERIA = "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.
 ROUND2_KERNEL1_DIAGNOSTIC = (
     "docs/evidence/sdf_directional_fd_v16_round2_kernel1_diagnostic_2026_09.json"
 )
+ROUND3_CRITERIA = "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json"
+ROUND3_KERNEL2_SUBMISSION = (
+    "docs/evidence/sdf_directional_fd_v16_round3_kernel2_submission_2026_09.json"
+)
+ROUND3_KERNEL2_DIAGNOSTIC = (
+    "docs/evidence/sdf_directional_fd_v16_round3_kernel2_diagnostic_2026_09.json"
+)
+ROUND3_FAILURE_ANALYSIS = (
+    "docs/evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json"
+)
+ROUND3_DATASET_VERIFICATION = (
+    "docs/evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json"
+)
 ROUND1_CRITERIA_FILE_SHA256 = "ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6"
 ROUND1_CRITERIA_CANONICAL_SHA256 = "a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c"
 ROUND1_SUBMISSION_DIAGNOSTIC_SHA256 = "3cabf32761785ac1f9cf1bf353b92e80649259a36197ba88e89f644b62edb9b8"
@@ -54,6 +67,13 @@ ROUND2_CRITERIA_FILE_SHA256 = "150a60232f1adb413fa7021833943c8effe5b91ef068909d4
 ROUND2_CRITERIA_CANONICAL_SHA256 = "91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa"
 ROUND2_KERNEL1_DIAGNOSTIC_SHA256 = "1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a"
 ROUND2_SOURCE_COMMIT = "178792e9065df87d87ea1d445baaedace404304e"
+ROUND3_CRITERIA_FILE_SHA256 = "45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5"
+ROUND3_CRITERIA_CANONICAL_SHA256 = "fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52"
+ROUND3_KERNEL2_SUBMISSION_SHA256 = "379ad6ac7968109bbb7962afbfc03f5a1be8f8e9d6a7e6eed3f15d90c3db4629"
+ROUND3_KERNEL2_DIAGNOSTIC_SHA256 = "4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae"
+ROUND3_FAILURE_ANALYSIS_SHA256 = "faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596"
+ROUND3_DATASET_VERIFICATION_SHA256 = "aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c"
+ROUND3_SOURCE_COMMIT = "9978eb4f19c716b9666c50c18261738edd978e4f"
 RETRY_KERNEL_ID = DATASET_ID + "-kernel"
 RETRY_KERNEL_TITLE = "CFD Opt SDF v16 Directional FD Oracle Kernel"
 SOURCE_PATHS = {
@@ -84,6 +104,11 @@ SOURCE_PATHS = {
     "round1_submission_diagnostic": ROUND1_SUBMISSION_DIAGNOSTIC,
     "round2_criteria": ROUND2_CRITERIA,
     "round2_kernel1_diagnostic": ROUND2_KERNEL1_DIAGNOSTIC,
+    "round3_criteria": ROUND3_CRITERIA,
+    "round3_kernel2_submission": ROUND3_KERNEL2_SUBMISSION,
+    "round3_kernel2_diagnostic": ROUND3_KERNEL2_DIAGNOSTIC,
+    "round3_failure_analysis": ROUND3_FAILURE_ANALYSIS,
+    "round3_dataset_verification": ROUND3_DATASET_VERIFICATION,
 }
 BACKEND_KEYS = (
     "accelerator", "machine_shape", "gpu_count", "gpu_name", "driver_version",
@@ -287,6 +312,130 @@ def load_round2_preflight_retry_binding() -> dict:
     }
 
 
+def load_round3_pre_primal_retry_binding() -> dict:
+    paths = {
+        "criteria": ROUND3_CRITERIA,
+        "submission": ROUND3_KERNEL2_SUBMISSION,
+        "diagnostic": ROUND3_KERNEL2_DIAGNOSTIC,
+        "failure_analysis": ROUND3_FAILURE_ANALYSIS,
+        "dataset_verification": ROUND3_DATASET_VERIFICATION,
+    }
+    files = {name: ROOT / path for name, path in paths.items()}
+    sidecars = {name: path.with_suffix(path.suffix + ".sha256")
+                for name, path in files.items()}
+    if not all(path.is_file() for path in (*files.values(), *sidecars.values())):
+        raise ValueError("round-3 criteria and exact /2 diagnostic evidence must be preserved")
+    digests = {name: sha256(path) for name, path in files.items()}
+    expected = {
+        "criteria": ROUND3_CRITERIA_FILE_SHA256,
+        "submission": ROUND3_KERNEL2_SUBMISSION_SHA256,
+        "diagnostic": ROUND3_KERNEL2_DIAGNOSTIC_SHA256,
+        "failure_analysis": ROUND3_FAILURE_ANALYSIS_SHA256,
+        "dataset_verification": ROUND3_DATASET_VERIFICATION_SHA256,
+    }
+    if any(digests[name] != value for name, value in expected.items()):
+        raise ValueError("round-3 evidence file SHA differs from its registered identity")
+    if any(sidecars[name].read_text().strip() != digests[name] for name in paths):
+        raise ValueError("round-3 evidence sidecar does not match its file")
+
+    criteria = json.loads(files["criteria"].read_text())
+    submission = json.loads(files["submission"].read_text())
+    diagnostic = json.loads(files["diagnostic"].read_text())
+    analysis = json.loads(files["failure_analysis"].read_text())
+    dataset = json.loads(files["dataset_verification"].read_text())
+    execution = diagnostic.get("runner_execution_state", {})
+    julia = diagnostic.get("julia_progress_markers", {})
+    exact_kernel = f"{RETRY_KERNEL_ID}/2"
+    expected_status = f'{exact_kernel} has status "KernelWorkerStatus.ERROR"'
+    expected_copy = "/kaggle/working/sdf_directional_fd_v16/run_queue.tsv"
+    if (criteria.get("criteria_round") != 3
+            or criteria.get("immutable") is not True
+            or criteria.get("registered_before_computation") is not True
+            or criteria.get("status") != "registered_not_run"
+            or criteria.get("formal_measurement_started") is not False
+            or criteria.get("source_commit") != ROUND3_SOURCE_COMMIT
+            or criteria.get("registered_source_commit") != ROUND3_SOURCE_COMMIT
+            or criteria.get("criteria_sha256") != ROUND3_CRITERIA_CANONICAL_SHA256
+            or criteria.get("kernel_id") != RETRY_KERNEL_ID
+            or criteria.get("input_dataset_id") != DATASET_ID
+            or diagnostic.get("kind") != "sdf_directional_fd_flow16_diagnostic"
+            or diagnostic.get("criteria_path") != ROUND3_CRITERIA
+            or diagnostic.get("criteria_sha256") != digests["criteria"]
+            or diagnostic.get("source_commit") != ROUND3_SOURCE_COMMIT
+            or diagnostic.get("dataset_id") != DATASET_ID
+            or diagnostic.get("dataset_version") != 3
+            or diagnostic.get("kernel_id") != RETRY_KERNEL_ID
+            or diagnostic.get("kernel_version") != 2
+            or diagnostic.get("terminal_status") != expected_status
+            or diagnostic.get("host_verification_passed") is not False
+            or diagnostic.get("host_verifier_error") != "ValueError: FD Kaggle output has no DONE marker"
+            or diagnostic.get("output_manifest_consistent") is not True
+            or execution.get("stage") != "julia_job"
+            or execution.get("solver_started") is not False
+            or execution.get("solver_step_invoked") != []
+            or execution.get("solver_step_returned") != []
+            or any(julia.get(key) != [] for key in (
+                "run_started", "run_finished", "solver_step_invoked", "solver_step_returned"))
+            or diagnostic.get("runner_outcome") is not None
+            or submission.get("exact_kernel_ref") != exact_kernel
+            or submission.get("registered_criteria_path") != ROUND3_CRITERIA
+            or submission.get("registered_source_commit") != ROUND3_SOURCE_COMMIT
+            or submission.get("dataset_version") != 3
+            or submission.get("terminal_status_observed") is not False
+            or dataset.get("dataset_version") != 3
+            or dataset.get("criteria_file_sha256") != digests["criteria"]
+            or dataset.get("all_paths_sizes_and_sha256_match") is not True
+            or dataset.get("host_input_preflight_passed") is not True
+            or dataset.get("solver_started") is not False
+            or analysis.get("parent_round3_diagnostic_path") != ROUND3_KERNEL2_DIAGNOSTIC
+            or analysis.get("parent_round3_diagnostic_sha256") != digests["diagnostic"]
+            or analysis.get("failure_stage") != "julia_job pre-primal run-queue snapshot initialization"
+            or analysis.get("exact_exception") != "ArgumentError: 'src' and 'dst' refer to the same file/dir. This is not supported."
+            or analysis.get("copy_source") != expected_copy
+            or analysis.get("copy_destination") != expected_copy
+            or analysis.get("copy_paths_identical") is not True
+            or analysis.get("queue_rows_read_and_validated_before_failure") != 33
+            or analysis.get("julia_job_started") is not True
+            or analysis.get("cuda_t4_smoke_completed") is not True
+            or analysis.get("solver_started") is not False
+            or analysis.get("measurement_thresholds_changed") is not False
+            or analysis.get("host_verifier_error") != "ValueError: FD Kaggle output has no DONE marker"
+            or any(diagnostic.get(key) is not False for key in (
+                "sdf_directional_fd_oracle_qualified", "sdf_directional_fd_flow16_qualified",
+                "sdf_gradient_field_qualified", "gradient_qualified", "reverse_mode_qualified",
+                "optimizer_qualified", "topology_qualified", "shape_update_allowed"))):
+        raise ValueError("round-3 is not the exact preserved pre-primal queue self-copy failure")
+
+    return {
+        "criteria_path": ROUND3_CRITERIA,
+        "criteria_file_sha256": digests["criteria"],
+        "criteria_canonical_sha256": criteria["criteria_sha256"],
+        "kernel2_submission_path": ROUND3_KERNEL2_SUBMISSION,
+        "kernel2_submission_sha256": digests["submission"],
+        "kernel2_diagnostic_path": ROUND3_KERNEL2_DIAGNOSTIC,
+        "kernel2_diagnostic_sha256": digests["diagnostic"],
+        "failure_analysis_path": ROUND3_FAILURE_ANALYSIS,
+        "failure_analysis_sha256": digests["failure_analysis"],
+        "dataset_verification_path": ROUND3_DATASET_VERIFICATION,
+        "dataset_verification_sha256": digests["dataset_verification"],
+        "kernel_id": RETRY_KERNEL_ID,
+        "kernel_version": 2,
+        "dataset_version": 3,
+        "solver_started": False,
+        "solver_step_invoked": [],
+        "solver_step_returned": [],
+        "failure_stage": analysis["failure_stage"],
+        "exact_exception": analysis["exact_exception"],
+        "copy_source": analysis["copy_source"],
+        "copy_destination": analysis["copy_destination"],
+        "measurement_thresholds_changed": False,
+        "reason": (
+            "round 3 exact kernel /2 failed after Julia startup but before any primal step because "
+            "the Julia job attempted to copy the run queue from OUT/run_queue.tsv onto itself."
+        ),
+    }
+
+
 def assert_same_measurement_contract(candidate: dict, registered: dict) -> None:
     fields = (
         "criteria_id", "input_dataset_id", "geometry", "responses", "directions",
@@ -300,8 +449,8 @@ def assert_same_measurement_contract(candidate: dict, registered: dict) -> None:
 
 
 def build_criteria(*, state_path: Path, round_number: int) -> dict:
-    if round_number not in (1, 2, 3):
-        raise ValueError("only directional-FD criteria rounds 1, 2, and 3 are defined")
+    if round_number not in (1, 2, 3, 4):
+        raise ValueError("only directional-FD criteria rounds 1, 2, 3, and 4 are defined")
     (w3_criteria, w3_result, w4_criteria, w4_result,
      w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha) = load_prerequisites()
     observed_w4_backend = w4_result["backend_identity"]
@@ -336,11 +485,14 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
             or kernel_metadata.get("dataset_sources") != [DATASET_ID]
             or (round_number >= 2 and kernel_metadata.get("title") != RETRY_KERNEL_TITLE)):
         raise ValueError("draft round, unique kernel slug/title, and kernel metadata do not agree")
-    supersession_binding = (
-        load_round1_submission_retry_binding() if round_number == 2
-        else load_round2_preflight_retry_binding() if round_number == 3
-        else None
-    )
+    supersession_binding = {
+        1: None,
+        2: load_round1_submission_retry_binding,
+        3: load_round2_preflight_retry_binding,
+        4: load_round3_pre_primal_retry_binding,
+    }[round_number]
+    if callable(supersession_binding):
+        supersession_binding = supersession_binding()
     directions = generate_directions(state)
     direction_audit = validate_directions(state, directions)
     direction_inputs, direction_records = {}, {}
@@ -502,7 +654,11 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
     })
     if supersession_binding is not None:
         final["supersedes"] = supersession_binding
-        predecessor_path = ROUND1_CRITERIA if round_number == 2 else ROUND2_CRITERIA
+        predecessor_path = {
+            2: ROUND1_CRITERIA,
+            3: ROUND2_CRITERIA,
+            4: ROUND3_CRITERIA,
+        }[round_number]
         predecessor = json.loads((ROOT / predecessor_path).read_text())
         assert_same_measurement_contract(final, predecessor)
     final["criteria_sha256"] = json_hash(final)
