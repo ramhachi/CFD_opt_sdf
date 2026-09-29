@@ -132,7 +132,7 @@ Brinkman方式一般のNo-Goへ昇格させてはならない。
 | P19 | volume targetとStage S geometry fieldの意味論が一致しない | 最重大 | **closed（2026-09-23, semantic mismatch）**。PQ4.1は`rho_projection`を採用fieldとして完全composite gateを実行し、`beta_solver`はsolver audit fieldに限定した。残るfailures（当時）はP2/P17/P20として追跡する |
 | P20 | Stage S entryの幾何測定が一部fail-openまたは誤計算 | 高 | **closed（2026-09-24）**。self-intersection直接測定とfail-closed化、component gapのface-to-face校正、minimum/quantile契約分離、volume calibrationのshape label訂正、clean/defect/cap回帰testを実装。v15 PQ4.1 passは修理前gateの記録であり、次のPQ4.1は修理後gateで再判定する |
 | P21 | v16 physical profile の外周場が候補から十分に離れていない | 最重大 | **registered profile は解消（2026-09-26）**。元 V1 box と第1拡大は outer pressure gate のみ No-Go だったが、同じ moving-ground/freestream profile の v2 domain と downstream-expanded domain が全 physical-profile gate を通過し、2-domain convergence も `|Δdownforce|=0.0008034 <= 0.005`、relative-Cd `0.0008242 <= 0.02`。この candidate/profile の reduced-laminar qualification に限り、absolute/grid-independent/high-Re reference は未成立 |
-| P22 | SDF-native の volume 契約と design-grid/flow-grid 恒等性 | 最重大 | **契約登録済み（2026-09-26, plan v2.1）、enforcement 未実装**。sharp/revoxelized/density の体積が別測度（0.12925 / 0.126125 / 0.1775 m³ と Stage T `Vmax=0.0763256681`）であることが genesis 実測で確認され、SDF 契約は `V_phi = |{trilinear center sample < 0}| h^3 <= V_phi_0 = 0.12612500000000004`（`evidence/sdf_native_volume_semantics_v1_2026_09.json`）。旧 `Vmax` を SDF Stage S に持ち込まない。optimizer 側 signed residual `g_V` と平滑化 volume は one-step gate 前に実装 |
+| P22 | SDF-native の volume 契約と design-grid/flow-grid 恒等性 | 最重大 | **sharp contract registered; P22-01 differentiable primitive implemented on `feat/issue-27-p22-volume-gradient` (software-only; one-step integration pending)**。sharp/revoxelized/density の体積が別測度（0.12925 / 0.126125 / 0.1775 m³ と Stage T `Vmax=0.0763256681`）であることが genesis 実測で確認され、SDF 契約は `V_phi = |{trilinear center sample < 0}| h^3 <= V_phi_0 = 0.12612500000000004`（`evidence/sdf_native_volume_semantics_v1_2026_09.json`）。旧 `Vmax` を SDF Stage S に持ち込まない。smooth value/gradient と signed residual は実装済みだが、一歩の形状更新・全 hard gate 通過は未実行でP22はopen |
 | P23 | topology birth の topology policy（root/disconnected 成分許可）が未定義 | 高 | **open（Birth-0 前の必須 gate）**。genesis v16 状態は root/fixed/forbidden が全空で `root_connectivity = not_applicable` のため、旧 root hard gate は何も制約しない。SDFTopologyPolicy v1 として「非接続空力成分の許可」「root 接続の強制」「root領域の定義」を登録するまで Birth-0 作業を開始しない |
 
 P11–P14は2026-09-12の外部監査（`problem_resolution_plan_2026_09.md`）が指摘し、
@@ -1855,17 +1855,26 @@ sharp 体積と、Stage T が制約していた密集体積が別物であるこ
   WaterLily へは world-space trilinear adapter（`GridSDFBody` /
   `sdf_at_world(xyz_m)`）で埋め込み、flow grid 解像度と domain は独立変数。
   同一 canonical phi に対する coarse/medium/fine flow grid が可能なことまで契約。
-- 平滑化 volume `smoothed_volume_and_gradient(...)` と optimizer 側 signed residual
-  `g_V = V_phi / V_phi_0 - 1` は one constrained SDF step の前に実装する
-  （reporting 用 `max(0, V-V_lim)` は W0-W4 の blocker ではない）。
+- 平滑化 volume `smoothed_volume_and_gradient(...)`、optimizer 側 signed residual
+  `g_V = V_epsilon / V_phi_0 - 1`、遷移幅、中心サンプリング、mask ownership は
+  [`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md)
+  とそのAPIで定義する。sharp volume reportとは別の値として記録する。
+  有限幅の one-sided smoothing は遷移帯の sharp volume を過小評価するため、
+  `g_V <= 0` 単独では保守的な feasibility certificate でも optimizer admission
+  でもない。受入には登録 sharp residual `V_phi - V_phi_0 <= 0` を独立に要求する。
 
 ### 状態
 
-**契約登録済み、optimizer 側 enforcement 未実装。** evidence 自体（immutable）の
-"sharp limit" 記述は当面の減点対象ではなく、source docstring と plan 文書の
-ε→0 / h→0 表現訂正を 2026-09-26 の correction で行う（v1 evidence は無変更）。
-P22 の closure は one constrained SDF step で volume 契約 + 全 hard gate が
-実際に presence referred された実測で行う（登録のみでの閉鎖禁止）。
+**sharp contract 登録済み、P22-01 の smooth volume/value-gradient primitive は
+isolated issue branch に実装済み（software contract/numerical fixture evidence）。**
+登録 evidence（immutable）は変更しない。smooth contract v1 は一セル幅の
+one-sided cosine、全h-cube center sample、design/fixed/forbidden/rootの勾配所有権、
+v16 reference limit、units、state/grid/contract hashを固定する。
+smooth residualは有限遷移幅でsharp体積を上から拘束しないため、単独で受入や
+optimizer/shape updateを許可しない。sharp reference residual/violationの独立確認を要求する。
+このprimitiveの検証は形状更新、WaterLily reverse-mode資格化、optimizer integration、
+全hard gateの通過を意味しない。P22はone constrained SDF stepでvolume契約と
+全hard gateが実際に参照された後にのみ閉じる（登録のみでの閉鎖禁止）。
 
 ## P23 — topology birth 用 topology policy（root / disconnected 成分）が未定義（2026-09-26 登録）
 

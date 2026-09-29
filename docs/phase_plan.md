@@ -1712,8 +1712,8 @@ adapter qualification must additionally fix, before any solver run:
   probe fixture, and every registered run advertises it in its
   `runtime fingerprint`.
 
-**Contract 2 — SDF sharp volume semantics (registered now; differentiable
-implementation deferred until the one-step gate).**  The Stage T density
+**Contract 2 — SDF sharp volume semantics (registered; P22-01 smooth primitive
+implemented, shape update still gated).**  The Stage T density
 volume `V_rho` (`0.0719735015` at limit `Vmax = 0.0763256681`) and the
 handoff's measured binary sharp volume `V_sharp = 0.12925000000000003`
 are different quantities; the ratio `V_sharp/Vmax` is about `1.69`, so a
@@ -1730,9 +1730,13 @@ grid spacing**: letting the indicator sharpen (`epsilon -> 0`) gives the
 sharp midpoint occupancy rule on the discrete grid, and the separate
 continuum limit `h -> 0` of that discrete measure is what would converge
 toward the geometric solid volume of the probability limit; these two
-limits are distinct and only the discrete rule is registered.  The
-smoothed H_eps implementation arrives with the one-step gate.  The first
-SDF volume constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured**
+limits are distinct and only the discrete rule is registered.  The P22-01
+smooth primitive is specified in
+[`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md):
+it uses a one-sided cosine transition of width one design-grid cell and
+reports the smooth value separately from sharp `V_phi`. This software
+capability does not authorize a shape update or move the one-step gate. The
+first SDF volume constraint is `V_phi <= V_phi_0` with `V_phi_0` **re-measured**
 on the registered genesis state: 1009 sampled solid centers,
 `V_phi_0 = 0.12612500000000004 m^3`.  Three samplings are registered and
 explicitly separated in
@@ -1747,11 +1751,17 @@ volume), and the non-contracted node-occupancy diagnostic
 carried into SDF Stage S evaluation.  If a physically smaller target were
 wanted, it is a separate material-lineage decision requiring a
 volume-calibrated offset rebuild, not a contract reuse.  The module
-`src/cfd_sdf/design/volume_semantics.py` implements the sampled measure,
-the limit semantics and the reporting-only over-volume
-(`max(0, V - V_lim)`; contract level; the optimizer-side enforcement — a
-signed residual `g_V = V_phi / V_phi_0 - 1` plus
-`smoothed_volume_and_gradient(...)` — arrives with the one-step gate).
+`src/cfd_sdf/design/volume_semantics.py` implements the sampled sharp
+measure, reporting-only sharp over-volume (`max(0, V - V_lim)`), and the
+separate P22-01 smooth value/gradient API with signed residual
+`g_V = V_epsilon / V_phi_0 - 1`. This is a contract/software result only;
+the finite-width one-sided smoothing underestimates sharp volume inside its
+transition band, so `g_V <= 0` is not a conservative feasibility certificate
+and cannot admit an optimizer step or shape update by itself. Acceptance must
+independently require the registered sharp residual `V_phi - V_phi_0 <= 0`.
+The result reports this signed sharp residual and positive violation separately.
+The one-step gate still requires its full solver, gradient, volume, and
+hard-gate preconditions.
 
 **Contract 3 — SDFTopologyPolicy v1 is a prerequisite gate for Birth-0
 (registration may be later; no Birth-0 work before it).**  The v16

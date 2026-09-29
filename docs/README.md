@@ -107,6 +107,9 @@ Start here in a new terminal, after reading the repository root
 - [`colab_mcp_runbook_2026_09.md`](colab_mcp_runbook_2026_09.md)
   — Codex から Colab MCP を使う実務手順。接続の維持、T4 の事前確認、W1g の
   実行と証拠回収、停止条件を記す。実行順と判定基準は変更しない。
+- [`sdf_native_smoothed_volume_contract_v1_2026_09.md`](sdf_native_smoothed_volume_contract_v1_2026_09.md)
+  — P22-01's frozen differentiable volume rule, registered v16 sharp reference,
+  mask ownership, units, and software-evidence boundary.
 
 ## Compatibility policy
 

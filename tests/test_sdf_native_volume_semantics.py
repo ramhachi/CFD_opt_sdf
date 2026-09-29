@@ -92,7 +92,7 @@ def test_report_binds_state_identity_and_feasibility():
     assert report["node_occupancy_diagnostic"]["solid_nodes"] == int((phi < 0).sum())
     assert report["state_sha256"] == state.state_sha256
     assert report["state_phi_sha256"] == state.phi_sha256()
-    assert "not a differentiable constraint" in report["claims_not_supported"][0]
+    assert "sharp center-count V_phi is not differentiable" in report["claims_not_supported"][0]
 
 
 def test_report_flags_infeasible_state():
