@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF gradient oracle | Entry gate open; formal measurement not started | W4 host verification passed and the extended-domain follow-up condition is false. Register separate immutable FD criteria before any measurement. |
+| Centered-FD SDF directional oracle | Round 1 immutable criteria registered; formal measurement not started | Criteria SHA `ad0bd7dc…` binds source `d0ac7163…`, exact W3/W4 PASS evidence, 3 directions and 30 perturbations. Stage and remotely verify the private dataset before submission. This qualifies no gradient field. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -4152,6 +4152,45 @@ verification, while preserving W3/W4 evidence and all qualification limits.
   kernel version, and host-verify that exact version. Stop after the FD host
   result. Do not run reverse/adjoint, optimization, or shape updates in this
   work item.
+
+## 2026-09-29: centered directional-FD round 1 registered
+
+The FD source/harness and validation were committed before registration. The
+registrar initially failed with an undefined local W4 backend binding before
+writing either criteria file. The binding was repaired in
+`d0ac7163d86b4f5db5ba99c8113c767669365312`, pushed, and the registrar was
+rerun from the clean pushed branch. No measurement occurred in that attempt.
+
+- **Implemented:** source/harness commit `167dc992339d8edf9f368cbeff97963cca969deb`;
+  registration repair commit `d0ac7163d86b4f5db5ba99c8113c767669365312`.
+- **Registered:** immutable FD criteria round 1 at
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.json`, file
+  and sidecar SHA-256
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`;
+  internal canonical criteria SHA-256
+  `a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c`.
+  It is `registered_not_run`, has `immutable=true`,
+  `registered_before_computation=true`, and binds source commit `d0ac716…`.
+  Registrar `--check` passed.
+- **Frozen identities:** 24 exact source-repository inputs, 35 raw dataset
+  payload inputs, canonical state SHA `44507748…`; D0/D1/D2 SHA-256 values
+  `fb74a1e7…`, `26964bfa…`, and `e6ad0912…`; all 30 plus/minus states are
+  bound and their minimum measured SDF margin is `0.33999999370425943 m`.
+  The run order has 33 fresh primals with baseline A/B/C at beginning, middle,
+  and end. The exact W3/W4 criteria and result SHAs are bound, including the
+  W4 observed-runtime identity SHA.
+- **Submitted / measured:** private dataset is not staged or uploaded; no FD
+  kernel submitted; `formal_measurement_started=false`; no FD `sim_step!`
+  invoked.
+- **Host verified:** only the prerequisite W3/W4 evidence and premeasurement
+  registration hashes. No FD output or host result exists.
+- **Qualified:** directional FD oracle, 3D gradient field, gradient backend,
+  reverse mode, topology and shape update remain unqualified/false.
+- **Open:** prepare the exact private dataset from the immutable criteria,
+  verify local inventory, upload, wait for `ready`, redownload and hash-compare
+  the exact remote version, then submit the private T4 kernel. Stop after
+  exact-version host verification; no reverse/adjoint or shape work in this
+  task.
 - **Validation:** 22 focused FD tests passed. Python `compileall src tests
   scripts`, runner `py_compile`, Julia parse plus exact flow_16 dims/origin/
   Re=80 assertion, both JSON parses, 30 canonical-state perturbation

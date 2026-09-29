@@ -2458,3 +2458,36 @@ version and verify its full file inventory and hashes. Submit only after that
 comparison passes. Record the exact kernel version returned by Kaggle and use
 that same version for status, logs, and output retrieval; never substitute
 `latest`. Stop after the independent host verifier and append-only evidence.
+
+## 2026-09-29: centered directional-FD round 1 immutable registration
+
+Source/harness commit `167dc992339d8edf9f368cbeff97963cca969deb` and registrar
+repair commit `d0ac7163d86b4f5db5ba99c8113c767669365312` are pushed on
+`codex/kaggle-batch-migration`. The first registrar call stopped before file
+creation on an undefined W4 backend local; the repaired exact registrar was
+rerun from a clean pushed branch, with no solver measurement in between.
+
+- Registered criteria:
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round1.json`.
+- File/sidecar SHA-256:
+  `ad0bd7dcc6f8e2f0927799fe1c9818e58c43fbc4205312a5ad4c397d61f6fdc6`.
+- Canonical internal criteria SHA-256:
+  `a110132ff6df6859fe4e38b5e4cb634c8ef2ac0015cfb6fbc5562d63c5bc292c`.
+- Source commit: `d0ac7163d86b4f5db5ba99c8113c767669365312`.
+- `immutable=true`, `registered_before_computation=true`,
+  `status=registered_not_run`, `formal_measurement_started=false`.
+- 24 source inputs and 35 data payload inputs are SHA-bound. The three frozen
+  direction hashes are D0 `fb74a1e7…`, D1 `26964bfa…`, and D2 `e6ad0912…`.
+  All 30 perturbation states and exact 33-run order are frozen; the minimum
+  preflight SDF margin is `0.33999999370425943 m`.
+- `--check` revalidated the sidecar, canonical criteria hash, source commit,
+  and every source input hash. The exact round is registered but not measured.
+
+Next, run the dataset preparer to
+`work/kaggle_sdf_directional_fd_dataset_round1/`. Compare every staged file
+against the criteria and dataset manifest, create the private Kaggle dataset,
+wait for its exact status to become `ready`, download that dataset version,
+and compare its complete inventory/hash set to the local manifest. Do not
+submit a kernel until that remote comparison passes. There is still no FD
+dataset version, kernel version, solver measurement, host verification, or
+qualification result.
