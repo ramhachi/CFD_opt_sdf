@@ -72,9 +72,9 @@ an infrastructure choice, not a solver component.
 | Canonical state | SDF `phi`; genesis and volume semantics contract registered; optimizer volume enforcement pending. |
 | WaterLily primal | W0/W1 and sphere remain capability evidence. W3 round 4 passed only the registered v16 finite-box integrity/force/stationarity contract; physical aerodynamics remain unqualified. |
 | W3 v16 primal | Exact kernel `/5` passed host verification for the registered finite-box integrity/force/stationarity contract. The owner-lifetime defect is confirmed, but W3 v4's all-zero force root cause remains unresolved. Physical-profile equivalence and broader aerodynamics remain unqualified. |
-| Next gate | W3 round 4 and W4 round 4 are closed. FD round 3 kernel `/2` ended `ERROR` in Julia queue initialization before any `sim_step!`; host verifier failed closed on the missing `DONE` marker. The exact diagnostic SHA is `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`. Preserve rounds 2 and 3; fix only the queue input/output path collision and preregister round 4 with the unchanged measurement contract. |
+| Next gate | W3 round 4 and W4 round 4 are closed. FD round 3 kernel `/2` remains a preserved pre-primal diagnostic. The one-path queue input fix is pushed, and immutable FD round 4 is registered (file SHA `ace4e539…`, canonical SHA `949d998b…`, source `8bf8875`). Its measurement contract equals round 3. Dataset v4 and a new kernel are not yet submitted. |
 | W4 | Immutable round 4 (SHA `3efc8133…`, source `b9ae43b`) ran exact private T4 kernel `/3`; dataset version 3 inventory was verified. Independent host verification passed T0-T10 for all four cases, including exact-window stationarity. Append-only result SHA `87a88178…`. The extended-domain fine-grid follow-up was not triggered. This qualifies only the registered finite-box sensitivity matrix, not grid/domain convergence or physical aerodynamics. |
-| Centered-FD SDF derivatives | Entry gate open after W4 host PASS. Round-3 immutable criteria and dataset v3 are preserved. Exact kernel `/2` reached the Julia job but failed copying `/kaggle/working/sdf_directional_fd_v16/run_queue.tsv` onto itself; `solver_started=false`, no step markers, and no force integration. Host verifier reported missing `DONE`. All FD/gradient/reverse qualification flags remain false; round 4 is the next preregistration after the one-path fix. |
+| Centered-FD SDF derivatives | Entry gate open after W4 host PASS. Round-3 immutable criteria, dataset v3 and exact `/2` failure are preserved. Round 4 is immutable and registered against that diagnostic, with 3 directions, 30 perturbations, and 33 runs unchanged. Dataset v4, kernel submission, FD measurement, and host verification are still open. All FD/gradient/reverse qualification flags remain false. |
 | Production gradient backend | Undecided and unqualified. |
 | Constrained SDF update | Blocked; `shape_update_allowed=false`. |
 | Topology birth | Unqualified; register SDFTopologyPolicy v1 before Birth-0. |
@@ -108,9 +108,10 @@ exact W3 round 4 `/5` passed host verification for the registered finite-box
 primal contract. This does not explain W3 v4's complete all-zero force history.
 Physical-profile equivalence, grid/domain response, FD, gradient/reverse,
 topology and shape update remain unqualified; `shape_update_allowed=false`.
-W4 owner-retention and stationarity preparation is implemented, but criteria
-and measurement are still open. No historical evidence or criteria are
-rewritten by this status summary.
+W4 criteria and measurement are closed for the registered finite-box
+sensitivity matrix. Immutable FD round 4 is registered, but its dataset and
+measurement remain open. No historical evidence or criteria are rewritten by
+this status summary.
 
 The dated entries below preserve chronology. Their local status and "next"
 instructions are snapshots; when they conflict with the SDF-native summary

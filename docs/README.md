@@ -45,7 +45,17 @@ SHA-256 `4044e4f01508590f622e89194427af47c599d00959cf721a0f143b136d746fae`,
 with detailed failure analysis in
 [`sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json`](evidence/sdf_directional_fd_v16_round3_kernel2_failure_analysis_2026_09.json),
 SHA-256 `faf0f9b8100b02f303b029a3644cbf5c3df4e3e0a18d935014401142936c8596`.
-Formal FD, gradient, reverse, optimizer and shape update remain unqualified.
+The queue input now comes from the runner's temporary base directory, while
+Julia retains the `OUT/run_queue.tsv` snapshot; this one-path fix is covered by
+an executable regression. Immutable FD round 4 is registered at
+[`sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json)
+(file SHA `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`,
+canonical SHA `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`)
+and binds source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Machine
+comparison confirms the entire measurement contract remains identical to
+round 3. Dataset v4 is not uploaded and no round-4 kernel is submitted or
+measured. Formal FD, gradient, reverse, optimizer and shape update remain
+unqualified.
 See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for

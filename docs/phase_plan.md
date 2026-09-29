@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 v16 primal | Round-4 registered finite-box primal contract PASS; broader physical qualification remains false | Exact kernel `/5` passed host verification on all T0-T10. The claim is limited to the registered WaterLily finite-box approximation; the unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | Round-4 matrix passed exact kernel `/3` and independent host verification | Immutable criteria SHA `3efc8133…`; result SHA `87a88178…`. All four cases passed T0-T10, including the inherited 2% stationarity gate. The registered extended-domain fine-grid follow-up was not triggered. This is bounded finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | Round 3 exact kernel `/2` ended `ERROR` in Julia job initialization before a primal step | Round-3 criteria SHA `45fb570b…`, dataset v3, and diagnostic SHA `4044e4f0…` remain preserved. CUDA T4 smoke passed; Julia failed at a same-path copy of the run queue before `CUDA.memory_info()` or `sim_step!`. Host verifier failed closed on the missing `DONE` marker. Fix only the input/output queue path collision and preregister round 4 with unchanged measurement fields. No FD/gradient qualification is granted. |
+| Centered-FD SDF directional oracle | Round 4 immutable criteria registered; no new dataset or kernel run | Exact criteria file SHA `ace4e539…`, canonical SHA `949d998b…`, bound source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Contract is machine-identical to round 3. The one-path queue fix writes input under the runner's temporary base directory while Julia snapshots to `OUT/run_queue.tsv`. Round-3 `/2` remains a preserved pre-primal failure; round 4 has not been submitted or measured. No FD/gradient qualification is granted. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -657,11 +657,22 @@ Current gates and immediate sequence as of 2026-09-29:
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **Prepare formal centered-FD qualification.** The entry gate is open, but no
-   formal FD measurement has started. Register separate immutable criteria
-   (including a perturbation-direction contract and epsilon ladder) before
-   running any centered differences. Centered FD remains the permanent
-   independent numerical gradient oracle.
+5. **Prepare formal centered-FD qualification.** The FD entry gate is open.
+   Immutable directional-FD round 4 is registered at
+   [`sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json),
+   file/sidecar SHA-256
+   `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`,
+   canonical criteria SHA-256
+   `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`,
+   source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Its 3 directions,
+   30 perturbations, 33-run order, all force/window/stationarity/noise/plateau
+   rules, gates, and claims are machine-identical to round 3. Round 4 only
+   changes source identity, round metadata, and supersession linkage to the
+   exact round-3 `/2` queue self-copy diagnostic. Dataset v4 is not yet staged
+   or uploaded; no new kernel has been submitted and no FD primal has run.
+   Prepare the next dataset version and exact-version T4 execution under this
+   immutable registration. Centered FD remains the permanent independent
+   numerical gradient oracle.
 6. **Select a production gradient backend** only after comparing candidate
    reverse AD, discrete-adjoint, or other methods against the qualified FD
    oracle. No production backend is selected or qualified.
@@ -4533,3 +4544,54 @@ evidence remain immutable.
   then register immutable round 4 against this exact round-3 diagnostic. Keep
   the 33-run contract, thresholds and all measurement semantics unchanged.
   Do not retry round 3 or submit a new kernel under its criteria.
+
+### 2026-09-29 FD round-4 queue-path fix and immutable preregistration
+
+This checkpoint closes the round-3 pre-primal queue-path defect and registers
+the next immutable FD round. It does not start a dataset upload, Kaggle kernel,
+or primal measurement.
+
+- **Implemented:** the runner now writes the run-queue input to the existing
+  temporary `base` directory. The Julia job continues copying that input to
+  `OUT/run_queue.tsv`, so source and destination differ while the output
+  snapshot remains available. Queue row serialization and registered run
+  order are unchanged.
+- **Regression:** an executable test builds baseline and perturbation rows in
+  a temporary input directory and confirms the input path differs from the
+  Julia output-snapshot path. Registrar tests bind the exact round-3 criteria,
+  `/2` submission, terminal diagnostic, dataset verification, and failure
+  analysis. A machine comparison requires the full round-4 measurement
+  contract to equal round 3 and rejects a changed noise-resolution gate.
+- **Validation:** focused FD tests passed (`32 passed`); Python `compileall
+  src tests scripts`, targeted `py_compile`, Julia FD-job `Meta.parseall`, JSON
+  parsing, and `git diff --check` passed. Full pytest reported `1,149 passed,
+  37 failed, 4 skipped` in `211.37 s`. The 37 failures are historical tests
+  whose ignored `work/` fixtures are absent in this managed worktree; all
+  reported tracebacks are missing paths under `work/`, and no FD test failed.
+  Full log is `work/sdf_directional_fd_round4_source_validation/full_pytest.log`,
+  SHA-256 `54a56120fbbf9caf0ad84712a65e039027a27f101bda5dcaf186aef29130a805`.
+- **Source commit:** the runner, tests, round-4 registrar, and mutable draft
+  are committed and pushed as `8bf88756791213ac75b3c36ab6316323653d5c9a`.
+- **Registered:** immutable criteria
+  [`sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json)
+  has file and sidecar-content SHA-256
+  `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`,
+  sidecar-file SHA-256
+  `8e0ef570cba16e6964bc7d8763b41fe1fed8d2d69dcba841047e16f0b745494a`,
+  canonical criteria SHA-256
+  `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`,
+  and binds source commit `8bf88756791213ac75b3c36ab6316323653d5c9a`. Registrar
+  `--check --round 4` passed. The exact round-3 criteria, submission, diagnostic,
+  dataset verification, and failure-analysis hashes are bound in its
+  `supersedes` record. Contract comparison passed: 3 directions, 30
+  perturbations, 33 runs, and all registered measurement/gate semantics are
+  unchanged.
+- **Dataset / kernel:** private dataset version 4 has not been staged or
+  uploaded. No new kernel version has been submitted, and there is no round-4
+  primal measurement or host verification.
+- **Qualified:** centered-FD oracle, flow16 FD, gradient field, reverse mode,
+  optimizer, topology, and shape update remain false; `shape_update_allowed`
+  remains false. Round 3 remains an exact pre-primal diagnostic.
+- **Open:** prepare and remotely verify the next dataset version against
+  round-4 criteria before submitting an exact T4 kernel. Preserve the round-3
+  criteria and diagnostic; do not modify any measurement threshold.

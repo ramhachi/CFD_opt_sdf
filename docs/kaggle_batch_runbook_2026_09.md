@@ -2793,3 +2793,57 @@ kernel `/2` ended in `ERROR`; the run did not reach a primal step.
   Add a focused path-separation regression, validate, commit/push, and register
   immutable round 4 bound to the round-3 `/2` diagnostic. FD/gradient/reverse/
   optimizer/topology/shape-update flags remain false.
+
+## 2026-09-29: FD round-4 queue-path fix and immutable registration
+
+The round-3 `/2` self-copy failure is closed at source level. The runner writes
+`run_queue.tsv` under the existing temporary `base` directory; the Julia job
+copies it to `OUT/run_queue.tsv` for the retained output snapshot. Queue rows
+and all measurement semantics stay unchanged. A focused executable test checks
+the two paths differ and preserves the baseline/perturbation TSV serialization.
+
+Source and validation:
+
+- Source commit `8bf88756791213ac75b3c36ab6316323653d5c9a` is pushed to
+  `codex/kaggle-batch-migration`.
+- Focused FD tests: `32 passed`.
+- `.venv/bin/python -m compileall src tests scripts`, targeted `py_compile`, Julia
+  `Meta.parseall`, round-3 evidence JSON parsing, and `git diff --check`: pass.
+- Full pytest: `1,149 passed, 37 failed, 4 skipped` in `211.37 s`. The 37
+  failures trace to absent ignored historical `work/` inputs/artifacts in this
+  worktree; the FD tests passed. Captured log:
+  `work/sdf_directional_fd_round4_source_validation/full_pytest.log`, SHA-256
+  `54a56120fbbf9caf0ad84712a65e039027a27f101bda5dcaf186aef29130a805`.
+
+Immutable round-4 criteria are registered at
+[`evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json`](evidence/sdf_directional_fd_v16_criteria_2026_09_round4.json):
+
+- Criteria file SHA-256 and sidecar content:
+  `ace4e53963ee7d37d7806f48ef1ef449380294c0a5216043e50558f1d31192fd`.
+- Sidecar file SHA-256:
+  `8e0ef570cba16e6964bc7d8763b41fe1fed8d2d69dcba841047e16f0b745494a`.
+- Canonical criteria SHA-256:
+  `949d998bb9e5b83ddbb2a24efc25b57754f4db29568e0a0f6e8b062647206db9`.
+- Bound source commit: `8bf88756791213ac75b3c36ab6316323653d5c9a`.
+- `--check --round 4`: passed.
+- Round-3 to round-4 measurement-contract equality: passed, including the 3
+  registered directions, 30 perturbations, 33-run order, response definitions,
+  exact `[80,120]` window, stationarity, force closure, baseline noise,
+  resolution, plateau, backend, and gates. Round 4's `supersedes` record binds
+  round-3 criteria, dataset-verification, `/2` submission, terminal diagnostic,
+  and detailed failure-analysis evidence by exact SHA.
+
+State separation:
+
+- **Implemented / pushed:** one-path run-queue fix, regression, round-4
+  registrar, and mutable draft metadata.
+- **Registered:** immutable round-4 criteria and sidecar are present.
+- **Dataset:** private dataset version 4 has not been staged, uploaded, or
+  remotely verified.
+- **Submitted / measured / verified:** no round-4 kernel has been submitted;
+  no solver step or host verification has run under round 4.
+- **Qualified:** FD oracle, gradient, reverse, optimizer, topology, and shape
+  update remain false.
+- **Open:** stage and upload a new dataset version, redownload and verify its
+  exact inventory, then submit and verify only the returned exact kernel
+  version. Do not edit the immutable criteria or reuse round 3's `/2`.
