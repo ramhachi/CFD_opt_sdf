@@ -19,9 +19,10 @@ using .CFDSDFWaterLily
 using .CFDSDFWaterLily.GridSDFBody
 Base.include(CFDSDFWaterLily, joinpath(SRC, "V16PhysicalProfile.jl"))
 
-const SHAPE = (61, 33, 25)
+const SHAPE = Tuple(parse.(Int, split(get(ENV, "FD04_SHAPE", "61,33,25"), ",")))
+const HD = parse(Float64, get(ENV, "FD04_H", "0.05"))  # design-lattice spacing [m]
 const ORIGIN = (-1.0, -0.8, -0.6)
-const H = (0.05, 0.05, 0.05)
+const H = (HD, HD, HD)
 const FLOW_ORIGIN = (-2.5, -1.2, -0.9)
 const DIRECTIONS = ("D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026")
 const EPSILONS = ("0p0005", "0p0010", "0p0025", "0p0050", "0p0100")
@@ -48,9 +49,9 @@ function main()
         p = joinpath(dir, "perturbations", "$(d)__eps_$(e)m__$(s).phi-f4-fortran.raw")
         push!(cases, (d, e, s, read_phi(p)))
     end
-    base_grid = make_grid(base_phi)
-    bodies = CFDSDFWaterLily.v16_physical_profile_bodies(base_grid)
-    sim = CFDSDFWaterLily.build_v16_physical_profile_simulation(bodies)
+    base = CFDSDFWaterLily.GridSDFWaterLilyBody(make_grid(base_phi), Float32.(FLOW_ORIGIN), 0.05f0)
+    ground = CFDSDFWaterLily.V16MovingGroundBody(0.0f0, 1.0f0)
+    sim = CFDSDFWaterLily.build_v16_physical_profile_simulation((combined = base + ground,))
     open(out, "w") do io
         println(io, "snapshot_t,direction,eps,sign,variant,fx,fy,fz")
         for t in times
