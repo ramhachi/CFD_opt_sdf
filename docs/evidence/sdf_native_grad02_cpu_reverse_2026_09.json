@@ -1,0 +1,190 @@
+{
+  "artifact_id": "sdf_native_grad02_cpu_reverse_2026_09",
+  "artifact_schema_version": 1,
+  "recorded_at_utc": "2026-09-29T09:53:03Z",
+  "evidence_class": "local_experimental_cpu_capability_reproduction",
+  "issue": {
+    "number": 22,
+    "title": "GRAD-02: Reproduce pinned WaterLily PR #285 CPU reverse capability",
+    "state_at_recording": "open"
+  },
+  "scope": {
+    "purpose": "Reproduce the pinned CPU Poisson VJP and two-step sim_step! reverse fixtures; capture the full-step outcome and tolerance effect.",
+    "not_a_qualification": true,
+    "production_backend_promoted": false,
+    "phase_or_w3_w4_status_changed": false,
+    "gpu_reverse_tested": false,
+    "sdf_gradient_or_shape_update_tested": false
+  },
+  "source_identity": {
+    "tested_branch": "exp/issue-22-grad02-cpu-reverse",
+    "base_remote_ref": "origin/exp/w3-enzyme-reverse-spike",
+    "base_commit": "61a1a1ce00f2e9028b0532273a4f7b342bc20849",
+    "project_path": "infra/kaggle/kernel_enzyme_reverse_spike/julia/Project.toml",
+    "project_sha256": "867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383",
+    "manifest_path": "infra/kaggle/kernel_enzyme_reverse_spike/julia/Manifest.toml",
+    "manifest_sha256": "f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e",
+    "waterlily_manifest_git_tree_sha1": "2d2758e21ed310f863e989df7429b34a63246efc",
+    "waterlily_pr_285_head": "feed49f480b52047b4e9b8bfacdf3e4f8201106b",
+    "versions": {
+      "julia": "1.12.6",
+      "waterlily": "1.6.1",
+      "enzyme": "0.13.205",
+      "cuda_jl_pinned_but_not_executed": "6.2.1"
+    }
+  },
+  "runtime_fingerprint": {
+    "host_kernel": "Darwin",
+    "host_arch": "aarch64",
+    "host_machine": "arm64-apple-darwin24.0.0",
+    "julia_threads": 1,
+    "solver_storage": "Array",
+    "gpu": "not present or used in this CPU run"
+  },
+  "commands": [
+    {
+      "purpose": "mean-zero interior Poisson tolerance sweep",
+      "command": "julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/grad02_poisson_tolerance_sweep.jl",
+      "exit_status": 0,
+      "script_path": "infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/grad02_poisson_tolerance_sweep.jl",
+      "script_sha256": "f46b2c65f7393f26decb7817ca65a1407d1892c41c81265912a75ab69a459428",
+      "raw_log_path": "work/issue22-grad02-cpu-reverse/poisson_tolerance_sweep.log",
+      "raw_log_sha256": "a27861a841e8dc284a93e948c80f9682f583888da67475d751de07b3f0f6e41b"
+    },
+    {
+      "purpose": "full two-step sim_step! reverse from prebuilt sphere state",
+      "command": "julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl",
+      "capture_command": "set -o pipefail; julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl 2>&1 | tee /tmp/grad02_full_step_cpu_reverse_final.log",
+      "exit_status": 2,
+      "script_path": "infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl",
+      "script_sha256": "82bcf4eb7650fbdafc79a35dc67f702dde41e278a69ad0c6d8189f339294c5d0",
+      "raw_log_path": "work/issue22-grad02-cpu-reverse/full_step_cpu_reverse.log",
+      "raw_log_sha256": "d73b6431adf41e4e8acb1da1d926e6e7b64909c78bd2b114913d8d4e8fdcb993"
+    },
+    {
+      "purpose": "existing single-cell Poisson VJP diagnostic replay",
+      "command": "julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/poisson_adjoint_spike.jl",
+      "capture_command": "set -o pipefail; julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/poisson_adjoint_spike.jl 2>&1 | tee /tmp/grad02_legacy_poisson_reverse_final.log",
+      "exit_status": 0,
+      "script_path": "infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/poisson_adjoint_spike.jl",
+      "script_sha256": "aacf98e1f68d3df60d10a9df8fa4a3231aee82d25f83384fe8b26cf0bf034ca4",
+      "raw_log_path": "work/issue22-grad02-cpu-reverse/legacy_poisson_reverse.log",
+      "raw_log_sha256": "c2a74d8dea221b6c5eb5a83e4b6698a68948a6fad2a7dd39917cc50e414295e0"
+    }
+  ],
+  "observations": {
+    "mean_zero_poisson_tolerance_sweep": {
+      "fixture": {
+        "padded_grid": [
+          26,
+          18,
+          18
+        ],
+        "active_interior_cell_count": 6144,
+        "source_direction_sum": -1.4210854715202004e-14,
+        "objective_cotangent_sum": 1.0658141036401503e-13,
+        "centered_fd_step": 1e-05,
+        "directional_derivative": "dot(adjoint_source, mean_zero_source_direction)"
+      },
+      "method_note": "A process-local MultiLevelPoisson overload forwards a Ref-selected tolerance to solver!(; tol=...). It preserves the poisson_solve! function identity so the pinned WaterLilyEnzymeCoreExt custom rule is used. No package source or manifest was edited.",
+      "results": [
+        {
+          "tolerance": 0.0001,
+          "fd_cycles": [
+            3,
+            3
+          ],
+          "reverse_cycles": 3,
+          "primal": 184.83926825877353,
+          "centered_fd_directional": 184.839268216308,
+          "reverse_directional": 184.8423172733419,
+          "reverse_over_fd": 1.0000164957211923,
+          "relative_error": 1.6495721192410798e-05,
+          "reverse_elapsed_seconds_including_jit": 34.851728542
+        },
+        {
+          "tolerance": 1e-10,
+          "fd_cycles": [
+            7,
+            7
+          ],
+          "reverse_cycles": 7,
+          "primal": 184.85606474632212,
+          "centered_fd_directional": 184.85606480140856,
+          "reverse_directional": 184.85606478301386,
+          "reverse_over_fd": 0.9999999999004917,
+          "relative_error": 9.95082357366827e-11,
+          "reverse_elapsed_seconds_including_jit": 0.005361834
+        }
+      ],
+      "timing_note": "The first reverse call includes first-use Enzyme compilation. The second tolerance runs in the same Julia process after compilation, so those wall times are not a solver-throughput comparison."
+    },
+    "legacy_single_cell_poisson_probe": {
+      "poisson_tolerance": "WaterLily default 1e-4",
+      "primal": 1082.1336855719337,
+      "centered_fd_rhs": 0.12250039844730053,
+      "reverse_rhs": 0.13056436354830023,
+      "reverse_over_fd": 1.0658280724243423,
+      "relative_error": 0.06582807242434241,
+      "scope_note": "This exactly replays the existing probe. It perturbs one RHS cell and uses an uncentered pressure cotangent; retain as a separate historical diagnostic, not as a tolerance-sweep point or a substitute for the mean-zero fixture."
+    },
+    "full_sim_step_reverse": {
+      "status": "failed_before_gradient_return",
+      "fixture": {
+        "dimensions": [
+          24,
+          16,
+          16
+        ],
+        "sphere_center": [
+          8.0,
+          8.0,
+          8.0
+        ],
+        "sphere_radius": 2.0,
+        "reynolds_number_diameter": 100,
+        "steps": 2,
+        "precision": "Float64",
+        "backend": "Array",
+        "initial_state_gradient_cell": [
+          10,
+          8,
+          8,
+          1
+        ],
+        "poisson_tolerance": 0.0001,
+        "remeasure": false
+      },
+      "primal_base_drag": 8.45013686103991,
+      "centered_fd_initial_velocity": 0.09989015934408484,
+      "reverse_attempt_elapsed_seconds_including_jit": 7.025470291,
+      "exception_type": "MethodError",
+      "exception": "no method matching MixedDuplicated(::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}}, ::Flow{3, Float64, Array{Float64, 3}, Array{Float64, 4}, Array{Float64, 5}})",
+      "actual_log_exception_note": "Both printed Flow arguments have Array{Float64,3}, Array{Float64,4}, Array{Float64,5} fields; Enzyme reports no constructor for the pair.",
+      "failure_locus": {
+        "stage": "Enzyme augmented-forward activity wrapper creation while processing mom_step!",
+        "enzyme_frame": "Enzyme.Compiler.runtime_generic_augfwd for typeof(mom_step!) at Enzyme/src/rules/jitrules.jl:600",
+        "waterlily_callsite": "WaterLily/src/WaterLily.jl:116: mom_step!(sim.flow, sim.pois; λ, udf, kwargs...) inside sim_step!",
+        "constructor_definition": "EnzymeCore.jl:220 provides MixedDuplicated(::T, ::Base.RefValue{T}) and the optional Bool form; the failing call supplies Flow and Flow."
+      },
+      "reverse_gradient_returned": false,
+      "result_scope": "This is a reproducible blocker for this pinned Array-backed fixture. It does not establish that every WaterLily CPU backend or PR fixture fails."
+    }
+  },
+  "interpretation": {
+    "result": "The pinned custom Poisson VJP executes and its agreement improves markedly on the registered mean-zero directional fixture when tolerance tightens from 1e-4 to 1e-10. The separate two-step full sim_step! reverse does not return a gradient and stops in Enzyme's mom_step! augmented-forward path with MixedDuplicated(::Flow, ::Flow).",
+    "upstream_claim_comparison": "This local Array-backed fixture does not reproduce the upstream PR's full-step CPU success claim; fixture/backend differences are not isolated by this task.",
+    "qualification_flags_remain": {
+      "waterlily_reverse_cpu_qualified": false,
+      "waterlily_reverse_cuda_qualified": false,
+      "sdf_gradient_qualified": false,
+      "shape_update_allowed": false
+    }
+  },
+  "limits": [
+    "Executed on macOS arm64 CPU, not on a T4 or CUDA GPU.",
+    "The mean-zero Poisson sweep is an isolated operator-rule directional check; it is not differentiation through sim_step!.",
+    "The full sim_step! result covers one tiny two-step Float64 Array fixture and is not a universal statement about all CPU backends or upstream PR test fixtures.",
+    "No SDF, v16, force-qualification, production-adjoint, optimization, or target-physics evidence is produced."
+  ]
+}

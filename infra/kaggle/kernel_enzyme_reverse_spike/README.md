@@ -73,3 +73,41 @@ pass. WaterLily 1.8.0 also stopped at `MixedDuplicated(::Flow, ::Flow)` for the
 whole-step reverse, and that package version exposed no
 `WaterLilyEnzymeCoreExt` in the tested environment. Those results, and the
 Kaggle T4 attempt, do not qualify reverse mode or authorize a design update.
+
+## Issue #22 CPU rerun: isolated Poisson VJP vs full `sim_step!` (2026-09-29)
+
+The append-only result is `docs/evidence/sdf_native_grad02_cpu_reverse_2026_09.json`.
+The two CPU commands use the Project/Manifest above without instantiating or
+upgrading packages:
+
+```bash
+julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/grad02_poisson_tolerance_sweep.jl
+julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl
+```
+
+On the pinned Julia 1.12.6 / WaterLily PR #285 / Enzyme 0.13.205 environment,
+the two-step, Float64, `Array` sphere run reproduces the full-step reverse
+failure. The primal drag is `8.45013686103991`; centered FD with respect to the
+registered initial velocity cell is `0.09989015934408484`. Reverse stops after
+`7.025470291 s` (including JIT) with `MethodError: no method matching
+MixedDuplicated(::Flow, ::Flow)`. Enzyme reports the failure in
+`runtime_generic_augfwd` for `mom_step!`, called from `WaterLily.sim_step!`
+at `WaterLily/src/WaterLily.jl:116`; no reverse gradient is returned.
+
+The isolated Poisson tolerance sweep uses a mean-zero source direction and
+mean-zero objective cotangent over the 6,144 active interior cells, so the
+check respects the constant-pressure nullspace. At `tol=1e-4`, 3 multigrid
+cycles give a reverse/FD ratio of `1.0000164957` (relative error
+`1.6496e-5`); at `tol=1e-10`, 7 cycles give `0.9999999999` (relative error
+`9.9508e-11`). The tolerance override is local to that diagnostic process;
+it exposes `solver!(; tol=...)` through a test-only `poisson_solve!` method and
+does not edit WaterLily. The pre-existing single-cell Poisson probe is also
+reproduced separately at ratio `1.06582807`; its raw RHS perturbation and
+cotangent are not the mean-zero fixture above, so the two ratios are reported
+as different diagnostics.
+
+This records an isolated Poisson-rule result and a separate full-step blocker.
+The upstream PR's CPU success claim is not reproduced by this Array-backed
+fixture. No CUDA run, SDF gradient, production backend, or qualification gate
+is established by these results. `DIAGNOSTIC_RUN_DONE`/successful Poisson output
+means only that a diagnostic script completed; it is not a full-step pass.

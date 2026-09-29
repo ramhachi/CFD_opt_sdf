@@ -50,20 +50,26 @@ fd = (objective_from_initial_cell(fd_step) - objective_from_initial_cell(-fd_ste
 println("PRIMAL_BASE_DRAG ", repr(base))
 println("PRIMAL_CENTERED_FD_INITIAL_U ", repr(fd))
 
+println("CPU_STATE_REVERSE_BEGIN")
+reverse_started_ns = time_ns()
 try
-    result = @time Enzyme.autodiff(
+    result = Enzyme.autodiff(
         Enzyme.ReverseWithPrimal,
         force_after_steps!,
         Enzyme.Active,
         Enzyme.Duplicated(sim, shadow),
     )
+    elapsed = (time_ns() - reverse_started_ns) / 1e9
     grad = shadow.flow.u[ACTIVE_CELL]
+    println("CPU_STATE_REVERSE_ELAPSED_S_INCLUDING_JIT ", repr(elapsed))
     println("CPU_STATE_REVERSE_PRIMAL ", repr(result[2]))
     println("CPU_STATE_REVERSE_D_INITIAL_U ", repr(grad))
     println("CPU_STATE_REVERSE_FINITE ", isfinite(grad))
     println("CPU_STATE_REVERSE_VS_FD_RATIO ", repr(grad / fd))
     println("CPU_STATE_REVERSE_DONE")
 catch err
+    elapsed = (time_ns() - reverse_started_ns) / 1e9
+    println("CPU_STATE_REVERSE_ELAPSED_S_INCLUDING_JIT ", repr(elapsed))
     println("CPU_STATE_REVERSE_FAILED ", typeof(err))
     showerror(stderr, err, catch_backtrace())
     println(stderr)
