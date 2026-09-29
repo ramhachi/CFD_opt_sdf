@@ -209,3 +209,26 @@ def test_pass_result_and_sha_sidecar_are_append_only(tmp_path):
     assert result_path.with_suffix(".json.sha256").read_text() == digest + "\n"
     with pytest.raises(ValueError, match="already exists"):
         host.write_result_evidence(result_path, result)
+
+
+def test_runner_label_comes_from_staged_criteria_name(tmp_path, monkeypatch):
+    import json
+
+    monkeypatch.setattr(runner, "OUT", tmp_path / "out")
+    monkeypatch.setattr(runner, "set_label", lambda label: (
+        setattr(runner, "LABEL", label), setattr(runner, "OUT", tmp_path / f"w3_{label}")))
+    dataset = tmp_path / "input" / "ds"
+    dataset.mkdir(parents=True)
+    criteria = {"immutable": True, "registered_before_computation": True,
+                "input_dataset_id": "ramhachi888/x", "geometry": {"state_label": "v17"}}
+    path = dataset / "w3_v17_criteria.json"
+    path.write_text(json.dumps(criteria))
+    path.with_suffix(".json.sha256").write_text(runner.sha256(path) + "\n")
+    runner.read_criteria(tmp_path / "input")
+    assert runner.LABEL == "v17" and runner.OUT.name == "w3_v17"
+    criteria["geometry"]["state_label"] = "v16"
+    path.write_text(json.dumps(criteria))
+    path.with_suffix(".json.sha256").write_text(runner.sha256(path) + "\n")
+    with pytest.raises(RuntimeError, match="state label"):
+        runner.read_criteria(tmp_path / "input")
+    assert host.state_label({"geometry": {}}) == "v16"

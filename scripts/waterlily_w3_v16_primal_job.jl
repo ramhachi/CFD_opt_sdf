@@ -35,12 +35,17 @@ using .CFDSDFWaterLily.DeviceGridSDF
 length(ARGS) == 2 || error("usage: waterlily_w3_v16_primal_job.jl <phi_fortran.raw> <output_dir>")
 phi_raw_path, output_dir = ARGS
 
-const EXPECTED_STATE_SHA256 = "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
-const EXPECTED_PHI_C_ORDER_SHA256 = "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
-const EXPECTED_PHI_FORTRAN_SHA256 = "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
-const EXPECTED_SOURCE_STL_SHA256 = "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+# Canonical-state identity. The registered runner passes it from the criteria
+# `geometry` block; the defaults are the registered v16 state.
+const EXPECTED_STATE_SHA256 = get(ENV, "W3_STATE_SHA256", "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8")
+const EXPECTED_PHI_C_ORDER_SHA256 = get(ENV, "W3_PHI_C_ORDER_SHA256", "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785")
+const EXPECTED_PHI_FORTRAN_SHA256 = get(ENV, "W3_PHI_FORTRAN_SHA256", "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7")
+const EXPECTED_SOURCE_STL_SHA256 = get(ENV, "W3_SOURCE_SURFACE_SHA256", "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11")
+const SDF_POINT_SHAPE = Tuple(parse.(Int, split(get(ENV, "W3_POINT_SHAPE", "61,33,25"), ",")))
+const SDF_SPACING_M = parse(Float64, get(ENV, "W3_SDF_SPACING_M", "0.05"))
+const STATE_LABEL = get(ENV, "W3_STATE_LABEL", "v16")
 const REQUIRED_MARGIN_M = 0.15
-const EXPECTED_MARGIN_M = 0.3499999939931499
+const EXPECTED_MARGIN_M = parse(Float64, get(ENV, "W3_EXPECTED_MARGIN_M", "0.3499999939931499"))
 const MARGIN_TOL_M = 1e-6
 const T_END = 120.0
 const BURN_IN = 80.0
@@ -99,23 +104,23 @@ function load_canonical_grid(path)
     Base.ENDIAN_BOM == 0x04030201 ||
         error("registered phi byte encoding requires little-endian runtime")
     bytes = read(path)
-    length(bytes) == prod(V16_PROFILE_POINT_SHAPE) * sizeof(Float32) ||
+    length(bytes) == prod(SDF_POINT_SHAPE) * sizeof(Float32) ||
         error("canonical v16 phi byte length mismatch")
     bytes2hex(sha256(bytes)) == EXPECTED_PHI_FORTRAN_SHA256 ||
         error("canonical v16 Fortran-order phi source hash mismatch")
-    phi = reshape(copy(reinterpret(Float32, bytes)), V16_PROFILE_POINT_SHAPE)
+    phi = reshape(copy(reinterpret(Float32, bytes)), SDF_POINT_SHAPE)
     c_order_sha = bytes2hex(sha256(reinterpret(UInt8, vec(permutedims(phi, (3, 2, 1))))))
     c_order_sha == EXPECTED_PHI_C_ORDER_SHA256 ||
         error("canonical v16 C-order phi hash mismatch")
     grid = GridSDF(
         phi;
         origin = V16_CANONICAL_SDF_ORIGIN_M,
-        h = (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M),
+        h = (SDF_SPACING_M, SDF_SPACING_M, SDF_SPACING_M),
         outside_value = 3.0,
         margin_m = REQUIRED_MARGIN_M,
     )
     measured_margin = zero_level_margin_m(phi, V16_CANONICAL_SDF_ORIGIN_M,
-        (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))
+        (SDF_SPACING_M, SDF_SPACING_M, SDF_SPACING_M))
     abs(measured_margin - EXPECTED_MARGIN_M) <= MARGIN_TOL_M ||
         error("canonical v16 phi margin drift: $(measured_margin)")
     return grid, measured_margin, bytes2hex(sha256(reinterpret(UInt8, vec(phi)))), c_order_sha
@@ -212,14 +217,15 @@ function run_w3_primal()
     roundtrip_sha = device_roundtrip_sha(device_owner)
     roundtrip_sha == EXPECTED_PHI_FORTRAN_SHA256 || error("v16 GPU phi round-trip hash mismatch")
     device_grid = kernel_grid(device_owner)
-    bodies = v16_physical_profile_bodies(device_grid; T = Float32)
+    bodies = v16_physical_profile_bodies(device_grid; T = Float32,
+        point_shape = SDF_POINT_SHAPE, sdf_spacing_m = SDF_SPACING_M)
     sim = build_v16_physical_profile_simulation(bodies; T = Float32, mem = CuArray)
     owned_run = OwnedV16Run(device_owner, bodies, sim)
     fingerprint = runtime_fingerprint()
     vram_total = last(CUDA.memory_info())
     summary = run_primal(owned_run; vram_total)
 
-    csv_path = joinpath(output_dir, "v16.forces.csv")
+    csv_path = joinpath(output_dir, "$(STATE_LABEL).forces.csv")
     write_force_csv(csv_path, summary.history)
     csv_sha = bytes2hex(sha256(read(csv_path)))
     adapter = v16_physical_profile_adapter_contract()
@@ -243,7 +249,7 @@ function run_w3_primal()
         "\"flow_origin_m\":", json_array(V16_PROFILE_FLOW_ORIGIN_M), ",",
         "\"flow_upper_m\":", json_array(V16_PROFILE_FLOW_UPPER_M), ",",
         "\"canonical_sdf_origin_m\":", json_array(V16_CANONICAL_SDF_ORIGIN_M), ",",
-        "\"spacing_m\":", json_number(V16_PROFILE_SPACING_M), ",",
+        "\"spacing_m\":", json_number(SDF_SPACING_M), ",",
         "\"world_per_solver\":", json_number(V16_PROFILE_SPACING_M), ",",
         "\"solver_time_unit_s\":", json_number(V16_PROFILE_SOLVER_TIME_UNIT_S), ",",
         "\"solver_length\":", json_number(V16_PROFILE_SOLVER_LENGTH), ",",
@@ -283,7 +289,7 @@ function run_w3_primal()
         "\"force_csv_sha256\":\"", csv_sha, "\"",
         "}",
     )
-    write(joinpath(output_dir, "v16.summary.json"), result * "\n")
+    write(joinpath(output_dir, "$(STATE_LABEL).summary.json"), result * "\n")
     write(joinpath(output_dir, "w3_adapter_contract.json"),
         "{\"source_profile_equivalent\":false,\"physical_profile_qualified\":false," *
         "\"flow_cell_dims\":" * json_array(V16_PROFILE_CELL_DIMS) * "," *
