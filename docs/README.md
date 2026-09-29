@@ -24,8 +24,13 @@ open. Immutable FD round 2 is preserved; its exact kernel `/1` stopped in
 `host_input_preflight` before GPU or solver startup because the Python runner
 referenced canonical identity names outside their scope. A complete local
 preflight repair and regression coverage are implemented and pushed in source
-commit `86087b888e7ea42033476bfcee9c8c7e888bb3cb`; round 3 is not registered,
-and no FD measurement has started. See
+commit `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. Immutable round 3 is now
+registered against source commit `9978eb4f19c716b9666c50c18261738edd978e4f`
+(criteria file SHA-256
+`45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+canonical SHA-256
+`fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`).
+Dataset v3 has not yet been uploaded, and no FD measurement has started. See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
 version-bound commands and artifacts.

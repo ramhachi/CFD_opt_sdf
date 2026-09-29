@@ -2699,7 +2699,14 @@ Current operational state:
   round-3 registrar, and round-3 draft metadata are in source commit
   `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. Current-status documentation is
   being updated before immutable registration.
-- **Registered:** round 2 only. Its criteria file/sidecar SHA is
+- **Registered:** immutable round 3 is now registered. Its criteria path is
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json`, file
+  SHA `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  canonical criteria SHA
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`, and
+  source commit `9978eb4f19c716b9666c50c18261738edd978e4f`. The sidecar SHA is
+  `517e9f5650f706ccfab84f1d8ca8812918197c158d81e74847e29c2b2edea3b7`.
+  Round 2 remains unchanged; its criteria file/sidecar SHA is
   `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
   canonical criteria SHA is
   `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`, and
@@ -2711,9 +2718,9 @@ Current operational state:
   only, not an FD measurement.
 - **Qualified:** FD oracle, field gradient, reverse, optimizer, topology, and
   shape update remain false.
-- **Open:** register immutable round 3 from that clean source; prepare a fresh
-  empty dataset stage, upload a
-  new private dataset version, and redownload/compare its exact inventory;
-  then submit the unique retry kernel with T4 and collect the actual returned
-  version. Never assume `/2`; bind logs/output/host verification to the exact
-  returned version. Stop after exact-version host verification.
+- **Open:** commit the round-3 criteria and this status update; prepare a fresh
+  empty dataset stage, upload a new private dataset version, and
+  redownload/compare its exact inventory; then submit the unique retry kernel
+  with T4 and collect the actual returned version. Never assume `/2`; bind
+  logs/output/host verification to the exact returned version. Stop after
+  exact-version host verification.

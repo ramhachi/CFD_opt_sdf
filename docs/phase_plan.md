@@ -4419,22 +4419,31 @@ its exact kernel `/1` diagnostic remain immutable.
   worktree; neither FD test file failed. Full log:
   `work/sdf_directional_fd_round3_source_validation/full_pytest.log`,
   SHA-256 `35b3ad1e7d8e3376679a975b486daa669594c4aefceb4db88d78ea2d5a5fc916`.
-- **Registered:** round 3 is not yet frozen. Round-2 criteria file/sidecar SHA
-  `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
-  canonical SHA `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`,
-  and diagnostic SHA
-  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a` are
-  binding inputs for the next append-only round.
+- **Registered:** immutable round 3 is registered at
+  `docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round3.json`, file
+  SHA `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
+  sidecar SHA
+  `517e9f5650f706ccfab84f1d8ca8812918197c158d81e74847e29c2b2edea3b7`, and
+  canonical criteria SHA
+  `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`. It
+  binds source commit `9978eb4f19c716b9666c50c18261738edd978e4f`, round-2
+  criteria canonical SHA
+  `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`, and
+  exact round-2 `/1` diagnostic SHA
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+  The registrar's machine comparison found the full measurement contract
+  identical to round 2.
 - **Submitted / measured / verified:** only round-2 kernel `/1` exists and is
   preserved as `ERROR`; `solver_started=false`, Julia/CUDA were not reached,
-  and no `sim_step!` or FD measurement occurred. No round-3 dataset or kernel
-  exists yet.
+  and no `sim_step!` or FD measurement occurred. Round-3 dataset staging,
+  remote upload/verification, and kernel submission have not started.
 - **Qualified:** all FD-oracle, field-gradient, reverse, optimizer, topology,
   and shape-update flags remain false.
 - **Source commit:** runner, tests, registrar round-3 support, and mutable
   draft identity are committed and pushed as
   `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. The source tree is clean at that
   commit before the current documentation update.
-- **Open:** finish current-status notes, then register immutable round 3 from
-  the clean pushed source, stage and remotely verify dataset v3, and submit
+- **Open:** commit the immutable round-3 criteria/sidecar and current-status
+  notes, stage dataset v3 into a fresh directory, upload and redownload the
+  exact remote version for complete inventory/hash verification, then submit
   and host-verify only the exact returned T4 kernel version.
