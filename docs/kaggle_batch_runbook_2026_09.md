@@ -2560,3 +2560,52 @@ registrar `--round 2` from the clean pushed branch, upload a new version of
 the existing private dataset ID, verify every remote file hash, and submit
 the exact private T4 kernel. Do not modify round 1 or any measurement
 threshold.
+
+## 2026-09-29: FD round 2 immutable criteria registered
+
+This checkpoint supersedes the preceding retry-implementation section's
+`round 2 is implemented locally but not registered` status; it preserves that
+earlier transition for audit history.
+
+Source retry commit `178792e9065df87d87ea1d445baaedace404304e` was pushed and
+clean before registration. The registrar created and rechecked:
+
+```text
+criteria: docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json
+file SHA: 150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b
+canonical criteria SHA: 91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa
+source commit: 178792e9065df87d87ea1d445baaedace404304e
+kernel ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel
+dataset ID: ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle
+```
+
+Round 2 binds the exact round-1 criteria and HTTP 409 diagnostic. The registrar
+compared these round-1 fields and found no differences: geometry, primary
+responses, direction definitions and hashes, all 30 perturbation identities,
+33-run order, force integration/window, stationarity, noise floor, resolution
+factor, plateau gate, registered backend, gates and dataset payload. The only
+measurement-path identity change is the Kaggle kernel slug/title; round 2 also
+contains the supersedes linkage. Criteria `--check` and sidecar validation
+passed; `formal_measurement_started=false`.
+
+**Status:** implemented/pushed and immutably registered; private dataset v2 is
+not staged/uploaded yet; no round-2 kernel version exists; no solver step or
+measurement ran; no FD or gradient qualification is granted. Round-1 criteria
+and dataset version 1 remain unchanged.
+
+Next, commit/push the round-2 criteria and status docs. Then run:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python \
+  scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py \
+  --criteria docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round2.json \
+  --state work/kaggle_w3_v16_dataset_registered_3c54f386/sdf_design_state.npz \
+  --output work/kaggle_sdf_directional_fd_dataset_round2
+```
+
+Verify the local manifest, add a new private version of the existing dataset
+ID with `kaggle datasets version` (do not delete old versions), wait for that
+exact version to become `ready`, download it, and compare every path/hash to
+the manifest. Only after the remote match, push and execute the exact new
+private T4 kernel slug with the registered 14,400 second timeout. Stop after
+exact-version host verification.
