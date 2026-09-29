@@ -154,6 +154,9 @@ def build_criteria(*, state_path: Path, round_number: int) -> dict:
         raise ValueError("only the first new directional-FD criteria round is defined")
     (w3_criteria, w3_result, w4_criteria, w4_result,
      w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha) = load_prerequisites()
+    observed_w4_backend = w4_result["backend_identity"]
+    backend = observed_w4_backend["registered_backend"]
+    selected_w4_gpu = observed_w4_backend["selected_gpu_uuid"]
     state_path = Path(state_path)
     state = SDFDesignState.load(state_path)
     state_npz_sha = sha256(state_path)
