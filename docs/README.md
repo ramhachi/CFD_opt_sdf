@@ -145,6 +145,9 @@ framing.
 
 - [`CFD_opt_sdf_SDF_native_handoff/README.md`](CFD_opt_sdf_SDF_native_handoff/README.md)
   — index for the frozen SDF-native research handoff bundle.
+- [`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md)
+  — registered SDF topology-policy semantics, immutable registration hash,
+  and the unresolved v16 Birth-0 inputs.
 - [`colab_t4_batch_worker_plan_2026_09_26.md`](colab_t4_batch_worker_plan_2026_09_26.md)
   — Colab T4 batch-worker execution design, subordinate to the roadmap.
 - [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) —

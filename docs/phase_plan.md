@@ -1949,16 +1949,32 @@ the limit semantics and the reporting-only over-volume
 signed residual `g_V = V_phi / V_phi_0 - 1` plus
 `smoothed_volume_and_gradient(...)` — arrives with the one-step gate).
 
-**Contract 3 — SDFTopologyPolicy v1 is a prerequisite gate for Birth-0
-(registration may be later; no Birth-0 work before it).**  The v16
-genesis state has empty `fixed_solid`, `forbidden` and `root` masks
+**Contract 3 — SDFTopologyPolicy v1 contract registered; v16 binding
+unresolved.** The immutable registration is
+[`evidence/sdf_topology_policy_v1_2026_09.json`](evidence/sdf_topology_policy_v1_2026_09.json)
+and the semantics are described in
+[`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md).
+It reuses the ProblemSpec v2 root groups, connectivity modes, and exact
+minimum-feature lengths by content hash. Its component checker follows the
+existing Stage S 26-neighbour convention; disconnected solids are allowed
+only if every component has a designated root owner. Birth and whole-component
+deletion are disabled, merge is conditional on all gates, and split is
+conditional on every resulting component retaining a root owner. Forbidden,
+fixed-solid, root, design, and minimum solid/void-width rules are explicit.
+
+The v16 genesis state has empty `fixed_solid`, `forbidden` and `root` masks
 (`solid_design_fraction = 1.0`), and the Stage S entry evidence records
-`root_connectivity = not_applicable` for this candidate; the legacy
-root-connectivity hard gate therefore constrains nothing today, which is
-acceptable for the WaterLily primal but not for topology birth.  Before
-any Birth-0 work, an SDFTopologyPolicy v1 registration must fix: whether
-disconnected aero components are allowed; whether every component must
-connect to a designated root region; and which region is the root.
+`root_connectivity = not_applicable` for this candidate. The tracked Stage V
+v16 ProblemSpec has root connectivity disabled and null minimum solid/void
+widths; it is not a topology-policy source. The v16 genesis lineage has no
+bound ProblemSpec v2 topology-policy digest, per-group root-mask provenance,
+or registered minimum-feature values. Empty-root `not_applicable` is
+unresolved, not evidence of a passing root rule. The registration records
+these omissions and keeps `topology_birth_qualified=false`;
+Birth-0 remains blocked. Per-group masks passed to the checker are external
+registered evidence; the checker validates their IDs, shape, union with the
+state root mask, and material occupancy, while callers must independently
+verify the geometry-mask manifest provenance.
 
 **Updated gate order after genesis (W series).**  The gate ladder replaces
 any implication that the WaterLily primal starts directly on v16:
@@ -1977,8 +1993,8 @@ W4     WaterLily grid/domain response qualification
        CPU reverse-AD PoC (Pinned PR #285)
        GPU reverse/custom-adjoint Go/No-Go
        one constrained SDF step (volume contract + all hard gates enforced)
-REQD   SDFTopologyPolicy v1                    (registered before Birth-0)
-       topology birth (Birth-0 geometry fixture first)
+REGD   SDFTopologyPolicy v1 contract           (v16 root/feature binding OPEN)
+BLOCKED topology birth                         (birth disabled; P23 unresolved)
        bounded closed loop
        OpenFOAM PQ5 verification
 ```

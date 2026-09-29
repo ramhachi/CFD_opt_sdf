@@ -1891,15 +1891,25 @@ genesis v16 canonical 状態は `fixed_solid = 0`、`forbidden = 0`、`root = 0`
 を記録している。つまり旧 Stream の root-connectivity hard gate は、この candidate
 については実質何も制約していない。
 
-### 必要な登録（Birth-0 前の必須 gate）
+### 登録した契約
 
-SDFTopologyPolicy v1 として次を事前登録する:
-
-1. disconnected aero 成分を許可するのか（例: 端板/サスペンション分離要素）;
-2. すべての成分は designated root 領域に繋ぐのか;
-3. root 領域は具体的にどの領域なのか（候補生成と dry-run fixture を含めて定義）。
+[`sdf_topology_policy_v1_2026_09.md`](sdf_topology_policy_v1_2026_09.md) と
+[`evidence/sdf_topology_policy_v1_2026_09.json`](evidence/sdf_topology_policy_v1_2026_09.json)
+に、immutable SDFTopologyPolicy v1 と fail-closed transition checker を登録した。
+ProblemSpec v2 の root groups/connectivity/minimum-feature definitions は source
+content hash に結び付ける。複数solid componentは各componentが少なくとも一つの
+designated root groupに所有される場合だけ許可し、26-neighbour connectivity を使う。
+Birthとcomponent全削除はdisabled、mergeは他gate通過時に許可、splitは全componentが
+root-ownedの場合だけ許可する。forbidden material、fixed/root保持、solid/voidの最小幅も
+同じsource policyから判定する。
 
 ### 状態
 
-**open（Birth-0 作業の前に必須）。** 登録は後回しでよいが、topology birth の
-コード作業を開始する前に必ず登録する。WaterLily primal（W0-W4）には影響しない。
+**open（Birth-0 前の必須 gate。契約だけ登録済み）。** v16 genesisはroot/fixed/forbidden
+maskが空で、記録された`root_connectivity=not_applicable`はroot rule passを意味しない。
+SDF lineageのProblemSpec v2 digest/topology policy payload、非empty root groupとその
+per-group SDF maskのgeometry-manifest provenance、source付き minimum solid/void width、
+candidate-bound feature measurementは未登録。v16のfeature値から閾値を推測しない。
+policyは`birth_enabled=false`であり、Birth-0、flow-aware proposer、shape updateは
+実装・実行していない。`topology_birth_qualified=false`。これらのsourceとmask-evidence
+gatesが閉じるまでP23とissue #31はopen。WaterLily primal（W0-W4）には影響しない。
