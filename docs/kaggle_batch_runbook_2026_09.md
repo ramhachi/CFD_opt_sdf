@@ -2651,3 +2651,69 @@ and commit/push the source fix, preregister round 3 bound to this diagnostic
 and unchanged measurement fields, publish/verify dataset version 3, and submit
 the next exact kernel version. All FD/gradient qualification flags remain
 false.
+
+## 2026-09-29: FD round-3 host-input repair in progress
+
+The preceding round-2 entry is retained as the exact historical diagnosis. The
+repair addresses the whole host-input identity scope, rather than adding only
+the first missing import:
+
+- `verify_canonical_and_preflight()` returns C-order and Fortran-order phi
+  hashes, measured margin, and all four mask hashes as one identity object.
+- `build_state_identity_payload()` assembles that object with the canonical
+  NPZ hash, direction audit, and all 30 perturbation preflight records.
+- A local executable host-input preflight completes criteria, dataset,
+  source, W3/W4 prerequisite, canonical state, direction, perturbation, and
+  JSON-serialization checks before GPU inventory.
+- Regression coverage checks the returned identity payload, the preflight
+  ordering, and unresolved Python global references in the runner.
+
+Validation already completed on the current source changes:
+
+```text
+focused FD tests: 29 passed
+compileall src tests scripts: passed
+targeted Python py_compile: passed
+Julia FD job Meta.parseall: passed
+round-2 exact local dataset/source/prerequisite/host-input preflight: passed
+full pytest: 1,146 passed, 37 failed, 4 skipped
+full pytest log SHA-256: 35b3ad1e7d8e3376679a975b486daa669594c4aefceb4db88ea2d5a5fc916
+```
+
+The 37 full-suite failures are historical Stage T/S/V checks whose ignored
+`work/` meshes, checkpoints, solver logs, or case inputs are absent in this
+worktree; neither FD test failed. See the detailed classification in
+[`phase_plan.md`](phase_plan.md#2026-09-29-fd-round-3-pre-registration-runner-repair).
+
+Round 3 registrar support is implemented locally and binds the exact immutable
+round-2 criteria, its sidecar, and the pre-GPU `/1` diagnostic. It rejects a
+round-2 criteria or diagnostic hash mismatch, requires `solver_started=false`,
+and compares the measurement contract while permitting only source/runner/test
+identity, round identity, and supersession linkage to change. The mutable draft
+has `criteria_round=3` and retains the unique retry kernel slug. No round-2
+artifact or measurement threshold is changed.
+
+Current operational state:
+
+- **Implemented / pushed:** runner scope repair, executable regression,
+  round-3 registrar, and round-3 draft metadata are in source commit
+  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. Current-status documentation is
+  being updated before immutable registration.
+- **Registered:** round 2 only. Its criteria file/sidecar SHA is
+  `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
+  canonical criteria SHA is
+  `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`, and
+  exact `/1` diagnostic file/sidecar SHA is
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
+- **Submitted / measured / verified:** round-2 kernel `/1` is `ERROR` at
+  `host_input_preflight`; `solver_started=false`, with no Julia, CUDA, GPU
+  inventory, or `sim_step!` reached. It is infrastructure diagnostic evidence
+  only, not an FD measurement.
+- **Qualified:** FD oracle, field gradient, reverse, optimizer, topology, and
+  shape update remain false.
+- **Open:** register immutable round 3 from that clean source; prepare a fresh
+  empty dataset stage, upload a
+  new private dataset version, and redownload/compare its exact inventory;
+  then submit the unique retry kernel with T4 and collect the actual returned
+  version. Never assume `/2`; bind logs/output/host verification to the exact
+  returned version. Stop after exact-version host verification.

@@ -20,8 +20,13 @@ follow-up condition was not triggered. This qualifies only the registered
 WaterLily finite-box sensitivity matrix. OpenFOAM profile equivalence,
 absolute downforce, grid/domain convergence, gradient, reverse mode, topology,
 optimizer and shape update remain unqualified. The formal FD entry gate is
-open, but no FD measurement has started. See [`phase_plan.md`](phase_plan.md)
-for current execution order and
+open. Immutable FD round 2 is preserved; its exact kernel `/1` stopped in
+`host_input_preflight` before GPU or solver startup because the Python runner
+referenced canonical identity names outside their scope. A complete local
+preflight repair and regression coverage are implemented and pushed in source
+commit `86087b888e7ea42033476bfcee9c8c7e888bb3cb`; round 3 is not registered,
+and no FD measurement has started. See
+[`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
 version-bound commands and artifacts.
 

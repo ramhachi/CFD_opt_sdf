@@ -4383,3 +4383,58 @@ Exact captured artifacts (all under ignored `work/`):
   the minimal fix, preregister round 3 against this diagnostic and unchanged
   numerical contract, upload/verify dataset v3, submit the next exact kernel
   version, and resume host verification.
+
+### 2026-09-29 FD round-3 pre-registration runner repair
+
+This checkpoint supersedes the preceding “add the missing `phi_sha256` import”
+work instruction with a complete host-input identity scope repair. Round 2 and
+its exact kernel `/1` diagnostic remain immutable.
+
+- **Implemented locally:** `verify_canonical_and_preflight()` now returns one
+  canonical identity object containing C-order phi SHA, Fortran-order phi SHA,
+  measured canonical margin, and all four mask hashes. The new
+  `build_state_identity_payload()` assembles that verified object with NPZ SHA,
+  direction audit, and all 30 perturbation preflight rows. `run_main()` calls
+  `host_input_preflight()` and writes the JSON payload before `gpu_inventory()`.
+  It no longer reaches into local names from the nested preflight function.
+- **Latent scope audit:** besides the observed `phi_sha256` failure, `run_main()`
+  also previously referenced `zero_level_margin_m` and `mask_hashes` outside
+  their defining function scope. These are returned through the same canonical
+  identity object; this is not an import-only patch.
+- **Regression / local preflight:** executable payload tests cover C/F hashes,
+  margin, four mask hashes, direction audit, and perturbation details. An AST
+  check requires host preflight and identity serialization before GPU inventory;
+  a `symtable` audit finds no unresolved module-global names in runner function
+  scopes. Using the exact round-2 dataset and a source archive at registered
+  commit `178792e9065df87d87ea1d445baaedace404304e`, local criteria/dataset,
+  source, W3/W4 prerequisite, canonical NPZ/C/F phi, margin, mask, three
+  direction, 30 perturbation, and JSON assembly checks all completed. The
+  helper stopped before GPU inventory.
+- **Validation:** focused FD tests passed (`29 passed`). Python
+  `compileall src tests scripts`, the four targeted `py_compile` files, Julia
+  FD-job `Meta.parseall`, JSON parsing, and `git diff --check` passed. Full
+  repository pytest reported `1,146 passed, 37 failed, 4 skipped` in `207.26 s`.
+  The 37 failures are historical Stage T/S/V tests whose ignored `work/`
+  checkpoints, meshes, solver logs, or case files are absent from this managed
+  worktree; neither FD test file failed. Full log:
+  `work/sdf_directional_fd_round3_source_validation/full_pytest.log`,
+  SHA-256 `35b3ad1e7d8e3376679a975b486daa669594c4aefceb4db88d78ea2d5a5fc916`.
+- **Registered:** round 3 is not yet frozen. Round-2 criteria file/sidecar SHA
+  `150a60232f1adb413fa7021833943c8effe5b91ef068909d4d9364112c248e1b`,
+  canonical SHA `91756109ce69fbe7c77cb0f18417f6d48619bb0020585db1aab7f8e891d19bfa`,
+  and diagnostic SHA
+  `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a` are
+  binding inputs for the next append-only round.
+- **Submitted / measured / verified:** only round-2 kernel `/1` exists and is
+  preserved as `ERROR`; `solver_started=false`, Julia/CUDA were not reached,
+  and no `sim_step!` or FD measurement occurred. No round-3 dataset or kernel
+  exists yet.
+- **Qualified:** all FD-oracle, field-gradient, reverse, optimizer, topology,
+  and shape-update flags remain false.
+- **Source commit:** runner, tests, registrar round-3 support, and mutable
+  draft identity are committed and pushed as
+  `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. The source tree is clean at that
+  commit before the current documentation update.
+- **Open:** finish current-status notes, then register immutable round 3 from
+  the clean pushed source, stage and remotely verify dataset v3, and submit
+  and host-verify only the exact returned T4 kernel version.
