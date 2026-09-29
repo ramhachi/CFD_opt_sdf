@@ -2718,9 +2718,23 @@ Current operational state:
   only, not an FD measurement.
 - **Qualified:** FD oracle, field gradient, reverse, optimizer, topology, and
   shape update remain false.
-- **Open:** commit the round-3 criteria and this status update; prepare a fresh
-  empty dataset stage, upload a new private dataset version, and
-  redownload/compare its exact inventory; then submit the unique retry kernel
-  with T4 and collect the actual returned version. Never assume `/2`; bind
-  logs/output/host verification to the exact returned version. Stop after
-  exact-version host verification.
+- **Dataset verified:** private dataset version 3 is `ready`. All 37 files in
+  the local registered manifest match the remote files by path, size, and
+  SHA-256; the downloaded mounted inventory has 38 files including the
+  manifest. Remote inventory SHA-256 is
+  `1b74127038a414c39de72a681bc02f44661e27dfcae56e789cadf40091da3466`.
+  Append-only evidence
+  [`sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json)
+  SHA-256 is
+  `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
+  With that exact redownloaded payload, the host-side `read_criteria`,
+  `verify_dataset`, `verify_source`, `verify_prerequisites`, and
+  `host_input_preflight` passed: canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`,
+  canonical C/F hashes, CPU margin `0.3499999939931499 m`, four masks, three
+  directions, and 30 perturbations. `gpu_inventory()` was not called.
+
+- **Open:** commit this dataset verification evidence/status update, then
+  submit the unique private retry kernel on T4 and collect the actual returned
+  version. Never assume `/2`; bind status, logs, output, and host verification
+  to the exact returned version. Stop after exact-version host verification.

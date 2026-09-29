@@ -30,7 +30,13 @@ registered against source commit `9978eb4f19c716b9666c50c18261738edd978e4f`
 `45fb570bc3628ff083d5cd34f496e352f6ec0834ac93f381909bef1c4d13f6c5`,
 canonical SHA-256
 `fe49a91e5800460dc4560f453b72fd25f12158ecd4a099a1e940cbf434db8d52`).
-Dataset v3 has not yet been uploaded, and no FD measurement has started. See
+Private dataset version 3 is `ready`; all 37 registered payload files matched
+the remote manifest by path, size, and SHA-256, and the 38-file mounted
+inventory passed the runner's exact local host-input preflight before GPU
+inventory. Verification evidence is
+[`sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`](evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json),
+SHA-256 `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
+No round-3 kernel has been submitted and no FD measurement has started. See
 [`phase_plan.md`](phase_plan.md) for current execution order and
 [`kaggle_batch_runbook_2026_09.md`](kaggle_batch_runbook_2026_09.md) for
 version-bound commands and artifacts.

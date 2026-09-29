@@ -4433,6 +4433,20 @@ its exact kernel `/1` diagnostic remain immutable.
   `1c39d56953ef6e15979ea84bd2a5cca209af8689bb491be777d50e6f16a6d06a`.
   The registrar's machine comparison found the full measurement contract
   identical to round 2.
+- **Dataset verified:** private dataset version 3 is `ready`. The staged
+  manifest contains 37 registered payload files; the exact redownloaded
+  mounted inventory has those 37 plus the manifest, and every path, size, and
+  SHA-256 matches. Remote inventory SHA-256 is
+  `1b74127038a414c39de72a681bc02f44661e27dfcae56e789cadf40091da3466`;
+  dataset-verification evidence is
+  `docs/evidence/sdf_directional_fd_v16_dataset_round3_verification_2026_09.json`,
+  SHA-256 `aad6667f391543d78a338d089daf737203222e7ec54b4ffe871ffd740745d48c`.
+  Running the exact round-3 `read_criteria`, `verify_dataset`, `verify_source`,
+  `verify_prerequisites`, and `host_input_preflight` on that remote payload
+  passed. It checked canonical state SHA
+  `44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8`, C/F
+  phi identity, four masks, three directions, and 30 perturbations, and stopped
+  before `gpu_inventory()`.
 - **Submitted / measured / verified:** only round-2 kernel `/1` exists and is
   preserved as `ERROR`; `solver_started=false`, Julia/CUDA were not reached,
   and no `sim_step!` or FD measurement occurred. Round-3 dataset staging,
@@ -4443,7 +4457,7 @@ its exact kernel `/1` diagnostic remain immutable.
   draft identity are committed and pushed as
   `86087b888e7ea42033476bfcee9c8c7e888bb3cb`. The source tree is clean at that
   commit before the current documentation update.
-- **Open:** commit the immutable round-3 criteria/sidecar and current-status
-  notes, stage dataset v3 into a fresh directory, upload and redownload the
-  exact remote version for complete inventory/hash verification, then submit
-  and host-verify only the exact returned T4 kernel version.
+- **Open:** commit the dataset verification evidence/current-status update,
+  then submit the unique private T4 kernel using the registered criteria. Use
+  the actual returned version and collect only that exact version's status,
+  logs, and output for host verification.
