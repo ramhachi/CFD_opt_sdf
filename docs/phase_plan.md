@@ -630,6 +630,8 @@ are retained historical plans; neither controls current execution.
 
 **2026-09-30 FD-05 (#37) terminal result (supersedes the prior pending-FD-05 status and sequence items below where they conflict):** The registered v17 / flow_24 criteria ran once on Kaggle kernel `/1`; all 33 fresh primals completed. T0-T9 passed, while T10 and T11 failed the unchanged N-based 5% plateau gate in all six direction/response combinations. Strict host verification failed closed (`KernelWorkerStatus.ERROR`, no `DONE`); supplemental source-bound recomputation is diagnostic only. See [`issues/37_fd05_result.md`](issues/37_fd05_result.md) and its append-only evidence. No retry was run. FD, gradient, optimizer, topology, and shape-update qualification remain false; stop after this result.
 
+**2026-10-01 FD-05 solver-free diagnosis (diagnostic only; registered T10/T11 FAIL unchanged):** Re-analysis of the 33 raw force histories shows fully steady flow (window std ≤ 2.5e-6 N) and a viscous-force offset that does not vanish as ε→0 (D1/D2 +ε and −ε both shift by about −0.002 to −0.003 N at ε = 0.5 mm, almost unchanged up to 10 mm). A numpy re-evaluation of the `measure()` normal on the flow_24 band finds 348 samples with φ≈0 and |∇φ|≈0 (all on ≥2 v17 node planes where source faces lie on the lattice); any perturbation reverses their normal independently of ε. flow_16 has 377 such samples, flow_32 has 0. The causal link to the force jump is a hypothesis, not qualified. See [`issues/37_fd05_solver_free_diagnosis.md`](issues/37_fd05_solver_free_diagnosis.md). FD-06 is not registered; it needs a user decision between normal regularization and breaking sample-plane/face-plane coincidence.
+
 Current gates and immediate sequence as of 2026-09-30 after the FD-05 terminal result:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
@@ -670,12 +672,11 @@ Current gates and immediate sequence as of 2026-09-30 after the FD-05 terminal r
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **Stop before FD-05 and await the user's decision.** W4 v17 reports
-   `fd_entry_gate=OPEN` but `fd05_execution_authorized=false`; the open
-   prerequisite gate is not an execution authorization. Do not select a flow
-   resolution from this sensitivity matrix and do not register or run #37
-   automatically. The current matrix still has 6.77% drag and 8.37% downforce
-   changes from flow24 to flow32, so it does not demonstrate grid convergence.
+5. **FD-05 ran once and is terminal FAIL** (see the 2026-09-30 FD-05 and
+   2026-10-01 diagnosis checkpoints above). Do not retry FD-05 or edit its
+   criteria. Before any FD-06 registration, the user selects the geometric
+   remedy for the flat-normal samples, and a solver-free normal census plus a
+   short CPU FD check must show ε-proportional behaviour.
 6. **Repair the FD runner/host-verifier contract before a future authorized
    execution.** Round 5 is terminal failed evidence; preserve its immutable
    criteria, dataset v5, exact kernel `/4`, outputs, and diagnostics. The source
@@ -701,7 +702,7 @@ Current gates and immediate sequence as of 2026-09-30 after the FD-05 terminal r
 11. **Verify independently in Stage V** with body-fitted OpenFOAM and registered
     cross-fidelity/grid checks. Stage V remains a verifier, not the optimizer.
 
-Post-FD-05 status remains deliberately scoped: the v17 / flow_24 FD-05 run is terminal FAIL under T10/T11, and strict host verification failed closed; its supplemental recomputation is diagnostic only. W3 v16 and v17 registered finite-box W3 v16 and v17 registered finite-box
+Post-FD-05 status remains deliberately scoped: the v17 / flow_24 FD-05 run is terminal FAIL under T10/T11, and strict host verification failed closed; its supplemental recomputation is diagnostic only. W3 v16 and v17 registered finite-box
 primal contracts passed, and W4 v16 and v17 registered finite-box sensitivity
 matrices passed (`w4_sensitivity_matrix_passed=true`). The W3 v4 all-zero force root-cause
 mapping remains open. `physical_profile_qualified=false`,
@@ -740,7 +741,7 @@ W4 v17 observed `flow16→flow24` and `flow24→flow32` response changes of
 `0.09%/0.26%` change for the tested x+ domain extension. These support
 resolution sensitivity in the registered cases, not convergence, absolute
 force accuracy, or physical-profile qualification. `fd05_execution_authorized`
-is false; FD-05 remains unregistered and unrun pending the user's decision.
+is false; FD-05 remained unregistered at the time of this W4 entry (superseded: FD-05 ran on 2026-09-30, see [`issues/37_fd05_result.md`](issues/37_fd05_result.md)).
 
 ### 2026-09-29 FD round-5 dataset v5 and exact kernel `/4` terminal FAIL
 
