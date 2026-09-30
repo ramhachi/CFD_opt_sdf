@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "fd05_v17_flow24_kernel_submission_failure_before_run",
+  "recorded_at_utc": "2026-09-30T12:34:16Z",
+  "submission_attempt_count": 1,
+  "criteria_path": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json",
+  "criteria_sha256": "61e5109fe5fe28f141563e13bf1cf172666e6d9f7f45c587bf6466ab78986aa4",
+  "registered_source_commit": "b2cb556562813315a8868ffb9cf2bee08e611735",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle",
+  "dataset_version": 1,
+  "remote_dataset_inventory_sha256": "098a643718e9b619ebb02f55b649779d816559b90a63baaf3a9d529c781adc69",
+  "kaggle_cli_version": "Kaggle CLI 2.2.4",
+  "push_command": "kaggle kernels push --path infra/kaggle/kernel_sdf_directional_fd_v17_flow24 --accelerator NvidiaTeslaT4 --timeout 14400",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle-kernel",
+  "kernel_title": "CFD Opt SDF v17 Flow24 Directional FD Oracle Kernel",
+  "kernel_slug_length": 51,
+  "kernel_title_length": 51,
+  "kernel_runner_bytes": 55542,
+  "push_exit_code": 1,
+  "push_response": {
+    "http_status": 400,
+    "url": "https://api.kaggle.com/v1/kernels.KernelsApiService/SaveKernel",
+    "response_body_available": false,
+    "kernel_version_returned": null
+  },
+  "post_push_read_only_checks": {
+    "kernels_list_mine": "Completed successfully; the FD-05 kernel ID was absent from the returned owned-kernel list.",
+    "kernels_status": "Could not access the submitted slug; Kaggle CLI reported kernels.get permission denied and suggested a wrong slug or private kernel.",
+    "no_kernel_version_observed": true
+  },
+  "solver_started_observed": false,
+  "classification": "Kaggle submission API failure before a kernel version or solver run was observed; this is not a numerical FD PASS or FAIL.",
+  "cause": "Unconfirmed. The 51-character title/slug was identified as a submission-metadata risk; the API response body was not available, so it is not established as the cause.",
+  "follow_up": "Preserve this attempt. The next preregistration uses a shorter private kernel title/slug while retaining the numerical contract and all dataset solver-input identities. No numerical solver run has occurred yet."
+}
