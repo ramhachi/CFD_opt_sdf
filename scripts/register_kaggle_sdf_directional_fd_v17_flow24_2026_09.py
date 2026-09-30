@@ -21,10 +21,11 @@ LABEL = "v17"
 FLOW_CASE_ID = "flow_24"
 CRITERIA_ID = "sdf_directional_fd_v17_flow24_2026_09"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"
-KERNEL_ID = DATASET_ID + "-kernel"
-OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json"
-SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix2.json"
-SUPERSEDED_CRITERIA_SHA256 = "3c97ea5d140d9a124a49d7a60869d317c35d98bd6db1466866603f80ea76eadc"
+KERNEL_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle"
+KERNEL_TITLE = "CFD Opt SDF v17 Flow24 FD Oracle"
+OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix4.json"
+SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json"
+SUPERSEDED_CRITERIA_SHA256 = "61e5109fe5fe28f141563e13bf1cf172666e6d9f7f45c587bf6466ab78986aa4"
 R5_PATH = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json"
 R5_DIAGNOSTIC = ROOT / "docs/evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json"
 V17_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
@@ -110,7 +111,7 @@ def source_inputs() -> dict:
         "criteria_draft": "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json",
         "criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
         "v17_flow24_criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v17_flow24_2026_09.py",
-        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix2.json",
+        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json",
         "dataset_preparer": "scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py",
         "cpu_preflight": "scripts/preflight_kaggle_sdf_directional_fd_v16_cpu.py",
         "julia_job": "scripts/waterlily_sdf_directional_fd_v16_job.jl",
@@ -267,7 +268,8 @@ def build_criteria(source_commit: str) -> dict:
 
     metadata_path = ROOT / f"{KERNEL_DIR}/kernel-metadata.json"
     metadata = json.loads(metadata_path.read_text())
-    if metadata.get("id") != KERNEL_ID or metadata.get("dataset_sources") != [DATASET_ID]:
+    if (metadata.get("id") != KERNEL_ID or metadata.get("title") != KERNEL_TITLE
+            or metadata.get("dataset_sources") != [DATASET_ID]):
         raise ValueError("v17 flow24 kernel metadata ID/dataset binding mismatch")
     branch = subprocess.check_output(["git", "-C", str(ROOT), "branch", "--show-current"], text=True).strip()
     if branch != "codex/kaggle-batch-migration":
@@ -294,7 +296,7 @@ def build_criteria(source_commit: str) -> dict:
         "criteria_path": OUTPUT.relative_to(ROOT).as_posix(),
         "registration_revision": {"supersedes_criteria_path": SUPERSEDED_CRITERIA.relative_to(ROOT).as_posix(),
             "supersedes_criteria_sha256": superseded_sha,
-            "reason": "Append-only correction for dataset-metadata.json handling in the local inventory check; the CPU preflight stopped before Julia initialization or job execution, with no dataset upload or kernel run under the superseded preregistration.",
+            "reason": "Append-only submission-metadata correction after Kaggle SaveKernel returned HTTP 400 for the initial 51-character kernel title/slug. Read-only Kaggle checks found no FD-05 kernel/version and no solver run. Root cause is unconfirmed; this revision shortens only the private kernel title/slug and preserves the numerical contract and all dataset input identities.",
             "formal_measurement_started_under_superseded_criteria": False},
         "kind": "sdf_directional_fd_flow24_criteria",
         "status": "registered_not_run", "immutable": True,
