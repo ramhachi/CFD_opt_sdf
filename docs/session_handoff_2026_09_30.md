@@ -70,3 +70,15 @@ v16 の過去の criteria もそのまま動く。v17 用の registrar は `scri
 - **全 pytest のベースライン失敗は 37 件**。gitignore された `work/` の fixture がないことによるもので、Stage V / OpenFOAM 系が中心。検証は「新規の失敗が 0」で判定する。
 - Kaggle の kernel は、`infra/kaggle/kernel_w3_v17/kernel-metadata.json` と `infra/kaggle/kernel_w3/runner.py` を一時フォルダにコピーして push する。
 - **Kaggle 上の力は solver 単位**。N への換算係数は ρU²h² = 0.0025 (h = flow 格子 0.05)。報告と判定は N ベースで行う (ユーザー方針)。
+
+## 6. 追加の決定 (2026-09-30)
+
+- **FD と最適化に使う flow 解像度は flow_24** (ユーザー決定)。
+  - W4 v17 では、flow_16→24 で drag +46% / downforce +31%、flow_24→32 でも +7% / +9% 動く。値は収束していない。
+  - 1 run の計算時間は flow_24 で約 100 s、flow_32 で約 340 s。
+  - 最終的な形状の評価と ranking の確認は、別途 flow_32 以上で行う前提。
+- 検証ツールのバグを修正し、回帰テストを追加した。
+  - W3 の verifier: `HOST_VERIFIER` が未定義だった。
+  - W4 の verifier: 引数名 `remote_inventory_sha256` が同じ名前の関数を隠していた。
+  - 過去の round を検証し直すときは、今後も**登録した commit** の verifier を使う (host-compat ラッパー経由)。
+- `infra/kaggle/kernel_w4_v17/runner.py` と `docs/evidence/w4_v17_criteria.json` は中身が同一のコピーだが、W4 v17 の criteria で束縛されているので削除しない。

@@ -889,7 +889,8 @@ def verify(download: Path, *, criteria_path: Path = CRITERIA,
         expected_remote[names["manifest"]] = sha256(Path(dataset_dir) / names["manifest"])
         require(remote_inventory == expected_remote,
                 "downloaded remote Kaggle dataset files differ from the registered input inventory")
-        remote_inventory_sha = remote_inventory_sha256(remote_inventory)
+        # the keyword argument shadows the module helper of the same name
+        remote_inventory_sha = globals()["remote_inventory_sha256"](remote_inventory)
     else:
         expected_kernel_id = criteria.get("kernel_id", "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity")
         require(kernel_id in (None, expected_kernel_id),

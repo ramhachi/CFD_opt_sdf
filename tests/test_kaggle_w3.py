@@ -232,3 +232,8 @@ def test_runner_label_comes_from_staged_criteria_name(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="state label"):
         runner.read_criteria(tmp_path / "input")
     assert host.state_label({"geometry": {}}) == "v16"
+
+
+def test_host_verifier_defines_its_own_path():
+    """Regression: the PASS path hashed an undefined HOST_VERIFIER global."""
+    assert host.HOST_VERIFIER == ROOT / "scripts/verify_kaggle_w3_v16.py"
