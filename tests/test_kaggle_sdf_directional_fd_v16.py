@@ -745,7 +745,11 @@ def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity(monkeypa
     assert criteria["prerequisites"]["w4"]["backend_identity"] == w4_result["backend_identity"]
     assert criteria["w4_cross_check"]["flow24_drag_reference_n"] == pytest.approx(0.32631743972608007)
     assert criteria["registration_revision"]["supersedes_criteria_sha256"] == (
-        "9cd5e3e35ac779ed937f4516421d82fbd40820dec2ae556817a4ff3ab007918e")
+        "93f9873f9879b0f2851542e152f5f8acd65abaeaf6bf96a43736017295908b03")
+    assert runner.criteria_digest(criteria) == criteria["criteria_sha256"]
+    assert verifier.canonical_json_sha(
+        {key: value for key, value in criteria.items() if key != "criteria_sha256"}
+    ) == criteria["criteria_sha256"]
     _, runner_w4_result = runner.verify_prerequisites(ROOT, criteria)
     assert runner.w4_force_metrics(runner_w4_result, "flow_24")["downforce_time_weighted_n"] == pytest.approx(
         0.33102903147696705)
