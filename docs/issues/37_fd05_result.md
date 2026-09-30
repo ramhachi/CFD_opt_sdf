@@ -117,3 +117,9 @@ oracle, a gradient, a causal explanation, physical force accuracy, grid
 convergence, an optimizer, topology, or a shape update. All qualification and
 `shape_update_allowed` flags remain false. No follow-on gradient issue is
 started by this result.
+
+## Addendum 2026-10-01: solver-free diagnosis
+
+A diagnostic-only re-analysis of the raw outputs is recorded in
+[`37_fd05_solver_free_diagnosis.md`](37_fd05_solver_free_diagnosis.md). It does
+not change the verdict above.
