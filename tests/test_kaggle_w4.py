@@ -561,3 +561,14 @@ def test_w4_draft_cannot_be_loaded_as_an_immutable_registration(tmp_path):
             assert "immutable" in str(error) or "preregistration" in str(error)
         else:
             raise AssertionError("W4 draft was accepted for measurement")
+
+
+def test_verifier_functions_do_not_call_their_own_parameters():
+    """Regression: `remote_inventory_sha256=` shadowed the module helper inside verify()."""
+    import ast
+
+    tree = ast.parse((Path(__file__).resolve().parents[1] / "scripts/verify_kaggle_w4_v16.py").read_text())
+    for fn in (n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)):
+        params = {a.arg for a in fn.args.args + fn.args.kwonlyargs}
+        called = {c.func.id for c in ast.walk(fn) if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+        assert not params & called, (fn.name, params & called)

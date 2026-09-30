@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CRITERIA = ROOT / "docs/evidence/kaggle_w3_v16_primal_criteria_2026_09.json"
 DATASET_DIR = ROOT / "work/kaggle_w3_v16_dataset"
 RUNNER = ROOT / "infra/kaggle/kernel_w3/runner.py"
+HOST_VERIFIER = Path(__file__).resolve()
 
 
 def state_label(criteria: dict) -> str:
