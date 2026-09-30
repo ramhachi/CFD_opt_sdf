@@ -325,7 +325,7 @@ def build_criteria(source_commit: str) -> dict:
                 "fd_entry_gate": w4r["fd_entry_gate"], "extended_domain_fine_grid_required": False,
                 "formal_fd_measurement_started": False,
                 "observed_backend_identity_sha256": base.json_hash(w4r["backend_identity"]),
-                "backend_identity": w4r["backend_identity"]["registered_backend"]},
+                "backend_identity": w4r["backend_identity"]},
         },
         "backend": w3r["backend_identity"],
         "w4_cross_check": {"case_id": FLOW_CASE_ID,

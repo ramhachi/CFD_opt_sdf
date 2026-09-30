@@ -718,7 +718,7 @@ def test_v17_flow24_registration_preserves_fixed_r5_contract_and_rejects_thresho
         v17_registrar.assert_r5_unchanged(criteria, r5)
 
 
-def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity():
+def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity(monkeypatch):
     _, w3_result, w4_criteria, w4_result, *_ = v17_registrar.v17_prerequisites()
 
     assert w3_result["backend_identity"] == w4_result["backend_identity"]
@@ -726,6 +726,19 @@ def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity():
     assert flow24["flow_dims"] == [150, 72, 54]
     assert w4_result["force_metrics"]["flow_24"]["drag_time_weighted_n"] == pytest.approx(0.32631743972608007)
     assert w4_result["force_metrics"]["flow_24"]["downforce_time_weighted_n"] == pytest.approx(0.33102903147696705)
+    def registered_git_value(command, text=True):
+        if command[-2:] == ["branch", "--show-current"]:
+            return "codex/kaggle-batch-migration"
+        if command[-1] == "--porcelain":
+            return ""
+        if command[-1] in ("HEAD", "@{u}"):
+            return "test-source-commit"
+        raise AssertionError(f"unexpected git query: {command}")
+
+    monkeypatch.setattr(v17_registrar, "subprocess", SimpleNamespace(check_output=registered_git_value))
+    criteria = v17_registrar.build_criteria("test-source-commit")
+    assert criteria["prerequisites"]["w4"]["backend_identity"] == w4_result["backend_identity"]
+    assert criteria["w4_cross_check"]["flow24_drag_reference_n"] == pytest.approx(0.32631743972608007)
 
 
 def test_v17_flow24_job_environment_uses_registered_state_flow_directions_and_ladder():
