@@ -775,7 +775,7 @@ def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity(monkeypa
     assert criteria["prerequisites"]["w4"]["backend_identity"] == w4_result["backend_identity"]
     assert criteria["w4_cross_check"]["flow24_drag_reference_n"] == pytest.approx(0.32631743972608007)
     assert criteria["registration_revision"]["supersedes_criteria_sha256"] == (
-        "3c97ea5d140d9a124a49d7a60869d317c35d98bd6db1466866603f80ea76eadc")
+        v17_registrar.SUPERSEDED_CRITERIA_SHA256)
     assert runner.criteria_digest(criteria) == criteria["criteria_sha256"]
     assert verifier.canonical_json_sha(
         {key: value for key, value in criteria.items() if key != "criteria_sha256"}

@@ -23,9 +23,9 @@ CRITERIA_ID = "sdf_directional_fd_v17_flow24_2026_09"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle"
 KERNEL_TITLE = "CFD Opt SDF v17 Flow24 FD Oracle"
-OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix4.json"
-SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json"
-SUPERSEDED_CRITERIA_SHA256 = "61e5109fe5fe28f141563e13bf1cf172666e6d9f7f45c587bf6466ab78986aa4"
+OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix5.json"
+SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix4.json"
+SUPERSEDED_CRITERIA_SHA256 = "843a0f58a0f5a5f6525d00de423cbcc8eef827be31bd79244fa5ef04b2872e6d"
 R5_PATH = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json"
 R5_DIAGNOSTIC = ROOT / "docs/evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json"
 V17_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
@@ -111,7 +111,7 @@ def source_inputs() -> dict:
         "criteria_draft": "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json",
         "criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
         "v17_flow24_criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v17_flow24_2026_09.py",
-        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json",
+        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix4.json",
         "dataset_preparer": "scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py",
         "cpu_preflight": "scripts/preflight_kaggle_sdf_directional_fd_v16_cpu.py",
         "julia_job": "scripts/waterlily_sdf_directional_fd_v16_job.jl",
@@ -296,7 +296,7 @@ def build_criteria(source_commit: str) -> dict:
         "criteria_path": OUTPUT.relative_to(ROOT).as_posix(),
         "registration_revision": {"supersedes_criteria_path": SUPERSEDED_CRITERIA.relative_to(ROOT).as_posix(),
             "supersedes_criteria_sha256": superseded_sha,
-            "reason": "Append-only submission-metadata correction after Kaggle SaveKernel returned HTTP 400 for the initial 51-character kernel title/slug. Read-only Kaggle checks found no FD-05 kernel/version and no solver run. Root cause is unconfirmed; this revision shortens only the private kernel title/slug and preserves the numerical contract and all dataset input identities.",
+            "reason": "Append-only preregistration after the unexecuted schemafix4 submission-metadata correction. Validation found a stale regression-test expectation for the superseded criteria hash; this revision binds the corrected test baseline and exact source commit. The shortened private kernel title/slug, numerical contract, v17 state, flow_24 case, direction and perturbation identities, and solver input hashes are unchanged; no solver run occurred under schemafix3 or schemafix4.",
             "formal_measurement_started_under_superseded_criteria": False},
         "kind": "sdf_directional_fd_flow24_criteria",
         "status": "registered_not_run", "immutable": True,
