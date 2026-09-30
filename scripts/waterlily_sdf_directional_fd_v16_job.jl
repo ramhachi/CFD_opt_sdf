@@ -20,7 +20,9 @@ if !CPU_PRESTEP
         joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
     @eval using .CFDSDFWaterLily.DeviceGridSDF
 end
-using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
+Base.include(CFDSDFWaterLily,
+    joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "WaterLilyNormalFloorBody.jl"))
+using .CFDSDFWaterLily: GridSDFWaterLilyBody, NormalFloorWaterLilyBody, V16_PROFILE_POINT_SHAPE,
     V16_CANONICAL_SDF_ORIGIN_M, V16_PROFILE_SPACING_M, V16MovingGroundBody,
     v16_native_far_field_uBC
 using .CFDSDFWaterLily.V16W4Sensitivity: w4_cases, validate_w4_case
@@ -204,8 +206,10 @@ function measure_fresh_run(run, vram_total)
     roundtrip_sha = CPU_PRESTEP ? f_sha : device_roundtrip_sha(owner)
     roundtrip_sha == f_sha || error("$(run.run_id): device phi round-trip SHA mismatch")
     candidate_grid = CPU_PRESTEP ? grid : kernel_grid(owner)
-    candidate = GridSDFWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m), Float32(FLOW_CASE.flow_spacing_m),
-        Float32(NORMAL_FLOOR))
+    candidate = NORMAL_FLOOR > 0 ?
+        NormalFloorWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m),
+            Float32(FLOW_CASE.flow_spacing_m), Float32(NORMAL_FLOOR)) :
+        GridSDFWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m), Float32(FLOW_CASE.flow_spacing_m))
     ground = V16MovingGroundBody(0.0f0, 1.0f0)
     bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
     sim = WaterLily.Simulation(FLOW_CASE.flow_dims, v16_native_far_field_uBC,
@@ -219,7 +223,7 @@ function measure_fresh_run(run, vram_total)
             " spacing_m=", SDF_SPACING, " flow=", FLOW_CASE.case_id,
             " dims=", join(FLOW_CASE.flow_dims, ","), " flow_origin_m=", join(FLOW_CASE.flow_origin_m, ","),
             " flow_spacing_m=", FLOW_CASE.flow_spacing_m,
-            " normal_floor=", candidate.normal_floor)
+            " normal_floor=", NORMAL_FLOOR, " body=", nameof(typeof(candidate)))
         println("FD_PRESTEP_READY ", run.run_id)
         flush(stdout)
         return nothing

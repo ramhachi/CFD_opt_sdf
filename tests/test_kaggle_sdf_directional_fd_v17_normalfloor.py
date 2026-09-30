@@ -63,7 +63,7 @@ def test_kernel_and_dataset_identity_are_bound(criteria):
     assert meta["id"] == criteria["kernel_id"] and meta["dataset_sources"] == [criteria["input_dataset_id"]]
     assert len(meta["id"].split("/")[1]) <= 40  # Kaggle rejected longer FD-05 slugs
     assert criteria["inputs"]["kernel_runner"]["path"] == f"{registrar.KERNEL_DIR}/runner.py"
-    for name in ("waterlily_body", "normal_floor_selftest", "fd05_criteria"):
+    for name in ("waterlily_body", "normal_floor_body", "normal_floor_selftest", "fd05_criteria"):
         assert criteria["inputs"][name]["location"] == "source_repo"
 
 

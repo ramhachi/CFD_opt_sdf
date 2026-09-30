@@ -70,6 +70,7 @@ def build_criteria(source_commit: str, *, require_pushed_head: bool = True) -> d
     inputs = {k: v for k, v in v5.source_inputs().items() if k != "superseded_unexecuted_criteria"}
     inputs["kernel_runner"] = base.source_entry(f"{KERNEL_DIR}/runner.py")
     inputs["kernel_metadata"] = base.source_entry(f"{KERNEL_DIR}/kernel-metadata.json")
+    inputs["normal_floor_body"] = base.source_entry("julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl")
     inputs["waterlily_body"] = base.source_entry("julia/CFDSDFWaterLily/src/WaterLilyBody.jl")
     inputs["normal_floor_selftest"] = base.source_entry("julia/CFDSDFWaterLily/test/test_normal_floor.jl")
     inputs["fd06_criteria_registrar"] = base.source_entry(Path(__file__).resolve().relative_to(ROOT).as_posix())
