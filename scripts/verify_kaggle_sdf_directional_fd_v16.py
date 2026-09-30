@@ -88,9 +88,23 @@ def load_criteria(path: Path) -> tuple[dict, str]:
             and criteria.get("criteria_sha256") == canonical_json_sha(
                 {key: value for key, value in criteria.items() if key != "criteria_sha256"}),
             "FD criteria are not the exact immutable premeasurement round")
-    require(criteria.get("kind") == "sdf_directional_fd_flow16_criteria",
+    require(str(criteria.get("kind", "")).startswith("sdf_directional_fd_")
+            and criteria.get("input_dataset_id"),
             "unexpected FD criteria schema")
+    configure_criteria(criteria)
     return criteria, digest
+
+
+def configure_criteria(criteria: dict) -> None:
+    """Keep legacy v16 names as defaults while binding new criteria inventories."""
+    global OUTPUT_NAME, CRITERIA_NAME, DATASET_MANIFEST_NAME, EXPECTED_RUNS, DIRECTIONS, EPSILONS
+    artifacts = criteria.get("artifacts", {})
+    OUTPUT_NAME = artifacts.get("kernel_output_directory", OUTPUT_NAME)
+    CRITERIA_NAME = artifacts.get("dataset_criteria_filename", CRITERIA_NAME)
+    DATASET_MANIFEST_NAME = artifacts.get("dataset_manifest_filename", DATASET_MANIFEST_NAME)
+    DIRECTIONS = tuple(criteria["direction_inventory"])
+    EPSILONS = tuple(sorted({float(item["epsilon_m"]) for item in criteria["perturbation_inventory"]}))
+    EXPECTED_RUNS = list(criteria["run_order"])
 
 
 def git_blob_sha(commit: str, path: str) -> str:
@@ -133,13 +147,14 @@ def verify_source(criteria: dict, criteria_sha: str, runner_sha: str) -> dict:
                 and registered_identity == prereq["backend_identity"],
                 f"{prereq_key} is not exact host-verified PASS evidence")
         if prereq_key == "w4":
+            w4_v17 = criteria.get("criteria_id") == "sdf_directional_fd_v17_flow24_2026_09"
             require(result_doc.get("w4_sensitivity_matrix_passed") is True
                     and result_doc.get("fd_entry_gate") == "OPEN"
-                    and result_doc.get("formal_fd_measurement_started") is False
-                    and result_doc.get("extended_domain_fine_grid_required") is False
+                    and (w4_v17 or (result_doc.get("formal_fd_measurement_started") is False
+                                    and result_doc.get("extended_domain_fine_grid_required") is False))
                     and observed_identity.get("selected_gpu_uuid") == prereq["selected_gpu_uuid"]
                     and canonical_json_sha(observed_identity) == prereq["observed_backend_identity_sha256"],
-                    "W4 formal FD entry gate is not open")
+                    "W4 formal FD entry gate or observed backend identity is not exact")
     require(criteria["prerequisites"]["w3"]["backend_identity"]
             == criteria["prerequisites"]["w4"]["backend_identity"],
             "W3/W4 observed backend identities differ")
@@ -424,10 +439,15 @@ def host_physics_identity(summary, criteria):
         "baseline_A", "baseline_B", "baseline_C"} else next(
             item["zero_level_margin_m"] for item in criteria["perturbation_inventory"]
             if item["case_id"] == run_id)
+    state_label = geometry.get("state_label", "v16")
     close = lambda key, expected: math.isclose(
         float(summary.get(key, math.nan)), float(expected), rel_tol=0.0, abs_tol=1e-12)
     return (
-        math.isclose(float(summary.get("phi_margin_m", math.nan)), expected_margin,
+        (state_label == "v16" or (
+            summary.get("canonical_state_label") == state_label
+            and summary.get("canonical_state_sha256") == geometry["canonical_state_sha256"]
+            and summary.get("canonical_source_surface_sha256") == geometry["source_surface_sha256"]))
+        and math.isclose(float(summary.get("phi_margin_m", math.nan)), expected_margin,
                      rel_tol=0.0, abs_tol=1e-6)
         and close("phi_margin_gate_m", geometry["margin_gate_m"])
         and summary.get("point_shape") == geometry["point_shape"]
@@ -467,15 +487,16 @@ def host_physics_identity(summary, criteria):
     )
 
 
-def host_baseline_noise(values):
+def host_baseline_noise(values, floor_scale=1e-8):
     values = np.asarray(values, dtype=np.float64)
     med, lo, hi = float(np.median(values)), float(values.min()), float(values.max())
     span = hi - lo
     return {"median": med, "min": lo, "max": hi, "span": span,
-            "noise_floor": max(span, 1e-8 * max(1.0, abs(med)))}
+            "noise_floor": max(span, floor_scale * max(1.0, abs(med)))}
 
 
-def host_classify_pairs(pairs, baseline, noise):
+def host_classify_pairs(pairs, baseline, noise, *, resolution_factor=20.0,
+                        plateau_relative_tolerance=0.05, minimum_resolved_count=3):
     rows = []
     for pair in sorted(pairs, key=lambda item: item["epsilon_m"]):
         eps, plus, minus = pair["epsilon_m"], pair["plus_response_n"], pair["minus_response_n"]
@@ -483,12 +504,12 @@ def host_classify_pairs(pairs, baseline, noise):
         slope = (plus - minus) / (2 * eps)
         even = plus + minus - 2 * baseline
         rows.append({"epsilon_m": eps, "plus_response_n": plus, "minus_response_n": minus,
-            "pair_signal_n": signal, "resolved": signal >= 20 * noise,
+            "pair_signal_n": signal, "resolved": signal >= resolution_factor * noise,
             "centered_derivative_n_per_m": slope, "even_nonlinearity_n": even,
             "even_to_odd_ratio": abs(even) / max(signal, noise)})
     resolved = [row for row in rows if row["resolved"]]
-    selected = resolved[:3]
-    enough = len(selected) == 3
+    selected = resolved[:minimum_resolved_count]
+    enough = len(selected) == minimum_resolved_count
     reference = float(np.median([row["centered_derivative_n_per_m"] for row in selected])) if enough else None
     noise_equivalent = max(noise / row["epsilon_m"] for row in selected) if enough else None
     deviations = []
@@ -500,7 +521,7 @@ def host_classify_pairs(pairs, baseline, noise):
     signs = [int(math.copysign(1, row["centered_derivative_n_per_m"]))
              if row["centered_derivative_n_per_m"] != 0 else 0 for row in selected]
     sign_stable = enough and bool(signs) and signs[0] != 0 and len(set(signs)) == 1
-    passed = enough and sign_stable and all(value <= 0.05 for value in deviations)
+    passed = enough and sign_stable and all(value <= plateau_relative_tolerance for value in deviations)
     return {"all_epsilon_results": rows, "resolved_epsilon_m": [row["epsilon_m"] for row in resolved],
         "resolved_count": len(resolved), "plateau_epsilon_m": [row["epsilon_m"] for row in selected],
         "reference_derivative_n_per_m": reference,
@@ -558,10 +579,11 @@ def verify_run_summaries(criteria, output_dir, output_hashes):
                 and math.isclose(summary.get("solver_viscosity", math.nan), geom["solver_viscosity"], rel_tol=0, abs_tol=1e-12)
                 and summary.get("reynolds") == geom["reynolds"]
                 and summary.get("physical_box_m") == geom["physical_box_m"],
-                f"flow_16 grid/world mapping or Re mismatch: {run_id}")
+                f"{geom['case_id']} grid/world mapping or Re mismatch: {run_id}")
         require(host_physics_identity(summary, criteria),
-                f"flow_16 constants, BC, ground, force-body, or projection identity mismatch: {run_id}")
-        require(summary.get("t_end_target") == 120.0 and summary.get("t_end_reached", 0) >= 120.0
+                f"{geom['case_id']} constants, BC, ground, force-body, or projection identity mismatch: {run_id}")
+        target_t = criteria["measurement"]["target_t_u_l"]
+        require(summary.get("t_end_target") == target_t and summary.get("t_end_reached", 0) >= target_t
                 and summary.get("finite_u") is True and summary.get("finite_p") is True
                 and summary.get("finite_forces") is True,
                 f"fresh primal did not complete with finite fields/forces: {run_id}")
@@ -584,7 +606,8 @@ def verify_run_summaries(criteria, output_dir, output_hashes):
 
 
 def verify_julia_progress(output_dir, criteria):
-    log_path = output_dir / "fd_v16.log"
+    log_name = criteria.get("artifacts", {}).get("kernel_log_filename", "fd_v16.log")
+    log_path = output_dir / log_name
     log_text = log_path.read_text(errors="replace")
     invoked = [line.split()[-1] for line in log_text.splitlines() if line.startswith("FD_SOLVER_STEP_INVOKED ")]
     returned = [line.split()[-1] for line in log_text.splitlines() if line.startswith("FD_SOLVER_STEP_RETURNED ")]
@@ -650,6 +673,7 @@ def verify_runtime(criteria, output_dir, summaries):
 def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows, metrics,
              progress, runtime, kernel_version, status_text, status_sha, log_path, log_sha):
     measurement = criteria["measurement"]
+    noise_contract = criteria["noise_and_plateau"]
     baseline = {response: host_baseline_noise([metrics[run][f"{response}_time_weighted_n"]
         for run in BASELINE_RUNS]) for response in ("drag", "downforce")}
     direction_results = {}
@@ -667,17 +691,21 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
                 pairs.append(pair)
             response_pairs[direction_id][response] = pairs
             direction_results[direction_id][response] = host_classify_pairs(
-                pairs, baseline[response]["median"], baseline[response]["noise_floor"])
+                pairs, baseline[response]["median"], baseline[response]["noise_floor"],
+                resolution_factor=noise_contract["resolution_factor"],
+                plateau_relative_tolerance=noise_contract["plateau_relative_tolerance"],
+                minimum_resolved_count=noise_contract["minimum_resolved_epsilon_count"])
     drag_gate = all(direction_results[d]["drag"]["plateau_pass"] for d in DIRECTIONS)
     down_gate = all(direction_results[d]["downforce"]["plateau_pass"] for d in DIRECTIONS)
     w4 = read_json(ROOT / criteria["prerequisites"]["w4"]["result_path"])
-    w4_flow16 = w4["case_measurements"]["flow_16"]["force_metrics_host_recomputed"]
-    ref_drag = w4_flow16["drag_time_weighted_n"]
-    ref_down = w4_flow16["downforce_time_weighted_n"]
-    crosscheck = {"w4_flow16_drag_n": ref_drag,
+    flow_id = criteria["geometry"]["flow_case"]["case_id"]
+    w4_case = w4["case_measurements"][flow_id]["force_metrics_host_recomputed"]
+    ref_drag = w4_case["drag_time_weighted_n"]
+    ref_down = w4_case["downforce_time_weighted_n"]
+    crosscheck = {f"w4_{flow_id}_drag_n": ref_drag,
         "fd_baseline_median_drag_n": baseline["drag"]["median"],
         "drag_delta_n": baseline["drag"]["median"]-ref_drag,
-        "w4_flow16_downforce_n": ref_down,
+        f"w4_{flow_id}_downforce_n": ref_down,
         "fd_baseline_median_downforce_n": baseline["downforce"]["median"],
         "downforce_delta_n": baseline["downforce"]["median"]-ref_down,
         "numerical_tolerance_gate_registered": False,
@@ -697,7 +725,7 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
         for run in criteria["run_order"])
     exact_status = "KernelWorkerStatus.COMPLETE" in status_text or status_text.strip().upper() == "COMPLETE"
     gates = {
-        "T0_exact_W3_W4_prerequisites_and_FD_entry_gate": (
+        criteria["gates"][0]: (
             criteria["prerequisites"]["w3"]["host_verified"] is True
             and criteria["prerequisites"]["w4"]["host_verified"] is True
             and criteria["prerequisites"]["w4"]["fd_entry_gate"] == "OPEN"
@@ -710,7 +738,9 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
             and set(input_result["mask_sha256"]) == {"design_mask", "fixed_solid_mask", "forbidden_mask", "root_mask"}),
         "T2_direction_generation_identity_and_nonduplication": (
             set(input_result["direction_audit"]["direction_sha256"]) == set(DIRECTIONS)
-            and max(abs(value) for value in input_result["direction_audit"]["pairwise_cosine"].values()) < 0.95),
+            and input_result["direction_audit"]["shape"] == criteria["geometry"]["point_shape"]
+            and max(abs(value) for value in input_result["direction_audit"]["pairwise_cosine"].values())
+                < criteria["directions"]["max_pairwise_abs_cosine"]),
         "T3_all_30_perturbation_identities_and_preflight": (
             len(input_result["perturbation_preflight"]) == 30
             and min(row["zero_level_margin_m"] for row in input_result["perturbation_preflight"])
@@ -721,7 +751,8 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
             and progress["solver_step_returned"] == criteria["run_order"]
             and progress["run_started"] == criteria["run_order"]
             and progress["run_finished"] == criteria["run_order"]
-            and all(summaries[run]["t_end_reached"] >= 120 for run in criteria["run_order"])),
+            and all(summaries[run]["t_end_reached"] >= measurement["target_t_u_l"]
+                    for run in criteria["run_order"])),
         "T6_finite_fields_forces_component_closure_and_projection": (
             force_integrity and all(summaries[run]["finite_u"] and summaries[run]["finite_p"]
                                     and summaries[run]["finite_forces"] for run in criteria["run_order"])),
@@ -763,7 +794,7 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
         gates["T12_source_dataset_kernel_runtime_VRAM_and_artifact_integrity"] and runner_gate_match
     )
     return {"baseline_noise": baseline, "directional_fd_results": direction_results,
-        "directional_pairs": response_pairs, "w4_flow16_crosscheck": crosscheck,
+        "directional_pairs": response_pairs, f"w4_{flow_id}_crosscheck": crosscheck,
         "aggregate_solver_wall_seconds": total_solver_wall,
         "all_run_stationarity_pass": stationarity,
         "all_run_force_closure_pass": force_integrity,
@@ -784,9 +815,11 @@ def write_evidence(report: dict, criteria: dict, criteria_sha: str, output_dir: 
             "result evidence is allowed only after complete host PASS")
     if evidence_path.exists() or evidence_path.with_suffix(evidence_path.suffix + ".sha256").exists():
         raise FileExistsError(f"append-only evidence target exists: {evidence_path}")
+    flow_id = criteria["geometry"]["flow_case"]["case_id"]
+    crosscheck_key = f"w4_{flow_id}_crosscheck"
     result = {
         "schema_version": 1,
-        "kind": "sdf_directional_fd_flow16_result",
+        "kind": f"sdf_directional_fd_{flow_id}_result",
         "criteria_path": criteria["criteria_path"],
         "criteria_sha256": criteria_sha,
         "criteria_round": criteria["criteria_round"],
@@ -818,13 +851,14 @@ def write_evidence(report: dict, criteria: dict, criteria_sha: str, output_dir: 
         "run_metrics": report["run_metrics"],
         "directional_fd_results": report["directional_fd_results"],
         "directional_pairs": report["directional_pairs"],
-        "w4_flow16_crosscheck": report["w4_flow16_crosscheck"],
+        crosscheck_key: report[crosscheck_key],
         "runner_outcome_gate_match": report["runner_outcome_gate_match"],
         "runner_outcome_gates": report["runner_outcome_gates"],
         "runner_outcome_sha256": report["runner_outcome_sha256"],
         "gates": report["gates"],
         "sdf_directional_fd_oracle_qualified": report["sdf_directional_fd_oracle_qualified"],
         "sdf_directional_fd_flow16_qualified": report["sdf_directional_fd_flow16_qualified"],
+        "sdf_directional_fd_flow24_qualified": report["sdf_directional_fd_flow24_qualified"],
         "sdf_gradient_field_qualified": False,
         "gradient_qualified": False,
         "reverse_mode_qualified": False,
@@ -834,7 +868,8 @@ def write_evidence(report: dict, criteria: dict, criteria_sha: str, output_dir: 
         "optimizer_qualified": False,
         "topology_qualified": False,
         "shape_update_allowed": False,
-        "claim_scope": "The registered centered directional-FD oracle is qualified for the canonical v16 SDF on the registered WaterLily flow_16 discrete finite-box primal.",
+        "claim_scope": criteria["claims"]["target"] if report["verdict"] == "PASS"
+            else f"FAIL-CLOSED diagnostic for {criteria['claims']['target']}",
         "limitations": criteria["claims"]["unsupported"],
     }
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
@@ -876,7 +911,7 @@ def verify(args) -> dict:
     all_pass = measured["all_gates_pass"]
     host_report = {
         "schema_version": 1,
-        "kind": "sdf_directional_fd_v16_host_verification",
+        "kind": f"sdf_directional_fd_{criteria['geometry']['flow_case']['case_id']}_host_verification",
         "verdict": "PASS" if all_pass else "FAIL",
         "host_verification_passed": all_pass,
         "criteria_path": criteria_path.relative_to(ROOT).as_posix(),
@@ -921,14 +956,18 @@ def verify(args) -> dict:
         "baseline_noise": measured["baseline_noise"],
         "directional_fd_results": measured["directional_fd_results"],
         "directional_pairs": measured["directional_pairs"],
-        "w4_flow16_crosscheck": measured["w4_flow16_crosscheck"],
+        f"w4_{criteria['geometry']['flow_case']['case_id']}_crosscheck":
+            measured[f"w4_{criteria['geometry']['flow_case']['case_id']}_crosscheck"],
         "runner_outcome_gate_match": measured["runner_outcome_gate_match"],
         "runner_outcome_gates": measured["runner_outcome_gates"],
         "runner_outcome_sha256": measured["runner_outcome_sha256"],
         "aggregate_solver_wall_seconds": measured["aggregate_solver_wall_seconds"],
         "gates": measured["gates"],
         "sdf_directional_fd_oracle_qualified": all_pass,
-        "sdf_directional_fd_flow16_qualified": all_pass,
+        "sdf_directional_fd_flow16_qualified": (
+            criteria["geometry"]["flow_case"]["case_id"] == "flow_16" and all_pass),
+        "sdf_directional_fd_flow24_qualified": (
+            criteria["geometry"]["flow_case"]["case_id"] == "flow_24" and all_pass),
         "sdf_gradient_field_qualified": False,
         "gradient_qualified": False,
         "reverse_mode_qualified": False,
@@ -958,6 +997,9 @@ def verify(args) -> dict:
 
 
 def default_diagnostic_path(criteria: dict) -> Path:
+    criteria_id = criteria.get("criteria_id", "")
+    if criteria_id == "sdf_directional_fd_v17_flow24_2026_09":
+        return ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_diagnostic_2026_09.json"
     round_number = int(criteria.get("criteria_round", 1))
     return ROOT / f"docs/evidence/sdf_directional_fd_v16_diagnostic_2026_09_round{round_number}.json"
 
@@ -1003,7 +1045,7 @@ def write_diagnostic(args, error: Exception) -> tuple[Path, str] | None:
             execution = read_json(execution_path)
         except Exception as parse_error:
             execution = {"parse_error": str(parse_error), "sha256": sha256(execution_path)}
-    julia_log_path = output_dir / "fd_v16.log"
+    julia_log_path = output_dir / criteria.get("artifacts", {}).get("kernel_log_filename", "fd_v16.log")
     julia_log = julia_log_path.read_text(errors="replace") if julia_log_path.is_file() else ""
     markers = {
         "run_started": [line.split()[1] for line in julia_log.splitlines()
@@ -1032,7 +1074,7 @@ def write_diagnostic(args, error: Exception) -> tuple[Path, str] | None:
     log_bytes = log_path.read_bytes() if log_path.is_file() else b""
     result = {
         "schema_version": 1,
-        "kind": "sdf_directional_fd_flow16_diagnostic",
+        "kind": f"sdf_directional_fd_{criteria.get('geometry', {}).get('flow_case', {}).get('case_id', 'unknown')}_diagnostic",
         "criteria_path": criteria_path.relative_to(ROOT).as_posix() if criteria_path.is_relative_to(ROOT) else str(criteria_path),
         "criteria_sha256": criteria_sha,
         "source_commit": criteria.get("source_commit"),
@@ -1055,6 +1097,7 @@ def write_diagnostic(args, error: Exception) -> tuple[Path, str] | None:
         "host_verification_passed": False,
         "sdf_directional_fd_oracle_qualified": False,
         "sdf_directional_fd_flow16_qualified": False,
+        "sdf_directional_fd_flow24_qualified": False,
         "sdf_gradient_field_qualified": False,
         "gradient_qualified": False,
         "reverse_mode_qualified": False,
