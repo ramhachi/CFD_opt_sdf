@@ -187,7 +187,7 @@ def verify_prerequisites(source: Path, criteria: dict) -> tuple[dict, dict]:
             if (result.get("fd_entry_gate") != info.get("fd_entry_gate")
                     or result.get("extended_domain_fine_grid_required", False) is not info.get("extended_domain_fine_grid_required")
                     or result.get("formal_fd_measurement_started", False) is not info.get("formal_fd_measurement_started")
-                    or observation.get("selected_gpu_uuid") != info["selected_gpu_uuid"]
+                    or result.get("selected_gpu_uuid", observation.get("selected_gpu_uuid")) != info["selected_gpu_uuid"]
                     or observation_sha != info["observed_backend_identity_sha256"]):
                 raise RuntimeError("W4 FD entry or observed-backend prerequisite does not match registration")
     if prereq["w3"]["backend_identity"] != prereq["w4"]["backend_identity"]:

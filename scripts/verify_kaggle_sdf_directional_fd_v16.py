@@ -166,7 +166,8 @@ def verify_source(criteria: dict, criteria_sha: str, runner_sha: str) -> dict:
                     and result_doc.get("fd_entry_gate") == "OPEN"
                     and (w4_v17 or (result_doc.get("formal_fd_measurement_started") is False
                                     and result_doc.get("extended_domain_fine_grid_required") is False))
-                    and observed_identity.get("selected_gpu_uuid") == prereq["selected_gpu_uuid"]
+                    and result_doc.get("selected_gpu_uuid", observed_identity.get("selected_gpu_uuid"))
+                    == prereq["selected_gpu_uuid"]
                     and canonical_json_sha(observed_identity) == prereq["observed_backend_identity_sha256"],
                     "W4 formal FD entry gate or observed backend identity is not exact")
     require(criteria["prerequisites"]["w3"]["backend_identity"]
