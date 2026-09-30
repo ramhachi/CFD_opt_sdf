@@ -893,5 +893,7 @@ def test_registered_v17_kernel_runner_is_the_shared_criteria_runner():
     metadata = json.loads((kernel_directory / "kernel-metadata.json").read_text())
     shared_runner = ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py"
     assert (kernel_directory / "runner.py").read_bytes() == shared_runner.read_bytes()
-    assert metadata["id"] == "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle-kernel"
+    assert metadata["id"] == "ramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle"
+    assert metadata["title"] == "CFD Opt SDF v17 Flow24 FD Oracle"
+    assert metadata["id"].split("/", 1)[1] == metadata["title"].lower().replace(" ", "-")
     assert metadata["dataset_sources"] == ["ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"]
