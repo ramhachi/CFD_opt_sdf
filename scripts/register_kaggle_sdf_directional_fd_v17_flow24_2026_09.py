@@ -22,9 +22,9 @@ FLOW_CASE_ID = "flow_24"
 CRITERIA_ID = "sdf_directional_fd_v17_flow24_2026_09"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"
 KERNEL_ID = DATASET_ID + "-kernel"
-OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix1.json"
-SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json"
-SUPERSEDED_CRITERIA_SHA256 = "9cd5e3e35ac779ed937f4516421d82fbd40820dec2ae556817a4ff3ab007918e"
+OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix2.json"
+SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix1.json"
+SUPERSEDED_CRITERIA_SHA256 = "93f9873f9879b0f2851542e152f5f8acd65abaeaf6bf96a43736017295908b03"
 R5_PATH = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json"
 R5_DIAGNOSTIC = ROOT / "docs/evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json"
 V17_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
@@ -110,7 +110,7 @@ def source_inputs() -> dict:
         "criteria_draft": "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json",
         "criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
         "v17_flow24_criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v17_flow24_2026_09.py",
-        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json",
+        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix1.json",
         "dataset_preparer": "scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py",
         "cpu_preflight": "scripts/preflight_kaggle_sdf_directional_fd_v16_cpu.py",
         "julia_job": "scripts/waterlily_sdf_directional_fd_v16_job.jl",
@@ -294,7 +294,7 @@ def build_criteria(source_commit: str) -> dict:
         "criteria_path": OUTPUT.relative_to(ROOT).as_posix(),
         "registration_revision": {"supersedes_criteria_path": SUPERSEDED_CRITERIA.relative_to(ROOT).as_posix(),
             "supersedes_criteria_sha256": superseded_sha,
-            "reason": "Append-only correction for v17 W4 direct backend and force-metric result schema; no dataset upload or kernel run occurred under the superseded preregistration.",
+            "reason": "Append-only correction for the canonical criteria hash and v17 W4 result schema; the CPU preflight stopped before Julia initialization or job execution, with no dataset upload or kernel run under the superseded preregistration.",
             "formal_measurement_started_under_superseded_criteria": False},
         "kind": "sdf_directional_fd_flow24_criteria",
         "status": "registered_not_run", "immutable": True,
@@ -361,6 +361,7 @@ def build_criteria(source_commit: str) -> dict:
         if gate.startswith("T0_"):
             criteria["gates"][i] = "T0_exact_W3_v17_W4_v17_flow24_prerequisites"
     assert_r5_unchanged(criteria, r5)
+    criteria.pop("criteria_sha256", None)
     criteria["criteria_sha256"] = base.json_hash(criteria)
     return criteria
 
