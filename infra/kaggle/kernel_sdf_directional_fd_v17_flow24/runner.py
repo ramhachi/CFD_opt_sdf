@@ -153,6 +153,7 @@ def verify_dataset(criteria, criteria_sha: str, dataset_dir: Path) -> tuple[dict
             or manifest.get("files") != expected):
         raise RuntimeError("FD dataset manifest identity or registered inventory mismatch")
     actual = {path.relative_to(dataset_dir).as_posix() for path in dataset_dir.rglob("*") if path.is_file()}
+    actual.discard("dataset-metadata.json")
     allowed = set(expected) | {MANIFEST_NAME}
     if actual != allowed:
         raise RuntimeError(f"FD mounted input inventory mismatch: extra={actual-allowed}, missing={allowed-actual}")

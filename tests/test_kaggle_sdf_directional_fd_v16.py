@@ -58,6 +58,36 @@ def test_runner_and_registered_contract_share_exact_33_run_order():
     assert len(runner.EXPECTED_RUN_ORDER) == 33
 
 
+def test_dataset_inventory_allows_kaggle_metadata_but_rejects_unregistered_inputs(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner, "CRITERIA_NAME", "criteria.json")
+    monkeypatch.setattr(runner, "MANIFEST_NAME", "manifest.json")
+    input_path = tmp_path / "input.bin"
+    input_path.write_bytes(b"registered input")
+    criteria_path = tmp_path / "criteria.json"
+    criteria_bytes = b'{"immutable":true}\n'
+    criteria_path.write_bytes(criteria_bytes)
+    criteria_sha = hashlib.sha256(criteria_bytes).hexdigest()
+    sidecar = tmp_path / "criteria.json.sha256"
+    sidecar.write_text(criteria_sha + "\n")
+    input_sha = hashlib.sha256(input_path.read_bytes()).hexdigest()
+    sidecar_sha = hashlib.sha256(sidecar.read_bytes()).hexdigest()
+    manifest = {"dataset_id": "owner/dataset", "criteria_sha256": criteria_sha,
+        "source_commit": "source", "files": {"input.bin": input_sha,
+            "criteria.json": criteria_sha, "criteria.json.sha256": sidecar_sha}}
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest))
+    (tmp_path / "dataset-metadata.json").write_text("{}\n")
+    criteria = {"input_dataset_id": "owner/dataset", "source_commit": "source",
+        "inputs": {"input": {"path": "input.bin", "sha256": input_sha, "location": "kaggle_dataset"}}}
+
+    _, hashes = runner.verify_dataset(criteria, criteria_sha, tmp_path)
+    assert hashes == {"criteria.json": criteria_sha, "criteria.json.sha256": sidecar_sha,
+        "input.bin": input_sha}
+
+    (tmp_path / "unexpected.bin").write_bytes(b"not registered")
+    with pytest.raises(RuntimeError, match="mounted input inventory mismatch"):
+        runner.verify_dataset(criteria, criteria_sha, tmp_path)
+
+
 def test_exact_host_verified_w3_w4_prerequisites_bind_registered_backend_and_flow16():
     _, w3_result, _, w4_result, w3_criteria_sha, w3_result_sha, w4_criteria_sha, w4_result_sha = (
         registrar.load_prerequisites()
@@ -745,7 +775,7 @@ def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity(monkeypa
     assert criteria["prerequisites"]["w4"]["backend_identity"] == w4_result["backend_identity"]
     assert criteria["w4_cross_check"]["flow24_drag_reference_n"] == pytest.approx(0.32631743972608007)
     assert criteria["registration_revision"]["supersedes_criteria_sha256"] == (
-        "93f9873f9879b0f2851542e152f5f8acd65abaeaf6bf96a43736017295908b03")
+        "3c97ea5d140d9a124a49d7a60869d317c35d98bd6db1466866603f80ea76eadc")
     assert runner.criteria_digest(criteria) == criteria["criteria_sha256"]
     assert verifier.canonical_json_sha(
         {key: value for key, value in criteria.items() if key != "criteria_sha256"}
