@@ -1,6 +1,9 @@
-# Registered 33-run centered directional-FD measurement on fresh flow_16 primals.
+# Registered criteria-bound 33-run centered directional-FD measurement.
 
-using CUDA
+const CPU_PRESTEP = get(ENV, "FD_CPU_PRESTEP", "0") == "1"
+if !CPU_PRESTEP
+    @eval using CUDA
+end
 using Printf
 using SHA
 using WaterLily
@@ -11,37 +14,57 @@ using .CFDSDFWaterLily.GridSDFBody: GridSDF, zero_level_margin_m
 Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "V16PhysicalProfile.jl"))
 Base.include(CFDSDFWaterLily,
-    joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
-Base.include(CFDSDFWaterLily,
     joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "V16W4Sensitivity.jl"))
+if !CPU_PRESTEP
+    Base.include(CFDSDFWaterLily,
+        joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
+    @eval using .CFDSDFWaterLily.DeviceGridSDF
+end
 using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
     V16_CANONICAL_SDF_ORIGIN_M, V16_PROFILE_SPACING_M, V16MovingGroundBody,
     v16_native_far_field_uBC
-using .CFDSDFWaterLily.DeviceGridSDF
-using .CFDSDFWaterLily.V16W4Sensitivity: v16_w4_case, validate_v16_w4_case
+using .CFDSDFWaterLily.V16W4Sensitivity: w4_cases, validate_w4_case
 include(joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "OwnedV16Run.jl"))
 using .CFDSDFW3RunOwnership: OwnedV16Run
 
 length(ARGS) == 3 || error("usage: waterlily_sdf_directional_fd_v16_job.jl <dataset_dir> <run_queue.tsv> <output_dir>")
 dataset_dir, queue_path, output_dir = ARGS
 
-const EXPECTED_STATE_SHA = "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8"
-const EXPECTED_PHI_C_SHA = "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785"
-const EXPECTED_PHI_F_SHA = "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7"
-const EXPECTED_SOURCE_SHA = "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
-const FLOW_ORIGIN = (-2.5, -1.2, -0.9)
+const STATE_LABEL = get(ENV, "FD_STATE_LABEL", "v16")
+const EXPECTED_STATE_SHA = get(ENV, "FD_STATE_SHA256", "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8")
+const EXPECTED_PHI_C_SHA = get(ENV, "FD_PHI_C_ORDER_SHA256", "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785")
+const EXPECTED_PHI_F_SHA = get(ENV, "FD_PHI_FORTRAN_SHA256", "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7")
+const EXPECTED_SOURCE_SHA = get(ENV, "FD_SOURCE_SURFACE_SHA256", "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11")
+const point_shape_from_env = Tuple(parse.(Int, split(get(ENV, "FD_POINT_SHAPE", "61,33,25"), ",")))
+const sdf_origin_from_env = Tuple(parse.(Float64, split(get(ENV, "FD_SDF_ORIGIN_M", "-1,-0.8,-0.6"), ",")))
+const sdf_spacing_from_env = parse(Float64, get(ENV, "FD_SDF_SPACING_M", "0.05"))
+const EXPECTED_FLOW_ORIGIN = Tuple(parse.(Float64, split(get(ENV, "FD_FLOW_ORIGIN_M", "-2.5,-1.2,-0.9"), ",")))
 const OUTSIDE_VALUE = 3.0
-const REQUIRED_MARGIN = 0.15
+const REQUIRED_MARGIN = parse(Float64, get(ENV, "FD_MARGIN_GATE_M", "0.15"))
+const EXPECTED_MARGIN = parse(Float64, get(ENV, "FD_EXPECTED_MARGIN_M", "0.3499999939931499"))
 const MARGIN_TOL = 1e-6
-const T_END = 120.0
-const BURN_IN = 80.0
-const SAMPLE_EVERY = 8
-const FLOW_CASE = v16_w4_case("flow_16")
+const T_END = parse(Float64, get(ENV, "FD_T_END", "120.0"))
+const BURN_IN = parse(Float64, get(ENV, "FD_BURN_IN", "80.0"))
+const WINDOW_START = parse(Float64, get(ENV, "FD_WINDOW_START", "80.0"))
+const WINDOW_END = parse(Float64, get(ENV, "FD_WINDOW_END", "120.0"))
+const STATIONARITY_SPLIT = parse(Float64, get(ENV, "FD_STATIONARITY_SPLIT", "100.0"))
+const SAMPLE_EVERY = parse(Int, get(ENV, "FD_SAMPLE_EVERY", "8"))
+const FLOW_CASE_ID = get(ENV, "FD_FLOW_CASE_ID", "flow_16")
+const FLOW_CASE = only(filter(case -> case.case_id == FLOW_CASE_ID,
+    w4_cases(sdf_origin_from_env, sdf_spacing_from_env)))
+const EXPECTED_FLOW_DIMS = Tuple(parse.(Int, split(get(ENV, "FD_FLOW_DIMS", "100,48,36"), ",")))
+const EXPECTED_FLOW_SPACING = parse(Float64, get(ENV, "FD_FLOW_SPACING_M", "0.05"))
+const EXPECTED_SOLVER_LENGTH = parse(Float64, get(ENV, "FD_SOLVER_LENGTH", "16.0"))
+const EXPECTED_SOLVER_VISCOSITY = parse(Float64, get(ENV, "FD_SOLVER_VISCOSITY", "0.2"))
+const EXPECTED_SOLVER_TIME_UNIT = parse(Float64, get(ENV, "FD_SOLVER_TIME_UNIT_S", "0.05"))
 const FORCE_COLUMNS = ("step", "t_u_l", "fx_solver", "fy_solver", "fz_solver",
     "drag_solver", "downforce_solver", "pressure_fx_solver", "pressure_fy_solver",
     "pressure_fz_solver", "viscous_fx_solver", "viscous_fy_solver", "viscous_fz_solver")
-const EPSILONS = (0.0005, 0.001, 0.0025, 0.005, 0.01)
-const DIRECTIONS = ("D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026")
+const EPSILONS = Tuple(parse.(Float64, split(get(ENV, "FD_EPSILONS_M", "0.0005,0.001,0.0025,0.005,0.01"), ",")))
+const DIRECTIONS = Tuple(split(get(ENV, "FD_DIRECTION_IDS", "D0_interface_offset,D1_filtered_seed11,D2_filtered_seed2026"), ","))
+const SDF_POINT_SHAPE = point_shape_from_env
+const SDF_ORIGIN = sdf_origin_from_env
+const SDF_SPACING = sdf_spacing_from_env
 
 json_string(value::AbstractString) = "\"" * replace(value, "\\" => "\\\\", "\"" => "\\\"", "\n" => "\\n") * "\""
 json_value(value::Bool) = value ? "true" : "false"
@@ -92,8 +115,8 @@ end
 function read_phi(run)
     raw = read(run.phi_path)
     bytes2hex(sha256(raw)) == run.phi_sha || error("$(run.run_id): registered phi file SHA mismatch")
-    length(raw) == prod(V16_PROFILE_POINT_SHAPE) * sizeof(Float32) || error("$(run.run_id): phi byte length mismatch")
-    phi = reshape(copy(reinterpret(Float32, raw)), V16_PROFILE_POINT_SHAPE)
+    length(raw) == prod(SDF_POINT_SHAPE) * sizeof(Float32) || error("$(run.run_id): phi byte length mismatch")
+    phi = reshape(copy(reinterpret(Float32, raw)), SDF_POINT_SHAPE)
     all(isfinite, phi) || error("$(run.run_id): non-finite phi input")
     c_sha, f_sha = phi_hashes(phi)
     f_sha == run.phi_sha || error("$(run.run_id): Fortran phi SHA mismatch")
@@ -107,15 +130,14 @@ function load_cpu_grid(run)
         c_sha == EXPECTED_PHI_C_SHA || error("canonical baseline C-order phi identity mismatch")
         f_sha == EXPECTED_PHI_F_SHA || error("canonical baseline Fortran phi identity mismatch")
     end
-    margin = zero_level_margin_m(phi, V16_CANONICAL_SDF_ORIGIN_M,
-        (V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M))
+    margin = zero_level_margin_m(phi, SDF_ORIGIN, (SDF_SPACING, SDF_SPACING, SDF_SPACING))
     isfinite(margin) && margin >= REQUIRED_MARGIN - MARGIN_TOL ||
         error("$(run.run_id): perturbed phi fails the CPU SDF margin gate ($margin)")
     if run.run_id in ("baseline_A", "baseline_B", "baseline_C")
-        abs(margin - 0.3499999939931499) <= MARGIN_TOL || error("canonical SDF margin drift")
+        abs(margin - EXPECTED_MARGIN) <= MARGIN_TOL || error("canonical SDF margin drift")
     end
-    grid = GridSDF(phi; origin=V16_CANONICAL_SDF_ORIGIN_M,
-        h=(V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M, V16_PROFILE_SPACING_M),
+    grid = GridSDF(phi; origin=SDF_ORIGIN,
+        h=(SDF_SPACING, SDF_SPACING, SDF_SPACING),
         outside_value=OUTSIDE_VALUE, margin_m=REQUIRED_MARGIN)
     return grid, phi, margin, c_sha, f_sha
 end
@@ -141,7 +163,7 @@ function clipped_window(rows, start_t, end_t)
     b = findfirst(row -> row[2] >= start_t, rows)
     c = findlast(row -> row[2] <= end_t, rows)
     d = findfirst(row -> row[2] >= end_t, rows)
-    all(index -> index !== nothing, (a, b, c, d)) || error("force rows do not bracket [80,120]")
+    all(index -> index !== nothing, (a, b, c, d)) || error("force rows do not bracket the registered force window")
     return vcat([interpolate_row(rows[a], rows[b], start_t)],
         [row for row in rows if start_t < row[2] < end_t],
         [interpolate_row(rows[c], rows[d], end_t)])
@@ -159,28 +181,45 @@ function tw_mean(rows, column)
 end
 
 function window_stats(rows, column)
-    whole = tw_mean(clipped_window(rows, 80.0, 120.0), column)
-    first = tw_mean(clipped_window(rows, 80.0, 100.0), column)
-    second = tw_mean(clipped_window(rows, 100.0, 120.0), column)
+    whole = tw_mean(clipped_window(rows, WINDOW_START, WINDOW_END), column)
+    first = tw_mean(clipped_window(rows, WINDOW_START, STATIONARITY_SPLIT), column)
+    second = tw_mean(clipped_window(rows, STATIONARITY_SPLIT, WINDOW_END), column)
     drift = abs(first - second) / max(abs(whole), eps(Float64))
     return whole, first, second, drift
 end
 
 function measure_fresh_run(run, vram_total)
-    validate_v16_w4_case(FLOW_CASE)
+    validate_w4_case(FLOW_CASE; canonical_design_origin_m=SDF_ORIGIN,
+        canonical_design_spacing_m=SDF_SPACING)
+    FLOW_CASE.flow_origin_m == EXPECTED_FLOW_ORIGIN || error("registered flow origin differs from W4 case")
+    FLOW_CASE.flow_dims == EXPECTED_FLOW_DIMS || error("registered flow dimensions differ from W4 case")
+    abs(FLOW_CASE.flow_spacing_m - EXPECTED_FLOW_SPACING) <= 1e-12 || error("registered flow spacing differs from W4 case")
+    abs(FLOW_CASE.solver_length - EXPECTED_SOLVER_LENGTH) <= 1e-12 || error("registered solver length differs from W4 case")
+    abs(FLOW_CASE.solver_viscosity - EXPECTED_SOLVER_VISCOSITY) <= 1e-12 || error("registered solver viscosity differs from W4 case")
+    abs(FLOW_CASE.solver_time_unit_s - EXPECTED_SOLVER_TIME_UNIT) <= 1e-12 || error("registered solver time unit differs from W4 case")
     grid, phi, margin, c_sha, f_sha = load_cpu_grid(run)
-    owner = device_copy(grid)
-    roundtrip_sha = device_roundtrip_sha(owner)
+    owner = CPU_PRESTEP ? grid : device_copy(grid)
+    roundtrip_sha = CPU_PRESTEP ? f_sha : device_roundtrip_sha(owner)
     roundtrip_sha == f_sha || error("$(run.run_id): device phi round-trip SHA mismatch")
-    candidate_grid = kernel_grid(owner)
+    candidate_grid = CPU_PRESTEP ? grid : kernel_grid(owner)
     candidate = GridSDFWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m), Float32(FLOW_CASE.flow_spacing_m))
     ground = V16MovingGroundBody(0.0f0, 1.0f0)
     bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
     sim = WaterLily.Simulation(FLOW_CASE.flow_dims, v16_native_far_field_uBC,
         Float32(FLOW_CASE.solver_length); U=Float32(FLOW_CASE.solver_velocity),
         ν=Float32(FLOW_CASE.solver_viscosity), exitBC=true, body=bodies.combined,
-        T=Float32, mem=CuArray)
+        T=Float32, mem=(CPU_PRESTEP ? Array : CuArray))
     owned = OwnedV16Run(owner, bodies, sim)
+    if CPU_PRESTEP
+        println("FD_PRESTEP_IDENTITY ", run.run_id, " state=", run.state_sha,
+            " phi_c=", c_sha, " phi_f=", f_sha, " shape=", join(SDF_POINT_SHAPE, ","),
+            " spacing_m=", SDF_SPACING, " flow=", FLOW_CASE.case_id,
+            " dims=", join(FLOW_CASE.flow_dims, ","), " flow_origin_m=", join(FLOW_CASE.flow_origin_m, ","),
+            " flow_spacing_m=", FLOW_CASE.flow_spacing_m)
+        println("FD_PRESTEP_READY ", run.run_id)
+        flush(stdout)
+        return nothing
+    end
     summary = nothing
     GC.@preserve owned begin
         println("FD_RUN_STARTED ", run.run_id)
@@ -240,8 +279,11 @@ function measure_fresh_run(run, vram_total)
             run_id=run.run_id, direction_id=run.direction_id, epsilon_m=run.epsilon_m,
             sign=run.sign, input_phi_sha256=f_sha, input_state_sha256=run.state_sha,
             phi_c_order_sha256=c_sha, phi_fortran_sha256=f_sha,
-            device_roundtrip_sha256=roundtrip_sha, point_shape=V16_PROFILE_POINT_SHAPE,
-            canonical_sdf_origin_m=V16_CANONICAL_SDF_ORIGIN_M,
+            device_roundtrip_sha256=roundtrip_sha, canonical_state_label=STATE_LABEL,
+            canonical_state_sha256=EXPECTED_STATE_SHA,
+            canonical_source_surface_sha256=EXPECTED_SOURCE_SHA,
+            point_shape=SDF_POINT_SHAPE,
+            canonical_sdf_origin_m=SDF_ORIGIN,
             flow_origin_m=FLOW_CASE.flow_origin_m, flow_dims=FLOW_CASE.flow_dims,
             flow_spacing_m=FLOW_CASE.flow_spacing_m, solver_length=FLOW_CASE.solver_length,
             solver_viscosity=FLOW_CASE.solver_viscosity, solver_velocity=FLOW_CASE.solver_velocity,
@@ -251,15 +293,16 @@ function measure_fresh_run(run, vram_total)
             freestream_mps=(FLOW_CASE.freestream_mps, 0.0, 0.0),
             reference_length_m=FLOW_CASE.reference_length_m,
             reference_area_m2=FLOW_CASE.reference_area_m2,
-            physical_box_m=((-2.5, 2.5), (-1.2, 1.2), (-0.9, 0.9)),
-            canonical_design_spacing_m=V16_PROFILE_SPACING_M,
+            physical_box_m=ntuple(i -> (FLOW_CASE.flow_origin_m[i], FLOW_CASE.physical_box_max_m[i]), 3),
+            canonical_design_spacing_m=SDF_SPACING,
             candidate_body_mapping="flow_origin + solver_coordinate*flow_spacing; canonical GridSDF retains its registered origin and spacing",
             sdf_outside_value_m=OUTSIDE_VALUE,
             moving_ground_solver_plane=0.0,
-            moving_ground_world_plane_m=-0.9,
+            moving_ground_world_plane_m=FLOW_CASE.flow_origin_m[3],
             moving_ground_velocity_mps=(1.0, 0.0, 0.0),
-            force_window_t_u_l=(BURN_IN, T_END),
-            stationarity_half_windows_t_u_l=((80.0, 100.0), (100.0, 120.0)),
+            force_window_t_u_l=(WINDOW_START, WINDOW_END),
+            stationarity_half_windows_t_u_l=((WINDOW_START, STATIONARITY_SPLIT),
+                (STATIONARITY_SPLIT, WINDOW_END)),
             phi_margin_m=margin, phi_margin_gate_m=REQUIRED_MARGIN,
             julia_version=string(VERSION), julia_threads=Threads.nthreads(),
             cuda_jl_version=string(pkgversion(CUDA)),
@@ -273,7 +316,7 @@ function measure_fresh_run(run, vram_total)
             x_plus_boundary="WaterLily convective exit",
             pressure_boundary="WaterLily projection pressure; no per-patch freestreamPressure input",
             ground_model="moving planar half-space at solver z=0, mapped to world z=-0.9 m by flow origin, with +x wall velocity 1 m/s",
-            force_integration_body="canonical v16 candidate GridSDF only; exclude auxiliary moving-ground half-space",
+            force_integration_body="canonical $(STATE_LABEL) candidate GridSDF only; exclude auxiliary moving-ground half-space",
             force_projection_semantics="drag=+Fx; downforce=-Fz",
             source_profile_equivalent=false, physical_profile_qualified=false,
             t_end_target=T_END, t_end_reached=Float64(sim_time(sim)), steps=step,
@@ -313,8 +356,20 @@ function main()
     queue = read_queue(queue_path)
     [run.run_id for run in queue] == expected_order() || error("FD fixed 33-run order differs from registration")
     all(run -> isfile(run.phi_path), queue) || error("FD input queue references a missing phi file")
+    all(run -> bytes2hex(sha256(read(run.phi_path))) == run.phi_sha, queue) ||
+        error("FD run queue contains an input phi hash mismatch")
+    all(run -> run.run_id in ("baseline_A", "baseline_B", "baseline_C") ||
+        perturbation_id(run.direction_id, run.epsilon_m, run.sign) == run.run_id, queue) ||
+        error("FD run queue perturbation identity mismatch")
     run_queue_summary = joinpath(output_dir, "run_queue.tsv")
     cp(queue_path, run_queue_summary; force=true)
+    if CPU_PRESTEP
+        queue[1].run_id == "baseline_A" || error("CPU prestep must initialize the first registered baseline")
+        measure_fresh_run(queue[1], nothing)
+        println("FD_PRESTEP_COMPLETE runs_validated=", length(queue), " next=sim_step!")
+        flush(stdout)
+        return
+    end
     CUDA_VISIBLE = get(ENV, "CUDA_VISIBLE_DEVICES", "")
     CUDA_VISIBLE == "0" || error("registered single-T4 visibility must be CUDA_VISIBLE_DEVICES=0")
     runtime = Dict{String,Any}()
@@ -345,7 +400,7 @@ function main()
     end
     println("FD_MATRIX_DONE runs=", length(queue), " solver_wall_s=", sum(values(runtime)),
         " total_wall_s=", total_wall)
-    write(joinpath(output_dir, "FD_JOB_DONE"), "All 33 fresh flow_16 primals returned; host verification required.\n")
+    write(joinpath(output_dir, "FD_JOB_DONE"), "All 33 registered $(FLOW_CASE_ID) primals returned; host verification required.\n")
 end
 
 main()

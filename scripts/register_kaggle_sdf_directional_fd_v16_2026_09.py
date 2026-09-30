@@ -851,7 +851,12 @@ def main() -> int:
     parser.add_argument("--round", type=int, default=1)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--v17-flow24", action="store_true",
+                        help="register the separate v17/flow_24 FD-05 round-1 criteria")
     args = parser.parse_args()
+    if args.v17_flow24:
+        import register_kaggle_sdf_directional_fd_v17_flow24_2026_09 as v17
+        return v17.main()
     print(write_or_check(args.round, args.state, args.check))
     return 0
 

@@ -31,6 +31,14 @@ CRITERIA_NAME = "sdf_directional_fd_v16_criteria.json"
 MANIFEST_NAME = "sdf_directional_fd_v16_dataset_manifest.json"
 
 
+def artifact_names(criteria: dict) -> tuple[str, str]:
+    artifacts = criteria.get("artifacts", {})
+    return (
+        artifacts.get("dataset_criteria_filename", CRITERIA_NAME),
+        artifacts.get("dataset_manifest_filename", MANIFEST_NAME),
+    )
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -73,7 +81,7 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
     canonical_f = np.asarray(state.phi, dtype="<f4", order="F").tobytes(order="F")
     if (phi_sha256(state.phi, order="C") != geometry["canonical_phi_c_order_sha256"]
             or sha256_bytes(canonical_f) != geometry["canonical_phi_fortran_sha256"]):
-        raise ValueError("canonical v16 C/F phi identity differs from the frozen FD criteria")
+        raise ValueError("canonical C/F phi identity differs from the frozen FD criteria")
     dirs = generate_directions(state)
     audit = validate_directions(state, dirs)
     if audit != criteria["direction_audit"]:
@@ -88,7 +96,10 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
     (output_dir / canonical_entry["path"]).write_bytes(canonical_f)
     files[canonical_entry["path"]] = sha256_bytes(canonical_f)
 
-    for direction_id in DIRECTION_IDS:
+    direction_ids = tuple(criteria["direction_inventory"])
+    if direction_ids != DIRECTION_IDS:
+        raise ValueError("criteria direction order differs from the registered generator contract")
+    for direction_id in direction_ids:
         entry = criteria["direction_inventory"][direction_id]
         raw = np.asarray(dirs[direction_id], dtype="<f4", order="C").tobytes(order="C")
         digest = sha256_bytes(raw)
@@ -141,13 +152,14 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
         if entry.get("location") == "kaggle_dataset" and files.get(entry["path"]) != entry["sha256"]:
             raise ValueError(f"staged dataset input is absent or hash-mismatched: {name}")
 
-    shutil.copyfile(criteria_path, output_dir / CRITERIA_NAME)
-    criteria_copy_sha = sha256(output_dir / CRITERIA_NAME)
-    shutil.copyfile(criteria_sidecar, output_dir / f"{CRITERIA_NAME}.sha256")
-    files[CRITERIA_NAME] = criteria_copy_sha
-    files[f"{CRITERIA_NAME}.sha256"] = sha256(output_dir / f"{CRITERIA_NAME}.sha256")
+    criteria_name, manifest_name = artifact_names(criteria)
+    shutil.copyfile(criteria_path, output_dir / criteria_name)
+    criteria_copy_sha = sha256(output_dir / criteria_name)
+    shutil.copyfile(criteria_sidecar, output_dir / f"{criteria_name}.sha256")
+    files[criteria_name] = criteria_copy_sha
+    files[f"{criteria_name}.sha256"] = sha256(output_dir / f"{criteria_name}.sha256")
     (output_dir / "dataset-metadata.json").write_text(json.dumps({
-        "title": "CFD Opt SDF v16 Directional FD Oracle Inputs",
+        "title": criteria.get("dataset_title", "CFD Opt SDF v16 Directional FD Oracle Inputs"),
         "id": criteria["input_dataset_id"],
         "licenses": [{"name": "other"}],
     }, indent=2, sort_keys=True) + "\n")
@@ -166,8 +178,8 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
         "perturbation_preflight": perturbation_details,
         "files": files,
     }
-    (output_dir / MANIFEST_NAME).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    allowed = set(files) | {"dataset-metadata.json", MANIFEST_NAME}
+    (output_dir / manifest_name).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    allowed = set(files) | {"dataset-metadata.json", manifest_name}
     actual = {path.relative_to(output_dir).as_posix() for path in output_dir.rglob("*") if path.is_file()}
     if actual != allowed:
         raise ValueError(f"staged dataset inventory mismatch: extra={actual-allowed}, missing={allowed-actual}")

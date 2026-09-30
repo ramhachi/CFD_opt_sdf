@@ -1,10 +1,12 @@
 import ast
 import builtins
+import copy
 import hashlib
 import importlib.util
 import json
 import shutil
 import symtable
+import sys
 import tempfile
 from argparse import Namespace
 from pathlib import Path
@@ -41,6 +43,11 @@ preparer = load_module(
 registrar = load_module(
     "fd_criteria_registrar",
     "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
+)
+sys.path.insert(0, str(ROOT / "scripts"))
+v17_registrar = load_module(
+    "fd_v17_flow24_criteria_registrar",
+    "scripts/register_kaggle_sdf_directional_fd_v17_flow24_2026_09.py",
 )
 
 
@@ -633,3 +640,188 @@ def test_dataset_preparer_rejects_mutable_draft_even_with_valid_sidecar(tmp_path
     criteria.with_suffix(criteria.suffix + ".sha256").write_text(digest + "\n")
     with pytest.raises(ValueError, match="immutable premeasurement"):
         preparer.stage(Path("unused-state.npz"), criteria, tmp_path / "dataset")
+
+
+def test_v17_runner_discovers_criteria_filename_before_loading_criteria(tmp_path):
+    original = (runner.STAGE, runner.OUT, runner.CRITERIA_NAME, runner.MANIFEST_NAME,
+                runner.EXPECTED_DIRECTIONS, runner.EXPECTED_EPSILONS, runner.EXPECTED_RUN_ORDER)
+    verifier_original = (verifier.OUTPUT_NAME, verifier.CRITERIA_NAME,
+                         verifier.DATASET_MANIFEST_NAME, verifier.EXPECTED_RUNS,
+                         verifier.DIRECTIONS, verifier.EPSILONS)
+    try:
+        directory = tmp_path / "dataset"
+        directory.mkdir()
+        criteria = {
+            "immutable": True,
+            "registered_before_computation": True,
+            "status": "registered_not_run",
+            "source_commit": "a" * 40,
+            "registered_source_commit": "a" * 40,
+            "formal_measurement_started": False,
+            "kind": "sdf_directional_fd_flow24_criteria",
+            "input_dataset_id": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle",
+            "artifacts": {
+                "dataset_criteria_filename": "sdf_directional_fd_v17_flow24_criteria.json",
+                "dataset_manifest_filename": "sdf_directional_fd_v17_flow24_dataset_manifest.json",
+                "kernel_output_directory": "sdf_directional_fd_v17_flow24",
+            },
+            "direction_inventory": {
+                name: {} for name in (
+                    "D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026",
+                )
+            },
+            "perturbation_inventory": [{"epsilon_m": value} for value in (
+                0.0005, 0.001, 0.0025, 0.005, 0.01,
+            ) for _ in range(6)],
+            "run_order": ["baseline_A"],
+        }
+        criteria["criteria_sha256"] = runner.criteria_digest(criteria)
+        path = directory / criteria["artifacts"]["dataset_criteria_filename"]
+        path.write_text(json.dumps(criteria))
+        path.with_suffix(path.suffix + ".sha256").write_text(
+            hashlib.sha256(path.read_bytes()).hexdigest() + "\n")
+
+        loaded, digest = runner.read_criteria(directory)
+
+        assert loaded["kind"] == "sdf_directional_fd_flow24_criteria"
+        assert digest == hashlib.sha256(path.read_bytes()).hexdigest()
+        assert runner.CRITERIA_NAME == "sdf_directional_fd_v17_flow24_criteria.json"
+        assert runner.MANIFEST_NAME == "sdf_directional_fd_v17_flow24_dataset_manifest.json"
+        assert runner.STAGE == "sdf_directional_fd_v17_flow24"
+        assert preparer.artifact_names(loaded) == (
+            "sdf_directional_fd_v17_flow24_criteria.json",
+            "sdf_directional_fd_v17_flow24_dataset_manifest.json",
+        )
+        verifier.configure_criteria(loaded)
+        assert verifier.CRITERIA_NAME == runner.CRITERIA_NAME
+        assert verifier.DATASET_MANIFEST_NAME == runner.MANIFEST_NAME
+        assert verifier.OUTPUT_NAME == runner.STAGE
+    finally:
+        (runner.STAGE, runner.OUT, runner.CRITERIA_NAME, runner.MANIFEST_NAME,
+         runner.EXPECTED_DIRECTIONS, runner.EXPECTED_EPSILONS,
+         runner.EXPECTED_RUN_ORDER) = original
+        (verifier.OUTPUT_NAME, verifier.CRITERIA_NAME, verifier.DATASET_MANIFEST_NAME,
+         verifier.EXPECTED_RUNS, verifier.DIRECTIONS, verifier.EPSILONS) = verifier_original
+
+
+def test_v17_flow24_registration_preserves_fixed_r5_contract_and_rejects_threshold_change():
+    r5_path = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json"
+    r5 = json.loads(r5_path.read_text())
+    criteria = copy.deepcopy(r5)
+    criteria["gates"][0] = "T0_exact_W3_v17_W4_v17_flow24_prerequisites"
+    criteria["perturbation"]["epsilon_relative_to_design_spacing"] = [0.02, 0.04, 0.1, 0.2, 0.4]
+    criteria["perturbation_inventory"] = list(range(30))
+    v17_registrar.assert_r5_unchanged(criteria, r5)
+
+    criteria["noise_and_plateau"]["plateau_relative_tolerance"] += 0.01
+    with pytest.raises(ValueError, match="R5-fixed contract block: noise_and_plateau"):
+        v17_registrar.assert_r5_unchanged(criteria, r5)
+
+
+def test_v17_flow24_job_environment_uses_registered_state_flow_directions_and_ladder():
+    draft = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json"
+    criteria = copy.deepcopy(json.loads(draft.read_text()))
+    criteria["geometry"].update({
+        "state_label": "v17",
+        "canonical_state_sha256": "1" * 64,
+        "canonical_phi_c_order_sha256": "2" * 64,
+        "canonical_phi_fortran_sha256": "3" * 64,
+        "source_surface_sha256": "4" * 64,
+        "point_shape": [121, 65, 49],
+        "canonical_sdf_origin_m": [-1.0, -0.8, -0.6],
+        "design_spacing_m": 0.025,
+        "canonical_phi_margin_m": 0.35,
+        "margin_gate_m": 0.15,
+    })
+    criteria["geometry"]["flow_case"].update({
+        "case_id": "flow_24", "flow_dims": [150, 72, 54],
+        "flow_spacing_m": 1 / 30, "solver_length": 24.0,
+        "solver_viscosity": 0.3, "solver_time_unit_s": 1 / 30,
+    })
+    criteria["direction_inventory"] = {
+        name: {} for name in (
+            "D0_interface_offset", "D1_filtered_seed11", "D2_filtered_seed2026",
+        )
+    }
+    criteria["perturbation_inventory"] = [{"epsilon_m": value} for value in (
+        0.0005, 0.001, 0.0025, 0.005, 0.01,
+    ) for _ in range(6)]
+    environment = runner.julia_job_environment(criteria)
+
+    assert environment["FD_STATE_LABEL"] == "v17"
+    assert environment["FD_POINT_SHAPE"] == "121,65,49"
+    assert environment["FD_SDF_SPACING_M"] == "0.025"
+    assert environment["FD_FLOW_CASE_ID"] == "flow_24"
+    assert environment["FD_FLOW_DIMS"] == "150,72,54"
+    assert environment["FD_FLOW_ORIGIN_M"] == "-2.5,-1.2,-0.9"
+    assert environment["FD_SOLVER_LENGTH"] == "24.0"
+    assert environment["FD_SOLVER_VISCOSITY"] == "0.3"
+    assert environment["FD_DIRECTION_IDS"] == ",".join(criteria["direction_inventory"])
+    assert environment["FD_EPSILONS_M"] == "0.0005,0.001,0.0025,0.005,0.01"
+
+
+def test_v17_flow24_run_summary_must_bind_state_label_hashes_and_flow_case():
+    criteria = copy.deepcopy(json.loads(
+        (ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json").read_text()))
+    geometry = criteria["geometry"]
+    geometry.update({
+        "state_label": "v17", "canonical_state_sha256": "1" * 64,
+        "source_surface_sha256": "2" * 64, "point_shape": [121, 65, 49],
+        "canonical_sdf_origin_m": [-1.0, -0.8, -0.6], "design_spacing_m": 0.025,
+        "canonical_phi_margin_m": 0.35,
+    })
+    flow = geometry["flow_case"]
+    flow.update({"case_id": "flow_24", "flow_dims": [150, 72, 54],
+        "flow_spacing_m": 1 / 30, "solver_length": 24.0,
+        "solver_time_unit_s": 1 / 30, "solver_viscosity": 0.3})
+    summary = {
+        "run_id": "baseline_A", "canonical_state_label": "v17",
+        "canonical_state_sha256": geometry["canonical_state_sha256"],
+        "canonical_source_surface_sha256": geometry["source_surface_sha256"],
+        "phi_margin_m": geometry["canonical_phi_margin_m"],
+        "phi_margin_gate_m": geometry["margin_gate_m"],
+        "point_shape": geometry["point_shape"],
+        "canonical_sdf_origin_m": geometry["canonical_sdf_origin_m"],
+        "flow_origin_m": flow["flow_origin_m"], "flow_dims": flow["flow_dims"],
+        "flow_spacing_m": flow["flow_spacing_m"], "solver_length": flow["solver_length"],
+        "solver_viscosity": flow["solver_viscosity"], "solver_velocity": flow["solver_velocity"],
+        "solver_time_unit_s": flow["solver_time_unit_s"], "reynolds": flow["reynolds"],
+        "density_kg_m3": flow["density_kg_m3"],
+        "dynamic_viscosity_pa_s": flow["dynamic_viscosity_pa_s"],
+        "freestream_mps": flow["freestream_mps"],
+        "reference_length_m": flow["reference_length_m"],
+        "reference_area_m2": flow["reference_area_m2"],
+        "canonical_design_spacing_m": geometry["design_spacing_m"],
+        "candidate_body_mapping": flow["candidate_body_mapping"],
+        "sdf_outside_value_m": geometry["outside_value_m"],
+        "moving_ground_solver_plane": flow["moving_ground_solver_plane"],
+        "moving_ground_world_plane_m": flow["moving_ground_world_plane_m"],
+        "moving_ground_velocity_mps": flow["moving_ground_velocity_mps"],
+        "force_window_t_u_l": criteria["measurement"]["force_window_t_u_l"],
+        "stationarity_half_windows_t_u_l": criteria["measurement"]["stationarity_half_windows_t_u_l"],
+        "sample_every_solver_steps": criteria["measurement"]["force_sample_every_solver_steps"],
+        "physical_box_m": flow["physical_box_m"],
+        "native_velocity_boundary": flow["native_velocity_boundary"],
+        "side_top_tangential_boundary": flow["side_top_tangential_boundary"],
+        "x_plus_boundary": flow["x_plus_boundary"],
+        "pressure_boundary": flow["pressure_boundary"], "ground_model": flow["ground_model"],
+        "force_integration_body": flow["force_integration_body"],
+        "force_projection_semantics": flow["force_projection_semantics"],
+        "source_profile_equivalent": flow["source_profile_equivalent"],
+        "physical_profile_qualified": flow["physical_profile_qualified"],
+    }
+    assert runner.run_summary_contract(summary, criteria) is True
+    assert verifier.host_physics_identity(summary, criteria) is True
+
+    summary["canonical_state_sha256"] = "3" * 64
+    assert runner.run_summary_contract(summary, criteria) is False
+    assert verifier.host_physics_identity(summary, criteria) is False
+
+
+def test_registered_v17_kernel_runner_is_the_shared_criteria_runner():
+    kernel_directory = ROOT / "infra/kaggle/kernel_sdf_directional_fd_v17_flow24"
+    metadata = json.loads((kernel_directory / "kernel-metadata.json").read_text())
+    shared_runner = ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py"
+    assert (kernel_directory / "runner.py").read_bytes() == shared_runner.read_bytes()
+    assert metadata["id"] == "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle-kernel"
+    assert metadata["dataset_sources"] == ["ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"]
