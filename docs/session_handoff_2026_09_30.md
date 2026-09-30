@@ -49,13 +49,16 @@ v16 の過去の criteria もそのまま動く。v17 用の registrar は `scri
      - 流れは完全に定常である。
      - 粘性の力は ε→0 でもベースラインに戻らない。
      - flow_24 の band 内で、φ≈0 かつ |∇φ|≈0 の 348 点では、どんな摂動でも法線が反転する。
-   - 次は FD-06 の前に、法線を正則化するか、サンプル平面と面の平面の一致を崩すか、ユーザーが判断する。
+   - 原因仮説（法線の反転）に基づき、法線の下限 n=g/max(|g|,0.25) を入れた **FD-06 (2026-10-01)** を登録・実行した。`docs/issues/37_fd06_normal_floor_probe.md`（CPU の診断）と `docs/issues/37_fd06_result.md`（結果）。
+   - FD-06 の結果: 6 組のうち 2 組が PASS、残り 4 組が 5.2〜8.7%（基準 5%）で FAIL。FD-05 の 83〜150% から大幅に改善したが、**FD oracle は未 qualified**。再試行はしない。
+   - 次は、残りの 5〜9% の原因の診断（solver を使わない）をしてから、新しい契約として次の round を決める。
 3. **Volume reference:** remeasure v17 `V_phi_0` before OPT-01.
 4. **Gate definition revision (#29):** make force-band gradient gate v2 and
    exclude the solid-interior medial axis at the band edge. Three v17 cells
    remain below the current 0.25 threshold.
 5. W4 の verifier の `remote_inventory_sha256` の名前衝突は修正済み (§6)。
-6. FD の runner/host verifier の criteria hash の扱い（outcome はファイルの SHA、host は canonical SHA）を揃える。FD-06 を実行するより前に直す。
+6. FD の runner/host verifier の criteria hash の食い違いは、FD-06 の runner（新しい kernel ディレクトリ）で解消済み（T12 が PASS）。FD-05 以前の runner は変えていない。
+7. gate が 1 つでも FAIL すると runner は DONE を出さず、strict な host 検証は必ず止まる（設計どおり）。FAIL の round の記録は、診断ファイルと `scripts/recompute_fd_directional_from_raw.py` による独立な再計算で行う。
 
 
 ## 4. 未 merge のブランチ (2026-09-29 に途中で止めた WIP。中間報告は各ブランチの `docs/issues/*_interim.md`)
