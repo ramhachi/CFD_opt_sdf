@@ -67,3 +67,11 @@
 2. FD-06 を新しい契約として登録する。canonical state は v17、flow は flow_24、ε・判定基準・33 run の構成は FD-05 と同一にし、変更するのは normal_floor=0.25 だけ。
 3. 別件の修正として、FD の runner と host verifier の間の criteria hash の食い違いを直す。FD-05 で T12 が FAIL した原因。
 4. Kaggle で 33 本を実行し、host で厳密に検証する。
+
+## Correction (2026-10-01, append-only)
+
+The "次の手順" above and the #37 comment said the floor would live in `GridSDFWaterLilyBody` (`normal_floor`, merge
+`a13a4fc`). That in-place change broke a W2b round-5 test that pins `WaterLilyBody.jl`'s hash, so it was reverted and the
+floor now lives in a separate file, `julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl`
+(`NormalFloorWaterLilyBody`). `WaterLilyBody.jl` is byte-identical to its state before `a13a4fc`. Result:
+[`37_fd06_result.md`](37_fd06_result.md).
