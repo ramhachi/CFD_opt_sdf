@@ -25,24 +25,16 @@ using WaterLily
 using .GridSDFBody
 
 """
-    GridSDFWaterLilyBody(grid, world_origin_m, world_per_solver[, normal_floor])
+    GridSDFWaterLilyBody(grid, world_origin_m, world_per_solver)
 
 Static WaterLily body backed by the W1 `GridSDF` trilinear adapter.  The map
 field type (Float64 or Float32) selects the measurement arithmetic.
-
-`normal_floor` (default 0) replaces the normal `g/|g|` by `g/max(|g|, normal_floor)`
-(#37): where the trilinear gradient vanishes the normal is otherwise
-discontinuous under any perturbation.  0 keeps the historical bridge exactly.
 """
 struct GridSDFWaterLilyBody{A,T,S} <: WaterLily.AbstractBody
     grid::GridSDF{A,T}
     world_origin_m::NTuple{3,S}
     world_per_solver::S
-    normal_floor::S
 end
-
-GridSDFWaterLilyBody(grid, world_origin_m, world_per_solver) =
-    GridSDFWaterLilyBody(grid, world_origin_m, world_per_solver, zero(world_per_solver))
 
 function canonical_point(body::GridSDFWaterLilyBody, x)
     s = body.world_per_solver
@@ -65,7 +57,6 @@ function WaterLily.measure(
     _, grad = sdf_value_gradient_at_world(body.grid, x_m)
     magnitude = sqrt(grad[1] * grad[1] + grad[2] * grad[2] + grad[3] * grad[3])
     (!isfinite(magnitude) || magnitude == zero(magnitude)) && return (d, zero(x), zero(x))
-    magnitude = body.normal_floor > 0 ? max(magnitude, body.normal_floor) : magnitude
     components = (S(grad[1] / magnitude), S(grad[2] / magnitude), S(grad[3] / magnitude))
     n = x isa Array ? collect(components) : typeof(x)(components)
     return (d, n, zero(x))

@@ -26,8 +26,8 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def load_runner():
-    spec = importlib.util.spec_from_file_location("fd_cpu_preflight_runner", RUNNER_PATH)
+def load_runner(runner_path: Path = RUNNER_PATH):
+    spec = importlib.util.spec_from_file_location("fd_cpu_preflight_runner", runner_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("cannot load the criteria-bound FD runner")
     module = importlib.util.module_from_spec(spec)
@@ -56,7 +56,7 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
     if not criteria_path.is_file() or not sidecar.is_file() or sidecar.read_text().strip() != sha256(criteria_path):
         raise ValueError("immutable FD-05 criteria/sidecar is missing or mismatched")
     criteria = json.loads(criteria_path.read_text())
-    if (criteria.get("criteria_id") != "sdf_directional_fd_v17_flow24_2026_09"
+    if (not str(criteria.get("criteria_id", "")).startswith("sdf_directional_fd_v17_flow24")
             or criteria.get("immutable") is not True
             or criteria.get("status") != "registered_not_run"
             or criteria.get("formal_measurement_started") is not False):
@@ -70,7 +70,7 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
     if branch != "codex/kaggle-batch-migration" or commit != criteria["source_commit"] or tracked_status:
         raise ValueError("CPU preflight must use the clean registered source commit worktree")
 
-    runner = load_runner()
+    runner = load_runner(ROOT / criteria["inputs"]["kernel_runner"]["path"])
     runner.configure_criteria(criteria)
     _, criteria_sha = runner.read_criteria(dataset_dir)
     dataset_manifest, input_hashes = runner.verify_dataset(criteria, criteria_sha, dataset_dir)
@@ -121,6 +121,8 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
             "flow_spacing_m=0.03333333333333333",
             "FD_PRESTEP_READY baseline_A", "FD_PRESTEP_COMPLETE runs_validated=33 next=sim_step!",
         )
+        if "normal_floor" in criteria["geometry"]:
+            required_markers += (f"normal_floor={float(criteria['geometry']['normal_floor'])}",)
         missing = [marker for marker in required_markers if marker not in log]
         if missing or "FD_SOLVER_STEP_INVOKED" in log or "FD_SOLVER_STEP_RETURNED" in log:
             raise ValueError(f"CPU prestep boundary/identity mismatch; missing={missing}; log:\n{log[-16000:]}")
@@ -130,7 +132,8 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
         julia_version = subprocess.check_output([str(julia), "--version"], text=True).strip()
         evidence = {
             "schema_version": 1,
-            "kind": "fd05_v17_flow24_local_cpu_prestep",
+            "kind": "fd05_v17_flow24_local_cpu_prestep" if criteria["criteria_id"] == "sdf_directional_fd_v17_flow24_2026_09"
+                    else f"{criteria['criteria_id']}_local_cpu_prestep",
             "criteria_path": criteria_path.relative_to(ROOT).as_posix(),
             "criteria_sha256": criteria_sha,
             "source_commit": commit,

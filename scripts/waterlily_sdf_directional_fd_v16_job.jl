@@ -20,7 +20,9 @@ if !CPU_PRESTEP
         joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "DeviceGridSDF.jl"))
     @eval using .CFDSDFWaterLily.DeviceGridSDF
 end
-using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
+Base.include(CFDSDFWaterLily,
+    joinpath(@__DIR__, "..", "julia", "CFDSDFWaterLily", "src", "WaterLilyNormalFloorBody.jl"))
+using .CFDSDFWaterLily: GridSDFWaterLilyBody, NormalFloorWaterLilyBody, V16_PROFILE_POINT_SHAPE,
     V16_CANONICAL_SDF_ORIGIN_M, V16_PROFILE_SPACING_M, V16MovingGroundBody,
     v16_native_far_field_uBC
 using .CFDSDFWaterLily.V16W4Sensitivity: w4_cases, validate_w4_case
@@ -31,6 +33,8 @@ length(ARGS) == 3 || error("usage: waterlily_sdf_directional_fd_v16_job.jl <data
 dataset_dir, queue_path, output_dir = ARGS
 
 const STATE_LABEL = get(ENV, "FD_STATE_LABEL", "v16")
+# n = g/max(|g|, NORMAL_FLOOR); 0 keeps the historical bridge (all criteria before FD-06)
+const NORMAL_FLOOR = parse(Float64, get(ENV, "FD_NORMAL_FLOOR", "0.0"))
 const EXPECTED_STATE_SHA = get(ENV, "FD_STATE_SHA256", "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8")
 const EXPECTED_PHI_C_SHA = get(ENV, "FD_PHI_C_ORDER_SHA256", "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785")
 const EXPECTED_PHI_F_SHA = get(ENV, "FD_PHI_FORTRAN_SHA256", "9ed14a39a1456436ff40411c85ae54b04bfe28554ebe1b87677e7e9a62f632b7")
@@ -202,7 +206,10 @@ function measure_fresh_run(run, vram_total)
     roundtrip_sha = CPU_PRESTEP ? f_sha : device_roundtrip_sha(owner)
     roundtrip_sha == f_sha || error("$(run.run_id): device phi round-trip SHA mismatch")
     candidate_grid = CPU_PRESTEP ? grid : kernel_grid(owner)
-    candidate = GridSDFWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m), Float32(FLOW_CASE.flow_spacing_m))
+    candidate = NORMAL_FLOOR > 0 ?
+        NormalFloorWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m),
+            Float32(FLOW_CASE.flow_spacing_m), Float32(NORMAL_FLOOR)) :
+        GridSDFWaterLilyBody(candidate_grid, Float32.(FLOW_CASE.flow_origin_m), Float32(FLOW_CASE.flow_spacing_m))
     ground = V16MovingGroundBody(0.0f0, 1.0f0)
     bodies = (candidate=candidate, ground=ground, combined=candidate + ground)
     sim = WaterLily.Simulation(FLOW_CASE.flow_dims, v16_native_far_field_uBC,
@@ -215,7 +222,8 @@ function measure_fresh_run(run, vram_total)
             " phi_c=", c_sha, " phi_f=", f_sha, " shape=", join(SDF_POINT_SHAPE, ","),
             " spacing_m=", SDF_SPACING, " flow=", FLOW_CASE.case_id,
             " dims=", join(FLOW_CASE.flow_dims, ","), " flow_origin_m=", join(FLOW_CASE.flow_origin_m, ","),
-            " flow_spacing_m=", FLOW_CASE.flow_spacing_m)
+            " flow_spacing_m=", FLOW_CASE.flow_spacing_m,
+            " normal_floor=", NORMAL_FLOOR, " body=", nameof(typeof(candidate)))
         println("FD_PRESTEP_READY ", run.run_id)
         flush(stdout)
         return nothing
@@ -280,6 +288,7 @@ function measure_fresh_run(run, vram_total)
             sign=run.sign, input_phi_sha256=f_sha, input_state_sha256=run.state_sha,
             phi_c_order_sha256=c_sha, phi_fortran_sha256=f_sha,
             device_roundtrip_sha256=roundtrip_sha, canonical_state_label=STATE_LABEL,
+            normal_floor=NORMAL_FLOOR,
             canonical_state_sha256=EXPECTED_STATE_SHA,
             canonical_source_surface_sha256=EXPECTED_SOURCE_SHA,
             point_shape=SDF_POINT_SHAPE,

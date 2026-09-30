@@ -161,7 +161,7 @@ def verify_source(criteria: dict, criteria_sha: str, runner_sha: str) -> dict:
                 and registered_identity == prereq["backend_identity"],
                 f"{prereq_key} is not exact host-verified PASS evidence")
         if prereq_key == "w4":
-            w4_v17 = criteria.get("criteria_id") == "sdf_directional_fd_v17_flow24_2026_09"
+            w4_v17 = str(criteria.get("criteria_id", "")).startswith("sdf_directional_fd_v17_flow24")
             require(result_doc.get("w4_sensitivity_matrix_passed") is True
                     and result_doc.get("fd_entry_gate") == "OPEN"
                     and (w4_v17 or (result_doc.get("formal_fd_measurement_started") is False
@@ -462,6 +462,7 @@ def host_physics_identity(summary, criteria):
             summary.get("canonical_state_label") == state_label
             and summary.get("canonical_state_sha256") == geometry["canonical_state_sha256"]
             and summary.get("canonical_source_surface_sha256") == geometry["source_surface_sha256"]))
+        and ("normal_floor" not in geometry or close("normal_floor", geometry["normal_floor"]))
         and math.isclose(float(summary.get("phi_margin_m", math.nan)), expected_margin,
                      rel_tol=0.0, abs_tol=1e-6)
         and close("phi_margin_gate_m", geometry["margin_gate_m"])
@@ -1013,8 +1014,8 @@ def verify(args) -> dict:
 
 def default_diagnostic_path(criteria: dict) -> Path:
     criteria_id = criteria.get("criteria_id", "")
-    if criteria_id == "sdf_directional_fd_v17_flow24_2026_09":
-        return ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_diagnostic_2026_09.json"
+    if criteria_id.startswith("sdf_directional_fd_v17_flow24") and criteria_id.endswith("_2026_09"):
+        return ROOT / f"docs/evidence/{criteria_id[:-len('_2026_09')]}_diagnostic_2026_09.json"
     round_number = int(criteria.get("criteria_round", 1))
     return ROOT / f"docs/evidence/sdf_directional_fd_v16_diagnostic_2026_09_round{round_number}.json"
 
