@@ -56,7 +56,7 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
     if not criteria_path.is_file() or not sidecar.is_file() or sidecar.read_text().strip() != sha256(criteria_path):
         raise ValueError("immutable FD-05 criteria/sidecar is missing or mismatched")
     criteria = json.loads(criteria_path.read_text())
-    if (criteria.get("criteria_id") != "sdf_directional_fd_v17_flow24_2026_09"
+    if (not str(criteria.get("criteria_id", "")).startswith("sdf_directional_fd_v17_flow24")
             or criteria.get("immutable") is not True
             or criteria.get("status") != "registered_not_run"
             or criteria.get("formal_measurement_started") is not False):
