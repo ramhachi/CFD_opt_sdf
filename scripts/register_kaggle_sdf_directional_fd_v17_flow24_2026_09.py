@@ -22,7 +22,9 @@ FLOW_CASE_ID = "flow_24"
 CRITERIA_ID = "sdf_directional_fd_v17_flow24_2026_09"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle"
 KERNEL_ID = DATASET_ID + "-kernel"
-OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json"
+OUTPUT = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix1.json"
+SUPERSEDED_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json"
+SUPERSEDED_CRITERIA_SHA256 = "9cd5e3e35ac779ed937f4516421d82fbd40820dec2ae556817a4ff3ab007918e"
 R5_PATH = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_2026_09_round5.json"
 R5_DIAGNOSTIC = ROOT / "docs/evidence/sdf_directional_fd_v16_round5_kernel4_diagnostic_2026_09.json"
 V17_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
@@ -108,6 +110,7 @@ def source_inputs() -> dict:
         "criteria_draft": "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json",
         "criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v16_2026_09.py",
         "v17_flow24_criteria_registrar": "scripts/register_kaggle_sdf_directional_fd_v17_flow24_2026_09.py",
+        "superseded_unexecuted_criteria": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json",
         "dataset_preparer": "scripts/prepare_kaggle_sdf_directional_fd_v16_dataset_2026_09.py",
         "cpu_preflight": "scripts/preflight_kaggle_sdf_directional_fd_v16_cpu.py",
         "julia_job": "scripts/waterlily_sdf_directional_fd_v16_job.jl",
@@ -146,6 +149,15 @@ def build_criteria(source_commit: str) -> dict:
             or r5_diag_sha != "0b49997661d059a23e4a3cde4952d5cc2a8176468bf3726c42758ff7a65322f8"
             or R5_DIAGNOSTIC.with_suffix(R5_DIAGNOSTIC.suffix + ".sha256").read_text().strip() != r5_diag_sha):
         raise ValueError("preserved R5 criteria/diagnostic identity mismatch")
+    superseded_sha = base.sha256(SUPERSEDED_CRITERIA)
+    if (superseded_sha != SUPERSEDED_CRITERIA_SHA256
+            or SUPERSEDED_CRITERIA.with_suffix(SUPERSEDED_CRITERIA.suffix + ".sha256").read_text().strip() != superseded_sha):
+        raise ValueError("superseded unexecuted FD-05 criteria identity mismatch")
+    superseded = json.loads(SUPERSEDED_CRITERIA.read_text())
+    if (superseded.get("criteria_id") != CRITERIA_ID
+            or superseded.get("status") != "registered_not_run"
+            or superseded.get("formal_measurement_started") is not False):
+        raise ValueError("only the unexecuted initial FD-05 preregistration may be superseded")
     (w3c, w3r, w4c, w4r, w3c_sha, w3r_sha, w4c_sha, w4r_sha) = v17_prerequisites()
     genesis = json.loads(GENESIS.read_text())
     if GENESIS.with_suffix(GENESIS.suffix + ".sha256").read_text().strip() != base.sha256(GENESIS):
@@ -280,6 +292,10 @@ def build_criteria(source_commit: str) -> dict:
     criteria.update({
         "criteria_id": CRITERIA_ID, "criteria_round": 1,
         "criteria_path": OUTPUT.relative_to(ROOT).as_posix(),
+        "registration_revision": {"supersedes_criteria_path": SUPERSEDED_CRITERIA.relative_to(ROOT).as_posix(),
+            "supersedes_criteria_sha256": superseded_sha,
+            "reason": "Append-only correction for v17 W4 direct backend and force-metric result schema; no dataset upload or kernel run occurred under the superseded preregistration.",
+            "formal_measurement_started_under_superseded_criteria": False},
         "kind": "sdf_directional_fd_flow24_criteria",
         "status": "registered_not_run", "immutable": True,
         "registered_before_computation": True,

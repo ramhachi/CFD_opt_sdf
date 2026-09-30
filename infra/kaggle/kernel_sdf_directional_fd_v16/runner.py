@@ -173,9 +173,11 @@ def verify_prerequisites(source: Path, criteria: dict) -> tuple[dict, dict]:
         if sha256(criteria_path) != info["criteria_sha256"] or sha256(result_path) != info["result_sha256"]:
             raise RuntimeError(f"exact {key.upper()} prerequisite SHA mismatch")
         result = json.loads(result_path.read_text())
+        observed_backend = result.get("backend_identity", {})
+        registered_backend = (observed_backend.get("registered_backend", observed_backend)
+                             if key == "w4" else observed_backend)
         if (result.get("verdict") != "PASS" or result.get("host_verification_passed") is not True
-                or (result.get("backend_identity") != info["backend_identity"] if key == "w3"
-                    else result.get("backend_identity", {}).get("registered_backend") != info["backend_identity"])):
+                or registered_backend != info["backend_identity"]):
             raise RuntimeError(f"exact {key.upper()} prerequisite is not host-verified PASS")
         if key == "w4":
             w4_result = result
@@ -185,7 +187,7 @@ def verify_prerequisites(source: Path, criteria: dict) -> tuple[dict, dict]:
             if (result.get("fd_entry_gate") != info.get("fd_entry_gate")
                     or result.get("extended_domain_fine_grid_required", False) is not info.get("extended_domain_fine_grid_required")
                     or result.get("formal_fd_measurement_started", False) is not info.get("formal_fd_measurement_started")
-                    or observation.get("selected_gpu_uuid") != info["selected_gpu_uuid"]
+                    or result.get("selected_gpu_uuid", observation.get("selected_gpu_uuid")) != info["selected_gpu_uuid"]
                     or observation_sha != info["observed_backend_identity_sha256"]):
                 raise RuntimeError("W4 FD entry or observed-backend prerequisite does not match registration")
     if prereq["w3"]["backend_identity"] != prereq["w4"]["backend_identity"]:
@@ -193,6 +195,21 @@ def verify_prerequisites(source: Path, criteria: dict) -> tuple[dict, dict]:
     if w4_result is None:
         raise RuntimeError("exact W4 prerequisite result was not loaded")
     return prereq["w4"]["backend_identity"], w4_result
+
+
+def w4_force_metrics(result: dict, flow_id: str) -> dict:
+    """Read host-recomputed W4 metrics from either the v16 or v17 result schema."""
+    case = result.get("case_measurements", {}).get(flow_id, {})
+    metrics = case.get("force_metrics_host_recomputed")
+    if metrics is None:
+        metrics = result.get("force_metrics", {}).get(flow_id)
+        if metrics is None:
+            raise RuntimeError(f"W4 host-recomputed force metrics are missing for {flow_id}")
+        for total_key, metric_key in (("total_drag_n", "drag_time_weighted_n"),
+                                      ("total_downforce_n", "downforce_time_weighted_n")):
+            if total_key in case and case[total_key] != metrics.get(metric_key):
+                raise RuntimeError(f"W4 case summary and force metrics differ for {flow_id}: {metric_key}")
+    return metrics
 
 
 def verify_source(source: Path, criteria: dict) -> Path:
@@ -678,7 +695,7 @@ def verify_runner(w4_result, criteria, criteria_sha, manifest, input_hashes, dir
     drag_pass = all(direction_results[d]["drag"]["plateau_pass"] for d in EXPECTED_DIRECTIONS)
     downforce_pass = all(direction_results[d]["downforce"]["plateau_pass"] for d in EXPECTED_DIRECTIONS)
     flow_id = criteria["geometry"]["flow_case"]["case_id"]
-    w4_case = w4_result["case_measurements"][flow_id]["force_metrics_host_recomputed"]
+    w4_case = w4_force_metrics(w4_result, flow_id)
     reference_drag = w4_case["drag_time_weighted_n"]
     reference_down = w4_case["downforce_time_weighted_n"]
     crosscheck_label = f"w4_{flow_id}"

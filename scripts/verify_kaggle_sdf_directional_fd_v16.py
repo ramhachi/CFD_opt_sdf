@@ -74,6 +74,18 @@ def read_json(path: Path) -> dict:
     return json.loads(Path(path).read_text())
 
 
+def w4_force_metrics(result: dict, flow_id: str) -> dict:
+    """Read the verified W4 force reference from either registered result schema."""
+    metrics = result.get("force_metrics", {}).get(flow_id)
+    if metrics is not None:
+        case_summary = result.get("case_measurements", {}).get(flow_id, {})
+        require(case_summary.get("total_drag_n") == metrics.get("drag_time_weighted_n")
+                and case_summary.get("total_downforce_n") == metrics.get("downforce_time_weighted_n"),
+                "W4 case summary and host-recomputed force metrics differ")
+        return metrics
+    return result["case_measurements"][flow_id]["force_metrics_host_recomputed"]
+
+
 def load_criteria(path: Path) -> tuple[dict, str]:
     sidecar = path.with_suffix(path.suffix + ".sha256")
     require(path.is_file() and sidecar.is_file(), "immutable FD criteria/sidecar missing")
@@ -139,7 +151,9 @@ def verify_source(criteria: dict, criteria_sha: str, runner_sha: str) -> dict:
         criteria_doc = read_json(ROOT / prereq["criteria_path"])
         result_doc = read_json(ROOT / prereq["result_path"])
         observed_identity = result_doc.get("backend_identity", {})
-        registered_identity = observed_identity if prereq_key == "w3" else observed_identity.get("registered_backend")
+        registered_identity = observed_identity
+        if prereq_key == "w4" and "registered_backend" in observed_identity:
+            registered_identity = observed_identity["registered_backend"]
         require(criteria_doc.get("immutable") is True
                 and criteria_doc.get("registered_before_computation") is True
                 and result_doc.get("verdict") == "PASS"
@@ -152,7 +166,8 @@ def verify_source(criteria: dict, criteria_sha: str, runner_sha: str) -> dict:
                     and result_doc.get("fd_entry_gate") == "OPEN"
                     and (w4_v17 or (result_doc.get("formal_fd_measurement_started") is False
                                     and result_doc.get("extended_domain_fine_grid_required") is False))
-                    and observed_identity.get("selected_gpu_uuid") == prereq["selected_gpu_uuid"]
+                    and result_doc.get("selected_gpu_uuid", observed_identity.get("selected_gpu_uuid"))
+                    == prereq["selected_gpu_uuid"]
                     and canonical_json_sha(observed_identity) == prereq["observed_backend_identity_sha256"],
                     "W4 formal FD entry gate or observed backend identity is not exact")
     require(criteria["prerequisites"]["w3"]["backend_identity"]
@@ -699,7 +714,7 @@ def evaluate(criteria, input_result, output_dir, output_hashes, summaries, rows,
     down_gate = all(direction_results[d]["downforce"]["plateau_pass"] for d in DIRECTIONS)
     w4 = read_json(ROOT / criteria["prerequisites"]["w4"]["result_path"])
     flow_id = criteria["geometry"]["flow_case"]["case_id"]
-    w4_case = w4["case_measurements"][flow_id]["force_metrics_host_recomputed"]
+    w4_case = w4_force_metrics(w4, flow_id)
     ref_drag = w4_case["drag_time_weighted_n"]
     ref_down = w4_case["downforce_time_weighted_n"]
     crosscheck = {f"w4_{flow_id}_drag_n": ref_drag,

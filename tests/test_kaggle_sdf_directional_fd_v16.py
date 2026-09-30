@@ -6,6 +6,7 @@ import importlib.util
 import json
 import shutil
 import symtable
+import subprocess
 import sys
 import tempfile
 from argparse import Namespace
@@ -726,19 +727,31 @@ def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity(monkeypa
     assert flow24["flow_dims"] == [150, 72, 54]
     assert w4_result["force_metrics"]["flow_24"]["drag_time_weighted_n"] == pytest.approx(0.32631743972608007)
     assert w4_result["force_metrics"]["flow_24"]["downforce_time_weighted_n"] == pytest.approx(0.33102903147696705)
+
+    source_commit = subprocess.check_output(
+        ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
+
     def registered_git_value(command, text=True):
         if command[-2:] == ["branch", "--show-current"]:
             return "codex/kaggle-batch-migration"
         if command[-1] == "--porcelain":
             return ""
         if command[-1] in ("HEAD", "@{u}"):
-            return "test-source-commit"
+            return source_commit
         raise AssertionError(f"unexpected git query: {command}")
 
     monkeypatch.setattr(v17_registrar, "subprocess", SimpleNamespace(check_output=registered_git_value))
-    criteria = v17_registrar.build_criteria("test-source-commit")
+    criteria = v17_registrar.build_criteria(source_commit)
     assert criteria["prerequisites"]["w4"]["backend_identity"] == w4_result["backend_identity"]
     assert criteria["w4_cross_check"]["flow24_drag_reference_n"] == pytest.approx(0.32631743972608007)
+    assert criteria["registration_revision"]["supersedes_criteria_sha256"] == (
+        "9cd5e3e35ac779ed937f4516421d82fbd40820dec2ae556817a4ff3ab007918e")
+    _, runner_w4_result = runner.verify_prerequisites(ROOT, criteria)
+    assert runner.w4_force_metrics(runner_w4_result, "flow_24")["downforce_time_weighted_n"] == pytest.approx(
+        0.33102903147696705)
+    assert verifier.w4_force_metrics(w4_result, "flow_24")["drag_time_weighted_n"] == pytest.approx(
+        0.32631743972608007)
+    verifier.verify_source(criteria, criteria["criteria_sha256"], criteria["inputs"]["kernel_runner"]["sha256"])
 
 
 def test_v17_flow24_job_environment_uses_registered_state_flow_directions_and_ladder():
