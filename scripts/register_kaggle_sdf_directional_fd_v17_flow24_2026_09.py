@@ -64,16 +64,19 @@ def v17_prerequisites() -> tuple[dict, dict, dict, dict, str, str, str, str]:
             or w4c["geometry"]["canonical_state_sha256"] != genesis["state"]["state_sha256"]
             or state["state_label"] != LABEL or w4r.get("canonical_state_label") != LABEL):
         raise ValueError("W3/W4 v17 prerequisites are not exact host-verified PASS evidence")
-    backend = w4r["backend_identity"]["registered_backend"]
+    backend = w4r["backend_identity"]
     if backend != w3r["backend_identity"]:
         raise ValueError("W3 and W4 v17 registered backend identities differ")
     flow_case = next((case for case in w4c["cases"] if case["case_id"] == FLOW_CASE_ID), None)
-    measurement = w4r["case_measurements"].get(FLOW_CASE_ID, {}).get("force_metrics_host_recomputed", {})
+    measurement = w4r.get("force_metrics", {}).get(FLOW_CASE_ID, {})
+    case_measurement = w4r.get("case_measurements", {}).get(FLOW_CASE_ID, {})
     if (flow_case is None or flow_case["flow_dims"] != [150, 72, 54]
             or abs(float(flow_case["flow_spacing_m"]) - 1 / 30) > 1e-12
             or flow_case["solver_length"] != 24.0 or flow_case["solver_viscosity"] != 0.3
             or flow_case["physical_box_m"] != w4c["geometry"]["baseline_physical_box_m"]
-            or not all(key in measurement for key in ("drag_time_weighted_n", "downforce_time_weighted_n"))):
+            or not all(key in measurement for key in ("drag_time_weighted_n", "downforce_time_weighted_n"))
+            or case_measurement.get("total_drag_n") != measurement.get("drag_time_weighted_n")
+            or case_measurement.get("total_downforce_n") != measurement.get("downforce_time_weighted_n")):
         raise ValueError("W4 v17 flow_24 case or host-recomputed reference is unavailable")
     return w3c, w3r, w4c, w4r, w3c_sha, w3r_sha, w4c_sha, w4r_sha
 
@@ -326,8 +329,8 @@ def build_criteria(source_commit: str) -> dict:
         },
         "backend": w3r["backend_identity"],
         "w4_cross_check": {"case_id": FLOW_CASE_ID,
-            "flow24_drag_reference_n": w4r["case_measurements"][FLOW_CASE_ID]["force_metrics_host_recomputed"]["drag_time_weighted_n"],
-            "flow24_downforce_reference_n": w4r["case_measurements"][FLOW_CASE_ID]["force_metrics_host_recomputed"]["downforce_time_weighted_n"],
+            "flow24_drag_reference_n": w4r["force_metrics"][FLOW_CASE_ID]["drag_time_weighted_n"],
+            "flow24_downforce_reference_n": w4r["force_metrics"][FLOW_CASE_ID]["downforce_time_weighted_n"],
             "numerical_tolerance_gate_registered": False},
         "prior_failed_diagnostic": {"criteria_path": str(R5_PATH.relative_to(ROOT)),
             "criteria_sha256": r5_sha,

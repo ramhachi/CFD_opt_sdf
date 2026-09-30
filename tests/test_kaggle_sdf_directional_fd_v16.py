@@ -718,6 +718,16 @@ def test_v17_flow24_registration_preserves_fixed_r5_contract_and_rejects_thresho
         v17_registrar.assert_r5_unchanged(criteria, r5)
 
 
+def test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity():
+    _, w3_result, w4_criteria, w4_result, *_ = v17_registrar.v17_prerequisites()
+
+    assert w3_result["backend_identity"] == w4_result["backend_identity"]
+    flow24 = next(case for case in w4_criteria["cases"] if case["case_id"] == "flow_24")
+    assert flow24["flow_dims"] == [150, 72, 54]
+    assert w4_result["force_metrics"]["flow_24"]["drag_time_weighted_n"] == pytest.approx(0.32631743972608007)
+    assert w4_result["force_metrics"]["flow_24"]["downforce_time_weighted_n"] == pytest.approx(0.33102903147696705)
+
+
 def test_v17_flow24_job_environment_uses_registered_state_flow_directions_and_ladder():
     draft = ROOT / "docs/evidence/sdf_directional_fd_v16_criteria_draft_2026_09.json"
     criteria = copy.deepcopy(json.loads(draft.read_text()))
