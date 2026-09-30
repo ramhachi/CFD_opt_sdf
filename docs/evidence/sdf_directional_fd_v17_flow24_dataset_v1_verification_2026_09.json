@@ -1,0 +1,264 @@
+{
+  "create_command": "kaggle datasets create --path work/kaggle_sdf_directional_fd_v17_flow24_schemafix3_2026_09 --dir-mode zip",
+  "criteria_path": "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09_schemafix3.json",
+  "criteria_sha256": "61e5109fe5fe28f141563e13bf1cf172666e6d9f7f45c587bf6466ab78986aa4",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle",
+  "dataset_status": "ready",
+  "dataset_version": 1,
+  "download_command": "kaggle datasets download ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle --path work/kaggle_sdf_directional_fd_v17_flow24_remote_v1_2026_09 --unzip",
+  "downloaded_remote_directory": "work/kaggle_sdf_directional_fd_v17_flow24_remote_v1_2026_09",
+  "extra_paths": [],
+  "is_private": true,
+  "kind": "fd05_v17_flow24_kaggle_dataset_remote_verification",
+  "local_dataset_manifest_path": "work/kaggle_sdf_directional_fd_v17_flow24_schemafix3_2026_09/sdf_directional_fd_v17_flow24_dataset_manifest.json",
+  "local_dataset_manifest_sha256": "a58311b02f2f3437ae5987644088a2228edd6966ea3c44421317b30b1497f1de",
+  "missing_paths": [],
+  "path_set_exact": true,
+  "recorded_at_utc": "2026-09-30T12:21:10.827996Z",
+  "registered_input_file_count": 37,
+  "remote_file_count": 38,
+  "remote_files": [
+    {
+      "path": "canonical_v17_phi_f4_fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.181000",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "directions/D0_interface_offset.f4-c.raw",
+      "remote_creation_date": "2026-09-30T12:17:47.847000",
+      "sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "directions/D1_filtered_seed11.f4-c.raw",
+      "remote_creation_date": "2026-09-30T12:17:47.847000",
+      "sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "directions/D2_filtered_seed2026.f4-c.raw",
+      "remote_creation_date": "2026-09-30T12:17:47.853000",
+      "sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0005m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.500000",
+      "sha256": "04feb2085c76623952d53de4426bc8d34ece265590afcce6c256810d1583a17d",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0005m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.286000",
+      "sha256": "cc546e55221ce81cc98de75f44e1bb30456f56bad5ada1bd8a659e0d56518de6",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0010m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.628000",
+      "sha256": "ca8fed8f7e6d4c02b6550dd297a8561bceb9795b547010ea8d51b02fd680640a",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0010m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.217000",
+      "sha256": "c987912d624b6815dbde87e952fd8b76c91d22a255a46d6b39ef67576dc43bc6",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0025m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.617000",
+      "sha256": "ccca0b94c282e036edc420328a607aaaa550215bce076ca8974cdc62276fc139",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0025m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.623000",
+      "sha256": "bc5e7690047cbb4cb3dea7f643e798644fb844018211d02ebed761dea1dff0f6",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0050m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.172000",
+      "sha256": "74dd2d0f5dde097e0b66b8da490abd78f3acf2a3ab36f46ec7a76cc2bfe16989",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0050m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.618000",
+      "sha256": "754389103d0e1ed1de58518394a6759bd65ec51a3e368dbac7208252a3fbc8ac",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0100m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.476000",
+      "sha256": "fd0a2da349001630bd30bb703d9789d48300d8da13984744e1cea3fbec7475a8",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D0_interface_offset__eps_0p0100m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.634000",
+      "sha256": "74652a5213abcbb5d26d72b8f2f2aa04a0dc7ec9c90d409f2e3fe65118840289",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0005m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.323000",
+      "sha256": "ed4b3b48448c95793118cf1067a5b6ca71e01e3998b278e4b562abeb16133f27",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0005m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.635000",
+      "sha256": "6effc0af263b1ec6a83a1b8292739e952066870c6de22266096ede6f07d1a050",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0010m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.602000",
+      "sha256": "78ac05db0d875da57adbb34e514a297c3220f8fb761b21836128c254cf6ac440",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0010m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.404000",
+      "sha256": "05958084f1e205e5e2c42621bd686e67b20b25086a33512c12bcc0285c3d9346",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0025m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.172000",
+      "sha256": "5ee579986b7f207f377fb07985701fbc125007612d5a08cef002370629e4e7fa",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0025m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.151000",
+      "sha256": "14d6531665d5d6b639893fcb2d0e1c7c04b7482d63dbe1171739121597aff280",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0050m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.310000",
+      "sha256": "4b676d2ad0c66b7741a75bb164ab82a4e2996187615c09c65bc441b01caa5840",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0050m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.430000",
+      "sha256": "74304eb97b5ed77abb4317a286b8c0a0842dc1031f8f76ade2418b85e9b61fee",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0100m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.623000",
+      "sha256": "71322df31f88100bd9debacb58bc8e288aacc24e0dbc8e39d6fb5b943bdba236",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D1_filtered_seed11__eps_0p0100m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.628000",
+      "sha256": "11b5683a54e83a1faba74c3673b6b046553898cf329076052074b647d8b1261e",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0005m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.628000",
+      "sha256": "1fc0bca0903eeabd4f8b66b90d3fc431872921a2d35155e0f3e5375872efa1f8",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0005m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.456000",
+      "sha256": "431408b4040169bcdef76f3188094e6ed0899b8e3d21ff6bccae4a498d32e506",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0010m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.618000",
+      "sha256": "54609ad8d58cf4e827ea85552d161dacaeb81a16c32636b96ed4058cd0188f1d",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0010m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.634000",
+      "sha256": "24403277bbcfe7f5867a07c9b60ef32e102c5fe45bb700f6a609286cf619dbb6",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0025m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.628000",
+      "sha256": "d4520fac5225b43f110b37d415f57bd680839d26b16a3f52d3f26ea2ae708515",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0025m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.181000",
+      "sha256": "eafcb3adbc6018fb844689e840f15045d253097882dba651c895e0fbb75e22e7",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0050m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.623000",
+      "sha256": "67a7abc7740ef8853f77eb6e7d6913c1d1d0bcb0b98f401d5825b46f515ff42e",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0050m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.617000",
+      "sha256": "966a90e5dca081415669a567bb33e4fd9f45a4687adb3e2c172c5058d1a1a9f6",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0100m__minus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.628000",
+      "sha256": "bf1bb011a913997ac397dd797b08c95fcc462a8c6e598c31f82e714724c4fd0e",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "perturbations/D2_filtered_seed2026__eps_0p0100m__plus.phi-f4-fortran.raw",
+      "remote_creation_date": "2026-09-30T12:17:48.500000",
+      "sha256": "8fabc0cbd64852dfde70f6b471ac7f83b82c4f2751e97a89127aaf3280378bd8",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "sdf_design_state.npz",
+      "remote_creation_date": "2026-09-30T12:17:47.775000",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "size_bytes": 200028
+    },
+    {
+      "path": "sdf_directional_fd_v17_flow24_criteria.json",
+      "remote_creation_date": "2026-09-30T12:17:48.159000",
+      "sha256": "61e5109fe5fe28f141563e13bf1cf172666e6d9f7f45c587bf6466ab78986aa4",
+      "size_bytes": 94649
+    },
+    {
+      "path": "sdf_directional_fd_v17_flow24_criteria.json.sha256",
+      "remote_creation_date": "2026-09-30T12:17:47.791000",
+      "sha256": "5a6d74ca9339bfb1e2401799d37719a1dfa0fe2ded6671d1cdd76dbeeb0979cc",
+      "size_bytes": 65
+    },
+    {
+      "path": "sdf_directional_fd_v17_flow24_dataset_manifest.json",
+      "remote_creation_date": "2026-09-30T12:17:47.867000",
+      "sha256": "a58311b02f2f3437ae5987644088a2228edd6966ea3c44421317b30b1497f1de",
+      "size_bytes": 13336
+    }
+  ],
+  "remote_inventory_hash_method": "SHA-256 of sorted compact JSON {remote_path: downloaded_file_sha256}, followed by newline; includes the manifest.",
+  "remote_inventory_sha256": "098a643718e9b619ebb02f55b649779d816559b90a63baaf3a9d529c781adc69",
+  "schema_version": 1,
+  "sha256_exact": true,
+  "sha256_mismatch_paths": [],
+  "size_exact": true,
+  "size_mismatch_paths": [],
+  "source_commit": "b2cb556562813315a8868ffb9cf2bee08e611735",
+  "upload_metadata": {
+    "reason": "Installed Kaggle CLI enforces a 50-character dataset title maximum; dataset-metadata.json is excluded from uploaded solver inventory.",
+    "registered_criteria_title": "CFD Opt SDF v17 Flow24 Directional FD Oracle Inputs",
+    "uploaded_title": "CFD Opt SDF v17 Flow24 Directional FD Inputs",
+    "uploaded_title_length": 44
+  }
+}
