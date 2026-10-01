@@ -207,3 +207,16 @@ Compileall and diff-check: PASS. Source-bound full pytest: 37 failed, 1244 passe
 5 skipped, with exactly the initial 37 baseline failure IDs and no new failures.
 The parent source registration must be committed/pushed before a new exact
 Kaggle version is submitted. All six qualification flags remain false.
+
+## Round 3 terminal harness failure, exact Kaggle version 2
+
+Private CPU version 2 passed the Jammy/official-index/package-hash checks and
+apt installed the exact v2512 packages. It then failed the hardcoded
+`source /opt/openfoam2512/etc/bashrc` command. The downloaded official
+`openfoam2512-common` package contains `/usr/lib/openfoam/openfoam2512/etc/bashrc`;
+this path was independently read from its hash-verified archive. No meshing or
+solver command started. foamVersion is unverified. The exact ERROR, compressed
+raw log, downloaded-output inventory and package-path evidence are retained in
+Round 3 `terminal_failure_kernel_v2/`. No XFID verdict or Track C stop condition
+exists. A future immutable harness-correction round must retain all package,
+geometry, numerical-gate and case-template identities.

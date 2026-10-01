@@ -1,0 +1,51 @@
+{
+  "ERROR_sha256": "25383ec14c503934995f50dd11402c88eff2e73d2979ff52436afcccb86fa57e",
+  "Track_C_stop_condition_met": false,
+  "all_three_exact_deb_hashes_match_lock": true,
+  "downloaded_inventory": {
+    "cfd-opt-sdf-xfid-v16-openfoam-reproduction.log": {
+      "bytes": 15236,
+      "sha256": "7d4b01b56aa490b8f92d6d6cb8391f8327142965c25f04c0848b758c362b6499"
+    },
+    "openfoam_xfid_v16/ERROR.json": {
+      "bytes": 1102,
+      "sha256": "25383ec14c503934995f50dd11402c88eff2e73d2979ff52436afcccb86fa57e"
+    },
+    "openfoam_xfid_v16/InRelease": {
+      "bytes": 3624,
+      "sha256": "e2102adead8229c90f654a768a272e37b08c7bfa5d856379c9bf833196f79bad"
+    },
+    "openfoam_xfid_v16/Packages.gz": {
+      "bytes": 42529,
+      "sha256": "0000d7fae190252a056c976597be5823f1b9b16b288033000bb3d703610c91ab"
+    },
+    "openfoam_xfid_v16/add-debian-repo.sh": {
+      "bytes": 4147,
+      "sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b"
+    },
+    "openfoam_xfid_v16/openfoam2512-common_2512.0-2_all.deb": {
+      "bytes": 1308034,
+      "sha256": "55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9"
+    },
+    "openfoam_xfid_v16/openfoam2512-tools_2512.0-2_amd64.deb": {
+      "bytes": 54356,
+      "sha256": "77742307d3285f1cefeb286313b28fda15ed1d3b316e57e3353866fc326f3546"
+    },
+    "openfoam_xfid_v16/openfoam2512_2512.0-2_amd64.deb": {
+      "bytes": 69224860,
+      "sha256": "52377a07c3ef8129c89d89a108c5421d709cf5a0f291f4977274b04a02df2181"
+    }
+  },
+  "evidence_class": "downloaded_exact_Kaggle_terminal_environment_harness_failure_and_package_inventory",
+  "exact_kernel_id": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/2",
+  "failure": "hardcoded /opt/openfoam2512/etc/bashrc; official common package actually contains /usr/lib/openfoam/openfoam2512/etc/bashrc",
+  "foamVersion_verified": false,
+  "formal_XFID_verdict": null,
+  "large_deb_retention": "exact download retained in ignored work directory; package hash+official repository URL recorded; no git copy of 69MB package",
+  "meshing_started": false,
+  "package_installed_according_to_raw_apt_log": true,
+  "qualification_flags_changed": false,
+  "raw_kaggle_log_sha256": "7d4b01b56aa490b8f92d6d6cb8391f8327142965c25f04c0848b758c362b6499",
+  "solver_started": false,
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}
