@@ -1,0 +1,23 @@
+{
+  "command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/work/four_track_2026_10_02/xfid_v16_cpu_submission_r3_jammy",
+    "-t",
+    "3600"
+  ],
+  "enable_gpu": false,
+  "evidence_class": "versioned_Kaggle_CPU_dispatch_not_solver_evidence",
+  "exact_kernel_id": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/2",
+  "exit_code": 0,
+  "kernel_metadata_sha256": "28ffa72c980ac0e0b833423a6060c5cc6de5bfec701abf3de71e4d8dfc30d4e8",
+  "kernel_version": 2,
+  "registered_at_utc": "2026-10-01T18:37:26.163027+00:00",
+  "registration_sha256": "3e1f52dd7874296a9f28cf04bb0ad5b8c22fc377b4cb45b47d325eb99f98f254",
+  "runner_sha256": "8a0605ee78d3dfe6ccbad1ccfba61488861f33ec988541116c5b6693120469b8",
+  "stage": "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/work/four_track_2026_10_02/xfid_v16_cpu_submission_r3_jammy",
+  "stdout": "Kernel version 2 successfully pushed.  Please check progress at https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction\n",
+  "stdout_sha256": "57ec7792bfd085e1ae9c0a94aa181ce2a2b193081ffd9bfcf98a21bd5ad6990b"
+}

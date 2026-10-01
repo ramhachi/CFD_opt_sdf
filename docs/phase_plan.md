@@ -5026,3 +5026,48 @@ and in issues #44–#48; they do not amend historical criteria or evidence.
   checks; compare failure IDs to a measured baseline, not just a count of 37.
 - All six qualification/shape-update flags remain false. #48 starts only if
   #22–#25 stall, and cannot close #30 without explicit recorded supersession.
+
+### 2026-10-02 partial research topology decision (#31)
+
+The user selected detached components allowed and root connectivity optional
+for the research policy. Record this in a new successor policy identity;
+preserve historical v1 and state bindings. Birth/split/merge/whole-component
+deletion permissions remain awaiting the separate user decision. This partial
+choice is not a canonical registration or execution permission. Missing
+physical feature limits and provenance remain unresolved; all six flags remain
+false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.md).
+
+### 2026-10-02 reviewed execution checkpoint: reinitialization FAIL and CPU fixtures
+
+- #28 Godunov2 v2 immutable Round 3 completed a solver-free operator-effect
+  qualification: sphere and two spheres PASS; thin box and canonical v16 FAIL.
+  The thin box failed fixed-band Eikonal/idempotence gates, and canonical v16
+  failed smoothed-volume drift, edge displacement and idempotence. All gates
+  remain unchanged. Parent raw-output recomputation confirmed the stored
+  Eikonal statistics and volume drift. This operator is not qualified for
+  accepted shape updates; the failure does not establish a CFD or FD result.
+  See `docs/issues/28_result.md` and `docs/evidence/reinitialization_parent_review_2026_10_02/`.
+- #44 sampled-GridSDF composite Candidate C sphere CPU Round 4 is executing
+  after parent source review, preregistration, full baseline-ID validation and
+  push. Native analytic sphere/repeat are controls and sampled upstream is
+  diagnostic only. No terminal sphere verdict exists at this checkpoint.
+  This round does not qualify mass conservation or freeze production C.
+  Thin-plate, moving-ground/mass/force closure and operator-contract freeze
+  remain ahead of W3-C/W4-C and FD-08 measurements. Its W2 window estimator
+  differs explicitly from legacy arithmetic means; W3/W4 must retain their
+  actual historical evaluator semantics.
+- #45 exact private Kaggle CPU versions 1 and 2 both terminated before CFD.
+  Version 1 exposed the actual Jammy OS versus the Noble environment lock.
+  Version 2 installed the fixed Jammy OpenCFD v2512 packages, then exposed a
+  wrong hardcoded bashrc path. Both terminal failures are preserved under
+  their own registered rounds. A harness-only successor round must retain
+  every numerical gate, fixture and exact package lock. Environment
+  reproduction is not PASS and formal XFID is not permitted yet. These
+  harness failures are not resolved XFID DISAGREE; Track C's scientific
+  branch remains undecided.
+- #17 preflight preparation and #46/#47 registrars are implemented; #22's
+  CPU reverse capability replay remains blocked at the recorded Enzyme
+  MethodError. #19 identity/supersession helper is under final parent review.
+  #29 mechanical geometry gates are in progress. #31's event choices remain
+  pending; disconnected components/root policy was recorded only as a
+  partial user decision. #48 has not started. All six flags remain false.
