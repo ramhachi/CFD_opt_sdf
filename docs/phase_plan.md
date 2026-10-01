@@ -4921,3 +4921,56 @@ host-verified FD result and not a reusable fresh-primal run.
 - **Qualified:** round 4 remains failed, and the directional-FD oracle,
   flow16 FD, field gradient, reverse mode, optimizer, topology and shape update
   remain false. `shape_update_allowed=false` remains a hard stop.
+
+## 2026-10-02 execution-order adjustment: four parallel tracks after FD-07
+
+FD-05/06/07 (#37) are terminal diagnostics. FD-07 (merge `a6c52a0`) selected
+**Candidate C**, a one-sided C1 blend of raw and upstream-corrected `μ₀`
+applied only when sign disagreement leaves the half-cell band, as the sole
+continuous-replacement candidate. It preserves the 49 legal half-cell
+crossings, 1-/2-cell plate moments and moving-ground initialization, and cut
+short-CPU max force departure from the 1e-3 N class to drag `1.46e-7 N` /
+downforce `9.79e-7 N`. Open defects: one baseline face changes `μ₀`
+`0.09084 -> 0.90915`, and a 10x input changes response only `0.265-3.08x`.
+Candidate C is a production-qualification candidate, not a production
+operator.
+
+The directional-FD line is removed from the sole critical path and run in
+parallel. It remains the formal gate for GRAD-03 (#23), GRAD-05 (#25),
+GRID-01 (#26) and therefore OPT-01 (#30); "FD-02 PASS" in those issues now
+means FD-08 (#46) PASS.
+
+```text
+Track A  C-OP-01 (#44)  1-face dissection (solver-free) -> analytic/thin-body/
+                        moving-ground/mass+force closure (CFD) -> operator
+                        contract -> W3-C -> W4-C
+Track B  XFID-01 (#45)  preregistered {-eps, baseline, +eps} directions,
+                        WaterLily-C vs OpenFOAM Stage V on Kaggle CPU
+                        (sign and ordering)
+Track C  FD-08 (#46)    C-specific micro-response model -> preregistered
+                        eps ladder/noise-aware criteria -> CPU -> Kaggle T4
+         STEP-01 (#47)  finite-step secant oracle (0.1-0.5 h), separate
+         GRAD-02 (#22)  CPU reverse capability, parallel (capability only)
+Track D  solver-free    #28 reinit, #29 geometry gates, #31 topology policy,
+                        #17 preflight, #19 supersession
+Insurance LOWDIM-01 (#48) fixed low-dimensional basis, 2N primal; does not
+                        close OPT-01 without a recorded contract supersession
+```
+
+Rules:
+
+- The FD-06 noise level (`+3-4.5e-4 N` drag at 10 nm) is an upstream-operator
+  measurement and must not be carried into Candidate C; FD-08 measures its own.
+- Local directional-FD (gradient qualification) and finite-step secant
+  response (optimizer-step robustness) are separate oracles.
+- Stage V backend (user decision 2026-10-02): OpenFOAM code removal from the
+  repository continues; Stage V runs as a self-contained Kaggle CPU kernel
+  extracted from tag `archive/pre-openfoam-removal-2026-09-29`, with OpenFOAM
+  installed via apt and its version pinned in evidence.
+- **Branch condition:** if Track B shows WaterLily-C and OpenFOAM disagree in
+  response sign or candidate ordering on representative directions, lower the
+  priority of Track C FD/AD work and escalate; if they agree, allocate
+  compute to FD-08 and the gradient backend.
+
+No qualification flag changes. `shape_update_allowed=false`, the FD oracle,
+field gradient, reverse mode, optimizer and topology flags remain false.
