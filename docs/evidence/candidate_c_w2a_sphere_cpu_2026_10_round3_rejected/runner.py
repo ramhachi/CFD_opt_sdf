@@ -24,16 +24,16 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-CRITERIA_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_criteria_2026_10_round4.json"
+CRITERIA_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_criteria_2026_10_round3.json"
 W1_RESULT_PATH = ROOT / "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json"
 W1_RESULT_SHA256 = "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
 MANIFEST_PATH = ROOT / "julia/CFDSDFWaterLily/Manifest.toml"
 MANIFEST_SHA256 = "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
 JOB_PATH = ROOT / "scripts/waterlily_w2a_candidate_c_job.jl"
-SOURCE_MANIFEST_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round4.sha256"
+SOURCE_MANIFEST_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round3.sha256"
 PROJECT_DIR = ROOT / "julia/CFDSDFWaterLily"
-WORK_DIR = ROOT / "work/candidate_c_w2a_sphere_cpu_2026_10_round4"
-EVIDENCE_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round4.json"
+WORK_DIR = ROOT / "work/candidate_c_w2a_sphere_cpu_2026_10_round3"
+EVIDENCE_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round3.json"
 
 STATIONARITY_BOUND = 0.02
 CROSS_FIXTURE_BOUND = 0.10
@@ -154,7 +154,7 @@ def _terminal_fail(run_dir: Path, criteria_sha: str, source_manifest_sha: str,
     payload: dict[str, Any] = {
         "schema_version": 1,
         "status": "FAIL",
-        "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round4",
+        "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round3",
         "stage": stage,
         "detail": detail,
         "criteria": {"path": CRITERIA_PATH.relative_to(ROOT).as_posix(), "sha256": criteria_sha},
@@ -256,10 +256,6 @@ def _summary_matches_raw(summary: dict[str, Any], stats: dict[str, float]) -> bo
         if abs(reported - raw_value) > 1e-10 * max(1.0, abs(raw_value)):
             return False
     return True
-
-
-def _qualification_claims(criteria: dict[str, Any]) -> list[str]:
-    return list(criteria["claims_supported_if_all_gates_pass"])
 
 
 def main(preflight_only: bool = False) -> None:
@@ -516,7 +512,7 @@ def main(preflight_only: bool = False) -> None:
             "candidate_c_w2a_qualified": True,
             "fail_closed": False,
         },
-        "claims_supported": _qualification_claims(criteria),
+        "claims_supported": criteria["claims_supported"],
         "claims_not_supported": criteria["claims_not_supported"],
         "flags": criteria["flags"],
     }

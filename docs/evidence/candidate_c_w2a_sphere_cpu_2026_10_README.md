@@ -1,19 +1,18 @@
 # Candidate C inherited W2a sphere preparation
 
-This directory contains the pre-measurement W2a-C Round 3 registration. No
-W2a-C numerical solver step has run. Rounds 1 and 2 were rejected before
-measurement and are preserved in `candidate_c_w2a_sphere_cpu_2026_10_round1_rejected/`
-and `candidate_c_w2a_sphere_cpu_2026_10_round2_rejected/` respectively.
-Round 2 was rejected after review found its G5 implementation used
-`abs(first_half-full_mean)` instead of the preregistered
-`abs(first_half-second_half)`, which could understate drift and falsely pass.
+This directory contains the pre-measurement W2a-C Round 4 registration. No
+W2a-C numerical solver step has run. Rounds 1–3 were rejected before
+measurement and preserved in their `candidate_c_w2a_sphere_cpu_2026_10_roundN_rejected/`
+snapshots. Round 3 had a success-path metadata bug: it read a nonexistent
+`claims_supported` key and retained stale Round 2 output/source paths. Round 4
+corrects those references and adds a schema-use regression test.
 
-Round 3 criteria:
+Round 4 criteria:
 
-- `candidate_c_w2a_sphere_cpu_criteria_2026_10_round3.json`
-- SHA-256 `eecb4d1291032231f6b283c3aafabaf4b57c25e704c94601dbd710a825c5c540`
-- source manifest `candidate_c_w2a_sphere_cpu_sources_2026_10_round3.sha256`
-- source manifest SHA-256 `14d0d4da783a07ee8fc7c3d640e6f1097c25fde13ebc4db2b93e3f3839f008ce`
+- `candidate_c_w2a_sphere_cpu_criteria_2026_10_round4.json`
+- SHA-256 `58750ab16225628d476a6b2a2c44124f145da25fc1a1c88d4165714df6f30cff`
+- source manifest `candidate_c_w2a_sphere_cpu_sources_2026_10_round4.sha256`
+- source manifest SHA-256 `b1d42a3ff48cfd73c4aeb257447f52323989ab15f3a4da49e543abbd0c95816b`
 
 The fixture is inherited unchanged from W2a: Float32 Array, `96×64×64`,
 `Re_D=100`, exact sampled sphere with `D=1 m`, and `[40,60] tU/D` split at
@@ -37,9 +36,9 @@ The runner flushes each raw force and mass-flow sample to CSV. It independently
 recomputes exact window statistics from CSV and requires the results to match
 the Julia summary within the preregistered numerical-integrity tolerance; raw
 derived values are used for G4-G8. G5 is exactly
-`abs(mean_drag(40–50)-mean_drag(50–60))/abs(mean_drag(40–60))`, with the two
-equal-duration half windows. Zero or non-finite denominators fail closed.
-Julia transcripts are written on success, error, and timeout. Failure writes
+`abs(mean_drag(40–50)-mean_drag(50–60))/abs(mean_drag(40–60))`, with equal
+duration half windows. Zero or non-finite denominators fail closed. Julia
+transcripts are written on success, error, and timeout. Failure writes
 append-only `terminal-FAIL.json` with stage, criteria/source identity, scope,
 and hashes of available partial artifacts. Existing output paths are not
 overwritten; an atomic claim directory reserves the run.
