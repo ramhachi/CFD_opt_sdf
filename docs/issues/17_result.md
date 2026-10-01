@@ -48,3 +48,17 @@ Follow-up metadata validation now requires a non-empty Kaggle owner, a lowercase
 ## Conclusion
 
 The solver-free setup path reaches the real production Simulation initialization immediately before the first `sim_step!`, after validating the full 33-run queue. This closes the #17 execution-boundary capability check for the recorded local preview. It does not establish a Kaggle environment reproduction, solver result, FD oracle, or physical qualification.
+
+## Parent preservation checkpoint
+
+The exact preview JSON, its original sidecar, incoming queue and compressed
+Julia setup log are retained in the repository under
+[`docs/evidence/infra01_cpu_preview_2026_10_02/`](../evidence/infra01_cpu_preview_2026_10_02/).
+Their preservation manifest distinguishes the wrapper used during the preview
+from the subsequent reviewed metadata guard fix; that fix was tested with
+seven focused tests, and was not represented as a new Julia preview run.
+The uncompressed log SHA-256 remains
+`ac2300497076fa9f3a6c7be18e0c085b2bd76ae64f3618ae5a33618970992cb2`.
+Parent independently reran all seven focused tests successfully. Feature HEAD
+`d21c835` was integrated by `merge --no-ff`; the integrated checkpoint was
+`a046281` on `codex/kaggle-batch-migration`. All qualification flags remain false.
