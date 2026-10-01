@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+blockMesh
+surfaceFeatureExtract
+snappyHexMesh -overwrite
+set +e
+checkMesh -allGeometry -allTopology 2>&1 | tee log.checkMesh
+mesh_status=${PIPESTATUS[0]}
+set -e
+if (( mesh_status != 0 )); then
+    failed_marker_count=$(grep -Ec '^[[:space:]]*Failed [0-9]+ mesh checks?\.[[:space:]]*$' log.checkMesh || true)
+    fail_count=$(grep -Ec '^[[:space:]]*Failed 1 mesh checks?\.[[:space:]]*$' log.checkMesh || true)
+    diagnostic_count=$(grep -Ec '^\*\*\*' log.checkMesh || true)
+    concave_count=$(sed -nE 's/^\*\*\*Concave cells .*number of cells:[[:space:]]*([0-9]+)[[:space:]]*$/\1/p' log.checkMesh)
+    cell_count=$(awk '/^[[:space:]]*cells:[[:space:]]*[0-9]+[[:space:]]*$/ {count=$2} END {print count+0}' log.checkMesh)
+    if (( mesh_status != 1 || failed_marker_count != 1 || fail_count != 1 || diagnostic_count != 1 )) || [[ -z "$concave_count" ]] || ! awk -v concave="$concave_count" -v cells="$cell_count" 'BEGIN {exit !(cells > 0 && concave > 0 && concave / cells <= 0.08)}'; then
+        echo "checkMesh failed outside the registered single-concave-cell exception (exit=$mesh_status)" >&2
+        exit "$mesh_status"
+    fi
+fi
+simpleFoam 2>&1 | tee log.simpleFoam
