@@ -159,3 +159,23 @@ the criteria SHA-256 is
 The source checkpoint is `7ea5bf6`. Commit/push this registration before
 dispatch. Submission and terminal results must be separate append-only
 records; this registration alone cannot produce an XFID verdict or change a flag.
+
+## Round 2 terminal environment failure, exact Kaggle version 1
+
+Version `ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/1` terminated
+with `KernelWorkerStatus.ERROR`. Its fixture/package-lock self-check passed,
+then the observed **Ubuntu 22.04.5 Jammy, amd64** runtime failed the registered
+Noble OS gate. Apt installation, meshing and solver execution were not reached.
+There is no `DONE` or CFD response. The downloaded `ERROR.json` SHA-256 is
+`6b7f3bf4c04c728d49fff69a995881530459b0c5e45190d714c38d4ffb6ecc77`;
+the raw Kaggle log SHA-256 is
+`c86e1eb3871e61db8ab0a54755b890868db4ef1fddde80190cdec2ef64c8e04c`.
+Both are retained under the Round 2 evidence directory's
+`terminal_failure_kernel_v1/`, with a host failure audit and compressed log.
+
+This terminal failure remains immutable. A new environment round may bind
+official Jammy packages from the same historical OpenCFD v2512 `2512.0-2`
+family, retaining all numerical gates, archive geometry, meshing and solver
+settings. It must be preregistered before another exact kernel version is
+submitted. No XFID sign/rank verdict is possible; the resolved DISAGREE
+condition for stopping Track C has not occurred.
