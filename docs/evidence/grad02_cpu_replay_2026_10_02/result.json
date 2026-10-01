@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "issue": 22,
+  "recorded_at_utc": "2026-10-01T17:21:45.055698+00:00",
+  "evidence_class": "local_cpu_reverse_capability_diagnostic",
+  "source_commit": "2fd7f6abc5d21d74cadf7e207f75785c582bc7cb",
+  "input_sha256": {
+    "infra/kaggle/kernel_enzyme_reverse_spike/julia/Project.toml": "867d0e3f1846d65322b65c44261d649c43775984d36cbc6bfb43a02285653383",
+    "infra/kaggle/kernel_enzyme_reverse_spike/julia/Manifest.toml": "f30dacad47411641cbf297c4663e12029de2565ab6d875aa05891127289a8b6e",
+    "infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl": "82bcf4eb7650fbdafc79a35dc67f702dde41e278a69ad0c6d8189f339294c5d0"
+  },
+  "command": "julia --startup-file=no --project=infra/kaggle/kernel_enzyme_reverse_spike/julia infra/kaggle/kernel_enzyme_reverse_spike/julia/cpu/initial_state_reverse_spike.jl",
+  "exit_code": 2,
+  "runtime": {
+    "host_os": "macOS-26.3.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "julia": "1.12.6",
+    "waterlily": "1.6.1",
+    "enzyme": "0.13.205",
+    "backend": "Array",
+    "steps": 2,
+    "precision": "Float64"
+  },
+  "observation": {
+    "primal_base_drag_solver_units": 8.45013686103991,
+    "diagnostic_initial_velocity_fd_solver_units": 0.09989015934408484,
+    "reverse_returned": false,
+    "failure": "MethodError: MixedDuplicated(::Flow, ::Flow)",
+    "failure_stage": "mom_step! augmented-forward activity wrapper creation"
+  },
+  "log": {
+    "path": "docs/evidence/grad02_cpu_replay_2026_10_02/full_step.log",
+    "sha256": "395b0f3f18308756af8ac18f47b147625d05bb86941dc22624d3975c4bf85778"
+  },
+  "limits": [
+    "This repeats the pinned tiny prebuilt-sphere capability fixture only.",
+    "The finite-difference number is recorded as a diagnostic marker, not a gradient correctness verdict.",
+    "No SDF production operator, CUDA reverse, gradient, physical, or optimizer qualification."
+  ],
+  "qualification_flags": {
+    "shape_update_allowed": false,
+    "fd_oracle_qualified": false,
+    "field_gradient_qualified": false,
+    "reverse_qualified": false,
+    "optimizer_qualified": false,
+    "topology_qualified": false
+  }
+}
