@@ -1,0 +1,1086 @@
+{
+  "canonical_input": {
+    "path": "/Users/sota/.codex/worktrees/issue-28-reinit/CFD2026_09/work/issue_28/canonical_v16/sdf_design_state.npz",
+    "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+  },
+  "cases": [
+    {
+      "case_id": "analytic_sphere",
+      "input_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 60941,
+        "generation": 0,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "068a3f59dcb44483f35390e553af6c19bd911031feba29adbb26b2b67eebbb7b",
+        "reinitialization_policy_id": "sdf_reinitialization_policy_v1",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 7980,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "11268e4b154e03424b6d673314513e4706c9a62ac540795a1a0c066e19c18f82",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "output_npz": {
+        "path": "analytic_sphere_reinitialized.npz",
+        "sha256": "d17913b562ebdb9f71dbde6bffc219b19195f7dff82cbe6149ac160814aad2ac"
+      },
+      "output_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 60941,
+        "generation": 1,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "e75276df649be7b29226dc4e36b13410a7eaa05eaee07b5737f23a919ba4b199",
+        "reinitialization_policy_id": "sdf_native_reinitialization_godunov2_v2",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 7980,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "91ca40047e2beb03914b70fb7ad35cff6dd205ed97944c15325f3ece200f568c",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "report": {
+        "admissible": true,
+        "contract_sha256": "9895ab008e880ea65b30bbf01ab2489c62ad655ee911f9f237e300a118cc4f98",
+        "gates": {
+          "band_idempotence_max_h": {
+            "limit": 0.1,
+            "passed": true,
+            "value": 0.0793120265007019
+          },
+          "center_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "center_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "eikonal_fluid_max": {
+            "limit": 0.5,
+            "passed": true,
+            "value": 0.23458921664526922
+          },
+          "eikonal_fluid_p50": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.02165292522254958
+          },
+          "eikonal_fluid_p95": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.10378900891363041
+          },
+          "eikonal_solid_max": {
+            "limit": 0.5,
+            "passed": true,
+            "value": 0.39039176896841976
+          },
+          "eikonal_solid_p50": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.015177544059895354
+          },
+          "eikonal_solid_p95": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.08590575313913763
+          },
+          "exact_zero_nodes_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "far_band_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "mask_bytes_identical": {
+            "limit": true,
+            "passed": true,
+            "value": {
+              "design_mask": true,
+              "fixed_solid_mask": true,
+              "forbidden_mask": true,
+              "root_mask": true
+            }
+          },
+          "node_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "node_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "sharp_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.0028963606598664754
+          },
+          "sign_changes": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "smoothed_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.0030664771360262313
+          },
+          "unmatched_crossings": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "zero_level_displacement_edges_max": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.07931205874783565
+          }
+        },
+        "kind": "sdf_native_reinitialization_godunov2_v2",
+        "measured": {
+          "band_idempotence_max_h": 0.0793120265007019,
+          "center_components": [
+            1,
+            1
+          ],
+          "center_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "crossing_edge_count": 2888,
+          "degenerate_crossing_edge_count": 0,
+          "eikonal_evaluation_band": {
+            "count": 11826,
+            "definition": "input abs(phi) <= 3*h intersect input-grid interior",
+            "fluid_count": 7321,
+            "same_mask_for_input_output": true,
+            "solid_count": 4505
+          },
+          "eikonal_input": {
+            "fluid": {
+              "count": 7321,
+              "max": 0.0021509015724743286,
+              "p50": 0.0011049933215474539,
+              "p95": 0.0017333229912789294
+            },
+            "solid": {
+              "count": 4505,
+              "max": 0.0036853897056188245,
+              "p50": 0.0017541808166893214,
+              "p95": 0.0028926771302097533
+            }
+          },
+          "eikonal_output": {
+            "fluid": {
+              "count": 7321,
+              "max": 0.23458921664526922,
+              "p50": 0.02165292522254958,
+              "p95": 0.10378900891363041
+            },
+            "solid": {
+              "count": 4505,
+              "max": 0.39039176896841976,
+              "p50": 0.015177544059895354,
+              "p95": 0.08590575313913763
+            }
+          },
+          "exact_zero_nodes_preserved": true,
+          "godunov_fixed_point": true,
+          "godunov_iterations": 52,
+          "idempotence_iterations": 51,
+          "input_far_band_preserved": true,
+          "input_phi_sha256": "068a3f59dcb44483f35390e553af6c19bd911031feba29adbb26b2b67eebbb7b",
+          "input_state_sha256": "11268e4b154e03424b6d673314513e4706c9a62ac540795a1a0c066e19c18f82",
+          "mask_bytes_identical": {
+            "design_mask": true,
+            "fixed_solid_mask": true,
+            "forbidden_mask": true,
+            "root_mask": true
+          },
+          "node_components": [
+            1,
+            1
+          ],
+          "node_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "output_phi_sha256": "e75276df649be7b29226dc4e36b13410a7eaa05eaee07b5737f23a919ba4b199",
+          "output_state_sha256": "91ca40047e2beb03914b70fb7ad35cff6dd205ed97944c15325f3ece200f568c",
+          "sharp_volume_m3": {
+            "input": 0.9926250000000002,
+            "output": 0.9897500000000002,
+            "relative_drift": -0.0028963606598664754
+          },
+          "sign_changes": 0,
+          "smoothed_volume_m3": {
+            "input": 0.8783939374085171,
+            "output": 0.8810875123340044,
+            "relative_drift": 0.0030664771360262313
+          },
+          "unmatched_crossings": 0,
+          "zero_level_displacement_edges_max": 0.07931205874783565
+        },
+        "profile": "fixture",
+        "schema_version": 2,
+        "smoothed_volume_contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969"
+      },
+      "status": "PASS"
+    },
+    {
+      "case_id": "analytic_thin_box",
+      "input_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 68165,
+        "generation": 0,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "a2161d46baa968560dcfc16979d636f30a249ba215792a53a761b09335ebafa9",
+        "reinitialization_policy_id": "sdf_reinitialization_policy_v1",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 756,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "d38ed44b4beb9cb9dad79f3f581ff158ab5c482503a4aefefdad2ef2cc85f76c",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "output_npz": {
+        "path": "analytic_thin_box_reinitialized.npz",
+        "sha256": "a4b783822e0cc8fa970799fb1bf35d828dbf7644f096c139a0922153d56e6ed2"
+      },
+      "output_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 68165,
+        "generation": 1,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "40a9c9ef94491d1aad5e504f070612538b0655970d42a1d9a219ef6573bf4cbb",
+        "reinitialization_policy_id": "sdf_native_reinitialization_godunov2_v2",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 756,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "e3057d2c26d8960d6102c3b5d9b299cb18975cab3409471e7761d796c4192fbe",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "report": {
+        "admissible": false,
+        "contract_sha256": "9895ab008e880ea65b30bbf01ab2489c62ad655ee911f9f237e300a118cc4f98",
+        "gates": {
+          "band_idempotence_max_h": {
+            "limit": 0.1,
+            "passed": false,
+            "value": 0.25191813707351685
+          },
+          "center_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "center_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "eikonal_fluid_max": {
+            "limit": 0.5,
+            "passed": false,
+            "value": 0.5768236311453134
+          },
+          "eikonal_fluid_p50": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.0069930085061696845
+          },
+          "eikonal_fluid_p95": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.18361019990743166
+          },
+          "eikonal_solid_max": {
+            "limit": 0.5,
+            "passed": false,
+            "value": 0.8199999891221523
+          },
+          "eikonal_solid_p50": {
+            "limit": 0.05,
+            "passed": false,
+            "value": 0.18852615503741854
+          },
+          "eikonal_solid_p95": {
+            "limit": 0.25,
+            "passed": false,
+            "value": 0.8199999891221523
+          },
+          "exact_zero_nodes_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "far_band_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "mask_bytes_identical": {
+            "limit": true,
+            "passed": true,
+            "value": {
+              "design_mask": true,
+              "fixed_solid_mask": true,
+              "forbidden_mask": true,
+              "root_mask": true
+            }
+          },
+          "node_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "node_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "sharp_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.02213001383125866
+          },
+          "sign_changes": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "smoothed_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.0418703465033724
+          },
+          "unmatched_crossings": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "zero_level_displacement_edges_max": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.24026045024043352
+          }
+        },
+        "kind": "sdf_native_reinitialization_godunov2_v2",
+        "measured": {
+          "band_idempotence_max_h": 0.25191813707351685,
+          "center_components": [
+            1,
+            1
+          ],
+          "center_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "crossing_edge_count": 696,
+          "degenerate_crossing_edge_count": 0,
+          "eikonal_evaluation_band": {
+            "count": 3994,
+            "definition": "input abs(phi) <= 3*h intersect input-grid interior",
+            "fluid_count": 3238,
+            "same_mask_for_input_output": true,
+            "solid_count": 756
+          },
+          "eikonal_input": {
+            "fluid": {
+              "count": 3238,
+              "max": 0.26917639729875675,
+              "p50": 0.0005218462678708846,
+              "p95": 0.17236202852073024
+            },
+            "solid": {
+              "count": 756,
+              "max": 0.8199999891221523,
+              "p50": 0.17999999597668648,
+              "p95": 0.8199999891221523
+            }
+          },
+          "eikonal_output": {
+            "fluid": {
+              "count": 3238,
+              "max": 0.5768236311453134,
+              "p50": 0.0069930085061696845,
+              "p95": 0.18361019990743166
+            },
+            "solid": {
+              "count": 756,
+              "max": 0.8199999891221523,
+              "p50": 0.18852615503741854,
+              "p95": 0.8199999891221523
+            }
+          },
+          "exact_zero_nodes_preserved": true,
+          "godunov_fixed_point": true,
+          "godunov_iterations": 61,
+          "idempotence_iterations": 61,
+          "input_far_band_preserved": true,
+          "input_phi_sha256": "a2161d46baa968560dcfc16979d636f30a249ba215792a53a761b09335ebafa9",
+          "input_state_sha256": "d38ed44b4beb9cb9dad79f3f581ff158ab5c482503a4aefefdad2ef2cc85f76c",
+          "mask_bytes_identical": {
+            "design_mask": true,
+            "fixed_solid_mask": true,
+            "forbidden_mask": true,
+            "root_mask": true
+          },
+          "node_components": [
+            1,
+            1
+          ],
+          "node_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "output_phi_sha256": "40a9c9ef94491d1aad5e504f070612538b0655970d42a1d9a219ef6573bf4cbb",
+          "output_state_sha256": "e3057d2c26d8960d6102c3b5d9b299cb18975cab3409471e7761d796c4192fbe",
+          "sharp_volume_m3": {
+            "input": 0.09037500000000002,
+            "output": 0.08837500000000002,
+            "relative_drift": -0.02213001383125866
+          },
+          "sign_changes": 0,
+          "smoothed_volume_m3": {
+            "input": 0.052189057487908676,
+            "output": 0.05000388356720552,
+            "relative_drift": -0.0418703465033724
+          },
+          "unmatched_crossings": 0,
+          "zero_level_displacement_edges_max": 0.24026045024043352
+        },
+        "profile": "fixture",
+        "schema_version": 2,
+        "smoothed_volume_contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969"
+      },
+      "status": "FAIL"
+    },
+    {
+      "case_id": "analytic_two_spheres",
+      "input_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 67901,
+        "generation": 0,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "4f76959e6f0bc820c64f12158268e3e4745563b5171c40e1448af30a8eeb2e3a",
+        "reinitialization_policy_id": "sdf_reinitialization_policy_v1",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 1020,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "ce7d25d2c4383ed54ad7c215707e4c221528a13de79cddb861096007005317b5",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "output_npz": {
+        "path": "analytic_two_spheres_reinitialized.npz",
+        "sha256": "a3a7b6059903fb9d10a1fabe9da8d1c6ba46981e29092116a201fbcc84c0849a"
+      },
+      "output_state": {
+        "design_cell_count": 68921,
+        "fluid_cell_count": 67901,
+        "generation": 1,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.15000000000000002,
+        "origin_m": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "phi_sha256": "1a0361c964db08b9951441682d223f606a872b38c84b33a211ccedef5be8f836",
+        "reinitialization_policy_id": "sdf_native_reinitialization_godunov2_v2",
+        "schema_version": 1,
+        "shape": [
+          41,
+          41,
+          41
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 1020,
+        "source_sha256": null,
+        "spacing_m": 0.05,
+        "state_sha256": "21f640268dc0d468e1f162de765ad935b6118229dcbcca76547057ea22edec05",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "report": {
+        "admissible": true,
+        "contract_sha256": "9895ab008e880ea65b30bbf01ab2489c62ad655ee911f9f237e300a118cc4f98",
+        "gates": {
+          "band_idempotence_max_h": {
+            "limit": 0.1,
+            "passed": true,
+            "value": 0.07257837802171707
+          },
+          "center_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              2,
+              2
+            ]
+          },
+          "center_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "eikonal_fluid_max": {
+            "limit": 0.5,
+            "passed": true,
+            "value": 0.22941041553872943
+          },
+          "eikonal_fluid_p50": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.02954938771951543
+          },
+          "eikonal_fluid_p95": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.16232661063853748
+          },
+          "eikonal_solid_max": {
+            "limit": 0.5,
+            "passed": true,
+            "value": 0.31232170541026694
+          },
+          "eikonal_solid_p50": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.04287794760504515
+          },
+          "eikonal_solid_p95": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.09046545977658407
+          },
+          "exact_zero_nodes_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "far_band_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "mask_bytes_identical": {
+            "limit": true,
+            "passed": true,
+            "value": {
+              "design_mask": true,
+              "fixed_solid_mask": true,
+              "forbidden_mask": true,
+              "root_mask": true
+            }
+          },
+          "node_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              2,
+              2
+            ]
+          },
+          "node_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "sharp_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.0
+          },
+          "sign_changes": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "smoothed_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.007665376699114602
+          },
+          "unmatched_crossings": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "zero_level_displacement_edges_max": {
+            "limit": 0.25,
+            "passed": true,
+            "value": 0.07257837346031332
+          }
+        },
+        "kind": "sdf_native_reinitialization_godunov2_v2",
+        "measured": {
+          "band_idempotence_max_h": 0.07257837802171707,
+          "center_components": [
+            2,
+            2
+          ],
+          "center_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "crossing_edge_count": 884,
+          "degenerate_crossing_edge_count": 0,
+          "eikonal_evaluation_band": {
+            "count": 4208,
+            "definition": "input abs(phi) <= 3*h intersect input-grid interior",
+            "fluid_count": 3252,
+            "same_mask_for_input_output": true,
+            "solid_count": 956
+          },
+          "eikonal_input": {
+            "fluid": {
+              "count": 3252,
+              "max": 0.011635565739924525,
+              "p50": 0.004538310900803366,
+              "p95": 0.009327052695349614
+            },
+            "solid": {
+              "count": 956,
+              "max": 0.06257993314690857,
+              "p50": 0.01351977257134529,
+              "p95": 0.037651530400369615
+            }
+          },
+          "eikonal_output": {
+            "fluid": {
+              "count": 3252,
+              "max": 0.22941041553872943,
+              "p50": 0.02954938771951543,
+              "p95": 0.16232661063853748
+            },
+            "solid": {
+              "count": 956,
+              "max": 0.31232170541026694,
+              "p50": 0.04287794760504515,
+              "p95": 0.09046545977658407
+            }
+          },
+          "exact_zero_nodes_preserved": true,
+          "godunov_fixed_point": true,
+          "godunov_iterations": 46,
+          "idempotence_iterations": 46,
+          "input_far_band_preserved": true,
+          "input_phi_sha256": "4f76959e6f0bc820c64f12158268e3e4745563b5171c40e1448af30a8eeb2e3a",
+          "input_state_sha256": "ce7d25d2c4383ed54ad7c215707e4c221528a13de79cddb861096007005317b5",
+          "mask_bytes_identical": {
+            "design_mask": true,
+            "fixed_solid_mask": true,
+            "forbidden_mask": true,
+            "root_mask": true
+          },
+          "node_components": [
+            2,
+            2
+          ],
+          "node_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "output_phi_sha256": "1a0361c964db08b9951441682d223f606a872b38c84b33a211ccedef5be8f836",
+          "output_state_sha256": "21f640268dc0d468e1f162de765ad935b6118229dcbcca76547057ea22edec05",
+          "sharp_volume_m3": {
+            "input": 0.12900000000000003,
+            "output": 0.12900000000000003,
+            "relative_drift": 0.0
+          },
+          "sign_changes": 0,
+          "smoothed_volume_m3": {
+            "input": 0.09227361461520188,
+            "output": 0.09156630259978743,
+            "relative_drift": -0.007665376699114602
+          },
+          "unmatched_crossings": 0,
+          "zero_level_displacement_edges_max": 0.07257837346031332
+        },
+        "profile": "fixture",
+        "schema_version": 2,
+        "smoothed_volume_contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969"
+      },
+      "status": "PASS"
+    },
+    {
+      "case_id": "canonical_v16",
+      "input_state": {
+        "design_cell_count": 12495,
+        "fluid_cell_count": 48796,
+        "generation": 0,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.05,
+        "origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+        "reinitialization_policy_id": "sdf_reinitialization_policy_v1",
+        "schema_version": 1,
+        "shape": [
+          61,
+          33,
+          25
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 1420,
+        "source_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+        "spacing_m": 0.05,
+        "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "output_npz": {
+        "path": "canonical_v16_reinitialized.npz",
+        "sha256": "bd29ac6bee34a246d473b6622fcd90f85f17ea0f3665663b1f9e30e40cd0f366"
+      },
+      "output_state": {
+        "design_cell_count": 12495,
+        "fluid_cell_count": 48796,
+        "generation": 1,
+        "kind": "sdf_design_state",
+        "narrow_band_width_m": 0.05,
+        "origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "phi_sha256": "864874c8c2799969d8bcc57986af9a98c405db8f798af9f0a33a3551a291c7da",
+        "reinitialization_policy_id": "sdf_native_reinitialization_godunov2_v2",
+        "schema_version": 1,
+        "shape": [
+          61,
+          33,
+          25
+        ],
+        "sign_convention": "negative_inside",
+        "solid_cell_count": 1420,
+        "source_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+        "spacing_m": 0.05,
+        "state_sha256": "7d143b3f595fc362a590a6dda5f99137be0184dc126c87276b16e34ecfa38d18",
+        "topology_policy_id": "sdf_native_topology_policy_v1"
+      },
+      "report": {
+        "admissible": false,
+        "contract_sha256": "9895ab008e880ea65b30bbf01ab2489c62ad655ee911f9f237e300a118cc4f98",
+        "gates": {
+          "band_idempotence_max_h": {
+            "limit": 0.1,
+            "passed": false,
+            "value": 0.6499521136283875
+          },
+          "center_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "center_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "eikonal_fluid_p50": {
+            "limit": 0.1,
+            "passed": true,
+            "value": 0.041978230920513226
+          },
+          "eikonal_fluid_p95": {
+            "limit": 0.5,
+            "passed": true,
+            "value": 0.23554047208819856
+          },
+          "exact_zero_nodes_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "far_band_preserved": {
+            "limit": true,
+            "passed": true,
+            "value": true
+          },
+          "mask_bytes_identical": {
+            "limit": true,
+            "passed": true,
+            "value": {
+              "design_mask": true,
+              "fixed_solid_mask": true,
+              "forbidden_mask": true,
+              "root_mask": true
+            }
+          },
+          "node_component_count": {
+            "limit": "equal",
+            "passed": true,
+            "value": [
+              1,
+              1
+            ]
+          },
+          "node_topology_events": {
+            "limit": [],
+            "passed": true,
+            "value": {
+              "after_to_before": [],
+              "before_to_after": []
+            }
+          },
+          "sharp_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": true,
+            "value": 0.040634291377601495
+          },
+          "sign_changes": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "smoothed_volume_relative_drift": {
+            "limit": 0.05,
+            "passed": false,
+            "value": 0.3224877374317533
+          },
+          "unmatched_crossings": {
+            "limit": 0,
+            "passed": true,
+            "value": 0
+          },
+          "zero_level_displacement_edges_max": {
+            "limit": 0.25,
+            "passed": false,
+            "value": 0.5
+          }
+        },
+        "kind": "sdf_native_reinitialization_godunov2_v2",
+        "measured": {
+          "band_idempotence_max_h": 0.6499521136283875,
+          "center_components": [
+            1,
+            1
+          ],
+          "center_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "crossing_edge_count": 1602,
+          "degenerate_crossing_edge_count": 434,
+          "eikonal_evaluation_band": {
+            "count": 6349,
+            "definition": "input abs(phi) <= 3*h intersect input-grid interior",
+            "fluid_count": 4929,
+            "same_mask_for_input_output": true,
+            "solid_count": 1420
+          },
+          "eikonal_input": {
+            "fluid": {
+              "count": 4929,
+              "max": 0.9999998771218745,
+              "p50": 0.026916126052061284,
+              "p95": 0.25244800739925555
+            },
+            "solid": {
+              "count": 1420,
+              "max": 0.9999999999999989,
+              "p50": 0.2928932197548768,
+              "p95": 0.9999999403953549
+            }
+          },
+          "eikonal_output": {
+            "fluid": {
+              "count": 4929,
+              "max": 0.6698727793989674,
+              "p50": 0.041978230920513226,
+              "p95": 0.23554047208819856
+            },
+            "solid": {
+              "count": 1420,
+              "max": 0.9999999999999989,
+              "p50": 0.2275583078856629,
+              "p95": 0.7710245023946812
+            }
+          },
+          "exact_zero_nodes_preserved": true,
+          "godunov_fixed_point": true,
+          "godunov_iterations": 62,
+          "idempotence_iterations": 64,
+          "input_far_band_preserved": true,
+          "input_phi_sha256": "45b6c8f46a3d7bc4c321ab13529babe62469c6fe5834ef8f88604847dbba0785",
+          "input_state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+          "mask_bytes_identical": {
+            "design_mask": true,
+            "fixed_solid_mask": true,
+            "forbidden_mask": true,
+            "root_mask": true
+          },
+          "node_components": [
+            1,
+            1
+          ],
+          "node_topology_events": {
+            "after_to_before": [],
+            "before_to_after": []
+          },
+          "output_phi_sha256": "864874c8c2799969d8bcc57986af9a98c405db8f798af9f0a33a3551a291c7da",
+          "output_state_sha256": "7d143b3f595fc362a590a6dda5f99137be0184dc126c87276b16e34ecfa38d18",
+          "sharp_volume_m3": {
+            "input": 0.12612500000000004,
+            "output": 0.13125000000000003,
+            "relative_drift": 0.040634291377601495
+          },
+          "sign_changes": 0,
+          "smoothed_volume_m3": {
+            "input": 0.04763768084408358,
+            "output": 0.06300024875598807,
+            "relative_drift": 0.3224877374317533
+          },
+          "unmatched_crossings": 0,
+          "zero_level_displacement_edges_max": 0.5
+        },
+        "profile": "canonical",
+        "schema_version": 2,
+        "smoothed_volume_contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969"
+      },
+      "status": "FAIL"
+    }
+  ],
+  "claim_limit": "operator-effect qualification only; no optimizer descent, FD, solver, or physical claim",
+  "criteria_id": "sdf_native_reinitialization_godunov2_v2_round3_2026_10",
+  "criteria_sha256": "3f8716b39438e28a523ad2961596f7977e1df1fe0bbea4d1e28558f9d975aa25",
+  "execution_scope": "CPU only; no solver, GPU, optimizer, or finite-difference forward path",
+  "method_contract_sha256": "9895ab008e880ea65b30bbf01ab2489c62ad655ee911f9f237e300a118cc4f98",
+  "method_id": "sdf_native_reinitialization_godunov2_v2",
+  "qualification_flags_changed": false,
+  "runtime": {
+    "numpy": "2.5.2",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "scipy": "1.18.1"
+  },
+  "schema_version": 1,
+  "source_commit": "e8605610a7387a1f6a28d5f0d5a9bc6e9e0d6ae2",
+  "source_sha256": {
+    "docs/sdf_native_reinitialization_godunov2_v2_contract_2026_10.md": "b22a53a0697eb490825ab5d151c7862c6fe9b2d20ef3e755bb507d3bec4f2e8a",
+    "scripts/qualify_sdf_reinitialization.py": "398636dc649e96ed48b2dece44139c8c5e4efb3eea86b5084ec3016ff62af2ae",
+    "src/cfd_sdf/design/sdf_reinitialization.py": "ea92679041e0286c9d32e20aa542ba0f246ce6390dd43a8fb7ec3c499a94dfa6",
+    "src/cfd_sdf/design/sdf_state.py": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf",
+    "src/cfd_sdf/design/topology_policy.py": "f7ead697ef879462cfed5036a6e6af20c1953f767154b9fdbd606f69f83b418b",
+    "src/cfd_sdf/design/volume_semantics.py": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626",
+    "tests/test_sdf_native_reinitialization.py": "84598cb5e14193cfa72b21b3c66dd7d9950c274447a91ddc53ae3b7add70a7fb"
+  },
+  "tolerances": {
+    "canonical_eikonal_p50_max": 0.1,
+    "canonical_eikonal_p95_max": 0.5,
+    "fixture_eikonal_max": 0.5,
+    "fixture_eikonal_p50_max": 0.05,
+    "fixture_eikonal_p95_max": 0.25,
+    "idempotence_max_h": 0.1,
+    "volume_relative_drift_max": 0.05,
+    "zero_level_displacement_max_edges": 0.25
+  },
+  "verdict": "FAIL"
+}

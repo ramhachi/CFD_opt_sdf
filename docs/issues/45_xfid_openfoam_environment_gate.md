@@ -179,3 +179,48 @@ family, retaining all numerical gates, archive geometry, meshing and solver
 settings. It must be preregistered before another exact kernel version is
 submitted. No XFID sign/rank verdict is possible; the resolved DISAGREE
 condition for stopping Track C has not occurred.
+
+## Fresh Jammy environment round after kernel version 1 ERROR
+
+The exact private Kaggle CPU version 1 observed Ubuntu 22.04.5 Jammy amd64,
+whereas Round 2 required Noble. It terminated before apt installation, meshing
+or solver execution. The ERROR and downloaded log are preserved under the
+parent Round 2 terminal-failure directory. This is an environment-lock failure;
+no XFID response or DISAGREE verdict exists. Track C is not stopped by this error.
+
+A separate self-contained `infra/kaggle/kernel_openfoam_xfid_v16_jammy/`
+registers Round 3 for the observed OS with official OpenCFD v2512 packages
+exactly `2512.0-2`. Old Round 2 is unchanged. Every numerical gate, fixture
+identity and case-template byte remains unchanged. New criteria SHA-256:
+`b5e8d16838882c92f17d192cc5b1b0a1a525360ac4968cf5c40e359cb4f3190b`;
+package-lock SHA-256:
+`b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746`;
+runner SHA-256:
+`8a0605ee78d3dfe6ccbad1ccfba61488861f33ec988541116c5b6693120469b8`.
+Official lock-input bytes, URLs, hashes and validation logs are retained in
+`docs/evidence/xfid_jammy_apt_lock_inputs_2026_10_02/`. They are repository
+metadata, not evidence that OpenFOAM has been installed or run on Kaggle.
+[Official OpenCFD Jammy v2512 index](https://dl.openfoam.com/repos/deb/dists/jammy/main/pool/2512_0/binary-amd64/).
+
+Focused shell tests: 4 passed. Isolated embedded mount self-check: PASS.
+Compileall and diff-check: PASS. Source-bound full pytest: 37 failed, 1244 passed,
+5 skipped, with exactly the initial 37 baseline failure IDs and no new failures.
+The parent source registration must be committed/pushed before a new exact
+Kaggle version is submitted. All six qualification flags remain false.
+
+## Round 3 terminal harness failure, exact Kaggle version 2
+
+Private CPU version 2 passed the Jammy/official-index/package-hash checks and
+apt installed the exact v2512 packages. It then failed the hardcoded
+`source /opt/openfoam2512/etc/bashrc` command. The downloaded official
+`openfoam2512-common` package contains `/usr/lib/openfoam/openfoam2512/etc/bashrc`;
+this path was independently read from its hash-verified archive. No meshing or
+solver command started. foamVersion is unverified. The exact ERROR, compressed
+raw log, downloaded-output inventory and package-path evidence are retained in
+Round 3 `terminal_failure_kernel_v2/`. No XFID verdict or Track C stop condition
+exists. A future immutable harness-correction round must retain all package,
+geometry, numerical-gate and case-template identities.
+
+Round4 local validation used the exact command `python3 infra/kaggle/kernel_openfoam_xfid_v16_jammy_round4/runner.py --self-check` (PASS) and `python3 -m pytest -q infra/kaggle/kernel_openfoam_xfid_v16_jammy_round4/test_runner.py` (4 passed). `python3 -m py_compile` passed for the runner, tests and unchanged verifier; `.venv/bin/python -m compileall src tests` passed; `git diff --check` passed. The complete repository command `env PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --tb=short` completed with 37 failed, 1244 passed, 5 skipped. Sorted failure IDs equal the pinned four-track 37-ID baseline exactly, with zero new failures. Raw full-suite log SHA-256 is `cf64e796007ef9292946db215d9cc277e71a640e587e85f54134018c9f3c566c`; sorted ID-list SHA-256 is `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`, matching the baseline file.
+
+Round4 candidate source hashes: runner `2bf07d2ea3182254ce335b5f69a4689111d90d5ce00dc6a1fb5529092efe0d4f`, criteria `687dc69c16e48c914115754e22da370abc1629ae6331ffdfff67fc8a947b1ae8`, package lock `b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746`, embedded payload `2ff0fe7141a5b819eb1390eacac3e759516f5394ac899b07988fe5e9e62fe97e` (19-file inventory). These are source/harness and software-regression checks only. No Kaggle submission, package installation, meshing, solver execution, environment reproduction PASS, or XFID verdict occurred; parent registration and dispatch remain pending.
