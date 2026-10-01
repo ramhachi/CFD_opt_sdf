@@ -72,3 +72,41 @@ Source artifact hashes before commit:
 | `src/cfd_sdf/criteria_supersession.py` | `df3bc798cfbb666f5a9f5679298e02313c8f3cffe6ce7e330ccba01dea0466b4` |
 | `tests/test_criteria_supersession.py` | `9fd8f443aebcdec04d0e62b490e08593dcbd54a991d99ac38c3eb2ffcca55a24` |
 | `docs/issues/19_result.md` | recorded by the pushed commit |
+
+## Follow-up review checkpoint (2026-10-02)
+
+Review found that repairing a predecessor kernel/dataset ID collision changed
+the successor's top-level kernel ID but left the pending submission identity
+bound to the predecessor slug. The builder now updates that identity together;
+the regression constructs a collision case and verifies that the repaired ID
+and a newer version are accepted while the predecessor ID is rejected.
+
+The review also tightened Kaggle owner/title-derived slug validation (including
+the 40-character limit for a newly selected slug), recursively checks nested
+qualification flags, validates the predecessor canonical hash and round type,
+and verifies that rehashed successors preserve their registered pending
+kernel/dataset identity. The existing round-4-to-round-5 legacy binding remains
+accepted without rewriting its historical ID. Review follow-up validation
+results and the new source hashes follow.
+
+| Command | Result | Evidence class |
+| --- | --- | --- |
+| `PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q tests/test_criteria_supersession.py` | 23 passed | Focused source-only, identity-binding, and fail-closed regressions |
+| `PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests` | Passed | Syntax/bytecode validation |
+| `PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q` | 37 failed, 1267 passed, 5 skipped; failure IDs exactly equal the recorded baseline, with no new failures | Full repository suite; pre-existing failures only |
+| `git diff --check` | Passed | Patch whitespace validation |
+
+The follow-up full-suite output is
+`work/issue19_validation/review_followup_pytest.log` (SHA-256
+`960743fcdc86cd3fa49153642297bb17a35a4992168068d757f495b55e5181d9`); its
+37 failure IDs compare exactly to the same baseline artifact cited above. The
+compileall output is
+`work/issue19_validation/review_followup_compileall.log` (SHA-256
+`6cc1d0a4a09296b0a6246d4f63c0c39840f51c459278ec71887fac107def67f8`).
+Follow-up source artifact hashes before commit:
+
+| Path | SHA-256 |
+| --- | --- |
+| `src/cfd_sdf/criteria_supersession.py` | `9241c488e3d89993e2a6ccb49b8fcd7f28e9fdee5737dcbbb2d40a4910b17746` |
+| `tests/test_criteria_supersession.py` | `1ec8b1412f72ab96c2fc82ba3ec54d946c0379e5ca06dad335e9570380f1452e` |
+| `docs/issues/19_result.md` | recorded by the follow-up commit |

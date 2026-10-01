@@ -28,6 +28,11 @@ MUTABLE_FIELDS = {
 HEX_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 GIT_COMMIT = re.compile(r"^[0-9a-f]{40}$")
 KERNEL_TERMINAL = re.compile(r'^(.+)/(\d+) has status "KernelWorkerStatus\.(ERROR|COMPLETE)"$')
+QUALIFICATION_FLAGS = {
+    "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology",
+}
+KAGGLE_OWNER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
+KAGGLE_SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 
 
 class SupersessionError(ValueError):
@@ -80,25 +85,38 @@ def _load_immutable(path: Path) -> tuple[dict, str]:
 
 
 def _check_flag_state(criteria: dict) -> None:
-    for key, value in criteria.items():
-        if (key.endswith("_qualified") or key in {"shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology"}) and value is not False:
-            raise SupersessionError(f"qualification flag must remain false: {key}")
+    def visit(value: object, parent: str = "") -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                is_flag = key.endswith("_qualified") or key in QUALIFICATION_FLAGS
+                if is_flag and isinstance(child, bool) and child is not False:
+                    raise SupersessionError(f"qualification flag must remain false: {parent}{key}")
+                if is_flag and key.endswith("_qualified") and not isinstance(child, bool):
+                    raise SupersessionError(f"qualification flag must be boolean: {parent}{key}")
+                # A topology-policy contract may itself be a mapping, not a flag.
+                visit(child, f"{parent}{key}.")
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                visit(child, f"{parent}[{index}].")
+
+    visit(criteria)
 
 
-def _kernel_slug_is_valid(criteria: dict) -> None:
+def _kernel_slug_is_valid(criteria: dict, *, allow_legacy_overlength: bool = False) -> None:
     kernel_id = criteria.get("kernel_id")
     title = criteria.get("kernel_title")
     dataset_id = criteria.get("input_dataset_id")
     if not all(isinstance(value, str) and value for value in (kernel_id, title, dataset_id)):
         raise SupersessionError("kernel and dataset identities are required")
-    if "/" not in kernel_id or "/" not in dataset_id:
-        raise SupersessionError("kernel and dataset IDs must include an owner")
-    owner, slug = kernel_id.split("/", 1)
-    dataset_owner, dataset_slug = dataset_id.split("/", 1)
-    if (not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", slug)
-            or not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", dataset_slug)
-            or owner != dataset_owner or slug == dataset_slug):
+    owner, separator, slug = kernel_id.partition("/")
+    dataset_owner, dataset_separator, dataset_slug = dataset_id.partition("/")
+    if (not separator or not dataset_separator or not KAGGLE_OWNER.fullmatch(owner)
+            or not KAGGLE_OWNER.fullmatch(dataset_owner) or owner != dataset_owner
+            or not KAGGLE_SLUG.fullmatch(slug) or (len(slug) > 40 and not allow_legacy_overlength)
+            or not KAGGLE_SLUG.fullmatch(dataset_slug) or slug == dataset_slug):
         raise SupersessionError("kernel ID must be a valid unique slug separate from its dataset ID")
+    if not isinstance(title, str):
+        raise SupersessionError("kernel title must be text")
     title_slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
     if title_slug != slug:
         raise SupersessionError("kernel slug does not match the title-derived slug")
@@ -201,10 +219,68 @@ def verify_successor_submission(successor: dict, *, kernel_id: str, kernel_versi
         raise SupersessionError("submitted dataset version or exact input inventory differs from registration")
 
 
+def _validate_successor_identity(predecessor: dict, successor: dict) -> None:
+    binding = successor.get("supersedes")
+    if not isinstance(binding, dict):
+        raise SupersessionError("successor must bind the exact predecessor diagnostic")
+    legacy_binding = {
+        "kernel3_diagnostic_path", "kernel3_diagnostic_sha256",
+    } <= binding.keys()
+    if legacy_binding:
+        # Existing immutable rounds use this earlier, campaign-specific schema.
+        if (binding.get("criteria_canonical_sha256") != predecessor.get("criteria_sha256")
+                or binding.get("kernel_id") != predecessor.get("kernel_id")
+                or not isinstance(binding.get("kernel_version"), int)
+                or binding.get("kernel_version", 0) < 1
+                or not HEX_SHA256.fullmatch(binding.get("criteria_file_sha256", ""))):
+            raise SupersessionError("legacy supersession binding does not match its predecessor")
+        return
+
+    diagnostic = KERNEL_TERMINAL.fullmatch(binding.get("terminal_status", ""))
+    version = binding.get("kernel_version")
+    dataset_id = predecessor.get("input_dataset_id")
+    dataset_version = binding.get("dataset_version")
+    inventory_sha = sha256(json.dumps(
+        predecessor.get("input_dataset_files"), sort_keys=True, separators=(",", ":"),
+        allow_nan=False).encode())
+    expected_identity = {
+        "kernel_id": successor.get("kernel_id"),
+        "kernel_version": {
+            "status": "pending_at_registration",
+            "must_be_greater_than_predecessor": version,
+        },
+        "dataset": {
+            "id": dataset_id,
+            "version": dataset_version,
+            "input_inventory_sha256": inventory_sha,
+            "status": "exact_registered_version_and_inventory",
+        },
+    }
+    if (not HEX_SHA256.fullmatch(binding.get("criteria_file_sha256", ""))
+            or binding.get("criteria_canonical_sha256") != predecessor.get("criteria_sha256")
+            or binding.get("kernel_id") != predecessor.get("kernel_id")
+            or not isinstance(version, int) or isinstance(version, bool) or version < 1
+            or not diagnostic or diagnostic.group(1) != predecessor.get("kernel_id")
+            or int(diagnostic.group(2)) != version
+            or binding.get("dataset_id") != dataset_id
+            or binding.get("dataset_input_inventory_sha256") != inventory_sha
+            or binding.get("host_verification_passed") is not False
+            or binding.get("successor_identity") != expected_identity):
+        raise SupersessionError("successor kernel/dataset identity binding is inconsistent")
+
+
 def validate_successor(predecessor: dict, successor: dict,
                        allowed_source_changes: Mapping[str, Mapping[str, str]]) -> None:
-    if successor.get("criteria_round") != predecessor.get("criteria_round", 0) + 1:
+    if (predecessor.get("criteria_sha256") != canonical_sha256(predecessor)
+            or not isinstance(predecessor.get("criteria_round"), int)
+            or isinstance(predecessor.get("criteria_round"), bool)
+            or predecessor["criteria_round"] < 1):
+        raise SupersessionError("predecessor canonical hash or round identity is invalid")
+    if (not isinstance(successor.get("criteria_round"), int)
+            or isinstance(successor.get("criteria_round"), bool)
+            or successor.get("criteria_round") != predecessor["criteria_round"] + 1):
         raise SupersessionError("successor round must increment exactly once")
+    _check_flag_state(predecessor)
     for field in predecessor.keys() | successor.keys():
         if field not in MUTABLE_FIELDS and successor.get(field) != predecessor.get(field):
             raise SupersessionError(f"successor changed immutable measurement contract field: {field}")
@@ -253,7 +329,9 @@ def validate_successor(predecessor: dict, successor: dict,
     if successor.get("source_commit") != successor.get("registered_source_commit"):
         raise SupersessionError("successor source commit is not registered consistently")
     _check_flag_state(successor)
-    _kernel_slug_is_valid(successor)
+    _kernel_slug_is_valid(
+        successor, allow_legacy_overlength=successor.get("kernel_id") == predecessor.get("kernel_id"))
+    _validate_successor_identity(predecessor, successor)
     if successor.get("criteria_sha256") != canonical_sha256(successor):
         raise SupersessionError("successor canonical criteria hash mismatch")
 
@@ -325,6 +403,7 @@ def build_successor(
         successor["source_tree_commit"] = source_commit
     successor["source_input_sha256"] = new_hashes
     successor["supersedes"] = binding
+    binding["successor_identity"]["kernel_id"] = successor["kernel_id"]
     successor["criteria_sha256"] = canonical_sha256(successor)
     validate_successor(predecessor, successor, allowed_source_changes)
     return successor
