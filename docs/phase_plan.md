@@ -5071,3 +5071,11 @@ false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.
   #29 mechanical geometry gates are in progress. #31's event choices remain
   pending; disconnected components/root policy was recorded only as a
   partial user decision. #48 has not started. All six flags remain false.
+
+### 2026-10-02 reviewed execution checkpoint: geometry and environment harness
+
+- #19 supersession/collision helper is reviewed and integrated, with exact source and runtime identity checks and literal false qualification flags. Its full source-bound suite has zero new failure IDs. This is infrastructure contract evidence, not solver evidence.
+- #29 canonical v16 solver-free GEOM-01 diagnostic reports 3 PASS, 0 FAIL and 10 UNMEASURED gates; the aggregate gate remains closed. Width/gap estimates and the voxel cell-union mesh are diagnostic proxies. Missing physical limits, source/mask/policy bindings and actual GridSDF zero-level export checks block canonical qualification. See `docs/issues/29_result.md`.
+- #46/#47 reviewed plans bind actual float32 perturbations, exact [80,120] physical-time force means, runtime/source identity and disjoint evidence sets. Their existing arithmetic helpers remain preparation only. Neither formal campaign is registered or running.
+- #45 Kaggle CPU version 3 installed and hash-verified all fixed v2512 packages but failed before meshing at the noninteractive `foamVersion` function lookup. Exact package setup loads aliases only for interactive shells; the next immutable harness round must explicitly load that package function. All numerical gates, historical fixtures and package hashes are preserved. This is not resolved XFID DISAGREE and does not stop Track C.
+- #31 research detached components are allowed and root connectivity is optional by the user's partial decision. Event permissions and source/physical-limit bindings remain unresolved; no successor canonical policy has been registered. All six qualification flags remain false.
