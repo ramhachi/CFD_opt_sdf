@@ -1,10 +1,10 @@
 # C-OP-01 (#44): Candidate C operator diagnostic
 
-Status: solver-free baseline-face diagnosis, composite-body API, and a bounded
-CPU startup screen are implemented locally on
-`feat/issue-44-candidate-c-qualification`. The production contract is not
-frozen; W2a-C still needs its full inherited sphere fixture, and W3-C/W4-C have
-not been submitted.
+Status: solver-free baseline-face diagnosis, composite-body API, bounded CPU
+startup screen, and the full inherited CPU W2a sphere fixture have been
+recorded on `feat/issue-44-candidate-c-qualification`. W2a evidence is scoped
+to that fixture; the production operator contract is not frozen, and W3-C/W4-C
+have not been submitted.
 
 ## Baseline face
 
@@ -147,3 +147,61 @@ control. This needs a new immutable operator-identity round before it is run.
 W3-C retains the v17 W3 limits; W4-C retains the v17 four-case matrix and
 numeric limits with the operator identity changed. All qualification flags
 remain false.
+
+## Round 4: inherited CPU W2a sphere fixture
+
+Round 4 ran the exact registered W2a sphere setup on the inherited CPU Array
+backend: `96×64×64`, `Re_D=100`, `Float32`, `tU/D=[40,60]`. The sampled-sphere
+primary used GridSDF, `normal_floor=0.25`, and the Candidate C moment blend.
+The native analytic sphere and repeat were controls; same-GridSDF upstream
+with `normal_floor=0.25` was diagnostic. All eleven preregistered gates passed
+for this fixture under Round 4's endpoint-interpolated trapezoidal window
+evaluation. Numeric limits were inherited unchanged; the evaluation semantics
+are explicitly different from the legacy W2a arithmetic sample means, as
+recorded in the immutable criteria.
+
+The exact-window drag means recomputed independently from raw histories were:
+
+| Arm | Drag (solver units) | Drag (N) | Cd |
+| --- | ---: | ---: | ---: |
+| Native analytic | 88.4257796764243 | 0.3454132018610324 | 0.8795874957661115 |
+| GridSDF upstream diagnostic | 88.23353781418075 | 0.34466225708664355 | — |
+| GridSDF Candidate C | 88.23355050454136 | 0.34466230665836467 | 0.8776753568341346 |
+| Native analytic repeat | 88.4257796764243 | 0.3454132018610324 | 0.8795874957661115 |
+
+Candidate C differs from the native analytic sphere by `0.2173904%` in Cd,
+within the inherited 10% W2a fixture comparison bound. Its half-window drag
+drift is `1.9316e-7`, and the analytic-repeat drag difference is zero. Force
+scaling was independently checked as `rho U² h² = 0.00390625 N` per solver
+force unit (`rho=1 kg/m³`, `U=1 m/s`, `h=0.0625 m`). Every raw row satisfies
+`drag = pressure_drag + viscous_drag`; all recorded N components reproduce the
+registered Cartesian projections. The force source wraps WaterLily's raw
+pressure and viscous API values with one negation each to form body force; the
+job sums those body-force values without applying another sign inversion. W2a
+uses the registered `+x` drag projection.
+
+The six face mass flows and integrated-divergence diagnostics are retained,
+but Round 4 has no conservation threshold and therefore makes no mass
+conservation qualification claim. No production operator freeze, shape
+update, FD/reverse/gradient/optimizer/topology qualification, W3-C, or W4-C
+qualification follows. All qualification flags remain false.
+
+The hash-verified result is
+[`candidate_c_w2a_sphere_cpu_result_2026_10_round4.json`](../evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round4.json),
+SHA-256 `7de79ab8f7d3daf0633fb0d038f775a4dd457a79c316024deeadd72297ff41a7`.
+The immutable criteria SHA-256 is
+`58750ab16225628d476a6b2a2c44124f145da25fc1a1c88d4165714df6f30cff`. An
+independent host recomputation from the four force CSVs is recorded at
+[`candidate_c_w2a_sphere_cpu_round4_retained/independent_raw_audit.json`](../evidence/candidate_c_w2a_sphere_cpu_round4_retained/independent_raw_audit.json),
+SHA-256 `3dce0d41be9068d23c14bb15f8f6bd16a6187bd251c539686f81af57bf5f9af9`.
+It checked the exact `[40,60]`, `[40,50]`, `[50,60]` endpoint interpolation
+and trapezoid means, result/summary/transcript hashes, pressure-plus-viscous
+closure, physical N projections, and the force-sign wrapper semantics.
+
+All four raw force histories and stdout transcripts are retained as
+deterministic gzip files beside byte-identical summaries, parameters, criteria,
+result, source manifest, and parent measurement transcript. The retention
+manifest records both source and retained SHA-256 values, and confirms every
+gzip stream decompresses byte-identically:
+[`retention_manifest.json`](../evidence/candidate_c_w2a_sphere_cpu_round4_retained/retention_manifest.json),
+SHA-256 `2851f58609e98e84f19f5dc50d0d5625545358928e8ae666b74e4320f4b503ea`.
