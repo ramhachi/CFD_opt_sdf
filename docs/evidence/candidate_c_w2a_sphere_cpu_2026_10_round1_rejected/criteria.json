@@ -1,0 +1,178 @@
+{
+  "criteria_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10",
+  "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10",
+  "issue": 44,
+  "evidence_class": "candidate_operator_capability_and_numerical",
+  "immutable": true,
+  "registered_before_measurement": true,
+  "measurement_started": false,
+  "status": "preregistered_pending_parent_review; no solver steps authorized by this registration",
+  "inherited_w2a_criteria_path": "docs/evidence/sdf_native_w2a_sphere_cpu_criteria_2026_09.json",
+  "inherited_w2a_criteria_sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f",
+  "operator": {
+    "primary": "GridSDFWaterLily geometry sampled from the exact W2a analytic sphere, NormalFloorWaterLilyBody normal_floor=0.25, and CandidateCWaterLilyBody moment blend",
+    "normal_floor": 0.25,
+    "candidate_c_transition_width_solver_cells": 0.00011444091796875,
+    "candidate_c_changes": "mu0 only; mu1 uses raw face distance and wrapped body normal",
+    "diagnostic_control": "same GridSDF and same normal_floor=0.25 through upstream WaterLily measure! without Candidate C blend",
+    "native_control": "exact analytic sphere AutoBody on the inherited flow grid"
+  },
+  "fixture": {
+    "affine_map": {
+      "world_origin_m": [
+        -1.75,
+        -2.0,
+        -2.0
+      ],
+      "world_per_solver": 0.0625,
+      "map": "x_world_m = world_origin_m + world_per_solver .* x_solver",
+      "provenance": "registers the W1-measured map for the sphere fixture with D = 1.0 m over 16 solver units"
+    },
+    "canonical_phi": {
+      "center_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "construction": "exact float64 sphere SDF on the lattice, cast to Float32 exactly as genesis stores phi; built through the W1 gate constructor",
+      "expected_measured_margin_m": 0.2,
+      "margin_gate_m": 0.15,
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.7
+      ],
+      "outside_value_m": 3.0,
+      "radius_m": 0.5,
+      "shape": [
+        61,
+        33,
+        29
+      ],
+      "spacing_m": [
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "flow": {
+      "boundary_conditions": "uBC = (U,0,0) Dirichlet normal / Neumann tangential, no periodic direction, exitBC disabled",
+      "dims": [
+        96,
+        64,
+        64
+      ],
+      "initial_condition": "uniform u = uBC",
+      "kinematic_viscosity_solver": 0.16,
+      "length_scale_solver": 16.0,
+      "memory": "Array",
+      "note": "solver length unit = one flow cell; 16 cells per diameter; sim_time is in tU/D units",
+      "precision": "Float32",
+      "reynolds_diameter": 100.0,
+      "solver_center": [
+        32.0,
+        32.0,
+        32.0
+      ],
+      "solver_radius": 8.0,
+      "threads": "auto (recorded per run)",
+      "u_inf": 1.0
+    },
+    "geometries": {
+      "analytic": "WaterLily AutoBody with the exact sphere SDF in solver coordinates",
+      "sampled": "GridSDFWaterLilyBody over the canonical_phi fixture and the registered affine map"
+    },
+    "time": {
+      "burn_in_tu_d": 40.0,
+      "force_sampling": "every 4 solver steps; columns step,t_ud,drag,lift,side,pressure_drag,viscous_drag",
+      "measurement_window_tu_d": [
+        40.0,
+        60.0
+      ],
+      "stationarity_split_tu_d": 50.0,
+      "t_end_tu_d": 60.0
+    }
+  },
+  "arms": [
+    {
+      "id": "analytic",
+      "role": "inherited native analytic reference; formal control"
+    },
+    {
+      "id": "grid_upstream",
+      "role": "diagnostic only; same sampled GridSDF and normal_floor=0.25, upstream moment path"
+    },
+    {
+      "id": "candidate_c",
+      "role": "primary formal candidate operator"
+    },
+    {
+      "id": "analytic_repeat",
+      "role": "inherited reproducibility control"
+    }
+  ],
+  "gates_registered_before_measurement": {
+    "G1_completion": "all four arms reach t_end=60 tU/D with steps>0 and no exception",
+    "G2_finiteness": "all(isfinite,u) and all(isfinite,p) at end of all four arms",
+    "G3_force_finite": "every recorded force component finite for every arm",
+    "G4_drag_sign": "window-mean drag >0 for analytic, Candidate C, and analytic repeat",
+    "G5_stationarity": "|mean_drag(40–50)-mean_drag(50–60)|/mean_drag(40–60) <= 0.02 for analytic, Candidate C, and analytic repeat",
+    "G6_candidate_c_vs_native": "|Cd_C-Cd_analytic|/Cd_analytic <= 0.10; Cd=window-mean drag/(0.5*pi*R_solver^2)",
+    "G7_lift_bound": "|window-mean lift|/window-mean drag <=0.10 for analytic, Candidate C, and analytic repeat",
+    "G8_reproducibility": "identical analytic-repeat window-mean drag relative difference <=1e-6",
+    "inherited_thresholds": "all numeric limits are inherited unchanged from sdf_native_w2a_sphere_cpu_2026_09; the upstream diagnostic arm is excluded from formal sign/stationarity/lift thresholds",
+    "threshold_modification_rule": "fail closed; do not relax or select thresholds after observing data; failures require a new immutable criteria round",
+    "G9_boundary_flow_integrity": "all six external-face mass-flow and domain-integrated-divergence fields finite in every raw sample; this is a diagnostic integrity check without conservation threshold"
+  },
+  "recording": {
+    "force_samples": "every four solver steps from first force sample to end, same as inherited W2a criteria",
+    "force_units": "record solver-unit force for inherited Cd gates and SI force components N at every sample",
+    "force_scale": "rho*U_ref^2*h^2 = 1 kg/m3 * (1 m/s)^2 * (0.0625 m)^2 = 0.00390625 N per solver-force unit",
+    "mass_flow_samples": "every same sample: signed normal mass flow kg/s across all six external boundary planes using face-area weights",
+    "mass_flow_scale": "rho*U_ref*h^2 = 0.00390625 kg/s per solver velocity unit; rho=1 kg/m3 and U_ref=1 m/s",
+    "boundary_planes": "first/last physical normal-velocity face index per axis with transverse ghost layers excluded; report each signed outward face flow and net outward flow",
+    "continuity_diagnostic": "record signed normal mass flow on all six external faces, net outward mass flow, integrated discrete divergence, and their difference; diagnostic only, no mass-conservation pass threshold",
+    "window_statistics": "preserve inherited sample-selection and arithmetic means over [40,60] plus first/second half split at 50; retain every sampled row in raw CSV"
+  },
+  "execution": {
+    "backend": "Julia CLI CPU Array, threads=auto, Float32; no GPU required for this inherited CPU capability fixture",
+    "runtime_gate": "Julia, WaterLily, Manifest, implementation, runner, and source hashes checked before run directory creation or any solver step",
+    "output": "unique work/candidate_c_w2a_sphere_cpu_2026_10/run-001; refuse to overwrite existing run directory; partial artifacts remain on failure",
+    "qualification_gate": "only the eight inherited numerical gates above can produce the scoped W2a-C verdict; mass-flow fields are reported separately",
+    "parent_source_review_required_before_measurement": true
+  },
+  "inputs": {
+    "manifest_sha256": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "w1_criteria_sha256": "6da068fad8c79ba39197377157d4a5172dedf04511b2acbd8f69146aefea70ef",
+    "w1_result_sha256": "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567",
+    "inherited_w2a_criteria_sha256": "aea91e6cc8de65ef072b3fbb19a3ca50a01b5e75198e62c128fda3fe8849602f",
+    "source_manifest_path": "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10.sha256",
+    "source_manifest_sha256": "5e35729e9d071dee542ebbb958a97d74dffc26784c054cc08ca1997091ba590e"
+  },
+  "claims_supported_if_all_gates_pass": [
+    "the exact registered W2a sphere fixture can be time-integrated with Candidate C composite operator on the inherited CPU backend",
+    "the canonical GridSDF Candidate C force response meets unchanged inherited W2a stationary-force and native-sphere comparison bounds"
+  ],
+  "claims_not_supported": [
+    "mass conservation qualification; mass-flow values are physically weighted boundary diagnostics without an acceptance threshold",
+    "absolute/literature Cd accuracy, flow-grid convergence, target physics, full-vehicle/high-Re FSAE behavior",
+    "Candidate C production acceptance, W3-C/W4-C qualification, FD/reverse/gradient/optimizer/topology/shape-update qualification"
+  ],
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false,
+    "fd_oracle": false,
+    "field_gradient": false,
+    "reverse": false,
+    "optimizer": false,
+    "topology": false
+  },
+  "provenance": {
+    "runner": "scripts/run_waterlily_w2a_candidate_c_cpu_2026_10.py",
+    "job": "scripts/waterlily_w2a_candidate_c_job.jl",
+    "source_manifest": "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10.sha256"
+  }
+}
