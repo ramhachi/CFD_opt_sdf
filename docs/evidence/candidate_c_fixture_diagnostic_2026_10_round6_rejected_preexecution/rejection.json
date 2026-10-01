@@ -1,0 +1,21 @@
+{
+  "status": "rejected_before_solver_initialization_or_steps",
+  "rejected_at": "2026-10-02",
+  "reason": "parent source review identified deterministic harness and reporting defects; no solver was initialized or stepped",
+  "reasons": [
+    "Julia local output_path shadow read an uninitialized local in run_diagnostic().",
+    "Initialization-only preflight and formal run would collide on the same claim/run directory.",
+    "All-positive moving-ground-only GridSDF produced an infinite zero-level margin, incompatible with finite-sample checks.",
+    "Float32 sampled GridSDF minimum margin can be slightly below the nominal 0.15 m due to representation; the geometry constructor tolerance must be represented as a numerical slack, not changed physics.",
+    "Reported streamwise ground velocity came from a differently staggered face and was mislabeled as tangential wall mismatch.",
+    "Raw WaterLily pressure/viscous API values were not separately preserved from once-negated physical SI forces."
+  ],
+  "preserved_files": {
+    "candidate_c_grid_sdf_long_cpu_diagnostic.jl": "57a94b96e6372915b85b7e8e281376c2e130fb0f4d8902e666214614138a38df",
+    "plan.json": "5e780eb5e574de5bf0977feb7182bf06327b7c582e4fe9c1151cc58a995f54f2",
+    "test_candidate_c_long_cpu_diagnostic.py": "873de3af015f6d78c158e2994b77fc59e809c9ec8bd044321bddc6cc18c1288c",
+    "runner_sources.sha256": "fc3e3aa81b264dfbfb0b9274a30ee1d759c92ec5aaaf4c8bbeead30c381fdcd7",
+    "plan.sha256": "3bf09ed00e06749bb66872f086a9eac68fe529512df734f9ec5163aa64b85c27",
+    "verify_candidate_c_grid_sdf_long_cpu_diagnostic.py": "0552955ad7547eb38482e7ee8815037b4e203a9f6b0dc8f0e26b9a2083ed5c13"
+  }
+}
