@@ -64,3 +64,74 @@ ProblemSpec fixture was copied into this worker's local `work/` directory.
 That failure-ID removal is fixture availability, not a source bug repair.
 No calibration, immutable formal criteria, or fresh 33-run qualification set
 has been created. This remains preparation evidence only.
+
+## Registration and evidence bindings audited after integration
+
+The existing v17 FD-05 record is a protected historical reference, not the
+future FD-08 criteria. Its criteria file SHA-256 is
+`9cd5e3e35ac779ed937f4516421d82fbd40820dec2ae556817a4ff3ab007918e`
+(criteria identity `f9ee9cb265f928aade278b3027f90212292a8c01ac0719a7fd8e7799d387f12f`). It identifies the canonical state file
+`sdf_design_state.npz` (SHA-256
+`7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31`),
+canonical Fortran-order float32 phi bytes (SHA-256
+`e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431`),
+and v17 state identity `02f48f64…`. Its historical flow is `flow_24`, with
+the exact endpoint-clipped trapezoidal physical-time mean over `[80,120]`
+`tU/L`; the primary outputs are drag and downforce in N, with direction
+derivatives in N/m. This window and state are the required comparison
+bindings for FD-08, subject to re-verification against the actual new input
+inventory and operator-frozen registration.
+
+The former 33-run registration contained three baseline repetitions
+(`baseline_A/B/C`) plus `3 directions × 5 historical epsilons × 2 signs`.
+Its direction IDs were `D0_interface_offset`, `D1_filtered_seed11`, and
+`D2_filtered_seed2026`; its old epsilon values were 0.5, 1, 2.5, 5, and
+10 mm. Those directions, values, perturbation files, hashes, and results are
+protected history. The fact that they total 33 does not authorize their
+reuse for Candidate C. FD-08 must create its own complete fresh qualification
+inventory after calibration. It must explicitly define baseline repetition
+count and a rectangular direction × epsilon × sign map whose run IDs total
+exactly 33. If the frozen calibration-selected ladder and chosen directions
+do not fit that total, the formal campaign must not be registered as 33 by
+silently dropping cells or reusing calibration runs.
+
+The old registered runtime reference was Kaggle T4, Julia 1.12.6,
+WaterLily 1.8.0, KernelAbstractions, CUDA.jl 6.3.1 and CUDA runtime 12.8.0.
+Those values describe historical W3/W4 evidence. The new run must save and
+hash its own runtime identity; it cannot claim identity by copying these
+reference values. The source identity must include the frozen composite
+operator (Candidate C moment blend **and** `normal_floor=0.25` body), the
+actual WaterLily job/runner, and criteria/host verifier hashes.
+
+For every calibration and formal run, the future registrar/runner record
+must bind the direction bytes and both the requested epsilon and the actual
+float32 perturbed phi file hash. It must calculate a nonzero change from the
+canonical float32 phi (including changed-node count and an explicit magnitude
+summary) so a nominal epsilon that rounds away cannot be accepted. Each run
+must preserve the raw force-history artifact and its hash, the source/runtime
+identity and hashes, exact-window host recomputation, and primary force in N.
+The existing host force pipeline uses force-on-body wrappers; these first
+negate WaterLily's unmodified API reaction force, then project
+`drag=+Fx_body` and `downforce=-Fz_body`. The criteria's solver-force values
+are scaled by `rho*U^2*dx^2` to N (for the reference flow, `1/900 N` per
+solver-force unit). Any new evidence must name raw API forces, body-force
+components, projections, solver scaling, and physical N as distinct values
+to prevent a second sign flip.
+
+The existing helper remains only a fail-closed validator for a supplied
+summary. It does not register epsilon values, direction coverage, input
+hashes, operator freeze lineage, or saved runtime/force records. Reuse the
+existing FD runner, dataset manifest and host recomputation path for those
+artifacts; add the smallest registrar extension only after #44 freezes the
+operator and after a reviewer has checked the resulting binding schema.
+Calibration must use Candidate C measurements, not the upstream FD-06
+3–4.5e-4 N diagnostic. Its own response-resolution floor must be recorded as
+an independent absolute N term, alongside the unchanged 5% relative plateau
+term and sign consistency. A response at/below that independently frozen
+floor is `UNRESOLVED`, not `PASS`. Calibration and formal run namespaces and
+all artifact paths must be disjoint; calibration evidence is never reused in
+the formal verdict.
+
+No immutable FD-08 criteria, numeric epsilon ladder, resolution floor,
+uncertainty model, measurement artifact, or qualification result was created
+by this audit. The #44 composite operator contract remains unfrozen.
