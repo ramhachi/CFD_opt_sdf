@@ -85,3 +85,9 @@ The required qualification flags remain false: `shape_update_allowed`,
 result does not close canonical geometry qualification or authorize shape
 updates; it supplies a reproducible complete gate report and analytic
 fixture-only behavior tests for follow-on policy decisions.
+
+## Parent portable-fixture maintenance
+
+The parent integration focused suite exposed a new missing-fixture failure: the newly added canonical-policy test loaded an ignored worktree-local NPZ. The test now loads the already committed canonical v16 input archive from `docs/evidence/reinitialization_parent_review_2026_10_02/raw_round3/canonical_v16_input.npz`, independently checked to be byte-identical (SHA-256 `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`). Geometry implementation, preregistration and measured result are unchanged. Round1 retains its original test identity at measurement source commit `847dab9`; reproducing that immutable round requires its original source checkout. This test-only maintenance does not retroactively replace a registered source hash or produce a new geometry verdict.
+
+Parent maintenance validation: focused 6 passed; compileall passed; full pytest 36 failed, 1292 passed, 5 skipped. Exact-ID comparison with baseline has 0 new failures and one absent baseline failure due to already restored ignored ProblemSpec fixture. Compressed raw logs and hash audit are retained in `docs/evidence/geometry_portable_fixture_parent_validation_2026_10_02/`. No fresh canonical geometry run was made.

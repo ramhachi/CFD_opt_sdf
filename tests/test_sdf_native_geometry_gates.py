@@ -155,7 +155,7 @@ def test_cell_union_gap_has_expected_axis_aligned_cube_distance():
 
 
 def test_unresolved_canonical_policy_is_complete_but_not_qualified():
-    state = SDFDesignState.load(ROOT / "work/issue_29/canonical_v16/sdf_design_state.npz")
+    state = SDFDesignState.load(ROOT / "docs/evidence/reinitialization_parent_review_2026_10_02/raw_round3/canonical_v16_input.npz")
     report = evaluate_geometry_gates(
         state,
         policy=SDFTopologyPolicy.unresolved_registration(),
