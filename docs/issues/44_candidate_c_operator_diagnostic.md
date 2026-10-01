@@ -131,6 +131,13 @@ finite initialization of WaterLily's `μ₀`, `μ₁`, and velocity fields. This
 implementation/capability evidence, not CFD fixture, conservation, W3-C,
 W4-C, force, or physics qualification.
 
+Repository checks run on this branch:
+
+- `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests` — passed.
+- `/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q` — `37 failed, 1225 passed, 5 skipped`. Comparing sorted failure IDs with the measured integration baseline (`37 failed, 1226 passed, 4 skipped`) found the same 37 failures, zero new failures, and zero resolved baseline failures. The one pass/skip count difference is optional ignored-fixture availability in this worktree.
+- `git diff --check` — passed before commit.
+- `git diff --cached --check` — passed before commit.
+
 The next evidence gate is the full inherited W2a sphere on its fixed `96×64×64`
 flow lattice, `Re_D=100`, and `[40,60] tU/D` window, with the exact sphere
 sampled into GridSDF and passed through the Candidate C composite body. Keep
