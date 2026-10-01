@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from cfd_sdf.fd08_contract import evaluate_fd08_response, validate_fd08_run_partition
 
