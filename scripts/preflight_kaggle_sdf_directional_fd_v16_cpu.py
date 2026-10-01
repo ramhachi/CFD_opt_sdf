@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -15,18 +17,16 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_criteria_2026_09.json"
-DEFAULT_DATASET = ROOT / "work/kaggle_sdf_directional_fd_v17_flow24_2026_09"
-DEFAULT_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
-DEFAULT_EVIDENCE = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_cpu_prestep_2026_09.json"
-RUNNER_PATH = ROOT / "infra/kaggle/kernel_sdf_directional_fd_v16/runner.py"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/sdf_directional_fd_v17_flow24_normalfloor_criteria_2026_09.json"
+DEFAULT_DATASET = ROOT / "work/kaggle_sdf_directional_fd_v17_nfloor_remote_v1_2026_09"
+DEFAULT_OUTPUT = ROOT / "work/infra01_preflight/normalfloor_local_preview"
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def load_runner(runner_path: Path = RUNNER_PATH):
+def load_runner(runner_path: Path):
     spec = importlib.util.spec_from_file_location("fd_cpu_preflight_runner", runner_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("cannot load the criteria-bound FD runner")
@@ -49,66 +49,134 @@ def check_run_queue(queue_path: Path, criteria: dict, dataset_dir: Path) -> dict
         "row_count": len(rows), "first_run": rows[0][0], "last_run": rows[-1][0]}
 
 
-def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
-                  julia: Path, evidence_path: Path) -> dict:
-    criteria_path, dataset_dir, state_path = map(Path, (criteria_path, dataset_dir, state_path))
+def check_metadata(metadata: dict, dataset_id: str) -> dict:
+    kernel_id = metadata.get("id", "")
+    if (kernel_id.count("/") != 1 or len(kernel_id.rsplit("/", 1)[1]) > 40
+            or metadata.get("dataset_sources") != [dataset_id]):
+        raise ValueError("Kaggle kernel slug or dataset binding is invalid")
+    return {"kernel_id": kernel_id, "slug_length": len(kernel_id.rsplit("/", 1)[1]),
+        "dataset_sources": metadata["dataset_sources"]}
+
+
+def check_queue_output_separation(queue_path: Path, output_dir: Path) -> None:
+    if Path(queue_path).resolve() == (Path(output_dir) / "run_queue.tsv").resolve():
+        raise ValueError("incoming run queue must not be the Julia output snapshot")
+
+
+def check_summary_schema(runner_path: Path, job_path: Path) -> dict:
+    tree = ast.parse(runner_path.read_text())
+    runner_keys = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in {
+                "run_summary_contract", "close_summary", "verify_runner"}:
+            for item in ast.walk(node):
+                if isinstance(item, ast.Call) and isinstance(item.func, ast.Attribute):
+                    if (isinstance(item.func.value, ast.Name) and item.func.value.id == "summary"
+                            and item.func.attr == "get" and item.args and isinstance(item.args[0], ast.Constant)):
+                        runner_keys.add(item.args[0].value)
+                elif (isinstance(item, ast.Subscript) and isinstance(item.value, ast.Name)
+                        and item.value.id == "summary" and isinstance(item.slice, ast.Constant)):
+                    runner_keys.add(item.slice.value)
+    job_text = job_path.read_text()
+    start = job_text.index("summary = (")
+    end = job_text.index("\n        )", start)
+    job_keys = set(re.findall(r"\b([A-Za-z_]\w*)\s*=", job_text[start:end]))
+    missing = sorted(runner_keys - job_keys)
+    if missing:
+        raise ValueError(f"Python verifier expects summary fields absent from Julia job: {missing}")
+    return {"python_required_keys": sorted(runner_keys), "julia_keys": sorted(job_keys),
+        "missing_from_julia": missing}
+
+
+def run_preflight(criteria_path: Path, dataset_dir: Path, source_root: Path,
+                  julia: Path, output_dir: Path, preview_current_source: bool = False,
+                  state_path: Path | None = None) -> dict:
+    criteria_path, dataset_dir, source_root, output_dir = map(
+        Path, (criteria_path, dataset_dir, source_root, output_dir))
+    output_dir = output_dir.resolve()
+    evidence_path = output_dir / "preflight_evidence.json"
     sidecar = criteria_path.with_suffix(criteria_path.suffix + ".sha256")
     if not criteria_path.is_file() or not sidecar.is_file() or sidecar.read_text().strip() != sha256(criteria_path):
-        raise ValueError("immutable FD-05 criteria/sidecar is missing or mismatched")
+        raise ValueError("immutable FD criteria/sidecar is missing or mismatched")
     criteria = json.loads(criteria_path.read_text())
     if (not str(criteria.get("criteria_id", "")).startswith("sdf_directional_fd_v17_flow24")
             or criteria.get("immutable") is not True
             or criteria.get("status") != "registered_not_run"
             or criteria.get("formal_measurement_started") is not False):
         raise ValueError("CPU preflight requires the immutable registered v17 flow24 criteria")
-    if evidence_path.exists() or evidence_path.with_suffix(evidence_path.suffix + ".sha256").exists():
-        raise FileExistsError(f"append-only CPU-prestep evidence target already exists: {evidence_path}")
-    branch = subprocess.check_output(["git", "-C", str(ROOT), "branch", "--show-current"], text=True).strip()
-    commit = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
-    tracked_status = subprocess.check_output(
-        ["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no"], text=True).strip()
-    if branch != "codex/kaggle-batch-migration" or commit != criteria["source_commit"] or tracked_status:
-        raise ValueError("CPU preflight must use the clean registered source commit worktree")
+    if output_dir.exists():
+        raise FileExistsError(f"append-only CPU-prestep output directory already exists: {output_dir}")
+    output_dir.mkdir(parents=True)
+    branch = subprocess.check_output(["git", "-C", str(source_root), "branch", "--show-current"], text=True).strip()
+    commit = subprocess.check_output(["git", "-C", str(source_root), "rev-parse", "HEAD"], text=True).strip()
+    worktree_status = subprocess.check_output(
+        ["git", "-C", str(source_root), "status", "--porcelain"], text=True).strip()
+    if not preview_current_source and (
+            branch != "codex/kaggle-batch-migration" or commit != criteria["source_commit"] or worktree_status):
+        raise ValueError("formal CPU preflight requires the clean registered integration source commit")
 
-    runner = load_runner(ROOT / criteria["inputs"]["kernel_runner"]["path"])
+    runner = load_runner(source_root / criteria["inputs"]["kernel_runner"]["path"])
     runner.configure_criteria(criteria)
     _, criteria_sha = runner.read_criteria(dataset_dir)
     dataset_manifest, input_hashes = runner.verify_dataset(criteria, criteria_sha, dataset_dir)
-    runner.verify_source(ROOT, criteria)
-    backend, w4_result = runner.verify_prerequisites(ROOT, criteria)
+    source_mismatches = []
+    for name, item in criteria["inputs"].items():
+        if item.get("location") != "source_repo":
+            continue
+        path = source_root / item["path"]
+        observed = sha256(path) if path.is_file() else None
+        if observed != item["sha256"]:
+            source_mismatches.append({"name": name, "path": item["path"],
+                "expected_sha256": item["sha256"], "observed_sha256": observed})
+    if source_mismatches and not preview_current_source:
+        raise RuntimeError(f"registered FD source SHA mismatches: {source_mismatches}")
+    backend, w4_result = runner.verify_prerequisites(source_root, criteria)
+    metadata_path = source_root / criteria["inputs"]["kernel_metadata"]["path"]
+    metadata_identity = check_metadata(json.loads(metadata_path.read_text()), criteria["input_dataset_id"])
+    summary_schema = check_summary_schema(
+        source_root / criteria["inputs"]["kernel_runner"]["path"],
+        source_root / criteria["inputs"]["julia_job"]["path"])
     state, directions, direction_audit, perturbations, state_identity = runner.host_input_preflight(
-        ROOT, dataset_dir, criteria)
+        source_root, dataset_dir, criteria)
+    state_path = state_path or (dataset_dir / criteria["inputs"]["canonical_state_npz"]["path"])
     if sha256(state_path) != criteria["inputs"]["canonical_state_npz"]["sha256"]:
         raise ValueError("explicit v17 state path is not the dataset-bound canonical state")
 
-    cpu_project = ROOT / criteria["inputs"]["cpu_project"]["path"]
-    cpu_manifest = ROOT / criteria["inputs"]["cpu_manifest"]["path"]
+    cpu_project = source_root / criteria["inputs"]["cpu_project"]["path"]
+    cpu_manifest = source_root / criteria["inputs"]["cpu_manifest"]["path"]
     expected_project_sha = criteria["inputs"]["cpu_project"]["sha256"]
     expected_manifest_sha = criteria["inputs"]["cpu_manifest"]["sha256"]
     if sha256(cpu_project) != expected_project_sha or sha256(cpu_manifest) != expected_manifest_sha:
         raise ValueError("local CPU Julia project or manifest differs from registered source hashes")
 
-    with tempfile.TemporaryDirectory(prefix="fd05_cpu_prestep_") as temp_text:
+    scratch_project = output_dir / "scratch_julia_project"
+    shutil.copytree(cpu_project.parent, scratch_project)
+    output_job = output_dir / "job_output"
+    with tempfile.TemporaryDirectory(prefix="fd17_cpu_prestep_queue_") as temp_text:
         temp = Path(temp_text)
         queue_path = runner.write_run_queue(temp, dataset_dir, criteria)
         queue_identity = check_run_queue(queue_path, criteria, dataset_dir)
-        output_dir = temp / "job_output"
+        incoming_queue = output_dir / "incoming_run_queue.tsv"
+        shutil.copyfile(queue_path, incoming_queue)
+        check_queue_output_separation(queue_path, output_job)
         environment = os.environ.copy()
         environment.update(runner.julia_job_environment(criteria, cpu_preflight=True))
         environment["JULIA_NUM_THREADS"] = "1"
         environment.pop("CUDA_VISIBLE_DEVICES", None)
-        instantiate = subprocess.run([str(julia), "--startup-file=no", f"--project={cpu_project}",
-            "-e", "using Pkg; Pkg.instantiate()"], cwd=ROOT, env=environment,
+        instantiate = subprocess.run([str(julia), "--startup-file=no", f"--project={scratch_project}",
+            "-e", "using Pkg; Pkg.instantiate()"], cwd=source_root, env=environment,
             capture_output=True, text=True, check=False)
+        (output_dir / "julia_instantiate.log").write_text(instantiate.stdout + instantiate.stderr)
         if instantiate.returncode != 0:
             raise RuntimeError("CPU Julia project initialization failed:\n" + instantiate.stdout + instantiate.stderr)
         if sha256(cpu_project) != expected_project_sha or sha256(cpu_manifest) != expected_manifest_sha:
             raise ValueError("CPU Julia instantiate changed the registered project/manifest")
-        job = ROOT / criteria["inputs"]["julia_job"]["path"]
-        result = subprocess.run([str(julia), "--startup-file=no", f"--project={cpu_project}",
-            str(job), str(dataset_dir), str(queue_path), str(output_dir)], cwd=ROOT,
+        job = source_root / criteria["inputs"]["julia_job"]["path"]
+        result = subprocess.run([str(julia), "--startup-file=no", f"--project={scratch_project}",
+            str(job), str(dataset_dir), str(queue_path), str(output_job)], cwd=source_root,
             env=environment, capture_output=True, text=True, check=False)
         log = result.stdout + result.stderr
+        (output_dir / "julia_job.log").write_text(log)
         if result.returncode != 0:
             raise RuntimeError("registered Julia CPU prestep failed:\n" + log[-16000:])
         required_markers = (
@@ -126,18 +194,24 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
         missing = [marker for marker in required_markers if marker not in log]
         if missing or "FD_SOLVER_STEP_INVOKED" in log or "FD_SOLVER_STEP_RETURNED" in log:
             raise ValueError(f"CPU prestep boundary/identity mismatch; missing={missing}; log:\n{log[-16000:]}")
-        if (not (output_dir / "run_queue.tsv").is_file()
-                or (output_dir / "run_queue.tsv").read_bytes() != queue_path.read_bytes()):
+        if (not (output_job / "run_queue.tsv").is_file()
+                or (output_job / "run_queue.tsv").read_bytes() != queue_path.read_bytes()):
             raise ValueError("Julia job did not snapshot the exact registered run queue")
         julia_version = subprocess.check_output([str(julia), "--version"], text=True).strip()
         evidence = {
             "schema_version": 1,
-            "kind": "fd05_v17_flow24_local_cpu_prestep" if criteria["criteria_id"] == "sdf_directional_fd_v17_flow24_2026_09"
-                    else f"{criteria['criteria_id']}_local_cpu_prestep",
-            "criteria_path": criteria_path.relative_to(ROOT).as_posix(),
+            "kind": f"{criteria['criteria_id']}_local_cpu_prestep",
+            "evidence_class": "local_preview_not_formal_registration" if preview_current_source else "formal_preflight",
+            "preview_only": preview_current_source,
+            "criteria_path": str(criteria_path),
             "criteria_sha256": criteria_sha,
             "source_commit": commit,
             "source_branch": branch,
+            "source_worktree_status": worktree_status,
+            "source_inputs_match_registered_sha": not source_mismatches,
+            "source_input_sha_mismatches": source_mismatches,
+            "registered_preflight_script_sha256": criteria["inputs"].get("cpu_preflight", {}).get("sha256"),
+            "current_preflight_script_sha256": sha256(source_root / "scripts/preflight_kaggle_sdf_directional_fd_v16_cpu.py"),
             "dataset_id": criteria["input_dataset_id"],
             "dataset_manifest_sha256": runner.sha256(dataset_dir / criteria["artifacts"]["dataset_manifest_filename"]),
             "dataset_inventory_sha256": input_hashes,
@@ -149,6 +223,8 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
                 "spacing_m": state.spacing_m, "source_surface_sha256": state.source_sha256},
             "direction_identity": direction_audit,
             "perturbation_preflight_count": len(perturbations),
+            "kernel_metadata_identity": metadata_identity,
+            "summary_schema_compatibility": summary_schema,
             "run_queue": queue_identity,
             "prerequisites": {"w3_result_sha256": criteria["prerequisites"]["w3"]["result_sha256"],
                 "w4_result_sha256": criteria["prerequisites"]["w4"]["result_sha256"],
@@ -164,7 +240,6 @@ def run_preflight(criteria_path: Path, dataset_dir: Path, state_path: Path,
             "next_operation": "the exact registered job reached immediately before the first sim_step!",
             "prestep_passed": True,
         }
-    evidence_path.parent.mkdir(parents=True, exist_ok=True)
     evidence_path.write_text(json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n")
     digest = sha256(evidence_path)
     evidence_path.with_suffix(evidence_path.suffix + ".sha256").write_text(digest + "\n")
@@ -175,17 +250,21 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--criteria", type=Path, default=DEFAULT_CRITERIA)
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
-    parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
+    parser.add_argument("--state", type=Path)
     parser.add_argument("--julia", type=Path, default=Path(shutil.which("julia") or "julia"))
-    parser.add_argument("--evidence", type=Path, default=DEFAULT_EVIDENCE)
+    parser.add_argument("--source-root", type=Path, default=ROOT)
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--preview-current-source", action="store_true")
     args = parser.parse_args()
-    result = run_preflight(args.criteria.resolve(), args.dataset.resolve(), args.state.resolve(),
-        args.julia.resolve(), args.evidence.resolve())
+    result = run_preflight(args.criteria.resolve(), args.dataset.resolve(), args.source_root.resolve(),
+        args.julia.resolve(), args.output_dir.resolve(), args.preview_current_source,
+        args.state.resolve() if args.state else None)
     print(json.dumps({"prestep_passed": result["prestep_passed"],
         "source_commit": result["source_commit"], "criteria_sha256": result["criteria_sha256"],
         "run_count_checked": result["run_queue"]["row_count"],
         "solver_step_invoked": result["solver_step_invoked"],
-        "evidence_path": str(args.evidence.resolve())}, sort_keys=True))
+        "evidence_class": result["evidence_class"],
+        "evidence_path": str(args.output_dir.resolve() / "preflight_evidence.json")}, sort_keys=True))
     return 0
 
 
