@@ -38,15 +38,23 @@ WaterLily 1.8.0 computes the cosine kernel and its moments in `Body.jl`:
 
 with the implementation clamping/scaling by the kernel width \(\epsilon\).
 The first moment is implemented separately in `kern₁`/`μ₁` (Body.jl:53–60).
-The `measure!` fill (Body.jl:31–40) derives both from the same face distance
-after upstream sign consistency and multiplies the first moment by the body
-normal. The BDIM update uses both moments in distinct terms
+Its formula is even in its argument: every term depends on `d²`, `d*sin(πd)`,
+or `cos(πd)`, each even; hence `μ₁(-d,ϵ)=μ₁(d,ϵ)`. The `measure!` fill
+(Body.jl:31–40) derives both from the same face distance after upstream sign
+consistency and multiplies the first moment by the body normal. The BDIM
+update uses both moments in distinct terms
 (`Flow.jl:176–179`): \(\mu_1\) multiplies the derivative term and \(\mu_0\)
 multiplies the local acceleration.
 
 Candidate C replaces only the \(\mu_0\) handoff with its registered smooth
-blend (`CandidateCWaterLilyBody.jl:68–76, 88–97`); its \(\mu_1\) still uses
-the raw face distance. The wrapped normal-floor body evaluates
+blend (`CandidateCWaterLilyBody.jl:68–76, 88–97`). Because \(\mu_1\) is even,
+the upstream sign-consistency correction changes \(\mu_0\) but does not change
+\(\mu_1\). Candidate C's blended coefficient can therefore be interpreted as
+a convex mixture of the raw- and corrected-sign \(\mu_0\) values paired with
+their common \(\mu_1\) value, before the shared body-normal factor. The blend
+is not simply a switch to the upstream corrected moment; this note does not
+claim that no other effective distance could reproduce the resulting moment
+pair. The wrapped normal-floor body evaluates
 \(n=\nabla\phi/\max(\lVert\nabla\phi\rVert,0.25)\)
 (`WaterLilyNormalFloorBody.jl:35–40`). Thus this vector is unit length only
 when \(\lVert\nabla\phi\rVert\ge0.25\); below the floor it is deliberately
@@ -55,12 +63,12 @@ describing or recording the solver's `μ₁` input.
 
 **Static mathematical inference:** the continuous BDIM derivation obtains its
 moments as one convolution of the fluid/body equations with a shared signed
-distance and interface normal. Candidate C's locally blended \(\mu_0\), raw
-distance \(\mu_1\), and regularized normal are not, in general, the pair of
-moments of one common unmodified distance/kernel argument in cells affected by
-the blend/floor. This is a localized departure from the literal moment
-construction. It does **not** establish a mass leak, a failed projection, or a
-force-closure error. The physical effect, if any, requires registered
+distance and interface normal. Candidate C's \(\mu_0\) blend creates a convex
+mixture of the two sign-branch \(\mu_0\) coefficients, while \(\mu_1\) is
+unchanged by that sign flip; its wrapped normal may also be sub-unit below the
+floor. This is a modified local moment construction, but these facts alone do
+not show an algebraic conservation/projection identity failure, a mass leak,
+or a force-closure error. The physical effect, if any, requires registered
 observations.
 
 The normal floor itself is a bounded regularization of the sampled SDF
@@ -151,28 +159,35 @@ the solid. Include only the physical boundaries present in the selected
 control region and use their actual velocities. This region balance is not
 the same observable as the whole-grid telescoping identity.
 
-For force closure on the stationary-car case, define a fluid-only control
-volume enclosing the car: the solid body is excised, so its surface \(S_b\) is
-an inner boundary. Let the artificial outer control surface be \(S_o\) with
-outward normal \(n_o\), and the fluid-domain normal on the car cutout be
-\(n_f=-n_b\). With
+For force closure, define a fluid-only control volume enclosing the car: the
+solid body is excised, so its surface \(S_b\) is an inner boundary. Let the
+artificial outer control surface be \(S_o\) with outward normal \(n_o\), and
+the fluid-domain normal on the car cutout be \(n_f=-n_b\). For a moving
+cutout define relative mass flux using \(u-V_b\). With
 \(\sigma=-pI+2\mu S\), no body-force term, and consistent dimensional units,
-the integral momentum equation is
+the general integral momentum equation is
 
 \[
  F_{b\to f}
  =\frac{d}{dt}\int_{\Omega_{CV,f}}\rho u\,dV
- +\int_{S_o}\left[\rho u(u\cdot n_o)-\sigma n_o\right]dA.
+ +\int_{S_o}\left[\rho u(u\cdot n_o)-\sigma n_o\right]dA
+ +\int_{S_b}\rho u\big((u-V_b)\cdot n_f\big)\,dA.
 \]
 
 Here \(F_{b\to f}=\int_{S_b}\sigma n_f\,dA\) is body-on-fluid traction,
 matching the sign of WaterLily's reaction integral and opposing the repo's
-force-on-body helper. If the chosen fluid-only control volume also cuts the
-moving-ground boundary, add that ground traction as its own inner-boundary
-term; the simpler option is to position the control surface so it does not
-intersect ground. Preserve storage, pressure, viscous, momentum-unsteady,
-advective-flux, and traction terms independently before forming the closure
-residual.
+force-on-body helper. The car-surface advective term must remain in the
+diagnostic because no-through has not been qualified. For the stationary car,
+\(V_b=0\), and if independently measured \(u\cdot n_f=0\) then that term
+vanishes and the familiar storage plus outer momentum-flux expression remains.
+If the chosen fluid-only control volume also cuts the moving-ground boundary,
+the balance over all inner surfaces includes its relative advective-flux and
+traction terms. For a car-only force closure, include the ground relative
+advective term on the right and subtract the independently evaluated
+ground-on-fluid traction; alternatively keep the ground outside the chosen
+control volume. Preserve storage, pressure, viscous, momentum-unsteady, outer
+and every inner advective-flux, and every inner traction term independently
+before forming the closure residual.
 
 ## Uncertainty and qualification limits
 
