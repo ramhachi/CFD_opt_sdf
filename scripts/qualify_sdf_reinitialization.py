@@ -64,6 +64,9 @@ def analytic_fixture(spec: dict) -> SDFDesignState:
 
 def verify_criteria(criteria_path: Path, criteria: dict) -> tuple[str, dict]:
     digest = sha256(criteria_path)
+    canonical = {key: value for key, value in criteria.items() if key != "criteria_sha256"}
+    declared_criteria_sha = hashlib.sha256(json.dumps(
+        canonical, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
     sidecar = criteria_path.with_suffix(criteria_path.suffix + ".sha256")
     if not sidecar.is_file() or sidecar.read_text().strip() != digest:
         raise ValueError("criteria SHA sidecar missing or mismatched")
@@ -71,6 +74,8 @@ def verify_criteria(criteria_path: Path, criteria: dict) -> tuple[str, dict]:
             or criteria.get("formal_measurement_started") is not False
             or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round1_2026_10"):
         raise ValueError("criteria is not the immutable unrun reinitialization round")
+    if criteria.get("criteria_sha256") != declared_criteria_sha:
+        raise ValueError("criteria canonical digest mismatch")
     if (criteria.get("method_contract_id") != REINIT_CONTRACT_ID
             or criteria.get("method_contract_sha256") != REINIT_CONTRACT_SHA256
             or criteria.get("tolerances") != TOLERANCES):
@@ -104,7 +109,8 @@ def run(criteria_path: Path, canonical_path: Path, output_dir: Path) -> dict:
     for fixture in criteria["analytic_fixtures"]:
         state_inputs.append((fixture["case_id"], analytic_fixture(fixture)))
     canonical_state = SDFDesignState.load(canonical_path)
-    if canonical_state.state_sha256 != criteria["canonical_v16"]["state_sha256"]:
+    if (canonical_state.state_sha256 != criteria["canonical_v16"]["state_sha256"]
+            or canonical_state.phi_sha256() != criteria["canonical_v16"]["phi_sha256"]):
         raise ValueError("canonical v16 state identity mismatch")
     state_inputs.append(("canonical_v16", canonical_state))
     for case_id, before in state_inputs:
