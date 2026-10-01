@@ -24,16 +24,16 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-CRITERIA_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_criteria_2026_10_round3.json"
+CRITERIA_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_criteria_2026_10_round2.json"
 W1_RESULT_PATH = ROOT / "docs/evidence/sdf_native_w1_grid_sdf_body_2026_09.json"
 W1_RESULT_SHA256 = "d618b556ec71c638f8d10f201c4ae4c62a2b163f824dd9466dd928e89c725567"
 MANIFEST_PATH = ROOT / "julia/CFDSDFWaterLily/Manifest.toml"
 MANIFEST_SHA256 = "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c"
 JOB_PATH = ROOT / "scripts/waterlily_w2a_candidate_c_job.jl"
-SOURCE_MANIFEST_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round3.sha256"
+SOURCE_MANIFEST_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_sources_2026_10_round2.sha256"
 PROJECT_DIR = ROOT / "julia/CFDSDFWaterLily"
-WORK_DIR = ROOT / "work/candidate_c_w2a_sphere_cpu_2026_10_round3"
-EVIDENCE_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round3.json"
+WORK_DIR = ROOT / "work/candidate_c_w2a_sphere_cpu_2026_10_round2"
+EVIDENCE_PATH = ROOT / "docs/evidence/candidate_c_w2a_sphere_cpu_result_2026_10_round2.json"
 
 STATIONARITY_BOUND = 0.02
 CROSS_FIXTURE_BOUND = 0.10
@@ -154,7 +154,7 @@ def _terminal_fail(run_dir: Path, criteria_sha: str, source_manifest_sha: str,
     payload: dict[str, Any] = {
         "schema_version": 1,
         "status": "FAIL",
-        "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round3",
+        "gate_id": "sdf_native_w2a_candidate_c_sphere_cpu_2026_10_round2",
         "stage": stage,
         "detail": detail,
         "criteria": {"path": CRITERIA_PATH.relative_to(ROOT).as_posix(), "sha256": criteria_sha},
@@ -189,73 +189,9 @@ def _read_force_rows(csv_path: Path) -> list[dict[str, float]]:
 
 
 def _relative_to_reference(value: float, reference: float) -> float:
-    if not (value == value and reference == reference):
-        return float("inf")
-    if reference == 0.0 or abs(reference) == float("inf") or abs(value) == float("inf"):
-        return float("inf")
+    if reference == 0.0:
+        return 0.0 if value == 0.0 else float("inf")
     return abs(value - reference) / abs(reference)
-
-
-def _stationarity_ratio(first: float, second: float, full_mean: float) -> float:
-    """Registered equal-half drift divided by the full-window mean magnitude."""
-    if not all(value == value and abs(value) != float("inf") for value in (first, second, full_mean)):
-        return float("inf")
-    if full_mean == 0.0:
-        return float("inf")
-    return abs(first - second) / abs(full_mean)
-
-
-def _lift_ratio(lift: float, drag: float) -> float:
-    if not all(value == value and abs(value) != float("inf") for value in (lift, drag)):
-        return float("inf")
-    if drag <= 0.0:
-        return float("inf")
-    return abs(lift) / drag
-
-
-def _window_mean(rows: list[dict[str, float]], field: str, start: float, end: float) -> float:
-    """Recompute a time mean from raw CSV rows using endpoint interpolation + trapezoids."""
-    if end <= start or len(rows) < 2:
-        raise ValueError("invalid window or insufficient raw samples")
-    times = [row["t_ud"] for row in rows]
-    if any(not (a < b) for a, b in zip(times, times[1:])):
-        raise ValueError("raw sample times must be strictly increasing")
-
-    def at(target: float) -> float:
-        if target < times[0] or target > times[-1]:
-            raise ValueError(f"raw samples do not bracket t={target}")
-        for left, right in zip(rows, rows[1:]):
-            if left["t_ud"] <= target <= right["t_ud"]:
-                weight = (target - left["t_ud"]) / (right["t_ud"] - left["t_ud"])
-                return left[field] + weight * (right[field] - left[field])
-        raise ValueError(f"raw sample bracket missing at t={target}")
-
-    interior = [row for row in rows if start < row["t_ud"] < end]
-    points = [(start, at(start))]
-    points.extend((row["t_ud"], row[field]) for row in interior)
-    points.append((end, at(end)))
-    area = sum((t1 - t0) * (v0 + v1) / 2.0 for (t0, v0), (t1, v1) in zip(points, points[1:]))
-    return area / (end - start)
-
-
-def _raw_window_statistics(rows: list[dict[str, float]]) -> dict[str, float]:
-    return {
-        "window_mean_drag": _window_mean(rows, "drag_solver", 40.0, 60.0),
-        "window_mean_lift": _window_mean(rows, "lift_solver", 40.0, 60.0),
-        "window_mean_side": _window_mean(rows, "side_solver", 40.0, 60.0),
-        "first_half_mean_drag": _window_mean(rows, "drag_solver", 40.0, 50.0),
-        "second_half_mean_drag": _window_mean(rows, "drag_solver", 50.0, 60.0),
-    }
-
-
-def _summary_matches_raw(summary: dict[str, Any], stats: dict[str, float]) -> bool:
-    for key, raw_value in stats.items():
-        reported = float(summary[key])
-        if not all(value == value and abs(value) != float("inf") for value in (reported, raw_value)):
-            return False
-        if abs(reported - raw_value) > 1e-10 * max(1.0, abs(raw_value)):
-            return False
-    return True
 
 
 def main(preflight_only: bool = False) -> None:
@@ -360,40 +296,25 @@ def main(preflight_only: bool = False) -> None:
     finiteness = []
     force_finite = True
     boundary_flow_finite = True
-    raw_summary_consistent = True
     for name in names:
         summary = runs[name]["summary"]
         completion.append(
             summary["steps"] > 0 and summary["t_end_reached"] >= t_end
         )
         finiteness.append(bool(summary["finite_u"]) and bool(summary["finite_p"]))
-        rows: list[dict[str, float]] = []
-        try:
-            rows = _read_force_rows(runs[name]["csv_path"])
-            raw_stats = _raw_window_statistics(rows)
-        except (KeyError, OSError, ValueError, ZeroDivisionError) as exc:
-            raw_stats = {key: float("inf") for key in (
-                "window_mean_drag", "window_mean_lift", "window_mean_side",
-                "first_half_mean_drag", "second_half_mean_drag",
-            )}
-            runs[name]["raw_statistics_error"] = f"{type(exc).__name__}: {exc}"
-            raw_summary_consistent = False
-        else:
-            raw_summary_consistent &= _summary_matches_raw(summary, raw_stats)
-        runs[name]["raw_window_statistics"] = raw_stats
+        rows = _read_force_rows(runs[name]["csv_path"])
         force_fields = ("drag_solver", "lift_solver", "side_solver", "pressure_drag_solver", "viscous_drag_solver", "fx_n", "fy_n", "fz_n")
         flow_fields = ("inlet_kg_s", "outlet_kg_s", "yminus_kg_s", "yplus_kg_s", "zminus_kg_s", "zplus_kg_s", "net_outward_kg_s", "integrated_divergence_kg_s", "divergence_boundary_difference_kg_s")
         finite = lambda value: value == value and abs(value) != float("inf")
-        if len(rows) == 0 or any(not all(field in row and finite(row[field]) for field in force_fields) for row in rows):
+        if len(rows) == 0 or any(not all(finite(row[field]) for field in force_fields) for row in rows):
             force_finite = False
-        if len(rows) == 0 or any(not all(field in row and finite(row[field]) for field in flow_fields) for row in rows):
+        if len(rows) == 0 or any(not all(finite(row[field]) for field in flow_fields) for row in rows):
             boundary_flow_finite = False
         runs[name]["force_rows"] = len(rows)
         runs[name]["artifact_prefix"] = str(runs[name]["csv_path"].relative_to(ROOT)).removesuffix(".forces.csv")
     record("G1_completion", all(completion), f"t_end={t_end} reached for {names}")
     record("G2_finiteness", all(finiteness), f"finite u/p for {names}")
     record("G3_force_finite", force_finite, "every sampled force component finite")
-    record("G11_raw_summary_consistency", raw_summary_consistent, "independent Python endpoint interpolation/trapezoids over raw CSV reproduce reported 40-60, 40-50, and 50-60 drag/lift/side means within 1e-10 relative-scale integrity tolerance")
     record("G9_boundary_flow_finite", boundary_flow_finite, "all six physically weighted external-face mass flows and divergence diagnostics finite; no conservation threshold")
     minimum_margin = float(fixture["canonical_phi"]["margin_gate_m"])
     measured_margins = {
@@ -407,25 +328,24 @@ def main(preflight_only: bool = False) -> None:
     )
 
     formal_names = ["analytic", "candidate_c", "analytic_repeat"]
-    drags = {name: runs[name]["raw_window_statistics"]["window_mean_drag"] for name in names}
+    drags = {name: runs[name]["summary"]["window_mean_drag"] for name in names}
     record("G4_drag_sign", all(drags[name] > 0.0 for name in formal_names), f"window drag {drags}")
 
     stationary = {}
     for name in formal_names:
-        stats = runs[name]["raw_window_statistics"]
-        first = stats["first_half_mean_drag"]
-        second = stats["second_half_mean_drag"]
-        mean = stats["window_mean_drag"]
-        stationary[name] = _stationarity_ratio(first, second, mean)
+        summary = runs[name]["summary"]
+        first = summary["first_half_mean_drag"]
+        second = summary["second_half_mean_drag"]
+        mean = summary["window_mean_drag"]
+        stationary[name] = _relative_to_reference(first, mean)
     record(
         "G5_stationarity",
         all(value <= STATIONARITY_BOUND for value in stationary.values()),
         f"half-window relative drifts {stationary} <= {STATIONARITY_BOUND}",
     )
 
-    area = 0.5 * 3.141592653589793 * float(fixture["flow"]["solver_radius"]) ** 2
-    cd_analytic = drags["analytic"] / area
-    cd_candidate = drags["candidate_c"] / area
+    cd_analytic = runs["analytic"]["summary"]["cd"]
+    cd_candidate = runs["candidate_c"]["summary"]["cd"]
     cd_difference = _relative_to_reference(cd_candidate, cd_analytic)
     record(
         "G6_candidate_c_vs_native",
@@ -434,10 +354,8 @@ def main(preflight_only: bool = False) -> None:
     )
 
     lift_ratios = {
-        name: _lift_ratio(
-            runs[name]["raw_window_statistics"]["window_mean_lift"],
-            runs[name]["raw_window_statistics"]["window_mean_drag"],
-        ) for name in formal_names
+        name: abs(runs[name]["summary"]["window_mean_lift"]) / runs[name]["summary"]["window_mean_drag"]
+        for name in formal_names
     }
     record(
         "G7_lift_bound",
@@ -446,7 +364,7 @@ def main(preflight_only: bool = False) -> None:
     )
 
     repeat_difference = _relative_to_reference(
-        drags["analytic_repeat"], drags["analytic"]
+        runs["analytic_repeat"]["summary"]["window_mean_drag"], drags["analytic"]
     )
     record(
         "G8_reproducibility",
