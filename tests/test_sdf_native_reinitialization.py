@@ -5,6 +5,7 @@ import pytest
 
 from cfd_sdf.design.sdf_reinitialization import (
     SDFReinitializationError,
+    _eikonal_stats,
     _reinit_phi,
 )
 
@@ -22,6 +23,25 @@ def test_godunov_reinit_preserves_exact_zero_and_far_band():
     assert np.array_equal(output[far], phi[far])
     assert np.array_equal(output < 0, phi < 0)
     assert np.isfinite(output).all()
+
+
+def test_eikonal_report_uses_fixed_input_band_and_sign_labels():
+    h = 0.1
+    axis = (np.arange(15, dtype=np.float32) - 7) * h
+    before = np.broadcast_to(axis[:, None, None], (15, 15, 15)).copy()
+    input_solid = before < 0
+    evaluation_band = np.zeros(before.shape, dtype=bool)
+    evaluation_band[1:-1, 1:-1, 1:-1] = True
+    evaluation_band &= np.abs(before) <= 3 * h
+
+    after = before.copy()
+    after[7, 7, 7] = 10 * h  # leaves the input band; must remain in fixed sample
+    before_stats = _eikonal_stats(before, h, evaluation_band, input_solid)
+    after_stats = _eikonal_stats(after, h, evaluation_band, input_solid)
+
+    assert before_stats["fluid"]["count"] == after_stats["fluid"]["count"]
+    assert before_stats["solid"]["count"] == after_stats["solid"]["count"]
+    assert before_stats["fluid"]["count"] + before_stats["solid"]["count"] == int(evaluation_band.sum())
 
 
 @pytest.mark.parametrize("value", [-1.0, 0.0, 1.0])

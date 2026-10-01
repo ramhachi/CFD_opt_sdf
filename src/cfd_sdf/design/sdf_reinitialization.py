@@ -53,6 +53,7 @@ REINIT_CONTRACT_PAYLOAD: dict[str, Any] = {
     "degenerate_edge_rule": "if endpoint absolute-value sum < 1e-7 m, use midpoint t=0.5",
     "interface_node_seed": "dmin_axis is the nearest crossing distance on that axis; d=1/sqrt(sum_axis(1/dmin_axis^2)); missing axes contribute zero",
     "near_band": "replace only nodes with abs(input phi) <= 3*h; preserve all farther input values exactly",
+    "effect_evaluation_band": "fixed from input abs(phi) <= 3*h and the input-grid interior; same indices and input sign labels for before/after Eikonal errors and input-band idempotence",
     "masks": "copy design, fixed-solid, forbidden, and root masks byte-identically",
     "state_binding": "generation + 1; reinitialization_policy_id is this contract kind",
     "stopping": "zero-tolerance exact floating-point fixed point; max iterations = 4*sum(grid shape)",
@@ -197,14 +198,12 @@ def _with_phi(state: SDFDesignState, phi: np.ndarray) -> SDFDesignState:
     )
 
 
-def _eikonal_stats(phi: np.ndarray, spacing_m: float) -> dict[str, Any]:
+def _eikonal_stats(phi: np.ndarray, spacing_m: float, evaluation_band: np.ndarray,
+                   input_solid: np.ndarray) -> dict[str, Any]:
     gradient = np.sqrt(sum(value**2 for value in np.gradient(phi.astype(np.float64), spacing_m)))
-    interior = np.zeros(phi.shape, dtype=bool)
-    interior[1:-1, 1:-1, 1:-1] = True
-    band = (np.abs(phi) <= BAND_HALF_WIDTH_CELLS * spacing_m) & interior
     report = {}
-    for side, side_mask in (("fluid", phi > 0), ("solid", phi < 0)):
-        errors = np.abs(gradient[band & side_mask] - 1.0)
+    for side, side_mask in (("fluid", ~input_solid), ("solid", input_solid)):
+        errors = np.abs(gradient[evaluation_band & side_mask] - 1.0)
         report[side] = {"count": int(errors.size), "p50": float(np.percentile(errors, 50)) if errors.size else None,
             "p95": float(np.percentile(errors, 95)) if errors.size else None,
             "max": float(errors.max()) if errors.size else None}
@@ -235,12 +234,15 @@ def reinitialization_report(before: SDFDesignState, after: SDFDesignState, *, pr
     before_node, after_node = classify_topology_events(before_solid, after_solid), classify_topology_events(after_solid, before_solid)
     before_center, after_center = classify_topology_events(center_before, center_after), classify_topology_events(center_after, center_before)
     second, second_iterations = _reinit_phi(after.phi, spacing)
-    band_after = np.abs(after.phi) <= BAND_HALF_WIDTH_CELLS * spacing
-    idempotence = float(np.max(np.abs(second[band_after] - after.phi[band_after])) / spacing)
+    evaluation_band = np.zeros(before.phi.shape, dtype=bool)
+    evaluation_band[1:-1, 1:-1, 1:-1] = True
+    evaluation_band &= np.abs(before.phi) <= BAND_HALF_WIDTH_CELLS * spacing
+    idempotence = float(np.max(np.abs(second[evaluation_band] - after.phi[evaluation_band])) / spacing)
     v_sharp_before, v_sharp_after = sharp_volume_m3(before), sharp_volume_m3(after)
     v_smooth_before = smoothed_volume_and_gradient(before).smoothed_volume_m3
     v_smooth_after = smoothed_volume_and_gradient(after).smoothed_volume_m3
-    eikonal_before, eikonal_after = _eikonal_stats(before.phi, spacing), _eikonal_stats(after.phi, spacing)
+    eikonal_before = _eikonal_stats(before.phi, spacing, evaluation_band, before_solid)
+    eikonal_after = _eikonal_stats(after.phi, spacing, evaluation_band, before_solid)
     measured = {
         "input_state_sha256": before.state_sha256,
         "output_state_sha256": after.state_sha256,
@@ -256,6 +258,13 @@ def reinitialization_report(before: SDFDesignState, after: SDFDesignState, *, pr
             after.phi[np.abs(before.phi) > BAND_HALF_WIDTH_CELLS * spacing])),
         "eikonal_input": eikonal_before,
         "eikonal_output": eikonal_after,
+        "eikonal_evaluation_band": {
+            "definition": "input abs(phi) <= 3*h intersect input-grid interior",
+            "count": int(evaluation_band.sum()),
+            "fluid_count": int((evaluation_band & ~before_solid).sum()),
+            "solid_count": int((evaluation_band & before_solid).sum()),
+            "same_mask_for_input_output": True,
+        },
         "zero_level_displacement_edges_max": float(displacement.max()) if displacement.size else None,
         "unmatched_crossings": unmatched,
         "sign_changes": int(np.count_nonzero(before_solid != after_solid)),

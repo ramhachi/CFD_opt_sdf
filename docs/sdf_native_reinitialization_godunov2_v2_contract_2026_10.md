@@ -1,15 +1,16 @@
 # SDF-native reinitialization contract: sub-cell Godunov v2
 
-Status: registered as the new immutable SDF-02 qualification round in
-`docs/evidence/sdf_native_reinitialization_godunov2_v2_round1_2026_10.json`.
-That criteria records the source commit, source hashes, fixture specifications,
-canonical input SHA, and the unchanged conservative gate values before any
-qualification run. This is a new method-specific identity; it does not edit the
-historical SDF reinitialization contract or evidence from
-`feat/issue-28-sdf-reinit`.
+Status: round1 was rejected before measurement after review found its Eikonal
+sample set depended on the output field. It remains unchanged as immutable
+historical registration and must not be used. Round2 preregisters the corrected
+fixed-input evaluation mask in
+`docs/evidence/sdf_native_reinitialization_godunov2_v2_round2_2026_10.json`,
+with the same numerical gates and no measurement carried forward. This is a new
+method-specific identity; it does not edit historical evidence or the old
+contract from `feat/issue-28-sdf-reinit`.
 
 The implementation's static payload SHA-256 is
-`01c1337601da841ab97c34c78676e17f826bc710e8faed90243c27794fba0f25`.
+Updated round2 payload SHA is recorded in its immutable criteria file.
 
 ## Operator boundary
 
@@ -46,12 +47,15 @@ is allowed in this round.
 
 ## Registered measurements and gates
 
-For analytic fixtures, measure on output nodes satisfying `abs(phi_out) <= 3h`,
-excluding one-node grid boundaries, using central differences. Record fluid and
-solid `abs(|grad(phi)|-1)` percentiles 50/95 and maximum. For canonical v16,
-use the same fixed band and stencil but gate only fluid p50/p95; report solid
-statistics without a gate because the voxel staircase has legitimate medial
-axis ridges. Do not narrow the band or remove points after seeing results.
+At input, freeze the evaluation mask as `abs(phi_in) <= 3h` intersected with
+the grid interior (excluding the one-node boundary). Use this exact mask and
+the input sign labels for before and after central-difference statistics of
+`abs(|grad(phi)|-1)`. Record fluid and solid p50/p95/max for analytic fixtures.
+For canonical v16, gate only fluid p50/p95; report solid statistics without a
+gate because the voxel staircase has legitimate medial-axis ridges. The input
+mask counts and identical-mask binding are included in each case report. Do not
+narrow the band or remove points after seeing results. Idempotence is also
+evaluated on this fixed input mask.
 
 Also record and gate:
 

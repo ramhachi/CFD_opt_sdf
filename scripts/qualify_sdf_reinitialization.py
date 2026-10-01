@@ -72,7 +72,7 @@ def verify_criteria(criteria_path: Path, criteria: dict) -> tuple[str, dict]:
         raise ValueError("criteria SHA sidecar missing or mismatched")
     if (criteria.get("immutable") is not True or criteria.get("status") != "registered_not_run"
             or criteria.get("formal_measurement_started") is not False
-            or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round1_2026_10"):
+            or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round2_2026_10"):
         raise ValueError("criteria is not the immutable unrun reinitialization round")
     if criteria.get("criteria_sha256") != declared_criteria_sha:
         raise ValueError("criteria canonical digest mismatch")
@@ -132,8 +132,8 @@ def run(criteria_path: Path, canonical_path: Path, output_dir: Path) -> dict:
             cases.append({"case_id": case_id, "status": "UNRESOLVED",
                 "input_state": input_state, "output_state": None, "output_npz": None,
                 "error": str(error), "convergence": "not reached or no valid interface"})
-    overall = "PASS" if all(case["status"] == "PASS" for case in cases) else (
-        "UNRESOLVED" if any(case["status"] == "UNRESOLVED" for case in cases) else "FAIL")
+    overall = "FAIL" if any(case["status"] == "FAIL" for case in cases) else (
+        "UNRESOLVED" if any(case["status"] == "UNRESOLVED" for case in cases) else "PASS")
     evidence = {
         "schema_version": 1,
         "criteria_id": criteria["criteria_id"],
