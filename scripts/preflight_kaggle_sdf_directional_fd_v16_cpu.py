@@ -51,10 +51,16 @@ def check_run_queue(queue_path: Path, criteria: dict, dataset_dir: Path) -> dict
 
 def check_metadata(metadata: dict, dataset_id: str) -> dict:
     kernel_id = metadata.get("id", "")
-    if (kernel_id.count("/") != 1 or len(kernel_id.rsplit("/", 1)[1]) > 40
-            or metadata.get("dataset_sources") != [dataset_id]):
+    title = metadata.get("title", "")
+    if not isinstance(title, str):
         raise ValueError("Kaggle kernel slug or dataset binding is invalid")
-    return {"kernel_id": kernel_id, "slug_length": len(kernel_id.rsplit("/", 1)[1]),
+    owner, separator, slug = kernel_id.partition("/")
+    title_slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+    if (not separator or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", owner)
+            or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug) or len(slug) > 40
+            or slug != title_slug or metadata.get("dataset_sources") != [dataset_id]):
+        raise ValueError("Kaggle kernel slug or dataset binding is invalid")
+    return {"kernel_id": kernel_id, "slug_length": len(slug),
         "dataset_sources": metadata["dataset_sources"]}
 
 

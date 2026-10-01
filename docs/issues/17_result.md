@@ -2,7 +2,7 @@
 
 ## Evidence
 
-The local preview CLI now accepts explicit criteria, dataset, source checkout, Julia executable, and append-only output directory. It validates the attached immutable criteria and dataset inventory, registered prerequisites, canonical state and direction inputs, all 33 ordered queue rows and their input hashes, Kaggle kernel/dataset binding, and the Python verifier versus Julia summary-field contract. It instantiates a scratch copy of the pinned Julia project so the checkout's Project/Manifest remain unchanged, then runs the registered CPU-prestep job with `Array` storage.
+The local preview CLI now accepts explicit criteria, dataset, source checkout, Julia executable, and append-only output directory. It validates the attached immutable criteria and dataset inventory, registered prerequisites, canonical state and direction inputs, all 33 ordered queue rows and their input hashes, Kaggle owner/slug syntax, title-derived slug and dataset binding, and the Python verifier versus Julia summary-field contract. It instantiates a scratch copy of the pinned Julia project so the checkout's Project/Manifest remain unchanged, then runs the registered CPU-prestep job with `Array` storage.
 
 Exact execution:
 
@@ -42,6 +42,8 @@ git diff --check
 ```
 
 The sorted current failure IDs exactly match the shared baseline `failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): 37 baseline IDs, zero new, zero resolved. The post-commit full-suite log is `work/infra01_preflight/validation/full_pytest_postcommit.log` (SHA-256 `2e0ddceb2d9ee7cbb3ad38e4822e9a6a31f7af07dd15148e0b6c283449525100`). The earlier dirty-tree run had one extra v17 prerequisite failure because this worktree lacked the ignored canonical NPZ input and the working source was not yet committed; copying the registered NPZ/raw inputs into this worktree's ignored `work/sdf_native_genesis_v17/` and committing the source resolved that test.
+
+Follow-up metadata validation now requires a non-empty Kaggle owner, a lowercase kebab-case slug of at most 40 characters, and equality between that slug and the title normalized to lowercase ASCII words joined by hyphens. The existing registered metadata passes; malformed owner, whitespace slug, overlong slug, title mismatch, and wrong dataset binding fail closed. Follow-up focused tests: `pytest -q tests/test_kaggle_fd_preflight.py` → 7 passed; compileall and `git diff --check` pass.
 
 ## Conclusion
 

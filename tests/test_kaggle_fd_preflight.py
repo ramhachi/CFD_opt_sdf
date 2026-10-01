@@ -19,11 +19,24 @@ from scripts.preflight_kaggle_sdf_directional_fd_v16_cpu import (  # noqa: E402
 def test_registered_kernel_slug_and_dataset_binding():
     metadata = {
         "id": "ramhachi888/cfd-opt-sdf-v17-nfloor-fd-oracle",
+        "title": "CFD Opt SDF v17 NFloor FD Oracle",
         "dataset_sources": ["ramhachi888/cfd-opt-sdf-v17-nfloor-directional-fd-oracle"],
     }
     assert check_metadata(metadata, metadata["dataset_sources"][0])["slug_length"] <= 40
     with pytest.raises(ValueError, match="slug or dataset binding"):
         check_metadata({**metadata, "dataset_sources": ["wrong/dataset"]}, metadata["dataset_sources"][0])
+
+
+@pytest.mark.parametrize("kernel_id,title", [
+    ("/valid-title", "Valid Title"),
+    ("owner/white space", "White Space"),
+    ("owner/" + "a" * 41, "Long Slug"),
+    ("owner/different-title", "Other Title"),
+])
+def test_kernel_id_rejects_invalid_owner_slug_length_and_title(kernel_id, title):
+    metadata = {"id": kernel_id, "title": title, "dataset_sources": ["owner/input"]}
+    with pytest.raises(ValueError, match="slug or dataset binding"):
+        check_metadata(metadata, "owner/input")
 
 
 def test_queue_input_cannot_alias_julia_snapshot(tmp_path):
