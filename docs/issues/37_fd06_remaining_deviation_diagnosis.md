@@ -45,7 +45,8 @@ by 2.5e-4 N at 1e-8 m, non-proportionally. The derivative **target depends on τ
 
 The solved response is not proportional to ε at these scales, and the ε = 1e-6 offset is ≈ 200× what the frozen-flow slope
 (−0.15 N/m) predicts. Tightening the multigrid pressure tolerance from 1e-4 to 1e-6 (twice the cost) reproduces every one of
-these numbers to within 10% of the jump (e.g. +3.59e-5 → +3.55e-5 N): **not solver-tolerance noise**.
+these jumps (ε = 1e-6 m: drag +3.59e-5 → +3.55e-5 N, i.e. within 1%; downforce +3.9e-5 → +3.0e-5 N, within ~25%; the
+white-noise cases of §3 agree to within 1% in drag): **not solver-tolerance noise**.
 
 ## 3. White φ noise in the solve (tU/L window 2–3, same floor, Float32)
 
