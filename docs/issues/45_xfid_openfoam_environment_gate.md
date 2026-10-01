@@ -179,3 +179,31 @@ family, retaining all numerical gates, archive geometry, meshing and solver
 settings. It must be preregistered before another exact kernel version is
 submitted. No XFID sign/rank verdict is possible; the resolved DISAGREE
 condition for stopping Track C has not occurred.
+
+## Fresh Jammy environment round after kernel version 1 ERROR
+
+The exact private Kaggle CPU version 1 observed Ubuntu 22.04.5 Jammy amd64,
+whereas Round 2 required Noble. It terminated before apt installation, meshing
+or solver execution. The ERROR and downloaded log are preserved under the
+parent Round 2 terminal-failure directory. This is an environment-lock failure;
+no XFID response or DISAGREE verdict exists. Track C is not stopped by this error.
+
+A separate self-contained `infra/kaggle/kernel_openfoam_xfid_v16_jammy/`
+registers Round 3 for the observed OS with official OpenCFD v2512 packages
+exactly `2512.0-2`. Old Round 2 is unchanged. Every numerical gate, fixture
+identity and case-template byte remains unchanged. New criteria SHA-256:
+`b5e8d16838882c92f17d192cc5b1b0a1a525360ac4968cf5c40e359cb4f3190b`;
+package-lock SHA-256:
+`b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746`;
+runner SHA-256:
+`8a0605ee78d3dfe6ccbad1ccfba61488861f33ec988541116c5b6693120469b8`.
+Official lock-input bytes, URLs, hashes and validation logs are retained in
+`docs/evidence/xfid_jammy_apt_lock_inputs_2026_10_02/`. They are repository
+metadata, not evidence that OpenFOAM has been installed or run on Kaggle.
+[Official OpenCFD Jammy v2512 index](https://dl.openfoam.com/repos/deb/dists/jammy/main/pool/2512_0/binary-amd64/).
+
+Focused shell tests: 4 passed. Isolated embedded mount self-check: PASS.
+Compileall and diff-check: PASS. Source-bound full pytest: 37 failed, 1244 passed,
+5 skipped, with exactly the initial 37 baseline failure IDs and no new failures.
+The parent source registration must be committed/pushed before a new exact
+Kaggle version is submitted. All six qualification flags remain false.
