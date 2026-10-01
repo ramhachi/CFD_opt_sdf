@@ -71,3 +71,14 @@ from the newer source requires a separately preregistered successor round.
 Evidence class: CPU-only geometric operator-effect qualification on three registered analytic fields and one canonical-v16 state. No CFD solver, GPU, finite-difference response, optimizer update, or physical force calculation was run. All six qualification flags remained false.
 
 The four output NPZ hashes are recorded in the result JSON and the corresponding files remain in the ignored work output directory. The canonical input NPZ SHA-256 is `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`; its registered state and phi hashes were verified before the run.
+
+## Parent review and durable raw evidence retention
+
+The parent independently reloaded each exact output NPZ and input state,
+verified file/state identities, and recomputed fixed-input-band Eikonal
+quantiles plus smoothed-volume drift. Every value matched the recorded FAIL
+evidence. The audit is in `docs/evidence/reinitialization_parent_review_2026_10_02/`.
+The four output NPZ files, exact canonical-v16 input and available preflight,
+Round 2 harness-failure, Round 3 terminal and final pytest logs are now retained
+there under `raw_round3/`, with a hash inventory. This adds durable copies;
+it does not recover the overwritten first pytest log or change any verdict.
