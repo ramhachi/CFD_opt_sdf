@@ -71,11 +71,16 @@ def verify_criteria(criteria_path: Path, criteria: dict) -> tuple[str, dict]:
             or criteria.get("formal_measurement_started") is not False
             or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round1_2026_10"):
         raise ValueError("criteria is not the immutable unrun reinitialization round")
-    if criteria.get("method_contract_sha256") != REINIT_CONTRACT_SHA256:
+    if (criteria.get("method_contract_id") != REINIT_CONTRACT_ID
+            or criteria.get("method_contract_sha256") != REINIT_CONTRACT_SHA256
+            or criteria.get("tolerances") != TOLERANCES):
         raise ValueError("criteria method identity does not match the implementation")
     registered_commit = criteria["source_commit"]
     current_commit = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
     subprocess.check_call(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", registered_commit, current_commit])
+    dirty = subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain"], text=True).strip()
+    if dirty:
+        raise ValueError("qualification requires a clean source checkout")
     observed = {}
     for entry in criteria["source_inputs"]:
         path = ROOT / entry["path"]
@@ -98,7 +103,10 @@ def run(criteria_path: Path, canonical_path: Path, output_dir: Path) -> dict:
     state_inputs = []
     for fixture in criteria["analytic_fixtures"]:
         state_inputs.append((fixture["case_id"], analytic_fixture(fixture)))
-    state_inputs.append(("canonical_v16", SDFDesignState.load(canonical_path)))
+    canonical_state = SDFDesignState.load(canonical_path)
+    if canonical_state.state_sha256 != criteria["canonical_v16"]["state_sha256"]:
+        raise ValueError("canonical v16 state identity mismatch")
+    state_inputs.append(("canonical_v16", canonical_state))
     for case_id, before in state_inputs:
         profile = "canonical" if case_id == "canonical_v16" else "fixture"
         input_state = before.to_dict()

@@ -6,6 +6,9 @@ input SHA, and the unchanged conservative gate values before any qualification
 run. This is a new method-specific identity; it does not edit the historical
 SDF reinitialization contract or evidence from `feat/issue-28-sdf-reinit`.
 
+The implementation's static payload SHA-256 is
+`01c1337601da841ab97c34c78676e17f826bc710e8faed90243c27794fba0f25`.
+
 ## Operator boundary
 
 Reinitialization is an explicit post-acceptance operator. It is not applied in
