@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from cfd_sdf.step01_contract import finite_step_response, validate_step_fraction
 
