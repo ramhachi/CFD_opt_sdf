@@ -1,0 +1,21 @@
+{
+  "full_pytest": {
+    "raw_log_sha256": "ed880521cd5a155e88b9496400478a295260a3d70df9617c4dc9007e3b200e8f",
+    "gzip_sha256": "6eb3ec23c60f84b2a7224d56120ab000cae075fad2b66ff569deab8852be1314",
+    "failure_count": 38,
+    "new_failure_ids": [
+      "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity"
+    ],
+    "resolved_baseline_ids": [],
+    "summary": "38 failed, 1224 passed, 5 skipped, 7121 warnings in 248.50s (0:04:08)"
+  },
+  "full_pytest_with_baseline_fixtures": {
+    "raw_log_sha256": "bff21ea80264ae136e16c29269d0042987b59e9c2019dc58997ce1a64d54a57d",
+    "gzip_sha256": "eb757a78b87743268b95c28f1748ab3bd1ebc72dac129bd40bc628a231292732",
+    "failure_count": 37,
+    "new_failure_ids": [],
+    "resolved_baseline_ids": [],
+    "summary": "37 failed, 1225 passed, 5 skipped, 7121 warnings in 261.07s (0:04:21)"
+  },
+  "interpretation": "First run lacked ignored v17 NPZ/raw fixture; after exact input copies, all 37 failure IDs match baseline and zero new failures remain. This is a fixture availability difference, not a source repair."
+}
