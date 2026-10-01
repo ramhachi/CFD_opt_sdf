@@ -1,10 +1,12 @@
 # SDF-native reinitialization contract: sub-cell Godunov v2
 
-Status: proposed for a new immutable SDF-02 qualification round. The criteria
-JSON records the source commit, source hashes, fixture specifications, canonical
-input SHA, and the unchanged conservative gate values before any qualification
-run. This is a new method-specific identity; it does not edit the historical
-SDF reinitialization contract or evidence from `feat/issue-28-sdf-reinit`.
+Status: registered as the new immutable SDF-02 qualification round in
+`docs/evidence/sdf_native_reinitialization_godunov2_v2_round1_2026_10.json`.
+That criteria records the source commit, source hashes, fixture specifications,
+canonical input SHA, and the unchanged conservative gate values before any
+qualification run. This is a new method-specific identity; it does not edit the
+historical SDF reinitialization contract or evidence from
+`feat/issue-28-sdf-reinit`.
 
 The implementation's static payload SHA-256 is
 `01c1337601da841ab97c34c78676e17f826bc710e8faed90243c27794fba0f25`.
