@@ -36,12 +36,12 @@ Commands run:
 /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m compileall src tests
 # passed
 /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q
-# initial dirty-tree run: 38 failed, 1227 passed, 5 skipped; one extra failure was the v17 prerequisite test because the worktree lacked its ignored canonical NPZ input and the working source was not yet committed
+# post-commit full suite: 37 failed, 1228 passed, 5 skipped, 7121 warnings in 197.50s
 git diff --check
-# pending final verification
+# passed
 ```
 
-The full-suite IDs were compared with the shared baseline `failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`); the initial run had the 37 baseline failures plus that one missing-input/source-at-HEAD failure. The canonical state NPZ and matching Fortran raw fixture have since been copied into this worktree's ignored `work/sdf_native_genesis_v17/` for local validation. A post-commit focused recheck and any final full-suite comparison are recorded below after they run.
+The sorted current failure IDs exactly match the shared baseline `failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): 37 baseline IDs, zero new, zero resolved. The post-commit full-suite log is `work/infra01_preflight/validation/full_pytest_postcommit.log` (SHA-256 `2e0ddceb2d9ee7cbb3ad38e4822e9a6a31f7af07dd15148e0b6c283449525100`). The earlier dirty-tree run had one extra v17 prerequisite failure because this worktree lacked the ignored canonical NPZ input and the working source was not yet committed; copying the registered NPZ/raw inputs into this worktree's ignored `work/sdf_native_genesis_v17/` and committing the source resolved that test.
 
 ## Conclusion
 
