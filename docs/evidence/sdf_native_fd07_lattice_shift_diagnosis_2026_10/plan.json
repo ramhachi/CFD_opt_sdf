@@ -1,0 +1,169 @@
+{
+  "baseline_reproduction_bitwise": true,
+  "evidence_class": "diagnostic_only",
+  "flags": {
+    "canonical_registered": false,
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false
+  },
+  "issue": "#37",
+  "kind": "fd07_lattice_phase_cpu_diagnostic_preregistration",
+  "lattice_order": [
+    "control",
+    "shifted"
+  ],
+  "lattices": {
+    "control": {
+      "gradient_census": {
+        "cells_gradient_below_1e-6": 0,
+        "cells_gradient_below_threshold": 3,
+        "flat_gradient_threshold": 0.25,
+        "force_band_cells": 19376,
+        "force_band_m": 0.05,
+        "gradient_quantiles": {
+          "0.01": 0.43301248337579396,
+          "0.05": 0.7071064650852013,
+          "0.5": 0.9999999089185524,
+          "0.95": 1.0000000894069672
+        },
+        "near_zero_nodes_abs_phi_below_1e-7": 5370,
+        "verdict": "fail"
+      },
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "point_shape": [
+        121,
+        65,
+        49
+      ],
+      "raw_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "source_bounds_clearance_m": 0.35,
+      "spacing_m": 0.025,
+      "support_upper_m": [
+        2.0,
+        0.8,
+        0.6000000000000002
+      ]
+    },
+    "shifted": {
+      "gradient_census": {
+        "cells_gradient_below_1e-6": 0,
+        "cells_gradient_below_threshold": 828,
+        "flat_gradient_threshold": 0.25,
+        "force_band_cells": 19134,
+        "force_band_m": 0.05,
+        "gradient_quantiles": {
+          "0.01": 0.13999968767166138,
+          "0.05": 0.31878867959276813,
+          "0.5": 0.9277781725581921,
+          "0.95": 1.0000000521540642
+        },
+        "near_zero_nodes_abs_phi_below_1e-7": 0,
+        "verdict": "fail"
+      },
+      "origin_m": [
+        -0.99325,
+        -0.7907500000000001,
+        -0.5892499999999999
+      ],
+      "point_shape": [
+        121,
+        65,
+        49
+      ],
+      "raw_sha256": "7554e2c1611ca6c55a97b5f1de2282b05cc13b651b5d237b7196a4c3d2cf0043",
+      "source_bounds_clearance_m": 0.33924999999999994,
+      "spacing_m": 0.025,
+      "support_upper_m": [
+        2.0067500000000003,
+        0.80925,
+        0.6107500000000002
+      ]
+    }
+  },
+  "limitations": [
+    "one seed, no fresh repeated baseline, short horizon only",
+    "same STL but changed discrete trilinear geometry and translated fluid-only SDF support",
+    "no isolated causal proof, no full-window FD qualification",
+    "Float32 perturbation realization must be reported"
+  ],
+  "noise": "identical MersenneTwister(1) Float64 standard-normal node array across amplitudes/signs/lattices; lattice-local noise, not the same world-space realization",
+  "python_runtime": {
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "trimesh": "5.1.0",
+    "version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]"
+  },
+  "run_order": [
+    "baseline",
+    "noise_seed1@+1e-8",
+    "noise_seed1@-1e-8",
+    "noise_seed1@+1e-7",
+    "noise_seed1@-1e-7"
+  ],
+  "solver": {
+    "analysis_window_u_l": [
+      2.0,
+      3.0
+    ],
+    "backend": "CPU_Array",
+    "case_id": "flow_24",
+    "float": "Float32",
+    "flow_dims": [
+      150,
+      72,
+      54
+    ],
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "flow_spacing_m": 0.03333333333333333,
+    "normal_floor": 0.25,
+    "phi_storage": "Float32",
+    "poisson_max_iterations": 32,
+    "poisson_tolerance": 0.0001,
+    "sample_every_steps": 8,
+    "t_end_u_l": 3.0
+  },
+  "solver_calls": 10,
+  "source_file_hashes": {
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl": "996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e",
+    "julia/CFDSDFWaterLily/src/DeviceGridSDF.jl": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "julia/CFDSDFWaterLily/src/Forces.jl": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "julia/CFDSDFWaterLily/src/GridSDFBody.jl": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "julia/CFDSDFWaterLily/src/OwnedV16Run.jl": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe",
+    "julia/CFDSDFWaterLily/src/Runtime.jl": "bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458",
+    "julia/CFDSDFWaterLily/src/Simulation.jl": "99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2",
+    "julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl": "17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be",
+    "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0",
+    "julia/CFDSDFWaterLily/src/WaterLilyBody.jl": "e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369",
+    "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "scripts/sdf_native_fd07_lattice_shift_cpu_probe.jl": "3c3c019785b6f216a2ea389b7d7a2c37647b6c476d6354267f85fbef40e6f27f",
+    "scripts/sdf_native_fd07_lattice_shift_prepare.py": "928da90dcfcee0de029efff34c35ee9964d9329a1237bb894a5e12ca22ec7205",
+    "scripts/sdf_native_genesis_v17_2026_09.py": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae",
+    "src/cfd_sdf/sdf.py": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51"
+  },
+  "source_head": "bd1961565b6d1ce7b2feda3d525d48a4e1f35134",
+  "source_stl_bounds_m": [
+    [
+      -0.6000000238418579,
+      -0.44999998807907104,
+      -0.25
+    ],
+    [
+      0.550000011920929,
+      0.44999998807907104,
+      0.25
+    ]
+  ],
+  "source_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "source_stl_unchanged": true,
+  "summary": "matched window mean forces; odd=(plus-minus)/2, even=(plus+minus)/2-baseline; ratios between fixed noise scales; initial mu0/mu1 changes"
+}

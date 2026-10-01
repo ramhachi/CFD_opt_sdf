@@ -1,6 +1,13 @@
 # 問題台帳 — 2026-09-22
 
-> **現況（2026-09-29）:** W3 owner-fix round 4はexact T4 version 5でhost PASSし、
+> **現況（2026-10-01）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
+> FD-07の設計格子シフトでも短時間の不規則応答は解消しなかった。
+> solver-free検査では、一部の初期BDIM係数の大きな跳びが半セル境界の符号補正に
+> 局在する。力の長時間応答への因果関係と修正方式は未資格。
+> [issue #37の診断記録](issues/37_fd07_lattice_shift_diagnosis.md)と
+> [正本ロードマップ](phase_plan.md#11-current-sdf-native-execution-order)を参照する。
+>
+> **過去の現況（2026-09-29）:** W3 owner-fix round 4はexact T4 version 5でhost PASSし、
 > W4 immutable round 4もexact kernel version 3でhost PASSした。W3 v4 all-zero forceの
 > root causeは未解決の診断課題として残るが、現行の次gateを定義しない。W4は登録済み
 > finite-box sensitivity matrixのみ通過し、grid/domain convergence、FD、gradient、reverse、

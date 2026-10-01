@@ -1,0 +1,90 @@
+{
+  "evidence_class": "solver_free_initialization_diagnostic_only",
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false
+  },
+  "flow_steps": 0,
+  "input_hashes": {
+    "fixed_face_scalar_ablation.csv": "ddc3e5ed8470c7c247cc616b686f078a9ce2ab91414b91ba0eb73d7ac2ce7519",
+    "initial_fields.csv": "d197d769f33f7d6461111d9650cef06e0984ac9fa65b142d1012670ef73ce1c9",
+    "preregistration.txt": "ad4257f3848b93e8e4c61904f861c0f62c2925bc434902b20ccf592c5fcee61e"
+  },
+  "limitations": [
+    "fixed exposed261face subset selected by original census",
+    "one seeded +/-1e-8m perturbation",
+    "no solved-force or FD qualification",
+    "B smoothness does not transfer to original physical constants C"
+  ],
+  "matrix": {
+    "A": {
+      "seed1_minus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 64,
+          "max_abs_delta": 0.8183112300000001
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.6999999991339507e-07
+        }
+      },
+      "seed1_plus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 54,
+          "max_abs_delta": 0.8183112300000001
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.600000000851921e-07
+        }
+      }
+    },
+    "B": {
+      "seed1_minus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.599999999741698e-07
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.599999999741698e-07
+        }
+      },
+      "seed1_plus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.500000000349445e-07
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.500000000349445e-07
+        }
+      }
+    },
+    "C": {
+      "seed1_minus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 23,
+          "max_abs_delta": 0.818310335
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.500000000349445e-07
+        }
+      },
+      "seed1_plus_1e-8": {
+        "mu0_corrected": {
+          "count_abs_delta_gt1e-3": 10,
+          "max_abs_delta": 0.818310245
+        },
+        "mu0_uncorrected": {
+          "count_abs_delta_gt1e-3": 0,
+          "max_abs_delta": 2.500000000349445e-07
+        }
+      }
+    }
+  },
+  "pressure_solves": 0,
+  "script_sha256": "c3d89dad270c53df62ac209117dc1c7ca3891ec4a98a00f8a25d219c0bc9e83a",
+  "simulation_initializations": 9
+}

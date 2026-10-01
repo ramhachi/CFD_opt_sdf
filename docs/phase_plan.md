@@ -1,6 +1,6 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-09-29
+Date: 2026-10-01
 Status: authoritative
 Scope: generic rigid-object aerodynamic topology and shape optimization
 Architecture decision: SDF-native production research direction adopted on 2026-09-26
@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 primal | v16 round 4 and v17 round 1 registered finite-box primal contracts PASS; broader physical qualification remains false | v16 exact kernel `/5` and v17 exact kernel `/1` passed their own host-verified T0-T10 contracts. The v17 result is bound to its own state and criteria; neither result qualifies physical aerodynamics. The unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | v16 round 4 and canonical v17 round 1 sensitivity matrices passed exact-version host verification | v17 criteria SHA `5eceb62c…`, result SHA `25297c46…`, source `4c20787c`. Private dataset v1 inventory and exact kernel `/1` were verified; all four cases passed T0-T10. Resolution changes are large (flow16→24: drag 31.61%, downforce 23.43%; flow24→32: 6.77%, 8.37%), while the x+1 m domain change is below 0.26%. This remains finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | v16 round 5 terminal FAIL; v17 FD-05 round 1 terminal FAIL | Exact v17 / flow_24 kernel `/1` completed all 33 fresh primals. T0-T9 passed; T10-T11 failed the registered 5% N-based plateau gate in all six direction/response combinations. Strict host verification failed closed on `ERROR` / missing `DONE`; supplemental exact-source host recomputation is diagnostic only. See [`37_fd05_result.md`](issues/37_fd05_result.md). FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
+| Centered-FD SDF directional oracle | v16 round 5, v17 FD-05 and FD-06 round 1 terminal FAIL | FD-06 / flow_24 with normal floor 0.25 completed 33 fresh primals; D2 drag and D0 downforce passed the unchanged 5% plateau gate, while the four other combinations deviated by 6.40–8.72%. Strict host verification failed closed on missing `DONE`; raw host recomputation is diagnostic only. FD-07 design-lattice phase shift does not remove short-horizon irregular response. Solver-free controls localize finite initialization coefficient jumps at recorded faces to sign-consistency correction; solved-force causality and a remedy remain unqualified. See [`37_fd06_result.md`](issues/37_fd06_result.md) and [`37_fd06_remaining_deviation_diagnosis.md`](issues/37_fd06_remaining_deviation_diagnosis.md). See [FD-07 diagnosis](issues/37_fd07_lattice_shift_diagnosis.md). FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -634,7 +634,24 @@ are retained historical plans; neither controls current execution.
 
 **2026-10-01 FD-06 (#37) result (supplements the FD-05 entries; diagnostic scope as stated):** FD-06 is the FD-05 contract with one change, body normal floor `n = g/max(|g|, 0.25)` (new `NormalFloorWaterLilyBody`; `WaterLilyBody.jl` untouched). The registered v17 / flow_24 kernel `/1` completed all 33 primals; T10/T11 still fail closed, but only 4 of 6 combinations miss the unchanged 5% plateau gate, now by 5.2–8.7% instead of FD-05's 83–150%, with ε-proportional pair signals; D2 drag and D0 downforce pass. Strict host verification failed closed (no `DONE`, as any gate failure implies); an independent raw-data recomputation matches the runner. FD oracle and all gradient/optimizer/topology/shape-update flags remain false. See [`issues/37_fd06_result.md`](issues/37_fd06_result.md). No retry; any further change is a new preregistered round.
 
-Current gates and immediate sequence as of 2026-09-30 after the FD-05 terminal result:
+**2026-10-01 FD-07 (#37), diagnostic only:** Ten fixed short CPU solves test
+same-source resampling on a design lattice shifted by h×(0.27,0.37,0.43),
+with the physical flow grid unchanged. The shift does not remove irregular
+±10 nm force response and changes short-window baseline drag/downforce by
++11.88%/+7.23%; it is not adopted as v18. Both lattices retain initial BDIM
+mu0 jumps of about 0.8183. A separate nine-initialization/zero-flow-step
+arithmetic matrix and fixed-distance branch ablation localize those large
+coefficient jumps at recorded faces to WaterLily's half-cell sign-consistency
+correction. Float64 arithmetic alone with retained Float32-rounded constants
+reduces the tested local jump, whereas original Float64 physical constants
+retain it; no general precision fix is established. Solved-force causality,
+long-window FD and physical/gradient qualification remain unproven. The next
+bounded investigation targets sign-consistency semantics, not relaxed FD
+acceptance. See [FD-07 result](issues/37_fd07_lattice_shift_diagnosis.md).
+All qualification/update flags and historical FD-05/FD-06 FAIL results remain
+unchanged.
+
+Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-06 result and later diagnostic checkpoints above supersede their pending-registration instructions:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
    diagnostic `/2` completed and passed host verification under immutable

@@ -33,7 +33,36 @@ The authority split is intentional:
 - `docs/fixed_grid_data_contract_v2.md` defines retained Stage T artifact semantics; it does not make density the current canonical design variable.
 - `docs/evidence/*.json` is machine-readable evidence; prose must not broaden its scope.
 
-## Current SDF-native architecture and status (2026-09-29)
+## Current checkpoint (2026-10-01)
+
+Use `codex/kaggle-batch-migration` as the working integration branch; `main`
+remains untouched. Canonical genesis v17 is adopted. W3/W4 v17 passed their
+registered finite-box contracts; physical forces and grid convergence remain
+unqualified. The selected FD/optimization grid is flow_24.
+
+FD-05 and FD-06 are terminal FAIL. FD-06 uses a separate normal-floor body
+(0.25); two of six direction/response pairs pass the unchanged 5% gate and
+four fail at 6.40–8.72%. The short CPU frozen-flow test separates smooth force
+integration from irregular solved-flow response, without identifying its
+mechanism or proving the production-window behaviour. Its Float64 switch
+retains Float32 phi storage; it does not exclude SDF-storage roundoff. See
+[FD-06 result](issues/37_fd06_result.md) and
+[remaining-deviation diagnosis](issues/37_fd06_remaining_deviation_diagnosis.md).
+Current order and qualification flags are maintained in
+[phase_plan.md §11](phase_plan.md#11-current-sdf-native-execution-order).
+`shape_update_allowed=false` remains a hard stop.
+
+The dated snapshot below retains its evidence and implementation context; its
+pending-run and repair instructions are superseded by later records.
+
+FD-07 tested ten short CPU solves: a source-fixed design-lattice shift did
+not remove irregular response and was not adopted. Solver-free arithmetic
+and branch controls identify finite BDIM coefficient jumps from the half-cell
+sign-consistency correction on recorded faces; their effect on long-window
+solved-force FD remains unqualified. See
+[FD-07 diagnosis and commands](issues/37_fd07_lattice_shift_diagnosis.md).
+
+## Historical SDF-native architecture and status (2026-09-29)
 
 The product objective is a generic aerodynamic topology and shape optimizer
 whose canonical variable is bounded Cartesian SDF `phi` (`phi < 0` solid,

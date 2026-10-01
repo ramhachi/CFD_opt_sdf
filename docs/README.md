@@ -7,6 +7,31 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
+## Current checkpoint (2026-10-01)
+
+Canonical v17 W3 and W4 passed their own finite-box contracts; flow_24 is the
+chosen FD/optimization grid, not a converged physical reference. FD-05 and
+FD-06 both remain terminal FAIL. FD-06 normal floor 0.25 reduced plateau
+deviations to 1.40–8.72%, with only two of six combinations passing the
+unchanged 5% gate. Short CPU diagnostics find smooth frozen-flow force
+integration with the floor, but irregular solved-flow response; its mechanism
+is unresolved. See [FD-06 result](issues/37_fd06_result.md),
+[remaining-deviation diagnosis](issues/37_fd06_remaining_deviation_diagnosis.md)
+and [the current roadmap](phase_plan.md#11-current-sdf-native-execution-order).
+All FD/gradient/optimizer/topology/shape-update qualification flags remain false.
+
+FD-07 tested ten short CPU solves: a source-fixed design-lattice shift did
+not remove irregular response and was not adopted. Solver-free arithmetic
+and branch controls identify finite BDIM coefficient jumps from the half-cell
+sign-consistency correction on recorded faces; their effect on long-window
+solved-force FD remains unqualified. See
+[FD-07 diagnosis and commands](issues/37_fd07_lattice_shift_diagnosis.md).
+
+## Historical v16 execution checkpoints (2026-09-29)
+
+The following detailed record preserves prior artifacts and commands; its
+"latest" and "next" wording is historical and does not control current status.
+
 Latest execution checkpoint: FD round 5 exact private T4 kernel `/4` ran all
 33 fresh primals but ended in `KernelWorkerStatus.ERROR`; the strict host
 verifier failed closed because `DONE` is absent. The diagnostic-only raw CSV

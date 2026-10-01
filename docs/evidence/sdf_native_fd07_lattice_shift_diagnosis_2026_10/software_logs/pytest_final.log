@@ -1,0 +1,1801 @@
+.................................F...................................... [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 28%]
+........................................................................ [ 34%]
+.................................................................s...... [ 39%]
+........................................................................ [ 45%]
+......s................................................................. [ 51%]
+...........................................................F.F....F..... [ 57%]
+........................................................................ [ 62%]
+........................................................................ [ 68%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 85%]
+.......................................FF........F.F.F.....F............ [ 91%]
+FFFFF............FFFF....F............FF.FF.F.FF.F............F.F.....FF [ 96%]
+FFF....F........ss....F...............                                   [100%]
+=================================== FAILURES ===================================
+_ test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign _
+
+    def test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign():
+>       compiled = _compiled()
+                   ^^^^^^^^^^^
+
+tests/test_canonical_objective.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_canonical_objective.py:28: in _compiled
+    load_problem_spec(SPEC),
+    ^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/problem_spec.py:223: in load_problem_spec
+    raw = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq0_2_smoke/project_downforce_volume.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq0_2_smoke/project_downforce_volume.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+______ test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint ______
+
+    def test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint():
+        manifest = _manifest()
+        provenance = manifest["bootstrap_provenance"]
+        source = provenance["v14_checkpoint"]
+        source_path = ROOT / source["rho_path"]
+>       assert ca.sha256_file(source_path) == source["rho_file_sha256"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pq3_3b_campaign_v15.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_campaign_v14/checkpoints/rho_0005.npy')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_campaign_v14/checkpoints/rho_0005.npy'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+______________ test_pinned_evidence_and_margin_mask_hashes_verify ______________
+
+    def test_pinned_evidence_and_margin_mask_hashes_verify():
+        manifest = _manifest()
+        for key, ref in manifest["pinned_evidence"].items():
+            assert ca.sha256_file(ROOT / ref["path"]) == ref["sha256"]
+>       assert ca.sha256_file(ROOT / manifest["margin_mask"]["state"]) == manifest["margin_mask"]["state_sha256"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pq3_3b_campaign_v15.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_margin_masks/topology_state.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_margin_masks/topology_state.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________ test_start_state_is_the_recorded_v15_checkpoint_10_unchanged _________
+
+    def test_start_state_is_the_recorded_v15_checkpoint_10_unchanged():
+        manifest = _manifest()
+        outcome = json.loads(V15_OUTCOME.read_text())
+        checkpoint = outcome["checkpoint"]
+        stop = manifest["input_stop_state"]
+        assert stop["level"] == LEVEL_NAME
+        assert stop["state_path"] == f"work/pq3_3b_campaign_v15/{checkpoint['state_path']}"
+        assert stop["state_sha256"] == checkpoint["state_sha256"]
+        assert stop["rho_file_sha256"] == checkpoint["rho_file_sha256"]
+        assert stop["rho_sha256"] == checkpoint["rho_sha256"]
+>       assert ca.sha256_file(ROOT / stop["state_path"]) == stop["state_sha256"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pq3_3b_campaign_v16.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_campaign_v15/checkpoints/state_0010.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq3_3b_campaign_v15/checkpoints/state_0010.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________________ test_registered_adjoint_preflight_reverifies _________________
+
+    def test_registered_adjoint_preflight_reverifies():
+        artifact = json.loads(PREFLIGHT.read_text())
+        assert artifact["kind"] == "stage_s_work_f_adjoint_preflight"
+        assert artifact["summary"]["preflight_pass"] is True
+        assert artifact["summary"]["adjoint_allowed"] is True
+        assert artifact["summary"]["solver_started"] is False
+        assert artifact["structural_checks"]["pass"] is True
+        assert artifact["openfoam_dictionary_check"]["pass"] is True
+        case_dir = ROOT / artifact["adjoint_case"]["path"]
+>       assert ca.sha256_file(case_dir / "system" / "optimisationDict") == artifact[
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "adjoint_case"
+        ]["optimisation_dict_sha256"]
+
+tests/test_stage_s_adjoint_case.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/system/optimisationDict')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/system/optimisationDict'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+____________________ test_registered_adjoint_run_reverifies ____________________
+
+    def test_registered_adjoint_run_reverifies():
+        evidence = json.loads(RUN.read_text())
+        assert evidence["summary"]["adjoint_converged"] is True
+        assert evidence["summary"]["analytic_derivatives_ready"] is True
+        assert evidence["summary"]["perturbation_allowed"] is False
+        assert evidence["summary"]["shape_update_allowed"] is False
+        assert evidence["openfoam_run"]["returncode"] == 0
+        assert evidence["openfoam_run"]["timed_out"] is False
+        assert set(evidence["analytic"]["found_solvers"]) == {"adjDownforce", "adjDrag"}
+        case_dir = ROOT / evidence["case_dir"]
+        for name, sha in evidence["analytic"]["design_variable_derivative_files"].items():
+>           assert ca.sha256_file(case_dir / "optimisation" / "derivatives" / name) == sha
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_adjoint_case.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+___________________ test_registered_qualification_reverifies ___________________
+
+    def test_registered_qualification_reverifies():
+        artifact = json.loads(ARTIFACT.read_text())
+        run = json.loads(RUN_EVIDENCE.read_text())
+        assert artifact["run_evidence"]["sha256"] == ca.sha256_file(RUN_EVIDENCE)
+        assert artifact["summary"]["perturbation_allowed"] is True
+        assert artifact["summary"]["shape_update_allowed"] is False
+        assert all(artifact["base_gates"].values())
+        assert all(artifact["residual_checks"].values())
+        assert artifact["derivative_contract"]["active_var_count"] == 648
+        for response, record in artifact["derivative_contract"]["files"].items():
+            path = ROOT / record["path"]
+>           assert ca.sha256_file(path) == record["sha256"]
+                   ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_adjoint_qualification.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+______________________ test_baseline_file_hashes_reverify ______________________
+
+    def test_baseline_file_hashes_reverify():
+        artifact = _artifact()
+        for name, record in artifact["fields"]["bundle"].items():
+>           assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], name
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_baseline_v16.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state/beta_solver.vti')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state/beta_solver.vti'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+________ test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment ________
+
+    def test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment():
+        artifact = json.loads(V2_ARTIFACT.read_text())
+        assert artifact["kind"] == "stage_s_baseline_v16_v2"
+        assert artifact["gate"]["ready_for_stage_s"] is True
+        assert artifact["handoff"]["selected_threshold"] == 0.5
+        assert artifact["clearance"]["qualified"] is True
+        assert artifact["fields"]["geometry_basis"] == "rho_projection"
+        assert artifact["supersedes"]["sha256"] == ca.sha256_file(
+            ROOT / artifact["supersedes"]["path"]
+        )
+        for name, record in artifact["fields"]["bundle"].items():
+>           assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], name
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_baseline_v16.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/beta_solver.vti')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/beta_solver.vti'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+________________ test_registered_component_manifest_reverifies _________________
+
+    def test_registered_component_manifest_reverifies():
+        manifest = json.loads(MANIFEST.read_text())
+        assert manifest["kind"] == "stage_s_work_f_component_diagnosis_manifest"
+        assert manifest["registered_before_computation"] is True
+        assert manifest["component_formula"]["total"] == DERIVATIVE_SUM_FORMULA
+        assert manifest["component_formula"]["components"] == list(COMPONENT_COLUMNS)
+        assert manifest["holdout_rule"]["n_random_directions_min"] == 2
+        assert [entry["order"] for entry in manifest["ablations"]] == [1, 2]
+        assert [entry["option"] for entry in manifest["ablations"]] == [
+            "includeSurfaceArea",
+            "includeMeshMovement",
+        ]
+        # machine-generated evidence stays hash-bound; the plan documents are
+        # living and may be extended by a later authorized commit (the post-D3
+        # plan gained its section 21 in 17cb22c after this manifest was registered)
+        living_documents = {"post_d3_plan", "fd_diagnosis_plan"}
+        for name, record in manifest["inputs"].items():
+            if name in living_documents:
+                assert (ROOT / record["path"]).is_file()
+                continue
+            assert ca.sha256_file(ROOT / record["path"]) == record["sha256"]
+        qualification = json.loads(QUALIFICATION.read_text())
+        for name, record in manifest["directions"].items():
+            values = np.asarray(qualification["directions"][name]["values"], dtype=np.float64)
+            array_sha = hashlib.sha256(
+                np.ascontiguousarray(values, dtype=np.float64).tobytes()
+            ).hexdigest()
+            assert array_sha == record["sha256"]
+        for scheme, directory in (
+            ("upwind", UPWIND_DERIVATIVES),
+            ("linearUpwind", LINEAR_DERIVATIVES),
+        ):
+            for response, record in manifest["derivative_files"][scheme].items():
+>               assert ca.sha256_file(ROOT / record["path"]) == record["sha256"]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_component_diagnosis.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_______________ test_control_point_parsers_and_count_validation ________________
+
+tmp_path = PosixPath('/private/var/folders/t3/yn_7_hjn7md6jmb8cqgyshvr0000gn/T/pytest-of-sota/pytest-58/test_control_point_parsers_and0')
+
+    def test_control_point_parsers_and_count_validation(tmp_path: Path):
+        values = np.zeros((4, 3), dtype=np.float64)
+        values[1] = (1e-4, -2.5e-4, 0.0)
+        path = _write_cp_file(tmp_path, values)
+        parsed = read_control_points_file(path)
+        assert np.allclose(parsed, values)
+>       base = read_control_points_csv(BASE_CATALOG)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_fd_diagnosis.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/stage_s_realized_direction.py:54: in read_control_points_csv
+    for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = 'replace'
+newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+________ test_case_audit_detects_clipping_and_accepts_exact_application ________
+
+    def test_case_audit_detects_clipping_and_accepts_exact_application():
+        ids = _ids()
+        mask = active_mask_from_ids(ids)
+>       base = read_control_points_csv(BASE_CATALOG)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_fd_diagnosis.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/stage_s_realized_direction.py:54: in read_control_points_csv
+    for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = 'replace'
+newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+______________ test_pair_audit_odd_even_and_direction_comparison _______________
+
+    def test_pair_audit_odd_even_and_direction_comparison():
+        ids = _ids()
+        mask = active_mask_from_ids(ids)
+>       base = read_control_points_csv(BASE_CATALOG)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_fd_diagnosis.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/stage_s_realized_direction.py:54: in read_control_points_csv
+    for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = 'replace'
+newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_____________________ test_registered_d1_audit_reverifies ______________________
+
+    def test_registered_d1_audit_reverifies():
+        manifest = json.loads(D1_MANIFEST.read_text())
+        artifact = json.loads(D1_ARTIFACT.read_text())
+        assert artifact["manifest"]["sha256"] == ca.sha256_file(D1_MANIFEST)
+        for name, record in manifest["inputs"].items():
+>           assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], name
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_fd_diagnosis.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_____________________ test_registered_d2_audit_reverifies ______________________
+
+    def test_registered_d2_audit_reverifies():
+        manifest = json.loads(D2_MANIFEST.read_text())
+        artifact = json.loads(D2_ARTIFACT.read_text())
+        assert artifact["manifest"]["sha256"] == ca.sha256_file(D2_MANIFEST)
+        for name, record in manifest["inputs"].items():
+>           assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], name
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_fd_diagnosis.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/case_metadata.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/case_metadata.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+____________ test_baseline_patch_extraction_is_closed_and_oriented _____________
+
+    def test_baseline_patch_extraction_is_closed_and_oriented():
+>       baseline = extract_patch_surface(BASE_CASE, time_name="constant")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_perturbation.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/stage_s_perturbation.py:115: in extract_patch_surface
+    patch = _read_boundary(case_dir / "constant" / "polyMesh" / "boundary").get(WORK_F_DESIGN_PATCH)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/openfoam_sensitivity.py:175: in _read_boundary
+    lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/boundary')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = 'ignore'
+newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/boundary'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_____________ test_fixed_patches_do_not_move_in_a_registered_side ______________
+
+    def test_fixed_patches_do_not_move_in_a_registered_side():
+        evidence = json.loads(EVIDENCE.read_text())
+        side = next(iter(evidence["sides"].values()))
+        case_dir = ROOT / side["case_dir"]
+>       result = fixed_patch_immobility(
+            case_dir=case_dir,
+            baseline_points=BASE_CASE / "constant" / "polyMesh" / "points",
+            moved_points=case_dir / "0" / "polyMesh" / "points",
+        )
+
+tests/test_stage_s_perturbation.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/stage_s_perturbation.py:203: in fixed_patch_immobility
+    old = np.asarray(_read_points(baseline_points), dtype=np.float64)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/openfoam_sensitivity.py:206: in _read_points
+    lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/points')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = 'ignore'
+newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/points'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+___________________ test_registered_side_evidence_reverifies ___________________
+
+    def test_registered_side_evidence_reverifies():
+        evidence = json.loads(EVIDENCE.read_text())
+        qualification = json.loads(QUALIFICATION.read_text())
+        assert evidence["qualification"]["sha256"] == ca.sha256_file(QUALIFICATION)
+        assert qualification["summary"]["perturbation_allowed"] is True
+        assert evidence["summary"]["n_sides"] == 32
+        assert evidence["summary"]["n_pass"] == 32
+        assert evidence["summary"]["all_sides_pass"] is True
+        assert evidence["summary"]["primal_campaign_allowed"] is True
+        assert evidence["summary"]["solver_started"] is False
+>       assert evidence["morpher_utility"]["binary_sha256"] == ca.sha256_file(
+            ROOT / evidence["morpher_utility"]["binary_path"]
+        )
+
+tests/test_stage_s_perturbation.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/tools/moveControlPoints')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/tools/moveControlPoints'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________________ test_registered_surface_fd_result_reverifies _________________
+
+    def test_registered_surface_fd_result_reverifies():
+        result = json.loads(RESULT.read_text())
+        sides = json.loads(EVIDENCE.read_text())
+        assert result["sides_evidence"]["sha256"] == ca.sha256_file(EVIDENCE)
+        assert sides["summary"]["primal_campaign_allowed"] is True
+        assert result["summary"]["n_runs"] == 32
+        assert result["summary"]["n_runs_pass"] == 32
+        assert result["summary"]["both_responses_pass"] is False
+        assert result["summary"]["shape_update_allowed"] is False
+        for side_id, record in result["runs"].items():
+            assert record["pass"] is True, side_id
+            assert record["qualification"]["solver_converged"] is True
+            assert record["qualification"]["force_stationarity"] is True
+            assert record["qualification"]["check_mesh_qualified"] is True
+            qualification = ROOT / record["qualification_path"]
+>           assert ca.sha256_file(qualification) == record["qualification_sha256"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_perturbation.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__minus/stage_v_qualification.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__minus/stage_v_qualification.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+______________ test_registered_manifest_contract_and_reduced_spec ______________
+
+    def test_registered_manifest_contract_and_reduced_spec():
+        manifest = json.loads(MANIFEST.read_text())
+        assert manifest["kind"] == "stage_s_reduced_basis_fd_manifest"
+        assert manifest["architecture"]["id"] == "stage_s_reduced_basis_fd_v1"
+        assert manifest["design_space"]["k_modes"] == K_MODES
+        assert manifest["design_space"]["q_change_policy"].startswith("K is fixed")
+        assert manifest["mode_generation"]["min_normal_efficiency"] == MIN_NORMAL_EFFICIENCY
+        assert manifest["epsilon_ladder_m"] == list(EPSILON_LADDER_M)
+        assert manifest["flags"] == {
+            "original_adjoint_derivative_qualified": False,
+            "reduced_basis_fd_qualified": "pending",
+            "shape_update_allowed": False,
+        }
+        assert manifest["objective_contract"]["declared"] == "maximize downforce"
+        assert manifest["objective_contract"]["canonical_J"] == "J = -downforce"
+        assert manifest["objective_contract"]["drag"] == "report_only"
+        assert manifest["budget"]["s1_flow_runs"] == 0
+        for name, record in manifest["inputs"].items():
+            if "sha256" in record:
+>               assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], name
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_reduced_basis.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________________ test_every_recorded_artifact_hash_is_current _________________
+
+    def test_every_recorded_artifact_hash_is_current() -> None:
+        manifest = _manifest()
+        for key, ref in manifest["artifacts"].items():
+>           assert ca.sha256_file(ROOT / ref["path"]) == ref["sha256"], key
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_v16_contract_audit.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________ test_build_manifest_refuses_a_pq2_hash_registration_mismatch _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x134ff7500>
+
+    def test_build_manifest_refuses_a_pq2_hash_registration_mismatch(monkeypatch) -> None:
+        original = audit.PQ2_CANDIDATE_SHA
+        monkeypatch.setattr(audit, "PQ2_CANDIDATE_SHA", audit.V16_CANDIDATE_SHA)
+        try:
+            try:
+>               audit.build_manifest()
+
+tests/test_stage_s_v16_contract_audit.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/stage_s_v16_contract_audit_2026_09.py:155: in build_manifest
+    metadata = load_json(require_file(CASE_METADATA))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/case_metadata.json')
+
+    def require_file(path: Path) -> Path:
+        if not path.is_file():
+>           raise ValueError(f"required audit input is missing: {rel(path)}")
+E           ValueError: required audit input is missing: work/stage_s_work_f_v1/baseline/V1/case_metadata.json
+
+scripts/stage_s_v16_contract_audit_2026_09.py:55: ValueError
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x134ff7500>
+
+    def test_build_manifest_refuses_a_pq2_hash_registration_mismatch(monkeypatch) -> None:
+        original = audit.PQ2_CANDIDATE_SHA
+        monkeypatch.setattr(audit, "PQ2_CANDIDATE_SHA", audit.V16_CANDIDATE_SHA)
+        try:
+            try:
+                audit.build_manifest()
+            except ValueError as exc:
+>               assert "PQ2 registered candidate hash mismatch" in str(exc)
+E               AssertionError: assert 'PQ2 registered candidate hash mismatch' in 'required audit input is missing: work/stage_s_work_f_v1/baseline/V1/case_metadata.json'
+E                +  where 'required audit input is missing: work/stage_s_work_f_v1/baseline/V1/case_metadata.json' = str(ValueError('required audit input is missing: work/stage_s_work_f_v1/baseline/V1/case_metadata.json'))
+
+tests/test_stage_s_v16_contract_audit.py:81: AssertionError
+_________ test_registration_binds_the_baseline_and_response_identities _________
+
+    def test_registration_binds_the_baseline_and_response_identities():
+        manifest = _manifest()
+        baseline = json.loads(BASELINE.read_text())
+        assert manifest["baseline"]["sha256"] == ca.sha256_file(BASELINE)
+        assert baseline["gate"]["ready_for_stage_s"] is True
+>       spec = load_problem_spec(SPEC)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_work_f.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/problem_spec.py:223: in load_problem_spec
+    raw = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+___________ test_preflight_artifact_passed_and_matches_the_manifest ____________
+
+    def test_preflight_artifact_passed_and_matches_the_manifest():
+        preflight = json.loads(PREFLIGHT.read_text())
+        assert preflight["manifest"]["sha256"] == ca.sha256_file(MANIFEST)
+        assert preflight["baseline"]["sha256"] == ca.sha256_file(BASELINE)
+        assert preflight["case"]["pass"] is True
+        assert preflight["case"]["failed_checks"] == []
+        assert preflight["clearance"]["qualified"] is True
+        assert preflight["summary"]["preflight_pass"] is True
+        assert preflight["summary"]["mesh_allowed"] is True
+        assert preflight["summary"]["solver_started"] is False
+        case_dir = ROOT / preflight["case"]["case_dir"]
+>       assert ca.sha256_file(case_dir / "case_metadata.json") == preflight["case"]["metadata_sha256"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_work_f.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/case_metadata.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/case_metadata.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+___________ test_solver_evidence_qualified_and_reconfirmed_clearance ___________
+
+    def test_solver_evidence_qualified_and_reconfirmed_clearance():
+        evidence = json.loads(SOLVER.read_text())
+        assert evidence["manifest"]["sha256"] == ca.sha256_file(MANIFEST)
+        assert evidence["mesh_evidence"]["sha256"] == ca.sha256_file(MESH)
+        assert evidence["openfoam_run"]["returncode"] == 0
+        assert evidence["openfoam_run"]["timed_out"] is False
+        qualification = evidence["qualification"]
+        assert qualification["qualified"] is True
+        assert qualification["reasons"] == []
+        assert qualification["check_mesh"]["qualified"] is True
+        assert qualification["solver"]["qualified"] is True
+        assert qualification["force_stationarity"]["qualified"] is True
+        assert evidence["summary"]["p17_solver_execution_reconfirmed"] is True
+        assert evidence["summary"]["surface_fd_allowed"] is True
+        assert evidence["summary"]["shape_update_allowed"] is False
+        for key, record in evidence["artifacts"].items():
+>           assert ca.sha256_file(ROOT / record["path"]) == record["sha256"], key
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_s_work_f.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/postProcessing/forceCoeffs/0/coefficient.dat')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/postProcessing/forceCoeffs/0/coefficient.dat'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_______ test_response_manifests_share_the_catalog_and_identity_contract ________
+
+    def test_response_manifests_share_the_catalog_and_identity_contract():
+>       manifests = _manifests()
+                    ^^^^^^^^^^^^
+
+tests/test_stage_s_work_f_surface_fd.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stage_s_work_f_surface_fd.py:46: in _manifests
+    mesh = _baseline_mesh()
+           ^^^^^^^^^^^^^^^^
+tests/test_stage_s_work_f_surface_fd.py:41: in _baseline_mesh
+    return trimesh.load_mesh(stl)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:282: in load_mesh
+    return load_scene(*args, **kwargs).to_mesh()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:198: in load_scene
+    arg = _parse_file_args(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+file_obj = '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl'
+file_type = None, resolver = None, allow_remote = False, session = None
+kwargs = {}
+
+    def _parse_file_args(
+        file_obj,
+        file_type: str | None,
+        resolver: resolvers.ResolverLike | None = None,
+        allow_remote: bool = False,
+        session: HttpSessionLike | None = None,
+        **kwargs,
+    ) -> LoadSource:
+        """
+        Given a file_obj and a file_type try to magically convert
+        arguments to a file-like object and a lowercase string of
+        file type.
+    
+        Parameters
+        -----------
+        file_obj : str
+          if string represents a file path, returns:
+            file_obj:   an 'rb' opened file object of the path
+            file_type:  the extension from the file path
+    
+         if string is NOT a path, but has JSON-like special characters:
+            file_obj:   the same string passed as file_obj
+            file_type:  set to 'json'
+    
+         if string is a valid-looking URL
+            file_obj: an open 'rb' file object with retrieved data
+            file_type: from the extension
+    
+         if string is none of those:
+            raise ValueError as we can't do anything with input
+    
+         if file like object:
+            ValueError will be raised if file_type is None
+            file_obj:  same as input
+            file_type: same as input
+    
+         if other object: like a shapely.geometry.Polygon, etc:
+            file_obj:  same as input
+            file_type: if None initially, set to the class name
+                        (in lower case), otherwise passed through
+    
+        file_type : str
+             type of file and handled according to above
+    
+        Returns
+        -----------
+        args
+          Populated `_FileArg` message
+        """
+        # try to save a file path from various inputs
+        file_path = None
+    
+        # keep track if we opened a file ourselves and thus are
+        # responsible for closing it at the end of loading
+        was_opened = False
+    
+        if util.is_pathlib(file_obj):
+            # convert pathlib objects to string
+            file_obj = str(file_obj.absolute())
+    
+        if util.is_file(file_obj) and file_type is None:
+            raise ValueError("`file_type` must be set for file objects!")
+    
+        if isinstance(file_obj, str):
+            try:
+                # clean up file path to an absolute location
+                file_path = os.path.abspath(os.path.expanduser(file_obj))
+                # check to see if this path exists
+                exists = os.path.isfile(file_path)
+            except BaseException:
+                exists = False
+                file_path = None
+    
+            # file obj is a string which exists on filesystm
+            if exists:
+                # if not passed create a resolver to find other files
+                if resolver is None:
+                    resolver = resolvers.FilePathResolver(file_path)
+                # save the file name and path to metadata
+                # if file_obj is a path that exists use extension as file_type
+                if file_type is None:
+                    file_type = util.split_extension(file_path, special=["tar.gz", "tar.bz2"])
+                # actually open the file
+                file_obj = open(file_path, "rb")
+                # save that we opened it so we can cleanup later
+                was_opened = True
+            else:
+                if "{" in file_obj:
+                    # if a bracket is in the string it's probably straight JSON
+                    file_type = "json"
+                    file_obj = util.wrap_as_stream(file_obj)
+                elif urllib.parse.urlparse(file_obj).scheme in ("http", "https"):
+                    if not allow_remote:
+                        raise ValueError("unable to load URL with `allow_remote=False`")
+    
+                    # remove the url-safe encoding and query params
+                    file_type = util.split_extension(
+                        urllib.parse.unquote(file_obj).split("?", 1)[0].split("/")[-1].strip()
+                    )
+                    # create a web resolver to do the fetching and whatnot
+                    resolver = resolvers.WebResolver(url=file_obj, session=session)
+                    # fetch the base file
+                    file_obj = util.wrap_as_stream(resolver.get_base())
+    
+                elif file_type is None:
+>                   raise ValueError(f"string is not a file: `{file_obj}`")
+E                   ValueError: string is not a file: `/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl`
+
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:629: ValueError
+___________ test_manifest_validation_rejects_missing_roles_and_seeds ___________
+
+    def test_manifest_validation_rejects_missing_roles_and_seeds():
+        from cfd_sdf.fd_preregistration import build_fd_campaign_manifest
+    
+>       template = _manifests()["drag"]
+                   ^^^^^^^^^^^^
+
+tests/test_stage_s_work_f_surface_fd.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stage_s_work_f_surface_fd.py:46: in _manifests
+    mesh = _baseline_mesh()
+           ^^^^^^^^^^^^^^^^
+tests/test_stage_s_work_f_surface_fd.py:41: in _baseline_mesh
+    return trimesh.load_mesh(stl)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:282: in load_mesh
+    return load_scene(*args, **kwargs).to_mesh()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:198: in load_scene
+    arg = _parse_file_args(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+file_obj = '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl'
+file_type = None, resolver = None, allow_remote = False, session = None
+kwargs = {}
+
+    def _parse_file_args(
+        file_obj,
+        file_type: str | None,
+        resolver: resolvers.ResolverLike | None = None,
+        allow_remote: bool = False,
+        session: HttpSessionLike | None = None,
+        **kwargs,
+    ) -> LoadSource:
+        """
+        Given a file_obj and a file_type try to magically convert
+        arguments to a file-like object and a lowercase string of
+        file type.
+    
+        Parameters
+        -----------
+        file_obj : str
+          if string represents a file path, returns:
+            file_obj:   an 'rb' opened file object of the path
+            file_type:  the extension from the file path
+    
+         if string is NOT a path, but has JSON-like special characters:
+            file_obj:   the same string passed as file_obj
+            file_type:  set to 'json'
+    
+         if string is a valid-looking URL
+            file_obj: an open 'rb' file object with retrieved data
+            file_type: from the extension
+    
+         if string is none of those:
+            raise ValueError as we can't do anything with input
+    
+         if file like object:
+            ValueError will be raised if file_type is None
+            file_obj:  same as input
+            file_type: same as input
+    
+         if other object: like a shapely.geometry.Polygon, etc:
+            file_obj:  same as input
+            file_type: if None initially, set to the class name
+                        (in lower case), otherwise passed through
+    
+        file_type : str
+             type of file and handled according to above
+    
+        Returns
+        -----------
+        args
+          Populated `_FileArg` message
+        """
+        # try to save a file path from various inputs
+        file_path = None
+    
+        # keep track if we opened a file ourselves and thus are
+        # responsible for closing it at the end of loading
+        was_opened = False
+    
+        if util.is_pathlib(file_obj):
+            # convert pathlib objects to string
+            file_obj = str(file_obj.absolute())
+    
+        if util.is_file(file_obj) and file_type is None:
+            raise ValueError("`file_type` must be set for file objects!")
+    
+        if isinstance(file_obj, str):
+            try:
+                # clean up file path to an absolute location
+                file_path = os.path.abspath(os.path.expanduser(file_obj))
+                # check to see if this path exists
+                exists = os.path.isfile(file_path)
+            except BaseException:
+                exists = False
+                file_path = None
+    
+            # file obj is a string which exists on filesystm
+            if exists:
+                # if not passed create a resolver to find other files
+                if resolver is None:
+                    resolver = resolvers.FilePathResolver(file_path)
+                # save the file name and path to metadata
+                # if file_obj is a path that exists use extension as file_type
+                if file_type is None:
+                    file_type = util.split_extension(file_path, special=["tar.gz", "tar.bz2"])
+                # actually open the file
+                file_obj = open(file_path, "rb")
+                # save that we opened it so we can cleanup later
+                was_opened = True
+            else:
+                if "{" in file_obj:
+                    # if a bracket is in the string it's probably straight JSON
+                    file_type = "json"
+                    file_obj = util.wrap_as_stream(file_obj)
+                elif urllib.parse.urlparse(file_obj).scheme in ("http", "https"):
+                    if not allow_remote:
+                        raise ValueError("unable to load URL with `allow_remote=False`")
+    
+                    # remove the url-safe encoding and query params
+                    file_type = util.split_extension(
+                        urllib.parse.unquote(file_obj).split("?", 1)[0].split("/")[-1].strip()
+                    )
+                    # create a web resolver to do the fetching and whatnot
+                    resolver = resolvers.WebResolver(url=file_obj, session=session)
+                    # fetch the base file
+                    file_obj = util.wrap_as_stream(resolver.get_base())
+    
+                elif file_type is None:
+>                   raise ValueError(f"string is not a file: `{file_obj}`")
+E                   ValueError: string is not a file: `/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl`
+
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:629: ValueError
+__ test_evaluation_requires_both_responses_and_resolvable_aligned_directions ___
+
+    def test_evaluation_requires_both_responses_and_resolvable_aligned_directions():
+>       manifests = _manifests()
+                    ^^^^^^^^^^^^
+
+tests/test_stage_s_work_f_surface_fd.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stage_s_work_f_surface_fd.py:46: in _manifests
+    mesh = _baseline_mesh()
+           ^^^^^^^^^^^^^^^^
+tests/test_stage_s_work_f_surface_fd.py:41: in _baseline_mesh
+    return trimesh.load_mesh(stl)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:282: in load_mesh
+    return load_scene(*args, **kwargs).to_mesh()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:198: in load_scene
+    arg = _parse_file_args(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+file_obj = '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl'
+file_type = None, resolver = None, allow_remote = False, session = None
+kwargs = {}
+
+    def _parse_file_args(
+        file_obj,
+        file_type: str | None,
+        resolver: resolvers.ResolverLike | None = None,
+        allow_remote: bool = False,
+        session: HttpSessionLike | None = None,
+        **kwargs,
+    ) -> LoadSource:
+        """
+        Given a file_obj and a file_type try to magically convert
+        arguments to a file-like object and a lowercase string of
+        file type.
+    
+        Parameters
+        -----------
+        file_obj : str
+          if string represents a file path, returns:
+            file_obj:   an 'rb' opened file object of the path
+            file_type:  the extension from the file path
+    
+         if string is NOT a path, but has JSON-like special characters:
+            file_obj:   the same string passed as file_obj
+            file_type:  set to 'json'
+    
+         if string is a valid-looking URL
+            file_obj: an open 'rb' file object with retrieved data
+            file_type: from the extension
+    
+         if string is none of those:
+            raise ValueError as we can't do anything with input
+    
+         if file like object:
+            ValueError will be raised if file_type is None
+            file_obj:  same as input
+            file_type: same as input
+    
+         if other object: like a shapely.geometry.Polygon, etc:
+            file_obj:  same as input
+            file_type: if None initially, set to the class name
+                        (in lower case), otherwise passed through
+    
+        file_type : str
+             type of file and handled according to above
+    
+        Returns
+        -----------
+        args
+          Populated `_FileArg` message
+        """
+        # try to save a file path from various inputs
+        file_path = None
+    
+        # keep track if we opened a file ourselves and thus are
+        # responsible for closing it at the end of loading
+        was_opened = False
+    
+        if util.is_pathlib(file_obj):
+            # convert pathlib objects to string
+            file_obj = str(file_obj.absolute())
+    
+        if util.is_file(file_obj) and file_type is None:
+            raise ValueError("`file_type` must be set for file objects!")
+    
+        if isinstance(file_obj, str):
+            try:
+                # clean up file path to an absolute location
+                file_path = os.path.abspath(os.path.expanduser(file_obj))
+                # check to see if this path exists
+                exists = os.path.isfile(file_path)
+            except BaseException:
+                exists = False
+                file_path = None
+    
+            # file obj is a string which exists on filesystm
+            if exists:
+                # if not passed create a resolver to find other files
+                if resolver is None:
+                    resolver = resolvers.FilePathResolver(file_path)
+                # save the file name and path to metadata
+                # if file_obj is a path that exists use extension as file_type
+                if file_type is None:
+                    file_type = util.split_extension(file_path, special=["tar.gz", "tar.bz2"])
+                # actually open the file
+                file_obj = open(file_path, "rb")
+                # save that we opened it so we can cleanup later
+                was_opened = True
+            else:
+                if "{" in file_obj:
+                    # if a bracket is in the string it's probably straight JSON
+                    file_type = "json"
+                    file_obj = util.wrap_as_stream(file_obj)
+                elif urllib.parse.urlparse(file_obj).scheme in ("http", "https"):
+                    if not allow_remote:
+                        raise ValueError("unable to load URL with `allow_remote=False`")
+    
+                    # remove the url-safe encoding and query params
+                    file_type = util.split_extension(
+                        urllib.parse.unquote(file_obj).split("?", 1)[0].split("/")[-1].strip()
+                    )
+                    # create a web resolver to do the fetching and whatnot
+                    resolver = resolvers.WebResolver(url=file_obj, session=session)
+                    # fetch the base file
+                    file_obj = util.wrap_as_stream(resolver.get_base())
+    
+                elif file_type is None:
+>                   raise ValueError(f"string is not a file: `{file_obj}`")
+E                   ValueError: string is not a file: `/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl`
+
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py:629: ValueError
+____________ test_extended_spec_changes_only_domain_and_problem_id _____________
+
+    def test_extended_spec_changes_only_domain_and_problem_id():
+        module = _module()
+        import yaml
+    
+>       base = yaml.safe_load(BASE_SPEC.read_text(encoding="utf-8"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v16_domain_boundary_contract.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+____________________ test_registered_artifacts_are_current _____________________
+
+    def test_registered_artifacts_are_current():
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        for key, ref in manifest["artifacts"].items():
+>           assert ca.sha256_file(ROOT / ref["path"]) == ref["sha256"], key
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v16_domain_boundary_contract.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+____________________ test_registered_run_manifest_contract _____________________
+
+    def test_registered_run_manifest_contract():
+        pq2 = json.loads(PQ2_MANIFEST.read_text())
+        manifest = json.loads(RUN_MANIFEST.read_text())
+        assert manifest["kind"] == "stage_v_domain_boundary_factor_run_manifest"
+        assert manifest["registered_before_computation"] is True
+        assert manifest["pq2_manifest"]["sha256"] == ca.sha256_file(PQ2_MANIFEST)
+        assert manifest["fixed_domain_evidence"]["sha256"] == ca.sha256_file(FIXED_DOMAIN_EVIDENCE)
+        assert manifest["baseline"]["qualified"] is True
+        assert manifest["budget"] == {"max_new_runs": 2, "v3_runs": 0, "note": "V2 level only"}
+        treatments = {entry["name"]: entry for entry in manifest["treatments"]}
+        assert set(treatments) == {"far_field_domain_extension", "top_pressure_outlet"}
+        extension = treatments["far_field_domain_extension"]
+        assert extension["far_field_faces"] == ["inlet", "outlet", "sideMin", "sideMax", "top"]
+        assert extension["ground_face"] == "bottom"
+>       assert ca.sha256_file(ROOT / extension["extended_spec"]["path"]) == extension["extended_spec"]["sha256"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_boundary_factor.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_________________ test_extended_spec_diff_and_top_block_helper _________________
+
+    def test_extended_spec_diff_and_top_block_helper():
+        module = _script_module()
+>       extended = module._extended_spec()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_boundary_factor.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/run_stage_v_domain_boundary_factor_2026_09.py:106: in _extended_spec
+    raw = yaml.safe_load(SPEC.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/project_matched_re_laminar.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+____________ test_extended_domain_reuses_baseline_location_in_mesh _____________
+
+    def test_extended_domain_reuses_baseline_location_in_mesh():
+        pq2 = _script_module()
+>       assert pq2._location_in_mesh(pq2.BASELINE_CASE) == pytest.approx((-0.7, 0.0, 0.18))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_boundary_factor.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/run_stage_v_domain_boundary_factor_2026_09.py:233: in _location_in_mesh
+    text = (case_dir / "system" / "snappyHexMeshDict").read_text(encoding="utf-8")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/system/snappyHexMeshDict')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/system/snappyHexMeshDict'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_______ test_extended_case_bundle_uses_declared_grid_without_sdf_arrays ________
+
+    def test_extended_case_bundle_uses_declared_grid_without_sdf_arrays():
+        pq2 = _script_module()
+>       spec = pq2.load_problem_spec(pq2.EXT_SPEC)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_boundary_factor.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/problem_spec.py:223: in load_problem_spec
+    raw = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_____________ test_treatment_cases_match_the_registered_definition _____________
+
+    def test_treatment_cases_match_the_registered_definition():
+        manifest = json.loads(RUN_MANIFEST.read_text())
+        treatments = {entry["name"]: entry for entry in manifest["treatments"]}
+        t2_case = ROOT / treatments["top_pressure_outlet"]["case_dir"]
+>       qualification = json.loads((t2_case / "stage_v_qualification.json").read_text())
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_boundary_factor.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/top_pressure_outlet/V2/stage_v_qualification.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_boundary_factor_2026_09/top_pressure_outlet/V2/stage_v_qualification.json'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+________________ test_staged_geometry_is_byte_identical_to_base ________________
+
+    def test_staged_geometry_is_byte_identical_to_base():
+>       assert ca.sha256_file(STAGED_GEOMETRY) == ca.sha256_file(BASE_SPEC_GEOMETRY)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_domain_continuation.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/sota/projects/FomulaTMU/CFD2026_09/src/cfd_sdf/campaign_assertions.py:50: in sha256_file
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_continuation_2026_09/specs/geometry/design_domain.stl')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_v_domain_continuation_2026_09/specs/geometry/design_domain.stl'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+__ test_real_historical_run_without_residual_control_is_not_called_converged ___
+
+    def test_real_historical_run_without_residual_control_is_not_called_converged() -> None:
+        """A run that completes the 500-step endTime with no declared convergence criterion (the
+        situation for every existing Stage V case) must not qualify as solver_converged."""
+    
+>       text = (REAL_CASE / "log.simpleFoam").read_text(encoding="utf-8")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_stage_v_qualification.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/case_a_coarse/log.simpleFoam')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/work/stage_sv_laminar/case_a_coarse/log.simpleFoam'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=============================== warnings summary ===============================
+tests/test_extraction_qualification.py: 369 warnings
+tests/test_extraction_sweep.py: 1221 warnings
+tests/test_fixed_grid_backend.py: 9 warnings
+tests/test_fixed_grid_canonical_state_injection.py: 221 warnings
+tests/test_fixed_grid_connectivity.py: 190 warnings
+tests/test_fixed_grid_contract.py: 520 warnings
+tests/test_fixed_grid_optimizer.py: 506 warnings
+tests/test_fixed_grid_primal.py: 276 warnings
+tests/test_fixed_grid_sensitivity.py: 369 warnings
+tests/test_front_wing_pipeline.py: 893 warnings
+tests/test_handoff.py: 730 warnings
+tests/test_sdf_native_genesis.py: 131 warnings
+tests/test_stage_s_entry.py: 1228 warnings
+tests/test_stage_t_candidate_binding.py: 458 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    result.shape = shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign
+FAILED tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint
+FAILED tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify
+FAILED tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged
+FAILED tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies
+FAILED tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies
+FAILED tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies
+FAILED tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify
+FAILED tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment
+FAILED tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies
+FAILED tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation
+FAILED tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application
+FAILED tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison
+FAILED tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies
+FAILED tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies
+FAILED tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented
+FAILED tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side
+FAILED tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies
+FAILED tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies
+FAILED tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec
+FAILED tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current
+FAILED tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch
+FAILED tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities
+FAILED tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest
+FAILED tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions
+FAILED tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id
+FAILED tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition
+FAILED tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base
+FAILED tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged
+37 failed, 1221 passed, 4 skipped, 7121 warnings in 311.26s (0:05:11)

@@ -1,0 +1,36 @@
+evidence_class=diagnostic_only; solver_started=false; qualification=false
+matrix=A,B,C x baseline,seed1_plus_1e-8,seed1_minus_1e-8; nine initializations; zero flow steps
+solver_and_returned_distance=Float32; phi_storage=Float32; SDF_origin=(-1.0, -0.8, -0.6); SDF_h=.025; normal_floor=.25
+A=Float32 map arithmetic and Float32 constants
+B=Float64 map arithmetic and Float64(Float32) constants
+C=Float64 map arithmetic and original Float64 physical constants
+phi_raw_sha256=e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431; fixed_faces_sha256=5352cf1e218067d4449661519f3cf343f4583e99768204e5ff4fe7120cd9eaa6; fixed_faces_count=261
+noise=randn(MersenneTwister(1),Float64,(121,65,49)); same realization across all maps/signs
+scalar_ablation=same measured center/face distances with production copysign enabled versus no sign correction; unchanged .5 threshold; no solver modification
+flow_origin=(-2.5, -1.2, -0.9); spacing=0.03333333333333333; dims=(150, 72, 54); moving_ground_solver_z=0; ground_velocity=1
+limits=one seed; fixed exposed faces selected by prior control census; finite precision; no force, FD, optimizer or physical qualification
+julia_version=1.12.6; threads=1; WaterLily_version=1.8.0; actual_package=/Users/sota/.julia/packages/WaterLily/yOkji
+source_sha256 c3d89dad270c53df62ac209117dc1c7ca3891ec4a98a00f8a25d219c0bc9e83a  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/scripts/sdf_native_fd07_world_map_precision_probe.jl
+source_sha256 5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/Project.toml
+source_sha256 65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/Manifest.toml
+source_sha256 996224432490df72726e208ad36d1a68657b506ba4058d79a0f9eb72154d4e9e  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/CFDSDFWaterLily.jl
+source_sha256 2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/DeviceGridSDF.jl
+source_sha256 0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/Forces.jl
+source_sha256 fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/GridSDFBody.jl
+source_sha256 695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/OwnedV16Run.jl
+source_sha256 bd830f7f307f7bd5de67642b4e9243ae5586959fd475765b13ef14d19637d458  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/Runtime.jl
+source_sha256 99cfc7a30741c17b7e83f4451270e0536e336dd2c79cc1f904492910e8588cc2  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/Simulation.jl
+source_sha256 17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/V16PhysicalProfile.jl
+source_sha256 f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl
+source_sha256 e5b9329fbf29bc86fa1eb1a5481b255535e255e04418d0d2582f1d33e42df369  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/WaterLilyBody.jl
+source_sha256 6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf  /Users/sota/.codex/worktrees/kaggle-batch-migration/CFD2026_09/julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl
+source_sha256 588bf8ed167b4874cfb572e9f7dc6a9c34eb3e3aad919604303ce7413dde7221  /Users/sota/.julia/packages/WaterLily/yOkji/src/AutoBody.jl
+source_sha256 aed03bb57053731c7d2098950d92df9b59fda3bd4f7aaaca51bb076bd5edcaee  /Users/sota/.julia/packages/WaterLily/yOkji/src/Body.jl
+source_sha256 6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0  /Users/sota/.julia/packages/WaterLily/yOkji/src/Flow.jl
+source_sha256 58f9cbe34c4f5de05423d18143ee4a2fbb3f990f9b2be1911d478599d0362c00  /Users/sota/.julia/packages/WaterLily/yOkji/src/Metrics.jl
+source_sha256 f6a7b6fb60a27be07133ae3c04a93141defb7a79f70e88a252c3e55399c83009  /Users/sota/.julia/packages/WaterLily/yOkji/src/MultiLevelPoisson.jl
+source_sha256 a77c631c88a7637fa5ffdd80d52610acad9aba7346904cb4a90df55c3d0077fb  /Users/sota/.julia/packages/WaterLily/yOkji/src/Poisson.jl
+source_sha256 e82c5a512a5d27fa0fcb123da49c243b886b61d1a66d0f61170b6ff1ebeb95b6  /Users/sota/.julia/packages/WaterLily/yOkji/src/RigidMap.jl
+source_sha256 2508c936e803ebcc369ea2652f54dccc8f6391d40de7a6c00baaae5f2793549d  /Users/sota/.julia/packages/WaterLily/yOkji/src/WaterLily.jl
+source_sha256 8e9384f975f5ce0774d1f321ed72f7a4f31d3bd8ef6dac0c8b8c6a80ae808355  /Users/sota/.julia/packages/WaterLily/yOkji/src/core.jl
+source_sha256 da629f95b81ff718a467d178451f16cd8ea05af519262d86e91f0b1d21681e7a  /Users/sota/.julia/packages/WaterLily/yOkji/src/util.jl
