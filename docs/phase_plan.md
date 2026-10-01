@@ -671,6 +671,24 @@ or formal FD round is authorized by the diagnostic. See
 [`issues/37_fd07_sign_consistency_causal_diagnosis.md`](issues/37_fd07_sign_consistency_causal_diagnosis.md)
 and its append-only evidence.
 
+**2026-10-02 FD-07 continuous replacement screen (#37; bounded diagnostic only):** A
+pre-registered Stage 1/2/3 comparison selected Candidate C, the one-sided
+moment-level blend, as the single most promising diagnostic candidate. It
+preserves all registered analytic plane/sphere/one-cell/two-cell plate
+moments, all 49 legal half-cell crossings, reflection symmetry, and the
+moving-ground initialization; A and B fail the registered thin-body and/or
+ground semantics. On the single v17 / `flow_24` fixture, C's maximum paired
+force departures were lower than upstream for all 72 signed component
+comparisons. The baseline coefficient map still differs at one face by
+`0.81831` in `μ₀`; short-window force response does not scale 10× with 10×
+input and is not a derivative qualification. The first execution attempt
+stopped after the upstream baseline due to a recorder scope error; its
+partial evidence is preserved, and attempt 2 reran the full matrix. Candidate
+C is not adopted. Stop here: formal FD, production replacement, W3/W4
+requalification, Kaggle, v18, gradient, and optimizer remain unauthorized and
+unqualified. See [`issues/37_fd07_continuous_replacement_result.md`](issues/37_fd07_continuous_replacement_result.md)
+and its append-only evidence.
+
 Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-06 result and later diagnostic checkpoints above supersede their pending-registration instructions:
 
 1. **Retain the closed W3 owner-lifetime diagnosis.** Exact owner-lifetime
@@ -711,13 +729,15 @@ Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **FD-05 and FD-06 are terminal FAIL; FD-07 causal diagnosis is complete.**
-   Preserve all registered criteria and outcomes. The 2026-10-01 bounded
-   intervention supports the sign-consistency correction as the dominant
-   cause of this fixture's short-horizon irregularity, but does not qualify
-   formal FD or a replacement. Stop after the recorded result; any production
-   remedy or new FD registration requires a separately authorized,
-   preregistered task.
+5. **FD-05 and FD-06 are terminal FAIL; FD-07 diagnostics selected Candidate C
+   for possible follow-up only.** Preserve all registered criteria and
+   outcomes. The 2026-10-01 causal intervention supports the sign-consistency
+   correction as the dominant cause of this fixture's short-horizon
+   irregularity. The 2026-10-02 screen selects one diagnostic moment-level
+   candidate, but its baseline still differs at one `μ₀` face and its
+   short-window force response is not a qualified derivative. Stop after this
+   result; production adoption, formal FD, or requalification requires a
+   separately authorized, preregistered task.
 6. **Repair the FD runner/host-verifier contract before a future authorized
    execution.** Round 5 is terminal failed evidence; preserve its immutable
    criteria, dataset v5, exact kernel `/4`, outputs, and diagnostics. The source
