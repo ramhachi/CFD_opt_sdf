@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from scripts.qualify_sdf_reinitialization import analytic_fixture
+from scripts.qualify_sdf_reinitialization import DEFAULT_CRITERIA, analytic_fixture
 from cfd_sdf.design.sdf_reinitialization import (
     SDFReinitializationError,
     _eikonal_stats,
@@ -55,6 +55,10 @@ def test_registered_sphere_pair_fixture_builds_without_single_center():
     assert state.phi[2, 4, 4] < 0
     assert state.phi[6, 4, 4] < 0
     assert state.phi[4, 4, 4] > 0
+
+
+def test_default_runner_targets_current_immutable_round():
+    assert DEFAULT_CRITERIA.name == "sdf_native_reinitialization_godunov2_v2_round3_2026_10.json"
 
 
 @pytest.mark.parametrize("value", [-1.0, 0.0, 1.0])

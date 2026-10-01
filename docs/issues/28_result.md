@@ -59,6 +59,13 @@ The first full-suite attempt, before the ignored canonical-v17 inputs were resto
 
 `git diff --check` passed after the source/criteria edits.
 
+After preserving the round3 result, a maintenance checkpoint corrected the
+runner's default criteria path from rejected round1 to round3 and added a
+regression test. The formal command above already passed `--criteria` explicitly;
+this post-result edit is not part of the measured source snapshot and therefore
+does not match round3's registered runner/test hashes. Replaying a formal run
+from the newer source requires a separately preregistered successor round.
+
 ## Evidence scope and artifacts
 
 Evidence class: CPU-only geometric operator-effect qualification on three registered analytic fields and one canonical-v16 state. No CFD solver, GPU, finite-difference response, optimizer update, or physical force calculation was run. All six qualification flags remained false.

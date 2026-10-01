@@ -23,7 +23,7 @@ from cfd_sdf.design.sdf_reinitialization import (
 from cfd_sdf.design.sdf_state import SDFDesignState
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CRITERIA = ROOT / "docs/evidence/sdf_native_reinitialization_godunov2_v2_round1_2026_10.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/sdf_native_reinitialization_godunov2_v2_round3_2026_10.json"
 
 
 def sha256(path: Path) -> str:
