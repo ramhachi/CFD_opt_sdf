@@ -48,3 +48,19 @@ least three plateau observations before producing any response verdict.
 - `tests/test_fd08_contract.py`: SHA-256 `5f8d05d42af48e7fccffb4c396caa7d7bf2cf9c1a379c5a73f3d73b382f6b714`.
 - Full-suite logs are under ignored `work/fd08_preparation/`; hashes are listed above. Criteria, measurement and solver artifacts were not created.
 - Commit SHA is reported after push.
+
+## Parent review checkpoint, 2026-10-02
+
+The hashes above describe the worker's initial preparation snapshot. Parent
+commit `c69c6fe` added the repository-local `src` import bootstrap to the test,
+so the shared editable environment cannot accidentally test another worktree.
+The current test SHA-256 is
+`dfd94dcf431dbad571d2bbb468e78dd64eb7acfa9e845221970c3c14cdd8dc14`.
+The contract module hash is unchanged. The literal focused pytest command
+passed all five tests; compileall passed. Integration used `merge --no-ff`.
+
+The one formerly failing baseline test became runnable because its ignored
+ProblemSpec fixture was copied into this worker's local `work/` directory.
+That failure-ID removal is fixture availability, not a source bug repair.
+No calibration, immutable formal criteria, or fresh 33-run qualification set
+has been created. This remains preparation evidence only.
