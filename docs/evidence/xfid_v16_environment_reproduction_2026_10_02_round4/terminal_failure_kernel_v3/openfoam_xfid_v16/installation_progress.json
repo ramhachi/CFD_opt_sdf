@@ -1,0 +1,51 @@
+{
+  "apt_index_records": [
+    {
+      "bytes": 3624,
+      "name": "InRelease",
+      "sha256": "e2102adead8229c90f654a768a272e37b08c7bfa5d856379c9bf833196f79bad",
+      "url": "https://dl.openfoam.com/repos/deb/dists/jammy/InRelease"
+    },
+    {
+      "bytes": 42529,
+      "name": "Packages.gz",
+      "sha256": "0000d7fae190252a056c976597be5823f1b9b16b288033000bb3d703610c91ab",
+      "url": "https://dl.openfoam.com/repos/deb/dists/jammy/main/binary-amd64/Packages.gz"
+    }
+  ],
+  "architecture": "amd64",
+  "installed_packages": [
+    "openfoam2512-common=2512.0-2",
+    "openfoam2512-tools=2512.0-2",
+    "openfoam2512=2512.0-2"
+  ],
+  "observed_os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+  "official_installer_sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b",
+  "os_codename": "jammy",
+  "os_id": "ubuntu",
+  "os_version": "22.04",
+  "package_records": [
+    {
+      "architecture": "amd64",
+      "deb": "openfoam2512_2512.0-2_amd64.deb",
+      "name": "openfoam2512",
+      "sha256": "52377a07c3ef8129c89d89a108c5421d709cf5a0f291f4977274b04a02df2181",
+      "version": "2512.0-2"
+    },
+    {
+      "architecture": "all",
+      "deb": "openfoam2512-common_2512.0-2_all.deb",
+      "name": "openfoam2512-common",
+      "sha256": "55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9",
+      "version": "2512.0-2"
+    },
+    {
+      "architecture": "amd64",
+      "deb": "openfoam2512-tools_2512.0-2_amd64.deb",
+      "name": "openfoam2512-tools",
+      "sha256": "77742307d3285f1cefeb286313b28fda15ed1d3b316e57e3353866fc326f3546",
+      "version": "2512.0-2"
+    }
+  ],
+  "status": "packages_installed_and_hash_verified_before_foamVersion"
+}
