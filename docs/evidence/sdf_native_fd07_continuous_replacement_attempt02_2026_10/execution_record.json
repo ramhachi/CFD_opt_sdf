@@ -1,0 +1,79 @@
+{
+  "attempt": 2,
+  "base_head": "ecaa1572734596130ffefdd0d7b0ab3c2af67c15",
+  "branch": "exp/issue-37-continuous-sign-consistency",
+  "evidence_class": "bounded_diagnostic_only",
+  "input_files_manifest_sha256": "285b14b36a7ee1b940d85b3959ce775f62628dde5c389982ada06aff428a978a",
+  "registered_plan_sha256": "5da4f0f9f82fd59215e0c642f0c14644ba47335e542007b482e0b6d19a0a87c9",
+  "source_manifest_sha256": "a9afd938b7762260dad04335944126455ffbbf41da6ebcbe61798e68e82ab063",
+  "runtime": {
+    "julia": "julia version 1.12.6",
+    "waterlily": "1.8.0",
+    "body_jl_sha256": "aed03bb57053731c7d2098950d92df9b59fda3bd4f7aaaca51bb076bd5edcaee"
+  },
+  "superseded_attempt": {
+    "path": "docs/evidence/sdf_native_fd07_continuous_replacement_2026_10",
+    "plan_sha256": "c3959a55122c87386d0eb061f22f1dea3538697923bf1c1198dc9b5a6b8bb366",
+    "failure_record": "stage3_attempt_failure.txt",
+    "failure_record_sha256": "d9df007a35a9280b21c2c5923efb3e1f15c024eb25e45e7bcf46f7a024f9e4f4",
+    "completed_raw_history_sha256": "30b813e7336d14f42c11674182e2479c24ba296307ee1662e7911c399b283467",
+    "original_sources_manifest_sha256": "e70d89b5dc87b11f171f47baa1d302711b4c2d1475ce0dea48bb6e179bb53298",
+    "reconstructed_and_verified_source_snapshot_count": 19,
+    "artifact_manifest_sha256": "254e9697e75d134a355900b150d0a05a21c44aa5b97174cffb6bc95805178079",
+    "reason": "The upstream baseline flow reached tU/L=3.013518, then the attempt stopped because a Julia try-block local named steps was read outside its scope. Its plan and partial output are preserved without overwrite."
+  },
+  "commands": [
+    {
+      "stage": "analytic geometry fixtures",
+      "command": "julia --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_continuous_replacement_fixtures.jl docs/evidence/sdf_native_fd07_continuous_replacement_attempt02_2026_10",
+      "exit_code": 0,
+      "outputs": ["analytic_fixture_coefficients.csv", "analytic_reflection_symmetry.csv", "analytic_center_sign_sweep.csv", "analytic_translation_continuity.csv"]
+    },
+    {
+      "stage": "solver-free coefficient matrix",
+      "command": "julia -t 4 --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_continuous_replacement_probe.jl --coefficients docs/evidence/sdf_native_fd07_continuous_replacement_attempt02_2026_10",
+      "exit_code": 0,
+      "solver_steps": 0,
+      "outputs": ["coefficient_field_hashes.csv", "coefficient_metrics.csv", "coefficient_pair_responses.csv", "moving_ground_identity.csv", "sensitive_faces.csv", "coefficient_preflight.txt"]
+    },
+    {
+      "stage": "short CPU solve matrix",
+      "command": "julia -t 4 --project=julia/CFDSDFWaterLily scripts/sdf_native_fd07_continuous_replacement_probe.jl --solve C_MOMENT_BLEND docs/evidence/sdf_native_fd07_continuous_replacement_attempt02_2026_10",
+      "exit_code": 0,
+      "runs": 39,
+      "outputs": ["stage3_progress.csv", "stage3_execution.txt", "solved/upstream/*.csv", "solved/no_sign_correction/*.csv", "solved/c_moment_blend/*.csv"]
+    },
+    {
+      "stage": "independent host force integration",
+      "command": ".venv/bin/python scripts/sdf_native_fd07_continuous_replacement_analysis.py",
+      "exit_code": 0,
+      "outputs": ["force_response_long.csv", "force_pair_response.csv", "summary.json", "artifact_manifest.sha256"]
+    }
+  ],
+  "stage1": {
+    "modes": ["UPSTREAM", "NO_SIGN_CORRECTION", "A_THRESHOLD", "B_CENTER_SIGN", "C_MOMENT_BLEND"],
+    "phi_cases_per_mode": 13,
+    "coefficient_initializations": 65,
+    "paired_response_rows": 30,
+    "normal_floor": 0.25,
+    "flow_case": "flow_24",
+    "native_upstream_initialization_exact": true
+  },
+  "stage2": {
+    "fixture_coefficient_rows": 35,
+    "reflection_rows": 35,
+    "translation_rows": 10,
+    "legal_half_cell_crossings_in_near_center_plane": 49
+  },
+  "stage3": {
+    "modes": ["UPSTREAM", "NO_SIGN_CORRECTION", "C_MOMENT_BLEND"],
+    "runs_per_mode": 13,
+    "total_runs": 39,
+    "registered_window_t_u_l": [2.0, 3.0],
+    "force_conversion_n_per_solver_force": 0.0011111111111111111,
+    "observed_t_u_l_range": [3.0123203, 3.013518],
+    "sample_rows_per_history": 29,
+    "maximum_sample_force_closure_n": 6.315935428978668e-17,
+    "maximum_window_force_closure_n": 5.551115123125783e-17
+  }
+}

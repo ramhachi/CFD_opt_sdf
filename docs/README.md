@@ -7,7 +7,7 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-## Current checkpoint (2026-10-01)
+## Current checkpoint (2026-10-02)
 
 Canonical v17 W3 and W4 passed their own finite-box contracts; flow_24 is the
 chosen FD/optimization grid, not a converged physical reference. FD-05 and
@@ -20,12 +20,15 @@ is unresolved. See [FD-06 result](issues/37_fd06_result.md),
 and [the current roadmap](phase_plan.md#11-current-sdf-native-execution-order).
 All FD/gradient/optimizer/topology/shape-update qualification flags remain false.
 
-FD-07 tested ten short CPU solves: a source-fixed design-lattice shift did
-not remove irregular response and was not adopted. Solver-free arithmetic
-and branch controls identify finite BDIM coefficient jumps from the half-cell
-sign-consistency correction on recorded faces; their effect on long-window
-solved-force FD remains unqualified. See
-[FD-07 diagnosis and commands](issues/37_fd07_lattice_shift_diagnosis.md).
+FD-07's bounded continuous-replacement screen selects the one-sided
+moment-level Candidate C as the most promising diagnostic candidate. It
+preserves the tested analytic thin-body and moving-ground semantics and reduces
+short-window force perturbations on the registered v17 / flow_24 fixture.
+Its baseline `μ₀` still differs at one face, and force response does not scale
+with input by 10×; it is not a production replacement or formal FD result. See
+[the replacement result](issues/37_fd07_continuous_replacement_result.md),
+[FD-07 causal diagnosis](issues/37_fd07_sign_consistency_causal_diagnosis.md),
+and [FD-07 lattice diagnosis](issues/37_fd07_lattice_shift_diagnosis.md).
 
 ## Historical v16 execution checkpoints (2026-09-29)
 
