@@ -1,0 +1,24 @@
+{
+  "done_present": false,
+  "evidence_class": "fresh_kaggle_environment_failure_no_solver",
+  "failure_stage": "environment_install",
+  "files": {
+    "cfd-opt-sdf-xfid-v16-openfoam-reproduction.log": {
+      "preserved_name": "cfd-opt-sdf-xfid-v16-openfoam-reproduction.log.gz",
+      "preserved_sha256": "d941105994e0363ed320f1fb2249cf30faf0ed90c1982f20a2494cb3f1d1f7b7",
+      "raw_sha256": "c86e1eb3871e61db8ab0a54755b890868db4ef1fddde80190cdec2ef64c8e04c"
+    },
+    "openfoam_xfid_v16/ERROR.json": {
+      "preserved_name": "ERROR.json",
+      "preserved_sha256": "6b7f3bf4c04c728d49fff69a995881530459b0c5e45190d714c38d4ffb6ecc77",
+      "raw_sha256": "6b7f3bf4c04c728d49fff69a995881530459b0c5e45190d714c38d4ffb6ecc77"
+    }
+  },
+  "formal_xfid_verdict": null,
+  "kernel": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/1",
+  "observed_os": "Ubuntu 22.04.5 Jammy amd64",
+  "required_os": "Ubuntu Noble amd64",
+  "solver_started": false,
+  "terminal_status": "KernelWorkerStatus.ERROR",
+  "track_c_stop_condition_met": false
+}
