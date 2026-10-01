@@ -37,3 +37,19 @@ step values within the range, or register criteria.
 - `tests/test_step01_contract.py`: SHA-256 `bde3baa2130f3161d40ad9e19dcfa1b88dc7e3a8c71eede45829f1644f124071`.
 - Full-suite logs are under ignored `work/step01_preparation/`; hashes are listed above. Criteria, measurement and solver artifacts were not created.
 - Commit SHA is reported after push.
+
+## Parent review checkpoint, 2026-10-02
+
+The hashes above describe the worker's initial preparation snapshot. Parent
+commit `dd46c6c` added the repository-local `src` import bootstrap to the test,
+so the shared editable environment cannot accidentally test another worktree.
+The current test SHA-256 is
+`95409bef68b1856f23df8c7137b1ad575e2b499c32ca0b90ccff89ae6bc66669`.
+The contract module hash is unchanged. The literal focused pytest command
+passed all seven tests; compileall passed. Integration used `merge --no-ff`.
+
+The one formerly failing baseline test became runnable because its ignored
+ProblemSpec fixture was copied into this worker's local `work/` directory.
+That failure-ID removal is fixture availability, not a source bug repair.
+No finite-step solver measurements or secant qualification has been performed;
+the helper remains separate from the formal local FD oracle.

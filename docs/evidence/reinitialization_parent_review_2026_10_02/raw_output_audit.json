@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "case_id": "analytic_sphere",
+      "output_hash_state_identity_input_band_eikonal_smoothed_volume": "PASS"
+    },
+    {
+      "case_id": "analytic_thin_box",
+      "output_hash_state_identity_input_band_eikonal_smoothed_volume": "PASS"
+    },
+    {
+      "case_id": "analytic_two_spheres",
+      "output_hash_state_identity_input_band_eikonal_smoothed_volume": "PASS"
+    },
+    {
+      "case_id": "canonical_v16",
+      "output_hash_state_identity_input_band_eikonal_smoothed_volume": "PASS"
+    }
+  ],
+  "evidence_class": "parent_independent_raw_output_recomputation",
+  "formal_verdict": "FAIL",
+  "qualification_flags_changed": false,
+  "result_sha256": "ddb29fe605c146512467eeeaaa7bf979a372cef32e70870477127f576fd04ffe"
+}
