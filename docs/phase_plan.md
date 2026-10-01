@@ -5026,3 +5026,13 @@ and in issues #44–#48; they do not amend historical criteria or evidence.
   checks; compare failure IDs to a measured baseline, not just a count of 37.
 - All six qualification/shape-update flags remain false. #48 starts only if
   #22–#25 stall, and cannot close #30 without explicit recorded supersession.
+
+### 2026-10-02 partial research topology decision (#31)
+
+The user selected detached components allowed and root connectivity optional
+for the research policy. Record this in a new successor policy identity;
+preserve historical v1 and state bindings. Birth/split/merge/whole-component
+deletion permissions remain awaiting the separate user decision. This partial
+choice is not a canonical registration or execution permission. Missing
+physical feature limits and provenance remain unresolved; all six flags remain
+false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.md).

@@ -125,3 +125,37 @@ inform the XFID verdict or branch decision. Local self-check and mocked
 harness results are contract evidence; historical JSON and logs are prior
 Stage V evidence; only a fresh Kaggle replay verified independently from its
 raw artifacts can establish environment reproduction.
+
+## Parent source review and dispatch prerequisite checkpoint
+
+Parent independently passed four shell regression tests using
+`python -m pytest -q infra/kaggle/kernel_openfoam_xfid_v16/test_allrun.py`
+and checked the isolated script-only embedded mount with `runner.py --self-check`.
+Reading the historical parent case at time 584 reproduced Cd
+`1.1693991415068499`, downforce coefficient `0.7565514657808217`, drag
+`0.374207725282192 N`, downforce `0.24209646904986293 N`, and normalized mass
+imbalance `1.9077502684040886e-8`. Its 2967 concave cells out of 42619 are below
+the registered 8% ceiling. This remains a check of historical data and the
+harness; it is not fresh environment evidence.
+
+The integrated full-suite source binding was audited explicitly. Before the
+pytest `pythonpath=["src"]` fix, the shared editable environment had imported
+the original checkout package before discovering the new FD/STEP modules,
+causing two collection errors. That log is retained. After the fix, the literal
+integrated pytest command completed with **37 failed, 1245 passed, 4 skipped**.
+A separate source-bound replay of the original `2fd7f6a` baseline completed
+with **37 failed, 1225 passed, 5 skipped**. The exact 37 failure IDs match both
+each other and the first baseline; zero new failures. Compileall and diff
+checks passed. The pass/skip difference includes optional ignored fixtures.
+
+The immutable parent registration and preserved validation logs are under
+[`xfid_v16_environment_reproduction_2026_10_02_round2`](../evidence/xfid_v16_environment_reproduction_2026_10_02_round2/).
+Registration SHA-256:
+`8d40a6913a898b11fa7fc7d80c766af79ad5f9609fbfb5a0a7f88002d3696881`.
+The runner SHA-256 is
+`67d6021c7386d2297773be71d5bc5de234503506c70037b805e2c483bb91e447`;
+the criteria SHA-256 is
+`5718d0c3013a826504e4f8389d35958a67e3b10c3093954ac8958d9a2ef1ac56`.
+The source checkpoint is `7ea5bf6`. Commit/push this registration before
+dispatch. Submission and terminal results must be separate append-only
+records; this registration alone cannot produce an XFID verdict or change a flag.
