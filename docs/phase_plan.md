@@ -4974,3 +4974,55 @@ Rules:
 
 No qualification flag changes. `shape_update_allowed=false`, the FD oracle,
 field gradient, reverse mode, optimizer and topology flags remain false.
+
+### 2026-10-02 execution prerequisites and verdict clarification
+
+These user decisions supersede conflicting pilot and branch-rule wording above
+and in issues #44–#48; they do not amend historical criteria or evidence.
+
+- Production Candidate C is the composite **Candidate C moment blend plus
+  `normal_floor=0.25`**, registered as a new body type. Neither component alone
+  is the production operator. W3-C/W4-C preserve the existing v17 numerical
+  thresholds and four-case W4 matrix; operator identity changes in new rounds.
+- W2 sphere and thin-plate fixtures sample analytic geometry onto a GridSDF
+  and solve through the Candidate C body. Native analytic bodies are controls.
+- GPU を必要とする正式計算は Kaggle T4 のみ。OpenFOAM Stage V は Kaggle CPU。
+  CPU だけで足りる diagnostics と capability test は CPU で実施してよい。
+  Colab は使用しない。OpenCode Go／OpenCode CLI は 2026-10-20 まで使わない。
+- Stage V must use the historical **OpenCFD v2512** family associated with
+  image digest `sha256:33fb575aa9980d2bc42fd58c75ae698c489293ba30c991380fe3f899c622f319`.
+  Record OS, exact apt package version, `foamVersion`, and package hashes.
+  Before new shapes, reproduce the archive's v16 Stage V PASS fixture on
+  Kaggle CPU: STL and physical-profile SHA, mesh/solver settings, Cd/downforce,
+  qualified mesh interpretation, stationarity, and mass balance. Preregister
+  the reproduction contract; failure or missing evidence blocks XFID.
+- The only permitted early Track B pilot is that v16 environment/harness
+  reproduction. Upstream WaterLily pilot responses cannot support scientific
+  verdicts or branch decisions. Formal XFID waits for the composite C contract.
+- XFID verdicts are **AGREE / DISAGREE / UNRESOLVED**. For each solver, compute
+  `delta_R_plus=R(+epsilon)-R0`, `delta_R_minus=R(-epsilon)-R0`, and the centered
+  secant in N-based semantics. Compare signs and ranking only for responses
+  resolved above both solvers' preregistered resolution floors. An unresolved
+  response yields UNRESOLVED, never PASS. Stop Track C compute only for a
+  **resolved representative DISAGREE**; AGREE prioritizes FD-08, and UNRESOLVED
+  leaves the cross-fidelity branch undecided.
+- FD-08 uses disjoint calibration and fresh qualification sets. After the C
+  contract freezes, calibrate C's micro-response uncertainty on the same
+  backend, flow_24, time window, and canonical v17 state; freeze the epsilon
+  ladder and model, register immutable criteria, then use **33 new runs only**
+  for the formal verdict. Calibration runs cannot satisfy formal FD evidence.
+  Keep the 5% relative plateau term, independently measured absolute response
+  resolution floor, and sign consistency as separate conditions. Unresolved
+  responses yield UNRESOLVED. STEP-01's 0.1–0.5h secants remain a separate oracle.
+- #31's component/root and birth/split/merge/delete choices require user
+  decisions. Implement only mechanically determined existing requirements;
+  record undecided choices, effects and recommended defaults without silently
+  registering a canonical policy.
+- Work in issue-specific feature branches/worktrees from
+  `codex/kaggle-batch-migration`; integration uses `merge --no-ff` after review.
+  Preserve pinned bodies, historical rounds and unrelated work. Record commands,
+  results, artifact paths/hashes and evidence class in `docs/issues/` and the
+  corresponding issue. Run focused checks, compileall, full pytest and diff
+  checks; compare failure IDs to a measured baseline, not just a count of 37.
+- All six qualification/shape-update flags remain false. #48 starts only if
+  #22–#25 stall, and cannot close #30 without explicit recorded supersession.
