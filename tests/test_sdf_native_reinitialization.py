@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from scripts.qualify_sdf_reinitialization import analytic_fixture
 from cfd_sdf.design.sdf_reinitialization import (
     SDFReinitializationError,
     _eikonal_stats,
@@ -42,6 +43,18 @@ def test_eikonal_report_uses_fixed_input_band_and_sign_labels():
     assert before_stats["fluid"]["count"] == after_stats["fluid"]["count"]
     assert before_stats["solid"]["count"] == after_stats["solid"]["count"]
     assert before_stats["fluid"]["count"] + before_stats["solid"]["count"] == int(evaluation_band.sum())
+
+
+def test_registered_sphere_pair_fixture_builds_without_single_center():
+    state = analytic_fixture({
+        "shape": [9, 9, 9], "spacing_m": 0.1, "origin_m": [-0.4, -0.4, -0.4],
+        "shape_kind": "sphere_pair", "centers_m": [[-0.2, 0.0, 0.0], [0.2, 0.0, 0.0]],
+        "radii_m": [0.15, 0.15],
+    })
+
+    assert state.phi[2, 4, 4] < 0
+    assert state.phi[6, 4, 4] < 0
+    assert state.phi[4, 4, 4] > 0
 
 
 @pytest.mark.parametrize("value", [-1.0, 0.0, 1.0])

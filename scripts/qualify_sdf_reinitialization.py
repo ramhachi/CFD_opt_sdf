@@ -43,8 +43,8 @@ def analytic_fixture(spec: dict) -> SDFDesignState:
     origin = tuple(float(value) for value in spec["origin_m"])
     axes = [origin[i] + np.arange(shape[i], dtype=np.float64) * spacing for i in range(3)]
     x, y, z = np.meshgrid(*axes, indexing="ij")
-    center = np.asarray(spec["center_m"], dtype=np.float64)
     if spec["shape_kind"] == "sphere":
+        center = np.asarray(spec["center_m"], dtype=np.float64)
         phi = np.sqrt((x - center[0])**2 + (y - center[1])**2 + (z - center[2])**2) - float(spec["radius_m"])
     elif spec["shape_kind"] == "sphere_pair":
         radii = [float(value) for value in spec["radii_m"]]
@@ -54,6 +54,7 @@ def analytic_fixture(spec: dict) -> SDFDesignState:
             for item, radius in zip(centers, radii)
         ])
     elif spec["shape_kind"] == "box":
+        center = np.asarray(spec["center_m"], dtype=np.float64)
         half = np.asarray(spec["half_extents_m"], dtype=np.float64)
         q = np.stack((np.abs(x - center[0]), np.abs(y - center[1]), np.abs(z - center[2])), axis=-1) - half
         phi = np.linalg.norm(np.maximum(q, 0.0), axis=-1) + np.minimum(np.max(q, axis=-1), 0.0)
@@ -72,7 +73,7 @@ def verify_criteria(criteria_path: Path, criteria: dict) -> tuple[str, dict]:
         raise ValueError("criteria SHA sidecar missing or mismatched")
     if (criteria.get("immutable") is not True or criteria.get("status") != "registered_not_run"
             or criteria.get("formal_measurement_started") is not False
-            or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round2_2026_10"):
+            or criteria.get("criteria_id") != "sdf_native_reinitialization_godunov2_v2_round3_2026_10"):
         raise ValueError("criteria is not the immutable unrun reinitialization round")
     if criteria.get("criteria_sha256") != declared_criteria_sha:
         raise ValueError("criteria canonical digest mismatch")
