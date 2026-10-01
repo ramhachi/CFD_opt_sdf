@@ -1,0 +1,73 @@
+{
+  "command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q",
+  "comparison": {
+    "baseline_failure_count": 37,
+    "baseline_failure_ids_path": "work/four_track_2026_10_02/baseline_failure_ids.json",
+    "baseline_failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "baseline_ids_absent_in_current_run": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign"
+    ],
+    "new_failure_ids": [],
+    "result": "no new failure IDs; one baseline ID absent in this run"
+  },
+  "evidence_class": "software_validation",
+  "failure_ids": [
+    "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+    "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+    "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+    "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+    "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+    "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+    "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+    "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+    "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+    "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+    "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+    "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+    "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+    "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+    "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+    "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+    "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+    "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+    "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+    "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+    "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+    "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+    "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+    "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+    "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+    "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+    "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+    "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+    "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+    "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+    "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+    "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+    "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+    "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+  ],
+  "failure_ids_sha256": "d3b0199975fd49498ca74bca2d039e27774aa153a0b326131ab544c1b27a78f0",
+  "fixture_inputs_restored_byte_for_byte": [
+    {
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    {
+      "path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    }
+  ],
+  "full_log_path": "work/issue_29/pytest-full-postfix.log",
+  "full_log_sha256": "08edea190da9437b33b3daa1e709d15f8f7552b76887161968031fa10a9796ce",
+  "kind": "sdf_native_geometry_gates_pytest_validation",
+  "result": {
+    "duration_seconds": 217.59,
+    "failed": 36,
+    "passed": 1251,
+    "skipped": 5
+  },
+  "schema_version": 1
+}

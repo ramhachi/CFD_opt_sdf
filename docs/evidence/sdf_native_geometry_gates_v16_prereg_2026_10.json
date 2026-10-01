@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "kind": "sdf_native_geometry_gates_v16_preregistration",
+  "contract_id": "sdf_native_geometry_gates_v1",
+  "immutable": true,
+  "round_id": "GEOM-01-v16-solver-free-diagnostic-2026-10-r1",
+  "evidence_class": "solver_free_geometry_contract_and_capability",
+  "solver_started": false,
+  "input": {
+    "state_archive_path": "work/issue_29/canonical_v16/sdf_design_state.npz",
+    "state_archive_sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe",
+    "state_sha256": "44507748807dfbff995eb146866776b4a292e2fa2ddfe6caa5c3a611c29f6de8",
+    "genesis_manifest_path": "docs/evidence/sdf_native_genesis_v16_2026_09.json",
+    "genesis_manifest_sha256": "3c8e241681c80962a7fd62f1926e382d473ec8e9f3e6b9140bea9600d41cf670",
+    "grid": {
+      "point_shape": [61, 33, 25],
+      "origin_m": [-1.0, -0.8, -0.6],
+      "spacing_m": 0.05
+    }
+  },
+  "source_sha256": {
+    "scripts/sdf_native_geometry_gates_v16_2026_10.py": "401be040d02cd889c95dc03528bd19fc4aef49d749f90688bd8db58d6602002d",
+    "src/cfd_sdf/design/geometry_gates.py": "7bed1368f3a6e724fdddaeec9e21d8dc1bdb7fb76b637546142d0d083752b784",
+    "src/cfd_sdf/design/topology_policy.py": "f7ead697ef879462cfed5036a6e6af20c1953f767154b9fdbd606f69f83b418b",
+    "src/cfd_sdf/design/volume_semantics.py": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626",
+    "src/cfd_sdf/design/sdf_state.py": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf",
+    "src/cfd_sdf/extraction_qualification.py": "dd798afb730894263279e8f05e7704915e49cbca27f55ce1d1f2720bd0e6f2a2",
+    "tests/test_sdf_native_geometry_gates.py": "56c8682e37d420d61986c906544eebe0efcc2eaf781f69aab6e1cdd227499208",
+    "docs/sdf_native_geometry_gates_contract_v1_2026_10.md": "60ec42669c66868715e12cf7c2b359281ec57722b897763986a30c0f559290d1"
+  },
+  "measurement_contract": {
+    "aggregate_rule": "all registered gates must pass; fail and unmeasured both block",
+    "policy_scope": "canonical_unresolved",
+    "component_connectivity_measurement": "26-neighbour on phi<0 node occupancy; measured count does not register component/root permissions",
+    "cell_occupancy": "trilinear mean of eight phi nodes at cell centre < 0",
+    "volume_limit_m3": 0.12612500000000004,
+    "volume_rule": "inherited sharp V_phi <= limit; smoothed volume is diagnostic only",
+    "boundary_margin_cells": 1,
+    "low_gradient_band_abs_phi_m": 0.05,
+    "low_gradient_norm_floor": null,
+    "low_gradient_prior_bins": "<1e-6 and >=0.25 are descriptive only, not an acceptance cut",
+    "eikonal_median_tolerance": null,
+    "minimum_clearance_m": null,
+    "minimum_solid_width_m": null,
+    "minimum_void_width_m": null,
+    "minimum_gap_m": null,
+    "width_estimator": "minimum sampled 2*EDT ridge width on 4x supersampled V_phi cell occupancy; h/4 guard makes near-limit comparisons unresolved",
+    "gap_estimator": "cell-union face-distance estimate; one-cell h resolution guard makes near-limit comparisons unresolved",
+    "canonical_export_mesh": "not supplied; actual GridSDF zero-level/STL integrity and self-intersection remain unmeasured",
+    "diagnostic_export_proxy": "in-memory voxel cell-union surface, reported nested as proxy only",
+    "output_policy": "create new JSON path exclusively; no overwrite"
+  },
+  "qualification_flags": {
+    "shape_update_allowed": false,
+    "fd_oracle": false,
+    "field_gradient": false,
+    "reverse": false,
+    "optimizer": false,
+    "topology": false
+  },
+  "claims_supported_if_all_applicable_gates_pass": [
+    "reported solver-free geometry metrics for the hash-bound v16 state",
+    "implementation behavior on explicitly fixture-only analytic test geometries"
+  ],
+  "claims_not_supported": [
+    "physical feature width or gap qualification",
+    "canonical topology/root policy acceptance",
+    "actual GridSDF zero-level or Stage V/STL export qualification",
+    "flow, force, manufacturing, optimization, or shape-update qualification"
+  ]
+}

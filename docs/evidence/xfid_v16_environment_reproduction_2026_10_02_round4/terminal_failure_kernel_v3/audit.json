@@ -1,0 +1,76 @@
+{
+  "ERROR_sha256": "b4314b528a6eb3ac7643564e7946f61a6a4c2b6337368aa06e9e2e8f90071e3d",
+  "evidence_class": "Kaggle_CPU_environment_harness_failure_not_CFD_or_XFID",
+  "exact_kernel_id": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/3",
+  "meshing_started": false,
+  "observed_failure": "Fixed packages install and hashes match. Noninteractive bash sources setup but does not source aliases containing foamVersion; command not found.",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "records": [
+    {
+      "bytes": 15167,
+      "original_sha256": "5dc099d453f975c50fd52ba6ecf7cbbe74c6baaef3131b52ae76cd6f532aa50d",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/cfd-opt-sdf-xfid-v16-openfoam-reproduction.log.gz",
+      "sha256": "ee5537c42d59e8e9df7b37dd857dbcd8e24c2fa978743610338e4b63b20a7318"
+    },
+    {
+      "bytes": 3855,
+      "original_sha256": "b4314b528a6eb3ac7643564e7946f61a6a4c2b6337368aa06e9e2e8f90071e3d",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/openfoam_xfid_v16/ERROR.json",
+      "sha256": "b4314b528a6eb3ac7643564e7946f61a6a4c2b6337368aa06e9e2e8f90071e3d"
+    },
+    {
+      "bytes": 3624,
+      "original_sha256": "e2102adead8229c90f654a768a272e37b08c7bfa5d856379c9bf833196f79bad",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/openfoam_xfid_v16/InRelease",
+      "sha256": "e2102adead8229c90f654a768a272e37b08c7bfa5d856379c9bf833196f79bad"
+    },
+    {
+      "bytes": 42529,
+      "original_sha256": "0000d7fae190252a056c976597be5823f1b9b16b288033000bb3d703610c91ab",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/openfoam_xfid_v16/Packages.gz",
+      "sha256": "0000d7fae190252a056c976597be5823f1b9b16b288033000bb3d703610c91ab"
+    },
+    {
+      "bytes": 4147,
+      "original_sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/openfoam_xfid_v16/add-debian-repo.sh",
+      "sha256": "f7fa288327e936b5a85e3e4a0b29bf039c06d214916f39400b830b63a3310b5b"
+    },
+    {
+      "bytes": 2080,
+      "original_sha256": "46e68b35b9b1d09487f97c41dd3eeb07aa5c32be74f89992c5eb3ea74b8e647e",
+      "path": "docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round4/terminal_failure_kernel_v3/openfoam_xfid_v16/installation_progress.json",
+      "sha256": "46e68b35b9b1d09487f97c41dd3eeb07aa5c32be74f89992c5eb3ea74b8e647e"
+    },
+    {
+      "bytes": 1308034,
+      "download_path": "work/four_track_2026_10_02/xfid_v16_cpu_output_version3/openfoam_xfid_v16/openfoam2512-common_2512.0-2_all.deb",
+      "retention": "ignored exact-package download; official hash locked",
+      "sha256": "55588cb7231fb27eb6dbf53448a2e3d00fa30d516b42120b8eacf07abdfbe2d9"
+    },
+    {
+      "bytes": 54356,
+      "download_path": "work/four_track_2026_10_02/xfid_v16_cpu_output_version3/openfoam_xfid_v16/openfoam2512-tools_2512.0-2_amd64.deb",
+      "retention": "ignored exact-package download; official hash locked",
+      "sha256": "77742307d3285f1cefeb286313b28fda15ed1d3b316e57e3353866fc326f3546"
+    },
+    {
+      "bytes": 69224860,
+      "download_path": "work/four_track_2026_10_02/xfid_v16_cpu_output_version3/openfoam_xfid_v16/openfoam2512_2512.0-2_amd64.deb",
+      "retention": "ignored exact-package download; official hash locked",
+      "sha256": "52377a07c3ef8129c89d89a108c5421d709cf5a0f291f4977274b04a02df2181"
+    }
+  ],
+  "registration_sha256": "433fa0ab82b330a577cbb71567d3b0c51cba3013a5b45a519b089e662ff9606b",
+  "resolved_xfid_disagree": false,
+  "solver_started": false,
+  "terminal_status": "KernelWorkerStatus.ERROR",
+  "track_c_stop_condition_met": false
+}
