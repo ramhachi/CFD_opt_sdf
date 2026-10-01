@@ -1,10 +1,12 @@
 # 問題台帳 — 2026-09-22
 
 > **現況（2026-10-01）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
-> FD-07の設計格子シフトでも短時間の不規則応答は解消しなかった。
-> solver-free検査では、一部の初期BDIM係数の大きな跳びが半セル境界の符号補正に
-> 局在する。力の長時間応答への因果関係と修正方式は未資格。
-> [issue #37の診断記録](issues/37_fd07_lattice_shift_diagnosis.md)と
+> FD-07の設計格子シフトでも短時間の不規則応答は解消しなかったが、後続の
+> 事前登録A/B介入は、このfixtureの短時間力応答について半セル符号補正を主要因として支持した。
+> 初期 `μ₀` の大きな跳びは消え、力応答は大幅に抑制されたものの、残差は残る。
+> formal FD、長時間応答、物理精度、thin-body、保存性や本番代替策は未資格。
+> [issue #37の因果診断](issues/37_fd07_sign_consistency_causal_diagnosis.md)、
+> [FD-07格子シフト診断](issues/37_fd07_lattice_shift_diagnosis.md)、
 > [正本ロードマップ](phase_plan.md#11-current-sdf-native-execution-order)を参照する。
 >
 > **過去の現況（2026-09-29）:** W3 owner-fix round 4はexact T4 version 5でhost PASSし、

@@ -56,11 +56,17 @@ The dated snapshot below retains its evidence and implementation context; its
 pending-run and repair instructions are superseded by later records.
 
 FD-07 tested ten short CPU solves: a source-fixed design-lattice shift did
-not remove irregular response and was not adopted. Solver-free arithmetic
-and branch controls identify finite BDIM coefficient jumps from the half-cell
-sign-consistency correction on recorded faces; their effect on long-window
-solved-force FD remains unqualified. See
-[FD-07 diagnosis and commands](issues/37_fd07_lattice_shift_diagnosis.md).
+not remove irregular response and was not adopted. Its solver-free arithmetic
+and branch controls localized the initial BDIM coefficient jumps to the
+half-cell sign-consistency correction. A subsequent pre-registered 26-solve
+CPU A/B intervention supports that correction as the dominant cause of the
+short-horizon solved-force irregularity on the registered fixture: the large
+initial `μ₀` jump falls below `1e-5` and force departures are strongly
+suppressed, though residual response remains. This does not qualify formal FD, long-horizon
+behavior, thin-body handling, conservation, physical accuracy, or a production
+replacement. Stop at this result; no v18, production patch, or formal FD round
+was started. See [FD-07 diagnosis and commands](issues/37_fd07_lattice_shift_diagnosis.md)
+and [FD-07 causal diagnosis](issues/37_fd07_sign_consistency_causal_diagnosis.md).
 
 ## Historical SDF-native architecture and status (2026-09-29)
 

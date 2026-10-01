@@ -139,7 +139,7 @@ complete; it does not mean the mesh, fields, solver, or result are qualified.
 | WaterLily fixed-grid primal | Candidate primal/oracle under qualification; registered v16 finite-box primal contract passed | W0/W1 and sphere runs remain capability evidence. W3 round 4 qualifies only the canonical v16 integrity/force/stationarity contract on the registered WaterLily finite-box approximation; it does not qualify OpenFOAM equivalence or broader physical aerodynamics. |
 | W3 primal | v16 round 4 and v17 round 1 registered finite-box primal contracts PASS; broader physical qualification remains false | v16 exact kernel `/5` and v17 exact kernel `/1` passed their own host-verified T0-T10 contracts. The v17 result is bound to its own state and criteria; neither result qualifies physical aerodynamics. The unresolved W3 v4 all-zero root cause is not retroactively closed. |
 | W4 grid/domain sensitivity | v16 round 4 and canonical v17 round 1 sensitivity matrices passed exact-version host verification | v17 criteria SHA `5eceb62c…`, result SHA `25297c46…`, source `4c20787c`. Private dataset v1 inventory and exact kernel `/1` were verified; all four cases passed T0-T10. Resolution changes are large (flow16→24: drag 31.61%, downforce 23.43%; flow24→32: 6.77%, 8.37%), while the x+1 m domain change is below 0.26%. This remains finite-box sensitivity evidence, not grid/domain convergence or target-physics qualification. |
-| Centered-FD SDF directional oracle | v16 round 5, v17 FD-05 and FD-06 round 1 terminal FAIL | FD-06 / flow_24 with normal floor 0.25 completed 33 fresh primals; D2 drag and D0 downforce passed the unchanged 5% plateau gate, while the four other combinations deviated by 6.40–8.72%. Strict host verification failed closed on missing `DONE`; raw host recomputation is diagnostic only. FD-07 design-lattice phase shift does not remove short-horizon irregular response. Solver-free controls localize finite initialization coefficient jumps at recorded faces to sign-consistency correction; solved-force causality and a remedy remain unqualified. See [`37_fd06_result.md`](issues/37_fd06_result.md) and [`37_fd06_remaining_deviation_diagnosis.md`](issues/37_fd06_remaining_deviation_diagnosis.md). See [FD-07 diagnosis](issues/37_fd07_lattice_shift_diagnosis.md). FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
+| Centered-FD SDF directional oracle | v16 round 5, v17 FD-05 and FD-06 round 1 terminal FAIL | FD-06 / flow_24 with normal floor 0.25 completed 33 fresh primals; D2 drag and D0 downforce passed the unchanged 5% plateau gate, while the four other combinations deviated by 6.40–8.72%. Strict host verification failed closed on missing `DONE`; raw host recomputation is diagnostic only. FD-07 design-lattice phase shift did not remove short-horizon irregular response. A separate 26-solve CPU A/B intervention supports the half-cell sign-consistency correction as the dominant cause of the registered fixture's short-horizon solved-force irregularity: large initial `μ₀` jumps fell below `1e-5`, and force responses were strongly suppressed, with residual response remaining. This is bounded causal evidence, not formal FD or a production remedy. See [`37_fd06_result.md`](issues/37_fd06_result.md), [`37_fd06_remaining_deviation_diagnosis.md`](issues/37_fd06_remaining_deviation_diagnosis.md), [FD-07 diagnosis](issues/37_fd07_lattice_shift_diagnosis.md), and [FD-07 causal diagnosis](issues/37_fd07_sign_consistency_causal_diagnosis.md). FD/gradient/reverse/optimizer/topology/shape-update flags remain false. |
 | Production gradient backend | Undecided and unqualified | Reverse AD, discrete adjoint, or another method remains a candidate. Select only after qualification against the centered-FD oracle. |
 | Constrained SDF update | Blocked | `shape_update_allowed=false`; first update requires the primal, grid/domain, gradient, volume, and geometry gates. |
 | Topology birth | Unqualified; P23 policy is a prerequisite | SDF shape deformation alone does not create detached material. Register the topology policy and qualify an explicit birth mechanism before Birth-0. |
@@ -644,12 +644,32 @@ arithmetic matrix and fixed-distance branch ablation localize those large
 coefficient jumps at recorded faces to WaterLily's half-cell sign-consistency
 correction. Float64 arithmetic alone with retained Float32-rounded constants
 reduces the tested local jump, whereas original Float64 physical constants
-retain it; no general precision fix is established. Solved-force causality,
-long-window FD and physical/gradient qualification remain unproven. The next
-bounded investigation targets sign-consistency semantics, not relaxed FD
-acceptance. See [FD-07 result](issues/37_fd07_lattice_shift_diagnosis.md).
+retain it; no general precision fix is established. At this checkpoint,
+solved-force causality, long-window FD and physical/gradient qualification
+remained unproven. The subsequent bounded intervention is recorded below.
+See [FD-07 result](issues/37_fd07_lattice_shift_diagnosis.md).
 All qualification/update flags and historical FD-05/FD-06 FAIL results remain
 unchanged.
+
+**2026-10-01 FD-07 bounded causal intervention (#37; diagnostic only):** A
+pre-registered 26-solve A/B experiment compared a diagnostic copy of the
+pinned WaterLily 1.8.0 sign-consistency branch with the same initialization
+minus only that `copysign` operation. For the registered v17 / flow_24 CPU
+fixture, `NO_SIGN_CORRECTION` reduced the perturbation-relative initial
+`μ₀` maximum from `0.818311–0.818314` to `8.34e-7–9.30e-6` and removed faces
+above `|Δμ₀|=1e-3`; force absolute-departure ratios were at most `1.10e-3`
+for drag and `1.67e-3` for downforce. The weakest odd-response reduction was
+about 108-fold. This supports the correction as the dominant cause of the
+short-horizon irregularity on this fixture, while residual responses remain.
+The no-correction arm also changes one baseline `μ₀` face by `0.81831` and
+shifts baseline drag/downforce by `−3.66e-6 N / −2.93e-6 N`; it is a
+changed discrete model, not a production candidate.
+Geometry/map inputs and moving-ground controls match. Thin-body treatment,
+conservation, long-horizon response, formal FD, physical accuracy and any
+replacement remain unqualified. Stop at this result; no v18, production patch
+or formal FD round is authorized by the diagnostic. See
+[`issues/37_fd07_sign_consistency_causal_diagnosis.md`](issues/37_fd07_sign_consistency_causal_diagnosis.md)
+and its append-only evidence.
 
 Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-06 result and later diagnostic checkpoints above supersede their pending-registration instructions:
 
@@ -691,11 +711,13 @@ Current gates and sequence below retain the 2026-09-30 checkpoint. The dated FD-
    remains unresolved. Physical-profile equivalence, absolute downforce,
    grid/domain convergence, gradient/reverse, topology, optimizer and shape
    update remain false. Do not modify historical W3/W4 criteria or evidence.
-5. **FD-05 ran once and is terminal FAIL** (see the 2026-09-30 FD-05 and
-   2026-10-01 diagnosis checkpoints above). Do not retry FD-05 or edit its
-   criteria. Before any FD-06 registration, the user selects the geometric
-   remedy for the flat-normal samples, and a solver-free normal census plus a
-   short CPU FD check must show ε-proportional behaviour.
+5. **FD-05 and FD-06 are terminal FAIL; FD-07 causal diagnosis is complete.**
+   Preserve all registered criteria and outcomes. The 2026-10-01 bounded
+   intervention supports the sign-consistency correction as the dominant
+   cause of this fixture's short-horizon irregularity, but does not qualify
+   formal FD or a replacement. Stop after the recorded result; any production
+   remedy or new FD registration requires a separately authorized,
+   preregistered task.
 6. **Repair the FD runner/host-verifier contract before a future authorized
    execution.** Round 5 is terminal failed evidence; preserve its immutable
    criteria, dataset v5, exact kernel `/4`, outputs, and diagnostics. The source

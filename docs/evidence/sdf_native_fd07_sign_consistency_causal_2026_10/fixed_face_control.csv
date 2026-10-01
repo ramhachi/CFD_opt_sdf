@@ -1,0 +1,10 @@
+map,run_id,face_count,corrected_max_abs_delta,corrected_count_abs_delta_gt_1e-3,uncorrected_max_abs_delta,uncorrected_count_abs_delta_gt_1e-3,recorded_mu0_max_abs_error,corrected_face_bitwise_equal,control_pass
+A,baseline,261,0.0,0,0.0,0,0.0,true,true
+A,seed1_plus_1e-8,261,0.8183112293481827,54,2.384185791015625e-7,0,0.0,true,true
+A,seed1_minus_1e-8,261,0.8183112293481827,64,2.980232238769531e-7,0,0.0,true,true
+B,baseline,261,0.0,0,0.0,0,0.0,true,true
+B,seed1_plus_1e-8,261,2.384185791015625e-7,0,2.384185791015625e-7,0,0.0,true,true
+B,seed1_minus_1e-8,261,2.384185791015625e-7,0,2.384185791015625e-7,0,0.0,true,true
+C,baseline,261,0.0,0,0.0,0,0.0,true,true
+C,seed1_plus_1e-8,261,0.8183102458715439,10,2.384185791015625e-7,0,0.0,true,true
+C,seed1_minus_1e-8,261,0.818310335278511,23,2.384185791015625e-7,0,0.0,true,true
