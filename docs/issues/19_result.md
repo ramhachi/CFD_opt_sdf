@@ -110,3 +110,14 @@ Follow-up source artifact hashes before commit:
 | `src/cfd_sdf/criteria_supersession.py` | `9241c488e3d89993e2a6ccb49b8fcd7f28e9fdee5737dcbbb2d40a4910b17746` |
 | `tests/test_criteria_supersession.py` | `1ec8b1412f72ab96c2fc82ba3ec54d946c0379e5ca06dad335e9570380f1452e` |
 | `docs/issues/19_result.md` | recorded by the follow-up commit |
+
+## Parent literal-false flag review checkpoint
+
+Scalar qualification flags now require literal boolean false; values `1`,
+`"false"` and null are rejected rather than skipped by a boolean-only check.
+The historical topology contract mapping remains a mapping. Parent focused
+tests: 26 passed; compileall and diff-check passed; source-bound full suite:
+37 failed / 1270 passed / 5 skipped, exact baseline IDs and zero new failures.
+Source/test hashes and compressed log are retained under
+`docs/evidence/criteria_supersession_parent_review_2026_10_02/`. This is helper
+validation only; no criteria registration, submission or solver was performed.

@@ -338,3 +338,9 @@ def test_successor_writer_is_append_only(tmp_path):
     assert output.with_suffix(".json.sha256").read_text().strip() == digest
     with pytest.raises(SupersessionError, match="append-only"):
         write_successor({"criteria_round": 6}, output)
+
+
+@pytest.mark.parametrize("malformed", [1, "false", None])
+def test_scalar_qualification_flag_requires_literal_false(malformed):
+    with pytest.raises(SupersessionError, match="flag must remain false"):
+        _check_flag_state({"flags": {"shape_update_allowed": malformed}})

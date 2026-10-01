@@ -89,7 +89,7 @@ def _check_flag_state(criteria: dict) -> None:
         if isinstance(value, dict):
             for key, child in value.items():
                 is_flag = key.endswith("_qualified") or key in QUALIFICATION_FLAGS
-                if is_flag and isinstance(child, bool) and child is not False:
+                if is_flag and not isinstance(child, dict) and child is not False:
                     raise SupersessionError(f"qualification flag must remain false: {parent}{key}")
                 if is_flag and key.endswith("_qualified") and not isinstance(child, bool):
                     raise SupersessionError(f"qualification flag must be boolean: {parent}{key}")
