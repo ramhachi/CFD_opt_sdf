@@ -5324,3 +5324,31 @@ target-physics, grid-convergence or absolute-downforce evidence, and FD, gradien
 reverse, optimizer and topology flags remain false (fd05_execution_authorized stays
 false until the FD entry is separately authorized). Candidate C is now eligible for
 the FD-08 (#46) calibration step.
+
+### 2026-10-03 user-directed dependency order and C-OP-01 audit
+
+The user-directed order for this execution supersedes earlier wording that
+allowed Track B to run in parallel with Track C:
+
+1. Complete the #44 C-OP-01 final audit and close decision.
+2. Run formal XFID-01 (#45) against the frozen composite Candidate C identity.
+3. Start #46 FD-08 calibration/formal solver work only if XFID is AGREE.
+4. If XFID is DISAGREE or UNRESOLVED, stop before the #46 solver campaign and
+   report the bounded result and unresolved inputs.
+
+The #44 final audit satisfies its Done conditions: the frozen composite
+identity is hash-verified; W3-C Round3 and W4-C Round2 were freshly downloaded
+from Kaggle, their output and input inventories were checked, and the unchanged
+independent host verifiers passed. Raw W4-C versus historical-v17 force
+differences were independently recomputed from the force histories. The
+append-only audit is `docs/issues/44_final_audit_2026_10_03.md`, with structured
+hashes and host results in
+`docs/evidence/candidate_c_final_audit_2026_10_03/audit.json`. The audited
+close conditions are satisfied; closing #44 does not change any qualification
+flag.
+
+Use the existing independently verified Kaggle CPU v16 OpenCFD v2512
+environment reproduction as the #45 prerequisite. Do not rerun it as part of
+XFID, and do not report environment reproduction as a scientific comparison.
+No XFID direction response, comparison floor, or verdict is registered by this
+audit. All qualification flags remain false.
