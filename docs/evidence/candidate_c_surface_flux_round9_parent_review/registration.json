@@ -1,0 +1,53 @@
+{
+  "authorized_scope": [
+    "12 CPU initializations without sim_step",
+    "fresh 4-fixture x 3-arm bounded transient CPU run t=0.25 with [0.10,0.25] descriptive reductions",
+    "independent final raw point and field integrity checks"
+  ],
+  "commands": {
+    "init_command": [
+      ".venv/bin/python",
+      "scripts/run_candidate_c_surface_flux_round9.py",
+      "--parent-reviewed",
+      "--preflight-only"
+    ],
+    "outputs": "work/candidate_c_surface_flux_round9/init-001 and run-001 exclusive; partial ERROR retained; DONE only after independent hostintegrity",
+    "parent_external_preregistration_required": true,
+    "run_command": [
+      ".venv/bin/python",
+      "scripts/run_candidate_c_surface_flux_round9.py",
+      "--parent-reviewed"
+    ],
+    "solver_authorized": false,
+    "timeout_s": 1800
+  },
+  "criteria_id": "C-OP-01-CPU-SURFACE-OBSERVABLES-ROUND9",
+  "evidence_class": "parent_source_review_and_external_execution_preregistration_not_solver_evidence",
+  "execution_authorized_after_this_record_is_committed_and_integration_pushed": true,
+  "geometry_inventory_sha256": "a05ae040c5b7395612bd8f774bf45a684f5a47eca501891ebf6534ede25d8650",
+  "job_sha256": "39aec1c1646cf6df7feccbb3998b4fecb8c731312bf85ead388561468691ec9a",
+  "limitations": [
+    "mass or no-through qualification",
+    "closed fluidCV mass/force closure",
+    "stationarity, native/GridSDF accuracy or targetphysics",
+    "production W3-C/W4-C qualification",
+    "FD/reverse/gradient/shape/optimizer/topology"
+  ],
+  "parent_source_integration_commit": "9ea642376a23cfc55ba30aa9893d0c78c5bdc32c",
+  "physical_acceptance_thresholds": null,
+  "plan_sha256": "57966058c75ec8cd9ae22739428469ae4dcb95c539ecad922b76912519c371dd",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "recorded_at_utc": "2026-10-02T02:01:33.957471+00:00",
+  "review_result": "same geometry/operator/windows/integrity thresholds; dependency and Float64 conversion fixes reviewed; 5 focused PASS, full 37 baseline failure IDs /1311 passes/5skips; no solver initialization or steps",
+  "runner_sha256": "00b8cba6f5bf62644efbf427a367418e2f28ec39616ad7d37cb20fc5a557c36a",
+  "source_feature_commit": "6a51763a1718955d8e70a7075dd71ce6c2e44887",
+  "source_inventory_sha256": "3209f82103d83fd0c7a575b7e9242249ee1e5785932fc2aaa34935cac44a9fd4",
+  "validation_sha256": "c60f86bb04c37976cf33c82fe349e31c4b63a2aa15815488a51ad23919d80c11"
+}
