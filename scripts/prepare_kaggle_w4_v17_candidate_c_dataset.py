@@ -23,7 +23,7 @@ sha256 = _legacy_verifier.sha256
 verify_registered_source = _legacy_verifier.verify_registered_source
 from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 DEFAULT_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
-DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json"
 DEFAULT_OUTPUT = ROOT / "work/kaggle_w4_v17_candidate_c_dataset"
 EXPECTED_LABEL = "v17_candidate_c"
 EXPECTED_DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"

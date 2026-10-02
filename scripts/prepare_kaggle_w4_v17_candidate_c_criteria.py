@@ -15,8 +15,9 @@ sys.path.insert(0, str(ROOT / "src"))
 from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 
 BASE = ROOT / "docs/evidence/w4_v17_criteria.json"
-OUTPUT = "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json"
+OUTPUT = "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"
+ROUND1_SHA256 = "802f85bc4d1cf807b9474eceb773a48a6fc0349acf246080f97da7260c4984d9"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c"
 W3_CRITERIA = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json"
 FLAGS = {name: False for name in (
@@ -99,8 +100,9 @@ def build_draft(w3_criteria_path: Path, w3_result_path: Path) -> dict:
     original_measurement = copy.deepcopy(criteria["measurement"])
     original_profile = copy.deepcopy(criteria["profile_semantics"])
     draft.update({
-        "criteria_id": "waterlily_w4_v17_candidate_c_2026_10",
-        "criteria_round": 1,
+        "criteria_id": "waterlily_w4_v17_candidate_c_2026_10_round2",
+        "criteria_round": 2,
+        "supersedes_round1_criteria_sha256": ROUND1_SHA256,
         "kind": "waterlily_w4_candidate_c_canonical_grid_domain_sensitivity_criteria",
         "status": "draft_unregistered",
         "immutable": False,

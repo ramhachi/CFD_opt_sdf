@@ -21,7 +21,7 @@ SPEC.loader.exec_module(legacy)
 ORIGINAL_VALIDATE_CASE_CONTRACT = legacy.validate_case_contract
 FLAGS = {key: False for key in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
-DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json"
 DEFAULT_DATASET = ROOT / "work/kaggle_w4_v17_candidate_c_dataset"
 
 
