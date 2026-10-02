@@ -5293,3 +5293,17 @@ W3-C evidence. W4-C binds the W3-C observed backend identity including host driv
 backend), so a driver change between the W3-C and W4-C runs would stop W4-C and
 need a new round. No W4-C solver verdict exists yet. See
 `docs/evidence/kaggle_w4_v17_candidate_c_round1_registration/`.
+
+### 2026-10-02 W4-C Round1 gate failure and Round2 registration
+
+W4-C Round1 (criteria SHA-256 802f85bc…84d9, kernel v1) ran all four cases to
+completion on Kaggle T4 (driver 580.178.04, same as W3-C) and passed every
+registered gate except `T4_native_profile_limitation_preserved`: the Julia job
+reported a descriptive `force_integration_body` string that differed from the
+registered operator string `CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))`.
+Round1 verdict is FAIL on that pre-registered gate; the cause is a reporting-string
+mismatch, not a numerical result, and the retained forces are not reused. Evidence:
+`docs/evidence/kaggle_w4_v17_candidate_c_round1_terminal_failure/`. Round2
+(`docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json`) changes only
+that job string; matrix, numerical gates, backend binding and the six false flags
+are unchanged. See `docs/evidence/kaggle_w4_v17_candidate_c_round2_registration/`.

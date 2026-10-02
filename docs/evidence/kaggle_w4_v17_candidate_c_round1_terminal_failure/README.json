@@ -1,0 +1,29 @@
+{
+  "criteria_round": 1,
+  "criteria_sha256": "802f85bc4d1cf807b9474eceb773a48a6fc0349acf246080f97da7260c4984d9",
+  "driver_version_observed": "580.178.04",
+  "evidence_class": "registered_gate_failure_string_mismatch_no_numerical_issue",
+  "failure": "registered gate T4_native_profile_limitation_preserved = false (job reported force_integration_body 'Candidate C over normal-floor canonical candidate only; exclude auxiliary moving-ground half-space', registered operator string is 'CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))'); T0-T3 and T5-T10 true; all four cases ran to completion",
+  "files": {
+    "ERROR.txt": "b4c8f85244964751064c836e3ef7e2b65e154a7c66a5e080e4b4fbff8c3c384e",
+    "cfd-opt-sdf-w4-v17-candidate-c.log": "c3671329a7536b1dab5e10a80213c3f96f8b5b2004f30745b97dad74c1f318fa",
+    "domain_xplus1m_16.forces.csv": "4833e272cacd16d1b13a3832044ecd9781efd0831c45d105cdb8f1348264b5d6",
+    "domain_xplus1m_16.summary.json": "0491d0ae6b6515c5552c73ed401687a442368ddadcf10308f14b031a6e478bb2",
+    "execution_state.json": "21872836d8fb892749bd64866c87d3a372a007effd74fc9e36ff3b7012f1dd67",
+    "fingerprint.json": "22a240548507a4e86d166c7a07b0a8b1d0483ed39f9532d28cab8d6b0db6187b",
+    "flow_16.forces.csv": "416867c36fa0b0f8387283029621f45407f1f24f3aa544ee362068886d020a35",
+    "flow_16.summary.json": "1cc57ed8b5b1a6e46ea3c6c1492ed89f77363348415be80ffe96e3c3fd19da57",
+    "flow_24.forces.csv": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+    "flow_24.summary.json": "334111f3f8da60b274e6e7b95317dff3c2ccacb88f4ef402f15aa86cef9c47ff",
+    "flow_32.forces.csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "flow_32.summary.json": "68789c432f97fd127da11a4102b460bc63ded327509efce48e610e52d99c2034",
+    "nvidia_smi.csv": "11c1c41ed29f60d30d9bba3d7bdacb401cf0575dc20aa9f9e142823634ae5adb",
+    "outcome.json": "b5bde36b73fe823b1ec9b42e32d69bdc84f316b4b054998e06965a52c551321e",
+    "sha256.json": "c1d7a28fa0029148191c61a560140c3970cbadef4e082a11086cf85c13f67093"
+  },
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+  "kernel_version": 1,
+  "scope": "Round 1 verdict is FAIL on the pre-registered gate; the retained forces are not a W4-C verdict and are not reused for round 2.",
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}

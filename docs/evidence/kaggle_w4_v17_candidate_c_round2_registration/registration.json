@@ -1,0 +1,34 @@
+{
+  "change_from_round1": "W4-C job now reports the registered operator force_integration_body string; numerical contract, case matrix, backend binding and flags unchanged",
+  "criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+  "criteria_round": 2,
+  "criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+  "numerical_contract_preserved": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_kaggle_submission": true,
+  "scope": "No W4-C round 2 solver verdict yet; registration is not physics evidence.",
+  "source_commit": "51808f7751ec9fad0b296f685bd561bd48192743",
+  "supersedes_round1_criteria_sha256": "802f85bc4d1cf807b9474eceb773a48a6fc0349acf246080f97da7260c4984d9",
+  "validation": {
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "focused": "13 passed",
+    "static": "ruff F821 clean"
+  },
+  "w3_prerequisite": {
+    "criteria": "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json",
+    "criteria_sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+    "result": "docs/evidence/kaggle_w3_v17_candidate_c_round3_result_2026_10.json",
+    "result_sha256": "ca8f420e455afbcaf41184097fe7c9246930fe57bc58f06f38f128ebc2a31f1d"
+  }
+}

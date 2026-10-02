@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/kaggle/src/script.py", line 1018, in <module>
+    main()
+  File "/kaggle/src/script.py", line 797, in main
+    raise RuntimeError(f"W4 registered integrity gates failed: {gates}")
+RuntimeError: W4 registered integrity gates failed: {'T0_registered_inputs_and_w3_pass': True, 'T1_registered_case_matrix_complete': True, 'T2_canonical_phi_and_margin_identity': True, 'T3_case_mapping_and_reynolds': True, 'T4_native_profile_limitation_preserved': False, 'T5_T4_Julia_CUDA_WaterLily_identity': True, 'T6_primal_completion_and_force_integrity': True, 'T7_host_force_recomputation': True, 'T8_runtime_and_vram': True, 'T9_exact_source_and_runner_identity': True, 'T10_stationarity': True}
