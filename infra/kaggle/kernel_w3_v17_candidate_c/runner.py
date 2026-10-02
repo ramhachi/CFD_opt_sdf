@@ -44,6 +44,11 @@ def sha256_bytes(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def literal_false_flags(value):
+    keys = {"shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology"}
+    return isinstance(value, dict) and set(value) == keys and all(value[key] is False for key in keys)
+
+
 def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, sort_keys=True,
                                      allow_nan=False) + "\n")
@@ -103,17 +108,10 @@ def read_criteria(input_root=INPUT_ROOT):
         raise RuntimeError("W3 criteria are not immutable preregistration")
     if criteria["geometry"].get("state_label", "v16") != LABEL:
         raise RuntimeError("W3 criteria state label does not match the staged criteria file name")
-    operator = criteria.get("operator", {})
     if (LABEL != "v17_candidate_c"
-            or criteria.get("input_dataset_id") != "ramhachi888/cfd-opt-sdf-v17-candidate-c"
-            or operator.get("identity") != "candidate_c_moment_blend+normal_floor_0.25"
-            or operator.get("normal_floor") != 0.25
-            or operator.get("transition_width_solver") != 1.1444091796875e-4
-            or operator.get("simulation_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid)+moving_ground)"
-            or operator.get("force_integration_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))"):
-        raise RuntimeError("W3 Candidate C operator/body composition identity mismatch")
+            or criteria.get("kernel_id") != "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c"
+            or criteria.get("input_dataset_id") != "ramhachi888/cfd-opt-sdf-v17-candidate-c"):
+        raise RuntimeError("W3 Candidate C kernel/dataset identity mismatch")
     if not str(criteria.get("input_dataset_id", "")).startswith("ramhachi888/"):
         raise RuntimeError("W3 criteria dataset identity mismatch")
     return criteria, expected, dataset_dir, criteria_path
@@ -487,6 +485,19 @@ def main():
     with tempfile.TemporaryDirectory(prefix="cfd_w3_") as temp:
         base = Path(temp)
         source, project = fetch_source(base, criteria)
+        sys.path.insert(0, str(source / "src"))
+        from cfd_sdf.candidate_c_identity import load_candidate_c_identity
+        frozen = load_candidate_c_identity(source)
+        identity_record = json.loads((source / frozen["contract_path"]).read_text())
+        record_entry = criteria["inputs"]["operator_identity_record"]
+        sidecar_entry = criteria["inputs"]["operator_identity_sha256"]
+        if (record_entry["path"] != frozen["contract_path"]
+                or record_entry["sha256"] != frozen["contract_sha256"]
+                or criteria["operator"] != identity_record["operator"]
+                or not literal_false_flags(criteria.get("qualification_flags"))
+                or sidecar_entry["path"] != frozen["contract_path"] + ".sha256"
+                or sha256(source / sidecar_entry["path"]) != sidecar_entry["sha256"]):
+            raise RuntimeError("W3 criteria do not bind the exact frozen Candidate C identity")
         command(["git", "-C", str(source), "status", "--porcelain"], OUT / "git_status.log")
         if sha256(project / "Project.toml") != criteria["inputs"]["project"]["sha256"]:
             raise RuntimeError("W3 T4 project hash mismatch")
@@ -568,6 +579,15 @@ def main():
         "stationarity_relative_drift_limit": criteria["measurement"]["stationarity"]["relative_half_window_drift_max"],
         "physical_profile_qualified": False,
         "shape_update_allowed": False,
+        "candidate_c_qualification_flags": {
+            "shape_update_allowed": False,
+            "fd_oracle": False,
+            "field_gradient": False,
+            "reverse": False,
+            "optimizer": False,
+            "topology": False,
+        },
+        "operator_identity": criteria["operator"],
     })
     if not all(gates.values()):
         raise RuntimeError(f"W3 registered gates failed: {gates}")

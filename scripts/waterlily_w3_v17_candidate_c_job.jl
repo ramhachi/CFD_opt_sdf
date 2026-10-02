@@ -305,6 +305,7 @@ function run_w3_primal()
     write(joinpath(output_dir, "$(STATE_LABEL).summary.json"), result * "\n")
     write(joinpath(output_dir, "w3_adapter_contract.json"),
         "{\"source_profile_equivalent\":false,\"physical_profile_qualified\":false," *
+        "\"force_integration_body\":\"Candidate C over normal-floor canonical candidate only; exclude auxiliary moving ground\"," *
         "\"flow_cell_dims\":" * json_array(V16_PROFILE_CELL_DIMS) * "," *
         "\"flow_origin_m\":" * json_array(V16_PROFILE_FLOW_ORIGIN_M) * "," *
         "\"flow_upper_m\":" * json_array(V16_PROFILE_FLOW_UPPER_M) * "," *

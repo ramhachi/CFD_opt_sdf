@@ -1,0 +1,79 @@
+...................................................................F.... [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+...................s.................................................... [ 36%]
+.......................................................................s [ 42%]
+........................................................................ [ 47%]
+............s........................................................... [ 52%]
+.................................................................F.F.... [ 58%]
+F....................................................................... [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+...............................................................FF....... [ 89%]
+.F.F.F.....F............FFFFF............FFFF....F............FF.FF.F.FF [ 94%]
+.F............F.F.....FFFFF....F........ss....F......................    [100%]
+=============================== warnings summary ===============================
+tests/test_extraction_qualification.py: 369 warnings
+tests/test_extraction_sweep.py: 1221 warnings
+tests/test_fixed_grid_backend.py: 9 warnings
+tests/test_fixed_grid_canonical_state_injection.py: 221 warnings
+tests/test_fixed_grid_connectivity.py: 190 warnings
+tests/test_fixed_grid_contract.py: 520 warnings
+tests/test_fixed_grid_optimizer.py: 506 warnings
+tests/test_fixed_grid_primal.py: 276 warnings
+tests/test_fixed_grid_sensitivity.py: 369 warnings
+tests/test_front_wing_pipeline.py: 893 warnings
+tests/test_handoff.py: 730 warnings
+tests/test_sdf_native_genesis.py: 131 warnings
+tests/test_sdf_native_geometry_gates.py: 100 warnings
+tests/test_stage_s_entry.py: 1228 warnings
+tests/test_stage_t_candidate_binding.py: 458 warnings
+  /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/vtkmodules/util/numpy_support.py:244: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    result.shape = shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign
+FAILED tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint
+FAILED tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify
+FAILED tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged
+FAILED tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies
+FAILED tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies
+FAILED tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies
+FAILED tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify
+FAILED tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment
+FAILED tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies
+FAILED tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation
+FAILED tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application
+FAILED tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison
+FAILED tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies
+FAILED tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies
+FAILED tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented
+FAILED tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side
+FAILED tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies
+FAILED tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies
+FAILED tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec
+FAILED tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current
+FAILED tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch
+FAILED tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities
+FAILED tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest
+FAILED tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds
+FAILED tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions
+FAILED tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id
+FAILED tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays
+FAILED tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition
+FAILED tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base
+FAILED tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged
+37 failed, 1323 passed, 5 skipped, 7221 warnings in 231.60s (0:03:51)
