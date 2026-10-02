@@ -5307,3 +5307,20 @@ mismatch, not a numerical result, and the retained forces are not reused. Eviden
 (`docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json`) changes only
 that job string; matrix, numerical gates, backend binding and the six false flags
 are unchanged. See `docs/evidence/kaggle_w4_v17_candidate_c_round2_registration/`.
+
+### 2026-10-02 W4-C Round2 host-verified PASS
+
+W4-C Round2 (kernel v2, dataset v2, source 51808f7…) completed on Kaggle T4 (host
+driver 580.178.04, identical to W3-C) and passed all 11 in-kernel gates T0–T10 and
+the independent host verifier (verdict PASS). Result:
+`docs/evidence/kaggle_w4_v17_candidate_c_round2_result_2026_10.json`; retained artifacts
+in `docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/`. flow_16 reproduces
+W3-C exactly. Against the v17 primal W4 matrix, Candidate C changes drag/downforce
+by +0.10/+0.40% (flow_16), −0.74/+0.18% (flow_24), +0.01/+0.00% (flow_32) and
++0.01/+0.44% (domain_xplus1m_16); the resolution spread (downforce 8.2% flow_24→32,
+23% flow_16→24) is a property of the grid sensitivity, not of Candidate C. This is a
+primal contract/capability PASS under the limited profile adapter: it is not
+target-physics, grid-convergence or absolute-downforce evidence, and FD, gradient,
+reverse, optimizer and topology flags remain false (fd05_execution_authorized stays
+false until the FD entry is separately authorized). Candidate C is now eligible for
+the FD-08 (#46) calibration step.
