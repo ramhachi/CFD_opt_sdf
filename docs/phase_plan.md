@@ -5352,3 +5352,34 @@ environment reproduction as the #45 prerequisite. Do not rerun it as part of
 XFID, and do not report environment reproduction as a scientific comparison.
 No XFID direction response, comparison floor, or verdict is registered by this
 audit. All qualification flags remain false.
+
+### 2026-10-03 XFID-01 geometry preflight stop
+
+The #45 input-geometry preflight rebuilt the registered canonical v17 baseline
+and the six fixed D0/D1/D2 `±0.005 m` surfaces using the existing direction
+generator and canonical zero-level exporter. Exact perturbed GridSDF snapshots,
+surface hashes, topology measures, and Stage V clearance are retained in
+`docs/evidence/xfid01_geometry_preflight_2026_10_03/` and summarized in
+`docs/issues/45_xfid_geometry_preflight_2026_10_03.md`.
+
+The baseline zero-level STL fails watertightness, winding, manifold edge,
+duplicate-face, and positive-volume checks. All six perturbed surfaces are
+watertight and winding-consistent with no non-manifold or duplicate faces, but
+have negative signed volume and fail the required positive-volume gate. All
+seven surfaces meet the 0.25 m Stage V domain-clearance minimum. No surface was
+repaired, reoriented, smoothed, or replaced; directions and epsilon were not
+changed.
+
+Classify this as a premeasurement geometry-blocker **UNRESOLVED**, not an
+evaluated cross-fidelity force-sign/order result. Formal XFID criteria, solver
+response floors, force measurements, meshes, and solver runs do not exist for
+this attempt. The issue remains open. Stop before #46's FD-08 solver campaign;
+all qualification flags remain false. A future attempt needs a separately
+registered deterministic export/input round that passes the baseline and all
+required perturbed-geometry gates without losing GridSDF-to-STL identity.
+
+Software validation passed compileall and 58 focused tests. The full suite had
+37 failures, 1339 passes, and 5 skips; the exact 37 failure IDs match the pinned
+four-track baseline (zero new or resolved IDs). The full log, failure-ID list,
+and hash-bound validation record are retained under the preflight evidence
+directory.
