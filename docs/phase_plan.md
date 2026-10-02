@@ -5071,3 +5071,83 @@ false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.
   #29 mechanical geometry gates are in progress. #31's event choices remain
   pending; disconnected components/root policy was recorded only as a
   partial user decision. #48 has not started. All six flags remain false.
+
+### 2026-10-02 reviewed execution checkpoint: geometry and environment harness
+
+- #19 supersession/collision helper is reviewed and integrated, with exact source and runtime identity checks and literal false qualification flags. Its full source-bound suite has zero new failure IDs. This is infrastructure contract evidence, not solver evidence.
+- #29 canonical v16 solver-free GEOM-01 diagnostic reports 3 PASS, 0 FAIL and 10 UNMEASURED gates; the aggregate gate remains closed. Width/gap estimates and the voxel cell-union mesh are diagnostic proxies. Missing physical limits, source/mask/policy bindings and actual GridSDF zero-level export checks block canonical qualification. See `docs/issues/29_result.md`.
+- #46/#47 reviewed plans bind actual float32 perturbations, exact [80,120] physical-time force means, runtime/source identity and disjoint evidence sets. Their existing arithmetic helpers remain preparation only. Neither formal campaign is registered or running.
+- #45 Kaggle CPU version 3 installed and hash-verified all fixed v2512 packages but failed before meshing at the noninteractive `foamVersion` function lookup. Exact package setup loads aliases only for interactive shells; the next immutable harness round must explicitly load that package function. All numerical gates, historical fixtures and package hashes are preserved. This is not resolved XFID DISAGREE and does not stop Track C.
+- #31 research detached components are allowed and root connectivity is optional by the user's partial decision. Event permissions and source/physical-limit bindings remain unresolved; no successor canonical policy has been registered. All six qualification flags remain false.
+
+### 2026-10-02 reviewed CPU sphere checkpoint
+
+The #44 immutable Round4 sampled-GridSDF composite C sphere calculation completed all 11 registered CPU fixture gates. Parent review verified the independent NumPy interpolation/trapezoid audit and all 20 retained artifact hashes. Candidate C drag is 0.34466230665836467 N, native analytic control/repeat 0.3454132018610324 N (relative difference 0.2173904%); analytic repeated force histories are identical. The gate includes only finiteness of boundary-flow diagnostics, not a physical mass-conservation threshold. CPU sphere PASS does not freeze or qualify production C, W3-C/W4-C, target physics, FD or optimization. Thin-plate/moving-ground and body-relative flux/force observables remain pending. See `docs/evidence/candidate_c_w2a_sphere_cpu_round4_retained/`.
+
+Source/equation review of WaterLily 1.8.0 confirms that its first kernel moment is even in signed distance: the C μ0 blend is a convex mixture of the ±sign-branch μ0 values sharing μ1. The normal floor can return a subunit operator normal; geometric surface flux needs a distinct unit normal. A compatible μ0 Poisson/projection algebra and whole-grid telescoping identity alone do not establish immersed-body no-through or fluid-region mass/force closure. These are static findings with conditional equations, not observed failures. See `docs/issues/44_mass_force_contract_research.md`. All six flags remain false.
+
+### 2026-10-02 reviewed environment reproduction and bounded CPU dispatch
+
+#45 exact Kaggle CPU kernel version 4 completed the immutable Round5 v16
+environment reproduction. The unchanged, preregistered independent host
+verifier passed with the required `.venv/bin/python` (observed Python 3.12.13).
+An earlier invocation using system Python failed exact floating-sum equality;
+that diagnostic is preserved separately. No criteria, verifier, numerical
+gate, fixture or package identity was changed to obtain the host PASS.
+The parent independently downloaded the exact `/4` manifest, result and DONE,
+confirmed equality with the worker's complete download, and verified all 64
+artifact hashes. Exact-package OpenCFD v2512, Ubuntu Jammy, STL/profile/case
+identity, mesh qualification, stationarity, residual and mass gates passed.
+Measured drag is 0.37426349429041095 N, downforce 0.24225913050301373 N;
+normalized mass imbalance is 1.753881451723771e-8. The raw mesh reports the
+registered allowed concave-cell failed check: 2,969 of 42,619 cells, not a raw
+clean `checkMesh` result. See
+`docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/terminal_kernel_v4_parent_verified/`.
+This opens the environment prerequisite only. Formal XFID has not run and
+remains dependent on composite C operator-contract freeze. No resolved XFID
+DISAGREE exists; Track C's scientific branch remains undecided.
+
+#44 immutable CPU fixture diagnostic Round7 is executing after reviewed exact
+source hashes, preregistration and integration push. All 12 fixture/arm
+initializations passed without solver steps; the formal bounded diagnostic
+has no terminal verdict at this checkpoint. Four sampled analytic fixtures
+and three arms retain raw solver forces and SI forces separately. Descriptive
+half-window drift, native differences and whole-domain flux arithmetic do not
+qualify physical accuracy, no-through or immersed-fluid mass conservation.
+The parent full suite reports 37 failed, 1,296 passed and 5 skipped, exactly
+the existing failure IDs and zero new ones after restoring the hash-verified
+ignored canonical v17 fixture. See
+`docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_parent_review/`.
+
+Surface-flux method preparation remains unregistered. A sphere VTK seed has
+degenerate apex triangles that collapse on exact trilinear projection;
+nonzero neighboring one-sided gradients do not support an isolated-zero-set
+claim. Preserve that geometry-only failure while auditing zero-measure
+coverage. No physical flux measurement or tolerance change follows from it.
+All six qualification flags remain false; W3-C/W4-C, FD-08 calibration/fresh
+qualification and STEP-01 have not been dispatched.
+
+### 2026-10-02 long CPU fixture terminal and bounded surface preregistration
+
+#44 Round7 completed all 12 solver arms to t=10 but the immutable host verifier
+terminated ERROR: Julia promoted four Boolean values to Float64 1.0 in the CSV
+writer. The original source, CSV and ERROR are retained unchanged. A pure Julia
+control reproduces that promotion. An explicitly derived copy decodes only
+those four source-proven Boolean columns; its numerical integrity reanalysis
+is conditional used-data evidence, not formal Round7 PASS. Forces and
+whole-grid bookkeeping do not qualify no-through or immersed mass closure.
+See `docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_terminal_parent/`.
+
+The independently reviewed immutable Round8 surface plan and source bind
+three levels of exact GridSDF surface quadrature, a bounded moving-ground
+patch, fixed N+2 masks and independently recomputable final point/field data.
+Only exactly zero-area projected faces are removed; all positive-area faces
+and closed-body edge coverage are retained. External parent preregistration
+authorizes initialization and a fresh short CPU diagnostic after integration
+push. No physical acceptance threshold is introduced. It is not mass closure,
+stationarity, production operator qualification or a resolution floor.
+See `docs/evidence/candidate_c_surface_flux_round8_parent_review/registration.json`.
+All six qualification flags remain false. W3-C/W4-C source copies are reviewed
+preparation; formal criteria and T4 dispatch await the composite operator
+contract. Formal XFID remains pending; its environment gate is PASS and no
+resolved representative DISAGREE has been observed.
