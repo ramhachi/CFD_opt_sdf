@@ -18,7 +18,7 @@ BASE = ROOT / "docs/evidence/w4_v17_criteria.json"
 OUTPUT = "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c"
-W3_CRITERIA = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
+W3_CRITERIA = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json"
 FLAGS = {name: False for name in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
 

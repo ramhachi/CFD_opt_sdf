@@ -169,7 +169,7 @@ def test_w3_c_criteria_draft_preserves_v17_numeric_contract_and_false_flags():
     assert backend.pop("driver_version_policy") == "recorded_not_gated"
     backend["driver_version"] = backend.pop("driver_version_round1_reference")
     assert backend == baseline["backend"]
-    assert draft["criteria_round"] == 2
+    assert draft["criteria_round"] == 3
     assert draft["profile_adapter"] == baseline["profile_adapter"]
     assert draft["acceptance"] == baseline["acceptance"]
     for name, path in (
@@ -215,3 +215,13 @@ def test_w3_c_runner_records_driver_without_gating_only_for_round2_policy():
     assert runner.driver_matches({"driver_version_policy": "recorded_not_gated"}, row)
     assert not runner.driver_matches({"driver_version": "580.159.04"}, row)
     assert runner.driver_matches({"driver_version": "580.178.04"}, row)
+
+
+def test_w3_c_runner_has_no_undefined_names():
+    import ast
+    import builtins
+    tree = ast.parse((ROOT / "infra/kaggle/kernel_w3_v17_candidate_c/runner.py").read_text())
+    imported = {alias.asname or alias.name.split(".")[0]
+                for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
+                for alias in node.names}
+    assert "sys" in imported
