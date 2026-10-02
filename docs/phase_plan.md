@@ -5085,3 +5085,44 @@ false. See [the decision record](issues/31_research_policy_decisions_2026_10_02.
 The #44 immutable Round4 sampled-GridSDF composite C sphere calculation completed all 11 registered CPU fixture gates. Parent review verified the independent NumPy interpolation/trapezoid audit and all 20 retained artifact hashes. Candidate C drag is 0.34466230665836467 N, native analytic control/repeat 0.3454132018610324 N (relative difference 0.2173904%); analytic repeated force histories are identical. The gate includes only finiteness of boundary-flow diagnostics, not a physical mass-conservation threshold. CPU sphere PASS does not freeze or qualify production C, W3-C/W4-C, target physics, FD or optimization. Thin-plate/moving-ground and body-relative flux/force observables remain pending. See `docs/evidence/candidate_c_w2a_sphere_cpu_round4_retained/`.
 
 Source/equation review of WaterLily 1.8.0 confirms that its first kernel moment is even in signed distance: the C μ0 blend is a convex mixture of the ±sign-branch μ0 values sharing μ1. The normal floor can return a subunit operator normal; geometric surface flux needs a distinct unit normal. A compatible μ0 Poisson/projection algebra and whole-grid telescoping identity alone do not establish immersed-body no-through or fluid-region mass/force closure. These are static findings with conditional equations, not observed failures. See `docs/issues/44_mass_force_contract_research.md`. All six flags remain false.
+
+### 2026-10-02 reviewed environment reproduction and bounded CPU dispatch
+
+#45 exact Kaggle CPU kernel version 4 completed the immutable Round5 v16
+environment reproduction. The unchanged, preregistered independent host
+verifier passed with the required `.venv/bin/python` (observed Python 3.12.13).
+An earlier invocation using system Python failed exact floating-sum equality;
+that diagnostic is preserved separately. No criteria, verifier, numerical
+gate, fixture or package identity was changed to obtain the host PASS.
+The parent independently downloaded the exact `/4` manifest, result and DONE,
+confirmed equality with the worker's complete download, and verified all 64
+artifact hashes. Exact-package OpenCFD v2512, Ubuntu Jammy, STL/profile/case
+identity, mesh qualification, stationarity, residual and mass gates passed.
+Measured drag is 0.37426349429041095 N, downforce 0.24225913050301373 N;
+normalized mass imbalance is 1.753881451723771e-8. The raw mesh reports the
+registered allowed concave-cell failed check: 2,969 of 42,619 cells, not a raw
+clean `checkMesh` result. See
+`docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/terminal_kernel_v4_parent_verified/`.
+This opens the environment prerequisite only. Formal XFID has not run and
+remains dependent on composite C operator-contract freeze. No resolved XFID
+DISAGREE exists; Track C's scientific branch remains undecided.
+
+#44 immutable CPU fixture diagnostic Round7 is executing after reviewed exact
+source hashes, preregistration and integration push. All 12 fixture/arm
+initializations passed without solver steps; the formal bounded diagnostic
+has no terminal verdict at this checkpoint. Four sampled analytic fixtures
+and three arms retain raw solver forces and SI forces separately. Descriptive
+half-window drift, native differences and whole-domain flux arithmetic do not
+qualify physical accuracy, no-through or immersed-fluid mass conservation.
+The parent full suite reports 37 failed, 1,296 passed and 5 skipped, exactly
+the existing failure IDs and zero new ones after restoring the hash-verified
+ignored canonical v17 fixture. See
+`docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_parent_review/`.
+
+Surface-flux method preparation remains unregistered. A sphere VTK seed has
+degenerate apex triangles that collapse on exact trilinear projection;
+nonzero neighboring one-sided gradients do not support an isolated-zero-set
+claim. Preserve that geometry-only failure while auditing zero-measure
+coverage. No physical flux measurement or tolerance change follows from it.
+All six qualification flags remain false; W3-C/W4-C, FD-08 calibration/fresh
+qualification and STEP-01 have not been dispatched.

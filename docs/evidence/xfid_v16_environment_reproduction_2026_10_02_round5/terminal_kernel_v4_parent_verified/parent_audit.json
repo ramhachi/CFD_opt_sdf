@@ -1,0 +1,80 @@
+{
+  "Kaggle_Python_runtime": "not recorded by original registered runner; no version inferred",
+  "candidate_c_contract_frozen": false,
+  "command": [
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/.venv/bin/python",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/verify_artifact.py",
+    "/Users/sota/.codex/worktrees/issue-45-kaggle-openfoam/CFD2026_09/work/issue_45_round5/kaggle_kernel_v4_output/openfoam_xfid_v16",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/criteria.json",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/docs/evidence/xfid_v16_environment_reproduction_2026_10_02_round5/registration.json"
+  ],
+  "criteria_sha256": "7d5215fd3ba681230ffe183952a8e2a91cca1cbb6fc06eecaa85ff6cd67c2867",
+  "evidence_class": "parent_independent_host_verification_of_exact_Kaggle_CPU_environment_reproduction",
+  "formal_xfid_authorized": false,
+  "formal_xfid_verdict": "NOT_RUN",
+  "host_platform": "macOS-26.3.1-arm64-arm-64bit",
+  "host_python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "host_python_executable": "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/.venv/bin/python",
+  "issue": 45,
+  "kernel": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/4",
+  "package_debs": "all 3 original deb hashes verified in ignored exact-version artifact; retained tar excludes only debs, recover exact official downloads from lock",
+  "parent_exact_version_download_command": [
+    "kaggle",
+    "kernels",
+    "output",
+    "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/4",
+    "-p",
+    "work/four_track_2026_10_02/xfid_v16_parent_exact4_manifest",
+    "--file-pattern",
+    "(artifact_manifest.json|result.json|DONE)$"
+  ],
+  "parent_exact_version_download_matches": true,
+  "previous_system_python_failure": "preserved separately; unchanged verifier PASS using required .venv Python3.12.13; no criteria/verifier edits or threshold relaxations",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "raw_inventory_count": 64,
+  "raw_inventory_hash_mismatches": [],
+  "recorded_at_utc": "2026-10-02T00:45:32.738792+00:00",
+  "registration_sha256": "aad3e8bdf7dc04dde4c4d8ed9b890fce66dc876e7bb187c25cd81e26b5c0ffb7",
+  "retained_artifacts_sha256": {
+    "DONE": "cc1fd8f0012af7576f4c527b17e200bce28f9e8711f21d8533cc7da48e909fe8",
+    "artifact_manifest.json": "02d63dfe85598cce047ce30042460b21375b8e8f697ac4dbb9f878dc97e6651f",
+    "boundary.gz": "121145fe7be68bab4e84701f12de028675fa605f6ab7231871db08f9f8533a28",
+    "coefficient.dat.gz": "e83f393818e7900e606b32dc5fc3468961fdd8eadee9b5493cbc136384af04f7",
+    "foam_version_probe.json": "0ceb0d57befde4bd2579f2ff5ea944d6d3340849aa8d5a16c4a28f85ec914387",
+    "host_verification.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "host_verification.stdout.json": "e0ef6563efa9b8597ca2a0f139b6702740ea56b3382099df3a1294ce34567c74",
+    "installation_progress.json": "46e68b35b9b1d09487f97c41dd3eeb07aa5c32be74f89992c5eb3ea74b8e647e",
+    "log.checkMesh.gz": "3959578aa0098e96671e86da0ecabe131bdd20eceeac18d4ac478c01b5adea40",
+    "log.simpleFoam.gz": "309159c50dd3d5f7c65d2b0bfd2a6bb2e44aaa03249a1cfa10ec35cfa1fc8832",
+    "phi.gz": "1b38587e9e5a6685f48f4bd3168f9780e4ee7ef447608047fb0cf35cd625fce3",
+    "raw_nonpackage_artifact.tar.gz": "02aa5b5fd572774e4324e545f5e130b6ec6fe59caab64dcf4c0a25b86580ca5d",
+    "result.json": "b08691a72b383e562060bc60d064eeee7478d5eaeb400ef2ad0b422b88b0b407",
+    "system_python_host_failure.log": "1b7853fae8c1cdedc7c9587cc83607bdadbe999c09921629577f05b28cb17051"
+  },
+  "returncode": 0,
+  "runner_sha256": "19e336893f7b9dc8f1c84503a1218d654fa50eb8b3b3ba4d1530eedfa80f3195",
+  "status": "PASS",
+  "verified": {
+    "cells": 42619,
+    "concave_cells": 2969,
+    "evidence_class": "independent_host_recomputation",
+    "mass_imbalance": 1.753881451723771e-08,
+    "responses": {
+      "Cd": 1.1695734196575343,
+      "downforce_N": 0.24225913050301373,
+      "downforce_coefficient": 0.7570597828219179,
+      "drag_N": 0.37426349429041095
+    },
+    "runner_sha256": "19e336893f7b9dc8f1c84503a1218d654fa50eb8b3b3ba4d1530eedfa80f3195",
+    "status": "PASS"
+  },
+  "verifier_sha256": "d4c3a765611f4bcfae4f9b71dbc296fb375fdfbaad11b1a2e799a6010a48207b"
+}
