@@ -5151,3 +5151,17 @@ All six qualification flags remain false. W3-C/W4-C source copies are reviewed
 preparation; formal criteria and T4 dispatch await the composite operator
 contract. Formal XFID remains pending; its environment gate is PASS and no
 resolved representative DISAGREE has been observed.
+
+### 2026-10-02 surface initialization ERROR and fresh CPU Round9
+
+#44 surface Round8 terminated before Simulation at an unavailable direct
+StaticArrays import. The exact original ERROR and source remain immutable.
+Fresh Round9 references the same vector type through pinned WaterLily and
+adds raw pressure/viscous operands in Float64 before converting to N. It
+retains exact geometry/operator/window/threshold identity and exclusive new
+outputs. Parent source review and external preregistration authorize only
+initialization and bounded transient diagnostics after integration push.
+Focused controls and dependency loading PASS; full suite 37 failures all
+baseline IDs, 1311 passes, 5 skips; compileall and diff PASS. No physical
+acceptance threshold or qualification is introduced. All six flags remain false.
+See `docs/evidence/candidate_c_surface_flux_round9_parent_review/registration.json`.
