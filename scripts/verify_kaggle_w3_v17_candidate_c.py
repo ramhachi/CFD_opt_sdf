@@ -20,7 +20,7 @@ legacy = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(legacy)
 FLAGS = {key: False for key in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
-DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
 DEFAULT_DATASET = ROOT / "work/kaggle_w3_v17_candidate_c_dataset"
 
 
@@ -125,8 +125,27 @@ def verify(download: Path, *, criteria_path=DEFAULT_CRITERIA, dataset_dir=DEFAUL
         raise ValueError("W3-C criteria do not bind the parent-frozen operator identity")
     legacy.RUNNER = ROOT / criteria["inputs"]["kernel_runner"]["path"]
     legacy.HOST_VERIFIER = Path(__file__).resolve()
-    result = legacy.verify(download, criteria_path=Path(criteria_path), dataset_dir=dataset_dir,
-                           kernel_version=kernel_version, kaggle_log_path=execution_log_path)
+    original_load = legacy.load_criteria
+    if criteria.get("backend", {}).get("driver_version_policy") == "recorded_not_gated":
+        smi = Path(download) / "w3_v17_candidate_c" / "nvidia_smi.csv"
+        if not smi.is_file():
+            smi = Path(download) / "nvidia_smi.csv"
+        drivers = {line.split(",")[-1].strip() for line in smi.read_text().splitlines() if line.strip()}
+        if len(drivers) != 1:
+            raise ValueError("W3-C GPU inventory reports inconsistent NVIDIA drivers")
+        observed_driver = drivers.pop()
+
+        def load_recorded_driver(path):
+            loaded, digest = original_load(path)
+            loaded["backend"] = {**loaded["backend"], "driver_version": observed_driver}
+            return loaded, digest
+
+        legacy.load_criteria = load_recorded_driver
+    try:
+        result = legacy.verify(download, criteria_path=Path(criteria_path), dataset_dir=dataset_dir,
+                               kernel_version=kernel_version, kaggle_log_path=execution_log_path)
+    finally:
+        legacy.load_criteria = original_load
     folder = Path(download) / "w3_v17_candidate_c"
     if not folder.is_dir():
         folder = Path(download)

@@ -15,8 +15,9 @@ sys.path.insert(0, str(ROOT / "src"))
 from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 
 BASE = ROOT / "docs/evidence/kaggle_w3_v17_primal_criteria_2026_09.json"
-OUTPUT = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json"
+OUTPUT = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-candidate-c"
+ROUND1_SHA256 = "cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c"
 FLAGS = {name: False for name in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
@@ -56,8 +57,8 @@ def build_draft() -> dict:
                          copy.deepcopy(criteria["profile_adapter"]), copy.deepcopy(criteria["acceptance"]))
 
     draft.update({
-        "criteria_id": "kaggle_w3_v17_candidate_c_2026_10",
-        "criteria_round": 1,
+        "criteria_id": "kaggle_w3_v17_candidate_c_2026_10_round2",
+        "criteria_round": 2,
         "kind": "waterlily_w3_candidate_c_canonical_primal_criteria",
         "status": "draft_unregistered",
         "immutable": False,
@@ -68,12 +69,19 @@ def build_draft() -> dict:
             ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
         "criteria_source_path": BASE.relative_to(ROOT).as_posix(),
         "criteria_source_sha256": sha256(BASE),
-        "round_reason": "Preparation only: preserve the v17 W3 primal criteria and bind the parent-frozen composite Candidate C operator.",
+        "round_reason": ("Round 1 stopped fail-closed before any solver work because the Kaggle T4 host NVIDIA driver "
+                         "moved from 580.159.04 to 580.178.04. Round 2 keeps every numerical gate, records the host "
+                         "driver without gating on its value, and still gates GPU model, CUDA driver API/runtime, "
+                         "Julia, CUDA.jl, WaterLily and source hashes."),
+        "supersedes_round1_criteria_sha256": ROUND1_SHA256,
         "operator_identity_record": {"path": identity["contract_path"], "sha256": identity["contract_sha256"]},
         "operator": record["operator"],
         "operator_identity_record_sha256": identity["contract_sha256"],
         "qualification_flags": FLAGS,
     })
+    backend = draft["backend"]
+    backend["driver_version_round1_reference"] = backend.pop("driver_version")
+    backend["driver_version_policy"] = "recorded_not_gated"
     draft["geometry"]["state_label"] = "v17_candidate_c"
     draft["measurement"]["force_integration_body"] = record["operator"]["force_integration_body"]
     draft["flags"].update({
@@ -94,7 +102,10 @@ def build_draft() -> dict:
     inputs["operator_identity_sha256"] = source_entry(identity["contract_path"] + ".sha256")
     numerical_view = copy.deepcopy(draft["measurement"])
     numerical_view["force_integration_body"] = criteria["measurement"]["force_integration_body"]
-    if (numerical_view, draft["backend"], draft["profile_adapter"], draft["acceptance"]) != baseline_numerics:
+    gated_backend = {key: value for key, value in draft["backend"].items()
+                     if key not in ("driver_version_round1_reference", "driver_version_policy")}
+    gated_backend["driver_version"] = draft["backend"]["driver_version_round1_reference"]
+    if (numerical_view, gated_backend, draft["profile_adapter"], draft["acceptance"]) != baseline_numerics:
         raise AssertionError("W3-C preparation changed v17 numerical measurement/backend/profile/acceptance")
     return draft
 

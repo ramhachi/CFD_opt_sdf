@@ -140,6 +140,13 @@ def verify_dataset_manifest(criteria, criteria_sha, dataset_dir):
     return manifest_path
 
 
+def driver_matches(backend, row):
+    """Round 2+ criteria record the host NVIDIA driver without gating on its value."""
+    if backend.get("driver_version_policy") == "recorded_not_gated":
+        return True
+    return row.split(", ")[-1] == backend["driver_version"]
+
+
 def gpu_inventory(criteria):
     text = subprocess.check_output(
         ["nvidia-smi", "--query-gpu=index,name,uuid,memory.total,driver_version",
@@ -153,7 +160,9 @@ def gpu_inventory(criteria):
         raise RuntimeError("W3 GPU inventory index drift")
     if any(expected["gpu_name"] not in row for row in rows):
         raise RuntimeError("W3 T4 model drift")
-    if any(row.split(", ")[-1] != expected["driver_version"] for row in rows):
+    if len({row.split(", ")[-1] for row in rows}) != 1:
+        raise RuntimeError("W3 NVIDIA driver inventory inconsistent across GPUs")
+    if not all(driver_matches(expected, row) for row in rows):
         raise RuntimeError("W3 NVIDIA driver drift")
     uuids = [row.split(", ")[2] for row in rows]
     if len(set(uuids)) != len(rows) or any(not value.startswith("GPU-") for value in uuids):
@@ -548,8 +557,14 @@ def main():
         raise RuntimeError("W3 candidate-force CSV hash mismatch")
     rows = parse_force_csv(csv_path)
     adapter_contract = json.loads((OUT / "w3_adapter_contract.json").read_text())
+    gate_criteria = criteria
+    if criteria["backend"].get("driver_version_policy") == "recorded_not_gated":
+        # evaluate_gates stays byte-identical to v17; the recorded host driver is
+        # passed as the observed value, so only cross-GPU consistency is checked.
+        gate_criteria = {**criteria, "backend": {
+            **criteria["backend"], "driver_version": gpu_rows[0].split(", ")[-1]}}
     gates, metrics = evaluate_gates(
-        criteria, summary, rows, criteria["source_commit"], runner_sha,
+        gate_criteria, summary, rows, criteria["source_commit"], runner_sha,
         criteria_sha, gpu_rows, smoke, adapter_contract=adapter_contract,
         cuda_visible_devices=env["CUDA_VISIBLE_DEVICES"],
     )
