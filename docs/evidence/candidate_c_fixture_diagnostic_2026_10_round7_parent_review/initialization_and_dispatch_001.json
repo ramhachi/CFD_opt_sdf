@@ -1,0 +1,24 @@
+{
+  "evidence_class": "no_solver_step_CPU_initialization_capability",
+  "formal_command": [
+    ".venv/bin/python",
+    "scripts/verify_candidate_c_grid_sdf_long_cpu_diagnostic_round7.py",
+    "--parent-reviewed"
+  ],
+  "formal_run_id": "run-001",
+  "formal_status": "RUNNING_not_terminal",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registration_sha256": "55ea15b5995364bc7745ef39dfe08bf0250fcd9229c740ac4c95073f09ad89a6",
+  "runtime_sha256": "1227107487bb21470ce5f3ca6e2060ca379703cfcdebed1e9fcff9542b086af3",
+  "sim_step_called": false,
+  "source_commit": "5b8ec36ef7287d04dd63346df4b248bea5c3e57d",
+  "status": "PASS",
+  "transcript_sha256": "1e6273acb91f90bb093fc2b112e71eaa69d461024713fa417ad34e87c38794dc"
+}
