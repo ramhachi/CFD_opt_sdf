@@ -1,0 +1,32 @@
+{
+  "artifact_sha256": {
+    "solver.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "solver.stdout.txt": "486921448251fe7fb187af54cffdc88d73150883f49e67f0e9b930ce8bacea8a"
+  },
+  "command": [
+    "julia",
+    "--startup-file=no",
+    "--threads=auto",
+    "--project=/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/julia/CFDSDFWaterLily",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/scripts/candidate_c_surface_flux_round9.jl",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/docs/evidence/candidate_c_surface_flux_round9/plan.json",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/work/candidate_c_surface_flux_round8_geometry",
+    "/Users/sota/.codex/worktrees/four-track-orchestration/CFD2026_09/work/candidate_c_surface_flux_round9/init-001",
+    "--preflight-only"
+  ],
+  "criteria_sha256": "57966058c75ec8cd9ae22739428469ae4dcb95c539ecad922b76912519c371dd",
+  "host_platform": "macOS-26.3.1-arm64-arm-64bit",
+  "host_python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "job_sha256": "39aec1c1646cf6df7feccbb3998b4fecb8c731312bf85ead388561468691ec9a",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runner_sha256": "00b8cba6f5bf62644efbf427a367418e2f28ec39616ad7d37cb20fc5a557c36a",
+  "runtime_line": "CANDIDATE_C_SURFACE_RUNTIME julia=1.12.6 waterlily=1.8.0 threads=4 backend=Array precision=Float32 job_sha256=39aec1c1646cf6df7feccbb3998b4fecb8c731312bf85ead388561468691ec9a criteria_sha256=57966058c75ec8cd9ae22739428469ae4dcb95c539ecad922b76912519c371dd",
+  "status": "initialization_capability_only_no_sim_step"
+}

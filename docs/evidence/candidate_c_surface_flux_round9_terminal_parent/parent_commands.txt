@@ -1,0 +1,5 @@
+Prerequisite integration push e8852e8 completed before these commands.
+.venv/bin/python scripts/run_candidate_c_surface_flux_round9.py --parent-reviewed --preflight-only
+.venv/bin/python scripts/run_candidate_c_surface_flux_round9.py --parent-reviewed
+Parent independent reanalysis: import scripts/run_candidate_c_surface_flux_round9.py; registration(); verify(work/candidate_c_surface_flux_round9/run-001); assert surface_groups and qualification_flags equal original result.
+Parent archive audit: compare all tar member names and SHA256 of original bytes to parent_audit.json raw_original_file_sha256; zero mismatches.
