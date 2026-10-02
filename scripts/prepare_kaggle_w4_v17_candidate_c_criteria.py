@@ -33,10 +33,12 @@ SOURCE_PATHS = {
     "kernel_metadata": "infra/kaggle/kernel_w4_v17_candidate_c/kernel-metadata.json",
     "dataset_preparer": "scripts/prepare_kaggle_w4_v17_candidate_c_dataset.py",
     "host_verifier": "scripts/verify_kaggle_w4_v17_candidate_c.py",
+    "legacy_host_evaluator": "scripts/verify_kaggle_w4_v16.py",
     "criteria_registrar": "scripts/prepare_kaggle_w4_v17_candidate_c_criteria.py",
     "candidate_c_body": "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl",
     "normal_floor_body": "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl",
     "operator_identity_helper": "src/cfd_sdf/candidate_c_identity.py",
+    "operator_identity_dependency": "src/cfd_sdf/criteria_supersession.py",
 }
 
 

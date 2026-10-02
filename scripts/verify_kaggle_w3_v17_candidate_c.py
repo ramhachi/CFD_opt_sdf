@@ -86,6 +86,9 @@ def verify(download: Path, *, criteria_path=DEFAULT_CRITERIA, dataset_dir=DEFAUL
     if (metadata.get("id") != criteria["kernel_id"]
             or metadata.get("title") != "CFD Opt SDF W3 v17 Candidate C"
             or metadata.get("is_private") is not True
+            or metadata.get("enable_gpu") is not True
+            or metadata.get("machine_shape") != "NvidiaTeslaT4"
+            or metadata.get("enable_internet") is not True
             or metadata.get("dataset_sources") != [criteria["input_dataset_id"]]):
         raise ValueError("W3-C Kaggle kernel metadata identity mismatch")
     if (isinstance(kernel_version, bool) or not isinstance(kernel_version, int) or kernel_version < 1

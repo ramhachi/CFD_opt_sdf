@@ -168,6 +168,12 @@ def test_w3_c_criteria_draft_preserves_v17_numeric_contract_and_false_flags():
     assert draft["backend"] == baseline["backend"]
     assert draft["profile_adapter"] == baseline["profile_adapter"]
     assert draft["acceptance"] == baseline["acceptance"]
+    for name, path in (
+        ("legacy_host_evaluator", "scripts/verify_kaggle_w3_v16.py"),
+        ("operator_identity_dependency", "src/cfd_sdf/criteria_supersession.py"),
+    ):
+        assert draft["inputs"][name]["path"] == path
+        assert draft["inputs"][name]["sha256"] == hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
 
 
 def test_w4_c_draft_fails_closed_without_actual_w3_c_pass(tmp_path):
@@ -177,6 +183,9 @@ def test_w4_c_draft_fails_closed_without_actual_w3_c_pass(tmp_path):
     with pytest.raises(ValueError, match="requires registered W3-C criteria"):
         registrar.build_draft(tmp_path / "missing-w3-criteria.json",
                               tmp_path / "missing-w3-result.json")
+    source = (ROOT / "scripts/prepare_kaggle_w4_v17_candidate_c_criteria.py").read_text()
+    assert '"legacy_host_evaluator": "scripts/verify_kaggle_w4_v16.py"' in source
+    assert '"operator_identity_dependency": "src/cfd_sdf/criteria_supersession.py"' in source
 
 
 def test_candidate_c_flags_reject_integer_zero_as_not_literal_false():

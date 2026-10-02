@@ -64,8 +64,11 @@ current tree. Parent review must materialize and register immutable W3-C
 criteria before computation. W4-C registration must bind the actual
 host-verified W3-C result. Final criteria must bind each C job, runner,
 metadata, dataset preparer and C host verifier; frozen identity helper and
-record; Candidate C and normal-floor bodies; canonical v17 state; project and
-manifest; and inherited evaluator sources.
+record; the imported legacy host evaluator and the identity helper's
+`criteria_supersession.py` dependency; Candidate C and normal-floor bodies;
+canonical v17 state; project and manifest; and inherited evaluator sources.
+Host verification also enforces Kaggle metadata's GPU-enabled T4 machine shape
+and internet setting.
 
 ## Validation class and limits
 
@@ -81,6 +84,6 @@ Validation run on the prepared source tree:
 
 - `.venv/bin/python -m pytest -q tests/test_candidate_c_w3_w4_source_prep.py tests/test_candidate_c_identity.py`: 11 passed.
 - `.venv/bin/python -m compileall src tests`: passed.
-- `.venv/bin/python -m pytest -q --tb=no`: 37 failed, 1323 passed, 5 skipped. The sorted failure IDs exactly match `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): 0 new failures, 0 resolved failures. Full log: `docs/evidence/candidate_c_w3_w4_source_prep_2026_10/pytest.log` (SHA-256 `64e3df0c2e4977823dfc03ac60398595caba6e836df4bd8f36ebfce7448e6ea9`).
+- `.venv/bin/python -m pytest -q --tb=no`: 37 failed, 1323 passed, 5 skipped. The sorted failure IDs exactly match `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): 0 new failures, 0 resolved failures. Full log: `docs/evidence/candidate_c_w3_w4_source_prep_2026_10/pytest.log` (SHA-256 `8b3ae3e878b5bd0ad08a98c8e90f768f4510dad400a984548f028eb26ef61630`).
 - `julia --startup-file=no -e 'for p in ARGS; Meta.parseall(read(p, String)); println("PARSE_OK ", p); end' scripts/waterlily_w3_v17_candidate_c_job.jl scripts/waterlily_w4_v17_candidate_c_job.jl`: both files parsed.
 - `git diff --check`: passed after source edits.

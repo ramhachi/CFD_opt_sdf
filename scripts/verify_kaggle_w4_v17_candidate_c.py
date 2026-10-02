@@ -63,6 +63,9 @@ def load_criteria(path: Path):
     legacy.require(metadata.get("id") == criteria["kernel_id"]
                    and metadata.get("title") == "CFD Opt SDF W4 v17 Candidate C"
                    and metadata.get("is_private") is True
+                   and metadata.get("enable_gpu") is True
+                   and metadata.get("machine_shape") == "NvidiaTeslaT4"
+                   and metadata.get("enable_internet") is True
                    and metadata.get("dataset_sources") == [criteria["input_dataset_id"]],
                    "W4-C Kaggle kernel metadata identity mismatch")
     return criteria, digest
