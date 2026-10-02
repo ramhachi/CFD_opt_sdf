@@ -1,11 +1,13 @@
 # XFID-01 Stage V environment reproduction gate
 
-Status: **Round 2–4 remain immutable terminal environment/harness failures;
-Round 5 criteria and source are prepared and locally validated but not
-submitted**. This is an OpenFOAM environment and harness reproduction gate for
-issue #45, not a WaterLily/OpenFOAM comparison or scientific verdict. Formal
-XFID remains gated on #44 freezing the composite Candidate C moment-blend plus
-`normal_floor=0.25` operator.
+Status (current checkpoint): **the exact Round 5 Kaggle CPU environment
+reproduction passed independent host verification on kernel `/4`**. Round 2–4
+remain immutable terminal environment/harness failures. The append-only
+checkpoint at the end records the R5 result; earlier source-only status text
+below remains historical. This is an OpenFOAM environment and harness
+reproduction gate for issue #45, not a WaterLily/OpenFOAM comparison or
+scientific verdict. Formal XFID remains gated on #44 freezing the composite
+Candidate C moment-blend plus `normal_floor=0.25` operator.
 
 ## Preregistered round 2
 
@@ -268,3 +270,34 @@ Round 5 is not submitted. No OpenFOAM package installation, meshing, or solver
 execution occurred, so environment reproduction remains unresolved and no
 XFID verdict or Track C branch decision exists. All six qualification flags
 remain false; parent review and registration are pending.
+
+## Append-only checkpoint: exact Round 5 Kaggle CPU version 4 PASS
+
+The exact preregistered private Kaggle CPU kernel
+`ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction/4` completed the v16
+environment-reproduction fixture. The unchanged Round 5 host verifier passed
+using the required `.venv/bin/python` Python 3.12.13. The independent parent
+audit checked all 64 retained artifact hashes and exact runner, criteria,
+package-lock and registration bindings. The original Kaggle-side Python
+runtime was not recorded, and no value is inferred. An earlier host verifier
+attempt using system Python 3.9.6 failed exact floating-sum equality; that
+diagnostic remains preserved and did not change the verifier, registration or
+gates.
+
+Host-verified drag is `0.37426349429041095 N`, downforce is
+`0.24225913050301373 N`, and normalized mass imbalance is
+`1.753881451723771e-8`. The mesh has 2,969 concave cells of 42,619 and passes
+the registered concave-cell allowance; it is not a raw clean `checkMesh`
+result. The exact output is retained in
+[`terminal_kernel_v4_parent_verified`](../evidence/xfid_v16_environment_reproduction_2026_10_02_round5/terminal_kernel_v4_parent_verified/).
+Parent audit SHA-256:
+`80d2e34b155479976d126332c51767bcf176952f5839c375d388b56f3c53c702`;
+registration SHA-256:
+`aad3e8bdf7dc04dde4c4d8ed9b890fce66dc876e7bb187c25cd81e26b5c0ffb7`.
+
+This PASS satisfies the environment prerequisite only. It is not a new-shape
+run, XFID response, ranking, solver equivalence, or production qualification.
+No WaterLily-upstream scientific pilot or formal cross-fidelity comparison has
+run. All six qualification flags remain false. The comparison protocol is
+recorded separately as an unregistered draft at
+[`45_xfid_comparison_contract_draft.md`](45_xfid_comparison_contract_draft.md).
