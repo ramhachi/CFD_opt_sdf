@@ -1,0 +1,30 @@
+{
+  "criteria_path": "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json",
+  "criteria_round": 3,
+  "criteria_sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-candidate-c",
+  "driver_policy": "recorded_not_gated (user decision 2026-10-02)",
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+  "numerical_contract_preserved": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_kaggle_submission": true,
+  "scope": "No solver run and no W3-C verdict; W4-C registration requires actual host-verified W3-C PASS.",
+  "source_commit": "0fc2e0d669d091d83a31dd94d5fbfeb1ac8e7819",
+  "supersedes_round1_criteria_sha256": "cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e",
+  "supersedes_round2_criteria_sha256": "dd5121e3fbc9867a6913a2dae03dace90d61c0a6c6ad6e80acf3f7e4457ff3bf",
+  "validation": {
+    "compileall": "PASS",
+    "diff_check": "PASS",
+    "focused": "13 passed (candidate_c_w3_w4_source_prep + identity)",
+    "full_suite": "round 2 baseline: 1 failed (symlinked-work absolute-path artifact, identical without changes),1374 passed; round 3 changes are a one-line import plus a source-text test",
+    "static": "ruff F821 clean on W3-C/W4-C runner, verifier, registrar scripts"
+  }
+}

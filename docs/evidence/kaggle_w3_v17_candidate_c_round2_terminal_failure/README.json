@@ -1,0 +1,18 @@
+{
+  "criteria_round": 2,
+  "criteria_sha256": "dd5121e3fbc9867a6913a2dae03dace90d61c0a6c6ad6e80acf3f7e4457ff3bf",
+  "evidence_class": "source_defect_terminal_failure_no_solver_verdict",
+  "failure": "NameError: name 'sys' is not defined (runner.py line 497) after passing the driver gate; no solver ran",
+  "files": {
+    "ERROR.txt": "ddd6ee94617764533472f04cfe796b3939ead01da3695320cba3c2b20277cde9",
+    "cfd-opt-sdf-w3-v17-candidate-c.log": "ac149fe7e49d916e43a6556cddf7f00d1aadfa9ac825499a85e099f996578e6d",
+    "nvidia_smi.csv": "cc3e02b81004db6ac3c6f5e020635fb90fbf4d710f5195911ebe2bb0150ac67d",
+    "sha256.json": "f1cc37e3c9fa0859a571ef53312f14b1e0ab9218c8a71bebbf587d98c6d6c02d"
+  },
+  "immutable": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+  "kernel_version": 2,
+  "observed_driver_version": "580.178.04",
+  "scope": "No solver ran; not physics and not a W3-C verdict.",
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}
