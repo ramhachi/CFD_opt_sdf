@@ -225,3 +225,19 @@ def test_w3_c_runner_has_no_undefined_names():
                 for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
                 for alias in node.names}
     assert "sys" in imported
+
+
+def test_w4_c_draft_binds_the_actual_w3_c_round3_backend_identity():
+    registrar = _load_script(
+        "prepare_w4_candidate_c_criteria_real",
+        ROOT / "scripts/prepare_kaggle_w4_v17_candidate_c_criteria.py")
+    w3_criteria = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json"
+    w3_result = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_round3_result_2026_10.json"
+    draft = registrar.build_draft(w3_criteria, w3_result)
+    result = json.loads(w3_result.read_text())
+    assert draft["backend"] == result["backend_identity"]
+    assert draft["prerequisites"]["w3_result_evidence"]["backend_identity"] == draft["backend"]
+    baseline = json.loads((ROOT / "docs/evidence/w4_v17_criteria.json").read_text())
+    assert {k: v for k, v in draft["backend"].items() if k != "driver_version"} == {
+        k: v for k, v in baseline["backend"].items() if k != "driver_version"}
+    assert draft["cases"] == baseline["cases"]

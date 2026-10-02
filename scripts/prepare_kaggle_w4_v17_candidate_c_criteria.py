@@ -42,6 +42,14 @@ SOURCE_PATHS = {
 }
 
 
+def _without_driver(backend):
+    return {key: value for key, value in (backend or {}).items() if key != "driver_version"}
+
+
+def criteria_backend_base() -> dict:
+    return json.loads(BASE.read_text())["backend"]
+
+
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -80,7 +88,8 @@ def build_draft(w3_criteria_path: Path, w3_result_path: Path) -> dict:
             or w3_result.get("kernel_id") != w3_criteria["kernel_id"]
             or w3_result.get("operator_identity") != record["operator"]
             or w3_result.get("source_commit") != w3_criteria.get("source_commit")
-            or w3_result.get("backend_identity") != w3_criteria.get("backend")
+            or _without_driver(w3_result.get("backend_identity")) != _without_driver(criteria_backend_base())
+            or not w3_result.get("backend_identity", {}).get("driver_version")
             or w3_result.get("operator_identity_contract_sha256") != identity["contract_sha256"]
             or not literal_false_flags(w3_result.get("candidate_c_qualification_flags"))):
         raise ValueError("W4-C preparation requires the exact host-verified W3-C PASS on the frozen operator")
@@ -107,6 +116,10 @@ def build_draft(w3_criteria_path: Path, w3_result_path: Path) -> dict:
         "operator_identity_record_sha256": identity["contract_sha256"],
         "qualification_flags": FLAGS,
     })
+    # W4 binds the exact backend identity of the host-verified W3-C PASS (including the
+    # host driver W3-C actually observed): the legacy W4 evaluator requires
+    # W3 result backend == prerequisite backend == W4 backend.
+    draft["backend"] = copy.deepcopy(w3_result["backend_identity"])
     draft["geometry"]["state_label"] = "v17_candidate_c"
     draft["profile_semantics"]["force_integration_body"] = record["operator"]["force_integration_body"]
     draft["measurement"]["force_integration_body"] = record["operator"]["force_integration_body"]
@@ -152,6 +165,9 @@ def build_draft(w3_criteria_path: Path, w3_result_path: Path) -> dict:
         raise AssertionError("W4-C preparation changed the registered four-case matrix")
     measurement_view = copy.deepcopy(draft["measurement"])
     measurement_view["force_integration_body"] = original_measurement.get("force_integration_body")
+    # Only the stationarity precedent binding is re-pointed at the W3-C criteria; thresholds are unchanged.
+    for key in ("precedent_criteria_path", "precedent_criteria_sha256"):
+        measurement_view["stationarity"][key] = original_measurement["stationarity"].get(key)
     profile_view = copy.deepcopy(draft["profile_semantics"])
     profile_view["force_integration_body"] = original_profile["force_integration_body"]
     if measurement_view != original_measurement or profile_view != original_profile:
