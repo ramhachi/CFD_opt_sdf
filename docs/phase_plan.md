@@ -5253,3 +5253,16 @@ driver versions must note the driver difference when compared with historical
 v17 runs. W4-C registration still requires an actual host-verified W3-C PASS and
 must carry the same driver policy. See
 `docs/evidence/kaggle_w3_v17_candidate_c_round2_registration/`.
+
+### 2026-10-02 W3-C Round2 source-defect terminal failure and Round3 registration
+
+W3-C Round2 (criteria SHA-256 dd5121e3…3bf) passed the recorded-not-gated driver
+check (both GPUs 580.178.04) but stopped before any solver work on `NameError:
+sys` in the W3-C runner (defect introduced when the runner was integrated for
+Round1 and never exercised before). It is a terminal source-defect failure, not a
+W3-C verdict; evidence is in
+`docs/evidence/kaggle_w3_v17_candidate_c_round2_terminal_failure/`. Round3
+(`docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json`) changes
+only that import; numerical gates, operator identity, the driver policy and the
+six false flags are unchanged. See
+`docs/evidence/kaggle_w3_v17_candidate_c_round3_registration/`.
