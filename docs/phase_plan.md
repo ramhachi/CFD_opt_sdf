@@ -5190,3 +5190,26 @@ FD08 calibration may be prepared for this frozen identity, with formal
 qualification requiring separate fresh33 runs. No resolved representative
 XFID DISAGREE exists, so Track C's stop condition has not been triggered.
 All six qualification flags remain false.
+
+### 2026-10-02 XFID and FD08 preparation checkpoint
+
+The reviewed XFID arithmetic helper now has three-valued force-response
+verdicts. Any required contrast that is independently resolved in both
+solvers and has opposite signs is DISAGREE; an unresolved different contrast
+does not erase that observed disagreement. AGREE requires all required
+contrasts to resolve and agree. Other cases are UNRESOLVED. This is tested
+contract arithmetic, not a measured cross-fidelity verdict. WaterLily
+physical-time averaging and OpenFOAM steady-iteration tail averaging remain
+distinct, with shared physical-input/geometry lineage still to register.
+See docs/issues/45_xfid_comparison_contract_draft.md and
+docs/evidence/xfid_comparison_contract_preparation_2026_10_02/validation.json.
+
+FD08 now verifies the frozen composite Candidate C source identity and
+caller-declared flow_24, [80,120], canonical v17, disjoint calibration and
+fresh33 design bindings. It also audits in-memory Float32 perturbations.
+It does not verify actual T4 runtime, newly executed run provenance, or raw
+force artifacts, and registers no criteria. Candidate C calibration, epsilon
+ladder and uncertainty model remain pending; no formal FD evidence exists.
+W3-C source/host review is in progress before immutable registration.
+All six qualification flags remain false; no measured resolved XFID
+DISAGREE exists and Track C stop condition has not been triggered.
