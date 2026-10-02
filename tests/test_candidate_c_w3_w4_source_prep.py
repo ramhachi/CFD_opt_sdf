@@ -165,7 +165,11 @@ def test_w3_c_criteria_draft_preserves_v17_numeric_contract_and_false_flags():
     measurement = dict(draft["measurement"])
     measurement["force_integration_body"] = baseline["measurement"]["force_integration_body"]
     assert measurement == baseline["measurement"]
-    assert draft["backend"] == baseline["backend"]
+    backend = dict(draft["backend"])
+    assert backend.pop("driver_version_policy") == "recorded_not_gated"
+    backend["driver_version"] = backend.pop("driver_version_round1_reference")
+    assert backend == baseline["backend"]
+    assert draft["criteria_round"] == 2
     assert draft["profile_adapter"] == baseline["profile_adapter"]
     assert draft["acceptance"] == baseline["acceptance"]
     for name, path in (
@@ -203,3 +207,11 @@ def test_candidate_c_flags_reject_integer_zero_as_not_literal_false():
         module = _load_script(name, path)
         assert module.literal_false_flags(expected)
         assert not module.literal_false_flags(invalid)
+
+
+def test_w3_c_runner_records_driver_without_gating_only_for_round2_policy():
+    runner = _load_script("w3_c_runner_driver", ROOT / "infra/kaggle/kernel_w3_v17_candidate_c/runner.py")
+    row = "0, Tesla T4, GPU-x, 15360 MiB, 580.178.04"
+    assert runner.driver_matches({"driver_version_policy": "recorded_not_gated"}, row)
+    assert not runner.driver_matches({"driver_version": "580.159.04"}, row)
+    assert runner.driver_matches({"driver_version": "580.178.04"}, row)

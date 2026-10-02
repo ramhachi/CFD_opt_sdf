@@ -17,7 +17,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
-DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
 DEFAULT_OUT = ROOT / "work/kaggle_w3_v17_candidate_c_dataset"
 EXPECTED_LABEL = "v17_candidate_c"
 EXPECTED_DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-candidate-c"
