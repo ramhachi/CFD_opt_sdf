@@ -77,6 +77,7 @@ def validate_case_contract(criteria: dict) -> None:
     view["geometry"]["state_label"] = "v17"
     view["kind"] = "waterlily_w4_canonical_grid_domain_sensitivity_criteria"
     view["kernel_id"] = "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity"
+    view["input_dataset_id"] = "ramhachi888/cfd-opt-sdf-v17-w4-sensitivity"
     view["inputs"]["kernel_metadata"]["path"] = "infra/kaggle/kernel_w4_v17/kernel-metadata.json"
     view["prerequisites"]["canonical_state_identity"]["state_label"] = "v17"
     view["profile_semantics"]["force_integration_body"] = (
