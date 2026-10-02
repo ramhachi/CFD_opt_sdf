@@ -5232,3 +5232,24 @@ Kaggle T4 only, record actual versions/runtime and retain raw forces for
 independent host verification. W4-C registration still requires actual
 host-verified W3-C PASS. Physical/production and all six qualification
 flags remain false; registration is not physics evidence.
+
+### 2026-10-02 W3-C Round1 terminal environment failure and Round2 registration
+
+W3-C Round1 (criteria SHA-256 cff792c5…297e) stopped fail-closed with
+`W3 NVIDIA driver drift` before any solver work: the Kaggle T4 host driver moved
+from the registered 580.159.04 to 580.178.04 (both GPUs). This is an environment
+terminal failure, not a W3-C verdict and not physics evidence. Evidence is kept
+immutable in `docs/evidence/kaggle_w3_v17_candidate_c_round1_terminal_failure/`.
+
+User decision: the host NVIDIA driver version is recorded but no longer gated.
+Round2 (`docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json`)
+keeps every numerical gate, the operator identity and the six false qualification
+flags unchanged; GPU model, CUDA driver API/runtime, Julia, CUDA.jl, WaterLily and
+source hashes remain gated, and drivers must agree across GPUs. The runner and
+host verifier honor this only for criteria carrying
+`backend.driver_version_policy = recorded_not_gated`; Round1 behavior is
+unchanged and `evaluate_gates` is byte-identical to v17. Results from other
+driver versions must note the driver difference when compared with historical
+v17 runs. W4-C registration still requires an actual host-verified W3-C PASS and
+must carry the same driver policy. See
+`docs/evidence/kaggle_w3_v17_candidate_c_round2_registration/`.
