@@ -5126,3 +5126,28 @@ claim. Preserve that geometry-only failure while auditing zero-measure
 coverage. No physical flux measurement or tolerance change follows from it.
 All six qualification flags remain false; W3-C/W4-C, FD-08 calibration/fresh
 qualification and STEP-01 have not been dispatched.
+
+### 2026-10-02 long CPU fixture terminal and bounded surface preregistration
+
+#44 Round7 completed all 12 solver arms to t=10 but the immutable host verifier
+terminated ERROR: Julia promoted four Boolean values to Float64 1.0 in the CSV
+writer. The original source, CSV and ERROR are retained unchanged. A pure Julia
+control reproduces that promotion. An explicitly derived copy decodes only
+those four source-proven Boolean columns; its numerical integrity reanalysis
+is conditional used-data evidence, not formal Round7 PASS. Forces and
+whole-grid bookkeeping do not qualify no-through or immersed mass closure.
+See `docs/evidence/candidate_c_fixture_diagnostic_2026_10_round7_terminal_parent/`.
+
+The independently reviewed immutable Round8 surface plan and source bind
+three levels of exact GridSDF surface quadrature, a bounded moving-ground
+patch, fixed N+2 masks and independently recomputable final point/field data.
+Only exactly zero-area projected faces are removed; all positive-area faces
+and closed-body edge coverage are retained. External parent preregistration
+authorizes initialization and a fresh short CPU diagnostic after integration
+push. No physical acceptance threshold is introduced. It is not mass closure,
+stationarity, production operator qualification or a resolution floor.
+See `docs/evidence/candidate_c_surface_flux_round8_parent_review/registration.json`.
+All six qualification flags remain false. W3-C/W4-C source copies are reviewed
+preparation; formal criteria and T4 dispatch await the composite operator
+contract. Formal XFID remains pending; its environment gate is PASS and no
+resolved representative DISAGREE has been observed.
