@@ -110,3 +110,36 @@ optimizer or shape-update qualification flag.
 No immutable STEP-01 criteria or run set was created in this preparation.
 No CFD/calibration run or numerical verdict was produced; operator freeze in
 #44 remains pending.
+
+## Registrar/preflight preparation addendum (2026-10-02)
+
+The prior preparation section records the initial snapshot before #44's
+identity freeze. STEP-01 now reuses the #46
+`cfd_sdf.candidate_c_identity.load_candidate_c_identity` helper, which validates
+the shared immutable contract, `.sha256` sidecar, pinned body source bytes,
+composite wrapper parameters, and six false flags. It binds caller-declared
+`Kaggle-T4`, `flow_24`, `[80,120] tU/L`, and v17 state/phi identities. The
+shared contract SHA-256 is
+`516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc`; this is
+operator identity evidence, not physical or gradient qualification.
+
+`validate_step01_preflight` validates a caller-selected direction, signed
+step, and fraction in the existing 0.1–0.5 h range, then reports the signed
+physical displacement. It writes no criteria or run set. Its runtime identity,
+fresh solver execution, and gradient qualification fields remain false.
+`finite_step_response` accepts signed physical displacements within
+±2.5–12.5 mm and reports `R(s)-R(0)` in N and the finite secant in N/m. Its
+result is explicitly `STEP-01 finite_step_response_secant`; it is never a
+gradient verdict. These helpers validate declared metadata and supplied force
+numbers; they do not verify a Kaggle runtime, raw history artifact hash, or
+new solver execution.
+
+Verification on the issue worktree:
+
+- Dependency merge: `588efae` (`--no-ff` merge of reviewed #46 commit `a67a93b`).
+- Focused: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_candidate_c_identity.py tests/test_fd08_contract.py tests/test_step01_contract.py` — **25 passed**.
+- Compile: `.venv/bin/python -m compileall src tests` — **passed**.
+- Full suite: `.venv/bin/python -m pytest -q` — **36 failed, 1299 passed, 5 skipped**. The failure-ID set was compared with `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): **0 new IDs; 1 baseline ID resolved**, `tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign`.
+- `git diff --check` — **passed**.
+- Live identity check against the integration worktree validated contract SHA-256 `516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc`; the STEP-01 preflight reported a caller-supplied `-0.25 h` displacement as `-0.00625 m`, with runtime identity, fresh execution, gradient qualification and criteria registration all false.
+- Evidence class: immutable source identity and contract/readiness validation only. No step run, force measurement, immutable criteria or gradient qualification was created.
