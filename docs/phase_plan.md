@@ -5190,3 +5190,45 @@ FD08 calibration may be prepared for this frozen identity, with formal
 qualification requiring separate fresh33 runs. No resolved representative
 XFID DISAGREE exists, so Track C's stop condition has not been triggered.
 All six qualification flags remain false.
+
+### 2026-10-02 XFID and FD08 preparation checkpoint
+
+The reviewed XFID arithmetic helper now has three-valued force-response
+verdicts. Any required contrast that is independently resolved in both
+solvers and has opposite signs is DISAGREE; an unresolved different contrast
+does not erase that observed disagreement. AGREE requires all required
+contrasts to resolve and agree. Other cases are UNRESOLVED. This is tested
+contract arithmetic, not a measured cross-fidelity verdict. WaterLily
+physical-time averaging and OpenFOAM steady-iteration tail averaging remain
+distinct, with shared physical-input/geometry lineage still to register.
+See docs/issues/45_xfid_comparison_contract_draft.md and
+docs/evidence/xfid_comparison_contract_preparation_2026_10_02/validation.json.
+
+FD08 now verifies the frozen composite Candidate C source identity and
+caller-declared flow_24, [80,120], canonical v17, disjoint calibration and
+fresh33 design bindings. It also audits in-memory Float32 perturbations.
+It does not verify actual T4 runtime, newly executed run provenance, or raw
+force artifacts, and registers no criteria. Candidate C calibration, epsilon
+ladder and uncertainty model remain pending; no formal FD evidence exists.
+W3-C source/host review is in progress before immutable registration.
+All six qualification flags remain false; no measured resolved XFID
+DISAGREE exists and Track C stop condition has not been triggered.
+
+### 2026-10-02 W3-C Round1 immutable registration
+
+Fresh composite C W3-C Round1 is preregistered before Kaggle submission in
+docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json, SHA-256
+cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e.
+Source is 6aaa353a40ef5030fffb9b3377654149507df6c1. Parent verified every
+source input against that commit and exact staged canonical v17 bytes.
+Actual v17 measurement/backend/profile/acceptance numerics are unchanged;
+only operator identity, force-body description and source bindings differ.
+Parent focused tests11 pass; compileall/diff pass; full suite37 failed,1335
+passed,5 skipped with exact baseline failure IDs and zero new failures.
+See docs/evidence/kaggle_w3_v17_candidate_c_round1_parent_registration/.
+
+No W3-C solver verdict exists yet. The private new dataset/kernel will use
+Kaggle T4 only, record actual versions/runtime and retain raw forces for
+independent host verification. W4-C registration still requires actual
+host-verified W3-C PASS. Physical/production and all six qualification
+flags remain false; registration is not physics evidence.

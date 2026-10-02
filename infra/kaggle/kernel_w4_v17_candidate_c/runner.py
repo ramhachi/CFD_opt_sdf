@@ -49,6 +49,11 @@ def sha256_bytes(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def literal_false_flags(value):
+    keys = {"shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology"}
+    return isinstance(value, dict) and set(value) == keys and all(value[key] is False for key in keys)
+
+
 def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, sort_keys=True,
                                      allow_nan=False) + "\n")
@@ -123,16 +128,9 @@ def read_criteria(dataset_dir):
     if not criteria.get("input_dataset_id"):
         raise RuntimeError("W4 criteria do not bind a private input dataset")
     if label == "v17_candidate_c":
-        operator = criteria.get("operator", {})
-        if (criteria.get("input_dataset_id") != "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"
-                or operator.get("identity") != "candidate_c_moment_blend+normal_floor_0.25"
-                or operator.get("normal_floor") != 0.25
-                or operator.get("transition_width_solver") != 1.1444091796875e-4
-                or operator.get("simulation_body") !=
-                    "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid)+moving_ground)"
-                or operator.get("force_integration_body") !=
-                    "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))"):
-            raise RuntimeError("W4 Candidate C operator/body composition identity mismatch")
+        if (criteria.get("kernel_id") != "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c"
+                or criteria.get("input_dataset_id") != "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"):
+            raise RuntimeError("W4 Candidate C kernel/dataset identity mismatch")
     return criteria, digest
 
 
@@ -262,7 +260,9 @@ def validate_case_contract(criteria):
         "x_plus_boundary": "WaterLily convective exit",
         "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
         "ground_model": "moving planar half-space on the expanded flow-domain bottom at world z=-0.9 m, with +x wall velocity 1 m/s",
-        "force_integration_body": f"canonical {label} candidate GridSDF only; exclude auxiliary moving-ground half-space",
+        "force_integration_body": (criteria.get("operator", {}).get("force_integration_body")
+                                   if label == "v17_candidate_c" else
+                                   f"canonical {label} candidate GridSDF only; exclude auxiliary moving-ground half-space"),
         "drag_projection": [1.0, 0.0, 0.0],
         "downforce_projection": [0.0, 0.0, -1.0],
         "source_profile_equivalent": False,
@@ -421,7 +421,10 @@ def verify_source(source, criteria):
     w3_criteria = json.loads(w3_criteria_path.read_text())
     if (w3_criteria.get("immutable") is not True
             or w3_criteria.get("registered_before_computation") is not True
-            or w3_criteria.get("source_commit") != w3_criteria.get("registered_source_commit")):
+            or w3_criteria.get("source_commit") != w3_criteria.get("registered_source_commit")
+            or w3_criteria.get("geometry", {}).get("state_label") != "v17_candidate_c"
+            or w3_criteria.get("kernel_id") != "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c"
+            or w3_criteria.get("operator", {}).get("identity") != "candidate_c_moment_blend+normal_floor_0.25"):
         raise RuntimeError("bound W3 criteria are not immutable preregistration")
     result_path = Path(source) / prereq["path"]
     if sha256(result_path) != prereq["sha256"]:
@@ -430,6 +433,10 @@ def verify_source(source, criteria):
     if (prereq.get("host_verified") is not True
             or result.get("verdict") != "PASS"
             or result.get("host_verification_passed") is not True
+            or result.get("kernel_id") != "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c"
+            or result.get("canonical_state_label") != "v17_candidate_c"
+            or not literal_false_flags(result.get("candidate_c_qualification_flags"))
+            or result.get("operator_identity_contract_sha256") != criteria.get("operator_identity_record_sha256")
             or result.get("criteria_sha256") != prereq["criteria_sha256"]
             or result.get("kernel_version") != prereq["kernel_version"]
             or result.get("source_commit") != w3_criteria["source_commit"]
@@ -642,6 +649,19 @@ def main():
         if actual_commit != commit:
             raise RuntimeError("W4 source commit mismatch")
         project, w3_result = verify_source(source, criteria)
+        sys.path.insert(0, str(source / "src"))
+        from cfd_sdf.candidate_c_identity import load_candidate_c_identity
+        frozen = load_candidate_c_identity(source)
+        identity_record = json.loads((source / frozen["contract_path"]).read_text())
+        record_entry = criteria["inputs"]["operator_identity_record"]
+        sidecar_entry = criteria["inputs"]["operator_identity_sha256"]
+        if (record_entry["path"] != frozen["contract_path"]
+                or record_entry["sha256"] != frozen["contract_sha256"]
+                or criteria["operator"] != identity_record["operator"]
+                or not literal_false_flags(criteria.get("qualification_flags"))
+                or sidecar_entry["path"] != frozen["contract_path"] + ".sha256"
+                or sha256(source / sidecar_entry["path"]) != sidecar_entry["sha256"]):
+            raise RuntimeError("W4 criteria do not bind the exact frozen Candidate C identity")
         julia = install_julia(base, criteria)
         env = os.environ.copy()
         env.update({"JULIA_NUM_THREADS": str(criteria["backend"]["julia_threads"]),
@@ -763,6 +783,15 @@ def main():
         "topology_qualified": False,
         "optimizer_qualified": False,
         "shape_update_allowed": False,
+        "candidate_c_qualification_flags": {
+            "shape_update_allowed": False,
+            "fd_oracle": False,
+            "field_gradient": False,
+            "reverse": False,
+            "optimizer": False,
+            "topology": False,
+        },
+        "operator_identity": criteria.get("operator") if label == "v17_candidate_c" else None,
     })
     if not all(gates.values()):
         raise RuntimeError(f"W4 registered integrity gates failed: {gates}")

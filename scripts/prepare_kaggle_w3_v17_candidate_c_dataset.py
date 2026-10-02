@@ -21,7 +21,13 @@ DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026
 DEFAULT_OUT = ROOT / "work/kaggle_w3_v17_candidate_c_dataset"
 EXPECTED_LABEL = "v17_candidate_c"
 EXPECTED_DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-candidate-c"
+
+
+def literal_false_flags(value: object) -> bool:
+    keys = {"shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology"}
+    return isinstance(value, dict) and set(value) == keys and all(value[key] is False for key in keys)
 sys.path.insert(0, str(ROOT / "src"))
+from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 
 
 def sha256(path: Path) -> str:
@@ -35,16 +41,22 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
     criteria = json.loads(criteria_path.read_text())
     label = criteria["geometry"].get("state_label", "v16")
     dataset_id = criteria["input_dataset_id"]
-    operator = criteria.get("operator", {})
-    if (label != EXPECTED_LABEL or dataset_id != EXPECTED_DATASET_ID
-            or operator.get("identity") != "candidate_c_moment_blend+normal_floor_0.25"
-            or operator.get("normal_floor") != 0.25
-            or operator.get("transition_width_solver") != 1.1444091796875e-4
-            or operator.get("simulation_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid)+moving_ground)"
-            or operator.get("force_integration_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))"):
+    if label != EXPECTED_LABEL or dataset_id != EXPECTED_DATASET_ID:
         raise ValueError("W3 Candidate C state, dataset or operator identity mismatch")
+    frozen = load_candidate_c_identity(ROOT)
+    record = json.loads((ROOT / frozen["contract_path"]).read_text())
+    record_entry = criteria["inputs"]["operator_identity_record"]
+    sidecar_entry = criteria["inputs"]["operator_identity_sha256"]
+    if (criteria.get("operator") != record["operator"]
+            or criteria.get("operator_identity_record") != {
+                "path": frozen["contract_path"], "sha256": frozen["contract_sha256"]}
+            or criteria.get("operator_identity_record_sha256") != frozen["contract_sha256"]
+            or not literal_false_flags(criteria.get("qualification_flags"))
+            or record_entry.get("path") != frozen["contract_path"]
+            or record_entry.get("sha256") != frozen["contract_sha256"]
+            or sidecar_entry.get("path") != frozen["contract_path"] + ".sha256"
+            or sha256(ROOT / sidecar_entry["path"]) != sidecar_entry.get("sha256")):
+        raise ValueError("W3 criteria do not bind the exact frozen Candidate C identity")
     raw_name = criteria["inputs"]["canonical_phi_fortran_raw"]["path"]
     genesis_path = ROOT / criteria["inputs"]["genesis_evidence"]["path"]
     genesis = json.loads(genesis_path.read_text())
