@@ -15,9 +15,10 @@ sys.path.insert(0, str(ROOT / "src"))
 from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 
 BASE = ROOT / "docs/evidence/kaggle_w3_v17_primal_criteria_2026_09.json"
-OUTPUT = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
+OUTPUT = "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-candidate-c"
 ROUND1_SHA256 = "cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e"
+ROUND2_SHA256 = "dd5121e3fbc9867a6913a2dae03dace90d61c0a6c6ad6e80acf3f7e4457ff3bf"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c"
 FLAGS = {name: False for name in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
@@ -57,8 +58,8 @@ def build_draft() -> dict:
                          copy.deepcopy(criteria["profile_adapter"]), copy.deepcopy(criteria["acceptance"]))
 
     draft.update({
-        "criteria_id": "kaggle_w3_v17_candidate_c_2026_10_round2",
-        "criteria_round": 2,
+        "criteria_id": "kaggle_w3_v17_candidate_c_2026_10_round3",
+        "criteria_round": 3,
         "kind": "waterlily_w3_candidate_c_canonical_primal_criteria",
         "status": "draft_unregistered",
         "immutable": False,
@@ -69,11 +70,12 @@ def build_draft() -> dict:
             ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
         "criteria_source_path": BASE.relative_to(ROOT).as_posix(),
         "criteria_source_sha256": sha256(BASE),
-        "round_reason": ("Round 1 stopped fail-closed before any solver work because the Kaggle T4 host NVIDIA driver "
-                         "moved from 580.159.04 to 580.178.04. Round 2 keeps every numerical gate, records the host "
-                         "driver without gating on its value, and still gates GPU model, CUDA driver API/runtime, "
-                         "Julia, CUDA.jl, WaterLily and source hashes."),
+        "round_reason": ("Round 1 stopped fail-closed on a Kaggle T4 host driver drift (580.159.04 -> 580.178.04); "
+                         "round 2 recorded the driver without gating it but stopped before any solver work on a "
+                         "missing `import sys` in the W3-C runner. Round 3 fixes only that runner defect and keeps "
+                         "every numerical gate, the operator identity and the driver recorded-not-gated policy."),
         "supersedes_round1_criteria_sha256": ROUND1_SHA256,
+        "supersedes_round2_criteria_sha256": ROUND2_SHA256,
         "operator_identity_record": {"path": identity["contract_path"], "sha256": identity["contract_sha256"]},
         "operator": record["operator"],
         "operator_identity_record_sha256": identity["contract_sha256"],

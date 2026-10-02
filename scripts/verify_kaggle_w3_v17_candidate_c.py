@@ -20,7 +20,7 @@ legacy = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(legacy)
 FLAGS = {key: False for key in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
-DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round2.json"
+DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10_round3.json"
 DEFAULT_DATASET = ROOT / "work/kaggle_w3_v17_candidate_c_dataset"
 
 
