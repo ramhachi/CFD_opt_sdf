@@ -5279,3 +5279,17 @@ canonical v17 state under the limited profile adapter: it is not target-physics
 evidence and does not qualify FD, gradient, reverse, optimizer or topology; all six
 flags remain false. W4-C may now be registered (it must carry the same driver
 policy).
+
+### 2026-10-02 W4-C Round1 immutable registration
+
+Fresh composite C W4-C Round1 is preregistered before Kaggle submission in
+`docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json`. It binds the
+host-verified W3-C Round3 PASS, preserves the v17 four-case matrix and numerical
+gates, and keeps all six qualification flags false. Preparation required three
+registrar/verifier fixes (backend-identity binding, measurement-preservation
+assertion, legacy-validation view dataset id), all found by dry runs on the real
+W3-C evidence. W4-C binds the W3-C observed backend identity including host driver
+580.178.04 (the legacy W4 evaluator requires W3 result = prerequisite = W4
+backend), so a driver change between the W3-C and W4-C runs would stop W4-C and
+need a new round. No W4-C solver verdict exists yet. See
+`docs/evidence/kaggle_w4_v17_candidate_c_round1_registration/`.
