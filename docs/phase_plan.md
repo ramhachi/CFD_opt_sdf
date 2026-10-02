@@ -5213,3 +5213,22 @@ ladder and uncertainty model remain pending; no formal FD evidence exists.
 W3-C source/host review is in progress before immutable registration.
 All six qualification flags remain false; no measured resolved XFID
 DISAGREE exists and Track C stop condition has not been triggered.
+
+### 2026-10-02 W3-C Round1 immutable registration
+
+Fresh composite C W3-C Round1 is preregistered before Kaggle submission in
+docs/evidence/kaggle_w3_v17_candidate_c_criteria_2026_10.json, SHA-256
+cff792c51fbb24218bd7f21d336a3d4b704aeb20498d18a9e16976e6a295597e.
+Source is 6aaa353a40ef5030fffb9b3377654149507df6c1. Parent verified every
+source input against that commit and exact staged canonical v17 bytes.
+Actual v17 measurement/backend/profile/acceptance numerics are unchanged;
+only operator identity, force-body description and source bindings differ.
+Parent focused tests11 pass; compileall/diff pass; full suite37 failed,1335
+passed,5 skipped with exact baseline failure IDs and zero new failures.
+See docs/evidence/kaggle_w3_v17_candidate_c_round1_parent_registration/.
+
+No W3-C solver verdict exists yet. The private new dataset/kernel will use
+Kaggle T4 only, record actual versions/runtime and retain raw forces for
+independent host verification. W4-C registration still requires actual
+host-verified W3-C PASS. Physical/production and all six qualification
+flags remain false; registration is not physics evidence.
