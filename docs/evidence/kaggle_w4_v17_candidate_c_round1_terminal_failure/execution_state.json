@@ -1,0 +1,17 @@
+{
+  "canonical_state_label": "v17_candidate_c",
+  "failure": "Traceback (most recent call last):\n  File \"/kaggle/src/script.py\", line 1018, in <module>\n    main()\n  File \"/kaggle/src/script.py\", line 797, in main\n    raise RuntimeError(f\"W4 registered integrity gates failed: {gates}\")\nRuntimeError: W4 registered integrity gates failed: {'T0_registered_inputs_and_w3_pass': True, 'T1_registered_case_matrix_complete': True, 'T2_canonical_phi_and_margin_identity': True, 'T3_case_mapping_and_reynolds': True, 'T4_native_profile_limitation_preserved': False, 'T5_T4_Julia_CUDA_WaterLily_identity': True, 'T6_primal_completion_and_force_integrity': True, 'T7_host_force_recomputation': True, 'T8_runtime_and_vram': True, 'T9_exact_source_and_runner_identity': True, 'T10_stationarity': True}\n",
+  "solver_step_invoked": [
+    "flow_16",
+    "flow_24",
+    "flow_32",
+    "domain_xplus1m_16"
+  ],
+  "solver_step_returned": [
+    "flow_16",
+    "flow_24",
+    "flow_32",
+    "domain_xplus1m_16"
+  ],
+  "stage": "julia_job"
+}
