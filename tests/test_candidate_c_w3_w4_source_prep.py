@@ -241,3 +241,9 @@ def test_w4_c_draft_binds_the_actual_w3_c_round3_backend_identity():
     assert {k: v for k, v in draft["backend"].items() if k != "driver_version"} == {
         k: v for k, v in baseline["backend"].items() if k != "driver_version"}
     assert draft["cases"] == baseline["cases"]
+
+
+def test_w4_c_job_reports_the_registered_operator_force_body_string():
+    record = json.loads((ROOT / "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json").read_text())
+    job = (ROOT / "scripts/waterlily_w4_v17_candidate_c_job.jl").read_text()
+    assert f'force_integration_body="{record["operator"]["force_integration_body"]}",' in job
