@@ -1,0 +1,238 @@
+{
+  "arms": {
+    "analytic": {
+      "exact_window_means": {
+        "40_50": {
+          "drag_solver": 88.42578230948095,
+          "fx_n": 0.34541321214640996,
+          "fy_n": -5.401320976152039e-08,
+          "fz_n": -9.037355845539409e-09,
+          "lift_solver": -1.382738169894922e-05,
+          "pressure_drag_solver": 56.94868084909994,
+          "side_solver": -2.3135630964580887e-06,
+          "viscous_drag_solver": 31.477101460381014
+        },
+        "40_60": {
+          "drag_solver": 88.4257796764243,
+          "fx_n": 0.3454132018610324,
+          "fy_n": -6.295467411329705e-08,
+          "fz_n": -4.581714391331496e-09,
+          "lift_solver": -1.6116396573004046e-05,
+          "pressure_drag_solver": 56.948679320800274,
+          "side_solver": -1.172918884180863e-06,
+          "viscous_drag_solver": 31.47710035562401
+        },
+        "50_60": {
+          "drag_solver": 88.42577704336765,
+          "fx_n": 0.34541319157565487,
+          "fy_n": -7.18961384650737e-08,
+          "fz_n": -1.2607293712358362e-10,
+          "lift_solver": -1.840541144705887e-05,
+          "pressure_drag_solver": 56.94867779250062,
+          "side_solver": -3.227467190363741e-08,
+          "viscous_drag_solver": 31.477099250866996
+        }
+      },
+      "force_N_window_40_60": {
+        "drag_solver": 0.3454132018610324,
+        "lift_solver": -6.295467411329705e-08,
+        "pressure_drag_solver": 0.22245577859687607,
+        "side_solver": -4.581714391331496e-09,
+        "viscous_drag_solver": 0.12295742326415629
+      },
+      "max_force_closure_error_solver": 0.0,
+      "max_physical_projection_error_N": 0.0,
+      "raw_csv_sha256": "02f2b9049a0f4c6081f7bad3f65c83ec85563e748fae52e3082cb367030fa140",
+      "rows": 562,
+      "stdout_sha256": "33eb51c11ff0afc8a1de6f24daef1a7b65830ef6d3d225f8b5fc3931eb2f085a",
+      "summary_recomputation_matches": true,
+      "summary_sha256": "24fd31b9f102e064d7ac03564eb270cb672e222ab1ff8cfe84f254e724d90308"
+    },
+    "analytic_repeat": {
+      "exact_window_means": {
+        "40_50": {
+          "drag_solver": 88.42578230948095,
+          "fx_n": 0.34541321214640996,
+          "fy_n": -5.401320976152039e-08,
+          "fz_n": -9.037355845539409e-09,
+          "lift_solver": -1.382738169894922e-05,
+          "pressure_drag_solver": 56.94868084909994,
+          "side_solver": -2.3135630964580887e-06,
+          "viscous_drag_solver": 31.477101460381014
+        },
+        "40_60": {
+          "drag_solver": 88.4257796764243,
+          "fx_n": 0.3454132018610324,
+          "fy_n": -6.295467411329705e-08,
+          "fz_n": -4.581714391331496e-09,
+          "lift_solver": -1.6116396573004046e-05,
+          "pressure_drag_solver": 56.948679320800274,
+          "side_solver": -1.172918884180863e-06,
+          "viscous_drag_solver": 31.47710035562401
+        },
+        "50_60": {
+          "drag_solver": 88.42577704336765,
+          "fx_n": 0.34541319157565487,
+          "fy_n": -7.18961384650737e-08,
+          "fz_n": -1.2607293712358362e-10,
+          "lift_solver": -1.840541144705887e-05,
+          "pressure_drag_solver": 56.94867779250062,
+          "side_solver": -3.227467190363741e-08,
+          "viscous_drag_solver": 31.477099250866996
+        }
+      },
+      "force_N_window_40_60": {
+        "drag_solver": 0.3454132018610324,
+        "lift_solver": -6.295467411329705e-08,
+        "pressure_drag_solver": 0.22245577859687607,
+        "side_solver": -4.581714391331496e-09,
+        "viscous_drag_solver": 0.12295742326415629
+      },
+      "max_force_closure_error_solver": 0.0,
+      "max_physical_projection_error_N": 0.0,
+      "raw_csv_sha256": "02f2b9049a0f4c6081f7bad3f65c83ec85563e748fae52e3082cb367030fa140",
+      "rows": 562,
+      "stdout_sha256": "62edafe7acda122dbe12ae2f5277db8c1fc6af17cffc053be05899c3e1160d22",
+      "summary_recomputation_matches": true,
+      "summary_sha256": "36ac381e5a062ddeb3043ab31d502b5647ccca9853184fa76efac967d0974f29"
+    },
+    "candidate_c": {
+      "exact_window_means": {
+        "40_50": {
+          "drag_solver": 88.23355902597561,
+          "fx_n": 0.3446623399452172,
+          "fy_n": 1.1781140125099998e-05,
+          "fz_n": -1.1881683677156334e-05,
+          "lift_solver": 0.0030159718720255994,
+          "pressure_drag_solver": 56.842431170514644,
+          "side_solver": -0.0030417110213520216,
+          "viscous_drag_solver": 31.39112785546095
+        },
+        "40_60": {
+          "drag_solver": 88.23355050454136,
+          "fx_n": 0.34466230665836467,
+          "fy_n": 1.1781448068086067e-05,
+          "fz_n": -1.18825683467531e-05,
+          "lift_solver": 0.003016050705430033,
+          "pressure_drag_solver": 56.84242360825648,
+          "side_solver": -0.0030419374967687934,
+          "viscous_drag_solver": 31.391126896284884
+        },
+        "50_60": {
+          "drag_solver": 88.23354198310712,
+          "fx_n": 0.3446622733715122,
+          "fy_n": 1.1781756011072134e-05,
+          "fz_n": -1.1883453016349864e-05,
+          "lift_solver": 0.0030161295388344664,
+          "pressure_drag_solver": 56.8424160459983,
+          "side_solver": -0.003042163972185565,
+          "viscous_drag_solver": 31.391125937108818
+        }
+      },
+      "force_N_window_40_60": {
+        "drag_solver": 0.34466230665836467,
+        "lift_solver": 1.1781448068086067e-05,
+        "pressure_drag_solver": 0.22204071721975188,
+        "side_solver": -1.18825683467531e-05,
+        "viscous_drag_solver": 0.12262158943861283
+      },
+      "max_force_closure_error_solver": 0.0,
+      "max_physical_projection_error_N": 0.0,
+      "raw_csv_sha256": "09a72372ccad9e952a912e2b454974f40b0b3454ab1a760f7583260ed05cb928",
+      "rows": 561,
+      "stdout_sha256": "309f2b968921b4a51b9171da62f951afecf166f80b7e729de28fa7d9143dda7f",
+      "summary_recomputation_matches": true,
+      "summary_sha256": "fbac85bd7a641a86f063a123117ba0601d52f07e0b510c027c8e5397f02c7aa3"
+    },
+    "grid_upstream": {
+      "exact_window_means": {
+        "40_50": {
+          "drag_solver": 88.233545853962,
+          "fx_n": 0.34466228849203906,
+          "fy_n": 1.1843687474605133e-05,
+          "fz_n": -1.1887780525009044e-05,
+          "lift_solver": 0.003031983993498914,
+          "pressure_drag_solver": 56.842417065658324,
+          "side_solver": -0.0030432718144023153,
+          "viscous_drag_solver": 31.39112878830366
+        },
+        "40_60": {
+          "drag_solver": 88.23353781418075,
+          "fx_n": 0.34466225708664355,
+          "fy_n": 1.184937522619627e-05,
+          "fz_n": -1.1894500130707678e-05,
+          "lift_solver": 0.003033440057906245,
+          "pressure_drag_solver": 56.842409998890886,
+          "side_solver": -0.0030449920334611655,
+          "viscous_drag_solver": 31.391127815289856
+        },
+        "50_60": {
+          "drag_solver": 88.23352977439949,
+          "fx_n": 0.344662225681248,
+          "fy_n": 1.1855062977787408e-05,
+          "fz_n": -1.1901219736406313e-05,
+          "lift_solver": 0.0030348961223135764,
+          "pressure_drag_solver": 56.84240293212347,
+          "side_solver": -0.003046712252520016,
+          "viscous_drag_solver": 31.391126842276055
+        }
+      },
+      "force_N_window_40_60": {
+        "drag_solver": 0.34466225708664355,
+        "lift_solver": 1.184937522619627e-05,
+        "pressure_drag_solver": 0.22204066405816753,
+        "side_solver": -1.1894500130707678e-05,
+        "viscous_drag_solver": 0.122621593028476
+      },
+      "max_force_closure_error_solver": 0.0,
+      "max_physical_projection_error_N": 0.0,
+      "raw_csv_sha256": "6ffbf2b4fc09de15d44165b9b78d2f4757736ef6cf50c2eb306673a05ef84f7b",
+      "rows": 561,
+      "stdout_sha256": "43222a41c4cf7af393c5d4dbf1bc143ab3b180b1fece818a83596c450ef94316",
+      "summary_recomputation_matches": true,
+      "summary_sha256": "c724af980a95b319832ea8a1ec184f575c15bcbd9ce35ae905ce8ca99991f0d3"
+    }
+  },
+  "checks": {
+    "all_rows_finite": true,
+    "body_force_N_components_match_registered_projections": true,
+    "exact_window_summaries_recomputed": true,
+    "force_sign_wrapper_applies_negative_raw_api_once": true,
+    "pressure_plus_viscous_equals_total_each_row": true,
+    "raw_csv_hashes_match_result": true
+  },
+  "comparisons": {
+    "analytic_repeat_relative_drag_difference": 0.0,
+    "candidate_c_vs_analytic_cd_relative_difference": 0.0021739041780164175,
+    "cd": {
+      "analytic": 0.8795874957661115,
+      "analytic_repeat": 0.8795874957661115,
+      "candidate_c": 0.8776753568341346
+    },
+    "lift_over_drag": {
+      "analytic": 1.822590270843937e-07,
+      "analytic_repeat": 1.822590270843937e-07,
+      "candidate_c": 3.4182583475146426e-05
+    },
+    "stationarity_relative_drift": {
+      "analytic": 5.955405001453889e-08,
+      "analytic_repeat": 5.955405001453889e-08,
+      "candidate_c": 1.9315632653352295e-07
+    }
+  },
+  "criteria_sha256": "58750ab16225628d476a6b2a2c44124f145da25fc1a1c88d4165714df6f30cff",
+  "evidence_class": "independent_host_recomputation",
+  "force_scale_n_per_solver_unit": 0.00390625,
+  "force_sign_audit": {
+    "forces_source_path": "julia/CFDSDFWaterLily/src/Forces.jl",
+    "forces_source_sha256": "0e5a6b9dae2a5a3044a9ed08162a42ceb9e5ea5fac41585e7a758184205adc8e",
+    "interpretation": "wrappers negate WaterLily API reaction once to obtain body force; job adds pressure and viscous body forces with no further inversion; registered W2a +x projection is drag; CSV Fx_N=drag_solver*0.00390625",
+    "job_source_path": "scripts/waterlily_w2a_candidate_c_job.jl",
+    "job_source_sha256": "034a7352d4f0172d021434a94a3206f43b213b0ee35b715c9934047832ea500a"
+  },
+  "kind": "candidate_c_w2a_sphere_round4_independent_raw_audit",
+  "method": "Python csv.DictReader plus NumPy endpoint interpolation and numpy.trapezoid; separate implementation from runner evaluator",
+  "schema_version": 1,
+  "source_manifest_sha256": "b1d42a3ff48cfd73c4aeb257447f52323989ab15f3a4da49e543abbd0c95816b",
+  "source_result_sha256": "7de79ab8f7d3daf0633fb0d038f775a4dd457a79c316024deeadd72297ff41a7"
+}

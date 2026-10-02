@@ -1,10 +1,11 @@
 # XFID-01 Stage V environment reproduction gate
 
-Status: **round 2 criteria preregistered; kernel not submitted**. This is an
-OpenFOAM environment and harness reproduction gate for issue #45, not a
-WaterLily/OpenFOAM comparison or scientific verdict. Formal XFID remains gated
-on #44 freezing the composite Candidate C moment-blend plus `normal_floor=0.25`
-operator.
+Status: **Round 2–4 remain immutable terminal environment/harness failures;
+Round 5 criteria and source are prepared and locally validated but not
+submitted**. This is an OpenFOAM environment and harness reproduction gate for
+issue #45, not a WaterLily/OpenFOAM comparison or scientific verdict. Formal
+XFID remains gated on #44 freezing the composite Candidate C moment-blend plus
+`normal_floor=0.25` operator.
 
 ## Preregistered round 2
 
@@ -220,3 +221,50 @@ raw log, downloaded-output inventory and package-path evidence are retained in
 Round 3 `terminal_failure_kernel_v2/`. No XFID verdict or Track C stop condition
 exists. A future immutable harness-correction round must retain all package,
 geometry, numerical-gate and case-template identities.
+
+Round4 local validation used the exact command `python3 infra/kaggle/kernel_openfoam_xfid_v16_jammy_round4/runner.py --self-check` (PASS) and `python3 -m pytest -q infra/kaggle/kernel_openfoam_xfid_v16_jammy_round4/test_runner.py` (4 passed). `python3 -m py_compile` passed for the runner, tests and unchanged verifier; `.venv/bin/python -m compileall src tests` passed; `git diff --check` passed. The complete repository command `env PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --tb=short` completed with 37 failed, 1244 passed, 5 skipped. Sorted failure IDs equal the pinned four-track 37-ID baseline exactly, with zero new failures. Raw full-suite log SHA-256 is `cf64e796007ef9292946db215d9cc277e71a640e587e85f54134018c9f3c566c`; sorted ID-list SHA-256 is `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`, matching the baseline file.
+
+Round4 candidate source hashes: runner `2bf07d2ea3182254ce335b5f69a4689111d90d5ce00dc6a1fb5529092efe0d4f`, criteria `687dc69c16e48c914115754e22da370abc1629ae6331ffdfff67fc8a947b1ae8`, package lock `b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746`, embedded payload `2ff0fe7141a5b819eb1390eacac3e759516f5394ac899b07988fe5e9e62fe97e` (19-file inventory). These are source/harness and software-regression checks only. No Kaggle submission, package installation, meshing, solver execution, environment reproduction PASS, or XFID verdict occurred; parent registration and dispatch remain pending.
+
+## Round 5 local source validation (Kaggle kernel not submitted)
+
+Round 5 (`v16_environment_reproduction_r5_jammy_noninteractive_version`)
+keeps the v2512 package lock, numerical gates, environment identity, all 13
+case files, three fixtures, and the host verifier byte-identical/equal to
+Round 4. It corrects the noninteractive `foamVersion` probe by explicitly
+sourcing the pinned package's `$WM_PROJECT_DIR/etc/config.sh/aliases` after
+bashrc. The result's `execution_commands.version` comes from the same helper
+that builds the actual subprocess command; a regression asserts this binding.
+The alias behavior uses the exact `aliases` file retained from the Round 4
+package archives: the former command exits 127, while the new command returns
+`OpenFOAM-v2512`. This is a shell/API test, not a package installation.
+
+Round 5 criteria SHA-256 is
+`7d5215fd3ba681230ffe183952a8e2a91cca1cbb6fc06eecaa85ff6cd67c2867`; the
+source-reviewed runner SHA-256 is
+`19e336893f7b9dc8f1c84503a1218d654fa50eb8b3b3ba4d1530eedfa80f3195`; the
+unchanged package-lock SHA-256 is
+`b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746`.
+
+Validation commands and results:
+
+- `PYTHONPATH=src .venv/bin/python -m pytest -q infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/test_runner.py tests/test_sdf_native_geometry_gates.py` — 6 passed.
+- `.venv/bin/python -m compileall src tests infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/runner.py infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/test_runner.py infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/verify_artifact.py` — passed.
+- `python3 infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/runner.py --self-check` — passed; a copy of `runner.py` alone in a temporary directory also passed its embedded-only self-check.
+- `git diff --check` — passed.
+- `PYTHONPATH=src .venv/bin/python -m pytest -q --tb=short` — 37 failed, 1291 passed, 5 skipped; sorted IDs exactly equal the pinned 37-ID baseline (zero new and zero removed).
+
+The first pre-merge full suite is preserved separately: it had 38 failures,
+including one new failure from the concurrent #29 test attempting to read a
+gitignored canonical NPZ. After the portable fixture repair was committed and
+merged no-ff, the final suite returned to the exact pinned baseline. Compressed
+raw logs, hash bindings, unchanged-gate/input assertions and the failure-ID
+comparison are in
+[`Round 5 validation`](../evidence/xfid_v16_environment_reproduction_2026_10_02_round5/validation.json)
+(SHA-256
+`92b73b5e617a784f930f32b496766565c890b6e6c736414a671aa59f7095d718`).
+
+Round 5 is not submitted. No OpenFOAM package installation, meshing, or solver
+execution occurred, so environment reproduction remains unresolved and no
+XFID verdict or Track C branch decision exists. All six qualification flags
+remain false; parent review and registration are pending.
