@@ -5266,3 +5266,16 @@ W3-C verdict; evidence is in
 only that import; numerical gates, operator identity, the driver policy and the
 six false flags are unchanged. See
 `docs/evidence/kaggle_w3_v17_candidate_c_round3_registration/`.
+
+### 2026-10-02 W3-C Round3 host-verified PASS
+
+W3-C Round3 (criteria SHA-256 0db63d6a…325a, kernel v3, dataset v3, source commit
+0fc2e0d6…) completed on Kaggle T4 (host driver 580.178.04, recorded not gated) and
+passed all 11 in-kernel gates T0–T10 and the independent host verifier (18 files,
+verdict PASS). Result: `docs/evidence/kaggle_w3_v17_candidate_c_round3_result_2026_10.json`;
+retained artifacts in `docs/evidence/kaggle_w3_v17_candidate_c_round3_retained/`.
+This is a primal contract/capability PASS with Candidate C composite operator on the
+canonical v17 state under the limited profile adapter: it is not target-physics
+evidence and does not qualify FD, gradient, reverse, optimizer or topology; all six
+flags remain false. W4-C may now be registered (it must carry the same driver
+policy).

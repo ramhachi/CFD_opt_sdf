@@ -1,0 +1,142 @@
+{
+  "candidate_c_qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "criteria_sha256": "0db63d6a3424e650c4953be3253692ca37acde6f0c60b7ae5ca2cc0169aa325a",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-v17-candidate-c",
+  "gates": {
+    "T0_registered_inputs": true,
+    "T10_stationarity": true,
+    "T1_canonical_v16_identity": true,
+    "T2_margin_gate": true,
+    "T3_profile_adapter_is_explicitly_limited": true,
+    "T4_backend_identity": true,
+    "T5_primal_completion": true,
+    "T6_finite_fields_and_candidate_forces": true,
+    "T7_drag_orientation_and_host_recomputation": true,
+    "T8_runtime_and_vram": true,
+    "T9_source_commit_and_runner": true
+  },
+  "host_recomputed_metrics": {
+    "cd_time_weighted": 0.6981393852249136,
+    "diagnostic_first_half_time_weighted_downforce_solver": 101.79746961825046,
+    "diagnostic_first_half_time_weighted_drag_solver": 89.35988552620364,
+    "diagnostic_second_half_time_weighted_downforce_solver": 101.79096370829072,
+    "diagnostic_second_half_time_weighted_drag_solver": 89.36379709137418,
+    "downforce_time_weighted_n": 0.25448554165817655,
+    "drag_time_weighted_n": 0.22340460327197237,
+    "stationarity_relative_half_window_drift_downforce": 6.391237314849781e-05,
+    "stationarity_relative_half_window_drift_drag": 4.3772208733074e-05,
+    "window_samples": 200,
+    "window_time_weighted_downforce_solver": 101.7942166632706,
+    "window_time_weighted_drag_solver": 89.36184130878893
+  },
+  "operator_identity": {
+    "candidate_c_body_source": {
+      "path": "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl",
+      "sha256": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6"
+    },
+    "force_integration_body": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+    "identity": "candidate_c_moment_blend+normal_floor_0.25",
+    "normal_floor": 0.25,
+    "normal_floor_body_source": {
+      "path": "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl",
+      "sha256": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+    },
+    "simulation_body": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid)+moving_ground)",
+    "transition_width_solver": 0.00011444091796875
+  },
+  "physical_profile_qualified": false,
+  "selected_gpu_uuid": "GPU-92dfd098-b388-c84b-8843-812133c128c7",
+  "shape_update_allowed": false,
+  "source_commit": "0fc2e0d669d091d83a31dd94d5fbfeb1ac8e7819",
+  "state_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+  "stationarity_relative_drift_limit": 0.02,
+  "summary": {
+    "burn_in": 80.0,
+    "canonical_sdf_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "cd_time_weighted": 0.6981393852249136,
+    "cuda_jl_version": "6.3.1",
+    "device_roundtrip_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "diagnostic_first_half_time_weighted_downforce_solver": 101.79746961825046,
+    "diagnostic_first_half_time_weighted_drag_solver": 89.35988552620364,
+    "diagnostic_second_half_time_weighted_downforce_solver": 101.79096370829072,
+    "diagnostic_second_half_time_weighted_drag_solver": 89.36379709137418,
+    "dims": [
+      100,
+      48,
+      36
+    ],
+    "downforce_time_weighted_n": 0.25448554165817655,
+    "drag_time_weighted_n": 0.22340460327197237,
+    "finite_p": true,
+    "finite_u": true,
+    "first_step_seconds": 18.568871021270752,
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "flow_upper_m": [
+      2.5,
+      1.2,
+      0.9
+    ],
+    "force_csv_sha256": "416867c36fa0b0f8387283029621f45407f1f24f3aa544ee362068886d020a35",
+    "force_samples": 602,
+    "freestream_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "gpu_name": "Tesla T4",
+    "gpu_uuid": "GPU-92dfd098-b388-c84b-8843-812133c128c7",
+    "ground_velocity_mps": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "peak_vram_bytes": 26286852,
+    "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "phi_margin_gate_m": 0.15,
+    "phi_margin_m": 0.3499999939931499,
+    "physical_profile_qualified": false,
+    "pressure_boundary": "WaterLily projection pressure; no per-patch freestreamPressure input",
+    "reynolds": 80.0,
+    "sample_every_steps": 8,
+    "solver_length": 16.0,
+    "solver_time_unit_s": 0.05,
+    "solver_u": 1.0,
+    "solver_viscosity": 0.19999999999999996,
+    "source_profile_equivalent": false,
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+    "stationarity_relative_half_window_drift_downforce": 6.391237314849781e-05,
+    "stationarity_relative_half_window_drift_drag": 4.3772208733074e-05,
+    "steps": 4815,
+    "t_end_reached": 120.00254821777344,
+    "t_end_target": 120.0,
+    "vram_total_bytes": 15636037632,
+    "wall_seconds": 34.14826703071594,
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0",
+    "window_samples": 200,
+    "window_time_weighted_downforce_solver": 101.7942166632706,
+    "window_time_weighted_drag_solver": 89.36184130878893,
+    "world_per_solver": 0.05,
+    "x_max_boundary": "WaterLily convective exit"
+  }
+}
