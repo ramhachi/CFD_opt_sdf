@@ -6,24 +6,32 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
 
-from verify_kaggle_w4_v16 import (
-    load_criteria,
-    sha256,
-    validate_case_contract,
-    verify_registered_source,
-)
-
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "src"))
+from verify_kaggle_w4_v17_candidate_c import (
+    load_criteria,
+    legacy as _legacy_verifier,
+    validate_case_contract,
+)
+sha256 = _legacy_verifier.sha256
+verify_registered_source = _legacy_verifier.verify_registered_source
+from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 DEFAULT_STATE = ROOT / "work/sdf_native_genesis_v17/sdf_design_state.npz"
 DEFAULT_CRITERIA = ROOT / "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10.json"
 DEFAULT_OUTPUT = ROOT / "work/kaggle_w4_v17_candidate_c_dataset"
 EXPECTED_LABEL = "v17_candidate_c"
 EXPECTED_DATASET_ID = "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c"
+
+
+def literal_false_flags(value: object) -> bool:
+    keys = {"shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology"}
+    return isinstance(value, dict) and set(value) == keys and all(value[key] is False for key in keys)
 
 
 def label_from_criteria(criteria: dict) -> str:
@@ -36,16 +44,22 @@ def stage(state_path: Path, criteria_path: Path, output_dir: Path) -> dict:
     validate_case_contract(criteria)
     verify_registered_source(criteria)
     label = label_from_criteria(criteria)
-    operator = criteria.get("operator", {})
-    if (label != EXPECTED_LABEL or criteria.get("input_dataset_id") != EXPECTED_DATASET_ID
-            or operator.get("identity") != "candidate_c_moment_blend+normal_floor_0.25"
-            or operator.get("normal_floor") != 0.25
-            or operator.get("transition_width_solver") != 1.1444091796875e-4
-            or operator.get("simulation_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid)+moving_ground)"
-            or operator.get("force_integration_body") !=
-                "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))"):
+    if label != EXPECTED_LABEL or criteria.get("input_dataset_id") != EXPECTED_DATASET_ID:
         raise ValueError("W4 Candidate C state, dataset or operator identity mismatch")
+    frozen = load_candidate_c_identity(ROOT)
+    record = json.loads((ROOT / frozen["contract_path"]).read_text())
+    record_entry = criteria["inputs"]["operator_identity_record"]
+    sidecar_entry = criteria["inputs"]["operator_identity_sha256"]
+    if (criteria.get("operator") != record["operator"]
+            or criteria.get("operator_identity_record") != {
+                "path": frozen["contract_path"], "sha256": frozen["contract_sha256"]}
+            or criteria.get("operator_identity_record_sha256") != frozen["contract_sha256"]
+            or not literal_false_flags(criteria.get("qualification_flags"))
+            or record_entry.get("path") != frozen["contract_path"]
+            or record_entry.get("sha256") != frozen["contract_sha256"]
+            or sidecar_entry.get("path") != frozen["contract_path"] + ".sha256"
+            or sha256(ROOT / sidecar_entry["path"]) != sidecar_entry.get("sha256")):
+        raise ValueError("W4 criteria do not bind the exact frozen Candidate C identity")
     prefix = f"w4_{label}"
     state_path = Path(state_path)
     geometry = criteria["geometry"]
