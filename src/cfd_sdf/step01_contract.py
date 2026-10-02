@@ -18,6 +18,8 @@ from cfd_sdf.fd08_contract import (
 MIN_STEP_FRACTION = 0.1
 MAX_STEP_FRACTION = 0.5
 CANONICAL_GRID_SPACING_M = 0.025
+MIN_STEP_M = 0.0025
+MAX_STEP_M = 0.0125
 
 
 def validate_step_fraction(step_fraction_h: float) -> float:
@@ -90,19 +92,20 @@ def finite_step_response(*, baseline_n: float, candidate_n: float, step_m: float
     if any(isinstance(value, bool) for value in (baseline_n, candidate_n, step_m)):
         raise ValueError("forces and step_m must be numeric values, not booleans")
     baseline, candidate, step = float(baseline_n), float(candidate_n), float(step_m)
-    minimum_m = MIN_STEP_FRACTION * CANONICAL_GRID_SPACING_M
-    maximum_m = MAX_STEP_FRACTION * CANONICAL_GRID_SPACING_M
     if (not all(isfinite(value) for value in (baseline, candidate, step))
-            or not minimum_m <= abs(step) <= maximum_m):
+            or not MIN_STEP_M <= abs(step) <= MAX_STEP_M):
         raise ValueError(
-            f"forces must be finite N values and abs(step_m) must be in [{minimum_m}, {maximum_m}]"
+            f"forces must be finite N values and abs(step_m) must be in [{MIN_STEP_M}, {MAX_STEP_M}]"
         )
     delta_n = candidate - baseline
+    secant = delta_n / step
+    if not isfinite(delta_n) or not isfinite(secant):
+        raise ValueError("derived STEP-01 response change and finite secant must remain finite")
     return {
         "oracle_id": "STEP-01",
         "oracle_type": "finite_step_response_secant",
         "delta_response_n": delta_n,
-        "finite_secant_n_per_m": delta_n / step,
+        "finite_secant_n_per_m": secant,
         "signed_step_m": step,
         "gradient_qualification": False,
     }

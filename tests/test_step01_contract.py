@@ -62,3 +62,12 @@ def test_step01_secant_rejects_out_of_scope_physical_displacement(step: float):
 def test_step01_secant_rejects_boolean_force_inputs():
     with pytest.raises(ValueError, match="not booleans"):
         finite_step_response(baseline_n=True, candidate_n=0.31, step_m=0.01)
+
+
+@pytest.mark.parametrize(
+    ("baseline", "candidate"),
+    [(1e308, -1e308), (-1e308, 1e308), (0.0, 1e308)],
+)
+def test_step01_rejects_derived_overflow_in_response_or_secant(baseline, candidate):
+    with pytest.raises(ValueError, match="derived STEP-01.*must remain finite"):
+        finite_step_response(baseline_n=baseline, candidate_n=candidate, step_m=0.0025)

@@ -130,9 +130,10 @@ fresh solver execution, and gradient qualification fields remain false.
 `finite_step_response` accepts signed physical displacements within
 ±2.5–12.5 mm and reports `R(s)-R(0)` in N and the finite secant in N/m. Its
 result is explicitly `STEP-01 finite_step_response_secant`; it is never a
-gradient verdict. These helpers validate declared metadata and supplied force
-numbers; they do not verify a Kaggle runtime, raw history artifact hash, or
-new solver execution.
+gradient verdict. It also rejects finite input forces whose subtraction or
+division yields a nonfinite response change or secant. These helpers validate
+declared metadata and supplied force numbers; they do not verify a Kaggle
+runtime, raw history artifact hash, or new solver execution.
 
 Verification on the issue worktree:
 
@@ -143,3 +144,25 @@ Verification on the issue worktree:
 - `git diff --check` — **passed**.
 - Live identity check against the integration worktree validated contract SHA-256 `516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc`; the STEP-01 preflight reported a caller-supplied `-0.25 h` displacement as `-0.00625 m`, with runtime identity, fresh execution, gradient qualification and criteria registration all false.
 - Evidence class: immutable source identity and contract/readiness validation only. No step run, force measurement, immutable criteria or gradient qualification was created.
+
+The one baseline failure ID reported as resolved is fixture availability,
+not a source correction: restoring the ignored host-local artifact made that
+test runnable. The historical 36 failures remain the same baseline set minus
+that fixture-dependent case.
+
+## Derived-arithmetic overflow guard (2026-10-02)
+
+`finite_step_response` now fails closed if subtracting two finite force inputs
+or dividing the finite response by the signed step produces a nonfinite value.
+The negative cases cover overflow in both response subtraction directions and
+overflow in the secant quotient. The documented inclusive step endpoints use
+the exact 0.0025–0.0125 m constants, avoiding binary rounding of `0.1 × 0.025`
+past the lower endpoint. Signed step handling and the 0.1–0.5 h interval are
+unchanged.
+
+Final validation after this guard:
+
+- `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_step01_contract.py` — **15 passed**.
+- `.venv/bin/python -m compileall src tests` — **passed**.
+- `.venv/bin/python -m pytest -q` — **36 failed, 1302 passed, 5 skipped**; retained output at [`work/step01_preparation/full_pytest_overflow_guard.log`](../../work/step01_preparation/full_pytest_overflow_guard.log), SHA-256 `ba3e332d8a7d4fda20bc9b8573ab35ed3af59ff1898585988f7ecceb6aca379f`. Compared with baseline `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): **0 new failure IDs, 1 baseline ID resolved**. The resolved canonical-objective failure is from availability of an ignored host-local fixture and is not a code correction.
+- `git diff --check` — **passed**.
