@@ -5165,3 +5165,28 @@ Focused controls and dependency loading PASS; full suite 37 failures all
 baseline IDs, 1311 passes, 5 skips; compileall and diff PASS. No physical
 acceptance threshold or qualification is introduced. All six flags remain false.
 See `docs/evidence/candidate_c_surface_flux_round9_parent_review/registration.json`.
+
+### 2026-10-02 composite C identity freeze and bounded surface terminal
+
+#44 fresh Round9 completed 12 CPU arms and all 63 surface groups. The parent
+verified original output hashes, reran the unchanged independent host
+point/field/force integrity calculation, and rehashed every retained raw
+archive member. Status is diagnostic_data_integrity_ok, not physical
+qualification. Nonzero geometric slip and flux were observed; no physical
+acceptance threshold was preregistered. The short transient window and open
+ground patch do not establish stationarity or fluid-control-volume closure.
+See `docs/evidence/candidate_c_surface_flux_round9_terminal_parent/`.
+
+The composite algorithm/source identity is now frozen in immutable
+`docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json`:
+moment blend PLUS normal_floor=0.25, the fixed transition width and outer C
+body composition. It freezes the object to measure and does not promote
+physical or production qualification. W3-C/W4-C fresh criteria may now be
+registered after exact source/evaluator review, preserving actual v17 gates
+and the four-case matrix. W4-C still requires exact host-verified W3-C PASS.
+XFID environment reproduction is PASS; same-geometry lineage, solver-specific
+independent response floors and immutable comparison criteria remain pending.
+FD08 calibration may be prepared for this frozen identity, with formal
+qualification requiring separate fresh33 runs. No resolved representative
+XFID DISAGREE exists, so Track C's stop condition has not been triggered.
+All six qualification flags remain false.
