@@ -5403,3 +5403,28 @@ and all qualification flags remain false pending all seven geometry gates
 plus an independent recomputation. The round addresses only #29 GEOM-01's
 actual zero-level / Stage V STL export check, not the remaining #29 close
 conditions.
+
+### 2026-10-03 #45 zero-level surface export candidate result
+
+The preregistered geometry-only export round was evaluated after its criteria
+commit was pushed. D0 ±0.005 m passed individually; the baseline and all D1/D2
+perturbations failed, so the all-seven acceptance gate fails. The exact-
+coordinate sequence removes 4 duplicate faces and 1,126 repeated-index
+zero-area triangles from the baseline, but leaves 12 non-manifold edges and one
+ambiguous orientation face. Exact local `+grad(phi)` orientation makes D1/D2
+face dots positive but creates 191, 211, 229, and 248 same-direction shared
+edges respectively. See
+`docs/issues/45_surface_export_qualification_2026_10_03.md` and its registered
+and independently recomputed evidence. The production exporter remains
+unchanged; no solver or formal XFID ran. #45 remains UNRESOLVED, #46 remains
+blocked, and all qualification flags remain false. This updates only the actual
+zero-level / Stage V STL component referenced by #29 GEOM-01; it does not close
+#29.
+
+Validation: focused canonicalization tests 3 passed; compileall over `src` and
+`tests` passed; full pytest reported 36 failed, 1,343 passed, and 5 skipped
+after restoring and hash-checking the missing ignored v17 state fixture. Exact
+failure-ID comparison with the pinned 37-ID baseline found zero new failures
+and one baseline failure absent in this run. The pre-restoration log and final
+log/comparison remain separately preserved under
+`docs/evidence/xfid45_surface_export_round_2026_10_03/validation/`.

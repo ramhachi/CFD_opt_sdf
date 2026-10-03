@@ -91,3 +91,15 @@ fixture-only behavior tests for follow-on policy decisions.
 The parent integration focused suite exposed a new missing-fixture failure: the newly added canonical-policy test loaded an ignored worktree-local NPZ. The test now loads the already committed canonical v16 input archive from `docs/evidence/reinitialization_parent_review_2026_10_02/raw_round3/canonical_v16_input.npz`, independently checked to be byte-identical (SHA-256 `3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe`). Geometry implementation, preregistration and measured result are unchanged. Round1 retains its original test identity at measurement source commit `847dab9`; reproducing that immutable round requires its original source checkout. This test-only maintenance does not retroactively replace a registered source hash or produce a new geometry verdict.
 
 Parent maintenance validation: focused 6 passed; compileall passed; full pytest 36 failed, 1292 passed, 5 skipped. Exact-ID comparison with baseline has 0 new failures and one absent baseline failure due to already restored ignored ProblemSpec fixture. Compressed raw logs and hash audit are retained in `docs/evidence/geometry_portable_fixture_parent_validation_2026_10_02/`. No fresh canonical geometry run was made.
+
+## #45 actual zero-level / Stage V STL export cross-reference (2026-10-03)
+
+The formerly unmeasured actual GridSDF zero-level / Stage V STL export component
+was evaluated in the solver-free, preregistered
+[`#45 surface export round`](45_surface_export_qualification_2026_10_03.md).
+The exact-coordinate canonicalization candidate failed: it left 12 baseline
+non-manifold edges and an ambiguous face, while local-SDF facewise orientation
+created winding conflicts on D1/D2. D0 ±ε passed, but the required all-seven
+gate did not. The production exporter remains unqualified and #29 remains open.
+This cross-reference covers only GEOM-01 actual export integrity; the other #29
+close conditions remain outstanding.

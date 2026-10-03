@@ -1,0 +1,306 @@
+{
+  "cases": {
+    "D0_interface_offset_minus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 11056,
+            "positive": 0
+          },
+          "face_count": 11056,
+          "one_component_flip_can_align_every_resolvable_face": true
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 11056,
+        "positive": 0
+      },
+      "exact_coordinate_edge_connected_component_count": 1,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 11056,
+        "positive": 0
+      },
+      "raw_ply_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+      "state_snapshot_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+      "triangle_count": 11056,
+      "whole_component_orientation_satisfies_all_faces": true
+    },
+    "D0_interface_offset_plus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 9928,
+            "positive": 0
+          },
+          "face_count": 9928,
+          "one_component_flip_can_align_every_resolvable_face": true
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 9928,
+        "positive": 0
+      },
+      "exact_coordinate_edge_connected_component_count": 1,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 9928,
+        "positive": 0
+      },
+      "raw_ply_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+      "state_snapshot_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+      "triangle_count": 9928,
+      "whole_component_orientation_satisfies_all_faces": true
+    },
+    "D1_filtered_seed11_minus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 13,
+            "positive": 3
+          },
+          "face_count": 16,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 1,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 13182,
+            "positive": 78
+          },
+          "face_count": 13260,
+          "one_component_flip_can_align_every_resolvable_face": false
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13195,
+        "positive": 81
+      },
+      "exact_coordinate_edge_connected_component_count": 2,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13195,
+        "positive": 81
+      },
+      "raw_ply_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+      "state_snapshot_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+      "triangle_count": 13276,
+      "whole_component_orientation_satisfies_all_faces": false
+    },
+    "D1_filtered_seed11_plus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 7,
+            "positive": 1
+          },
+          "face_count": 8,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 1,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 13330,
+            "positive": 94
+          },
+          "face_count": 13424,
+          "one_component_flip_can_align_every_resolvable_face": false
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13337,
+        "positive": 95
+      },
+      "exact_coordinate_edge_connected_component_count": 2,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13337,
+        "positive": 95
+      },
+      "raw_ply_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+      "state_snapshot_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+      "triangle_count": 13432,
+      "whole_component_orientation_satisfies_all_faces": false
+    },
+    "D2_filtered_seed2026_minus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 8,
+            "positive": 0
+          },
+          "face_count": 8,
+          "one_component_flip_can_align_every_resolvable_face": true
+        },
+        {
+          "component_id": 1,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 14,
+            "positive": 2
+          },
+          "face_count": 16,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 2,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 16,
+            "positive": 0
+          },
+          "face_count": 16,
+          "one_component_flip_can_align_every_resolvable_face": true
+        },
+        {
+          "component_id": 3,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 13309,
+            "positive": 99
+          },
+          "face_count": 13408,
+          "one_component_flip_can_align_every_resolvable_face": false
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13347,
+        "positive": 101
+      },
+      "exact_coordinate_edge_connected_component_count": 4,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13347,
+        "positive": 101
+      },
+      "raw_ply_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+      "state_snapshot_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+      "triangle_count": 13448,
+      "whole_component_orientation_satisfies_all_faces": false
+    },
+    "D2_filtered_seed2026_plus": {
+      "all_source_cell_indices_valid": true,
+      "changed_source_triangle_ids": [],
+      "component_orientation_audit": [
+        {
+          "component_id": 0,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 8,
+            "positive": 0
+          },
+          "face_count": 8,
+          "one_component_flip_can_align_every_resolvable_face": true
+        },
+        {
+          "component_id": 1,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 24,
+            "positive": 8
+          },
+          "face_count": 32,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 2,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 8,
+            "positive": 0
+          },
+          "face_count": 8,
+          "one_component_flip_can_align_every_resolvable_face": true
+        },
+        {
+          "component_id": 3,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 6,
+            "positive": 2
+          },
+          "face_count": 8,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 4,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 14,
+            "positive": 2
+          },
+          "face_count": 16,
+          "one_component_flip_can_align_every_resolvable_face": false
+        },
+        {
+          "component_id": 5,
+          "dot_sign_counts": {
+            "ambiguous": 0,
+            "negative": 13332,
+            "positive": 96
+          },
+          "face_count": 13428,
+          "one_component_flip_can_align_every_resolvable_face": false
+        }
+      ],
+      "contouring_source_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13392,
+        "positive": 108
+      },
+      "exact_coordinate_edge_connected_component_count": 6,
+      "face_classification_changed_count": 0,
+      "half_open_cell_dot_sign_counts": {
+        "ambiguous": 0,
+        "negative": 13392,
+        "positive": 108
+      },
+      "raw_ply_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+      "state_snapshot_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+      "triangle_count": 13500,
+      "whole_component_orientation_satisfies_all_faces": false
+    }
+  },
+  "criteria_sha256": "96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd",
+  "diagnostic_source_sha256": "18530508b3c216dbce2d53e2475b5647181e4646b0a171e9474d8080393ca05d",
+  "evidence_class": "post_result_solver_free_orientation_diagnostic_only",
+  "formal_xfid_started": false,
+  "interpretation": "The contouring source-cell local trilinear gradient is compared with the preregistered half-open-cell gradient; no orientation or surface is changed.",
+  "kind": "xfid45_orientation_cell_semantics_diagnostic",
+  "registered_candidate_result_sha256": "732a6ac03cbf341cec35d58937ce3bee2cfe84df3413766d6c6f51ad8ea9b4ab",
+  "schema_version": 1,
+  "solver_started": false,
+  "source_cell_choice_changes_no_face_classification": true
+}
