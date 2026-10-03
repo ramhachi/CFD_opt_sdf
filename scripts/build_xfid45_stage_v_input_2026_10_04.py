@@ -111,9 +111,13 @@ def gates(v, f, phi, origin):
 
 
 def stats(x):
+    """Descriptive only. Vertices with zero cell-local gradient give inf: counted, excluded."""
     x = np.abs(x)
-    return {"median_m": float(np.median(x)), "p99_m": float(np.percentile(x, 99)),
-            "max_m": float(x.max()), "fraction_over_0p5mm": float((x > LIMIT).mean())}
+    ok = np.isfinite(x)
+    x = x[ok]
+    return {"vertices_with_zero_gradient": int((~ok).sum()), "median_m": float(np.median(x)),
+            "p99_m": float(np.percentile(x, 99)), "max_m": float(x.max()),
+            "fraction_over_0p5mm_among_finite": float((x > LIMIT).mean())}
 
 
 def main(out_stl_dir):
@@ -142,7 +146,8 @@ def main(out_stl_dir):
         (out_stl_dir / f"{c}.stl").write_bytes(blob)
         v32, f32 = read_stl(blob)
         g32, m32 = gates(v32, f32, phi, o)
-        d = sample_phi(phi, o, H, v) / np.linalg.norm(sample_phi_gradient(phi, o, H, v), axis=1)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            d = sample_phi(phi, o, H, v) / np.linalg.norm(sample_phi_gradient(phi, o, H, v), axis=1)
         row = {
             "source_surface_sha256": sha(src),
             "input_state_sha256": sha(CASES[c]),
@@ -153,11 +158,13 @@ def main(out_stl_dir):
             "own_field_first_order_distance_double": stats(d),
         }
         if c != "baseline":  # realized displacement from baseline, in units of nominal epsilon
-            r = sample_phi(base_phi, base_o, H, v) / np.linalg.norm(sample_phi_gradient(base_phi, base_o, H, v), axis=1)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                r = sample_phi(base_phi, base_o, H, v) / np.linalg.norm(sample_phi_gradient(base_phi, base_o, H, v), axis=1)
+            r = np.abs(r[np.isfinite(r)])
             row["displacement_from_baseline_over_epsilon"] = {
-                "median": float(np.median(np.abs(r)) / EPS),
-                "p05": float(np.percentile(np.abs(r), 5) / EPS),
-                "p95": float(np.percentile(np.abs(r), 95) / EPS),
+                "median": float(np.median(r) / EPS),
+                "p05": float(np.percentile(r, 5) / EPS),
+                "p95": float(np.percentile(r, 95) / EPS),
             }
         res["cases"][c] = row
         print(c, gd["practical_gate_pass"], g32["practical_gate_pass"], len(removed), flush=True)
