@@ -5383,3 +5383,23 @@ Software validation passed compileall and 58 focused tests. The full suite had
 four-track baseline (zero new or resolved IDs). The full log, failure-ID list,
 and hash-bound validation record are retained under the preflight evidence
 directory.
+
+### 2026-10-03 #45 deterministic zero-level surface export preregistration
+
+A separate solver-free geometry-export round is preregistered in
+`docs/evidence/xfid45_surface_export_round_2026_10_03_prereg.json` (SHA-256
+`96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd`). It binds
+the canonical v17 state, six byte-frozen D0/D1/D2 `±0.005 m` snapshots and
+direction hashes, the prior raw PLY/STL surfaces, exporter/canonicalizer/audit
+sources, and the Python/NumPy/SciPy/PyVista/VTK/trimesh runtime. The fixed
+candidate merges only exact coincident coordinates, removes duplicate and
+degenerate triangles, then orients each resolvable face by its local trilinear
+GridSDF gradient; it does not use signed volume to choose orientation.
+
+The round remains `PREREGISTERED_NOT_EVALUATED` until this registration commit
+is pushed. No target-case evaluation, solver, formal XFID measurement, or #46
+FD-08 run is authorized by this geometry registration. XFID remains unresolved
+and all qualification flags remain false pending all seven geometry gates
+plus an independent recomputation. The round addresses only #29 GEOM-01's
+actual zero-level / Stage V STL export check, not the remaining #29 close
+conditions.
