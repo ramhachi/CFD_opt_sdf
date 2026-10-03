@@ -31,7 +31,7 @@ try:
 except ImportError:  # peak memory is then reported as null
     psutil = None
 
-CRITERIA_SHA256 = "571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673"  # replaced at registration; runner refuses to run otherwise
+CRITERIA_SHA256 = "dea2d55891252df45b5e89a2124aec501d996a7dee343b8b51b9b629c50b491f"  # replaced at registration; runner refuses to run otherwise
 OUTPUT = Path(os.environ.get("X2_OUTPUT", "/kaggle/working/openfoam_xfid_gridphase_x2"))
 INPUT_ROOT = Path(os.environ.get("X2_INPUT", "/kaggle/input"))
 OPENFOAM_BASHRC = os.environ.get("X2_BASHRC", "/usr/lib/openfoam/openfoam2512/etc/bashrc")
@@ -239,13 +239,29 @@ def run_case(spec: dict, criteria: dict, template: Path, tri64: np.ndarray, root
     return record
 
 
+def record_environment(out: Path) -> dict:
+    """Write what the host actually is before anything can fail on it (two earlier rounds died on OS drift)."""
+    try:
+        release = dict(l.split("=", 1) for l in Path("/etc/os-release").read_text().splitlines() if "=" in l)
+    except OSError as exc:
+        release = {"unavailable": str(exc)}
+    meminfo = Path("/proc/meminfo").read_text().splitlines()[0] if Path("/proc/meminfo").exists() else None
+    env = {"os_release": {k: v.strip('"') for k, v in release.items()}, "python": sys.version, "cpu_count": os.cpu_count(),
+           "meminfo_first_line": meminfo, "uname": list(os.uname())}
+    write_json(out / "environment.json", env)
+    return env
+
+
 # ---- OpenFOAM installation (copied from the Round 5 runner; hash-pinned lock) ---
 
-def install_openfoam(work: Path, lock: dict, expected_version: str) -> dict:
+def install_openfoam(work: Path, locks: dict, expected_version: str) -> dict:
     release = dict(l.split("=", 1) for l in Path("/etc/os-release").read_text().splitlines() if "=" in l)
+    codename = release.get("VERSION_CODENAME", "").strip('"')
+    require(codename in locks, f"no registered OpenCFD v2512 lock for Ubuntu {codename!r}; registered: {sorted(locks)}")
+    lock = locks[codename]
     arch = subprocess.run(["dpkg", "--print-architecture"], check=True, text=True, capture_output=True).stdout.strip()
     require(release.get("ID", "").strip('"') == "ubuntu", f"unsupported OS ID: {release.get('ID')}")
-    require(release.get("VERSION_CODENAME", "").strip('"') == lock["suite"], "OpenCFD v2512 lock only supports Ubuntu Jammy")
+    require(codename == lock["suite"], "lock suite differs from the observed Ubuntu codename")
     require(arch == lock["architecture"], f"unsupported architecture: {arch}")
     installer = work / "add-debian-repo.sh"
     with installer.open("wb") as stream:
@@ -274,7 +290,7 @@ def install_openfoam(work: Path, lock: dict, expected_version: str) -> dict:
                            text=True, capture_output=True)
     lines = [l.strip() for s in (probe.stdout, probe.stderr) for l in s.splitlines() if re.fullmatch(r"OpenFOAM-[A-Za-z0-9._+-]+", l.strip())]
     require(lines == [expected_version], f"expected one {expected_version!r} foamVersion line; found {lines}; rc={probe.returncode} stdout={probe.stdout[-300:]!r} stderr={probe.stderr[-300:]!r}")
-    return {"installed_packages": installed, "foamVersion": lines[0], "os_release": release, "architecture": arch}
+    return {"installed_packages": installed, "foamVersion": lines[0], "os_release": release, "architecture": arch, "lock_suite": codename}
 
 
 # ---- main ----------------------------------------------------------------------
@@ -297,10 +313,12 @@ def main() -> None:
     require(criteria["immutable"] and criteria["registered_before_run"], "criteria are not an immutable preregistration")
     for rel, expected in criteria["inputs"].items():
         require(sha(data / rel) == expected, f"input SHA mismatch: {rel}")
-    lock = json.loads((data / "openfoam_package_lock.json").read_text())
-    install = {"skipped_for_test": True} if os.environ.get("X2_SKIP_INSTALL") else install_openfoam(OUTPUT, lock, criteria["environment"]["foam_version"])
+    record_environment(OUTPUT)
+    locks = {name: json.loads((data / f"openfoam_package_lock_{name}.json").read_text()) for name in criteria["environment"]["registered_lock_suites"]}
+    install = {"skipped_for_test": True} if os.environ.get("X2_SKIP_INSTALL") else install_openfoam(OUTPUT, locks, criteria["environment"]["foam_version"])
     tri64 = read_stl(data / "baseline_stage_v.stl")
     require(len(tri64) == criteria["baseline"]["triangles"], "baseline triangle count mismatch")
+    tri_v16 = read_stl(data / criteria["reproduction_case"]["stl_file"])
     results, deadline = [], criteria["launch_deadline_hours"] * 3600
     limit, streak = criteria["stop_after_consecutive_failures"], 0
 
@@ -316,10 +334,18 @@ def main() -> None:
             results.append({"id": spec["id"], "status": "NOT_RUN_CONSECUTIVE_FAILURES"})
         else:
             try:
-                results.append(run_case(spec, criteria, data / "case_template", tri64, OUTPUT))
+                results.append(run_case(spec, criteria, data / "case_template", tri_v16 if spec.get("kind") == "reproduction" else tri64, OUTPUT))
             except Exception as exc:  # per-case fail-soft: record and continue
                 shutil.rmtree(OUTPUT / "cases" / spec["id"] / "case", ignore_errors=True)
                 results.append({"id": spec["id"], "status": "RUNNER_EXCEPTION", "error": f"{type(exc).__name__}: {exc}"})
+            if spec.get("kind") == "reproduction" and results[-1].get("status") == "COMPLETED":
+                ref, scale = criteria["reproduction_case"]["references"], criteria["force_window"]["force_n_per_coefficient"]
+                cd = results[-1]["forces"]["drag_n"]["window_mean"] / scale
+                df = results[-1]["forces"]["downforce_n"]["window_mean"] / scale
+                results[-1]["reproduction_check_informational"] = {
+                    "Cd": cd, "downforce_coefficient": df,
+                    "Cd_within_tolerance": abs(cd - ref["Cd"]) / abs(ref["Cd"]) <= ref["Cd_relative_tolerance"],
+                    "downforce_within_tolerance": abs(df - ref["downforce_coefficient"]) <= ref["downforce_coefficient_absolute_tolerance"]}
             streak = streak + 1 if results[-1]["status"] != "COMPLETED" else 0
         write_json(OUTPUT / "result.json", summary())  # rewritten every case: survives a kernel kill
     manifest = {str(p.relative_to(OUTPUT)): sha(p) for p in sorted(OUTPUT.rglob("*")) if p.is_file() and p.name != "artifact_manifest.json"}
@@ -336,6 +362,8 @@ if __name__ == "__main__":
     except Exception as exc:
         err = OUTPUT / "ERROR.json" if OUTPUT.exists() else OUTPUT.parent / "x2_startup_ERROR.json"
         err.parent.mkdir(parents=True, exist_ok=True)
-        write_json(err, {"status": "FAIL", "error_type": type(exc).__name__, "error": str(exc)})
+        env_file = err.parent / "environment.json"
+        write_json(err, {"status": "FAIL", "error_type": type(exc).__name__, "error": str(exc),
+                         "environment": json.loads(env_file.read_text()) if env_file.is_file() else None})
         print(f"FAIL_CLOSED: {type(exc).__name__}: {exc}", file=sys.stderr)
         raise

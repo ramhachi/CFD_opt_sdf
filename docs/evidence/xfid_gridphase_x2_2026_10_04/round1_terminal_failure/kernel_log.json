@@ -1,0 +1,21 @@
+[{"stream_name":"stderr","time":2.021543445,"data":"FAIL_CLOSED: RuntimeError: OpenCFD v2512 lock only supports Ubuntu Jammy\n"}
+,{"stream_name":"stderr","time":2.022297902,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":2.023564321,"data":"  File \"/kaggle/src/script.py\", line 335, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":2.023587826,"data":"    main()\n"}
+,{"stream_name":"stderr","time":2.023591404,"data":"    ~~~~^^\n"}
+,{"stream_name":"stderr","time":2.023594197,"data":"  File \"/kaggle/src/script.py\", line 301, in main\n"}
+,{"stream_name":"stderr","time":2.023597263,"data":"    install = {\"skipped_for_test\": True} if os.environ.get(\"X2_SKIP_INSTALL\") else install_openfoam(OUTPUT, lock, criteria[\"environment\"][\"foam_version\"])\n"}
+,{"stream_name":"stderr","time":2.023600655,"data":"                                                                                   ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":2.023603691,"data":"  File \"/kaggle/src/script.py\", line 248, in install_openfoam\n"}
+,{"stream_name":"stderr","time":2.023606504,"data":"    require(release.get(\"VERSION_CODENAME\", \"\").strip('\"') == lock[\"suite\"], \"OpenCFD v2512 lock only supports Ubuntu Jammy\")\n"}
+,{"stream_name":"stderr","time":2.023609762,"data":"    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":2.023612616,"data":"  File \"/kaggle/src/script.py\", line 51, in require\n"}
+,{"stream_name":"stderr","time":2.023615507,"data":"    raise RuntimeError(message)\n"}
+,{"stream_name":"stderr","time":2.023618174,"data":"RuntimeError: OpenCFD v2512 lock only supports Ubuntu Jammy\n"}
+,{"stream_name":"stderr","time":4.818274994,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":4.818323238,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":5.231915686,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":5.231955593,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7.104008179,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":8.53443693,"data":"[NbConvertApp] Writing 369026 bytes to __results__.html\n"}
+]
