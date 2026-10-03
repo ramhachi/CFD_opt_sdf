@@ -20,6 +20,8 @@ Derived from the saved Round 3 `r=8` surfaces (read-only), 7 shapes (baseline, D
   all gates, component removals, triangle counts, signed volumes and the **sha256 of all 7 STLs agree**. The first
   hash mismatch exposed a script defect (normals from float32-rounded vertices), fixed by AMEND-02 after the
   triangle-coordinate bytes were verified identical.
+- The independent verifier's own script and machine-readable result are retained in
+  `docs/evidence/xfid45_stage_v_input_2026_10_04/independent/` (`indep.py`, `independent_result.json`; added after review).
 - Derived STL sha256 (binary, float32; files are reproducible by the script and not committed, 34 MB each):
 
 | case | sha256 | triangles |

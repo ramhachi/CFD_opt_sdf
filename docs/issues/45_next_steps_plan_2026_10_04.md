@@ -76,15 +76,22 @@ v1（同日）からの変更: ユーザー判断「STL の品質 gate は非本
 - 独立 check: 派生 STL を別の小スクリプトで再計算（sonnet サブエージェント、primary を見せない）。
 - 事前登録: 実用 gate と併記項目を、実行前に commit・push。厳密認証が未実施であることを結果に明記。
 
-### X2. OpenFOAM メッシュノイズの測定（Kaggle CPU・最重要）
+### X2. OpenFOAM グリッド位相感度（grid-phase）の測定（Kaggle CPU・最重要）
 
-- 目的: ε=5 mm の応答がメッシュ起因のゆらぎより大きいかを、XFID 本番の前に判断する。
-- 内容: baseline STL を ε≪セル（例: 0.5, 1, 2.5 mm の並進・微小 offset）で動かし、同じ Stage V 設定で力を測る。
-  応答が ε に比例するか、離散的にジャンプするか（castellation 起因）を見る。各 case の所要時間は kernel v4 の記録で確認する。
-- 判断:
-  - ノイズ ≪ ε の応答 → そのまま XFID へ。
-  - ノイズが同程度 → ε を大きくする（物理的に許される範囲）か、表面 level を上げる（コスト増）かをユーザーに諮る。
-  - これは XFID の response floor の calibration と同じ設計にできる（draft の「solver ごとの独立した floor」要件）。
+目的: 固定した背景メッシュに対して形状を剛体並進させたときの力の変化（grid-phase 感度）と、
+メッシュ生成コストを、XFID 本番の前に実測する。XFID の response floor の経験的根拠にする。
+
+設計上の注意（レビュー反映）: x 方向の並進は入口・出口・wake 長との相対位置が変わるため、
+**物理応答ゼロの null 摂動とは扱わない**。y は左右対称 domain/BC ならほぼ null に近いが断定しない。
+z は ground clearance が変わるので物理応答が乗る。したがって「ゆらぎ = メッシュノイズ」と仮定せず、
+各軸の応答を滑らかな成分（直線/2 次）と残差に分けて報告し、**経験的 floor の測定**として登録する。
+
+- 内容: baseline STL を軸ごとに 0.5, 1, 2, 4, 8 mm 並進（±両方向で奇/偶成分も分離）。毎回 snappyHexMesh を新規生成。
+- 記録するもの: drag/downforce の差とジャンプ [N]、総 cell 数・表面 refinement cell 数の変化、
+  checkMesh、snappyHexMesh の時間とピークメモリ、simpleFoam の反復数・時間。
+- 判断: 実現変位が D1/D2 相当（中央値約 0.9 mm、p95 約 3.2 mm）の並進でも力が D1/D2 相当以上に動くなら、
+  formal XFID で D1/D2 を使う設計は厳しい。→ ε を大きくする、D0 を主にする、表面 level を上げる、のいずれかをユーザーに諮る。
+- XFID の 7 形状は使わない（formal 証拠を消費しない）。submit 前にユーザー確認を取る。
 
 ### X3. XFID 比較契約の登録（solver 不要・約 1 日）
 
