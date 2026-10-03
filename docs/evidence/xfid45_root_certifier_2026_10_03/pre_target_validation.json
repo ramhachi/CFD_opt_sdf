@@ -1,0 +1,302 @@
+{
+  "artifacts": {
+    "compileall.log": {
+      "bytes": 194,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/compileall.log",
+      "sha256": "c304702758051fb2600e1ad43690f1e689e650d9a29fc96c2fb676117dfdec57"
+    },
+    "failure_ID_comparison.json": {
+      "bytes": 11219,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/failure_ID_comparison.json",
+      "sha256": "86845d166efe45f87d54d2b39338380f1a19a6e990cd1731dba3be3ae33bfd84"
+    },
+    "focused_pytest.log": {
+      "bytes": 99,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/focused_pytest.log",
+      "sha256": "ba1cfc408bcb819a34578825a34c56a75b4f64bb8b1ca2c4294d3d54f90b7306"
+    },
+    "full_pytest.log": {
+      "bytes": 100365,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/full_pytest.log",
+      "sha256": "db5071b44c1681414a7d423359c2e7d5d922270833b2fc13a1f745703aa581c1"
+    },
+    "git_cached_diff_check.log": {
+      "bytes": 0,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/git_cached_diff_check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "git_diff_check.log": {
+      "bytes": 0,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/git_diff_check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "initial_full_pytest_without_local_fixtures.log": {
+      "bytes": 111863,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/initial_full_pytest_without_local_fixtures.log",
+      "sha256": "168c2cab426602dee980acaca32fbc3f03d4cc17b3596c9bb3cecb4319cb2abb"
+    },
+    "ruff_check.log": {
+      "bytes": 19,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/ruff_check.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "ruff_format_check.log": {
+      "bytes": 26,
+      "path": "docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_validation/ruff_format_check.log",
+      "sha256": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1"
+    }
+  },
+  "commands": {
+    "compileall": {
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "compileall",
+        "src",
+        "tests"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/compileall.log"
+    },
+    "focused_pytest": {
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_xfid45_root_certifier_2026_10_03.py"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/focused_pytest.log"
+    },
+    "full_pytest": {
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log": "pre_target_validation/full_pytest.log"
+    },
+    "git_cached_diff_check": {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/git_cached_diff_check.log"
+    },
+    "git_diff_check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/git_diff_check.log"
+    },
+    "ruff_check": {
+      "command": [
+        "/opt/homebrew/bin/ruff",
+        "check",
+        "scripts/xfid45_root_certifier_2026_10_03.py",
+        "scripts/verify_xfid45_root_certifier_2026_10_03.py",
+        "scripts/run_xfid45_root_certifier_replay_2026_10_03.py",
+        "scripts/register_xfid45_root_certifier_2026_10_03.py",
+        "tests/test_xfid45_root_certifier_2026_10_03.py"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/ruff_check.log"
+    },
+    "ruff_format_check": {
+      "command": [
+        "/opt/homebrew/bin/ruff",
+        "format",
+        "--check",
+        "scripts/xfid45_root_certifier_2026_10_03.py",
+        "scripts/verify_xfid45_root_certifier_2026_10_03.py",
+        "scripts/run_xfid45_root_certifier_replay_2026_10_03.py",
+        "scripts/register_xfid45_root_certifier_2026_10_03.py",
+        "tests/test_xfid45_root_certifier_2026_10_03.py"
+      ],
+      "exit_code": 0,
+      "log": "pre_target_validation/ruff_format_check.log"
+    }
+  },
+  "evidence_class": "pre_target_software_validation",
+  "failure_ID_comparison": {
+    "current_failure_ids": [
+      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+    ],
+    "exact_round3_current_set_match": true,
+    "frozen_round3_current_failure_ids": [
+      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+    ],
+    "new_failure_ids": [],
+    "new_failure_ids_zero": true,
+    "pinned_baseline_failure_ids": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged"
+    ],
+    "pinned_failure_ID_file": "docs/evidence/four_track_baseline_2026_10_02/failure_ids.json",
+    "pinned_failure_ID_file_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "round3_comparison_file": "docs/evidence/xfid45_surface_round3_2026_10_03/validation/failure_ID_comparison.json"
+  },
+  "focused_test_count_passed": 16,
+  "full_test_summary": {
+    "failed": 36,
+    "passed": 1383,
+    "skipped": 9
+  },
+  "local_test_input_inventory": {
+    "work/pq0_2_smoke/project_downforce_volume.yaml": {
+      "bytes": 1810,
+      "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+      "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+    },
+    "work/sdf_native_genesis_v17/sdf_design_state.npz": {
+      "bytes": 200028,
+      "path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    }
+  },
+  "logs": {
+    "compileall.log": "c304702758051fb2600e1ad43690f1e689e650d9a29fc96c2fb676117dfdec57",
+    "focused_pytest.log": "ba1cfc408bcb819a34578825a34c56a75b4f64bb8b1ca2c4294d3d54f90b7306",
+    "full_pytest.log": "db5071b44c1681414a7d423359c2e7d5d922270833b2fc13a1f745703aa581c1",
+    "git_cached_diff_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_diff_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ruff_check.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "ruff_format_check.log": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1"
+  },
+  "result": "PASS",
+  "ruff_version": "ruff 0.15.8",
+  "stored_log_normalization": "trailing spaces, tabs, and carriage returns removed per line; line content and order retained",
+  "superseded_attempt": {
+    "evidence_class": "superseded_pre_target_validation_environment_attempt",
+    "local_fixture_hashes_after_copy": {
+      "work/pq0_2_smoke/project_downforce_volume.yaml": {
+        "bytes": 1810,
+        "path": "work/pq0_2_smoke/project_downforce_volume.yaml",
+        "sha256": "90314ab78073330a784939b3fe03c24319d217f564d3ebad4dea9a29c82d75fe"
+      },
+      "work/sdf_native_genesis_v17/sdf_design_state.npz": {
+        "bytes": 200028,
+        "path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+        "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+      }
+    },
+    "log": "pre_target_validation/initial_full_pytest_without_local_fixtures.log",
+    "log_normalization": "trailing spaces, tabs, and carriage returns removed per line; line content and order retained",
+    "reason": "managed worktree initially lacked two ignored local test fixtures; it produced 38 failures including two environment-only IDs, then the exact local fixture files were copied from the original checkout and hash-verified",
+    "sha256": "168c2cab426602dee980acaca32fbc3f03d4cc17b3596c9bb3cecb4319cb2abb"
+  }
+}
