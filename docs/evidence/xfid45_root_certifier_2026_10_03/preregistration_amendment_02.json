@@ -1,0 +1,62 @@
+{
+  "amendment_id": "XFID45-CERT-01-AMEND-02",
+  "evidence_class": "post-incomplete-attempt-output-assembly-amendment",
+  "created_at_utc": "2026-10-03T13:29:45.978406+00:00",
+  "parent_preregistration_path": "docs/evidence/xfid45_root_certifier_2026_10_03/preregistration.json",
+  "parent_preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+  "parent_amendment_path": "preregistration_amendment_01.json",
+  "parent_amendment_sha256": "1f7d4c713c591a08e9638e8cd68aa2405fffa7de6fc50a73ed8b3812f052d464",
+  "pre_amendment_feature_head": "da301bbc97061e80e529614d310494a6aa23e888",
+  "pre_amendment_feature_remote_head": "da301bbc97061e80e529614d310494a6aa23e888",
+  "target_attempt_01_failure_record_path": "target/r1_2_4_8/target_attempt_01_failure.json",
+  "target_attempt_01_failure_record_sha256": "e5a66335880e037302498d300ddd347493642beab5e58e795145ca6259f76a31",
+  "observed_output_assembly_defects": [
+    {
+      "symptom": "KeyError: 'baseline'",
+      "cause": "The caller passed surface results keyed by (r, case) while the fidelity prerequisite indexes by case name."
+    },
+    {
+      "symptom": "RuntimeWarning: invalid value encountered in subtract",
+      "cause": "Unresolved geometry bound arrays can contain matching infinity values; the diagnostic delta computed inf-inf and produced NaN, which is not serializable with allow_nan=False."
+    }
+  ],
+  "amendment_scope": [
+    "case-key the current-r surface prerequisite map as expected by the frozen fidelity evaluation",
+    "compare only jointly finite geometry bounds and separately record nonfinite-state mismatches",
+    "write the retry under the append-only target/attempt02 path",
+    "bind and verify the amendment chain plus attempt01 failure record"
+  ],
+  "target_attempt_02_id": "attempt02",
+  "source_sha256_overrides": {
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py": "b53980435e13a5c7e24aba4262f058dccaae822dfc8b385f59cb05ca0fc1cdd9",
+    "tests/test_xfid45_root_certifier_2026_10_03.py": "3ede8c025f19a5553185ce486b6d1a7c8eada885282396055a6aebb70260a114"
+  },
+  "unchanged_primary_certifier_sha256": "913516f1884bebb0bc7cf562a5fb03120d7ac65cb0561e6ea51679187c44751a",
+  "unchanged_independent_verifier_sha256": "2f8bf4f14392b04d4643b654a962f87618411da2897d48105e38f21b5bec72a4",
+  "unchanged_contract_subtree_sha256": {
+    "certifier_contract": "20618383f1475884ebd751e65186e1e30673500cb1e62929c2b8561e45fd3190",
+    "synthetic_suite": "2c8f6064ef9f1f2eb597bc206d950c3db220a40b1cbae6ab78c36bdc456668ac",
+    "absolute_geometry": "bb02c69cbeb89a425e5f7589deff2583bef5c2f88f50e0051f6be7d684f99718",
+    "normal_correspondence": "958ae8c379b90615ca9fe1e5575c0a273692b47ce95aa0b962d93ee2a82e61a5",
+    "target_replay_inventory": "71e07c608a592964a653fd51c892cc13ed92acf066b6e1dbebc823e6dd9ba6ba"
+  },
+  "criteria_changed": false,
+  "primary_or_independent_certifier_changed": false,
+  "root_existence_or_position_threshold_changed": false,
+  "absolute_geometry_threshold_changed": false,
+  "correspondence_threshold_or_ambiguity_policy_changed": false,
+  "target_inventory_changed": false,
+  "round3_source_or_evidence_changed": false,
+  "production_exporter_changed": false,
+  "target_evaluation_started": true,
+  "solver_kaggle_or_formal_xfid_started": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  }
+}

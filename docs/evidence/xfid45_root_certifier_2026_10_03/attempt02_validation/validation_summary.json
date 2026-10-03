@@ -1,0 +1,117 @@
+{
+  "evidence_class": "attempt02_pre_replay_software_validation",
+  "certifier_identity": "XFID45-CERT-01",
+  "created_at_utc": "2026-10-03T13:35:38.149136+00:00",
+  "target_attempt_01_started_and_incomplete": true,
+  "target_attempt_02_started": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "source_hashes": {
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py": "b53980435e13a5c7e24aba4262f058dccaae822dfc8b385f59cb05ca0fc1cdd9",
+    "tests/test_xfid45_root_certifier_2026_10_03.py": "3ede8c025f19a5553185ce486b6d1a7c8eada885282396055a6aebb70260a114"
+  },
+  "tests": {
+    "registered_synthetic_and_known_regression_suite": {
+      "result": "PASS",
+      "count": 16,
+      "criteria_changed": false
+    },
+    "runner_regressions": {
+      "result": "PASS",
+      "count": 5,
+      "cases": [
+        "amendment chain/source binding",
+        "all-root position agreement",
+        "nonfinite geometry bound comparison",
+        "current-r case-keyed surface prerequisite",
+        "append-only attempt path validation"
+      ]
+    },
+    "focused_pytest": {
+      "command": ".venv/bin/python -m pytest -q tests/test_xfid45_root_certifier_2026_10_03.py",
+      "exit_code": 0,
+      "summary": "21 passed in 4.52s",
+      "log": "focused_pytest.log"
+    },
+    "compileall": {
+      "command": ".venv/bin/python -m compileall src tests",
+      "exit_code": 0,
+      "log": "compileall.log"
+    },
+    "full_pytest": {
+      "command": ".venv/bin/python -m pytest -q",
+      "exit_code": 1,
+      "summary": "36 failed, 1388 passed, 9 skipped; 7226 warnings in 243.25s",
+      "failure_ID_comparison": "failure_ID_comparison.json"
+    },
+    "ruff_check": {
+      "exit_code": 0,
+      "log": "ruff_check.log"
+    },
+    "ruff_format_check": {
+      "exit_code": 0,
+      "log": "ruff_format_check.log"
+    },
+    "git_diff_check": {
+      "exit_code": 0,
+      "log": "git_diff_check.log"
+    }
+  },
+  "failure_ID_comparison": {
+    "exact_round3_current_set_match": true,
+    "round3_current_failure_count": 36,
+    "pinned_baseline_failure_count": 37,
+    "new_failure_count": 0,
+    "absent_pinned_baseline_ids": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign"
+    ]
+  },
+  "log_normalization": {
+    "applied": true,
+    "rule": "trim trailing spaces and tabs from each output line and normalize to LF; command content otherwise unchanged"
+  },
+  "artifacts": {
+    "compileall.log": {
+      "path": "attempt02_validation/compileall.log",
+      "bytes": 256,
+      "sha256": "3613a7eb8257ab9e8c5922aad7d907020533114bd9026d004f951d6011e39f5d"
+    },
+    "focused_pytest.log": {
+      "path": "attempt02_validation/focused_pytest.log",
+      "bytes": 99,
+      "sha256": "f61bdc84f1597bc9948ea059080cc9d11e83aa80e3551b2114803df2de7f06dc"
+    },
+    "full_pytest.log": {
+      "path": "attempt02_validation/full_pytest.log",
+      "bytes": 100365,
+      "sha256": "5e4a716e88798eb4f2890ac2ab6dc51a4cb94ac43fe6f8f6d1633418bcf2c3ff"
+    },
+    "git_diff_check.log": {
+      "path": "attempt02_validation/git_diff_check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ruff_check.log": {
+      "path": "attempt02_validation/ruff_check.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "ruff_format_check.log": {
+      "path": "attempt02_validation/ruff_format_check.log",
+      "bytes": 26,
+      "sha256": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1"
+    },
+    "failure_ID_comparison.json": {
+      "path": "attempt02_validation/failure_ID_comparison.json",
+      "bytes": 11615,
+      "sha256": "2078919b25b427dd7d3ee2779fde9ae290776ac9af34ee8b52b1aa1447915596"
+    }
+  }
+}

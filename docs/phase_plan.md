@@ -5533,3 +5533,40 @@ recomputation and an explicitly unresolved numerical correspondence limitation;
 no physical or FD qualification. Focused tests 16 passed; compileall, Round 3
 Ruff checks/format and diff check passed. Full frozen pytest: 36 failed, 1,371
 passed, 5 skipped; pinned-baseline failure-ID comparison found zero new IDs.
+
+### 2026-10-03 — #45 XFID45-CERT-01 root/correspondence result
+
+The registered solver-free replay completed all saved `r=1,2,4,8` surfaces
+and correspondence samples without rerunning extraction. All 201 inventoried
+inputs and bound source hashes match. The fixed 512-case property suite and
+synthetic/regression qualification passed before target access. On the fixed
+Round 3 `r=4` D0-minus sample 691, both implementations now enumerate and
+select the near `+0.00416667075 m` target root; the old roughly 54 mm
+far-root artifact is not reproduced on that sample, whose saved
+mesh/source-displacement diagnostic is about 33.8 nm.
+
+The complete trace has 98,304 primary/Sturm comparisons. Trace-derived counters
+match the independent result aggregate, but target root-set agreement fails:
+5,670 status mismatches, 5,214 root-count mismatches and 234 paired-root
+position mismatches. The maximum paired-root position delta is 14.3 nm against
+the unchanged maximum 0.364 pm agreement tolerance. CERT-01 is not qualified
+on target data and stops under Case C; no criteria or tolerance changed.
+
+Absolute geometry at the unchanged 0.5 mm limit is `r=4: 3 PASS, 0 FAIL,
+7 UNRESOLVED` and `r=8: 4 PASS, 0 FAIL, 6 UNRESOLVED` for both double and
+float32. Including unchanged non-geometry gates, the surface totals are
+`3/2/5` PASS/FAIL/UNRESOLVED at r=4 and `4/3/3` at r=8. The combined FAILs
+are the pre-existing orientation blockers: D1-minus and D2-plus at r=4, plus
+D2-minus at r=8; each also fails `positive_total_volume`, while the other
+listed legacy non-geometry gates pass. No perturbation fidelity pair qualifies:
+each of the 12 case/storage pairs at r=4 and r=8 fails the registered surface
+prerequisite. Per-pair agreement fields in the primary result are cumulative
+snapshots; the post-run table recomputed from the full trace supplies
+case-local counters.
+
+See [CERT-01 result](issues/45_root_certifier_2026_10_03.md) and its evidence
+under `docs/evidence/xfid45_root_certifier_2026_10_03/target/attempt02/`.
+Round 3, the production exporter, and all qualification flags remain
+unchanged. #45 remains OPEN/UNRESOLVED; formal XFID must not restart. #46
+remains BLOCKED. The #29 reference remains limited to actual zero-level /
+Stage V export measurement and does not close GEOM-01 overall.
