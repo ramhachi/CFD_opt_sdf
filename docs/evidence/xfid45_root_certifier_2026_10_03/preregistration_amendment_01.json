@@ -1,0 +1,59 @@
+{
+  "amendment_id": "XFID45-CERT-01-AMEND-01",
+  "evidence_class": "pre_target_runner_plumbing_amendment",
+  "created_at_utc": "2026-10-03T13:10:20.064818+00:00",
+  "parent_preregistration_path": "docs/evidence/xfid45_root_certifier_2026_10_03/preregistration.json",
+  "parent_preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+  "parent_authoritative_start_head": "3f9322dc0fa0f2847a3204427b81a665932b83b8",
+  "branch": "exp/issue45-root-certifier-2026-10-03",
+  "pre_amendment_feature_head": "c9cecbc027bd1847743d3c7cdad44c4db47cc879",
+  "pre_amendment_remote_head": "c9cecbc027bd1847743d3c7cdad44c4db47cc879",
+  "pre_target_failure_record": {
+    "path": "runner_preflight_failure.json",
+    "sha256": "0da4e6f47f53a857a1c81f0c0bc0d962acaef0a086966f0e8e71e3c8ab13665e"
+  },
+  "amendment_reason": "Correct the replay runner inventory-schema references after a fail-closed pre-target KeyError, and preserve the preregistered all-root-position agreement check instead of overwriting it with the nearest-root comparison.",
+  "amendment_scope": [
+    "runner target inventory field and nested path references",
+    "runner preregistration-amendment hash loading",
+    "runner aggregation of every root-position comparison separately from nearest-root position",
+    "runner registration-schema and non-nearest-root disagreement regression assertions"
+  ],
+  "source_sha256_overrides": {
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py": "562f5a73e39499c260305a756c654db30eeebfdb02d40f59ac965cab3eb04335",
+    "tests/test_xfid45_root_certifier_2026_10_03.py": "738b55e4d75926c8d9f1a10ad2b40457a756ca1ada2c1bb28f323fc466581905"
+  },
+  "unchanged_primary_certifier_sha256": "913516f1884bebb0bc7cf562a5fb03120d7ac65cb0561e6ea51679187c44751a",
+  "unchanged_independent_verifier_sha256": "2f8bf4f14392b04d4643b654a962f87618411da2897d48105e38f21b5bec72a4",
+  "unchanged_contract_subtree_sha256": {
+    "certifier_contract": "20618383f1475884ebd751e65186e1e30673500cb1e62929c2b8561e45fd3190",
+    "synthetic_suite": "2c8f6064ef9f1f2eb597bc206d950c3db220a40b1cbae6ab78c36bdc456668ac",
+    "absolute_geometry": "bb02c69cbeb89a425e5f7589deff2583bef5c2f88f50e0051f6be7d684f99718",
+    "normal_correspondence": "958ae8c379b90615ca9fe1e5575c0a273692b47ce95aa0b962d93ee2a82e61a5",
+    "target_replay_inventory": "71e07c608a592964a653fd51c892cc13ed92acf066b6e1dbebc823e6dd9ba6ba"
+  },
+  "target_inventory_file_count": 201,
+  "target_evaluation_started": false,
+  "criteria_changed": false,
+  "primary_or_independent_certifier_changed": false,
+  "synthetic_suite_definition_changed": false,
+  "target_inventory_changed": false,
+  "round3_source_or_evidence_changed": false,
+  "production_exporter_changed": false,
+  "solver_kaggle_or_formal_xfid_started": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "pre_target_static_review_finding": {
+    "finding": "The root-set comparator previously reused nearest_position_mismatch for all-root comparisons, then overwrote it with the nearest-root result.",
+    "correction": "Track root_position_mismatch independently and include it in per-set agreement, aggregate status, and agreement_pass.",
+    "criteria_changed": false,
+    "known_criteria_reference": "parent_preregistration.certifier_contract.independent_agreement_required"
+  }
+}

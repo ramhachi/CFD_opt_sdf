@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
+from scripts import run_xfid45_root_certifier_replay_2026_10_03 as replay
 from scripts.verify_xfid45_root_certifier_2026_10_03 import (
     enumerate_ray_roots as sturm_ray_roots,
     nearest_root as sturm_nearest,
@@ -23,6 +25,42 @@ from scripts.xfid45_root_certifier_2026_10_03 import (
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "docs/evidence/xfid45_surface_round3_2026_10_03"
+
+
+def test_replay_runner_reads_the_registered_target_inventory_schema():
+    registration_path = (
+        ROOT / "docs/evidence/xfid45_root_certifier_2026_10_03/preregistration.json"
+    )
+    prereg = json.loads(registration_path.read_text())
+    inventory = replay._registered_inventory(prereg)
+    files = inventory["files"]
+    loaded, parent_hash, amendment_hash = replay._load_registration()
+
+    assert files["file_count"] == len(files["files"]) == 201
+    assert set(files["original_fields"]) == set(replay.CASES)
+    assert len(files["saved_surface_artifacts"]) == 40
+    assert parent_hash == replay.sha256(registration_path)
+    assert amendment_hash == replay.sha256(replay.PREREGISTRATION_AMENDMENT)
+    for source in (replay.AMENDABLE_SOURCE, replay.AMENDABLE_TEST):
+        assert loaded["effective_source_sha256"][source] == replay.sha256(ROOT / source)
+
+
+def test_replay_agreement_checks_all_root_positions_not_only_the_nearest():
+    def root(t):
+        return SimpleNamespace(t_m=t, bracket_m=(t, t), kind="crossing")
+
+    primary = SimpleNamespace(
+        status="COMPLETE", zero_intervals=(), roots=(root(-0.02), root(0.001))
+    )
+    independent = SimpleNamespace(
+        status="COMPLETE", zero_intervals=(), roots=(root(-0.019), root(0.001))
+    )
+
+    comparison = replay._root_agreement(primary, independent, 0.025, 0.05)
+
+    assert comparison["root_position_mismatch"] == 1
+    assert comparison["nearest_position_mismatch"] == 0
+    assert comparison["nearest_identity_mismatch"] == 0
 
 
 def _coeff(roots: tuple[float, ...], scale: float = 1.0) -> tuple[float, ...]:

@@ -33,6 +33,10 @@ from scripts.xfid45_root_certifier_2026_10_03 import (  # noqa: E402
 
 ROUND3 = ROOT / "docs/evidence/xfid45_surface_round3_2026_10_03"
 EVIDENCE = ROOT / "docs/evidence/xfid45_root_certifier_2026_10_03"
+PREREGISTRATION = EVIDENCE / "preregistration.json"
+PREREGISTRATION_AMENDMENT = EVIDENCE / "preregistration_amendment_01.json"
+AMENDABLE_SOURCE = "scripts/run_xfid45_root_certifier_replay_2026_10_03.py"
+AMENDABLE_TEST = "tests/test_xfid45_root_certifier_2026_10_03.py"
 LIMIT_M = 5.0e-4
 CASES = (
     "D0_interface_offset_minus",
@@ -268,6 +272,7 @@ def _root_agreement(primary, independent, h: float, span: float) -> dict:
         ),
         "root_count_mismatch": int(len(primary.roots) != len(independent.roots)),
         "root_kind_mismatch": 0,
+        "root_position_mismatch": 0,
         "nearest_status_mismatch": 0,
         "nearest_identity_mismatch": 0,
         "nearest_position_mismatch": 0,
@@ -288,7 +293,7 @@ def _root_agreement(primary, independent, h: float, span: float) -> dict:
                 result["position_tolerance_max_m"], tol
             )
             result["root_kind_mismatch"] += int(p.kind != q.kind)
-            result["nearest_position_mismatch"] += int(delta > tol)
+            result["root_position_mismatch"] += int(delta > tol)
     p_near, p_status = nearest_root(primary, h, span)
     i_near, i_status = sturm_nearest(independent, h, span)
     result["nearest_status_mismatch"] = int(p_status != i_status)
@@ -321,6 +326,7 @@ def _add_agreement(total: dict, one: dict) -> None:
         "root_kind_mismatch",
         "nearest_status_mismatch",
         "nearest_identity_mismatch",
+        "root_position_mismatch",
         "nearest_position_mismatch",
     ):
         total[key] += one[key]
@@ -365,10 +371,9 @@ def _fidelity_replay(
         ROUND3 / "surfaces" / f"r{r}" / case / "normal_correspondence.npz"
     ) as data:
         samples_by_storage = {name: data[f"{name}_samples"].copy() for name in STORAGE}
-    base_path = (
-        ROOT / prereg["target_input_inventory"]["original_fields"]["baseline"]["path"]
-    )
-    case_path = ROOT / prereg["target_input_inventory"]["original_fields"][case]["path"]
+    original_fields = _registered_inventory(prereg)["files"]["original_fields"]
+    base_path = ROOT / original_fields["baseline"]["path"]
+    case_path = ROOT / original_fields[case]["path"]
     base_phi, origin, h, _ = load_field(base_path)
     target_phi, target_origin, target_h, _ = load_field(case_path)
     if h != target_h or not np.array_equal(origin, target_origin):
@@ -426,6 +431,7 @@ def _fidelity_replay(
                             "zero_interval_mismatch",
                             "root_count_mismatch",
                             "root_kind_mismatch",
+                            "root_position_mismatch",
                             "nearest_status_mismatch",
                             "nearest_identity_mismatch",
                             "nearest_position_mismatch",
@@ -571,10 +577,37 @@ def _verify_prereg(prereg: dict, paths: list[dict]) -> None:
             or sha256(path) != entry["sha256"]
         ):
             raise RuntimeError(f"registered input changed: {entry['path']}")
-    for name, expected in prereg["source_sha256"].items():
+    for name, expected in prereg["effective_source_sha256"].items():
         path = ROOT / name
         if sha256(path) != expected:
             raise RuntimeError(f"registered source changed: {name}")
+
+
+def _registered_inventory(prereg: dict) -> dict:
+    """Read the inventory field frozen by the CERT-01 registration schema."""
+    return prereg["target_replay_inventory"]
+
+
+def _load_registration() -> tuple[dict, str, str | None]:
+    prereg = json.loads(PREREGISTRATION.read_text())
+    preregistration_sha256 = sha256(PREREGISTRATION)
+    amendment_sha256 = None
+    effective_hashes = dict(prereg["source_sha256"])
+    if PREREGISTRATION_AMENDMENT.exists():
+        amendment = json.loads(PREREGISTRATION_AMENDMENT.read_text())
+        if amendment["parent_preregistration_sha256"] != preregistration_sha256:
+            raise RuntimeError("preregistration amendment parent hash mismatch")
+        if amendment.get("target_evaluation_started") is not False:
+            raise RuntimeError("amendment must precede target evaluation")
+        overrides = amendment["source_sha256_overrides"]
+        if set(overrides) != {AMENDABLE_SOURCE, AMENDABLE_TEST}:
+            raise RuntimeError(
+                "amendment may update only runner and regression test hashes"
+            )
+        effective_hashes.update(overrides)
+        amendment_sha256 = sha256(PREREGISTRATION_AMENDMENT)
+    prereg["effective_source_sha256"] = effective_hashes
+    return prereg, preregistration_sha256, amendment_sha256
 
 
 def _verify_registered_branch(prereg: dict) -> tuple[str, str]:
@@ -601,17 +634,17 @@ def _verify_registered_branch(prereg: dict) -> tuple[str, str]:
 
 
 def run(r_values: list[int]) -> Path:
-    prereg = json.loads((EVIDENCE / "preregistration.json").read_text())
+    prereg, preregistration_sha256, amendment_sha256 = _load_registration()
     prereg_commit, remote_head = _verify_registered_branch(prereg)
-    _verify_prereg(prereg, prereg["target_input_inventory"]["files"])
+    inventory = _registered_inventory(prereg)
+    _verify_prereg(prereg, inventory["files"]["files"])
     out_dir = EVIDENCE / "target" / ("r" + "_".join(map(str, r_values)))
     out_dir.mkdir(parents=True, exist_ok=False)
     all_results = json.loads((ROUND3 / "result.json").read_text())
     by_case = {(c["r"], c["case"]): c for c in all_results["cases"]}
     by_fidelity = {(c["r"], c["case"]): c for c in all_results["fidelity_pairs"]}
     input_hashes = {
-        case: prereg["target_input_inventory"]["original_fields"][case]["sha256"]
-        for case in CASES
+        case: inventory["files"]["original_fields"][case]["sha256"] for case in CASES
     }
     primary_cases = []
     independent_cases = []
@@ -623,6 +656,7 @@ def run(r_values: list[int]) -> Path:
         "zero_interval_mismatch": 0,
         "root_count_mismatch": 0,
         "root_kind_mismatch": 0,
+        "root_position_mismatch": 0,
         "nearest_status_mismatch": 0,
         "nearest_identity_mismatch": 0,
         "nearest_position_mismatch": 0,
@@ -640,10 +674,7 @@ def run(r_values: list[int]) -> Path:
                 for r in r_values:
                     fields = {
                         case: load_field(
-                            ROOT
-                            / prereg["target_input_inventory"]["original_fields"][case][
-                                "path"
-                            ]
+                            ROOT / inventory["files"]["original_fields"][case]["path"]
                         )
                         for case in CASES
                     }
@@ -703,7 +734,8 @@ def run(r_values: list[int]) -> Path:
     common = {
         "evidence_class": "solver_free_successor_root_certifier_replay",
         "certifier_identity": "XFID45-CERT-01",
-        "preregistration_sha256": sha256(EVIDENCE / "preregistration.json"),
+        "preregistration_sha256": preregistration_sha256,
+        "preregistration_amendment_sha256": amendment_sha256,
         "preregistration_branch_head": prereg_commit,
         "preregistration_remote_head": remote_head,
         "registration_start_head": prereg["authoritative_start_head"],
@@ -711,7 +743,7 @@ def run(r_values: list[int]) -> Path:
         "surface_extraction_rerun": False,
         "r_values": r_values,
         "input_hashes": input_hashes,
-        "source_sha256": prereg["source_sha256"],
+        "source_sha256": prereg["effective_source_sha256"],
         "runtime_identity": prereg["runtime_identity"],
         "qualification_flags": FALSE_FLAGS,
         "elapsed_seconds": time.time() - started,
@@ -735,6 +767,7 @@ def run(r_values: list[int]) -> Path:
                 "zero_interval_mismatch",
                 "root_count_mismatch",
                 "root_kind_mismatch",
+                "root_position_mismatch",
                 "nearest_status_mismatch",
                 "nearest_identity_mismatch",
                 "nearest_position_mismatch",

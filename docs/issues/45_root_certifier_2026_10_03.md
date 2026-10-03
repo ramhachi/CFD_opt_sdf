@@ -53,20 +53,40 @@ property family (`451003`), and the fixed Round 3 sample 691 regression. The
 primary and independent methods must agree on root counts, positions,
 nearest-root identity, and ambiguity status.
 
-Pre-target checks are complete: focused suite `16 passed`; compileall, Ruff,
-formatting, staged and unstaged diff checks passed. The full suite reported
-`36 failed, 1383 passed, 9 skipped`; its failure-ID set exactly matches the
-frozen Round 3/current comparison, and it adds zero IDs relative to the pinned
-baseline. The two ignored worktree fixtures needed for reproducible full-suite
-checks were copied from the original checkout and hash recorded. An earlier
-run without those fixtures is preserved separately as an environment-only
-attempt in the pre-target validation evidence.
+The original preregistration was committed and pushed as `c9cecbc`, but its
+first runner invocation failed closed before reading any saved target input or
+surface: the runner referenced the absent `target_input_inventory` key instead
+of the registered `target_replay_inventory.files` schema. The registered
+preregistration and Git branch metadata were read; no target output directory
+was created. This attempt is preserved at
+`docs/evidence/xfid45_root_certifier_2026_10_03/runner_preflight_failure.json`.
+
+Pre-target amendment `XFID45-CERT-01-AMEND-01` binds the corrected inventory
+paths and a fix to the all-root-position agreement accumulator. The latter
+preserves the registered requirement to compare every root position even when
+the nearest roots agree; it does not change the criteria or either certifier.
+The amendment binds only the replay runner and regression-test hashes and
+records the unchanged contract subtrees. Its SHA-256 is
+`1f7d4c713c591a08e9638e8cd68aa2405fffa7de6fc50a73ed8b3812f052d464`.
+
+Final pre-target validation passed the 16 registered synthetic/property and
+known-regression cases plus two runner regression checks (`18 passed`).
+Compileall, Ruff, formatting and diff checks passed. Full pytest reported
+`36 failed, 1385 passed, 9 skipped`; its failure-ID set exactly matches the
+frozen Round 3/current set and adds zero IDs against the pinned baseline. One
+pinned baseline ID remains absent. The prior pre-final-review full run is
+preserved as superseded validation. The two ignored worktree fixtures needed
+for reproducible full-suite checks were copied from the original checkout and
+their hashes are recorded. See
+`docs/evidence/xfid45_root_certifier_2026_10_03/pre_target_amendment_validation/`
+for commands, logs, failure-ID comparison and hashes.
 
 ## Target replay status
 
-**Not started.** The preregistration now binds source hashes, runtime, the
-fixed synthetic suite and seed, root-count/position/ambiguity rules, and 201
-saved input/artifact hashes. The next step is to commit and push it, verify that
+**Not started.** The preregistration and its pre-target amendment bind source
+hashes, runtime, the fixed synthetic suite and seed,
+root-count/position/ambiguity rules, and 201 saved input/artifact hashes. After
+the amendment and validation evidence are committed and pushed, verify that
 remote and local feature-branch HEADs are identical, then replay all registered
 `r={1,2,4,8}` saved surfaces and correspondence samples. No target result has
 informed or changed the criteria.

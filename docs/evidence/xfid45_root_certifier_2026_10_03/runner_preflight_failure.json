@@ -1,0 +1,41 @@
+{
+  "evidence_class": "pre_target_runner_interface_failure_record",
+  "attempted_command": [
+    ".venv/bin/python",
+    "scripts/run_xfid45_root_certifier_replay_2026_10_03.py",
+    "--r",
+    "1",
+    "2",
+    "4",
+    "8"
+  ],
+  "branch": "exp/issue45-root-certifier-2026-10-03",
+  "local_head": "c9cecbc027bd1847743d3c7cdad44c4db47cc879",
+  "remote_head": "c9cecbc027bd1847743d3c7cdad44c4db47cc879",
+  "registered_runner_sha256": "c130c6fbbe24c0c4513c1c2a0c56f40efca614edd74babfd91e477b7aad64416",
+  "registered_preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+  "observed_error": {
+    "type": "KeyError",
+    "key": "target_input_inventory"
+  },
+  "failure_location": "run() requested prereg[\"target_input_inventory\"][\"files\"] although the committed preregistration schema uses target_replay_inventory.files.files",
+  "raw_console_log_retained": false,
+  "observation_source": "captured tool result from the attempted command; no raw console log was saved",
+  "preregistration_read": true,
+  "git_branch_and_remote_head_checked": true,
+  "saved_target_input_files_opened": false,
+  "saved_round3_surface_files_opened": false,
+  "target_output_directory_created": false,
+  "target_evaluation_started": false,
+  "solver_or_kaggle_started": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "observed_on_date": "2026-10-03"
+}
