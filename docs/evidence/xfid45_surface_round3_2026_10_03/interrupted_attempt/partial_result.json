@@ -1,0 +1,2482 @@
+{
+  "cases": [
+    {
+      "case": "D0_interface_offset_minus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.0030317893229525293,
+        "maximum_certified_upper_distance_m": 0.008547322472022768,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 110560,
+        "sample_count_certified_over_limit": 8197,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 1661,
+        "triangle_count_without_certificate": 1661,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8217421187288586
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8265420982274062
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8265420982274062
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 11056,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.1453838195573132,
+            "raw_signed_volume_m3": 0.1453838195573132,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.1453838195573132,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.125013347356785,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6041666746139527,
+              -0.44999997615814213,
+              -0.2541666746139526
+            ],
+            [
+              0.5541666984558107,
+              0.44999999999999996,
+              0.25416669845581064
+            ]
+          ],
+          "component_face_counts": [
+            11056
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 16584,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 5530,
+          "minimum_stage_v_clearance_m": 0.6458333015441894,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 5530,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.1453838195573132,
+          "stage_v_clearance_by_axis_m": [
+            1.8958333253860473,
+            0.75,
+            0.6458333015441894
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 11056,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "ba5577d2c4407cd55c4b8221f53fc54ae9fa1b2542b27f3fa0998aa9105375d0",
+      "raw_stl_sha256": "92f0eac885039ea4c89cc7bc04c7ded0b43527e7698ab658e2588360ce537723",
+      "repeat_array_sha256": "ba5577d2c4407cd55c4b8221f53fc54ae9fa1b2542b27f3fa0998aa9105375d0",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.0030317876188508575,
+        "maximum_certified_upper_distance_m": 0.008547329163252704,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 110560,
+        "sample_count_certified_over_limit": 8197,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 1661,
+        "triangle_count_without_certificate": 1661,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8217421351594534
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8265421147514408
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.8265421147514408
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 11056,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.14538382501202915,
+            "raw_signed_volume_m3": 0.14538382501202915,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.14538382501202915,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.125013374804965,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6041666865348816,
+              -0.44999998807907104,
+              -0.2541666626930237
+            ],
+            [
+              0.5541666746139526,
+              0.44999998807907104,
+              0.25416669249534607
+            ]
+          ],
+          "component_face_counts": [
+            11056
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 16584,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 27638,
+          "exact_unique_vertex_count": 5530,
+          "minimum_stage_v_clearance_m": 0.645833307504654,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 33168,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.14538382501202915,
+          "stage_v_clearance_by_axis_m": [
+            1.8958333134651184,
+            0.7500000119209289,
+            0.645833307504654
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 11056,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 3.125013374804965,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.5541666746139526,
+            0.44999998807907104,
+            0.25416669249534607
+          ]
+        ],
+        "component_face_counts": [
+          11056
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 16584,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 27638,
+        "exact_unique_vertex_count": 5530,
+        "minimum_stage_v_clearance_m": 0.645833307504654,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 33168,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.14538382501202915,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.645833307504654
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 11056,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 3.125013347356785,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6041666746139527,
+            -0.44999997615814213,
+            -0.2541666746139526
+          ],
+          [
+            0.5541666984558107,
+            0.44999999999999996,
+            0.25416669845581064
+          ]
+        ],
+        "component_face_counts": [
+          11056
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 16584,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 5530,
+        "minimum_stage_v_clearance_m": 0.6458333015441894,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 5530,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.1453838195573132,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333253860473,
+          0.75,
+          0.6458333015441894
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 11056,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "7efcb75d24382bca7310a5fcb01c99a40e65f91a0872c4da6977d511a0f0266a",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "8b1e73cb799f437425e577ff2c0516a5251017ad1deeb2ec23b20f1388266f67"
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.0034153962723920905,
+        "maximum_certified_upper_distance_m": 0.011816439934669371,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 99280,
+        "sample_count_certified_over_limit": 11347,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2255,
+        "triangle_count_without_certificate": 2255,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7276220468535624
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7340884070803114
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7340884070803114
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 9928,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.11083000764609563,
+            "raw_signed_volume_m3": 0.11083000764609563,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.11083000764609563,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 2.8996219422539973,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.5958333492279053,
+              -0.44999997615814213,
+              -0.2458333253860473
+            ],
+            [
+              0.5458333015441896,
+              0.44999999999999996,
+              0.24583330154418948
+            ]
+          ],
+          "component_face_counts": [
+            9928
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 14892,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 4966,
+          "minimum_stage_v_clearance_m": 0.6541666746139527,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 4966,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.11083000764609563,
+          "stage_v_clearance_by_axis_m": [
+            1.9041666507720947,
+            0.75,
+            0.6541666746139527
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 9928,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "157ef71c211ef50d2dc2c44be292e1da8129760a1616881df7901440af0c3eaa",
+      "raw_stl_sha256": "8165dfd2d013e3e42df6ae22bf3e055e1d8c8a8a324a720ec13d7d5d4d1480f8",
+      "repeat_array_sha256": "157ef71c211ef50d2dc2c44be292e1da8129760a1616881df7901440af0c3eaa",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.003415395932149009,
+        "maximum_certified_upper_distance_m": 0.011816444259408617,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 99280,
+        "sample_count_certified_over_limit": 11347,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2255,
+        "triangle_count_without_certificate": 2255,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7276220328194132
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7340883942074053
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7340883942074053
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 9928,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.11083000873681843,
+            "raw_signed_volume_m3": 0.11083000873681843,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.11083000873681843,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 2.899621943626951,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.5958333611488342,
+              -0.44999998807907104,
+              -0.24583332240581512
+            ],
+            [
+              0.5458332896232605,
+              0.44999998807907104,
+              0.24583330750465393
+            ]
+          ],
+          "component_face_counts": [
+            9928
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 14892,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 24818,
+          "exact_unique_vertex_count": 4966,
+          "minimum_stage_v_clearance_m": 0.6541666775941849,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 29784,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.11083000873681843,
+          "stage_v_clearance_by_axis_m": [
+            1.9041666388511658,
+            0.7500000119209289,
+            0.6541666775941849
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 9928,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 2.899621943626951,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.5958333611488342,
+            -0.44999998807907104,
+            -0.24583332240581512
+          ],
+          [
+            0.5458332896232605,
+            0.44999998807907104,
+            0.24583330750465393
+          ]
+        ],
+        "component_face_counts": [
+          9928
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 14892,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 24818,
+        "exact_unique_vertex_count": 4966,
+        "minimum_stage_v_clearance_m": 0.6541666775941849,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 29784,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.11083000873681843,
+        "stage_v_clearance_by_axis_m": [
+          1.9041666388511658,
+          0.7500000119209289,
+          0.6541666775941849
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 9928,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 2.8996219422539973,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.5958333492279053,
+            -0.44999997615814213,
+            -0.2458333253860473
+          ],
+          [
+            0.5458333015441896,
+            0.44999999999999996,
+            0.24583330154418948
+          ]
+        ],
+        "component_face_counts": [
+          9928
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 14892,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 4966,
+        "minimum_stage_v_clearance_m": 0.6541666746139527,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 4966,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.11083000764609563,
+        "stage_v_clearance_by_axis_m": [
+          1.9041666507720947,
+          0.75,
+          0.6541666746139527
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 9928,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "51dda97f486c9f4883b29b862580bc5264c727ee9dc5fe3b2c359270a3a6857e",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "03318b629dd5f4718034db31fc4d16b49ad99cf5ed9c8d3dd578ae795b2fe2af"
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "FAIL",
+        "positive_total_volume": "N/A",
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "FAIL",
+        "positive_total_volume": "N/A",
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004451662031502287,
+        "maximum_certified_upper_distance_m": 0.016252080586579395,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 132720,
+        "sample_count_certified_over_limit": 10188,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2149,
+        "triangle_count_without_certificate": 2352,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": false,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 5.208179147433876e-08,
+                "outward_area_fraction": 0.7510264144474929
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 4.6946396762124465e-05,
+                "outward_area_fraction": 0.7548451561298571
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.00013298988055848317,
+                "outward_area_fraction": 0.7590865498117312
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13264,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12764737851033034,
+            "raw_signed_volume_m3": 0.12764737851033034,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 1,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.012226550534373432,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 12486,
+            "oriented_signed_volume_m3": -1.4941310676631434e-10,
+            "raw_signed_volume_m3": -1.4941310676631434e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "void_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12764737836091725,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "FAIL",
+        "stored_all_components_outward": false,
+        "topology": {
+          "area_m2": 3.0936134610698818,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6041666746139527,
+              -0.44999997615814213,
+              -0.2541666746139526
+            ],
+            [
+              0.5494195938110353,
+              0.44999999999999996,
+              0.2535137176513672
+            ]
+          ],
+          "component_face_counts": [
+            13264,
+            8
+          ],
+          "component_min_original_face_id": [
+            0,
+            12486
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 2,
+          "edge_count": 19908,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 4,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 6640,
+          "minimum_stage_v_clearance_m": 0.6458333253860474,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 6640,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12764737836091725,
+          "stage_v_clearance_by_axis_m": [
+            1.8958333253860473,
+            0.75,
+            0.6458333253860474
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13272,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "58a01319c4fb508fbc40a9d8bd367e664cf1776a961394c7020775fda82c668e",
+      "raw_stl_sha256": "1ff963425bb0a41ffb15704b62f640ce5ae3fd1dd734e001ab2e2bb8c8ff8fe9",
+      "repeat_array_sha256": "58a01319c4fb508fbc40a9d8bd367e664cf1776a961394c7020775fda82c668e",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004451662035144229,
+        "maximum_certified_upper_distance_m": 0.0162520807911059,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 132720,
+        "sample_count_certified_over_limit": 10188,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2149,
+        "triangle_count_without_certificate": 2352,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": false,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 5.208237742474099e-08,
+                "outward_area_fraction": 0.7510264142543623
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 4.694637136805926e-05,
+                "outward_area_fraction": 0.7548451562801527
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.00013298982389879773,
+                "outward_area_fraction": 0.7590865507168433
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13264,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12764737902292547,
+            "raw_signed_volume_m3": 0.12764737902292547,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 1,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.012237573004722743,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 12486,
+            "oriented_signed_volume_m3": -1.4943065204510635e-10,
+            "raw_signed_volume_m3": -1.4943065204510635e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "void_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12764737887349484,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "FAIL",
+        "stored_all_components_outward": false,
+        "topology": {
+          "area_m2": 3.093613475762022,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6041666865348816,
+              -0.44999998807907104,
+              -0.2541666626930237
+            ],
+            [
+              0.5494195818901062,
+              0.44999998807907104,
+              0.25351372361183167
+            ]
+          ],
+          "component_face_counts": [
+            13264,
+            8
+          ],
+          "component_min_original_face_id": [
+            0,
+            12486
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 2,
+          "edge_count": 19908,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 4,
+          "exact_coordinate_merge_count": 33176,
+          "exact_unique_vertex_count": 6640,
+          "minimum_stage_v_clearance_m": 0.6458333373069763,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 39816,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12764737887349484,
+          "stage_v_clearance_by_axis_m": [
+            1.8958333134651184,
+            0.7500000119209289,
+            0.6458333373069763
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13272,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 3.093613475762022,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6041666865348816,
+            -0.44999998807907104,
+            -0.2541666626930237
+          ],
+          [
+            0.5494195818901062,
+            0.44999998807907104,
+            0.25351372361183167
+          ]
+        ],
+        "component_face_counts": [
+          13264,
+          8
+        ],
+        "component_min_original_face_id": [
+          0,
+          12486
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 2,
+        "edge_count": 19908,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 4,
+        "exact_coordinate_merge_count": 33176,
+        "exact_unique_vertex_count": 6640,
+        "minimum_stage_v_clearance_m": 0.6458333373069763,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 39816,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12764737887349484,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333134651184,
+          0.7500000119209289,
+          0.6458333373069763
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13272,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 3.0936134610698818,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6041666746139527,
+            -0.44999997615814213,
+            -0.2541666746139526
+          ],
+          [
+            0.5494195938110353,
+            0.44999999999999996,
+            0.2535137176513672
+          ]
+        ],
+        "component_face_counts": [
+          13264,
+          8
+        ],
+        "component_min_original_face_id": [
+          0,
+          12486
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 2,
+        "edge_count": 19908,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 4,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 6640,
+        "minimum_stage_v_clearance_m": 0.6458333253860474,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 6640,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12764737836091725,
+        "stage_v_clearance_by_axis_m": [
+          1.8958333253860473,
+          0.75,
+          0.6458333253860474
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13272,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "e7f07660c5f4bcb23db58248b5f775a4059a924b62942675ce02cfcb5309af43",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "44dce114b3959def4f4aad88eeadaee49c8d58912793c001acb5feeade87f05e"
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004486091175194019,
+        "maximum_certified_upper_distance_m": 0.016328588688112013,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 134240,
+        "sample_count_certified_over_limit": 9935,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2110,
+        "triangle_count_without_certificate": 2298,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7590226377279707
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 3.0165734147076756e-05,
+                "outward_area_fraction": 0.761128178537823
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0001710779617113789,
+                "outward_area_fraction": 0.7675654375162366
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13424,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12836897445814197,
+            "raw_signed_volume_m3": 0.12836897445814197,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12836897445814197,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.1206272647821507,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6021321058273315,
+              -0.44999997615814213,
+              -0.25358459949493406
+            ],
+            [
+              0.5509486198425293,
+              0.44999999999999996,
+              0.2536029815673829
+            ]
+          ],
+          "component_face_counts": [
+            13424
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 20136,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 0,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 6712,
+          "minimum_stage_v_clearance_m": 0.6463970184326171,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 6712,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12836897445814197,
+          "stage_v_clearance_by_axis_m": [
+            1.8978678941726685,
+            0.75,
+            0.6463970184326171
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13424,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "b6c81c68fadd6ee58b2427ca5e07467f7d583f6123dd87d43eea7079ddc8bf25",
+      "raw_stl_sha256": "ad09c7fe25c3771a0ac3b200ff028e6e5d922cbcaa6fe50dffbbf6155f84ebfb",
+      "repeat_array_sha256": "b6c81c68fadd6ee58b2427ca5e07467f7d583f6123dd87d43eea7079ddc8bf25",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004486091833678018,
+        "maximum_certified_upper_distance_m": 0.016328587664701934,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 134240,
+        "sample_count_certified_over_limit": 9935,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2110,
+        "triangle_count_without_certificate": 2296,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.7590226373609311
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 3.0165678509388394e-05,
+                "outward_area_fraction": 0.7611281784064579
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.000171078015264078,
+                "outward_area_fraction": 0.767565437696902
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13424,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.1283689747162714,
+            "raw_signed_volume_m3": 0.1283689747162714,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.1283689747162714,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.1206272855754147,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6021320819854736,
+              -0.44999998807907104,
+              -0.2535845935344696
+            ],
+            [
+              0.5509486198425293,
+              0.44999998807907104,
+              0.2536029815673828
+            ]
+          ],
+          "component_face_counts": [
+            13424
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 20136,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 0,
+          "exact_coordinate_merge_count": 33560,
+          "exact_unique_vertex_count": 6712,
+          "minimum_stage_v_clearance_m": 0.6463970184326172,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 40272,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.1283689747162714,
+          "stage_v_clearance_by_axis_m": [
+            1.8978679180145264,
+            0.7500000119209289,
+            0.6463970184326172
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13424,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 3.1206272855754147,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6021320819854736,
+            -0.44999998807907104,
+            -0.2535845935344696
+          ],
+          [
+            0.5509486198425293,
+            0.44999998807907104,
+            0.2536029815673828
+          ]
+        ],
+        "component_face_counts": [
+          13424
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 20136,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 0,
+        "exact_coordinate_merge_count": 33560,
+        "exact_unique_vertex_count": 6712,
+        "minimum_stage_v_clearance_m": 0.6463970184326172,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 40272,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.1283689747162714,
+        "stage_v_clearance_by_axis_m": [
+          1.8978679180145264,
+          0.7500000119209289,
+          0.6463970184326172
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13424,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 3.1206272647821507,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6021321058273315,
+            -0.44999997615814213,
+            -0.25358459949493406
+          ],
+          [
+            0.5509486198425293,
+            0.44999999999999996,
+            0.2536029815673829
+          ]
+        ],
+        "component_face_counts": [
+          13424
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 20136,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 0,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 6712,
+        "minimum_stage_v_clearance_m": 0.6463970184326171,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 6712,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12836897445814197,
+        "stage_v_clearance_by_axis_m": [
+          1.8978678941726685,
+          0.75,
+          0.6463970184326171
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13424,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "e55d80542ef342ccdeefcd31c1d4c500ff0aa6537a21fe50dd18a86e4c695403",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "6902944c519ea92f22cc1b47ab6a75697ddb44597360e6e41198969930b43878"
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "PASS",
+        "positive_total_volume": true,
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004455819500595706,
+        "maximum_certified_upper_distance_m": 0.016035350459384184,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 134500,
+        "sample_count_certified_over_limit": 10264,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2184,
+        "triangle_count_without_certificate": 2417,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 9.72869443318399e-06,
+                "outward_area_fraction": 0.7489844410771247
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 3.433492622369794e-05,
+                "outward_area_fraction": 0.753276915772361
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.00010214252349156161,
+                "outward_area_fraction": 0.7579886998668315
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13450,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12810802770790267,
+            "raw_signed_volume_m3": 0.12810802770790267,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12810802770790267,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.111434775890915,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6020901918411254,
+              -0.44999997615814213,
+              -0.2534004688262939
+            ],
+            [
+              0.5517304420471192,
+              0.44999999999999996,
+              0.25306119918823244
+            ]
+          ],
+          "component_face_counts": [
+            13450
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 20175,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 6727,
+          "minimum_stage_v_clearance_m": 0.646599531173706,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 6727,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12810802770790267,
+          "stage_v_clearance_by_axis_m": [
+            1.8979098081588746,
+            0.75,
+            0.646599531173706
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13450,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "5ea1968e449b763d159915b7e5c5108d89b73e0ecaed8d087741d311282ee336",
+      "raw_stl_sha256": "21d589251669ab5a0c290e643e6b3cbc7cd26a426b075a2f3b871229e3660e9c",
+      "repeat_array_sha256": "5ea1968e449b763d159915b7e5c5108d89b73e0ecaed8d087741d311282ee336",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.004455822395316962,
+        "maximum_certified_upper_distance_m": 0.016035351651060358,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 134500,
+        "sample_count_certified_over_limit": 10264,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2184,
+        "triangle_count_without_certificate": 2417,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": true,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 9.728706815243867e-06,
+                "outward_area_fraction": 0.7489844389585639
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 3.4334957140509225e-05,
+                "outward_area_fraction": 0.7532769141769098
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.00010214264511147608,
+                "outward_area_fraction": 0.7579886995413753
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13450,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.128108028264464,
+            "raw_signed_volume_m3": 0.128108028264464,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.128108028264464,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "PASS",
+        "stored_all_components_outward": true,
+        "topology": {
+          "area_m2": 3.111434795048351,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6020901799201965,
+              -0.44999998807907104,
+              -0.2534004747867584
+            ],
+            [
+              0.5517304539680481,
+              0.44999998807907104,
+              0.2530612051486969
+            ]
+          ],
+          "component_face_counts": [
+            13450
+          ],
+          "component_min_original_face_id": [
+            0
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 1,
+          "edge_count": 20175,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 2,
+          "exact_coordinate_merge_count": 33623,
+          "exact_unique_vertex_count": 6727,
+          "minimum_stage_v_clearance_m": 0.6465995252132416,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 40350,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.128108028264464,
+          "stage_v_clearance_by_axis_m": [
+            1.8979098200798035,
+            0.7500000119209289,
+            0.6465995252132416
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13450,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 3.111434795048351,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6020901799201965,
+            -0.44999998807907104,
+            -0.2534004747867584
+          ],
+          [
+            0.5517304539680481,
+            0.44999998807907104,
+            0.2530612051486969
+          ]
+        ],
+        "component_face_counts": [
+          13450
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 20175,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 33623,
+        "exact_unique_vertex_count": 6727,
+        "minimum_stage_v_clearance_m": 0.6465995252132416,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 40350,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.128108028264464,
+        "stage_v_clearance_by_axis_m": [
+          1.8979098200798035,
+          0.7500000119209289,
+          0.6465995252132416
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13450,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 3.111434775890915,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6020901918411254,
+            -0.44999997615814213,
+            -0.2534004688262939
+          ],
+          [
+            0.5517304420471192,
+            0.44999999999999996,
+            0.25306119918823244
+          ]
+        ],
+        "component_face_counts": [
+          13450
+        ],
+        "component_min_original_face_id": [
+          0
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 1,
+        "edge_count": 20175,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 2,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 6727,
+        "minimum_stage_v_clearance_m": 0.646599531173706,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 6727,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12810802770790267,
+        "stage_v_clearance_by_axis_m": [
+          1.8979098081588746,
+          0.75,
+          0.646599531173706
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13450,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "3506273afcac313a640a0a716551123da1fc23ab2a6f589e49dbed4d7ad99182",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "70f147248bb6b72476c772ad9a8f99d0ebaf2c8bdf100a83beb8085a46001d80"
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "deterministic_repeat_match": true,
+      "double_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "FAIL",
+        "positive_total_volume": "N/A",
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "float32_gates": {
+        "absolute_geometry": false,
+        "clearance": true,
+        "degenerate_free": true,
+        "duplicate_free": true,
+        "edge_manifold": true,
+        "lineage": true,
+        "orientation": "FAIL",
+        "positive_total_volume": "N/A",
+        "vertex_link_manifold": true,
+        "watertight": true,
+        "winding": true
+      },
+      "identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.0045548702972828346,
+        "maximum_certified_upper_distance_m": 0.016301471242078616,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 135060,
+        "sample_count_certified_over_limit": 9812,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2091,
+        "triangle_count_without_certificate": 2341,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "lineage": true,
+      "orientation": {
+        "all_components_orientable": false,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 8.515842950169372e-06,
+                "outward_area_fraction": 0.7610204318546906
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 5.2490237400081846e-05,
+                "outward_area_fraction": 0.7656769744156565
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0002329507280760979,
+                "outward_area_fraction": 0.7703333767801673
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13490,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12790814378096435,
+            "raw_signed_volume_m3": 0.12790814378096435,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 1,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.2594517355119831,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 2348,
+            "oriented_signed_volume_m3": -3.256532098025898e-10,
+            "raw_signed_volume_m3": -3.256532098025898e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "void_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 2,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.055718261285693904,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.054078424094009606,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 9178,
+            "oriented_signed_volume_m3": 3.214230016240283e-10,
+            "raw_signed_volume_m3": 3.214230016240283e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12790814377673412,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "FAIL",
+        "stored_all_components_outward": false,
+        "topology": {
+          "area_m2": 3.1188982929034523,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6040420532226562,
+              -0.44999997615814213,
+              -0.2535797119140625
+            ],
+            [
+              0.5501287460327149,
+              0.44999999999999996,
+              0.2517839431762696
+            ]
+          ],
+          "component_face_counts": [
+            13490,
+            8,
+            8
+          ],
+          "component_min_original_face_id": [
+            0,
+            2348,
+            9178
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 3,
+          "edge_count": 20259,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 4,
+          "exact_coordinate_merge_count": 0,
+          "exact_unique_vertex_count": 6757,
+          "minimum_stage_v_clearance_m": 0.6464202880859375,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 6757,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12790814377673412,
+          "stage_v_clearance_by_axis_m": [
+            1.8959579467773438,
+            0.75,
+            0.6464202880859375
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13506,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "r": 1,
+      "raw_array_sha256": "e2ed1d001e9ef6d4563857f0da9f4961b49f9e1204c117838962a48ed0c6ce62",
+      "raw_stl_sha256": "8f0b2417175e62390be8c897c8a66ff0da60f65056f54e05f11d3dff55ce98a4",
+      "repeat_array_sha256": "e2ed1d001e9ef6d4563857f0da9f4961b49f9e1204c117838962a48ed0c6ce62",
+      "serialized_identity": {
+        "certified_exceeds_limit": true,
+        "maximum_certified_lower_distance_m": 0.0045548696964199656,
+        "maximum_certified_upper_distance_m": 0.016301465198210987,
+        "per_triangle_bounds_columns": [
+          "maximum_upper_m",
+          "maximum_lower_m",
+          "unresolved_samples"
+        ],
+        "sample_count": 135060,
+        "sample_count_certified_over_limit": 9812,
+        "scope": "10 fixed triangle samples, numerically guarded interval root witnesses; no continuous Hausdorff claim",
+        "triangle_count_certified_over_limit": 2091,
+        "triangle_count_without_certificate": 2341,
+        "unresolved_sample_count": 0,
+        "within_limit": false
+      },
+      "serialized_orientation": {
+        "all_components_orientable": false,
+        "components": [
+          {
+            "component_id": 0,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 8.51579653965999e-06,
+                "outward_area_fraction": 0.7610204262260698
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 5.2490182242874e-05,
+                "outward_area_fraction": 0.7656769686581406
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.00023295067421147481,
+                "outward_area_fraction": 0.7703333715099894
+              }
+            ],
+            "delta_votes": [
+              "outward",
+              "outward",
+              "outward"
+            ],
+            "face_count": 13490,
+            "minimum_original_face_id": 0,
+            "oriented_signed_volume_m3": 0.12790814455807617,
+            "raw_signed_volume_m3": 0.12790814455807617,
+            "stable_sidedness": "outward",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 1,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.25944802306793324,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 2348,
+            "oriented_signed_volume_m3": -3.2564806754155293e-10,
+            "raw_signed_volume_m3": -3.2564806754155293e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "void_boundary",
+            "whole_component_flipped": false
+          },
+          {
+            "component_id": 2,
+            "delta_audit": [
+              {
+                "delta_over_original_h": 0.02,
+                "inward_area_fraction": 0.05571933942869354,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.05,
+                "inward_area_fraction": 0.054079226970640985,
+                "outward_area_fraction": 0.0
+              },
+              {
+                "delta_over_original_h": 0.1,
+                "inward_area_fraction": 0.0,
+                "outward_area_fraction": 0.0
+              }
+            ],
+            "delta_votes": [
+              "ambiguous",
+              "ambiguous",
+              "ambiguous"
+            ],
+            "face_count": 8,
+            "minimum_original_face_id": 9178,
+            "oriented_signed_volume_m3": 3.21435737990241e-10,
+            "raw_signed_volume_m3": 3.21435737990241e-10,
+            "stable_sidedness": "ambiguous",
+            "volume_class": "solid_boundary",
+            "whole_component_flipped": false
+          }
+        ],
+        "deltas_over_original_h": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "global_positive_volume": true,
+        "global_signed_volume_m3": 0.12790814455386385,
+        "roundoff_tolerance_m": 3.552713678800501e-16,
+        "rule": "strict area majority >50% at all three deltas; same polarity required; phi<0 solid, phi>0 fluid",
+        "status": "FAIL",
+        "stored_all_components_outward": false,
+        "topology": {
+          "area_m2": 3.1188983190864796,
+          "boundary_edge_count": 0,
+          "bounds_m": [
+            [
+              -0.6040420532226562,
+              -0.44999998807907104,
+              -0.253579705953598
+            ],
+            [
+              0.5501287579536438,
+              0.44999998807907104,
+              0.25178393721580505
+            ]
+          ],
+          "component_face_counts": [
+            13490,
+            8,
+            8
+          ],
+          "component_min_original_face_id": [
+            0,
+            2348,
+            9178
+          ],
+          "duplicate_face_count": 0,
+          "edge_connected_component_count": 3,
+          "edge_count": 20259,
+          "edge_incidence_not_two_count": 0,
+          "euler_characteristic": 4,
+          "exact_coordinate_merge_count": 33761,
+          "exact_unique_vertex_count": 6757,
+          "minimum_stage_v_clearance_m": 0.646420294046402,
+          "nonmanifold_edge_count": 0,
+          "original_vertex_count": 40518,
+          "repeated_index_face_count": 0,
+          "signed_volume_m3": 0.12790814455386385,
+          "stage_v_clearance_by_axis_m": [
+            1.8959579467773438,
+            0.7500000119209289,
+            0.646420294046402
+          ],
+          "stage_v_clearance_pass": true,
+          "topology_pass": true,
+          "triangle_count": 13506,
+          "vertex_link_bad_count": 0,
+          "vertex_link_bad_vertices": [],
+          "watertight": true,
+          "winding_consistent": true,
+          "zero_area_face_count": 0
+        }
+      },
+      "serialized_statistics": {
+        "area_m2": 3.1188983190864796,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6040420532226562,
+            -0.44999998807907104,
+            -0.253579705953598
+          ],
+          [
+            0.5501287579536438,
+            0.44999998807907104,
+            0.25178393721580505
+          ]
+        ],
+        "component_face_counts": [
+          13490,
+          8,
+          8
+        ],
+        "component_min_original_face_id": [
+          0,
+          2348,
+          9178
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 3,
+        "edge_count": 20259,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 4,
+        "exact_coordinate_merge_count": 33761,
+        "exact_unique_vertex_count": 6757,
+        "minimum_stage_v_clearance_m": 0.646420294046402,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 40518,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12790814455386385,
+        "stage_v_clearance_by_axis_m": [
+          1.8959579467773438,
+          0.7500000119209289,
+          0.646420294046402
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13506,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "statistics": {
+        "area_m2": 3.1188982929034523,
+        "boundary_edge_count": 0,
+        "bounds_m": [
+          [
+            -0.6040420532226562,
+            -0.44999997615814213,
+            -0.2535797119140625
+          ],
+          [
+            0.5501287460327149,
+            0.44999999999999996,
+            0.2517839431762696
+          ]
+        ],
+        "component_face_counts": [
+          13490,
+          8,
+          8
+        ],
+        "component_min_original_face_id": [
+          0,
+          2348,
+          9178
+        ],
+        "duplicate_face_count": 0,
+        "edge_connected_component_count": 3,
+        "edge_count": 20259,
+        "edge_incidence_not_two_count": 0,
+        "euler_characteristic": 4,
+        "exact_coordinate_merge_count": 0,
+        "exact_unique_vertex_count": 6757,
+        "minimum_stage_v_clearance_m": 0.6464202880859375,
+        "nonmanifold_edge_count": 0,
+        "original_vertex_count": 6757,
+        "repeated_index_face_count": 0,
+        "signed_volume_m3": 0.12790814377673412,
+        "stage_v_clearance_by_axis_m": [
+          1.8959579467773438,
+          0.75,
+          0.6464202880859375
+        ],
+        "stage_v_clearance_pass": true,
+        "topology_pass": true,
+        "triangle_count": 13506,
+        "vertex_link_bad_count": 0,
+        "vertex_link_bad_vertices": [],
+        "watertight": true,
+        "winding_consistent": true,
+        "zero_area_face_count": 0
+      },
+      "stl_gzip_sha256": "6b772d2925add26bb5a8ab56c5362faea99959cdf519d34cc2bf6b319cb47e03",
+      "surface_gates_pass": false,
+      "surface_npz_sha256": "f16cd382bebe02a09d132308f4cb88de3faf628c98c1ec001dacc24ac45ca00b"
+    }
+  ],
+  "evidence_class": "solver_free_registered_surface_refinement_screen",
+  "fidelity_pairs": [],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "registration_commit": "4a7b8dad21c778029fb719e3df90328deb2b9abc",
+  "registration_sha256": "bef16d8b15344654a8bdd36f5181e8c085383f8970f2edc4006bdd7a2f175f26",
+  "selected_r": null,
+  "source_volume_quadrature": {
+    "D0_interface_offset_minus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.14312504094459658,
+        "32": 0.14308925791732321,
+        "64": 0.1432904588635926
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "D0_interface_offset_plus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.11475481958400306,
+        "32": 0.11478160809417431,
+        "64": 0.11460557281488591
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "D1_filtered_seed11_minus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.12903356039269898,
+        "32": 0.1290342248203585,
+        "64": 0.12903475807762374
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "D1_filtered_seed11_plus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.1291435447642991,
+        "32": 0.12914403539746502,
+        "64": 0.1291431225120554
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "D2_filtered_seed2026_minus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.12914982940828074,
+        "32": 0.12915105779553698,
+        "64": 0.12915064803268061
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "D2_filtered_seed2026_plus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.1290786007433024,
+        "32": 0.1290836563466754,
+        "64": 0.12908267333009962
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "baseline": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 498,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.12924999531258957,
+        "32": 0.12924999081519664,
+        "64": 0.12924998670354199
+      },
+      "nearzero_nonzero_original_nodes": 2588,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "heldout_R3_eccentric_void": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.05453680280083336,
+        "32": 0.054538162155079443,
+        "64": 0.054538148349684915
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "heldout_R3_torus": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.018931293897168168,
+        "32": 0.018931799447589076,
+        "64": 0.018931670369094718
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    },
+    "heldout_R3_two_ellipsoids": {
+      "all_zero_original_cells": 0,
+      "exact_zero_original_nodes": 0,
+      "gauss_xy_exact_linear_z": {
+        "16": 0.03770738781970989,
+        "32": 0.037707564607102374,
+        "64": 0.03770754802516121
+      },
+      "nearzero_nonzero_original_nodes": 0,
+      "scope": "approximate volume ladder; no exact quadrature error bound"
+    }
+  }
+}

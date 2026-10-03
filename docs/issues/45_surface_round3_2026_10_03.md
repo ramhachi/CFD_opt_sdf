@@ -77,3 +77,15 @@ user decision on formal #45 XFID resumption. No solver, Kaggle, formal XFID or
 ## Results
 
 Pending: evaluation starts only after the immutable registration commit is pushed.
+
+### Execution serialization addendum (criteria unchanged)
+
+The first registered execution stopped after six r=1 perturbation cases because
+NumPy integer node indices in baseline's diagnostic defect map were not accepted
+by Python's default JSON encoder. The partial FAIL ledger and raw interruption
+log are retained in `interrupted_attempt/`. The original registration and every
+frozen scientific source remain byte-for-byte unchanged. A separately committed
+and pushed output-only adapter adds exact `np.integer -> Python int` encoding;
+it changes no extractor, measurement, verifier, threshold, gate or numeric value.
+The complete run is restarted under the same registration, with prefix surface
+hashes and individual gates checked against the interrupted attempt.
