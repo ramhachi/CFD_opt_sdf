@@ -5599,3 +5599,18 @@ every certified geometry gate and that #46 solver work waits for XFID AGREE:
   unique nearest root. See `docs/issues/45_cert01_mismatch_taxonomy_2026_10_04.md`.
 
 No qualification flag changes; all six remain false.
+
+### 2026-10-04 — #45 X1 complete; X2 OpenFOAM grid-phase probe registered and submitted
+
+- X1 (practical Stage V STL inputs, `XFID45-STAGEV-INPUT-01`): 7/7 practical gates PASS in double and float32-STL
+  storage on the saved Round 3 `r=8` surfaces; four sub-resolution components removed by the registered rule; independent
+  recomputation agrees on all gates and all STL sha256 values. Geometry is uncertified; see
+  `docs/issues/45_stage_v_input_2026_10_04.md`.
+- X2 (`xfid45_gridphase_x2_r1`): measurement-only probe of OpenFOAM force sensitivity to rigid sub-cell translation of the
+  baseline STL (32 cases, 0.5-8 mm, z/y/x, fixed Round 5 case template), recording forces in N, mesh and cost. No axis is
+  assumed null. Registered criteria SHA-256 `571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673`; private
+  Kaggle dataset `ramhachi888/cfd-opt-sdf-xfid-x2-inputs` and CPU kernel `ramhachi888/cfd-opt-sdf-xfid-gridphase-x2` v1
+  submitted at source `01a5a46`. No result exists at this checkpoint; the run is not an XFID response or verdict. See
+  `docs/issues/45_xfid_gridphase_x2_2026_10_04.md`.
+- Formal XFID criteria (X3) will be registered only after the X2 result; #46 may run in parallel per the 2026-10-04 decision.
+  All six qualification flags remain false.
