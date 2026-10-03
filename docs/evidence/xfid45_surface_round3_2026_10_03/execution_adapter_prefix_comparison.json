@@ -1,0 +1,84 @@
+{
+  "all_frozen_sources_unchanged": true,
+  "all_prefix_artifacts_and_gates_agree": true,
+  "cases": [
+    {
+      "case": "D0_interface_offset_minus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    },
+    {
+      "case": "D0_interface_offset_plus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_minus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    },
+    {
+      "case": "D1_filtered_seed11_plus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_minus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    },
+    {
+      "case": "D2_filtered_seed2026_plus",
+      "matches": {
+        "double_gates": true,
+        "float32_gates": true,
+        "raw_array_sha256": true,
+        "raw_stl_sha256": true,
+        "surface_npz_sha256": true
+      },
+      "r": 1
+    }
+  ],
+  "scope": "output-only integer JSON adapter has no scientific effect on interrupted prefix",
+  "source_checks": {
+    "audit_xfid45_surface_round3.py": true,
+    "register_xfid45_surface_round3.py": true,
+    "test_xfid45_round3_export.py": true,
+    "test_xfid45_round3_measure.py": true,
+    "verify_xfid45_round3.py": true,
+    "verify_xfid45_surface_round3.py": true,
+    "xfid45_round3_export.py": true,
+    "xfid45_round3_measure.py": true,
+    "xfid45_surface_round2_candidates.py": true
+  }
+}

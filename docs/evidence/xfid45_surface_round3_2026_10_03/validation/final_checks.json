@@ -1,0 +1,73 @@
+{
+  "evidence_class": "software_validation_not_geometry_qualification",
+  "checks": [
+    {
+      "name": "compileall_final",
+      "command": [
+        "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+        "-m",
+        "compileall",
+        "src",
+        "tests"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "ruff_final",
+      "command": [
+        "/opt/homebrew/bin/ruff",
+        "check",
+        "scripts/assemble_xfid45_round3_independent.py",
+        "scripts/audit_xfid45_surface_round3.py",
+        "scripts/diagnose_xfid45_round3_orientation.py",
+        "scripts/diagnose_xfid45_round3_ray_roots.py",
+        "scripts/recompute_xfid45_round3_partitions.py",
+        "scripts/record_xfid45_round3_bundle.py",
+        "scripts/register_xfid45_surface_round3.py",
+        "scripts/run_xfid45_round3_json_adapter.py",
+        "scripts/verify_xfid45_round3.py",
+        "scripts/verify_xfid45_surface_round3.py",
+        "scripts/xfid45_round3_export.py",
+        "scripts/xfid45_round3_measure.py",
+        "tests/test_xfid45_round3_export.py",
+        "tests/test_xfid45_round3_measure.py"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "ruff_format_final",
+      "command": [
+        "/opt/homebrew/bin/ruff",
+        "format",
+        "--check",
+        "scripts/assemble_xfid45_round3_independent.py",
+        "scripts/audit_xfid45_surface_round3.py",
+        "scripts/diagnose_xfid45_round3_orientation.py",
+        "scripts/diagnose_xfid45_round3_ray_roots.py",
+        "scripts/recompute_xfid45_round3_partitions.py",
+        "scripts/record_xfid45_round3_bundle.py",
+        "scripts/register_xfid45_surface_round3.py",
+        "scripts/run_xfid45_round3_json_adapter.py",
+        "scripts/verify_xfid45_round3.py",
+        "scripts/verify_xfid45_surface_round3.py",
+        "scripts/xfid45_round3_export.py",
+        "scripts/xfid45_round3_measure.py",
+        "tests/test_xfid45_round3_export.py",
+        "tests/test_xfid45_round3_measure.py"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "diff_check_final",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0
+    }
+  ],
+  "focused_summary": "16 passed, 51 warnings",
+  "full_suite_summary": "36 failed, 1371 passed, 5 skipped",
+  "new_failure_ids": 0
+}
