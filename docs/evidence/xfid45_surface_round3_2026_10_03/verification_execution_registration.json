@@ -1,0 +1,23 @@
+{
+  "aggregation": "Concatenate unique r-case records; require exact coverage 40 cases and 24 pairs. All individual/aggregate gate and volume agreements required; choose smallest r all surfaces/pairs PASS. Ignore empty-r candidate results in partial ledgers.",
+  "evidence_class": "verification_execution_scheduling_not_criteria_change",
+  "original_verifier_sources_immutable": true,
+  "partition_values": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "scope": "Four fixed homogeneous r partitions, 10 cases and 6 pairs each. Unchanged frozen verifier main and helper run on copied subset ledgers and original saved surfaces. No scientific evaluation code or threshold changes.",
+  "source_path": "scripts/recompute_xfid45_round3_partitions.py",
+  "source_sha256": "9f87e62276d6030188d3a9865da3c7d2ece3cab34316ea6e47f5d9c0cf3ac08d"
+}
