@@ -83,13 +83,34 @@ for commands, logs, failure-ID comparison and hashes.
 
 ## Target replay status
 
-**Not started.** The preregistration and its pre-target amendment bind source
-hashes, runtime, the fixed synthetic suite and seed,
-root-count/position/ambiguity rules, and 201 saved input/artifact hashes. After
-the amendment and validation evidence are committed and pushed, verify that
-remote and local feature-branch HEADs are identical, then replay all registered
-`r={1,2,4,8}` saved surfaces and correspondence samples. No target result has
-informed or changed the criteria.
+Target replay attempt 01 passed the branch, amendment and 201-file identity
+preflight. It recomputed the ten `r=1` double/float32 surface geometry cases,
+then enumerated all 1,024 saved `r=1` `D0_interface_offset_minus` double
+correspondence samples before failing in output assembly with `KeyError: 'baseline'`.
+No result JSON or qualification summary was written. The valid partial trace,
+console output and structured failure record are preserved under
+`docs/evidence/xfid45_root_certifier_2026_10_03/target/r1_2_4_8/`.
+
+Post-attempt amendment `XFID45-CERT-01-AMEND-02` fixes only replay output
+assembly: case-key the current-r surface prerequisite map, represent
+non-finite bound comparisons without generating NaN, and write the retry under
+`target/attempt02/`. It is chained to amendment 01 and binds the failed attempt
+record. Primary and independent certifier hashes, target inventory, and all
+criteria remain unchanged. Amendment SHA-256:
+`2a4fca403caada581b5bdeb08f963c89cef469af4978697d60ff14a1c6776a48`.
+
+Attempt 02 has not started. Its focused suite passed `21/21`, including the 16
+registered synthetic/property/regression cases and five runner checks;
+compileall, Ruff, format and diff checks passed. Full pytest reports
+`36 failed, 1388 passed, 9 skipped`; failure IDs exactly match the frozen
+Round 3/current set with zero new IDs against the pinned baseline. Logs and
+hashes are in
+`docs/evidence/xfid45_root_certifier_2026_10_03/attempt02_validation/`.
+After this evidence and amendment 02 are committed and pushed, verify the
+remote/local feature-branch HEAD match and run all registered
+`r={1,2,4,8}` surfaces and correspondence samples once under attempt 02.
+Attempt 01 remains preserved as an incomplete software failure, not a CERT-01
+result. No threshold or ambiguity rule has been changed based on target values.
 
 Qualification flags remain false: solver qualification, FD oracle, field
 gradient, reverse mode, optimizer, topology, and shape update are all disabled.

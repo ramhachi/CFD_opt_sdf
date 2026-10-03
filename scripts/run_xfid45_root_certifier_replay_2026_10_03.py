@@ -9,6 +9,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -35,6 +36,8 @@ ROUND3 = ROOT / "docs/evidence/xfid45_surface_round3_2026_10_03"
 EVIDENCE = ROOT / "docs/evidence/xfid45_root_certifier_2026_10_03"
 PREREGISTRATION = EVIDENCE / "preregistration.json"
 PREREGISTRATION_AMENDMENT = EVIDENCE / "preregistration_amendment_01.json"
+PREREGISTRATION_AMENDMENT_02 = EVIDENCE / "preregistration_amendment_02.json"
+TARGET_ATTEMPT_01_RECORD = EVIDENCE / "target/r1_2_4_8/target_attempt_01_failure.json"
 AMENDABLE_SOURCE = "scripts/run_xfid45_root_certifier_replay_2026_10_03.py"
 AMENDABLE_TEST = "tests/test_xfid45_root_certifier_2026_10_03.py"
 LIMIT_M = 5.0e-4
@@ -120,6 +123,53 @@ def _geometry_class(summary: dict) -> str:
     return "UNRESOLVED"
 
 
+def _bound_delta(
+    parent: np.ndarray, independent: np.ndarray
+) -> tuple[float | None, int, int]:
+    parent = np.asarray(parent, dtype=np.float64)
+    independent = np.asarray(independent, dtype=np.float64)
+    finite_parent = np.isfinite(parent)
+    finite_independent = np.isfinite(independent)
+    comparable = finite_parent & finite_independent
+    same_nonfinite_state = (
+        (np.isnan(parent) & np.isnan(independent))
+        | (np.isposinf(parent) & np.isposinf(independent))
+        | (np.isneginf(parent) & np.isneginf(independent))
+    )
+    state_agrees = comparable | same_nonfinite_state
+    delta = (
+        float(np.max(np.abs(parent[comparable] - independent[comparable]), initial=0.0))
+        if np.any(comparable)
+        else None
+    )
+    return (
+        delta,
+        int(np.count_nonzero(comparable)),
+        int(np.count_nonzero(~state_agrees)),
+    )
+
+
+def _case_surface_index(cases: list[dict], r: int) -> dict[str, dict]:
+    return {entry["case"]: entry for entry in cases if entry["r"] == r}
+
+
+def _target_output_dir(r_values: list[int], attempt_id: str | None) -> Path:
+    parent = EVIDENCE / "target"
+    if attempt_id is not None:
+        if re.fullmatch(r"attempt[0-9]{2}", attempt_id) is None:
+            raise ValueError("attempt id must use the form attemptNN")
+        parent /= attempt_id
+    return parent / ("r" + "_".join(map(str, r_values)))
+
+
+def _pair_surface_prerequisite(surface_results: dict[str, dict], case: str) -> bool:
+    return all(
+        surface_results[name][storage]["surface_classification"] == "PASS"
+        for name in ("baseline", case)
+        for storage in STORAGE
+    )
+
+
 def _old_nongeometry_gates(gates: dict) -> bool:
     return (
         all(
@@ -166,11 +216,11 @@ def _surface_replay(
             else prior_case["serialized_identity"]
         )
         old_class = _geometry_class(old_summary)
-        max_delta = float(
-            np.max(
-                np.abs(parent_bounds[:, :2] - independent_bounds[:, :2]), initial=0.0
-            )
-        )
+        (
+            max_delta,
+            comparable_bound_count,
+            nonfinite_bound_state_mismatch_count,
+        ) = _bound_delta(parent_bounds[:, :2], independent_bounds[:, :2])
         same_old = bool(np.array_equal(parent_bounds, old))
         gates = prior_case[gate_key]
         new_values[label] = {
@@ -191,6 +241,8 @@ def _surface_replay(
             ),
             "independent_gate_agreement": p_class == i_class,
             "max_parent_independent_bound_delta_m": max_delta,
+            "comparable_parent_independent_bound_count": comparable_bound_count,
+            "nonfinite_bound_state_mismatch_count": nonfinite_bound_state_mismatch_count,
             "round3_saved_triangle_bounds_exact_match": same_old,
             "round3_saved_triangle_bounds_sha256": hashlib.sha256(
                 old.tobytes()
@@ -499,11 +551,7 @@ def _fidelity_replay(
         errors[valid] = np.abs(mesh_delta[valid] - sdf_delta[valid]) + coordinate_guard
         unresolved = ~valid
         maximum = float(np.nanmax(errors)) if np.any(np.isfinite(errors)) else None
-        prereq = all(
-            surface_results[other][surface_storage]["surface_classification"] == "PASS"
-            for other in ("baseline", case)
-            for surface_storage in STORAGE
-        )
+        prereq = _pair_surface_prerequisite(surface_results, case)
         qualified = (
             prereq
             and not unresolved.any()
@@ -588,26 +636,57 @@ def _registered_inventory(prereg: dict) -> dict:
     return prereg["target_replay_inventory"]
 
 
-def _load_registration() -> tuple[dict, str, str | None]:
+def _load_registration() -> tuple[dict, str, list[str]]:
     prereg = json.loads(PREREGISTRATION.read_text())
     preregistration_sha256 = sha256(PREREGISTRATION)
-    amendment_sha256 = None
     effective_hashes = dict(prereg["source_sha256"])
-    if PREREGISTRATION_AMENDMENT.exists():
-        amendment = json.loads(PREREGISTRATION_AMENDMENT.read_text())
+    amendment_paths = (PREREGISTRATION_AMENDMENT, PREREGISTRATION_AMENDMENT_02)
+    amendment_hashes = []
+    for index, path in enumerate(amendment_paths):
+        if not path.exists():
+            continue
+        if index > 0 and not amendment_hashes:
+            raise RuntimeError("preregistration amendment chain has a missing parent")
+        amendment = json.loads(path.read_text())
         if amendment["parent_preregistration_sha256"] != preregistration_sha256:
             raise RuntimeError("preregistration amendment parent hash mismatch")
-        if amendment.get("target_evaluation_started") is not False:
-            raise RuntimeError("amendment must precede target evaluation")
+        if index == 0:
+            if amendment.get("target_evaluation_started") is not False:
+                raise RuntimeError("amendment 01 must precede target evaluation")
+        else:
+            if amendment.get("parent_amendment_sha256") != amendment_hashes[-1]:
+                raise RuntimeError("amendment chain parent hash mismatch")
+            if amendment.get("target_evaluation_started") is not True:
+                raise RuntimeError(
+                    "amendment 02 must disclose the earlier target attempt"
+                )
+            if amendment.get("criteria_changed") is not False:
+                raise RuntimeError("post-attempt amendment cannot change criteria")
+            if amendment.get("primary_or_independent_certifier_changed") is not False:
+                raise RuntimeError(
+                    "post-attempt amendment cannot change either certifier"
+                )
+            if amendment.get("unchanged_contract_subtree_sha256") != json.loads(
+                PREREGISTRATION_AMENDMENT.read_text()
+            ).get("unchanged_contract_subtree_sha256"):
+                raise RuntimeError(
+                    "post-attempt amendment changed the frozen contract binding"
+                )
+            if not TARGET_ATTEMPT_01_RECORD.is_file() or sha256(
+                TARGET_ATTEMPT_01_RECORD
+            ) != amendment.get("target_attempt_01_failure_record_sha256"):
+                raise RuntimeError(
+                    "prior incomplete target attempt record hash mismatch"
+                )
         overrides = amendment["source_sha256_overrides"]
         if set(overrides) != {AMENDABLE_SOURCE, AMENDABLE_TEST}:
             raise RuntimeError(
                 "amendment may update only runner and regression test hashes"
             )
         effective_hashes.update(overrides)
-        amendment_sha256 = sha256(PREREGISTRATION_AMENDMENT)
+        amendment_hashes.append(sha256(path))
     prereg["effective_source_sha256"] = effective_hashes
-    return prereg, preregistration_sha256, amendment_sha256
+    return prereg, preregistration_sha256, amendment_hashes
 
 
 def _verify_registered_branch(prereg: dict) -> tuple[str, str]:
@@ -633,12 +712,12 @@ def _verify_registered_branch(prereg: dict) -> tuple[str, str]:
     return head, remote_head
 
 
-def run(r_values: list[int]) -> Path:
-    prereg, preregistration_sha256, amendment_sha256 = _load_registration()
+def run(r_values: list[int], attempt_id: str | None = None) -> Path:
+    prereg, preregistration_sha256, amendment_sha256s = _load_registration()
     prereg_commit, remote_head = _verify_registered_branch(prereg)
     inventory = _registered_inventory(prereg)
     _verify_prereg(prereg, inventory["files"]["files"])
-    out_dir = EVIDENCE / "target" / ("r" + "_".join(map(str, r_values)))
+    out_dir = _target_output_dir(r_values, attempt_id)
     out_dir.mkdir(parents=True, exist_ok=False)
     all_results = json.loads((ROUND3 / "result.json").read_text())
     by_case = {(c["r"], c["case"]): c for c in all_results["cases"]}
@@ -704,7 +783,7 @@ def run(r_values: list[int]) -> Path:
                                 },
                             }
                         )
-                    surface_index = {(c["r"], c["case"]): c for c in primary_cases}
+                    surface_index = _case_surface_index(primary_cases, r)
                     for case in PAIRS:
                         pair = _fidelity_replay(
                             r,
@@ -735,13 +814,17 @@ def run(r_values: list[int]) -> Path:
         "evidence_class": "solver_free_successor_root_certifier_replay",
         "certifier_identity": "XFID45-CERT-01",
         "preregistration_sha256": preregistration_sha256,
-        "preregistration_amendment_sha256": amendment_sha256,
+        "preregistration_amendment_sha256": (
+            amendment_sha256s[-1] if amendment_sha256s else None
+        ),
+        "preregistration_amendment_chain_sha256": amendment_sha256s,
         "preregistration_branch_head": prereg_commit,
         "preregistration_remote_head": remote_head,
         "registration_start_head": prereg["authoritative_start_head"],
         "round3_source_and_evidence_unchanged": True,
         "surface_extraction_rerun": False,
         "r_values": r_values,
+        "target_attempt_id": attempt_id or "attempt01",
         "input_hashes": input_hashes,
         "source_sha256": prereg["effective_source_sha256"],
         "runtime_identity": prereg["runtime_identity"],
@@ -852,9 +935,10 @@ def run(r_values: list[int]) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--r", nargs="+", type=int, choices=(1, 2, 4, 8), required=True)
+    parser.add_argument("--attempt-id")
     args = parser.parse_args()
     values = sorted(set(args.r))
-    print(run(values))
+    print(run(values, args.attempt_id))
 
 
 if __name__ == "__main__":

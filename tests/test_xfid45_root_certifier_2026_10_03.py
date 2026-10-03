@@ -34,13 +34,16 @@ def test_replay_runner_reads_the_registered_target_inventory_schema():
     prereg = json.loads(registration_path.read_text())
     inventory = replay._registered_inventory(prereg)
     files = inventory["files"]
-    loaded, parent_hash, amendment_hash = replay._load_registration()
+    loaded, parent_hash, amendment_hashes = replay._load_registration()
 
     assert files["file_count"] == len(files["files"]) == 201
     assert set(files["original_fields"]) == set(replay.CASES)
     assert len(files["saved_surface_artifacts"]) == 40
     assert parent_hash == replay.sha256(registration_path)
-    assert amendment_hash == replay.sha256(replay.PREREGISTRATION_AMENDMENT)
+    assert amendment_hashes == [
+        replay.sha256(replay.PREREGISTRATION_AMENDMENT),
+        replay.sha256(replay.PREREGISTRATION_AMENDMENT_02),
+    ]
     for source in (replay.AMENDABLE_SOURCE, replay.AMENDABLE_TEST):
         assert loaded["effective_source_sha256"][source] == replay.sha256(ROOT / source)
 
@@ -61,6 +64,48 @@ def test_replay_agreement_checks_all_root_positions_not_only_the_nearest():
     assert comparison["root_position_mismatch"] == 1
     assert comparison["nearest_position_mismatch"] == 0
     assert comparison["nearest_identity_mismatch"] == 0
+
+
+def test_replay_geometry_bound_delta_handles_unresolved_infinite_bounds():
+    parent = np.asarray([[np.inf, 0.1], [np.inf, 0.2]])
+    independent = np.asarray([[np.inf, 0.1], [np.inf, 0.201]])
+
+    with np.errstate(invalid="raise"):
+        delta, comparable, mismatch = replay._bound_delta(parent, independent)
+
+    assert delta == pytest.approx(0.001)
+    assert comparable == 2
+    assert mismatch == 0
+
+
+def test_replay_surface_prerequisite_uses_case_keyed_current_r_results():
+    case = "D0_interface_offset_minus"
+    entries = [
+        {
+            "r": 1,
+            "case": name,
+            **{
+                storage: {"surface_classification": "PASS"}
+                for storage in replay.STORAGE
+            },
+        }
+        for name in ("baseline", case)
+    ]
+    entries.append({"r": 2, "case": "baseline"})
+    index = replay._case_surface_index(entries, 1)
+
+    assert set(index) == {"baseline", case}
+    assert replay._pair_surface_prerequisite(index, case)
+    index[case]["float32"]["surface_classification"] = "UNRESOLVED"
+    assert not replay._pair_surface_prerequisite(index, case)
+
+
+def test_replay_attempt_output_directory_is_append_only_and_validated():
+    assert replay._target_output_dir([1, 2, 4, 8], "attempt02") == (
+        replay.EVIDENCE / "target/attempt02/r1_2_4_8"
+    )
+    with pytest.raises(ValueError, match="attempt id"):
+        replay._target_output_dir([1, 2, 4, 8], "../overwrite")
 
 
 def _coeff(roots: tuple[float, ...], scale: float = 1.0) -> tuple[float, ...]:
