@@ -1,0 +1,717 @@
+{
+  "absolute_geometry": {
+    "classification_counts_by_r_storage": {
+      "1": {
+        "double": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "UNRESOLVED",
+            "heldout_R3_torus": "FAIL",
+            "heldout_R3_two_ellipsoids": "UNRESOLVED"
+          },
+          "absolute_geometry_counts": {
+            "FAIL": 8,
+            "UNRESOLVED": 2
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "UNRESOLVED",
+            "heldout_R3_torus": "FAIL",
+            "heldout_R3_two_ellipsoids": "UNRESOLVED"
+          },
+          "combined_surface_counts": {
+            "FAIL": 8,
+            "UNRESOLVED": 2
+          },
+          "max_certified_lower_distance_m": 0.005345825055198898,
+          "max_certified_upper_distance_m": 0.02500000002500002
+        },
+        "float32": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "UNRESOLVED",
+            "heldout_R3_torus": "FAIL",
+            "heldout_R3_two_ellipsoids": "UNRESOLVED"
+          },
+          "absolute_geometry_counts": {
+            "FAIL": 8,
+            "UNRESOLVED": 2
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "UNRESOLVED",
+            "heldout_R3_torus": "FAIL",
+            "heldout_R3_two_ellipsoids": "UNRESOLVED"
+          },
+          "combined_surface_counts": {
+            "FAIL": 8,
+            "UNRESOLVED": 2
+          },
+          "max_certified_lower_distance_m": 0.005345827205991678,
+          "max_certified_upper_distance_m": 0.02349089823221406
+        }
+      },
+      "2": {
+        "double": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "UNRESOLVED",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "FAIL": 7,
+            "PASS": 2,
+            "UNRESOLVED": 1
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "UNRESOLVED",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 7,
+            "PASS": 2,
+            "UNRESOLVED": 1
+          },
+          "max_certified_lower_distance_m": 0.0014255547075665872,
+          "max_certified_upper_distance_m": 0.012500000025000067
+        },
+        "float32": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "UNRESOLVED",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "FAIL": 7,
+            "PASS": 2,
+            "UNRESOLVED": 1
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "FAIL",
+            "D0_interface_offset_plus": "FAIL",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "FAIL",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "FAIL",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "UNRESOLVED",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 7,
+            "PASS": 2,
+            "UNRESOLVED": 1
+          },
+          "max_certified_lower_distance_m": 0.0014255549393019562,
+          "max_certified_upper_distance_m": 0.012500000211266047
+        }
+      },
+      "4": {
+        "double": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "UNRESOLVED",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "UNRESOLVED",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "UNRESOLVED",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "PASS": 3,
+            "UNRESOLVED": 7
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "UNRESOLVED",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 2,
+            "PASS": 3,
+            "UNRESOLVED": 5
+          },
+          "max_certified_lower_distance_m": 0.00037832288539643645,
+          "max_certified_upper_distance_m": 0.012132043816485192
+        },
+        "float32": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "UNRESOLVED",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "UNRESOLVED",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "UNRESOLVED",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "PASS": 3,
+            "UNRESOLVED": 7
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "UNRESOLVED",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 2,
+            "PASS": 3,
+            "UNRESOLVED": 5
+          },
+          "max_certified_lower_distance_m": 0.0003783231327777645,
+          "max_certified_upper_distance_m": 0.01464466496798311
+        }
+      },
+      "8": {
+        "double": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "PASS",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "UNRESOLVED",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "UNRESOLVED",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "PASS": 4,
+            "UNRESOLVED": 6
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "PASS",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 3,
+            "PASS": 4,
+            "UNRESOLVED": 3
+          },
+          "max_certified_lower_distance_m": 9.738677724510655e-05,
+          "max_certified_upper_distance_m": 0.0031250000250000443
+        },
+        "float32": {
+          "absolute_geometry_by_case": {
+            "D0_interface_offset_minus": "PASS",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "UNRESOLVED",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "UNRESOLVED",
+            "D2_filtered_seed2026_plus": "UNRESOLVED",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "absolute_geometry_counts": {
+            "PASS": 4,
+            "UNRESOLVED": 6
+          },
+          "combined_surface_by_case": {
+            "D0_interface_offset_minus": "PASS",
+            "D0_interface_offset_plus": "UNRESOLVED",
+            "D1_filtered_seed11_minus": "FAIL",
+            "D1_filtered_seed11_plus": "UNRESOLVED",
+            "D2_filtered_seed2026_minus": "FAIL",
+            "D2_filtered_seed2026_plus": "FAIL",
+            "baseline": "UNRESOLVED",
+            "heldout_R3_eccentric_void": "PASS",
+            "heldout_R3_torus": "PASS",
+            "heldout_R3_two_ellipsoids": "PASS"
+          },
+          "combined_surface_counts": {
+            "FAIL": 3,
+            "PASS": 4,
+            "UNRESOLVED": 3
+          },
+          "max_certified_lower_distance_m": 9.738677432014715e-05,
+          "max_certified_upper_distance_m": 0.010355347001795743
+        }
+      }
+    },
+    "legacy_non_geometry_gate_failures_from_immutable_round3": {
+      "4": [
+        {
+          "case": "D1_filtered_seed11_minus",
+          "storage": {
+            "double": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            },
+            "float32": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            }
+          }
+        },
+        {
+          "case": "D2_filtered_seed2026_plus",
+          "storage": {
+            "double": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            },
+            "float32": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            }
+          }
+        }
+      ],
+      "8": [
+        {
+          "case": "D1_filtered_seed11_minus",
+          "storage": {
+            "double": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            },
+            "float32": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            }
+          }
+        },
+        {
+          "case": "D2_filtered_seed2026_minus",
+          "storage": {
+            "double": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            },
+            "float32": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            }
+          }
+        },
+        {
+          "case": "D2_filtered_seed2026_plus",
+          "storage": {
+            "double": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            },
+            "float32": {
+              "failed_legacy_gates": [
+                "positive_total_volume"
+              ],
+              "orientation": "FAIL"
+            }
+          }
+        }
+      ]
+    },
+    "orientation_failures_from_immutable_round3": {
+      "4": [
+        {
+          "case": "D1_filtered_seed11_minus",
+          "serialized": "FAIL",
+          "source": "FAIL"
+        },
+        {
+          "case": "D2_filtered_seed2026_plus",
+          "serialized": "FAIL",
+          "source": "FAIL"
+        }
+      ],
+      "8": [
+        {
+          "case": "D1_filtered_seed11_minus",
+          "serialized": "FAIL",
+          "source": "FAIL"
+        },
+        {
+          "case": "D2_filtered_seed2026_minus",
+          "serialized": "FAIL",
+          "source": "FAIL"
+        },
+        {
+          "case": "D2_filtered_seed2026_plus",
+          "serialized": "FAIL",
+          "source": "FAIL"
+        }
+      ]
+    },
+    "round3_saved_absolute_bounds_exactly_reproduced": true,
+    "unchanged_tolerance_m": 0.0005
+  },
+  "disposition": "UNRESOLVED_CERTIFIER_TARGET_AGREEMENT",
+  "elapsed_seconds": 3216.980798959732,
+  "evidence_class": "xfid45_cert01_post_replay_audit",
+  "integrity_checks": {
+    "all_201_registered_inputs_byte_and_sha256_match": true,
+    "all_effective_source_hashes_match": true,
+    "effective_source_file_count": 9,
+    "gzip_trace_read_to_eof_and_json_parsed": true,
+    "gzip_trace_records": 49152,
+    "original_run_manifest_all_entries_match": true,
+    "original_run_manifest_entries_verified_before_extension": 4,
+    "registered_input_file_count": 201,
+    "round3_source_and_evidence_unchanged": true,
+    "surface_extraction_rerun": false
+  },
+  "known_regression_sample_691": {
+    "baseline_independent_roots_m": [
+      -0.04999982745948728,
+      6.077743819333213e-09
+    ],
+    "baseline_nearest_status": "UNIQUE_NEAREST_ROOT",
+    "baseline_primary_roots_m": [
+      -0.04999982745948728,
+      6.077743819333212e-09
+    ],
+    "case": "D0_interface_offset_minus",
+    "interpretation": "The near target root is enumerated and uniquely selected by both implementations on this fixed regression sample; the old approximately 54 mm parent value is not reproduced here. This is local regression evidence only.",
+    "r": 4,
+    "round3_mesh_minus_source_displacement_difference_m": 3.378070927931992e-08,
+    "round3_parent_far_root_m": -0.04999995310790837,
+    "sample": 691,
+    "storage": "double",
+    "target_independent_roots_m": [
+      -0.04999995311363819,
+      0.0041666707520111234
+    ],
+    "target_nearest_status": "UNIQUE_NEAREST_ROOT",
+    "target_primary_roots_m": [
+      -0.04999995311372914,
+      0.0041666707520111234
+    ]
+  },
+  "perturbation_fidelity": {
+    "by_r": {
+      "1": {
+        "pair_storage_count": 12,
+        "qualification_counts": {
+          "NOT_QUALIFIED_SURFACE_PREREQUISITE": 12
+        },
+        "surface_prerequisite_counts": {
+          "FAIL": 12
+        },
+        "unresolved_samples_max": 161,
+        "unresolved_samples_min": 136
+      },
+      "2": {
+        "pair_storage_count": 12,
+        "qualification_counts": {
+          "NOT_QUALIFIED_SURFACE_PREREQUISITE": 12
+        },
+        "surface_prerequisite_counts": {
+          "FAIL": 12
+        },
+        "unresolved_samples_max": 190,
+        "unresolved_samples_min": 131
+      },
+      "4": {
+        "pair_storage_count": 12,
+        "qualification_counts": {
+          "NOT_QUALIFIED_SURFACE_PREREQUISITE": 12
+        },
+        "surface_prerequisite_counts": {
+          "FAIL": 12
+        },
+        "unresolved_samples_max": 155,
+        "unresolved_samples_min": 99
+      },
+      "8": {
+        "pair_storage_count": 12,
+        "qualification_counts": {
+          "NOT_QUALIFIED_SURFACE_PREREQUISITE": 12
+        },
+        "surface_prerequisite_counts": {
+          "FAIL": 12
+        },
+        "unresolved_samples_max": 151,
+        "unresolved_samples_min": 112
+      }
+    },
+    "interpretation": "No perturbation pair meets the registered baseline+perturbation double+float32 surface prerequisite.",
+    "qualified": false
+  },
+  "primary_independent_target_root_agreement": {
+    "agreement_pass": false,
+    "by_group_report": "root_set_agreement_by_group.json",
+    "case_local_output_limitation": "The fidelity-pair primary_independent_root_agreement fields are cumulative snapshots, not case-local. root_set_agreement_by_group.json recomputes case-local values from the full root trace.",
+    "recomputed_from_full_trace": {
+      "comparisons": 98304,
+      "max_nearest_position_delta_m": 1.0605752387427003e-13,
+      "max_root_position_delta_m": 1.4335000741994008e-08,
+      "nearest_identity_mismatch": 5670,
+      "nearest_position_mismatch": 0,
+      "nearest_status_mismatch": 5670,
+      "position_tolerance_max_m": 3.637978807091713e-13,
+      "root_count_mismatch": 5214,
+      "root_kind_mismatch": 0,
+      "root_position_mismatch": 234,
+      "status_mismatch": 5670,
+      "zero_interval_mismatch": 0
+    },
+    "recomputed_metrics_exactly_match_independent_result": true,
+    "representative_mismatches": [
+      {
+        "case": "D0_interface_offset_minus",
+        "comparison": {
+          "comparisons": 1,
+          "max_nearest_position_delta_m": 0.0,
+          "max_root_position_delta_m": 0.0,
+          "nearest_identity_mismatch": 1,
+          "nearest_position_mismatch": 0,
+          "nearest_status_mismatch": 1,
+          "position_tolerance_max_m": 3.637978807091713e-13,
+          "root_count_mismatch": 1,
+          "root_kind_mismatch": 0,
+          "root_position_mismatch": 0,
+          "status_mismatch": 1,
+          "zero_interval_mismatch": 0
+        },
+        "independent": {
+          "reasons": [],
+          "roots_m": [
+            4.550249066426208e-14
+          ],
+          "status": "COMPLETE"
+        },
+        "primary": {
+          "reasons": [
+            "endpoint_value_within_roundoff_envelope",
+            "monotonic_interval_endpoint_sign_unresolved"
+          ],
+          "roots_m": [],
+          "status": "UNRESOLVED"
+        },
+        "r": 1,
+        "sample": 26,
+        "sample_point_m": [
+          -0.5833333333333334,
+          -0.18333333333333335,
+          -0.24999999999999992
+        ],
+        "side": "baseline",
+        "storage": "double"
+      },
+      {
+        "case": "D0_interface_offset_minus",
+        "comparison": {
+          "comparisons": 1,
+          "max_nearest_position_delta_m": 0.0,
+          "max_root_position_delta_m": 0.0,
+          "nearest_identity_mismatch": 0,
+          "nearest_position_mismatch": 0,
+          "nearest_status_mismatch": 0,
+          "position_tolerance_max_m": 3.637978807091713e-13,
+          "root_count_mismatch": 1,
+          "root_kind_mismatch": 0,
+          "root_position_mismatch": 0,
+          "status_mismatch": 0,
+          "zero_interval_mismatch": 0
+        },
+        "independent": {
+          "reasons": [
+            "distinct_roots_not_separable_at_registered_precision"
+          ],
+          "roots_m": [
+            -0.0,
+            4.547473508864625e-14
+          ],
+          "status": "UNRESOLVED"
+        },
+        "primary": {
+          "reasons": [
+            "endpoint_value_within_roundoff_envelope",
+            "monotonic_interval_endpoint_sign_unresolved"
+          ],
+          "roots_m": [],
+          "status": "UNRESOLVED"
+        },
+        "r": 1,
+        "sample": 291,
+        "sample_point_m": [
+          -0.25,
+          -0.19166666666666665,
+          -0.0833333333333333
+        ],
+        "side": "baseline",
+        "storage": "double"
+      },
+      {
+        "case": "D0_interface_offset_plus",
+        "comparison": {
+          "comparisons": 1,
+          "max_nearest_position_delta_m": 0.0,
+          "max_root_position_delta_m": 5.575401251789458e-15,
+          "nearest_identity_mismatch": 1,
+          "nearest_position_mismatch": 0,
+          "nearest_status_mismatch": 1,
+          "position_tolerance_max_m": 3.637978807091713e-13,
+          "root_count_mismatch": 0,
+          "root_kind_mismatch": 0,
+          "root_position_mismatch": 0,
+          "status_mismatch": 1,
+          "zero_interval_mismatch": 0
+        },
+        "independent": {
+          "reasons": [],
+          "roots_m": [
+            0.0130365322106718
+          ],
+          "status": "COMPLETE"
+        },
+        "primary": {
+          "reasons": [
+            "root_position_exceeds_roundoff_enclosure"
+          ],
+          "roots_m": [
+            0.013036532210677375
+          ],
+          "status": "UNRESOLVED"
+        },
+        "r": 1,
+        "sample": 244,
+        "sample_point_m": [
+          -0.28333333333333327,
+          -0.4384215911229452,
+          -0.11666666666666663
+        ],
+        "side": "target",
+        "storage": "double"
+      }
+    ],
+    "root_status_reason_counts": {
+      "independent:distinct_roots_not_separable_at_registered_precision": 798,
+      "primary:endpoint_value_within_roundoff_envelope|monotonic_interval_endpoint_sign_unresolved": 4530,
+      "primary:endpoint_value_within_roundoff_envelope|monotonic_interval_endpoint_sign_unresolved|near_tangent_value_within_roundoff_envelope": 24,
+      "primary:reduced_degree_root_within_discarded_term_envelope": 6,
+      "primary:root_position_exceeds_roundoff_enclosure": 564
+    }
+  },
+  "process_exit_code": 0,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "registration": {
+    "amendment_chain_sha256": [
+      "1f7d4c713c591a08e9638e8cd68aa2405fffa7de6fc50a73ed8b3812f052d464",
+      "2a4fca403caada581b5bdeb08f963c89cef469af4978697d60ff14a1c6776a48"
+    ],
+    "authoritative_start_head": "3f9322dc0fa0f2847a3204427b81a665932b83b8",
+    "feature_branch_head": "c18989e9642de766f55a4460596c4a3a40c68204",
+    "feature_remote_head": "c18989e9642de766f55a4460596c4a3a40c68204",
+    "preregistration_sha256": "ceb3dbd5f70ee9905ebc3ddf9aa90c3afde83b046d6fcd9c9799940783d6a7d7",
+    "r_values": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "target_attempt_id": "attempt02"
+  },
+  "scope": "Solver-free successor diagnostic only; no solver, Kaggle, formal XFID, #46, exporter, or criteria change.",
+  "synthetic_pre_target_qualification": {
+    "passed": true,
+    "property_case_count": 512,
+    "property_seed": 451003,
+    "registered_cases": 16
+  },
+  "target_command": ".venv/bin/python scripts/run_xfid45_root_certifier_replay_2026_10_03.py --r 1 2 4 8 --attempt-id attempt02"
+}
