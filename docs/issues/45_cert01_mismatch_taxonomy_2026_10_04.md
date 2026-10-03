@@ -51,6 +51,7 @@ the two certifiers picking different roots.
   arithmetic of each other or of the sample point, so no position tolerance
   separates them; an ownership rule for shared endpoints is the candidate
   lever. The Sturm count already returns COMPLETE for A, B and D.
+
 ## Follow-up checks (same trace, same script, `followups_baseline_classes_B_C`)
 
 - **Class C is a shared-cell-plane duplicate, not a double root within a cell.**
