@@ -66,7 +66,7 @@ v1（同日）からの変更: ユーザー判断「STL の品質 gate は非本
 | D3 | 使う r | r=8 の保存済み STL（最大 lower bound 0.097 mm、ε の 2% 以下）。r=4 は予備 |
 | D4 | 2026-10-03 の順序（「baseline と全摂動が geometry gate を通ること」）の置換 | 厳密 gate を実用 gate に置換することを phase_plan に追記し、#45 にコメントする |
 
-### X1. 実用 STL 入力の確定（solver 不要・約半日）
+### X1. 実用 STL 入力の確定（solver 不要・約半日）— **完了 2026-10-04**: 7/7 PASS、独立 check と STL の sha256 が一致。`45_stage_v_input_2026_10_04.md`
 
 - 入力: Round 3 の保存済み r=8 の STL/表面（baseline と D0/D1/D2 の ±ε の 7 形状）。
 - 処理（決定的スクリプト 1 本）: D2 に従い極小 component を除去し、主 component が内向きなら component 単位で反転。頂点は動かさない。
