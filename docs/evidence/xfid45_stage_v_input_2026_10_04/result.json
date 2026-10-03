@@ -1,0 +1,438 @@
+{
+ "evidence_class": "solver_free_practical_stage_v_input_derivation_uncertified_geometry",
+ "git_head": "359276d36c4c8df54fe8b889d7b084e7a36efad7",
+ "git_status_clean": true,
+ "cases": {
+  "baseline": {
+   "source_surface_sha256": "1ee648e20161d01a507e036468d1a9bdfb40e974f0e70cbd13122701f6f95398",
+   "input_state_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+   "derived_stl_sha256": "1d0f25786aebf771a73e884e3e52f92073ddff82e80ba501104b18e775f7fc2a",
+   "removed_components": [],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     681504
+    ],
+    "signed_volume_m3": 0.12928033422709995,
+    "triangles": 681504,
+    "min_clearance_m": 0.6499999999999999
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     681504
+    ],
+    "signed_volume_m3": 0.12928033539499406,
+    "triangles": 681504,
+    "min_clearance_m": 0.65
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 2,
+    "median_m": 2.9802324608141496e-09,
+    "p99_m": 4.768371582019922e-08,
+    "max_m": 5097652718179389.0,
+    "fraction_over_0p5mm_among_finite": 0.0012208292247734424
+   }
+  },
+  "D0_interface_offset_minus": {
+   "source_surface_sha256": "3f21a1ccb08f0949f7a9c9a3fcc537804d80358fcb84d03016d132e634b83afe",
+   "input_state_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+   "derived_stl_sha256": "79db0b4b9fb699930d302cfee09a7301675841de87160ffd21b2c0807c6b0214",
+   "removed_components": [],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     699300
+    ],
+    "signed_volume_m3": 0.14331083328310176,
+    "triangles": 699300,
+    "min_clearance_m": 0.6458333015441894
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     699300
+    ],
+    "signed_volume_m3": 0.14331083841598136,
+    "triangles": 699300,
+    "min_clearance_m": 0.645833307504654
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.6563555998711358e-08,
+    "p99_m": 3.9469325693680447e-08,
+    "max_m": 4.767798670171716e-08,
+    "fraction_over_0p5mm_among_finite": 0.0
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.833330142001308,
+    "p05": 2.384185791015625e-06,
+    "p95": 1.3867497402917541
+   }
+  },
+  "D0_interface_offset_plus": {
+   "source_surface_sha256": "325a33e8ea1949315f4b563b392bfd8606b19bcc0edc307b356549855e04a6af",
+   "input_state_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+   "derived_stl_sha256": "7e73189ec2daf490ad7cdb361541c910e1a948205774fd4374e99b362f1ea3b9",
+   "removed_components": [],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     670764
+    ],
+    "signed_volume_m3": 0.1145658034162883,
+    "triangles": 670764,
+    "min_clearance_m": 0.6541666746139527
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     670764
+    ],
+    "signed_volume_m3": 0.1145658043695346,
+    "triangles": 670764,
+    "min_clearance_m": 0.6541666775941849
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.4338611272934411e-08,
+    "p99_m": 3.795433512530739e-08,
+    "max_m": 4.768158984588047e-08,
+    "fraction_over_0p5mm_among_finite": 0.0
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.8333313340947782,
+    "p05": 2.384185791015625e-06,
+    "p95": 1.386753175317904
+   }
+  },
+  "D1_filtered_seed11_minus": {
+   "source_surface_sha256": "fdd325e01699ff1feb4ab57b0000a163551d1bcb803b69b02b726476af8dd7c7",
+   "input_state_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+   "derived_stl_sha256": "e2c736ce08408e01a15ba30bae89da71638a5254e12a5c02fe8ccd6f31ec5ca4",
+   "removed_components": [
+    {
+     "faces": 8,
+     "bbox_diagonal_m": 0.004134086720622387,
+     "signed_volume_m3": -1.4941310676631434e-10,
+     "center_m": [
+      0.4998597145080568,
+      -0.34983623027801514,
+      0.10033929347991949
+     ]
+    }
+   ],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     711266
+    ],
+    "signed_volume_m3": 0.12902081313368266,
+    "triangles": 711266,
+    "min_clearance_m": 0.6458333253860474
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     711266
+    ],
+    "signed_volume_m3": 0.1290208133217812,
+    "triangles": 711266,
+    "min_clearance_m": 0.6458333373069763
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.1897668293605586e-08,
+    "p99_m": 4.536450163023085e-08,
+    "max_m": 0.00045302001018818823,
+    "fraction_over_0p5mm_among_finite": 0.0
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.18329650436781542,
+    "p05": 2.3822223944382353e-06,
+    "p95": 0.6461913478381285
+   }
+  },
+  "D1_filtered_seed11_plus": {
+   "source_surface_sha256": "2414c03bf40f6cab5eed88c4351654456673e95b7cc94cceb75816e75c381c7c",
+   "input_state_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+   "derived_stl_sha256": "16ae2cad296f718f7756f5a061ffbc07578efec0e29e844da00879fee4df04f2",
+   "removed_components": [],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     712438
+    ],
+    "signed_volume_m3": 0.1291344198984962,
+    "triangles": 712438,
+    "min_clearance_m": 0.6463970184326171
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     712438
+    ],
+    "signed_volume_m3": 0.12913442009741596,
+    "triangles": 712438,
+    "min_clearance_m": 0.6463970184326172
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.1838212506842221e-08,
+    "p99_m": 4.539293839419623e-08,
+    "max_m": 0.00025561419192425615,
+    "fraction_over_0p5mm_among_finite": 0.0
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.1793482351181342,
+    "p05": 2.3818597071048187e-06,
+    "p95": 0.6533159218359685
+   }
+  },
+  "D2_filtered_seed2026_minus": {
+   "source_surface_sha256": "9470dec43ad4accf82fa08520c7acb50865c132238d472468f6ce84cf2b85e41",
+   "input_state_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+   "derived_stl_sha256": "af240d1362051e03ac4975399d75cf218e75d79d876c97fb121c4c0d5d60558e",
+   "removed_components": [
+    {
+     "faces": 8,
+     "bbox_diagonal_m": 0.0006497815781548948,
+     "signed_volume_m3": -7.576738211736753e-12,
+     "center_m": [
+      -0.5997778296470642,
+      0.3498188972473144,
+      -0.15012354850769039
+     ]
+    }
+   ],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     713236
+    ],
+    "signed_volume_m3": 0.12913965227346652,
+    "triangles": 713236,
+    "min_clearance_m": 0.646599531173706
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     713236
+    ],
+    "signed_volume_m3": 0.12913965245440603,
+    "triangles": 713236,
+    "min_clearance_m": 0.6465995252132416
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.1742188272847402e-08,
+    "p99_m": 4.53396979673499e-08,
+    "max_m": 0.0009575852416971014,
+    "fraction_over_0p5mm_among_finite": 8.412315630082441e-06
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.18212021285712104,
+    "p05": 2.38164088234231e-06,
+    "p95": 0.6347941306777262
+   }
+  },
+  "D2_filtered_seed2026_plus": {
+   "source_surface_sha256": "42b9ff5158346a2e7c3659e23bee8643d9fd918cf272ef19dd3c9bd841e84aa4",
+   "input_state_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+   "derived_stl_sha256": "4f30168ff954a9a9dfd0ff9be09787006b9acc02c9cc3c8fdce756f1061ee464",
+   "removed_components": [
+    {
+     "faces": 8,
+     "bbox_diagonal_m": 0.0025133057167756874,
+     "signed_volume_m3": -3.2565320980033105e-10,
+     "center_m": [
+      -0.3497005224227905,
+      -0.19914963245391842,
+      -0.10079417228698725
+     ]
+    },
+    {
+     "faces": 16,
+     "bbox_diagonal_m": 0.003706415530340829,
+     "signed_volume_m3": 3.22391471411494e-10,
+     "center_m": [
+      0.25042672157287604,
+      -0.3997122645378113,
+      -0.0017548561096191184
+     ]
+    }
+   ],
+   "double_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "double_measures": {
+    "components": [
+     713244
+    ],
+    "signed_volume_m3": 0.12907128320627217,
+    "triangles": 713244,
+    "min_clearance_m": 0.6464202880859375
+   },
+   "float32_stl_gates": {
+    "watertight": true,
+    "winding_consistent": true,
+    "edge_manifold": true,
+    "vertex_link_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "positive_signed_volume": true,
+    "stage_v_clearance": true,
+    "orientation_pass_without_flip": true,
+    "practical_gate_pass": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     713244
+    ],
+    "signed_volume_m3": 0.12907128332666742,
+    "triangles": 713244,
+    "min_clearance_m": 0.646420294046402
+   },
+   "own_field_first_order_distance_double": {
+    "vertices_with_zero_gradient": 0,
+    "median_m": 1.1900939299145166e-08,
+    "p99_m": 4.529107880464908e-08,
+    "max_m": 0.00134751415828105,
+    "fraction_over_0p5mm_among_finite": 2.80407375835614e-06
+   },
+   "displacement_from_baseline_over_epsilon": {
+    "median": 0.18008351057698313,
+    "p05": 2.38164088234231e-06,
+    "p95": 0.6398762866219164
+   }
+  }
+ },
+ "all_practical_gates_pass": true
+}

@@ -5570,3 +5570,32 @@ Round 3, the production exporter, and all qualification flags remain
 unchanged. #45 remains OPEN/UNRESOLVED; formal XFID must not restart. #46
 remains BLOCKED. The #29 reference remains limited to actual zero-level /
 Stage V export measurement and does not close GEOM-01 overall.
+
+### 2026-10-04 — #45 order revision: practical Stage V geometry gate; #46 in parallel
+
+User decisions (2026-10-04), superseding the 2026-10-03 wording that XFID waits for
+every certified geometry gate and that #46 solver work waits for XFID AGREE:
+
+- The certified 0.5 mm absolute-geometry, root-set (CERT-02), and small-component
+  orientation work is **not** a prerequisite for XFID. It moves to #29 GEOM-01 and
+  is pursued after the XFID result or when a certified Stage V geometry claim is
+  needed. CERT-01 stays FAIL; Round 3 and CERT-01 evidence are unchanged.
+- XFID uses a practical Stage V STL gate instead (watertight, edge/vertex-link
+  manifold, no duplicate/degenerate faces, positive signed volume, clearance) on a
+  derived STL built from the saved Round 3 `r=8` surfaces, with sub-resolution
+  components removed by a deterministic registered rule. Geometry error is
+  measured and reported with the verdict, never certified. Any XFID result is
+  scoped to that uncertified-geometry condition.
+- Evidence behind the change: the Stage V mesh surface cells are 25-50 mm
+  (`snappyHexMeshDict` level (2 3) on a 0.2 m background), about 50-100 times the
+  0.5 mm gate; the epsilon=5 mm perturbation is 1/5-1/10 of a surface cell, so the
+  open risk is mesh noise versus epsilon, measured first (X2) rather than gated by
+  the STL certificate. Details: `docs/issues/45_next_steps_plan_2026_10_04.md`.
+- #46 FD-08 calibration may run in parallel with XFID (frozen composite
+  Candidate C identity, flow_24, [80,120], canonical v17). A **resolved
+  representative XFID DISAGREE** still stops Track C compute; UNRESOLVED does not.
+- CERT-01 mismatch taxonomy (post-hoc, solver-free): 5,796 disagreements, 5,706 on
+  the baseline side; all 90 target-side ones are primary-UNRESOLVED with the same
+  unique nearest root. See `docs/issues/45_cert01_mismatch_taxonomy_2026_10_04.md`.
+
+No qualification flag changes; all six remain false.

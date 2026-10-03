@@ -1,0 +1,8 @@
+{
+ "amendment_id": "XFID45-STAGEV-INPUT-01-AMEND-01",
+ "date": "2026-10-04",
+ "parent_preregistration": "docs/evidence/xfid45_stage_v_input_2026_10_04/preregistration.json",
+ "reason": "first run (git 9ce4c1b) evaluated all 7 cases (practical gates all True in both storages, 4 components removed) but terminated at the JSON write: a descriptive first-order-distance statistic was inf because some baseline vertices have zero cell-local gradient, and the writer rejects non-finite values. No result.json was written; STLs from that run are not used.",
+ "change": "reporting only: descriptive statistics count vertices with zero gradient and compute median/p99/max/fraction over finite values; numpy divide warnings silenced. No gate, rule, input, threshold or STL byte rule changes.",
+ "script_sha256_after_amendment": "3a2fcaeeb0cd2622fe90d015bdac80e0f4dae2adc8c436444cecab56c63187e4"
+}
