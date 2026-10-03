@@ -5428,3 +5428,21 @@ failure-ID comparison with the pinned 37-ID baseline found zero new failures
 and one baseline failure absent in this run. The pre-restoration log and final
 log/comparison remain separately preserved under
 `docs/evidence/xfid45_surface_export_round_2026_10_03/validation/`.
+
+### 2026-10-03 #45 successor surface export round 2 preregistration
+
+Step 0 is diagnostic-only evidence: the remaining 12 baseline non-manifold
+edges all touch exact-zero source cells; six main perturbation components
+have stable inward sidedness, but some small D2 components remain unresolved.
+No threshold is inferred from these observations. Round 2 freezes current
+contour/component-sidedness (A), pinned Lewiner with positive symbolic tie
+(B), and fixed Kuhn-6 tetrahedra with combinatorial edge identities (C).
+Its preregistration binds all seven unchanged inputs plus three held-outs,
+original-trilinear sampled identity at the analytically fixed 0.5 mm limit,
+serialized STL gates, runtime/source hashes and an independent verifier that
+imports no extractor. Criteria must be committed and pushed before evaluation.
+See `docs/issues/45_surface_round2_2026_10_03.md` and
+`docs/evidence/xfid45_surface_round2_2026_10_03/preregistration.json`.
+This is geometry evidence only for #29's actual zero-level / Stage V export
+gap. No production exporter, solver, Kaggle, formal XFID or #46 execution is
+part of this round; all qualification flags remain false.

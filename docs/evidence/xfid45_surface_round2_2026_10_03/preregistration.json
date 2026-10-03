@@ -1,0 +1,408 @@
+{
+  "C_selection_condition": "document Kuhn piecewise-affine versus original trilinear semantic difference and identity evidence before selecting; production adoption remains separate PR",
+  "Step0": {
+    "path": "docs/evidence/xfid45_surface_round2_2026_10_03/step0.json",
+    "sha256": "87c0aedc9479b64ba39716545fffe8e4d91d921abdb3c6e2b7c7b6e4ed5f3546"
+  },
+  "Step0_evidence_class": "diagnostic_only_not_qualification",
+  "all_candidates_fail_action": "raise reconsideration of direct GridSDF Stage V; do not run solver",
+  "authoritative_branch": "codex/kaggle-batch-migration",
+  "authoritative_start_head": "c89bfa209fe3c3c4d9a28d481352e9fa5ed93c4f",
+  "candidates": {
+    "A": {
+      "algorithm": "PyVista/VTK ImageData.contour at iso 0; exact cleanup; component-sidedness orientation",
+      "field_tie": "native VTK handling of exact zero",
+      "orientation": "whole edge-connected component only",
+      "post_extraction_vertex_movement": false
+    },
+    "B": {
+      "algorithm": "scikit-image 0.25.2 Lewiner marching cubes",
+      "allow_degenerate": false,
+      "field_axis_order": "input xyz order; no transpose",
+      "field_tie": "exact zeros replaced in extraction scratch with +tau",
+      "gradient_direction": "ascent",
+      "level": 0.0,
+      "method": "lewiner",
+      "orientation": "whole edge-connected component only",
+      "post_extraction_vertex_movement": false,
+      "step_size": 1
+    },
+    "C": {
+      "algorithm": "deterministic Kuhn-6 marching tetrahedra",
+      "cube_split": "six axis permutations along 000-to-111 body diagonal",
+      "edge_identity": "sorted pair of global C-order grid node ids",
+      "field_tie": "exact zeros replaced in extraction scratch with +tau",
+      "interpolation": "float64 t=fa/(fa-fb)",
+      "orientation": "affine tetra gradient for native triangles, then whole component only",
+      "post_extraction_vertex_movement": false
+    }
+  },
+  "canonical_v17": {
+    "exact_zero_node_count_expected": 498,
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "sign_convention": "phi < 0 is solid; phi > 0 is fluid; canonical outward solid normal follows +grad(phi)",
+    "spacing_m": 0.025,
+    "state_file_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "epsilon_m": 0.005,
+  "evaluation_policy": "evaluate and retain every candidate on every input; no adaptive repairs or threshold changes",
+  "evidence_class": "immutable_solver_free_geometry_export_candidate_preregistration",
+  "experiment_branch": "exp/issue45-surface-round2-2026-10-03",
+  "fixed_before_Step0": [
+    "orientation_area_majority_rule",
+    "delta_ladder",
+    "heldout_input_generation_formulas",
+    "analytic_displacement_limit"
+  ],
+  "forbidden": [
+    "solver",
+    "Kaggle",
+    "formal XFID",
+    "FD08/#46",
+    "direction or epsilon change",
+    "posthoc isovalue shift",
+    "smoothing",
+    "hole filling",
+    "manual mesh edits",
+    "post-extraction vertex movement",
+    "production exporter edits"
+  ],
+  "frozen_direction_contract": {
+    "cases": {
+      "D0_interface_offset_minus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74dd2d0f5dde097e0b66b8da490abd78f3acf2a3ab36f46ec7a76cc2bfe16989",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/design_candidate.stl",
+        "raw_stl_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+        "sign": -1,
+        "state_sha256": "3647a33b44652c9a630baa1726aa80ccc4a60dcc0c2c2b1a4092e7e159524693",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+        "state_snapshot_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+      },
+      "D0_interface_offset_plus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "754389103d0e1ed1de58518394a6759bd65ec51a3e368dbac7208252a3fbc8ac",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/design_candidate.stl",
+        "raw_stl_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+        "sign": 1,
+        "state_sha256": "6f6cf11c43cf5910220086aaadf9e7cf43f892a4c8e38e14d29fee295c817dbb",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+        "state_snapshot_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+      },
+      "D1_filtered_seed11_minus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "4b676d2ad0c66b7741a75bb164ab82a4e2996187615c09c65bc441b01caa5840",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/design_candidate.stl",
+        "raw_stl_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+        "sign": -1,
+        "state_sha256": "9c602e20690e7863d61a6c54cc4864fb6ebc74c024cec79d045cf1417b893fc1",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+        "state_snapshot_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+      },
+      "D1_filtered_seed11_plus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74304eb97b5ed77abb4317a286b8c0a0842dc1031f8f76ade2418b85e9b61fee",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/design_candidate.stl",
+        "raw_stl_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+        "sign": 1,
+        "state_sha256": "5b4dc6679c8025d2e899c1213f8b9f6fb8e2ec338e85024bebb99a38f50b77e3",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+        "state_snapshot_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+      },
+      "D2_filtered_seed2026_minus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "67a7abc7740ef8853f77eb6e7d6913c1d1d0bcb0b98f401d5825b46f515ff42e",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/design_candidate.stl",
+        "raw_stl_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+        "sign": -1,
+        "state_sha256": "7924db57acfd10f644db017e241e8d938422033b818c4b0932eafbba55425f58",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+        "state_snapshot_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+      },
+      "D2_filtered_seed2026_plus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "966a90e5dca081415669a567bb33e4fd9f45a4687adb3e2c172c5058d1a1a9f6",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/design_candidate.stl",
+        "raw_stl_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+        "sign": 1,
+        "state_sha256": "741e2c8bbbb23668a5dca1391a3bd002cbb0926bb8aa0e91058cbc7f003dab3a",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+        "state_snapshot_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+      }
+    },
+    "direction_ids": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026"
+    ],
+    "direction_sha256": {
+      "D0_interface_offset": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "D1_filtered_seed11": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "D2_filtered_seed2026": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8"
+    },
+    "directions_and_epsilon_may_not_change_after_observation": true,
+    "epsilon_m": 0.005,
+    "frozen_snapshot_manifest_sha256": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955"
+  },
+  "gates": {
+    "all_10_inputs_required": true,
+    "clearance_m_minimum": 0.25,
+    "component_sidedness_orientation_pass": true,
+    "duplicate_faces": 0,
+    "float32_STL_same_gates": true,
+    "global_signed_volume_positive": true,
+    "independent_verifier_agreement": true,
+    "maximum_new_failure_IDs": 0,
+    "nonmanifold_edges": 0,
+    "nonmanifold_vertex_links": 0,
+    "original_phi_immutable": true,
+    "raw_array_repeat_hash_identical": true,
+    "sampled_identity_pass": true,
+    "watertight": true,
+    "winding_consistent": true,
+    "zero_area_faces": 0
+  },
+  "grid_h_m": 0.025,
+  "identity_gate": {
+    "analytic_formula": "min(0.1*epsilon,0.02*h)",
+    "distance_method": "feasible root witnesses along exact piecewise-linear axis segments; Newton20iterations center search, max step h; search p and center plus/minus h and intervening grid planes",
+    "failure_classification": "lower > limit proves representation discrepancy; upper > limit with lower <= limit is inability to certify identity, not proven nearest-distance violation",
+    "global_lipschitz_lower_bound": "norm of maximum absolute grid edge slope for each axis",
+    "limit_m": 0.0005,
+    "pass": "every sample has feasible zero witness distance <=0.0005 m in double surface and float32 STL; lower bound must not contradict pass; axis root requires explicit zero endpoint or opposite signs, no product-based sign test",
+    "reference": "original immutable trilinear zero set, no extraction scratch tie",
+    "samples": "all10 degree3 barycentric lattice points per triangle, including vertices and centroid",
+    "scope_limit": "sampled certificates only; no continuous Hausdorff assertion",
+    "witness_residual_tolerance_m": 2.5000000000000003e-12
+  },
+  "input_files": {
+    "D0_interface_offset_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+      "sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+    },
+    "D0_interface_offset_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+      "sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+    },
+    "D1_filtered_seed11_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+      "sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+    },
+    "D1_filtered_seed11_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+      "sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+    },
+    "D2_filtered_seed2026_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+      "sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+    },
+    "D2_filtered_seed2026_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+      "sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+    },
+    "H_analytic_shell": {
+      "path": "docs/evidence/xfid45_surface_round2_2026_10_03/heldout/H_analytic_shell.npz",
+      "sha256": "ec05b22a2b34cec717310c2c64e94fd14241db395f907ae619312931d290f933"
+    },
+    "H_combined_minus": {
+      "path": "docs/evidence/xfid45_surface_round2_2026_10_03/heldout/H_combined_minus.npz",
+      "sha256": "d2bb2c0251294ffc46479608ce93430f19e369fc2c5fdfef1fd89843a009dfbe"
+    },
+    "H_combined_plus": {
+      "path": "docs/evidence/xfid45_surface_round2_2026_10_03/heldout/H_combined_plus.npz",
+      "sha256": "a30dca318691e365f0a9b606311a16c4d7456fef42960b89456b4aad500a7fa5"
+    },
+    "baseline": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/canonical_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    }
+  },
+  "manifold_claim": "expected by algorithm construction, not guaranteed; measured edge and vertex-link gates required",
+  "orientation": {
+    "canonical_sign": "negative solid, positive fluid",
+    "centroid_samples": true,
+    "component_flips_only": true,
+    "delta_over_h": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "facewise_post_extraction_flips": false,
+    "gradient_dot_auxiliary_only": true,
+    "majority_area_strictly_greater_than": 0.5,
+    "normal": "solid-to-fluid; void-boundary signed contributions may be negative",
+    "roundoff_tolerance_m": 3.552713678800501e-16,
+    "same_nonambiguous_vote_at_every_delta": true,
+    "serialized_STL_component_sidedness_required": true,
+    "volume_not_used_to_decide_flip": true
+  },
+  "predecessor_registration": {
+    "path": "docs/evidence/xfid45_surface_export_round_2026_10_03_prereg.json",
+    "sha256": "96cece05ee24a2c63f46c27cbbff8b493b71c9340a8e9d21d0a04ac55393a6cd"
+  },
+  "predecessor_result": {
+    "path": "docs/evidence/xfid45_surface_export_round_2026_10_03/result.json",
+    "sha256": "732a6ac03cbf341cec35d58937ce3bee2cfe84df3413766d6c6f51ad8ea9b4ab"
+  },
+  "processing_sequence": {
+    "A": [
+      "native VTK iso0 contour",
+      "exact coincident coordinate merge",
+      "exact duplicate face removal",
+      "repeated-index and exact zero-area removal",
+      "whole-component sidedness orientation"
+    ],
+    "B": [
+      "scratch exact-zero positive tie",
+      "Lewiner iso0, step1, ascent, allow_degenerate=False",
+      "whole-component sidedness orientation"
+    ],
+    "C": [
+      "scratch exact-zero positive tie",
+      "lexicographic Kuhn6 body diagonal000-111",
+      "edge-id combinatorial merge",
+      "native affine tetra gradient winding and edge-id diagonal",
+      "whole-component sidedness orientation"
+    ]
+  },
+  "production_exporter_change": "separate PR after review; no adoption in this round",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "round_id": "XFID45-SURFACE-R2-2026-10-03",
+  "runtime_files": {
+    "_marching_cubes_lewiner.py": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner.py",
+      "sha256": "a97ddbfef01d89ba9bdf80242ea2f5ccaf2c5bd9b07f97c9dc4dda44434d30c9"
+    },
+    "_marching_cubes_lewiner_cy.cpython-312-darwin.so": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner_cy.cpython-312-darwin.so",
+      "sha256": "79e6d10596ef8168820f64ff501f82178c4c8fc70e457f99e7a89e57ed22fbc9"
+    },
+    "_marching_cubes_lewiner_luts.py": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner_luts.py",
+      "sha256": "a6e6144e1725f60013aaa99eaf04ea01da6aa2839e328474a15e89fe0bcfe701"
+    },
+    "python_binary": {
+      "path": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805"
+    }
+  },
+  "runtime_identity": {
+    "PYTHONPATH": "work/xfid45_surface_round2_deps:src:scripts",
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "pyvista": "0.48.4",
+    "scikit_image": "0.25.2",
+    "scipy": "1.18.1",
+    "task_dependency_install": "uv pip install --python <existing python> --target work/xfid45_surface_round2_deps --no-deps scikit-image==0.25.2 lazy-loader==0.4",
+    "trimesh": "5.1.0",
+    "vtk": "9.6.2"
+  },
+  "schema_version": 1,
+  "selection_priority": [
+    "A",
+    "B",
+    "C"
+  ],
+  "source_files": {
+    "scripts/audit_xfid45_geometry_preflight_2026_10_03.py": {
+      "path": "scripts/audit_xfid45_geometry_preflight_2026_10_03.py",
+      "sha256": "7865f6be1ede7d919ee77117f7d5c6a120b14475930a7c93535e7671323d5b00"
+    },
+    "scripts/audit_xfid45_round2_step0.py": {
+      "path": "scripts/audit_xfid45_round2_step0.py",
+      "sha256": "af334cfb7c942b65a3b0002b4b8f0cacec371ac84773e117128f5db0ae8d6504"
+    },
+    "scripts/audit_xfid45_surface_round2.py": {
+      "path": "scripts/audit_xfid45_surface_round2.py",
+      "sha256": "01519c0939483047112be68433fb824ad08ed9dd11ad58011597f2d48daa52e5"
+    },
+    "scripts/verify_xfid45_surface_round2.py": {
+      "path": "scripts/verify_xfid45_surface_round2.py",
+      "sha256": "5be881fad95e4233481f3eabb788819128863e21225a33795e23a5ea3c5d969c"
+    },
+    "scripts/xfid45_round2_metrics.py": {
+      "path": "scripts/xfid45_round2_metrics.py",
+      "sha256": "4430b5f45e9630a034237f24cef1a9bf6222655bcf70282ba20f989ca97de44d"
+    },
+    "scripts/xfid45_surface_round2_candidates.py": {
+      "path": "scripts/xfid45_surface_round2_candidates.py",
+      "sha256": "291a6be8e45d350968f201cc5b81f4c610a3a90000deabe12a1acdf35eec9f8f"
+    },
+    "src/cfd_sdf/design/sdf_state.py": {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    "src/cfd_sdf/export_vtk.py": {
+      "path": "src/cfd_sdf/export_vtk.py",
+      "sha256": "44c152b421415fbc49d047e9a178f7702d40451bb53107ded6d7302872353a72"
+    },
+    "tests/test_xfid45_round2_metrics.py": {
+      "path": "tests/test_xfid45_round2_metrics.py",
+      "sha256": "f61f6ea14c441271ef7b7446eeddd554809f00f8c442410fa7f6ec08c0339816"
+    },
+    "tests/test_xfid45_surface_round2_candidates.py": {
+      "path": "tests/test_xfid45_surface_round2_candidates.py",
+      "sha256": "04d33cb42961ec973233204e769866428cff077745b239abe99c07b05fd98b25"
+    }
+  },
+  "status": "registered_before_target_evaluation",
+  "synthetic_tests_before_registration": {
+    "command": "PYTHONPATH=work/xfid45_surface_round2_deps:src:scripts <pinned python> -m pytest -q tests/test_xfid45_surface_round2_candidates.py tests/test_xfid45_round2_metrics.py",
+    "passed": 12
+  },
+  "thresholds_inferred_from_Step0": false,
+  "verifier": {
+    "comparison": "gate verdicts equal; integer topology stats equal; area/volume/clearance rtol1e-10 atol1e-12; Lipschitz lower bounds atol1e-12; upper witness distances may differ because witnesses differ",
+    "imports_evaluator_helpers": false,
+    "imports_extractor": false,
+    "method": "stored NPZ and STL independent edge/link census, RGI sidedness, finite-difference Newton + exact axis zero witnesses"
+  },
+  "zero_tie": {
+    "canonical_field_unchanged": true,
+    "changed_nodes": "exact phi==0 only, including -0.0",
+    "meaning": "finite numeric realization of symbolic tie, not mathematical infinitesimal; displacement independently gated against original trilinear field",
+    "nonzero_nodes_unchanged": true,
+    "numeric_realization_tau_m": 2.3841858265427618e-08,
+    "override_predecessor_symbolic_tie_ban": true,
+    "sign": "positive fluid"
+  }
+}
