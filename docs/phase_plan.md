@@ -5490,3 +5490,46 @@ Evidence class: solver-free candidate registration, not physical qualification.
 All qualification flags false; production exporter unchanged; solver/Kaggle/formal
 XFID/#46 prohibited. Direct GridSDF Stage V is a user decision if candidates fail,
 not an implementation selected here. #29 reference is limited to actual export.
+
+### 2026-10-03 — #45 surface export Round 3 results
+
+The registered run completed 40 surface cases: 9 PASS, 31 FAIL; pass counts at
+`r=1,2,4,8` were 0/10, 2/10, 3/10 and 4/10. No refinement was selected. The
+24 canonical fidelity pairs were N/A for qualification because surface
+prerequisites failed; their numerical diagnostics report `within_limit=false`.
+The frozen root residual-filter omission means Boolean gate agreement does not
+imply quantitative correspondence agreement. All four independent partitions
+are complete: individual/aggregate surface maps agree in 40/40 cases, pair
+Boolean gate/status maps agree in 24/24, and all volumes agree. Exact coverage
+and partition source bindings are recorded in the complete independent assembly.
+
+Geometry-gate failures at `r=1,2` include certified lower-bound exceedances of
+0.5 mm (8/10 and 7/10 respectively). At `r=4,8`, failing G cases have lower
+bounds below tolerance but insufficient upper-bound certificates; those results
+do not demonstrate actual distance above tolerance. The `r=1` baseline is a
+closed edge-manifold surface with a bad vertex link, so orientation is N/A and
+its negative signed volume is not a valid solid-volume measurement. Topology
+passes at `r>=2`, without proving that the original continuous trilinear zero
+set is nonsingular. Component-wise SDF diagnostics attribute the original six
+shapes' negative signed-volume findings to inward main-component winding; the
+diagnostic correction flips whole components and leaves vertices unchanged, but
+small components remain unstable. The `r=8` source-volume quadrature has no
+certified error bound and is
+descriptive only; signed-volume differences against the invalid `r=1` baseline
+are not physical solid-volume differences.
+
+Original scientific registration `4a7b8da` and serialization-only JSON adapter
+`3a32eee` are separate. All qualification flags remain false; production state
+is unchanged; #45 remains UNRESOLVED and formal XFID/#46 remain blocked.
+The all-r failure does not prove intrinsic zero-set impossibility. Reconsidering
+direct GridSDF Stage V requires a separate user decision on cross-fidelity
+independence and is not selected or implemented here. This result is limited to
+the actual #29 zero-level / STL export gap and does not close #29 GEOM-01 overall.
+See [Round 3 issue note](issues/45_surface_round3_2026_10_03.md) for bounds,
+diagnostic limitations and disposition.
+
+Evidence class: solver-free export failure screen with independent saved-artifact
+recomputation and an explicitly unresolved numerical correspondence limitation;
+no physical or FD qualification. Focused tests 16 passed; compileall, Round 3
+Ruff checks/format and diff check passed. Full frozen pytest: 36 failed, 1,371
+passed, 5 skipped; pinned-baseline failure-ID comparison found zero new IDs.
