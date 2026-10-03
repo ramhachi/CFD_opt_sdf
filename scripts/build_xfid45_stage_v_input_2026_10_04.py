@@ -76,7 +76,8 @@ def remove_small_components(v, f, h=H):
 
 def stl_bytes(v, f):
     tri = v[f].astype(np.float32)
-    n = np.cross(tri[:, 1].astype(np.float64) - tri[:, 0], tri[:, 2].astype(np.float64) - tri[:, 0])
+    t64 = v[f]  # registered rule: normals come from the float64 triangle
+    n = np.cross(t64[:, 1] - t64[:, 0], t64[:, 2] - t64[:, 0])
     n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-300)
     rec = np.zeros(len(f), dtype=[("n", "<f4", 3), ("t", "<f4", (3, 3)), ("a", "<u2")])
     rec["n"], rec["t"] = n.astype(np.float32), tri
