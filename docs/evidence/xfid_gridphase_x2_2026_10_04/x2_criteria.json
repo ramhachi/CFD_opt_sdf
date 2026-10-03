@@ -12,6 +12,12 @@
   "case_order": [
     {
       "axis": "x",
+      "id": "v16_fixture",
+      "kind": "reproduction",
+      "shift_m": 0.0
+    },
+    {
+      "axis": "x",
       "id": "baseline",
       "shift_m": 0.0
     },
@@ -176,10 +182,15 @@
   "environment": {
     "architecture": "amd64",
     "foam_version": "OpenFOAM-v2512",
+    "note": "both hash-pinned OpenCFD v2512 2512.0-2 locks are registered; the lock matching the observed Ubuntu codename is used and the observed OS is recorded in environment.json; any other OS fails closed with diagnostics",
     "observed_reference_os_version": "22.04.5",
     "openfoam_family": "OpenCFD v2512",
     "os_id": "ubuntu",
     "package_version": "2512.0-2",
+    "registered_lock_suites": [
+      "jammy",
+      "noble"
+    ],
     "version_codename": "jammy"
   },
   "evidence_class": "openfoam_stage_v_gridphase_probe_diagnostic_uncertified_geometry",
@@ -204,7 +215,9 @@
     "case_template/system/fvSolution": "007ddea730c1268410e406ecc83a82300d3840c353f0a6ce1ae2fbe9a4dfb643",
     "case_template/system/snappyHexMeshDict": "e8fdf720a2af997828c9d73d1f860ac3389b17011123f28427a8cc6e0eeb0a43",
     "case_template/system/surfaceFeatureExtractDict": "0f7c017a9edc5dd0819368089e35b59f8da84587432ab53facdb46e48fe0c4f8",
-    "openfoam_package_lock.json": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746"
+    "openfoam_package_lock_jammy.json": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",
+    "openfoam_package_lock_noble.json": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340",
+    "v16_fixture.stl": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
   },
   "interpretation": "axis responses are NOT assumed null: x changes inlet/outlet/wake distance, z changes ground clearance, y is approximately symmetric but not assumed; each axis is split into a smooth part and a residual and reported separately",
   "launch_deadline_hours": 9.0,
@@ -216,6 +229,14 @@
     "any qualification flag change"
   ],
   "per_case_failure_policy": "record the failing stage and continue; checkMesh exit 1 with exactly one concave-cell failure and concave fraction <= 0.08 is allowed (as in Round 5); no case is retried; a stage running longer than stage_timeout_s is killed and recorded; after stop_after_consecutive_failures consecutive non-COMPLETED cases the remaining cases are marked NOT_RUN_CONSECUTIVE_FAILURES (the 0.68 M-triangle surface is untested in OpenFOAM here); result.json is rewritten after every case",
+  "predecessor": {
+    "criteria_sha256": "571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673",
+    "evidence": "docs/evidence/xfid_gridphase_x2_2026_10_04/round1_terminal_failure/",
+    "reason": "runner OS gate accepted Ubuntu Jammy only; the Kaggle host image had drifted (Python 3.13 image) and the observed OS was not recorded",
+    "round_id": "xfid45_gridphase_x2_r1",
+    "solver_started": false,
+    "terminal_status": "KernelWorkerStatus.ERROR"
+  },
   "purpose": "empirical grid-phase sensitivity of OpenFOAM Stage V forces to rigid sub-cell translation of the baseline STL; meshing cost; basis for an OpenFOAM response floor in the later XFID registration",
   "qualification_flags": {
     "fd_oracle": false,
@@ -235,7 +256,19 @@
     "gzipped logs and force history"
   ],
   "registered_before_run": true,
-  "round_id": "xfid45_gridphase_x2_r1",
+  "reproduction_case": {
+    "id": "v16_fixture",
+    "purpose": "first case: cheap smoke test of the harness (2,684 triangles) and an informational re-check of the Round 5 v16 reproduction on whatever OS Kaggle provides now; it does not gate the later cases",
+    "references": {
+      "Cd": 1.1693991415068494,
+      "Cd_relative_tolerance": 0.02,
+      "downforce_coefficient": 0.7565514657808219,
+      "downforce_coefficient_absolute_tolerance": 0.005
+    },
+    "stl_file": "v16_fixture.stl",
+    "stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "round_id": "xfid45_gridphase_x2_r2",
   "stage_timeout_s": 7200,
   "stop_after_consecutive_failures": 3
 }

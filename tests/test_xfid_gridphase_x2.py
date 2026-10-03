@@ -2,6 +2,8 @@ import gzip
 import importlib.util
 from pathlib import Path
 
+import json
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,10 +101,11 @@ def _run_fake(tmp_path, snappy=None, deadline_hours=1.0, n_cases=2):
     (data / "case_template/system/controlDict").write_text("x")
     tri = np.array([[[0, 0, 0], [1, 0, 0], [0, 1, 0]]], dtype=float)
     (data / "baseline_stage_v.stl").write_bytes(x2.stl_bytes(tri))
-    (data / "openfoam_package_lock.json").write_text("{}")
+    (data / "openfoam_package_lock_jammy.json").write_text("{}")
+    (data / "v16_fixture.stl").write_bytes(x2.stl_bytes(tri))
     inputs = {p.relative_to(data).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(data.rglob("*")) if p.is_file()}
-    cases = [{"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "z_p1mm", "axis": "z", "shift_m": 0.001}][:2] + [{"id": f"c{i}", "axis": "y", "shift_m": 0.001} for i in range(n_cases - 2)]
-    criteria = {"immutable": True, "registered_before_run": True, "round_id": "t", "environment": {"foam_version": "x"},
+    cases = [{"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "z_p1mm", "axis": "z", "shift_m": 0.001, "kind": "reproduction"}][:2] + [{"id": f"c{i}", "axis": "y", "shift_m": 0.001} for i in range(n_cases - 2)]
+    criteria = {"immutable": True, "registered_before_run": True, "round_id": "t", "environment": {"foam_version": "x", "registered_lock_suites": ["jammy"]}, "reproduction_case": {"stl_file": "v16_fixture.stl", "references": {"Cd": 1.17, "Cd_relative_tolerance": 0.02, "downforce_coefficient": 0.80, "downforce_coefficient_absolute_tolerance": 0.005}},
                 "baseline": {"triangles": 1}, "inputs": inputs, "case_order": cases, "launch_deadline_hours": deadline_hours,
                 "force_window": {"minimum_rows": 20, "tail_fraction": 0.25, "force_n_per_coefficient": 0.32},
                 "qualification_flags": {"optimizer": False}, "stage_timeout_s": 60, "stop_after_consecutive_failures": 3}
@@ -155,3 +158,22 @@ def test_hung_stage_is_killed_at_the_timeout(tmp_path):
     x2.OPENFOAM_BASHRC = str(rc)
     r = x2.timed_run("hang", ["sleep", "30"], tmp_path, timeout_s=0.5)
     assert r["timed_out"] and r["returncode"] != 0 and r["wall_s"] < 10
+
+
+def test_reproduction_case_is_informational_and_environment_is_recorded(tmp_path):
+    out, result = _run_fake(tmp_path)
+    check = result["cases"][1]["reproduction_check_informational"]
+    assert abs(check["Cd"] - 0.37426349429041095 / 0.32) < 1e-9 and check["Cd_within_tolerance"] is True and check["downforce_within_tolerance"] is False
+    env = json.loads((out / "environment.json").read_text())
+    assert "os_release" in env and "python" in env
+
+
+def test_unregistered_os_fails_closed_with_diagnostics(tmp_path, monkeypatch):
+    locks = {"jammy": {"suite": "jammy"}}
+    monkeypatch.setattr(x2.Path, "read_text", lambda self, *a, **k: 'VERSION_CODENAME=plucky\nID=ubuntu\n' if str(self) == "/etc/os-release" else x2.Path.read_bytes(self).decode())
+    try:
+        x2.install_openfoam(tmp_path, locks, "OpenFOAM-v2512")
+    except RuntimeError as e:
+        assert "plucky" in str(e) and "jammy" in str(e)
+    else:
+        raise AssertionError("expected fail-closed")

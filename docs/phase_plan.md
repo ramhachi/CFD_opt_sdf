@@ -5614,3 +5614,15 @@ No qualification flag changes; all six remain false.
   `docs/issues/45_xfid_gridphase_x2_2026_10_04.md`.
 - Formal XFID criteria (X3) will be registered only after the X2 result; #46 may run in parallel per the 2026-10-04 decision.
   All six qualification flags remain false.
+
+### 2026-10-04 — #45 X2 OpenFOAM grid-phase probe result
+
+Round 1 stopped fail-closed on Kaggle host-image drift (Jammy-only OS gate; preserved, not a measurement). Round 2 (kernel v2,
+criteria `dea2d558...491f`) completed 33/33 cases in 0.73 h on Ubuntu 24.04 (Noble), OpenFOAM v2512 `2512.0-2`; the 236-file
+manifest was host-verified. The v16 fixture reproduces the Round 5 (Jammy) result bit-for-bit, so the host OS does not change the
+result. A 681,504-triangle surface meshes in about 12 s and solves in about 60 s per case. Rigid sub-cell translation of the baseline
+STL changes cell counts and forces non-smoothly: baseline-subtracted one-sided differences reach 0.7-0.9% (a y-shift of either sign
+adds a ~0.5% even-in-shift jump), centered secants S have drag RMS 9e-5 N / max 1.8e-4 N and downforce RMS 2.9e-4 N / max 4.9e-4 N
+(upper bounds; they include any real translation response). This is a diagnostic, not an XFID response; no floor is adopted and
+formal XFID criteria (X3) remain unregistered. See `docs/issues/45_xfid_gridphase_x2_result_2026_10_04.md`. All six qualification
+flags remain false.

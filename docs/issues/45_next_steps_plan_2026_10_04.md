@@ -76,7 +76,7 @@ v1（同日）からの変更: ユーザー判断「STL の品質 gate は非本
 - 独立 check: 派生 STL を別の小スクリプトで再計算（sonnet サブエージェント、primary を見せない）。
 - 事前登録: 実用 gate と併記項目を、実行前に commit・push。厳密認証が未実施であることを結果に明記。
 
-### X2. OpenFOAM グリッド位相感度（grid-phase）の測定（Kaggle CPU・最重要）
+### X2. OpenFOAM グリッド位相感度（grid-phase）の測定（Kaggle CPU・最重要）— **完了 2026-10-04（round 2）**: 33/33 完了、0.73 h、中心 secant ノイズ ~3e-4 N（downforce）。`45_xfid_gridphase_x2_result_2026_10_04.md`
 
 目的: 固定した背景メッシュに対して形状を剛体並進させたときの力の変化（grid-phase 感度）と、
 メッシュ生成コストを、XFID 本番の前に実測する。XFID の response floor の経験的根拠にする。

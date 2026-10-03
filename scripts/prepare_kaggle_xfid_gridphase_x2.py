@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import build_xfid45_stage_v_input_2026_10_04 as x1  # noqa: E402
 
 R5 = ROOT / "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5"
+NOBLE = ROOT / "infra/kaggle/kernel_openfoam_xfid_v16"
 KERNEL = ROOT / "infra/kaggle/kernel_openfoam_xfid_gridphase_x2"
 EVID = ROOT / "docs/evidence/xfid_gridphase_x2_2026_10_04"
 DATASET = ROOT / "work/kaggle_xfid_gridphase_x2_dataset"
@@ -32,7 +33,7 @@ def sha(p):
 
 
 def case_order():
-    cases = [{"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "baseline_repeat", "axis": "x", "shift_m": 0.0}]
+    cases = [{"id": "v16_fixture", "kind": "reproduction", "axis": "x", "shift_m": 0.0}, {"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "baseline_repeat", "axis": "x", "shift_m": 0.0}]
     for mm in SHIFTS_MM:
         for axis in AXES:
             for sign, tag in ((1, "p"), (-1, "m")):
@@ -55,17 +56,27 @@ def main(bind_runner):
         if src.is_file() and rel.as_posix() != "constant/triSurface/design_candidate.stl":
             (DATASET / "case_template" / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, DATASET / "case_template" / rel)
-    shutil.copy2(R5 / "openfoam_package_lock.json", DATASET / "openfoam_package_lock.json")
+    shutil.copy2(R5 / "openfoam_package_lock.json", DATASET / "openfoam_package_lock_jammy.json")
+    shutil.copy2(NOBLE / "openfoam_package_lock.json", DATASET / "openfoam_package_lock_noble.json")
+    v16 = R5 / "fixtures/candidate_v16.stl"
+    assert sha(v16) == "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11", "v16 fixture hash"
+    shutil.copy2(v16, DATASET / "v16_fixture.stl")
     r5 = json.loads((R5 / "criteria.json").read_text())
     inputs = {p.relative_to(DATASET).as_posix(): sha(p) for p in sorted(DATASET.rglob("*")) if p.is_file()}
     criteria = {
-        "round_id": "xfid45_gridphase_x2_r1",
+        "round_id": "xfid45_gridphase_x2_r2",
+        "predecessor": {"round_id": "xfid45_gridphase_x2_r1", "criteria_sha256": "571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673", "terminal_status": "KernelWorkerStatus.ERROR", "solver_started": False, "evidence": "docs/evidence/xfid_gridphase_x2_2026_10_04/round1_terminal_failure/", "reason": "runner OS gate accepted Ubuntu Jammy only; the Kaggle host image had drifted (Python 3.13 image) and the observed OS was not recorded"},
         "date": "2026-10-04",
         "evidence_class": "openfoam_stage_v_gridphase_probe_diagnostic_uncertified_geometry",
         "authority": "docs/issues/45_next_steps_plan_2026_10_04.md (X2) and the 2026-10-04 phase_plan entry",
         "purpose": "empirical grid-phase sensitivity of OpenFOAM Stage V forces to rigid sub-cell translation of the baseline STL; meshing cost; basis for an OpenFOAM response floor in the later XFID registration",
         "interpretation": "axis responses are NOT assumed null: x changes inlet/outlet/wake distance, z changes ground clearance, y is approximately symmetric but not assumed; each axis is split into a smooth part and a residual and reported separately",
-        "environment": r5["environment"],
+        "environment": {**r5["environment"], "registered_lock_suites": ["jammy", "noble"],
+                        "note": "both hash-pinned OpenCFD v2512 2512.0-2 locks are registered; the lock matching the observed Ubuntu codename is used and the observed OS is recorded in environment.json; any other OS fails closed with diagnostics"},
+        "reproduction_case": {"id": "v16_fixture", "stl_file": "v16_fixture.stl", "stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+                              "purpose": "first case: cheap smoke test of the harness (2,684 triangles) and an informational re-check of the Round 5 v16 reproduction on whatever OS Kaggle provides now; it does not gate the later cases",
+                              "references": {"Cd": r5["gates"]["reproduction"]["drag_coefficient_reference"], "Cd_relative_tolerance": r5["gates"]["reproduction"]["drag_coefficient_relative_tolerance"],
+                                             "downforce_coefficient": r5["gates"]["reproduction"]["downforce_coefficient_reference"], "downforce_coefficient_absolute_tolerance": r5["gates"]["reproduction"]["downforce_coefficient_absolute_tolerance"]}},
         "baseline": {"stl_sha256": BASELINE_STL_SHA, "triangles": int(len(f)), "source": "docs/evidence/xfid45_stage_v_input_2026_10_04/result.json (baseline derived STL)"},
         "inputs": inputs,
         "case_template_origin": "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/case_template (hash-identical, minus the v16 candidate STL)",
