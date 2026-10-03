@@ -66,7 +66,7 @@ def test_analysis_recovers_a_planted_quadratic_with_no_residual():
     assert res["baseline_repeat_difference_n"]["drag_n"] == 0
 
 
-def _run_fake(tmp_path, snappy=None, deadline_hours=1.0):
+def _run_fake(tmp_path, snappy=None, deadline_hours=1.0, n_cases=2):
     """Whole control flow (copy template, STL write, five stages, parse, retain, deadline) with stub binaries."""
     import hashlib
     import json
@@ -101,11 +101,11 @@ def _run_fake(tmp_path, snappy=None, deadline_hours=1.0):
     (data / "baseline_stage_v.stl").write_bytes(x2.stl_bytes(tri))
     (data / "openfoam_package_lock.json").write_text("{}")
     inputs = {p.relative_to(data).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(data.rglob("*")) if p.is_file()}
-    cases = [{"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "z_p1mm", "axis": "z", "shift_m": 0.001}]
+    cases = [{"id": "baseline", "axis": "x", "shift_m": 0.0}, {"id": "z_p1mm", "axis": "z", "shift_m": 0.001}][:2] + [{"id": f"c{i}", "axis": "y", "shift_m": 0.001} for i in range(n_cases - 2)]
     criteria = {"immutable": True, "registered_before_run": True, "round_id": "t", "environment": {"foam_version": "x"},
                 "baseline": {"triangles": 1}, "inputs": inputs, "case_order": cases, "launch_deadline_hours": deadline_hours,
                 "force_window": {"minimum_rows": 20, "tail_fraction": 0.25, "force_n_per_coefficient": 0.32},
-                "qualification_flags": {"optimizer": False}}
+                "qualification_flags": {"optimizer": False}, "stage_timeout_s": 60, "stop_after_consecutive_failures": 3}
     text = json.dumps(criteria)
     digest = hashlib.sha256(text.encode()).hexdigest()
     (data / "x2_criteria.json").write_text(text)
@@ -141,3 +141,17 @@ def test_stage_failure_is_recorded_and_later_cases_still_run(tmp_path):
 def test_launch_deadline_marks_cases_not_run(tmp_path):
     _, result = _run_fake(tmp_path, deadline_hours=-1.0)
     assert [c["status"] for c in result["cases"]] == ["NOT_RUN_TIME_BUDGET"] * 2
+
+
+def test_consecutive_failures_stop_the_remaining_cases(tmp_path):
+    (tmp_path / "a").mkdir()
+    _, result = _run_fake(tmp_path / "a", snappy="exit 2", n_cases=5)
+    assert [c["status"] for c in result["cases"]] == ["snappyHexMesh_FAILED"] * 3 + ["NOT_RUN_CONSECUTIVE_FAILURES"] * 2
+
+
+def test_hung_stage_is_killed_at_the_timeout(tmp_path):
+    rc = tmp_path / "bashrc"
+    rc.write_text("")
+    x2.OPENFOAM_BASHRC = str(rc)
+    r = x2.timed_run("hang", ["sleep", "30"], tmp_path, timeout_s=0.5)
+    assert r["timed_out"] and r["returncode"] != 0 and r["wall_s"] < 10

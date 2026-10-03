@@ -16,6 +16,7 @@ import os
 import re
 import resource
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -30,7 +31,7 @@ try:
 except ImportError:  # peak memory is then reported as null
     psutil = None
 
-CRITERIA_SHA256 = "586c1e8c4897a955cfc22d969fc05d2ab32a0f2e85f49e08aef7c263b91185d2"  # replaced at registration; runner refuses to run otherwise
+CRITERIA_SHA256 = "571d36fb7071415db6f96e6bf0d5e58fc9c5f4980b79df563ae24471940ea673"  # replaced at registration; runner refuses to run otherwise
 OUTPUT = Path(os.environ.get("X2_OUTPUT", "/kaggle/working/openfoam_xfid_gridphase_x2"))
 INPUT_ROOT = Path(os.environ.get("X2_INPUT", "/kaggle/input"))
 OPENFOAM_BASHRC = os.environ.get("X2_BASHRC", "/usr/lib/openfoam/openfoam2512/etc/bashrc")
@@ -153,14 +154,14 @@ def force_window(dat_text: str, spec: dict) -> dict:
 
 # ---- process control ----------------------------------------------------------
 
-def timed_run(name: str, command: list[str], cwd: Path) -> dict:
+def timed_run(name: str, command: list[str], cwd: Path, timeout_s: float | None = None) -> dict:
     """Run one OpenFOAM stage; log to log.<name>; sample peak process-tree RSS every 0.5 s."""
     shell = f"source {OPENFOAM_BASHRC} && " + " ".join(command)
     before = resource.getrusage(resource.RUSAGE_CHILDREN)
     peak = [0]
     start = time.monotonic()
     with open(cwd / f"log.{name}", "wb") as log:
-        proc = subprocess.Popen(["bash", "-lc", shell], cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
+        proc = subprocess.Popen(["bash", "-lc", shell], cwd=cwd, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         stop = threading.Event()
 
         def sample():
@@ -177,11 +178,16 @@ def timed_run(name: str, command: list[str], cwd: Path) -> dict:
 
         thread = threading.Thread(target=sample, daemon=True)
         thread.start()
-        returncode = proc.wait()
+        timed_out = False
+        try:
+            returncode = proc.wait(timeout=timeout_s)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            returncode, timed_out = proc.wait(), True
         stop.set()
         thread.join()
     after = resource.getrusage(resource.RUSAGE_CHILDREN)
-    return {"stage": name, "returncode": returncode, "wall_s": time.monotonic() - start,
+    return {"stage": name, "returncode": returncode, "timed_out": timed_out, "wall_s": time.monotonic() - start,
             "child_user_s": after.ru_utime - before.ru_utime, "child_sys_s": after.ru_stime - before.ru_stime,
             "peak_rss_mb_sampled": (peak[0] / 1e6) if psutil is not None else None}
 
@@ -201,7 +207,7 @@ def run_case(spec: dict, criteria: dict, template: Path, tri64: np.ndarray, root
               "stages": [], "status": "COMPLETED"}
     start = time.monotonic()
     for name, command in STAGES:
-        stage = timed_run(name, command, work)
+        stage = timed_run(name, command, work, criteria["stage_timeout_s"])
         record["stages"].append(stage)
         if stage["returncode"] != 0:
             allowed = name == "checkMesh" and parse_check_mesh((work / "log.checkMesh").read_text(errors="replace"))["only_allowed_concave_failure"]
@@ -260,12 +266,14 @@ def install_openfoam(work: Path, lock: dict, expected_version: str) -> dict:
         require(deb.is_file() and sha(deb) == lock["packages"][n], f"{n} package missing or SHA mismatch")
         debs.append(str(deb))
     subprocess.run(["apt-get", "install", "-y", *debs], check=True)
+    for d in debs:
+        Path(d).unlink()  # hundreds of MB; hashes are verified and recorded by the lock
     installed = subprocess.run(["dpkg-query", "-W", "-f=${Package}=${Version}\n", *names], check=True, text=True, capture_output=True).stdout.splitlines()
     require(sorted(installed) == sorted(f"{n}={lock['version']}" for n in names), "installed OpenFOAM package set differs from lock")
     probe = subprocess.run(["bash", "-lc", f'source {OPENFOAM_BASHRC} && source "$WM_PROJECT_DIR/etc/config.sh/aliases" && foamVersion'],
                            text=True, capture_output=True)
     lines = [l.strip() for s in (probe.stdout, probe.stderr) for l in s.splitlines() if re.fullmatch(r"OpenFOAM-[A-Za-z0-9._+-]+", l.strip())]
-    require(lines == [expected_version], f"expected one {expected_version!r} foamVersion line; found {lines}")
+    require(lines == [expected_version], f"expected one {expected_version!r} foamVersion line; found {lines}; rc={probe.returncode} stdout={probe.stdout[-300:]!r} stderr={probe.stderr[-300:]!r}")
     return {"installed_packages": installed, "foamVersion": lines[0], "os_release": release, "architecture": arch}
 
 
@@ -294,20 +302,32 @@ def main() -> None:
     tri64 = read_stl(data / "baseline_stage_v.stl")
     require(len(tri64) == criteria["baseline"]["triangles"], "baseline triangle count mismatch")
     results, deadline = [], criteria["launch_deadline_hours"] * 3600
+    limit, streak = criteria["stop_after_consecutive_failures"], 0
+
+    def summary():
+        return {"criteria_sha256": CRITERIA_SHA256, "runner_sha256": sha(Path(__file__).resolve()),
+                "round_id": criteria["round_id"], "install": install, "elapsed_s": time.monotonic() - started,
+                "cases": results, "qualification_flags": criteria["qualification_flags"]}
+
     for spec in criteria["case_order"]:
         if time.monotonic() - started > deadline:
             results.append({"id": spec["id"], "status": "NOT_RUN_TIME_BUDGET"})
-            continue
-        results.append(run_case(spec, criteria, data / "case_template", tri64, OUTPUT))
-        write_json(OUTPUT / "progress.json", {"completed": len(results), "elapsed_s": time.monotonic() - started})
-    summary = {"criteria_sha256": CRITERIA_SHA256, "runner_sha256": sha(Path(__file__).resolve()),
-               "round_id": criteria["round_id"], "install": install,
-               "elapsed_s": time.monotonic() - started, "cases": results,
-               "qualification_flags": criteria["qualification_flags"]}
-    write_json(OUTPUT / "result.json", summary)
+        elif streak >= limit:
+            results.append({"id": spec["id"], "status": "NOT_RUN_CONSECUTIVE_FAILURES"})
+        else:
+            try:
+                results.append(run_case(spec, criteria, data / "case_template", tri64, OUTPUT))
+            except Exception as exc:  # per-case fail-soft: record and continue
+                shutil.rmtree(OUTPUT / "cases" / spec["id"] / "case", ignore_errors=True)
+                results.append({"id": spec["id"], "status": "RUNNER_EXCEPTION", "error": f"{type(exc).__name__}: {exc}"})
+            streak = streak + 1 if results[-1]["status"] != "COMPLETED" else 0
+        write_json(OUTPUT / "result.json", summary())  # rewritten every case: survives a kernel kill
     manifest = {str(p.relative_to(OUTPUT)): sha(p) for p in sorted(OUTPUT.rglob("*")) if p.is_file() and p.name != "artifact_manifest.json"}
     write_json(OUTPUT / "artifact_manifest.json", manifest)
-    (OUTPUT / "DONE").write_text(json.dumps({"status": "COMPLETED_MEASUREMENT", "artifact_manifest_sha256": sha(OUTPUT / "artifact_manifest.json")}, sort_keys=True) + "\n")
+    counts = {}
+    for c in results:
+        counts[c["status"]] = counts.get(c["status"], 0) + 1
+    (OUTPUT / "DONE").write_text(json.dumps({"status": "FINISHED_MEASUREMENT_LOOP", "status_counts": counts, "artifact_manifest_sha256": sha(OUTPUT / "artifact_manifest.json")}, sort_keys=True) + "\n")
 
 
 if __name__ == "__main__":

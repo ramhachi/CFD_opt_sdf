@@ -15,7 +15,10 @@ priority (1, 2, 0.5, 4, 8 mm; z, y, x).
 Recorded per case: STL hash; per-stage wall time, CPU time, sampled peak RSS; checkMesh cells/concave/failed
 checks; snappyHexMesh cells per refinement level; simpleFoam iterations and residuals; drag and downforce in N
 (last-25% window mean, std, drift, last value; N = coefficient x 0.32); gzipped logs and force history. A failing
-stage is recorded and later cases still run; cases are never retried; no new case launches after 9 h of the 12 h limit.
+stage is recorded and later cases still run; cases are never retried; no new case launches after 9 h of the 12 h limit;
+a stage running longer than 7,200 s is killed and recorded; after 3 consecutive non-COMPLETED cases the rest are marked
+`NOT_RUN_CONSECUTIVE_FAILURES` (the 0.68 M-triangle surface has never been meshed by OpenFOAM here, so a systematic failure must
+not burn hours); `result.json` is rewritten after every case.
 
 ## Interpretation rules (fixed before the run)
 
@@ -35,6 +38,15 @@ stage is recorded and later cases still run; cases are never retried; no new cas
 concave, 584 iterations, drag 0.37426349 N and downforce 0.24225913 N); deterministic STL translation; the whole
 runner control flow with stub OpenFOAM binaries (success, stage failure continues, deadline marks NOT_RUN);
 analysis recovers a planted quadratic. The real snappyHexMesh log format and the real timings are untested.
+
+## Independent review (sonnet, read-only) and disposition
+
+No defect likely to fail the first real run was found. Adopted: per-case exception handling (a non-stage exception no longer
+aborts the loop), stage timeout, `result.json` after every case, DONE carries per-status counts, foamVersion-probe diagnostics,
+`.deb` cleanup, consecutive-failure stop. Not adopted: retaining `phi`/boundary for a mass-balance audit (X2 is a force/cost probe,
+not a Stage V qualification; residuals are recorded). Open and unverifiable locally: the real `snappyHexMesh` log format
+(parser keeps the raw block and the gzipped log), a zero-header binary STL through OpenFOAM's reader (reviewer ~90% confident),
+and meshing a 681,504-triangle surface (the cost columns answer it).
 
 ## Registered artifacts
 
