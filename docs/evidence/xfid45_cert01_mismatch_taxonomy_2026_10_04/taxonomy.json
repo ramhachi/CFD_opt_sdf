@@ -1,0 +1,147 @@
+{
+ "evidence_class": "solver_free_post_hoc_trace_taxonomy_unregistered",
+ "trace_sha256": "5a82495e4006aa79db3805e5ee991aaf09b46252b71ad01dbceb7ccfc6e21c3d",
+ "totals": {
+  "comparisons": 98304,
+  "mismatching": 5796
+ },
+ "by_class": {
+  "A_root_at_sample_point_dropped_by_primary_endpoint_envelope": 4398,
+  "B_nonzero_cell_endpoint_root_dropped_by_primary_endpoint_envelope": 144,
+  "C_sturm_splits_one_root_into_ulp_apart_pair": 672,
+  "D_primary_position_bracket_exceeds_roundoff_enclosure": 564,
+  "F_other": 18
+ },
+ "by_side": {
+  "baseline": 5706,
+  "target": 90
+ },
+ "by_side_r_class": [
+  {
+   "side": "baseline",
+   "r": 1,
+   "class": "A_root_at_sample_point_dropped_by_primary_endpoint_envelope",
+   "count": 1098
+  },
+  {
+   "side": "baseline",
+   "r": 1,
+   "class": "B_nonzero_cell_endpoint_root_dropped_by_primary_endpoint_envelope",
+   "count": 72
+  },
+  {
+   "side": "baseline",
+   "r": 1,
+   "class": "C_sturm_splits_one_root_into_ulp_apart_pair",
+   "count": 132
+  },
+  {
+   "side": "baseline",
+   "r": 1,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 312
+  },
+  {
+   "side": "baseline",
+   "r": 1,
+   "class": "F_other",
+   "count": 6
+  },
+  {
+   "side": "baseline",
+   "r": 2,
+   "class": "A_root_at_sample_point_dropped_by_primary_endpoint_envelope",
+   "count": 1212
+  },
+  {
+   "side": "baseline",
+   "r": 2,
+   "class": "B_nonzero_cell_endpoint_root_dropped_by_primary_endpoint_envelope",
+   "count": 48
+  },
+  {
+   "side": "baseline",
+   "r": 2,
+   "class": "C_sturm_splits_one_root_into_ulp_apart_pair",
+   "count": 246
+  },
+  {
+   "side": "baseline",
+   "r": 2,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 66
+  },
+  {
+   "side": "baseline",
+   "r": 2,
+   "class": "F_other",
+   "count": 12
+  },
+  {
+   "side": "baseline",
+   "r": 4,
+   "class": "A_root_at_sample_point_dropped_by_primary_endpoint_envelope",
+   "count": 1032
+  },
+  {
+   "side": "baseline",
+   "r": 4,
+   "class": "B_nonzero_cell_endpoint_root_dropped_by_primary_endpoint_envelope",
+   "count": 24
+  },
+  {
+   "side": "baseline",
+   "r": 4,
+   "class": "C_sturm_splits_one_root_into_ulp_apart_pair",
+   "count": 120
+  },
+  {
+   "side": "baseline",
+   "r": 4,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 24
+  },
+  {
+   "side": "baseline",
+   "r": 8,
+   "class": "A_root_at_sample_point_dropped_by_primary_endpoint_envelope",
+   "count": 1056
+  },
+  {
+   "side": "baseline",
+   "r": 8,
+   "class": "C_sturm_splits_one_root_into_ulp_apart_pair",
+   "count": 174
+  },
+  {
+   "side": "baseline",
+   "r": 8,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 72
+  },
+  {
+   "side": "target",
+   "r": 1,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 11
+  },
+  {
+   "side": "target",
+   "r": 2,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 40
+  },
+  {
+   "side": "target",
+   "r": 4,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 14
+  },
+  {
+   "side": "target",
+   "r": 8,
+   "class": "D_primary_position_bracket_exceeds_roundoff_enclosure",
+   "count": 25
+  }
+ ]
+}
