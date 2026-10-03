@@ -89,3 +89,26 @@ and pushed output-only adapter adds exact `np.integer -> Python int` encoding;
 it changes no extractor, measurement, verifier, threshold, gate or numeric value.
 The complete run is restarted under the same registration, with prefix surface
 hashes and individual gates checked against the interrupted attempt.
+
+### Frozen correspondence numerical limitation (diagnostic, not a repair)
+
+A post-registration read-only check found a source-root enumeration limitation.
+For r=4 D0−, double correspondence sample 691, the original target trilinear
+field has a sign crossing at `t=+0.00416667075198 m`. The mesh intersection is
+`+0.00416669845581 m`. Including the baseline source-root offset, their diagnostic
+displacement difference is approximately **33.8 nm**. The parent cubic root
+candidate's residual is `3.62e-12 m`, just above its frozen `h*1e-10=2.5e-12 m`
+filter; it drops the nearby root and selects another certified crossing at
+`−0.0499999531 m`. The resulting frozen error near 54 mm is therefore not evidence
+of an actual 54 mm displacement discrepancy at this sample.
+
+The independent verifier accepts the nearby root using its sign certificate.
+Its r=4 D0− maximum error/unresolved counts differ from the parent, while both
+registered Boolean fidelity gates remain FAIL. **Individual/aggregate gate
+agreement must not be described as quantitative per-sample correspondence
+agreement.** A local crossing certificate does not establish complete root
+enumeration or nearest-root uniqueness. Sources, thresholds and original results
+remain unchanged; `ray_root_omission_diagnostic.json` and its separate reproduction
+script are auxiliary evidence, not replacement criteria or a qualified result.
+A future round must establish robust root enumeration/completeness with synthetic
+near-linear cubics before registering and evaluating target shapes.
