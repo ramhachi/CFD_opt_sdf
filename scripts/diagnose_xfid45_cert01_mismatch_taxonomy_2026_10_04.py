@@ -49,9 +49,38 @@ def classify(side):
     return cls
 
 
+def followups(r, cls, out):
+    """Class C: are the ulp-apart Sturm roots in adjacent cells with touching brackets?
+    Class B: would an incomplete primary set pick a different nearest root; target side?"""
+    s = r["baseline"]
+    p, i = s["primary"], s["independent"]
+    if cls.startswith("C"):
+        ts = sorted(i["roots"], key=lambda x: x["t_m"])
+        for a, b in zip(ts, ts[1:]):
+            if b["t_m"] - a["t_m"] < ZERO_M:
+                adj = sum(abs(u - v) for u, v in zip(a["cell"], b["cell"])) == 1
+                touch = a["bracket_m"][0] <= b["bracket_m"][1] and b["bracket_m"][0] <= a["bracket_m"][1]
+                out["C_pairs"] += 1
+                out["C_adjacent_cells"] += adj
+                out["C_brackets_touch"] += touch
+                out["C_both_kind_crossing"] += a["kind"] == b["kind"] == "crossing"
+    if cls.startswith("B"):
+        tn = min(i["roots"], key=lambda x: abs(x["t_m"]))["t_m"]
+        pt = [x["t_m"] for x in p["roots"]]
+        out["B_rows"] += 1
+        out["B_primary_has_no_root"] += not pt
+        out["B_incomplete_primary_nearest_would_differ"] += bool(pt) and abs(min(pt, key=abs) - tn) > MATCH_M
+        t = r["target"]
+        out["B_target_side_both_complete_same_roots"] += (
+            t["primary"]["status"] == t["independent"]["status"] == "COMPLETE"
+            and len(t["primary"]["roots"]) == len(t["independent"]["roots"])
+        )
+
+
 def main():
     n = collections.Counter()
     tab = collections.Counter()
+    fu = collections.Counter()
     for line in gzip.open(TRACE, "rt"):
         r = json.loads(line)
         for side_name in ("baseline", "target"):
@@ -60,6 +89,8 @@ def main():
             if cls:
                 n["mismatching"] += 1
                 tab[(side_name, r["r"], cls)] += 1
+                if side_name == "baseline":
+                    followups(r, cls, fu)
     by_class = collections.Counter()
     by_side = collections.Counter()
     for (side, _, cls), v in tab.items():
@@ -74,6 +105,7 @@ def main():
         "totals": dict(n),
         "by_class": dict(sorted(by_class.items())),
         "by_side": dict(by_side),
+        "followups_baseline_classes_B_C": dict(fu),
         "by_side_r_class": rows,
     }
     OUT.mkdir(parents=True, exist_ok=True)

@@ -51,9 +51,21 @@ the two certifiers picking different roots.
   arithmetic of each other or of the sample point, so no position tolerance
   separates them; an ownership rule for shared endpoints is the candidate
   lever. The Sturm count already returns COMPLETE for A, B and D.
-- Not established: whether class C is a duplicate across two adjacent cells or
-  a genuinely double root, and whether any class-B root changes a nearest-root
-  choice at the target side. Both need a targeted check before contract text.
+## Follow-up checks (same trace, same script, `followups_baseline_classes_B_C`)
+
+- **Class C is a shared-cell-plane duplicate, not a double root within a cell.**
+  All 672 Sturm pairs lie in adjacent cells (one index step), their position
+  brackets touch or overlap, and both roots are `kind=crossing` (no tangent
+  flag). 534 sit at `t≈0` (`-0.0` vs `-4.55e-14`), 138 at a non-zero `t`. The
+  primary merges exact duplicates only; a one-ulp difference across the plane
+  defeats that merge. A genuine double root straddling a plane is not excluded
+  analytically, only unsupported by the trace.
+- **Class B does not corrupt a nearest-root choice; it removes the choice.** In
+  all 144 rows the primary returns no root at all (UNRESOLVED), so no wrong
+  nearest root is selected; the Sturm root is the sole or nearest baseline root.
+  On the target side of the same 144 samples, primary and Sturm both return
+  COMPLETE with the same root count (144/144). B is therefore a missing
+  baseline-side correspondence, not a target-side selection error.
 
 ## Not claimed
 
