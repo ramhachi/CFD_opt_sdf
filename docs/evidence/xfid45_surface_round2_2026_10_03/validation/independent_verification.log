@@ -1,0 +1,40 @@
+A D0_interface_offset_minus agreement True
+A D0_interface_offset_plus agreement True
+A D1_filtered_seed11_minus agreement True
+A D1_filtered_seed11_plus agreement True
+A D2_filtered_seed2026_minus agreement True
+A D2_filtered_seed2026_plus agreement True
+A H_analytic_shell agreement True
+A H_combined_minus agreement True
+A H_combined_plus agreement True
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py:302: RuntimeWarning: divide by zero encountered in divide
+  center_mass = integrated[1:4] / volume
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py:302: RuntimeWarning: invalid value encountered in divide
+  center_mass = integrated[1:4] / volume
+A baseline agreement False
+B D0_interface_offset_minus agreement True
+B D0_interface_offset_plus agreement True
+B D1_filtered_seed11_minus agreement True
+B D1_filtered_seed11_plus agreement True
+B D2_filtered_seed2026_minus agreement True
+B D2_filtered_seed2026_plus agreement True
+B H_analytic_shell agreement True
+B H_combined_minus agreement True
+B H_combined_plus agreement True
+B baseline agreement True
+/Users/sota/.codex/worktrees/issue45-export-qualification/CFD2026_09/scripts/verify_xfid45_surface_round2.py:180: RuntimeWarning: invalid value encountered in scalar divide
+  float(weights[(plus > tol) & (minus < -tol)].sum() / total) > 0.5
+C D0_interface_offset_minus agreement False
+C D0_interface_offset_plus agreement False
+C D1_filtered_seed11_minus agreement True
+C D1_filtered_seed11_plus agreement True
+C D2_filtered_seed2026_minus agreement True
+C D2_filtered_seed2026_plus agreement True
+C H_analytic_shell agreement True
+C H_combined_minus agreement False
+C H_combined_plus agreement False
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py:316: RuntimeWarning: invalid value encountered in scalar multiply
+  integrated[5] + integrated[6] - (volume * (center_mass[[1, 2]] ** 2).sum())
+/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py:325: RuntimeWarning: invalid value encountered in scalar multiply
+  inertia[1, 2] = -(integrated[8] - (volume * np.prod(center_mass[[1, 2]])))
+C baseline agreement False

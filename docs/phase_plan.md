@@ -5446,3 +5446,32 @@ See `docs/issues/45_surface_round2_2026_10_03.md` and
 This is geometry evidence only for #29's actual zero-level / Stage V export
 gap. No production exporter, solver, Kaggle, formal XFID or #46 execution is
 part of this round; all qualification flags remain false.
+
+### 2026-10-03 #45 successor surface round 2 result (geometry only)
+
+After criteria/source commit `4dbcfb8d5f71d73324f30c9be16d39f68390a552` was
+pushed, all A/B/C candidates were measured on the seven frozen inputs and
+three preregistered held-outs. All 30 cases FAIL; no candidate is selected.
+Original-trilinear sampled Lipschitz lower distances exceed the fixed 0.5 mm
+limit on every canonical/frozen-direction case. A retains baseline's 12 bad
+edges and D2 sidedness ambiguities; B baseline has a pinched vertex link even
+with closed edges; C also fails float32 STL topology and baseline numerical/
+implementation integrity. Construction arguments do not qualify manifoldness.
+See `docs/issues/45_surface_round2_2026_10_03.md` and the immutable raw and
+independent evidence under `docs/evidence/xfid45_surface_round2_2026_10_03/`.
+
+The extractor-free verifier agrees with overall FAIL in 30/30 cases and with
+every individual gate in 24/30. Six orientation-gate discrepancies expose
+component-definition differences on non-manifold/zero-area surfaces and are
+retained without altering registered programs. They also fail the required
+independent agreement gate. Reconsider direct GridSDF Stage V as a separate
+representation/independence decision; no implementation or solver execution
+is authorized by this result. #45 remains UNRESOLVED; formal XFID and #46
+remain blocked and all qualification flags false. Production exporter changes
+require a separate PR. The #29 reference is only its actual zero-level / STL
+export gap, not overall GEOM-01 closure.
+
+Validation: focused 15 passed; compileall, script compilation, ruff and diff
+check passed; full pytest 36 failed, 1,355 passed, 5 skipped. Exact failure-ID
+comparison with the pinned 37-ID baseline found zero new IDs and one absent
+baseline ID, matching the predecessor's fixture-restored 36-ID set.

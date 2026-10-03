@@ -97,3 +97,159 @@ from [#45](https://github.com/ramhachi/CFD_opt_sdf/issues/45). It establishes
 no minimum-feature, topology-policy or manufacturing close condition for
 #29. A geometry pass would only permit considering return to #45; this task
 does not execute formal XFID and never advances automatically to #46.
+
+## Reproduction
+
+Use the recorded Python 3.12 runtime and its recorded NumPy/SciPy/PyVista/VTK/
+trimesh versions. Install the experiment dependency in an ignored task folder:
+
+```sh
+uv pip install --python <recorded-python> \
+  --target work/xfid45_surface_round2_deps --no-deps \
+  scikit-image==0.25.2 lazy-loader==0.4
+```
+
+Set `PYTHONPATH=work/xfid45_surface_round2_deps:src:scripts`. Synthetic tests
+work without this optional dependency by skipping the two B cases if the
+pinned version is unavailable. The recorded qualification screen includes B.
+`audit_xfid45_surface_round2.py` deliberately refuses changed registered
+sources/inputs/runtime binaries or an unpushed registration HEAD. Its first
+execution must be at the registration commit. Existing saved surfaces can be
+recomputed separately with `verify_xfid45_surface_round2.py`; that script
+performs no extraction. The post-screen representation diagnostic likewise
+reads only saved arrays and does not modify the criteria or candidates.
+
+## Step 2: frozen screen result
+
+The registration/source commit `4dbcfb8d5f71d73324f30c9be16d39f68390a552`
+was pushed and remote-HEAD matched **before** target evaluation. Registration
+SHA-256 is `981eddecd957817fc40fc0a1b6460a4de6cd4527ba05cee5677f3ebbfdf316a3`.
+The evaluator verified every registered input, source and runtime file hash
+before extracting any target. All three candidates were executed twice on
+all 10 inputs; all raw vertex/face array hashes repeat exactly. Original phi
+is unchanged in every extraction. **No candidate is selected.**
+
+| Input | A | B | C |
+|---|---|---|---|
+| canonical v17 baseline | FAIL | FAIL | FAIL |
+| D0 minus | FAIL | FAIL | FAIL |
+| D0 plus | FAIL | FAIL | FAIL |
+| D1 minus | FAIL | FAIL | FAIL |
+| D1 plus | FAIL | FAIL | FAIL |
+| D2 minus | FAIL | FAIL | FAIL |
+| D2 plus | FAIL | FAIL | FAIL |
+| held-out combined minus | FAIL | FAIL | FAIL |
+| held-out combined plus | FAIL | FAIL | FAIL |
+| held-out analytic shell | FAIL | FAIL | FAIL |
+
+### Identity and topology findings
+
+Every canonical/frozen-direction case has sampled **Lipschitz lower bounds**
+above 0.5 mm, so rejection is supported by a bound, not just failure of the
+witness search. Maximum lower bounds across the seven inputs are:
+
+| Candidate | Smallest case maximum lower bound | Largest case maximum lower bound |
+|---|---:|---:|
+| A | 3.0318 mm | 5.3458 mm |
+| B | 3.0318 mm | 5.3458 mm |
+| C | 4.7755 mm | 5.5083 mm |
+
+These bounds measure distance from **triangle samples** to the original
+trilinear zero set. They are neither a vertex-motion measure nor an exact
+nearest-distance/Hausdorff value. The corresponding finite witness upper
+bounds are also retained, with unresolved samples explicitly counted. In the
+analytic shell held-out, A/B have upper bounds about 0.515 mm and lower bounds
+about 0.300 mm: their identity is **not certified by the registered method**,
+not proved to exceed 0.5 mm. C's shell lower bound is 0.6557 mm and does prove
+exceedance.
+
+A keeps the original contour coordinates. Whole-component flips preserve
+winding in the six perturbations, but do not cure baseline's 12 bad edges and
+11 bad vertex links. D2's small ambiguous components remain an orientation
+failure. Even D0/D1's topology and orientation successes do not establish
+original-trilinear surface identity.
+
+B baseline has closed edges, no duplicate/zero-area triangles, but **one
+non-manifold vertex link**. At approximately `(0.5, -0.4, 0.15) m`, its link
+has two disjoint cycles. Localization records nine incident faces and the
+containing cell `[60,16,30]`, whose phi values include exact zeros and
+`-6.28e-16 m`. Edge incidence alone would miss this defect. This numerical
+and contouring evidence does not prove that the original mathematical zero
+set is manifold, nor that every old defect is solely a VTK bug.
+
+C's six perturbations pass double-coordinate edge/link gates and have no
+native duplicate or zero-area faces. Their minimum positive triangle area is
+only `7.1054e-17 m2`. float32 STL merges 257 coordinate sets per perturbation,
+creating 321 non-manifold edges, 318 invalid vertex links, 16 duplicate faces
+and 580 zero-area triangles in each. These are measured serialization
+failures, despite combinatorial edge identities. C baseline already fails
+before serialization: native-ID edge incidence is bad at 1,380 edges;
+exact double-coordinate merging yields 896 bad edges, 874 bad links,
+114 duplicate faces and 1,512 zero-area triangles. Degenerate-coordinate
+rounding and the registered implementation's polygon ordering limit what
+can be inferred from a construction argument. No guarantee is claimed and
+no corrective cleanup is added after observing these results.
+
+C uses a piecewise-affine tetrahedral field, whereas the identity reference
+is the original trilinear field. Its measured discrepancy, STL failures and
+baseline implementation/numerical defects reject C. They do not authorize a
+change of canonical geometry semantics. The finite zero tie does not by
+itself explain the failures on nonzero perturbation inputs.
+
+All 30 outputs have positive total signed volume and satisfy clearance;
+the smallest measured clearance is `0.6061457 m`. These gates alone do not
+make any surface acceptable. Detailed raw/serialized statistics, samples,
+orientation votes, source-edge/tetra provenance and hashes are in the result
+and per-case files. Extraction audits are losslessly gzip archived; the
+archive record includes uncompressed-content hashes and checked decompression
+identity. Prior-round evidence remains immutable.
+
+### Independent recomputation and its discrepancies
+
+The registered independent verifier completed all 30 cases, imports no
+extractor or measurement helper, and agrees with the **overall FAIL verdict
+on all 30**. It agrees on every individual geometry gate in **24/30**, so the
+registered all-case independent-agreement requirement also fails.
+
+Six differences are retained without changing either registered program:
+
+- A baseline: the evaluator joins all faces sharing an edge, including
+  edges with more than two faces; the verifier's face-adjacency graph separates
+  such faces. Their component-sidedness gate differs on this already
+  non-manifold surface.
+- C D0 minus/plus, both combined held-outs, and baseline: the evaluator
+  removes zero-area faces before its sidedness component census; the verifier
+  retains their components and reports zero-total-area components ambiguous.
+  The verifier rejects orientation where the evaluator reports a pass.
+
+Every difference is limited to orientation gates; independently measured
+closed-edge/vertex-link, duplicates, zero-area faces, area/volume/clearance and
+identity gate verdicts agree. Raw maximum witness upper distances need not be
+identical because the two projection methods find different valid witnesses.
+The discrepancy report is an **evaluation-harness limitation**, not a new
+successful exporter or a reason to relax the criteria. Any future round must
+align this component-definition contract with synthetic regressions before
+registration. Registered evidence here is unchanged and all six cases fail
+other geometry gates regardless.
+
+### Validation and status
+
+Focused tests: **15 passed** (12 successor tests plus 3 prior canonicalization
+tests). `python -m compileall src tests`, script compilation, ruff and
+`git diff --check` pass. Full `pytest -q`: **36 failed, 1,355 passed, 5 skipped**.
+The exact 36 failure IDs equal the predecessor's fixture-restored run. Against
+the pinned 37-ID baseline: **zero new IDs**, one baseline ID absent (the
+canonical objective sign test). Existing failures are retained in the full
+log and failure-ID record; this is not a claim that the full suite is green.
+
+**#45 remains UNRESOLVED. Formal XFID cannot resume from this screen.** No
+solver/Kaggle/formal XFID/#46 ran, and all qualification flags remain false.
+A/B/C all fail, so the requested escalation is to **reconsider a GridSDF-direct
+Stage V representation as a separate design decision**, including the
+independence of the Stage V geometry/solver semantics. No direct-input solver
+path is implemented or run here. A new surface method, additional refinement,
+changed geometry semantics or production exporter would need a separately
+reviewed task/PR and preregistration.
+
+This evidence is cross-referenced to #29's actual zero-level / Stage V STL
+export gap only; #29's other close conditions remain unmeasured here.

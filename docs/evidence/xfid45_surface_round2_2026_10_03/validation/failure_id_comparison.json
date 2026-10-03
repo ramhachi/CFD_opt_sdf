@@ -1,0 +1,14 @@
+{
+  "pinned_baseline_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+  "pinned_baseline_failure_count": 37,
+  "current_failure_count": 36,
+  "new_failure_ids": [],
+  "missing_baseline_failure_ids": [
+    "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign"
+  ],
+  "failure_ids_equal_predecessor_after_fixture_restore": true,
+  "full_pytest_summary": "36 failed, 1355 passed, 5 skipped, 7277 warnings in 273.06s (0:04:33)",
+  "full_log_sha256": "70dd82c06dc6ee7f514c7850f4e4081f010f736d57ca99151d6ff81356d261bd",
+  "full_log_lossless_archive": "full_pytest.log.gz",
+  "full_log_archive_sha256": "ae1d6a60812501dbf8433808e8bfface785a64b905bc53eb8cc923d73409dd7d"
+}
