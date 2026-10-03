@@ -5475,3 +5475,18 @@ Validation: focused 15 passed; compileall, script compilation, ruff and diff
 check passed; full pytest 36 failed, 1,355 passed, 5 skipped. Exact failure-ID
 comparison with the pinned 37-ID baseline found zero new IDs and one absent
 baseline ID, matching the predecessor's fixture-restored 36-ID set.
+
+### 2026-10-03 — #45 surface export Round 3 registration
+
+Round 2 (`4dbcfb8` / `7351d41`) remains immutable failed evidence. Round 3 tests
+export-only virtual refinement `r=1,2,4,8` of the original trilinear GridSDF with
+pinned Lewiner, fixed exact-zero scratch tie, fixed component/vertex-link definitions,
+float64 and float32 STL topology, sidedness, sampled 0.5 mm absolute geometry and
+0.5 mm normal perturbation fidelity. Three fresh heldouts supplement the frozen
+seven canonical inputs. Sources, evaluator, independent verifier and runtime are
+frozen before target evaluation; synthetic definition checks precede registration.
+See [Round 3 issue note](issues/45_surface_round3_2026_10_03.md).
+Evidence class: solver-free candidate registration, not physical qualification.
+All qualification flags false; production exporter unchanged; solver/Kaggle/formal
+XFID/#46 prohibited. Direct GridSDF Stage V is a user decision if candidates fail,
+not an implementation selected here. #29 reference is limited to actual export.

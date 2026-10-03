@@ -1,0 +1,466 @@
+{
+  "absolute_geometry": {
+    "analytic_formula": "min(.1 epsilon,.02 original_h)",
+    "evaluation_error": "E=64eps64*sum(abs(eight weighted corner terms))",
+    "failure": "unresolved upper OR certified upper >limit; certified lower>limit separately reported",
+    "independent_search": "finite-difference proposal gradient h*1e-5 vs parent analytic gradient",
+    "limit_m": 0.0005,
+    "lower": "max(abs(phi)-E,0)/L where global per-axis max edge slopes bound gradient and L inflated 64eps64",
+    "samples": "10 degree-3 barycentric samples per triangle, including all vertices, edge and interior points, on BOTH double and STL surfaces",
+    "scope": "guarded floating-point sampled lower/upper distances, NOT a continuous Hausdorff certificate nor full directed-rounding interval arithmetic",
+    "search": "initial axis witnesses plus <=20 Newton proposals, step cap h; proposal points never move surface vertices",
+    "upper": "axis-line original-cell root intervals from reliable signs and endpoint E bounds; exact zero witness only phi==0 and E==0; coordinate guard h*1e-9"
+  },
+  "all_fail_action": "distinguish finite sampling/refinement insufficiency, intrinsic original zero-set singularity, backend precision/tie floor and serialization defects; no proof of intrinsic impossibility from candidate failure alone; raise direct GridSDF Stage V reconsideration to user, do not implement",
+  "authoritative_branch": "codex/kaggle-batch-migration",
+  "authoritative_start_head": "7351d41e31ab8f4ba939e426831646af409ee9a7",
+  "branch": "exp/issue45-surface-round3-2026-10-03",
+  "candidates": {
+    "uniform_virtual_refinement": {
+      "adaptive_candidate": null,
+      "design_state_changes": false,
+      "extractor": "scikit-image 0.25.2 Lewiner, level=0, step_size=1, ascent, allow_degenerate=False",
+      "processing_sequence": [
+        "virtual trilinear sampling",
+        "scratch exact-zero tie",
+        "native Lewiner extraction",
+        "voxel-to-world mapping",
+        "topology prerequisite",
+        "whole-component sidedness orientation if valid",
+        "save untouched vertex coordinates NPZ and float32 STL",
+        "independent saved-artifact assessment"
+      ],
+      "r": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "resampling": "float64 scipy.ndimage.zoom endpoint aligned, order=1, grid_mode=False, prefilter=False; values from original trilinear field"
+    }
+  },
+  "canonical_v17": {
+    "exact_zero_node_count_expected": 498,
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "sign_convention": "phi < 0 is solid; phi > 0 is fluid; canonical outward solid normal follows +grad(phi)",
+    "spacing_m": 0.025,
+    "state_file_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "clearance": {
+    "flow_box_m": [
+      [
+        -2.5,
+        -1.2,
+        -0.9
+      ],
+      [
+        2.5,
+        1.2,
+        0.9
+      ]
+    ],
+    "minimum_m": 0.25
+  },
+  "component_definition": "exact coordinate identity for audit adjacency only; edge-connected face graph retaining EVERY face incl degenerate; all incidences of nonmanifold edges connected; order by minimum original face id",
+  "determinism": "two independent extraction+orientation calls per case/r, exact little-endian vertex/face array SHA256 equality required in lineage; gzip mtime=0",
+  "epsilon_m": 0.005,
+  "evidence_class": "immutable_solver_free_export_candidate_registration",
+  "fidelity_target_cases": [
+    "D0_interface_offset_minus",
+    "D0_interface_offset_plus",
+    "D1_filtered_seed11_minus",
+    "D1_filtered_seed11_plus",
+    "D2_filtered_seed2026_minus",
+    "D2_filtered_seed2026_plus"
+  ],
+  "forbidden": [
+    "solver",
+    "Kaggle",
+    "formal XFID",
+    "FD08/#46",
+    "direction or epsilon change",
+    "posthoc isovalue shift",
+    "smoothing",
+    "hole filling",
+    "manual mesh edits",
+    "post-extraction vertex movement",
+    "production exporter edits",
+    "OpenCode",
+    "direct GridSDF Stage V selection this round",
+    "post-result evaluator/verifier/threshold changes"
+  ],
+  "fresh_heldout_formulas": {
+    "heldout_R3_eccentric_void": {
+      "formula": "max of outer ellipsoid center=(-.023,.041,.057), axes=(.30,.23,.20), and .09-norm(p-(.031,-.017,.024)); fluid cavity radius=.09m",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "purpose": "fresh synthetic heldout, not canonical design state or formal FD direction",
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "spacing_m": 0.025
+    },
+    "heldout_R3_torus": {
+      "formula": "center=(.043,-.061,.037), major radius=.20m, tube radius=.07m; sqrt((hypot(x-cx,y-cy)-R)^2+(z-cz)^2)-a",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "purpose": "fresh synthetic heldout, not canonical design state or formal FD direction",
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "spacing_m": 0.025
+    },
+    "heldout_R3_two_ellipsoids": {
+      "formula": "min of ellipsoid level min(axes)*(norm((p-center)/axes)-1); centers=(-.113,.087,.049),(.45,-.21,.02); axes=(.31,.19,.14),(.12,.09,.08)",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "purpose": "fresh synthetic heldout, not canonical design state or formal FD direction",
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "spacing_m": 0.025
+    }
+  },
+  "frozen_direction_contract": {
+    "cases": {
+      "D0_interface_offset_minus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74dd2d0f5dde097e0b66b8da490abd78f3acf2a3ab36f46ec7a76cc2bfe16989",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "4420631618832eea629e94da2d13a422cd957b376ac105745505d751e188fb02",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_minus/design_candidate.stl",
+        "raw_stl_sha256": "88ab3aed96d97ab188b37368f13ab50e89758ec9ea3ca42556151e131fc6e11d",
+        "sign": -1,
+        "state_sha256": "3647a33b44652c9a630baa1726aa80ccc4a60dcc0c2c2b1a4092e7e159524693",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+        "state_snapshot_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+      },
+      "D0_interface_offset_plus": {
+        "direction_sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "754389103d0e1ed1de58518394a6759bd65ec51a3e368dbac7208252a3fbc8ac",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6cd05f19ade86ca90f25693d6571e7ef0976184b8d38fdf18dd01f56a36d03b0",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D0_interface_offset_plus/design_candidate.stl",
+        "raw_stl_sha256": "a2698a28049ce1532e03297155cffb387674e0cd2f0e513e248e878b7dbefaa1",
+        "sign": 1,
+        "state_sha256": "6f6cf11c43cf5910220086aaadf9e7cf43f892a4c8e38e14d29fee295c817dbb",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+        "state_snapshot_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+      },
+      "D1_filtered_seed11_minus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "4b676d2ad0c66b7741a75bb164ab82a4e2996187615c09c65bc441b01caa5840",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "9ce73f7d7ee0b7ce0437d9a8fd66f65c8af87cfc12597d219a27b979e34a3d95",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_minus/design_candidate.stl",
+        "raw_stl_sha256": "86d2a09ac6deec08b0aa6f656531a93c510f0bfe1a4f45093a7978c0e2da8f26",
+        "sign": -1,
+        "state_sha256": "9c602e20690e7863d61a6c54cc4864fb6ebc74c024cec79d045cf1417b893fc1",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+        "state_snapshot_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+      },
+      "D1_filtered_seed11_plus": {
+        "direction_sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "74304eb97b5ed77abb4317a286b8c0a0842dc1031f8f76ade2418b85e9b61fee",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "854ee63a8860e2db76a1375de8a0d562317750a5f9136a6f7849ac72a35c2191",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D1_filtered_seed11_plus/design_candidate.stl",
+        "raw_stl_sha256": "d0a7911785d7bc8177e9f8a944d0cb65d688c6f448ba4af285af49ebc87c5eeb",
+        "sign": 1,
+        "state_sha256": "5b4dc6679c8025d2e899c1213f8b9f6fb8e2ec338e85024bebb99a38f50b77e3",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+        "state_snapshot_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+      },
+      "D2_filtered_seed2026_minus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "67a7abc7740ef8853f77eb6e7d6913c1d1d0bcb0b98f401d5825b46f515ff42e",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "6f135498c772c61b0b49ac160eb416fd87c2a72293f8f138f6ee0ecdfeecac01",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_minus/design_candidate.stl",
+        "raw_stl_sha256": "ed0d2eab234a02f3d38c0e6fb7488f960b367a089d9171367955400f6f7cd91f",
+        "sign": -1,
+        "state_sha256": "7924db57acfd10f644db017e241e8d938422033b818c4b0932eafbba55425f58",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+        "state_snapshot_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+      },
+      "D2_filtered_seed2026_plus": {
+        "direction_sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+        "epsilon_m": 0.005,
+        "phi_fortran_sha256": "966a90e5dca081415669a567bb33e4fd9f45a4687adb3e2c172c5058d1a1a9f6",
+        "raw_ply_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/canonical_export/zero_surface.ply",
+        "raw_ply_sha256": "b014e8dbac48127bfd2e2a3c0256d462e7a1e36b121a9d80dcc90969f98c0ee2",
+        "raw_stl_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/surfaces/D2_filtered_seed2026_plus/design_candidate.stl",
+        "raw_stl_sha256": "debe4be598dc3a303e7e9d8f9523aa2dd8cb06d9e4da2187966e72ba1c0e95ea",
+        "sign": 1,
+        "state_sha256": "741e2c8bbbb23668a5dca1391a3bd002cbb0926bb8aa0e91058cbc7f003dab3a",
+        "state_snapshot_path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+        "state_snapshot_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+      }
+    },
+    "direction_ids": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026"
+    ],
+    "direction_sha256": {
+      "D0_interface_offset": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "D1_filtered_seed11": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "D2_filtered_seed2026": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8"
+    },
+    "directions_and_epsilon_may_not_change_after_observation": true,
+    "epsilon_m": 0.005,
+    "frozen_snapshot_manifest_sha256": "3e82a6672934d2863d10aafa319a39c728e58b36011fb7003957d5e0825e4955"
+  },
+  "gate_order": [
+    "lineage",
+    "edge manifold then vertex link manifold then watertight/winding/duplicate/degenerate",
+    "component sidedness orientation",
+    "absolute trilinear zero-set sample geometry",
+    "baseline-to-six normal displacement fidelity",
+    "clearance"
+  ],
+  "grid_h_m": 0.025,
+  "independent_verifier": {
+    "agreement": "ALL individual Boolean/status gates and aggregate decisions equal; SDF/mesh volumes rtol=1e-8 atol=h^3*1e-9",
+    "input": "saved NPZ and gzip lossless raw binary STL; original snapshot fields",
+    "lineage_scope": "source/artifact hashes and frozen extraction provenance checked; independent verifier does not re-run extraction",
+    "recomputes": [
+      "topology",
+      "orientation",
+      "sample distance bounds",
+      "normal correspondence",
+      "mesh signed volumes",
+      "original SDF volume ladder"
+    ],
+    "source_imports": "neither extractor nor parent evaluation helpers imported"
+  },
+  "inputs": {
+    "D0_interface_offset_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+      "sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f"
+    },
+    "D0_interface_offset_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+      "sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683"
+    },
+    "D1_filtered_seed11_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+      "sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8"
+    },
+    "D1_filtered_seed11_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+      "sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc"
+    },
+    "D2_filtered_seed2026_minus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+      "sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a"
+    },
+    "D2_filtered_seed2026_plus": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+      "sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999"
+    },
+    "baseline": {
+      "path": "docs/evidence/xfid01_geometry_preflight_2026_10_03/canonical_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    "heldout_R3_eccentric_void": {
+      "path": "docs/evidence/xfid45_surface_round3_2026_10_03/inputs/heldout_R3_eccentric_void.npz",
+      "sha256": "0ec3b62a737cd4c7ae2eacef6160a2787a4fadbdfc12ba4f6725a3260efe1994"
+    },
+    "heldout_R3_torus": {
+      "path": "docs/evidence/xfid45_surface_round3_2026_10_03/inputs/heldout_R3_torus.npz",
+      "sha256": "2597808d4b800a313242e7bc06c04c0dab01f1cf87b08abd1639c26f67c2966a"
+    },
+    "heldout_R3_two_ellipsoids": {
+      "path": "docs/evidence/xfid45_surface_round3_2026_10_03/inputs/heldout_R3_two_ellipsoids.npz",
+      "sha256": "e2c310357dcc2807d923a10f43f1425bf195efa84672f1436aa5f0d959b5214a"
+    }
+  },
+  "integration": "--no-ff, never force-push/reset/main",
+  "normal_fidelity": {
+    "analytic_formula": "min(.1 epsilon,.02 original_h)",
+    "anchors": "unique area-stratified baseline triangle centroids at CDF quantiles (k+.5)/1024",
+    "applicability": "six canonical baseline-to-perturbation pairs; heldouts have no paired direction so this gate is N/A by design, not a fail",
+    "dedup_and_tie_m": 2.5000000000000004e-11,
+    "error_upper": "abs(mesh_target_t-(SDF_target_t-SDF_baseline_t))+2h*1e-8+h*1e-9",
+    "limit_m": 0.0005,
+    "mesh_correspondence": "target stored triangle ray hits, nearest unique absolute t; baseline anchor mesh t=0",
+    "normal": "original baseline analytic trilinear grad phi normalized, not current triangle normal",
+    "prerequisite": "all baseline and target surface gates pass; otherwise correspondence diagnostic only, qualification N/A",
+    "samples": 1024,
+    "source_correspondence": "nearest unique absolute ray zero of source baseline and target trilinear fields in +/-2h; original-cell segments are cubic; ambiguous tie or zero interval unresolved",
+    "source_root_guard": "sign crossing certified at t +/- h*1e-8 using E intervals",
+    "volume": "original SDF Gauss xy n=16,32,64 with exact linear-z sublevel fraction; approximate ladder not a certified integral; mesh and STL signed-volume changes recorded"
+  },
+  "orientation": {
+    "criterion": "strict area >50% two-sided phi signs at each delta, same polarity all deltas; only whole-component flip",
+    "deltas_over_original_h": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "gradient_dot": "auxiliary only, never orientation decision",
+    "prerequisite": "global topology pass; otherwise N/A and NO flips",
+    "sign_guard_m": 3.552713678800501e-16,
+    "solid_void": "positive contribution solid boundary, negative contribution void boundary; classification conditional on stable orientation",
+    "stored_gate": "all components already outward towards fluid and global signed volume >0"
+  },
+  "predecessor_registration": {
+    "path": "docs/evidence/xfid45_surface_round2_2026_10_03/preregistration.json",
+    "sha256": "981eddecd957817fc40fc0a1b6460a4de6cd4527ba05cee5677f3ebbfdf316a3"
+  },
+  "predecessor_result": {
+    "path": "docs/evidence/xfid45_surface_round2_2026_10_03/result.json",
+    "sha256": "082a5fef3f923ea01b2a37d011558452709e1c956f6fbf9733dbab9163cf65d0"
+  },
+  "production_exporter_change": false,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "solver_qualification": false,
+    "topology": false
+  },
+  "round_id": "XFID45_surface_round3_2026_10_03",
+  "runtime_files": {
+    "python": {
+      "path": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805"
+    },
+    "scipy.ndimage._interpolation": {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/ndimage/_interpolation.py",
+      "sha256": "0e834f3b96ddf80ad96f30ecd3b5499fcfd3e3e049674e29a08c1c4b5dec8190"
+    },
+    "scipy.ndimage._nd_image": {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/ndimage/_nd_image.cpython-312-darwin.so",
+      "sha256": "e6b5ecf24ffe8b3bcac97c6c12eab10cf8e94019c2e92a2a0093d57489e44f65"
+    },
+    "skimage.measure._marching_cubes_lewiner": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner.py",
+      "sha256": "a97ddbfef01d89ba9bdf80242ea2f5ccaf2c5bd9b07f97c9dc4dda44434d30c9"
+    },
+    "skimage.measure._marching_cubes_lewiner_cy": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner_cy.cpython-312-darwin.so",
+      "sha256": "79e6d10596ef8168820f64ff501f82178c4c8fc70e457f99e7a89e57ed22fbc9"
+    },
+    "skimage.measure._marching_cubes_lewiner_luts": {
+      "path": "work/xfid45_surface_round2_deps/skimage/measure/_marching_cubes_lewiner_luts.py",
+      "sha256": "a6e6144e1725f60013aaa99eaf04ea01da6aa2839e328474a15e89fe0bcfe701"
+    }
+  },
+  "runtime_identity": {
+    "executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "machine": "arm64",
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "pytest": "9.1.1",
+    "python": "3.12.13",
+    "pyvista": "0.48.4",
+    "rtree": "1.4.1",
+    "scikit-image": "0.25.2",
+    "scipy": "1.18.1",
+    "thread_environment": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "trimesh": "5.1.0",
+    "vtk": "9.6.2"
+  },
+  "schema_version": 1,
+  "selection": "evaluate every r on every input; choose smallest r for which all10 double+STL surface gates, all6 fidelity pairs, independent per-gate/aggregate/volume agreement pass",
+  "sources": {
+    "audit_xfid45_surface_round3.py": {
+      "path": "scripts/audit_xfid45_surface_round3.py",
+      "sha256": "9eda9553cc0cc5ea225c4d6cf0d760ae8305ecb292e867c59a7e3ef49961b62d"
+    },
+    "register_xfid45_surface_round3.py": {
+      "path": "scripts/register_xfid45_surface_round3.py",
+      "sha256": "cac81efd177be58fff6021e6581a5aedd63b19e25cf9ad43456c9640fd4445a9"
+    },
+    "test_xfid45_round3_export.py": {
+      "path": "tests/test_xfid45_round3_export.py",
+      "sha256": "4fd760f3e8bfc84fc49e8a099efeb1381c369bce369b7312b68fa0248cc24085"
+    },
+    "test_xfid45_round3_measure.py": {
+      "path": "tests/test_xfid45_round3_measure.py",
+      "sha256": "53f887430cca5b75d0ba3814402d9a83a9257db844e659a5b68b9f2d66e91afa"
+    },
+    "verify_xfid45_round3.py": {
+      "path": "scripts/verify_xfid45_round3.py",
+      "sha256": "8232a40d9704d23ac9cfa558de48462ebbfbecf30531f5c0ea374bcc641dd665"
+    },
+    "verify_xfid45_surface_round3.py": {
+      "path": "scripts/verify_xfid45_surface_round3.py",
+      "sha256": "9031eea22c85690bcd2096c7ec8e88f417fa01d68df0cd6e210220a4f35c4827"
+    },
+    "xfid45_round3_export.py": {
+      "path": "scripts/xfid45_round3_export.py",
+      "sha256": "2d54bf3d987a0eecc0f8ce158c866c8d2b91800d1e37422a2d151a8bff963ba0"
+    },
+    "xfid45_round3_measure.py": {
+      "path": "scripts/xfid45_round3_measure.py",
+      "sha256": "2c557a98f74a595eeabf7580c2076749c55ffb7fcc82b159b72e387a65459aac"
+    },
+    "xfid45_surface_round2_candidates.py": {
+      "path": "scripts/xfid45_surface_round2_candidates.py",
+      "sha256": "291a6be8e45d350968f201cc5b81f4c610a3a90000deabe12a1acdf35eec9f8f"
+    }
+  },
+  "step0": {
+    "evidence_class": "synthetic_definition_check_not_qualification",
+    "focused_log": {
+      "path": "docs/evidence/xfid45_surface_round3_2026_10_03/step0.log",
+      "sha256": "95745e622f9b3d4eb09e30a2c83ceda487b914fa698ca00631c9c891eabe9db9"
+    },
+    "tests": "degenerate/nonmanifold-edge/pinched-vertex/void/float32-collapse plus identity, normal fidelity, volume and import independence; 16 passed before registration",
+    "thresholds_fitted": false
+  },
+  "topology": "closed edge counts exactly 2; each vertex link one connected degree-2 cycle; no duplicate faces, repeated-index or exact zero-area triangles; coherent winding; NPZ float64 and roundtripped STL float32 both required; manifold expected by construction but not guaranteed",
+  "upstream_source": {
+    "interpretation": "backend weights use 1/(eps64+abs(phi)); finite numerical floor remains fixed",
+    "path": "docs/evidence/xfid45_surface_round3_2026_10_03/lewiner_0_25_2_source.pyx",
+    "sha256": "2a8be3396533aa89db8b346755f39ef7bac6a271556406ebe2c19b0e7fcc87f3",
+    "url": "https://raw.githubusercontent.com/scikit-image/scikit-image/v0.25.2/skimage/measure/_marching_cubes_lewiner_cy.pyx"
+  },
+  "zero_tie": {
+    "finite_tau_semantics": "finite positive realization of fixed symbolic sign, not a claim of infinitesimal exactness",
+    "float32_cast": "native backend conversion; any nonzero-to-zero underflow fails lineage; rounding max recorded",
+    "nearzero_nonzero": "retained unchanged; no clamp or relative rescale",
+    "previous_prohibition_explicitly_lifted_for_round3": true,
+    "rule": "only exact float64 zero virtual nodes -> +tau in extraction scratch; original fields immutable",
+    "tau_m": 2.3841858265427618e-08
+  }
+}
