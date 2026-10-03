@@ -1,0 +1,89 @@
+{
+ "registration_id": "XFID45-STAGEV-INPUT-01",
+ "date": "2026-10-04",
+ "evidence_class": "solver_free_practical_stage_v_input_derivation_uncertified_geometry",
+ "authority": "User decisions D1-D4 of 2026-10-04 (docs/phase_plan.md 2026-10-04 entry; docs/issues/45_next_steps_plan_2026_10_04.md)",
+ "supersedes_for_XFID_only": "certified 0.5 mm absolute-geometry, CERT-02 and all-component orientation gates; those move to #29 GEOM-01. Round 3 and CERT-01 evidence unchanged.",
+ "inputs": {
+  "baseline": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/canonical_state.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/baseline/surface.npz",
+   "state_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+   "surface_sha256": "1ee648e20161d01a507e036468d1a9bdfb40e974f0e70cbd13122701f6f95398"
+  },
+  "D0_interface_offset_minus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_minus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D0_interface_offset_minus/surface.npz",
+   "state_sha256": "e7a83328efc9a7a263e54e59fa349e2d57c6cba5dceffff783291056cbc7fd5f",
+   "surface_sha256": "3f21a1ccb08f0949f7a9c9a3fcc537804d80358fcb84d03016d132e634b83afe"
+  },
+  "D0_interface_offset_plus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D0_interface_offset_plus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D0_interface_offset_plus/surface.npz",
+   "state_sha256": "de56ae5b73572ac6fecabb81760c83f9b7a65d3894779ed4bfb2a1b732e55683",
+   "surface_sha256": "325a33e8ea1949315f4b563b392bfd8606b19bcc0edc307b356549855e04a6af"
+  },
+  "D1_filtered_seed11_minus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_minus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D1_filtered_seed11_minus/surface.npz",
+   "state_sha256": "b2109466ae483d631ed476a62fd5ae32d5a40ebf325edbfecbfedec76ec454c8",
+   "surface_sha256": "fdd325e01699ff1feb4ab57b0000a163551d1bcb803b69b02b726476af8dd7c7"
+  },
+  "D1_filtered_seed11_plus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D1_filtered_seed11_plus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D1_filtered_seed11_plus/surface.npz",
+   "state_sha256": "43d033b0143549369bf8da718019d276abd1ac65d479a23c7c707629bfdb44dc",
+   "surface_sha256": "2414c03bf40f6cab5eed88c4351654456673e95b7cc94cceb75816e75c381c7c"
+  },
+  "D2_filtered_seed2026_minus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_minus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D2_filtered_seed2026_minus/surface.npz",
+   "state_sha256": "b6ef1bc458e936a0eb286a3f402acab9392fcd198851abc4689b0e7ce8fede9a",
+   "surface_sha256": "9470dec43ad4accf82fa08520c7acb50865c132238d472468f6ce84cf2b85e41"
+  },
+  "D2_filtered_seed2026_plus": {
+   "state": "docs/evidence/xfid01_geometry_preflight_2026_10_03/state_snapshots/D2_filtered_seed2026_plus.npz",
+   "surface": "docs/evidence/xfid45_surface_round3_2026_10_03/surfaces/r8/D2_filtered_seed2026_plus/surface.npz",
+   "state_sha256": "14ddbeac636268854048d8c3c5734cbdce36aa1922841d79a8acd058d1e09999",
+   "surface_sha256": "42b9ff5158346a2e7c3659e23bee8643d9fd918cf272ef19dd3c9bd841e84aa4"
+  }
+ },
+ "source_files": {
+  "scripts/build_xfid45_stage_v_input_2026_10_04.py": "26388f4246877909c688c4eb94a99006fdf59e132ff782ebf94709d85602ec63",
+  "scripts/xfid45_round3_export.py": "2d54bf3d987a0eecc0f8ce158c866c8d2b91800d1e37422a2d151a8bff963ba0",
+  "scripts/xfid45_surface_round2_candidates.py": "291a6be8e45d350968f201cc5b81f4c610a3a90000deabe12a1acdf35eec9f8f",
+  "tests/test_xfid45_stage_v_input_2026_10_04.py": "83a4e07591b15e946fe3a7802b0353ada1d726572f731c26b7fd57bf1cb6baf8"
+ },
+ "rule_small_component_removal": "remove every exact-coordinate edge-connected component whose bounding-box diagonal is below the design lattice spacing h=0.025 m (smaller than one lattice cell, below the representation's own resolution); record face count, diagonal, signed volume and center of each removed component; vertices are not moved",
+ "stl_format": "binary STL, 80 zero header bytes, float32 vertices, float32 unit normals from the float64 triangle, attribute 0; deterministic",
+ "practical_gate_per_case_and_storage": {
+  "storages": [
+   "double surface (kept components)",
+   "float32 STL read back from the written bytes"
+  ],
+  "all_must_hold": [
+   "watertight",
+   "winding_consistent",
+   "edge_manifold (no boundary or non-manifold edges)",
+   "vertex_link_manifold",
+   "no duplicate, repeated-index or zero-area faces",
+   "positive signed volume",
+   "Stage V clearance >= 0.25 m",
+   "orientation: Round 3 orient() sidedness (strict area majority at delta/h=0.02,0.05,0.1) PASS with no component flipped"
+  ],
+  "aggregate": "all 7 cases pass in both storages"
+ },
+ "reported_not_gated": [
+  "own-field first-order distance |phi|/|grad phi| at kept vertices (median, p99, max, fraction > 0.5 mm)",
+  "displacement of non-baseline vertices from the baseline field in units of epsilon=5 mm (median, p05, p95)",
+  "removed-component volume and location"
+ ],
+ "not_claimed": [
+  "certified 0.5 mm geometry",
+  "grid-independent or physical accuracy",
+  "XFID response, sign or ranking",
+  "any qualification flag change (all six remain false)"
+ ],
+ "not_in_this_round": "held-out cases (not needed for XFID); r != 8; meshing or any solver run",
+ "independent_check": "separate recomputation by an agent that does not see the build script, from the same inputs and rule text only"
+}
