@@ -593,3 +593,42 @@ Evidence is preserved in
 `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/`. R2 criteria
 have not yet been registered, no calibration T4 measurement has started, and
 all six qualification flags remain literal `false`.
+
+
+## Calibration retry round 2 preregistered (2026-10-05)
+
+After the kernel bundling repair and passing bounded CPU rehearsal, immutable
+calibration round `fd08_candidate_c_calibration_2026_10_04_r2` was registered
+against clean, pushed integration source
+`d69a6ed94cd6fd8cc4b4be676f971f3620daa5e5`. The criteria are at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/xfidc_criteria.json`
+(SHA-256
+`27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d`); the
+append-only host registration audit is in the same directory (SHA-256
+`201fd5f892dc23a95bd90e3f542cb6f42506b834526a8cccfbd35b8e84f6ef19`).
+
+R2 preserves the same 47 states, five baseline repeats, and calibration-only
+epsilon candidates `0.00005, 0.00015, 0.0005, 0.0015, 0.005, 0.015, 0.05 m`.
+All 89 input files verify against the registered inventory (SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`); all 29
+bound source inputs verify against both the worktree and the registered source
+commit (sorted inventory digest
+`a7847b0c3742691fa2f3270fa09fedbe07eac94fae7a6741031d7224a0878b9e`). The
+criteria bind the exact CPU rehearsal result and preview, corrected single-file
+kernel bundle, response-floor/selector/verdict contracts, and frozen Candidate
+C and canonical v17 identities. No formal epsilon ladder is registered. The
+remote Kaggle dataset still needs a new version containing the R2 criteria
+before kernel submission. No T4 calibration has run, no epsilon has been
+selected, no calibration verdict exists, and all six qualification flags
+remain literal `false`.
+
+Post-registration validation: focused FD-08/contract/identity tests passed
+**40/40**, Python `compileall src tests` passed, and `git diff --check` passed.
+The full suite reported **37 failed, 1437 passed, 9 skipped**. Its sorted
+failure-ID set exactly matches the pinned 37-ID baseline: **0 new, 0
+resolved**. The full log SHA-256 is
+`dd83b20224a29a3f45a675ff077bd9116a79bea8e11e9a29389a4e533922315a` at
+`work/fd08_preparation/full_pytest_after_r2_registration_2026_10_05.log`
+(local ignored artifact); the exact-set comparison record SHA-256 is
+`5c8855cad85c2644de79b269a9ca204593f2f5f9a5743d829824e1545fb05305` at
+`work/fd08_preparation/r2_registration_full_pytest_comparison_2026_10_05.json`.

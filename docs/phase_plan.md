@@ -5810,3 +5810,28 @@ details and inventories are in
 `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/`. R2 immutable
 criteria registration is now the next gate; no T4 calibration measurement or
 verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration retry round 2 preregistered
+
+After the bundled single-file kernel repair and setup-only CPU rehearsal,
+immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r2` was
+registered on integration source
+`d69a6ed94cd6fd8cc4b4be676f971f3620daa5e5`. Criteria SHA-256 is
+`27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d`; host
+registration audit SHA-256 is
+`201fd5f892dc23a95bd90e3f542cb6f42506b834526a8cccfbd35b8e84f6ef19`.
+
+The registered inventory is unchanged at 47 runs (five baselines and 42 signed
+perturbations) over the same seven calibration-only epsilon candidates. All
+89 input files and 29 source inputs passed host hash verification; full
+inventory digests and CPU rehearsal bindings are in the issue preparation log
+and R2 evidence directory. Formal criteria and epsilon remain unregistered.
+The private Kaggle dataset must be versioned with R2 criteria before the
+corrected T4 kernel is submitted. No T4 measurement or calibration verdict
+exists; all six qualification flags remain false.
+
+Focused FD-08 tests passed 40/40, compileall and `git diff --check` passed.
+Full pytest reported 37 failures, 1437 passes and 9 skips; the exact sorted
+failure IDs match the pinned baseline (0 new, 0 resolved). Log and comparison
+record hashes are preserved in `docs/issues/46_fd08_preparation.md`.

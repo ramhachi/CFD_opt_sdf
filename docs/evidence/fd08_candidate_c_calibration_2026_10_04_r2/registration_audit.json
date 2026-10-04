@@ -1,0 +1,103 @@
+{
+  "baseline_repeat_count": 5,
+  "calibration_criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/xfidc_criteria.json",
+  "calibration_criteria_sha256": "27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d",
+  "calibration_epsilon_ladder_m": [
+    5e-05,
+    0.00015,
+    0.0005,
+    0.0015,
+    0.005,
+    0.015,
+    0.05
+  ],
+  "candidate_identity": {
+    "body_source_sha256": {
+      "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+      "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+    },
+    "contract_path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25",
+    "physical_qualification": false,
+    "qualification_flags": {
+      "fd_oracle": false,
+      "field_gradient": false,
+      "optimizer": false,
+      "reverse": false,
+      "shape_update_allowed": false,
+      "topology": false
+    }
+  },
+  "canonical_v17_phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+  "canonical_v17_state_identity_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+  "case_id": "flow_24",
+  "cpu_rehearsal_evidence": {
+    "evidence_class": "cpu_setup_operator_rehearsal_only",
+    "input_state_bindings": [
+      {
+        "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "raw_phi_evidence_path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "role": "baseline",
+        "run_id": "cal_baseline_01"
+      },
+      {
+        "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "raw_phi_evidence_path": "inputs/D0_interface_offset__eps_5_0000000000e_05__plus.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "role": "perturbation",
+        "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus"
+      }
+    ],
+    "observed_cpu_runtime": {
+      "backend": "Array",
+      "julia_version": "1.12.6",
+      "waterlily_version": "1.8.0"
+    },
+    "preview_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/cpu_rehearsal_preview.json",
+    "preview_sha256": "40bc84ff9d5713cc8d9fc95375ae052f4146e8a91c17da0f44e684e99dfbe734",
+    "result_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/rehearsal_result.json",
+    "result_sha256": "c74c903d2d1f1714bf16ce5a8daaaf357a90e01e03dd7b40d7b4e7cbbaaf6e89",
+    "runner_output_inventory_sha256": "04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac",
+    "runner_output_manifest_sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108",
+    "source_commit": "f0ffb82839836516fdc786f36e0530b2361d7b22"
+  },
+  "created_at_utc": "2026-10-04T18:34:25.208898Z",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_local_audit": {
+    "criteria_sha256": "27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d",
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_candidate_c_calibration_dataset_r2",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "verified_file_count": 89
+  },
+  "dataset_version_status": "r2 criteria registered locally; remote dataset version not yet published",
+  "evidence_class": "host_side_registration_and_inventory_integrity",
+  "force_scale_n_per_solver_force": 0.0011111111111111111,
+  "formal_epsilon_ladder_registered": false,
+  "formal_measurement_started": false,
+  "kind": "fd08_candidate_c_calibration_preregistration_audit",
+  "measurement_window_t_u_l": [
+    80.0,
+    120.0
+  ],
+  "perturbation_state_count": 42,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run_count": 47,
+  "source_commit": "d69a6ed94cd6fd8cc4b4be676f971f3620daa5e5",
+  "source_input_count": 29,
+  "source_inputs_verified_against_worktree_and_source_commit": true,
+  "source_inventory_sha256": "a7847b0c3742691fa2f3270fa09fedbe07eac94fae7a6741031d7224a0878b9e",
+  "stationarity_contract": {
+    "inherited_measurement_stationarity_gate_field": true,
+    "runner_semantics": "reported only; stationarity is not in the FD-08 runner or host analyzer gate set",
+    "specific_rule": "drift is recorded per state and reported; it does not stop the run (W4-C registered 0.02 for the unperturbed state)"
+  }
+}
