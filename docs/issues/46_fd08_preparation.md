@@ -563,3 +563,33 @@ reported **37 failed, 1436 passed, 9 skipped**; sorted IDs equal the pinned
 The last focused rerun additionally exercised the r2 path regression. The
 calibration retry remains pending and all six qualification flags remain
 literal `false`.
+
+
+## CPU rehearsal under the bundled-kernel source (2026-10-05)
+
+Under pushed integration source `f0ffb82839836516fdc786f36e0530b2361d7b22`,
+the builder regenerated the full 47-state setup preview and the bounded CPU
+rehearsal completed the prescribed baseline and smallest-epsilon D0+ state,
+one Array step each. Julia 1.12.6 and WaterLily 1.8.0 were recorded; both
+Float32 phi margins were about 0.35 m against the registered 0.15 m limit, and
+both raw histories passed the host force-component/sign audit. The terminal is
+2/2 `COMPLETED`. This remains setup-only evidence: its force window is
+`[0, 0.0104167] tU/L`, not `[80,120]`, and its forces were not analyzed as FD
+responses or used to select criteria.
+
+The builder preview SHA-256 is
+`40bc84ff9d5713cc8d9fc95375ae052f4146e8a91c17da0f44e684e99dfbe734`; its 89
+staged input files pass inventory digest
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`. All 29
+bound source inputs verify, with sorted inventory digest
+`a7847b0c3742691fa2f3270fa09fedbe07eac94fae7a6741031d7224a0878b9e`. The
+rehearsal result SHA-256 is
+`c74c903d2d1f1714bf16ce5a8daaaf357a90e01e03dd7b40d7b4e7cbbaaf6e89`; the
+runner output manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`, with
+verified inventory digest
+`04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac`.
+Evidence is preserved in
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/`. R2 criteria
+have not yet been registered, no calibration T4 measurement has started, and
+all six qualification flags remain literal `false`.

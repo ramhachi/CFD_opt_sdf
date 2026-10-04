@@ -5799,3 +5799,14 @@ The full suite retained exactly the 37 pinned baseline failure IDs (0 new, 0
 resolved; 1436 passed, 9 skipped). R1 remains an infrastructure terminal; r2
 CPU rehearsal and immutable registration are pending. No calibration result
 exists, and all six qualification flags remain false.
+
+The bounded CPU rehearsal then passed under source `f0ffb82839836516fdc786f36e0530b2361d7b22`:
+the baseline and smallest-epsilon D0+ setup states each completed one Array
+step, and both raw histories passed the host component/sign audit. This is
+setup-only evidence outside the registered response window. Its result SHA-256
+is `c74c903d2d1f1714bf16ce5a8daaaf357a90e01e03dd7b40d7b4e7cbbaaf6e89`; full
+details and inventories are in
+`docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry3/`. R2 immutable
+criteria registration is now the next gate; no T4 calibration measurement or
+verdict exists, and all six qualification flags remain false.
