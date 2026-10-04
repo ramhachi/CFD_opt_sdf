@@ -1,0 +1,18 @@
+[{"stream_name":"stderr","time":0.777366548,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":0.778382598,"data":"  File \"/kaggle/src/script.py\", line 35, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":0.778405221,"data":"    or hashlib.sha256(core_path.read_bytes()).hexdigest() != core_binding.get(\"sha256\")):\n"}
+,{"stream_name":"stderr","time":0.778410337,"data":"                      ~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":0.778414244,"data":"  File \"/usr/lib/python3.13/pathlib/_abc.py\", line 625, in read_bytes\n"}
+,{"stream_name":"stderr","time":0.778417828,"data":"    with self.open(mode='rb') as f:\n"}
+,{"stream_name":"stderr","time":0.778421095,"data":"         ~~~~~~~~~^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":0.778424502,"data":"  File \"/usr/lib/python3.13/pathlib/_local.py\", line 537, in open\n"}
+,{"stream_name":"stderr","time":0.778433762,"data":"    return io.open(self, mode, buffering, encoding, errors, newline)\n"}
+,{"stream_name":"stderr","time":0.778436312,"data":"           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":0.778438645,"data":"FileNotFoundError: [Errno 2] No such file or directory: '/kaggle/src/runner_base.py'\n"}
+,{"stream_name":"stderr","time":3.081719935,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":3.081751662,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":3.4046145279999998,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":3.40465612,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":4.745287704,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":5.689297303,"data":"[NbConvertApp] Writing 282105 bytes to __results__.html\n"}
+]

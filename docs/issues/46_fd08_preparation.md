@@ -498,3 +498,36 @@ The append-only per-file host verification record is
 (SHA-256 `3af66a93b1487ab4c195e7e543b694cf11f1ba0a2245cc8d084c0ac2e8899148`).
 The T4 calibration kernel has not yet been submitted, so no calibration solver
 measurements or verdict exist.
+
+
+## Calibration kernel v1 infrastructure terminal (2026-10-05)
+
+Kaggle kernel version 1 reached terminal status `KernelWorkerStatus.ERROR`
+before entering the solver or T4 smoke path. The exact error was
+`FileNotFoundError: /kaggle/src/runner_base.py`. The wrapper checks its own
+registered SHA successfully, then assumes `runner_base.py` was uploaded beside
+the Kaggle `code_file`. Inspection of the installed Kaggle CLI confirms that
+`kernels_push` sends the metadata `code_file` as the script body; it does not
+upload adjacent helper files. This is a kernel packaging/path defect, not a
+solver or scientific failure. No Julia install, GPU smoke test, baseline, or
+perturbation ran, and no calibration evidence or verdict was produced.
+
+Kaggle's returned page slug is
+`ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration`, while the preregistered
+metadata ID is `ramhachi888/cfd-opt-sdf-fd08-calibration`; the CLI warned of
+that title/ID mismatch. Both exact identities and the error artifacts are
+retained at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/r1_kernel_v1_terminal/`
+(terminal audit SHA-256
+`887e167a9f5346f8e23ce62d4f3db698c62f8cf6a3adc740317d5c1ce3d19f05`). The
+raw Kaggle log is SHA-256
+`cb23d12c9392952e4d4293bd6621b8c319d53d4d4a5fbff6c461b037348b6f6b`;
+the separate `kernels logs` response is SHA-256
+`b3c535559576a83c786ebf5149674ca0410d194878f13d386a6b761c45fd29e8`.
+
+Round 1 criteria and its private input dataset are unchanged. The retry will
+package the hash-bound core runner in the one submitted script, correct the
+Kaggle title/ID slug alignment, rerun the bounded setup rehearsal against the
+new source inventory, and preregister a distinct immutable retry round before
+submitting another T4 job. All six qualification flags remain literal
+`false`.

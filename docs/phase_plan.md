@@ -5779,3 +5779,13 @@ append-only remote inventory audit is
 `docs/evidence/fd08_candidate_c_calibration_2026_10_04/remote_dataset_verification.json`.
 The calibration T4 kernel has not yet been submitted; no solver measurement
 or calibration verdict exists.
+
+Calibration kernel v1 (`KernelWorkerStatus.ERROR`) stopped before solver or T4
+smoke startup because Kaggle uploaded only the `code_file`, leaving the
+wrapper's adjacent `runner_base.py` absent. The failure logs and identity
+audit are preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/r1_kernel_v1_terminal/`.
+This is an infrastructure terminal with no scientific measurement. Round 1
+criteria and dataset remain unchanged; a separate retry registration will
+bind the packaging correction and updated source inventory before another T4
+submission. All six qualification flags remain false.
