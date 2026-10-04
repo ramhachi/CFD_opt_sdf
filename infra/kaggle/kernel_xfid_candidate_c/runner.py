@@ -21,7 +21,7 @@ import traceback
 import urllib.request
 from pathlib import Path
 
-CRITERIA_SHA256 = "__CRITERIA_SHA256__"  # bound at registration; the runner refuses to run otherwise
+CRITERIA_SHA256 = "39974802c43a55bde53da2afc6e04149ef7fec148d8b678e1f8b92a4523d775b"  # bound at registration; the runner refuses to run otherwise
 OUT_ROOT = Path(os.environ.get("XC_OUT_ROOT", "/kaggle/working"))
 OUT = OUT_ROOT / "xfid_candidate_c"
 INPUT_ROOT = Path(os.environ.get("XC_INPUT", "/kaggle/input"))

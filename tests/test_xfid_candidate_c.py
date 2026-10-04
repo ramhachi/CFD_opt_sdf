@@ -76,12 +76,13 @@ def test_verdict_pipeline_on_synthetic_waterlily_output(tmp_path):
     assert fv.verdict(openfoam, wl) == "DISAGREE"
 
 
-def test_runner_refuses_unbound_criteria(tmp_path):
+def test_runner_refuses_unregistered_criteria(tmp_path):
     (tmp_path / "xfidc_criteria.json").write_text("{}")
+    (tmp_path / "xfidc_criteria.json.sha256").write_text("0" * 64)
     try:
         xc.read_criteria(tmp_path)
     except RuntimeError as e:
-        assert "not been bound" in str(e)
+        assert "SHA mismatch" in str(e)  # bound runner: a foreign criteria file is refused
     else:
         raise AssertionError("expected refusal")
 
