@@ -933,3 +933,21 @@ download and hash audit is in the same directory (SHA-256
 corrected T4 kernel has not yet been submitted. No calibration solver
 measurement or verdict exists; all six qualification flags remain literal
 `false`.
+
+
+## Calibration round 4 kernel v2 submitted (2026-10-05)
+
+Kaggle accepted private kernel version 2 at
+`https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel`
+using dataset version 4 and the registered `NvidiaTeslaT4` request. Before
+submission, all 29 source inputs were reverified against R4's source commit;
+the kernel wrapper and embedded core hashes match R4 criteria. The initial
+status was `KernelWorkerStatus.RUNNING`, with empty logs and no output files
+yet available. The submission record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_submission.json`
+(SHA-256
+`a4cabc1559383445b090dfd3cf65c8b7ed9b37400ed200d849cd01c13ddb22cb`).
+
+Runtime identity, completed artifacts, and calibration analysis remain
+pending. No solver terminal or calibration verdict exists; no formal epsilon
+has been selected, and all six qualification flags remain literal `false`.

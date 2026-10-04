@@ -6002,3 +6002,19 @@ host verification audit SHA-256 is
 `521f8c6e4311c27bd9e147ce21655b3624c62827221be1fb852cd49b223e6ec7`.
 Next: submit the corrected calibration kernel against version 4. No solver
 measurement has started; all six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 calibration round 4 kernel v2 submitted
+
+Kaggle accepted private kernel version 2 against dataset version 4 with the
+registered `NvidiaTeslaT4` request. The first status was
+`KernelWorkerStatus.RUNNING`; initial logs were empty. Criteria SHA-256 is
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`, bound
+to wrapper SHA-256
+`c1c9e495fc457fe8667ad546e71ce45c128a0d2353fcc316f5cfa840bdb6a78c` and
+core SHA-256
+`508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8`.
+Submission identity and first status are preserved in the R4 evidence
+directory. Runtime identity, solver progress, and terminal analysis remain
+pending. No calibration verdict exists; all six qualification flags remain
+literal `false`.
