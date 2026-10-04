@@ -5789,3 +5789,13 @@ This is an infrastructure terminal with no scientific measurement. Round 1
 criteria and dataset remain unchanged; a separate retry registration will
 bind the packaging correction and updated source inventory before another T4
 submission. All six qualification flags remain false.
+
+The criteria-neutral repair packages the hash-bound core into the submitted
+single-file Kaggle script, verifies embedded wrapper/core hashes before running,
+and aligns the kernel title slug with its registered ID. A distinct r2 criteria
+and output namespace are supported; only a read-only 47-state registration
+dry-run has been performed. Focused tests passed 40/40 and compileall passed.
+The full suite retained exactly the 37 pinned baseline failure IDs (0 new, 0
+resolved; 1436 passed, 9 skipped). R1 remains an infrastructure terminal; r2
+CPU rehearsal and immutable registration are pending. No calibration result
+exists, and all six qualification flags remain false.

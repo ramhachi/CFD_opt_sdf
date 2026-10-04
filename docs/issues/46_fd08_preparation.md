@@ -531,3 +531,35 @@ Kaggle title/ID slug alignment, rerun the bounded setup rehearsal against the
 new source inventory, and preregister a distinct immutable retry round before
 submitting another T4 job. All six qualification flags remain literal
 `false`.
+
+
+## Criteria-neutral kernel packaging repair (2026-10-05)
+
+The retry implementation now builds
+`infra/kaggle/kernel_fd08_calibration/runner.py` as a deterministic single-file
+Kaggle script from a tracked template and the unchanged `runner_base.py`. The
+script decodes the embedded core and checks both wrapper and core SHA-256
+values against the attached immutable criteria before entering the core
+runner. `scripts/build_fd08_calibration_kernel.py` is included in the retry
+source inventory. The kernel title now slugifies to its registered metadata ID
+(`cfd-opt-sdf-fd08-calibration`), avoiding the v1 URL/ID mismatch. Round 1
+criteria and dataset version 1 remain untouched.
+
+The registrar accepts a separately named retry round and derives a distinct
+criteria/result namespace; a dry-run produced the expected 47-state r2
+inventory without writing criteria. Kaggle CLI confirms dataset versions can
+be added without deleting old versions. No r2 criteria or solver run has yet
+been registered or started.
+
+Validation: final focused FD-08/contract/identity tests passed **40/40**;
+Python `compileall src tests` and `git diff --check` passed. The full suite
+reported **37 failed, 1436 passed, 9 skipped**; sorted IDs equal the pinned
+37-ID baseline exactly (**0 new, 0 resolved**). Full log SHA-256 is
+`617546368f12ae5fc2d7e2ac4e6dda468f91c4751fdbd95a9cd3aeb25d9268c4` at
+`work/fd08_preparation/full_pytest_after_kernel_bundle_fix_2026_10_05.log`
+(local ignored artifact); the comparison record SHA-256 is
+`2603bbea89578811042eb49a3e7d5091bbd78bd0fb52761c0b6a94173391910d` at
+`work/fd08_preparation/runner_bundle_full_pytest_comparison_2026_10_05.json`.
+The last focused rerun additionally exercised the r2 path regression. The
+calibration retry remains pending and all six qualification flags remain
+literal `false`.

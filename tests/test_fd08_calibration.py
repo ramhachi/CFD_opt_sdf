@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import ast
+import base64
 import hashlib
 import importlib.util
 import json
 from pathlib import Path
 import sys
+import zlib
 
 import numpy as np
 import pytest
@@ -32,13 +35,14 @@ from cfd_sdf.fd08_calibration import (
     verify_runtime_artifacts,
 )
 from verify_fd08_formal import verify_source_inputs
+from build_fd08_calibration_kernel import render_kernel_source
 from preflight_fd08_cpu import (
     audit_cpu_force_history,
     parse_cpu_completion_marker,
     resolve_output_directory,
     verify_preview_dataset,
 )
-from register_fd08_calibration import write_cpu_preview
+from register_fd08_calibration import DEFAULT_STATE, build as build_calibration_criteria, write_cpu_preview
 
 
 def _calibration_rows(epsilons: tuple[float, ...], slope: float) -> list[dict]:
@@ -456,6 +460,49 @@ def test_fd08_t4_runner_reuses_registered_xfid_runner_byte_for_byte():
     xfid = (repo / "infra/kaggle/kernel_xfid_candidate_c/runner.py").read_text()
     assert calibration == formal
     assert calibration == xfid
+
+
+def test_fd08_kaggle_script_embeds_exact_core_and_matches_kernel_slug():
+    repo = Path(__file__).resolve().parents[1]
+    kernel_dir = repo / "infra/kaggle/kernel_fd08_calibration"
+    template = (kernel_dir / "runner.py.template").read_bytes()
+    core = (kernel_dir / "runner_base.py").read_bytes()
+    rendered = render_kernel_source(template, core)
+    script_path = kernel_dir / "runner.py"
+    assert script_path.read_bytes() == rendered
+    assert b"with_name(\"runner_base.py\")" not in rendered
+
+    tree = ast.parse(rendered)
+    assignment = next(
+        node for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "_CORE_SOURCE_B85"
+                for target in node.targets)
+    )
+    packed = ast.literal_eval(assignment.value)
+    assert zlib.decompress(base64.b85decode(packed.encode("ascii"))) == core
+
+    metadata = json.loads((kernel_dir / "kernel-metadata.json").read_text())
+    title_slug = "-".join(metadata["title"].lower().split())
+    assert metadata["id"].split("/", 1)[1] == title_slug
+
+
+def test_calibration_retry_registration_uses_append_only_round_paths():
+    criteria = build_calibration_criteria(
+        DEFAULT_STATE,
+        (0.00005, 0.00015, 0.0005, 0.0015, 0.005, 0.015, 0.05),
+        "1" * 40,
+        Path("work/fd08_candidate_c_calibration_dataset_r2"),
+        Path("docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/xfidc_criteria.json"),
+        write=False,
+        round_id="fd08_candidate_c_calibration_2026_10_04_r2",
+    )
+    assert criteria["round_id"] == "fd08_candidate_c_calibration_2026_10_04_r2"
+    assert criteria["criteria_path"].endswith("_r2/xfidc_criteria.json")
+    assert criteria["artifact_namespaces"]["calibration_result_root"].endswith("_r2/result/fd08_calibration")
+    assert len(criteria["state_order"]) == 47
+    assert criteria["qualification_flags"] == {key: False for key in (
+        "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
 
 
 def test_runner_stationarity_is_reported_without_becoming_a_completion_gate(tmp_path: Path, monkeypatch):

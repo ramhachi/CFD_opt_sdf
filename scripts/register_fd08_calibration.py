@@ -57,6 +57,7 @@ CRITERIA_OUT = ROOT / "docs/evidence/fd08_candidate_c_calibration_2026_10_04/xfi
 DATASET_OUT = ROOT / "work/fd08_candidate_c_calibration_dataset"
 DATASET_ID = "ramhachi888/cfd-opt-sdf-fd08-calibration"
 KERNEL_ID = "ramhachi888/cfd-opt-sdf-fd08-calibration"
+ROUND_ID = "fd08_candidate_c_calibration_2026_10_04_r1"
 KERNEL_DIR = "infra/kaggle/kernel_fd08_calibration"
 FLAGS = {key: False for key in (
     "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}
@@ -365,6 +366,7 @@ def bind_cpu_rehearsal(criteria: dict, result_path: Path, source_commit: str) ->
 
 def build(state_path: Path, epsilons_m: tuple[float, ...], source_commit: str,
           dataset_dir: Path, criteria_path: Path, *, write: bool,
+          round_id: str = ROUND_ID,
           cpu_preview_dir: Path | None = None,
           cpu_rehearsal_result_path: Path | None = None) -> dict:
     if write and cpu_preview_dir is not None:
@@ -372,6 +374,12 @@ def build(state_path: Path, epsilons_m: tuple[float, ...], source_commit: str,
     if write and cpu_rehearsal_result_path is None:
         raise ValueError("calibration criteria registration requires the passing CPU rehearsal result")
     epsilons = validate_calibration_ladder(epsilons_m)
+    if not re.fullmatch(r"fd08_candidate_c_calibration_2026_10_04_r[1-9][0-9]*", round_id):
+        raise ValueError("calibration round ID must use the registered FD-08 round naming pattern")
+    criteria_relative = _repo_path(criteria_path)
+    if Path(criteria_relative).is_absolute():
+        raise ValueError("calibration criteria must be registered inside the repository")
+    artifact_root = (Path(criteria_relative).parent / "result/fd08_calibration").as_posix()
     if len({epsilon_tag(value) for value in epsilons}) != len(epsilons):
         raise ValueError("calibration epsilon values collide in deterministic state IDs")
     base_path = BASE_CRITERIA
@@ -500,19 +508,21 @@ def build(state_path: Path, epsilons_m: tuple[float, ...], source_commit: str,
         "kernel_metadata": f"{KERNEL_DIR}/kernel-metadata.json",
         "kernel_wrapper": f"{KERNEL_DIR}/runner.py",
         "kernel_base_runner": f"{KERNEL_DIR}/runner_base.py",
+        "kernel_wrapper_template": f"{KERNEL_DIR}/runner.py.template",
+        "kernel_bundle_builder": "scripts/build_fd08_calibration_kernel.py",
     }
     source_inputs.update({key: source_entry(path) for key, path in additional_sources.items()})
 
     criteria = copy.deepcopy(base)
     criteria.update({
-        "round_id": "fd08_candidate_c_calibration_2026_10_04_r1",
+        "round_id": round_id,
         "kind": "fd08_candidate_c_calibration",
         "evidence_class": "candidate_c_micro_response_calibration_not_formal_fd",
         "immutable": True, "registered_before_computation": True,
         "status": "registered_not_run", "formal_measurement_started": False,
         "registered_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "source_commit": source_commit,
-        "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04/xfidc_criteria.json",
+        "criteria_path": criteria_relative,
         "dataset_staging_path": _repo_path(dataset_dir),
         "input_dataset_id": DATASET_ID, "kernel_id": KERNEL_ID,
         "source_inputs": source_inputs,
@@ -556,7 +566,7 @@ def build(state_path: Path, epsilons_m: tuple[float, ...], source_commit: str,
             "kernel_log_filename": "kernel_log.json",
         },
         "artifact_namespaces": {
-            "calibration_result_root": "docs/evidence/fd08_candidate_c_calibration_2026_10_04/result/fd08_calibration",
+            "calibration_result_root": artifact_root,
         },
         "calibration_formal_disjointness": {
             "calibration_run_ids": [row["name"] for row in state_order],
@@ -619,6 +629,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--epsilon-ladder-m", type=float, nargs="+", required=True)
+    parser.add_argument("--round-id", default=ROUND_ID)
     parser.add_argument("--source-commit", default=None)
     parser.add_argument("--criteria", type=Path, default=CRITERIA_OUT)
     parser.add_argument("--dataset", type=Path, default=DATASET_OUT)
@@ -630,7 +641,8 @@ def main() -> int:
     args = parser.parse_args()
     commit = args.source_commit or subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     criteria = build(args.state, tuple(args.epsilon_ladder_m), commit, args.dataset, args.criteria,
-                     write=args.register, cpu_preview_dir=args.cpu_preview_dir,
+                     write=args.register, round_id=args.round_id,
+                     cpu_preview_dir=args.cpu_preview_dir,
                      cpu_rehearsal_result_path=args.cpu_rehearsal_result)
     print(json.dumps({"round_id": criteria["round_id"], "runs": len(criteria["state_order"]),
                       "epsilon_ladder_m": criteria["calibration_epsilon_ladder_m"],
