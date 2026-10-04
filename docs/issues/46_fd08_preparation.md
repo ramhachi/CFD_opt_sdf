@@ -781,3 +781,19 @@ The host download/hash verification record is in the same directory (SHA-256
 corrected private kernel has not yet been submitted. No T4 calibration
 measurement or verdict exists; no formal epsilon ladder is registered and all
 six qualification flags remain literal `false`.
+
+
+## Calibration round 3 kernel v1 submitted (2026-10-05)
+
+Kaggle accepted private kernel version 1 at
+`https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel`
+with the registered `NvidiaTeslaT4` request and dataset version 3. The first
+status check reported `KernelWorkerStatus.RUNNING`; the initial stdout snapshot
+was empty, so actual GPU/runtime identity and solver progress are not yet
+verified. The append-only submission identity record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/kernel_submission.json`
+(SHA-256
+`9bced35dd374b493eaeca29f49bf4edd1f826c98f93018ed28e203f9193d41ae`). No
+terminal artifacts or host analysis exist yet. No epsilon has been selected,
+no FD-08 verdict exists, and all six qualification flags remain literal
+`false`.

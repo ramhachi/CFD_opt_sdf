@@ -5904,3 +5904,12 @@ archive, catalog, and audit hashes are recorded in
 `docs/issues/46_fd08_preparation.md` and the R3 evidence directory. No T4
 kernel has yet been submitted and no calibration verdict exists; all six
 qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration round 3 kernel v1 submitted
+
+Kaggle accepted private kernel v1 with a T4 request and registered dataset
+version 3. Its first status was `KernelWorkerStatus.RUNNING`; stdout was not
+yet available, so runtime identity and solver progress remain pending. The
+submission identity is preserved in the R3 evidence directory. No terminal
+result or FD-08 verdict exists, and all six qualification flags remain false.
