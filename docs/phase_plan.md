@@ -6018,3 +6018,40 @@ Submission identity and first status are preserved in the R4 evidence
 directory. Runtime identity, solver progress, and terminal analysis remain
 pending. No calibration verdict exists; all six qualification flags remain
 literal `false`.
+
+
+### 2026-10-05 — #46 calibration round 4 kernel v2 incomplete at runtime limit
+
+Kaggle kernel v2 reached `KernelWorkerStatus.CANCEL_ACKNOWLEDGED` after its
+requested 7,200-second run limit. The final saved runner state is
+`state_D2_filtered_seed2026__eps_5_0000000000e_04__minus`; the last API log
+event at 7,189.427 seconds starts that state. The output `result.json` is
+explicitly partial: 38 of 47 registered states completed, and the remaining
+nine D2 states are absent. This is runtime/infrastructure incompleteness,
+not a scientific FAIL.
+
+Host verification matched the result criteria SHA-256 to immutable R4
+criteria `81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`;
+all 29 registered source inputs match source commit
+`b098d1a60992e217fd131e0b02c383bb39b0a8f5`. The completed per-state force
+CSV hashes match both `result.json` and the saved state result records. The
+runtime identity records two Tesla T4 GPUs, compute capability 7.5.0, Julia
+1.12.6, CUDA driver API 13.3.0/runtime 12.8.0, CUDA.jl 6.3.1, WaterLily 1.8.0,
+and driver 580.178.04 (recorded, not a gate under R4).
+
+The 200 downloaded output files and SHA-256 inventory are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v2_terminal/`;
+host inventory SHA-256 is
+`c2fa76d425669da1d97f1e03d370c84209937ee27061cdb3551681d83691ee10`, and
+terminal audit SHA-256 is
+`accc34a667d40ebe73e29e041bdf3e63575518b2e240281c4353c69a7a15dddf`.
+Because the 47-state inventory and final output manifest are incomplete, the
+registered analyzer was not run. No response floor, epsilon selection, or
+calibration verdict is issued; no formal criteria are registered, and all six
+qualification flags remain literal `false`.
+
+The next attempt may use the same immutable R4 criteria, source, and dataset
+with a 10,800-second Kaggle run limit. This changes only the execution time
+allowance, not the 5,400-second aggregate solver budget or any measurement,
+response, epsilon, or verdict rule. The v2 partial outputs remain separate
+and will not be combined with retry results.

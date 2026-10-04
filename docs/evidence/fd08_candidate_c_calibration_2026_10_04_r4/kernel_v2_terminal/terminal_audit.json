@@ -1,0 +1,1406 @@
+{
+  "audit_captured_at_utc": "2026-10-04T21:51:24Z",
+  "audit_kind": "FD08 R4 calibration kernel v2 terminal/incomplete execution audit",
+  "backend_runtime_observed": {
+    "CUARRAY_SMOKE": "true",
+    "CUDA_DRIVER_VERSION": "13.3.0",
+    "CUDA_FUNCTIONAL": "true",
+    "CUDA_JL_VERSION": "6.3.1",
+    "CUDA_RUNTIME_VERSION": "12.8.0",
+    "GPU_COMPUTE_CAPABILITY": "7.5.0",
+    "GPU_NAME": "Tesla T4",
+    "GPU_TOTAL_MEMORY_BYTES": "unknown",
+    "JULIA_VERSION": "1.12.6",
+    "KA_SMOKE": "true",
+    "WATERLILY_CUDA_EXT": "true",
+    "WATERLILY_VERSION": "1.8.0"
+  },
+  "calibration_analyzer_run": false,
+  "calibration_verdict": "NOT_ISSUED",
+  "completed_states": [
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 253582,
+          "exists": true,
+          "sha256": "a3aef6d6859c4d1ac4106d61d83b0f54de97a4acca0b0c06501ebe4df08e5666"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4330,
+          "exists": true,
+          "sha256": "28e8d7ac2b77d0b5275deee92a7dbe4453297c78f49194737bad6ef4889eb1a0"
+        },
+        "job.log": {
+          "bytes": 4575,
+          "exists": true,
+          "sha256": "45edb1188d186c3486dbf573f4031b7c0d3a0c814d09cf4ee432ba3a4f6fc294"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "0a8ef232d521b30f5b77c2559bdd61bf53fac17f09dca8f20f929c6303a9f510"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "a3aef6d6859c4d1ac4106d61d83b0f54de97a4acca0b0c06501ebe4df08e5666",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_02__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "a3aef6d6859c4d1ac4106d61d83b0f54de97a4acca0b0c06501ebe4df08e5666",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251036,
+          "exists": true,
+          "sha256": "5f4b8b759ae4383ab327a726c6d5d421ee77950f9cd3bdbd542daebadf1e72d2"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4335,
+          "exists": true,
+          "sha256": "0c6d55d5d26587617e5281dc450144fd962dbbdb667a6858e253acd7e8cc5a81"
+        },
+        "job.log": {
+          "bytes": 4578,
+          "exists": true,
+          "sha256": "6ecee8e56e27ec5144a0645a82c604bb8ea27ec612f5661768190c148626b99c"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "af81e7d00bd6c1cfc70f141505e43a4fffb3f9aa4d4591e1ef0bcfbc5e76fdc7"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "5f4b8b759ae4383ab327a726c6d5d421ee77950f9cd3bdbd542daebadf1e72d2",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_02__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "5f4b8b759ae4383ab327a726c6d5d421ee77950f9cd3bdbd542daebadf1e72d2",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 250286,
+          "exists": true,
+          "sha256": "cc8d095f8bf466112d94b36d57319edf19f9c4cbd3d3863bfbbbf642d03ef380"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "71b6c42b499b0bacab040f44be218dafcdafa756e9f3664b88d7ffb06c1bc46b"
+        },
+        "job.log": {
+          "bytes": 4568,
+          "exists": true,
+          "sha256": "b3b13ec204a47ff95446d2d2f024ece4bbb4053edce536a206ecd04328d4eb42"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "01f922c0c9340eafe0e9e768a48e877046c453d783d57ed5dce2ec840c81a05f"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "cc8d095f8bf466112d94b36d57319edf19f9c4cbd3d3863bfbbbf642d03ef380",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_03__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "cc8d095f8bf466112d94b36d57319edf19f9c4cbd3d3863bfbbbf642d03ef380",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251275,
+          "exists": true,
+          "sha256": "3847a8547edbab4f75d1070dd02b0a660a64bda6f3564d1b31083b28afa36aed"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4328,
+          "exists": true,
+          "sha256": "61b3917a648cad8dbea84628f064d3448417d3bd413410dd64f8c465ffbb9683"
+        },
+        "job.log": {
+          "bytes": 4571,
+          "exists": true,
+          "sha256": "b4787ed6f7c02a8c8e87f7f1400a364435bfedcd7995036d30414c811c8fe355"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "e9bf8e8c2563bde731a110d9329ec6f50f42a5fd2d934be9f5033cbea736b5dc"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "3847a8547edbab4f75d1070dd02b0a660a64bda6f3564d1b31083b28afa36aed",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_03__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "3847a8547edbab4f75d1070dd02b0a660a64bda6f3564d1b31083b28afa36aed",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251353,
+          "exists": true,
+          "sha256": "24d676e9511ad7b8d0d0d9a28dbfa5943875f50614602b98730a5ed01fc275e3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4327,
+          "exists": true,
+          "sha256": "86c66d6bb1a8fa3eead68301b1ae9c7eac4b64fed3ca7efc0944403eeafa84a0"
+        },
+        "job.log": {
+          "bytes": 4572,
+          "exists": true,
+          "sha256": "a816e6696b9403df48a0ec494f9eef0ea781899a26d2a7bd769d7a62c9b59a8e"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "7ea2b3aba48936c2979aed52c4d79e947c9c007e1efe43eeba4bf584363282a3"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "24d676e9511ad7b8d0d0d9a28dbfa5943875f50614602b98730a5ed01fc275e3",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_04__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "24d676e9511ad7b8d0d0d9a28dbfa5943875f50614602b98730a5ed01fc275e3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251241,
+          "exists": true,
+          "sha256": "a387ec0b0c5dc0ada9151a8b8640dc98ced208ff68a3a7638b8a0f73ddf95bac"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "07ec6783f3e4f6c78f345dbffd3a07c5cde2398355c59fc34ba74cb564e1bcde"
+        },
+        "job.log": {
+          "bytes": 4566,
+          "exists": true,
+          "sha256": "da6a99343819058425dd8dbeb777c89569ead8e46cd45f339a26d575578629de"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "c297567d613cefda9fda8a7e59d10c21ccdeab9d547adfdc0c4f1129d8e85f35"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "a387ec0b0c5dc0ada9151a8b8640dc98ced208ff68a3a7638b8a0f73ddf95bac",
+      "run_id": "D0_interface_offset__eps_1_5000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "a387ec0b0c5dc0ada9151a8b8640dc98ced208ff68a3a7638b8a0f73ddf95bac",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 256220,
+          "exists": true,
+          "sha256": "3225c764b4c69e47f3629f49e2a8e6be999946e7bc90a5df0b32368e49a37d69"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4336,
+          "exists": true,
+          "sha256": "40cedbb51d758d092aee1fde3df616519b7d83c457d65178db770ccd7d82aea2"
+        },
+        "job.log": {
+          "bytes": 4581,
+          "exists": true,
+          "sha256": "723a1308c8319a6a3914f70b77775d62fe5fcb836aa1ce4168ed10a0dfe5d47f"
+        },
+        "state_result.json": {
+          "bytes": 1003,
+          "exists": true,
+          "sha256": "16d3bb6e6fe811b1561309b1ef4aaa57cd8efe2dc64f2554d110f4baffdd1895"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "3225c764b4c69e47f3629f49e2a8e6be999946e7bc90a5df0b32368e49a37d69",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_02__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "3225c764b4c69e47f3629f49e2a8e6be999946e7bc90a5df0b32368e49a37d69",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 252722,
+          "exists": true,
+          "sha256": "cb62f8f1fdb6b3bc050b486e474c5a2ad8feae8263c3490790bce67748338eac"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4335,
+          "exists": true,
+          "sha256": "19e8591d4c0e9ba6d43aad4fcec3bfc646f8eb0ae8211c53b4d1122fe9587a2b"
+        },
+        "job.log": {
+          "bytes": 4578,
+          "exists": true,
+          "sha256": "59e9e86aa1527d90776a86ecd1166749f99e919a190c539ef2a0974e7ce24e8d"
+        },
+        "state_result.json": {
+          "bytes": 1002,
+          "exists": true,
+          "sha256": "8aa7a20dcb23f85c7a7ba9ba065c3cf47bdddf25688db7f4a4c3906db11c5b79"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "cb62f8f1fdb6b3bc050b486e474c5a2ad8feae8263c3490790bce67748338eac",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_02__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "cb62f8f1fdb6b3bc050b486e474c5a2ad8feae8263c3490790bce67748338eac",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 249456,
+          "exists": true,
+          "sha256": "c1e51ad916bf8d24513ff9f681db3d8e3c50c73f85aa3284790f422542042cb4"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "a3377db8f085311271bca31a1659b17031d5f3943facd17ae2f1f7a9b170fe9c"
+        },
+        "job.log": {
+          "bytes": 4568,
+          "exists": true,
+          "sha256": "b8a5995b07711be9bcac1d4d2b94c481778db4eb9d4e94b6d421568123f34ee5"
+        },
+        "state_result.json": {
+          "bytes": 998,
+          "exists": true,
+          "sha256": "8b824b276ec99840cd35dbd230d46799e77d7d0d7e53d50d93b4c52a45568ed3"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "c1e51ad916bf8d24513ff9f681db3d8e3c50c73f85aa3284790f422542042cb4",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_03__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "c1e51ad916bf8d24513ff9f681db3d8e3c50c73f85aa3284790f422542042cb4",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 250343,
+          "exists": true,
+          "sha256": "02b1e06442246dc02ab98017324f7f2a04dcffff205e1128c550c7aaae06426c"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4327,
+          "exists": true,
+          "sha256": "d7c1099929e429f2d0994679d438e2e3079e81982760f14348b4527192166ba5"
+        },
+        "job.log": {
+          "bytes": 4570,
+          "exists": true,
+          "sha256": "1083a8ca4afcf34cbe51c7223af479b43c4b3d37039950001ea6edfc6137d0f0"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "5ae9635c14f04af8240f56e4f3756c76040c3649b88214bc5931e51b19860156"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "02b1e06442246dc02ab98017324f7f2a04dcffff205e1128c550c7aaae06426c",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_03__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "02b1e06442246dc02ab98017324f7f2a04dcffff205e1128c550c7aaae06426c",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251183,
+          "exists": true,
+          "sha256": "fe59017ace088d5991da64ac74bd07bb9c462a2e324a502dd5856a8504d3a129"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "53cf8fb6245d79ac34c3421e4d662ca6cdcbf986872a90cfbd4d9ef3ddaad8ab"
+        },
+        "job.log": {
+          "bytes": 4568,
+          "exists": true,
+          "sha256": "911351db69c358affcdece5f66a7f81947d876fc69156a18d2387b9c0028ca58"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "5aa5627d80a4314fcceffaef640a15affcc17b1dc7b176800e56083e33927168"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "fe59017ace088d5991da64ac74bd07bb9c462a2e324a502dd5856a8504d3a129",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_04__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "fe59017ace088d5991da64ac74bd07bb9c462a2e324a502dd5856a8504d3a129",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251413,
+          "exists": true,
+          "sha256": "6abf3a173da4a74b55c1bc0ea342a19aef78dac63c40cbd12c0fe6837d4c4687"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4329,
+          "exists": true,
+          "sha256": "51fde004739ae492b1acca993c9fdba7562b5938931498dfdfccb8b9feba102e"
+        },
+        "job.log": {
+          "bytes": 4572,
+          "exists": true,
+          "sha256": "05bf1265a95a00e8aeb7f33986f6e06cb954c8522ae224f4dc5fb2a2eaf2e2fc"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "474144af969588d65d61e8631baf1af0da8c1d01f4106d0cd849cdd07cc87e00"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "6abf3a173da4a74b55c1bc0ea342a19aef78dac63c40cbd12c0fe6837d4c4687",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "6abf3a173da4a74b55c1bc0ea342a19aef78dac63c40cbd12c0fe6837d4c4687",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251201,
+          "exists": true,
+          "sha256": "224035e973692a224f647a14da6f5c1fff892b64968c32a99cb5be798c4df282"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4326,
+          "exists": true,
+          "sha256": "b308c51b5c7c593c898a82e9b44d65eb24083ffd07e1555aa26bec75424c643e"
+        },
+        "job.log": {
+          "bytes": 4571,
+          "exists": true,
+          "sha256": "7a93c0205ee4bff210fbe1362978d45de89d2655c2f9e6573d1f59d703896ba5"
+        },
+        "state_result.json": {
+          "bytes": 995,
+          "exists": true,
+          "sha256": "ecaf23e8baefc67fd31fc04f6502350fc00a062d4809b3b6d02b5c4b0fdf39f1"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "224035e973692a224f647a14da6f5c1fff892b64968c32a99cb5be798c4df282",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_05__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "224035e973692a224f647a14da6f5c1fff892b64968c32a99cb5be798c4df282",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251245,
+          "exists": true,
+          "sha256": "f922fc487c162a54c9fd3b2dcc89bafda9338df27cef75cfd83136dac167a080"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4327,
+          "exists": true,
+          "sha256": "246c0dbc721d4517581b11e622b6a0c6cffd531bb1d57d4efc0304f21eb026d3"
+        },
+        "job.log": {
+          "bytes": 4570,
+          "exists": true,
+          "sha256": "e9eaa0851bbcde4c9a0204bfa1ad0b0c61ada4c2ac20b4eb09adaa0a56847d63"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "9a2ba1ad5d57d523c15a4871be0e63565c4f89c87550e7e785f910b7faa9f397"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "f922fc487c162a54c9fd3b2dcc89bafda9338df27cef75cfd83136dac167a080",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "f922fc487c162a54c9fd3b2dcc89bafda9338df27cef75cfd83136dac167a080",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251206,
+          "exists": true,
+          "sha256": "865718b97397e07cb34a0354c386218ea44db77ee86ce95771fb41ef30d4ac02"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4328,
+          "exists": true,
+          "sha256": "b4206ec4e14d77f640bb35c4fece73a3c4d07642e67144f580ca582367308882"
+        },
+        "job.log": {
+          "bytes": 4571,
+          "exists": true,
+          "sha256": "fd0171d0486a487fde09b46e41dffc5dbe7441fde6fab99c3bdd4160bbcb9b35"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "01f513e57dc93de2551e8e3d1dc03ac7b49c60727988a075853f2dc71dd2e0b6"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "865718b97397e07cb34a0354c386218ea44db77ee86ce95771fb41ef30d4ac02",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_02__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "865718b97397e07cb34a0354c386218ea44db77ee86ce95771fb41ef30d4ac02",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251475,
+          "exists": true,
+          "sha256": "9319dbde000c874ec32d16424533e4785fc1be561b84c87ac342f853474797ab"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4329,
+          "exists": true,
+          "sha256": "2febc365690ec2ef9453c954d56bff168ef07801be4bcb36855dccc4b868fb35"
+        },
+        "job.log": {
+          "bytes": 4570,
+          "exists": true,
+          "sha256": "18fb311d8e41ee44c57394f7126b9a9c83862e3aad7b358ad8e0157c7ab33fcb"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "17425c268df9b8d283b6a593f6cc6f5743f467d8a73894d17763acc63213be11"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "9319dbde000c874ec32d16424533e4785fc1be561b84c87ac342f853474797ab",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_02__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "9319dbde000c874ec32d16424533e4785fc1be561b84c87ac342f853474797ab",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251216,
+          "exists": true,
+          "sha256": "9ec949ff5a104046d46590fa723b543b1aca8b1976053f44485f23a8af936f47"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4321,
+          "exists": true,
+          "sha256": "3870eca70ef3e3ddbf0c7ecc7cb51d7fb8daa40c95d05807dea6a1656a2c42e8"
+        },
+        "job.log": {
+          "bytes": 4564,
+          "exists": true,
+          "sha256": "ba1110fda8d9af0963c919384330c5de1e74a01b705b28a65248137db9da4eb4"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "72615e437e9d1badb70ce304ab443c956d9ba64b0055ce63aba0b7a52b20482b"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "9ec949ff5a104046d46590fa723b543b1aca8b1976053f44485f23a8af936f47",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_03__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "9ec949ff5a104046d46590fa723b543b1aca8b1976053f44485f23a8af936f47",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251195,
+          "exists": true,
+          "sha256": "3cdcecef795ac08e4d382b7786949dbca7da95e5685dc218cc5509389c3ac694"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4330,
+          "exists": true,
+          "sha256": "085d507e4a149580c02ae59d0589f1f521a54d39080b7f57675d66c976ae9830"
+        },
+        "job.log": {
+          "bytes": 4571,
+          "exists": true,
+          "sha256": "004622e4d2e3f74e5e40c15fd53ba510f6b335cc6ad680453868ac784afb5d65"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "ad48ab467e5796ac0b410b7ab44d6836ec79650744b111f930911bb5cee5b01f"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "3cdcecef795ac08e4d382b7786949dbca7da95e5685dc218cc5509389c3ac694",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_03__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "3cdcecef795ac08e4d382b7786949dbca7da95e5685dc218cc5509389c3ac694",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251334,
+          "exists": true,
+          "sha256": "093a147e2c0b572b45c984314c573e22c01865e31f5163a8efd1d91cce4b69ea"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "a88a8db7344c40f79695a21880ed541a065d9bf8774544197754805493d80fa7"
+        },
+        "job.log": {
+          "bytes": 4566,
+          "exists": true,
+          "sha256": "654c617d1dfe6817d71d82a07da8e8b963d1458fbe1d7dc59fffeec5450da86a"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "87a67446877a8d12f74792f65d094b74b6e4863a9e86948e3ad10b70f7cee5f0"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "093a147e2c0b572b45c984314c573e22c01865e31f5163a8efd1d91cce4b69ea",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_04__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "093a147e2c0b572b45c984314c573e22c01865e31f5163a8efd1d91cce4b69ea",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251367,
+          "exists": true,
+          "sha256": "33df585aa08af86e29fa0c122403a713ad29d5431d2b5a29a1987958ee550c10"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4328,
+          "exists": true,
+          "sha256": "b7e3397fd8ce48b26d27004efbcb4d728959404623fddc59d79553f2de92193d"
+        },
+        "job.log": {
+          "bytes": 4569,
+          "exists": true,
+          "sha256": "954694f1649364257610ed7f25956460c3673c206f1aef04e54fe8ec7b50baf1"
+        },
+        "state_result.json": {
+          "bytes": 1002,
+          "exists": true,
+          "sha256": "33c40eb0e7b392cf177360a6ac9c600f9fc3955d2b7b6938f43e4cc6282e902b"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "33df585aa08af86e29fa0c122403a713ad29d5431d2b5a29a1987958ee550c10",
+      "run_id": "D1_filtered_seed11__eps_1_5000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "33df585aa08af86e29fa0c122403a713ad29d5431d2b5a29a1987958ee550c10",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 253899,
+          "exists": true,
+          "sha256": "f3ceba5ed1e66fa1acb41a2613d270436c15a075dc0b536216d3521b6c04ce27"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4329,
+          "exists": true,
+          "sha256": "f0c3a92cf366ea820a38b9b7bd1cabed8b626c1850dce4e2d168000b1920dc6d"
+        },
+        "job.log": {
+          "bytes": 4572,
+          "exists": true,
+          "sha256": "cb23c84cf4a1c6b0532e2f0c16077a74aa687c8b55d966801ac212bd090cb435"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "9193e1cb6517da0342fef196a059b45790caa8ad340d443add832b89740ceaf0"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "f3ceba5ed1e66fa1acb41a2613d270436c15a075dc0b536216d3521b6c04ce27",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_02__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "f3ceba5ed1e66fa1acb41a2613d270436c15a075dc0b536216d3521b6c04ce27",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 252266,
+          "exists": true,
+          "sha256": "e1cec35b01081e84c5624c303aa5b798993e8614885020bddaaaf836337f8f27"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4330,
+          "exists": true,
+          "sha256": "24b788301d7950321136762549fb8246b0be853eedf7ca6c1c4c6f13da0a6d31"
+        },
+        "job.log": {
+          "bytes": 4571,
+          "exists": true,
+          "sha256": "cb35f51786675f3225efb225c916f8cd92fbf3d50e0b01b43d2f61be1f9b0793"
+        },
+        "state_result.json": {
+          "bytes": 1002,
+          "exists": true,
+          "sha256": "d7d0c929eb6c76ce35fd68d93f34e0465fe11caca43d46897b79b76d6e04fade"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "e1cec35b01081e84c5624c303aa5b798993e8614885020bddaaaf836337f8f27",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_02__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "e1cec35b01081e84c5624c303aa5b798993e8614885020bddaaaf836337f8f27",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251245,
+          "exists": true,
+          "sha256": "78f50940a74d7c0644f6a30556a3bf4c2ce6a91cfe7b7ae03eb88905216a7ab3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4324,
+          "exists": true,
+          "sha256": "77d4cb60e158c0018944af631265493ad1b6d080db60e5b16e7d64c554a4e95f"
+        },
+        "job.log": {
+          "bytes": 4567,
+          "exists": true,
+          "sha256": "e89f98798730283a6c4332ad5e9593b46fb99b21b2aaf90dccdf90e12e60a2af"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "1941c712a47224f35c0d747c97bd93e971ccc1bb181ef8ed72431b10433c8ba4"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "78f50940a74d7c0644f6a30556a3bf4c2ce6a91cfe7b7ae03eb88905216a7ab3",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_03__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "78f50940a74d7c0644f6a30556a3bf4c2ce6a91cfe7b7ae03eb88905216a7ab3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251344,
+          "exists": true,
+          "sha256": "bb8e88662cbf73cab95ea564b2f6bb46dcc443b5a04e105db139f86991be7465"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4327,
+          "exists": true,
+          "sha256": "aac3e60de03fe2be1bc59b406129fe526795baf705fb2ddb5751ac8e329c69ff"
+        },
+        "job.log": {
+          "bytes": 4568,
+          "exists": true,
+          "sha256": "9093b8aba62566343aca7c433efcc2810bf8c084415cf2ab245c0d5680a241ab"
+        },
+        "state_result.json": {
+          "bytes": 1000,
+          "exists": true,
+          "sha256": "85b3cf2d739325d97b2b1a6ae19b28696b2599b4a968b40e9f886ce93798e03d"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "bb8e88662cbf73cab95ea564b2f6bb46dcc443b5a04e105db139f86991be7465",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_03__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "bb8e88662cbf73cab95ea564b2f6bb46dcc443b5a04e105db139f86991be7465",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251350,
+          "exists": true,
+          "sha256": "78a540525e84bc0e292bc2c2e98c5a28b14ccb6602d13d50e927957bf3623e11"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4329,
+          "exists": true,
+          "sha256": "7feae0395fc993ce650ec64c666be81e0a9a9292654b040562b5e711ae4e0a91"
+        },
+        "job.log": {
+          "bytes": 4572,
+          "exists": true,
+          "sha256": "9ff57ab684325c40b958861dc5a33d1709bb0eb6474a6fe89d73ced951852a00"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "f2e5f48333e9dce39d94dd9dd2efe745cc095cc9747656623fb50d08f2cadd54"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "78a540525e84bc0e292bc2c2e98c5a28b14ccb6602d13d50e927957bf3623e11",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_04__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "78a540525e84bc0e292bc2c2e98c5a28b14ccb6602d13d50e927957bf3623e11",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251292,
+          "exists": true,
+          "sha256": "34becdfc13482a64baab3834eb782ddb31d1ff410e930889d8868be4d9bc7500"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4319,
+          "exists": true,
+          "sha256": "692a4772fcf8422ed681c4239d7baa1dbf56d48f33b885252d88ffbcf51162f4"
+        },
+        "job.log": {
+          "bytes": 4560,
+          "exists": true,
+          "sha256": "6c3351afd15e24fd0d39e196867c500fdce2a8b89ef99442f7a6f7a104fac068"
+        },
+        "state_result.json": {
+          "bytes": 997,
+          "exists": true,
+          "sha256": "7728689d45a3a504cec01ba671b642069dd83a23e6148962c211376cd29db2e2"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "34becdfc13482a64baab3834eb782ddb31d1ff410e930889d8868be4d9bc7500",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "34becdfc13482a64baab3834eb782ddb31d1ff410e930889d8868be4d9bc7500",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251319,
+          "exists": true,
+          "sha256": "39b9b4f9a2210d20be158971d5acbffd18e191684acd19832e46839c31ec5397"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4323,
+          "exists": true,
+          "sha256": "4f9b0177a1e8db6e1c82ada08a4265328ef763d29432ffd139badbe0db394778"
+        },
+        "job.log": {
+          "bytes": 4566,
+          "exists": true,
+          "sha256": "c3c927ee2879c310d400aaacdf1a30ab6454a8a4f6f11c4ee74920bf7737cef1"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "153ba613bc1edf24e188f811b8e413e96bb7a1d2ee26fbccf9e806d3bca4180d"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39b9b4f9a2210d20be158971d5acbffd18e191684acd19832e46839c31ec5397",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_05__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39b9b4f9a2210d20be158971d5acbffd18e191684acd19832e46839c31ec5397",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251268,
+          "exists": true,
+          "sha256": "05359108bd0ea3e9f02ac388e11b1bac5c078b8a3fb00b9d17a17485cf9fbcce"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4322,
+          "exists": true,
+          "sha256": "5e3f6fcd40e7f20c4f9edb3f320ee81bf197e4fb531032b792958bc1c6473493"
+        },
+        "job.log": {
+          "bytes": 4563,
+          "exists": true,
+          "sha256": "16a1112d5d8656faf1b015e5a1668f1484e8449d9b2885129cc1f374899de892"
+        },
+        "state_result.json": {
+          "bytes": 999,
+          "exists": true,
+          "sha256": "e2c862a666008a44c958ab4b8d8fc1f1111ce73c43af5275ac4facef47238e28"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "05359108bd0ea3e9f02ac388e11b1bac5c078b8a3fb00b9d17a17485cf9fbcce",
+      "run_id": "D1_filtered_seed11__eps_5_0000000000e_05__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "05359108bd0ea3e9f02ac388e11b1bac5c078b8a3fb00b9d17a17485cf9fbcce",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251197,
+          "exists": true,
+          "sha256": "588ecf6d84419433cdeb7b21e609ff9e03d747cf69a917ec781e8979e66e44a1"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4325,
+          "exists": true,
+          "sha256": "d1d413a8ea95f727bb70f61979fff0ccb93e1a695919734699b7fa6008336c67"
+        },
+        "job.log": {
+          "bytes": 4572,
+          "exists": true,
+          "sha256": "29495840c3466783e1814783afe4719b1ffa34f3976add48f6a4dae557825f7b"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "df0b8a35daff7af0548a09bb649ca2842d372281d71be2f3c3bbe639b4acb65b"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "588ecf6d84419433cdeb7b21e609ff9e03d747cf69a917ec781e8979e66e44a1",
+      "run_id": "D2_filtered_seed2026__eps_1_5000000000e_04__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "588ecf6d84419433cdeb7b21e609ff9e03d747cf69a917ec781e8979e66e44a1",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251301,
+          "exists": true,
+          "sha256": "c31fb1a090b17fb531a8e3b29f5308b828f1029d3d3969e3524f7f7dade0e096"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4333,
+          "exists": true,
+          "sha256": "f8010e31fff89db55c5bbe3e89eb2b31f81afadc4585ecf4f8336e6c7080ee40"
+        },
+        "job.log": {
+          "bytes": 4578,
+          "exists": true,
+          "sha256": "a085c0f2320875abf7af0cc16f186afde7b5f959f7883ac4fde5dd5e4ebb5e93"
+        },
+        "state_result.json": {
+          "bytes": 1002,
+          "exists": true,
+          "sha256": "dfb97564de69b587d2161a2f9afb6e0d25583ffb8dd64a7d9c63724df509284c"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "c31fb1a090b17fb531a8e3b29f5308b828f1029d3d3969e3524f7f7dade0e096",
+      "run_id": "D2_filtered_seed2026__eps_1_5000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "c31fb1a090b17fb531a8e3b29f5308b828f1029d3d3969e3524f7f7dade0e096",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251343,
+          "exists": true,
+          "sha256": "ba5471d439b55e587db2b9ea04e76c965c19afde9769a4db3bad9c05fdfd03f5"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4332,
+          "exists": true,
+          "sha256": "8b5ba34f0594b5c37c98694fd0a3a91e138492c0860c4358582e117e4a1040b2"
+        },
+        "job.log": {
+          "bytes": 4577,
+          "exists": true,
+          "sha256": "97714afeba52480b9b71fdf7ae095ed3fcef763e45b8e04af96640d865aaf42c"
+        },
+        "state_result.json": {
+          "bytes": 1002,
+          "exists": true,
+          "sha256": "b5e863ed89ecddb8698c4dc7547de64c3ffecffceffb7a18fcf3f5a13faef878"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "ba5471d439b55e587db2b9ea04e76c965c19afde9769a4db3bad9c05fdfd03f5",
+      "run_id": "D2_filtered_seed2026__eps_5_0000000000e_04__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "ba5471d439b55e587db2b9ea04e76c965c19afde9769a4db3bad9c05fdfd03f5",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251349,
+          "exists": true,
+          "sha256": "858e851e6e3b923cf8ae0cefea1963534f66be48ee37bf9057dd460fd04bda18"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4333,
+          "exists": true,
+          "sha256": "dbc5cb773a84ca56fca608d89bfc0ecff7132dfd3e9ae49b0b4b68876e699df1"
+        },
+        "job.log": {
+          "bytes": 4580,
+          "exists": true,
+          "sha256": "331ed1969706e2b0ebab92cb71076b8eda9921d5450a3e6cfdeda3ca5835cf08"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "dc7eb35047db7615a1bb5e073ece607c99b2e5044d82e466d5653fa9c4b3e057"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "858e851e6e3b923cf8ae0cefea1963534f66be48ee37bf9057dd460fd04bda18",
+      "run_id": "D2_filtered_seed2026__eps_5_0000000000e_05__minus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "858e851e6e3b923cf8ae0cefea1963534f66be48ee37bf9057dd460fd04bda18",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "5d566d9812721ed04447dfce3755dad31f1eb3ed8a253da368bc14b273fab38d"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4329,
+          "exists": true,
+          "sha256": "79165ff09ad32dfb47277a2441c60f948cb90ed3551d8a7901d559619d2358d5"
+        },
+        "job.log": {
+          "bytes": 4574,
+          "exists": true,
+          "sha256": "334b01a6757e759bfb5c223bbe79c90af4d051993019f3848573f4448eb0fc85"
+        },
+        "state_result.json": {
+          "bytes": 1001,
+          "exists": true,
+          "sha256": "8d4449db807e0364e374d5fc5941ba3578641e898bde1d31657e46c399d8b493"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "5d566d9812721ed04447dfce3755dad31f1eb3ed8a253da368bc14b273fab38d",
+      "run_id": "D2_filtered_seed2026__eps_5_0000000000e_05__plus",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "5d566d9812721ed04447dfce3755dad31f1eb3ed8a253da368bc14b273fab38d",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4295,
+          "exists": true,
+          "sha256": "5f6b8330ed8485a127e9523c4000f4bf60096c8d43bbbcb0205dc9e71d8ce4df"
+        },
+        "job.log": {
+          "bytes": 4474,
+          "exists": true,
+          "sha256": "ce84c936839385d47ac44112c7506b8c393285eead009ab45cea590978d2e79e"
+        },
+        "state_result.json": {
+          "bytes": 998,
+          "exists": true,
+          "sha256": "2d6e3c7fd43c64420b98c8ef5e94700a5f4e7b7055c363346781870fc445ae73"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "run_id": "cal_baseline_01",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4294,
+          "exists": true,
+          "sha256": "a29bd16db791a82875700d15611b729a16dafe03a1468d688c9ec30877ad4993"
+        },
+        "job.log": {
+          "bytes": 4473,
+          "exists": true,
+          "sha256": "ff9c062907b38eca62b6c60854cd2ba778dd0199eb027e2da8d78f4b2bb1e328"
+        },
+        "state_result.json": {
+          "bytes": 997,
+          "exists": true,
+          "sha256": "a0177ec967279bee40ee7eacb57e039a36a7c95502c41a87976a00c4c1ba3ad8"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "run_id": "cal_baseline_02",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4294,
+          "exists": true,
+          "sha256": "0e03f59f746ef3c1ed56400863258e58a63f3d96a8f61f5dcaa1f7a1d37c2714"
+        },
+        "job.log": {
+          "bytes": 4473,
+          "exists": true,
+          "sha256": "a0af0f97b14a80fe4ba4607f31827a8b51cdbc94eb1e4ec0c57390361d29dc40"
+        },
+        "state_result.json": {
+          "bytes": 998,
+          "exists": true,
+          "sha256": "6728b5e28c001f672972c817ce8e4c7d48561336b1661931b1b16b14e1ab47e9"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "run_id": "cal_baseline_03",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4295,
+          "exists": true,
+          "sha256": "c7c66cdaaa480686e7edfae3ed29cc466c4590071ad530458ab1af7f05efa45c"
+        },
+        "job.log": {
+          "bytes": 4474,
+          "exists": true,
+          "sha256": "b18b87f76e6ea8dd997d7451b3bb2af4b92ef57bf54ad5346781a3dcedb37130"
+        },
+        "state_result.json": {
+          "bytes": 998,
+          "exists": true,
+          "sha256": "c0a4a0099c1b6bd8f6dd9621d6374f4b1bd7f2607a58d75a0b9d08f9941d15b4"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "run_id": "cal_baseline_04",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "status": "COMPLETED"
+    },
+    {
+      "files": {
+        "W4_JOB_DONE": {
+          "bytes": 73,
+          "exists": true,
+          "sha256": "5420440475820fd79c940ee2a95c10ce435bfeabbf2bf4bf686d12ef23bfecc3"
+        },
+        "flow_24.forces.csv": {
+          "bytes": 251288,
+          "exists": true,
+          "sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3"
+        },
+        "flow_24.summary.json": {
+          "bytes": 4295,
+          "exists": true,
+          "sha256": "5704b6df5027db560aef6eb7d60a7746cee6d239f76d534463747e3daf585e46"
+        },
+        "job.log": {
+          "bytes": 4474,
+          "exists": true,
+          "sha256": "2d10902c2799d8f2f11e92f3dd4280cf5886e97f1e82014c0d384dbae04d9d9d"
+        },
+        "state_result.json": {
+          "bytes": 998,
+          "exists": true,
+          "sha256": "e3398b3471cc7405b9eeb373cf4c35dc952143f3b51e67ca353facf5f02a072f"
+        }
+      },
+      "result_force_hash_matches": true,
+      "result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "run_id": "cal_baseline_05",
+      "state_result_force_hash_matches": true,
+      "state_result_force_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+      "status": "COMPLETED"
+    }
+  ],
+  "criteria_hash_matches": true,
+  "criteria_sha256_expected": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "criteria_sha256_in_result": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "execution_state": {
+    "stage": "state_D2_filtered_seed2026__eps_5_0000000000e_04__minus"
+  },
+  "expected_state_count": 47,
+  "expected_state_count_complete": false,
+  "expected_state_ids_missing_from_result": [
+    "D2_filtered_seed2026__eps_5_0000000000e_04__minus",
+    "D2_filtered_seed2026__eps_1_5000000000e_03__plus",
+    "D2_filtered_seed2026__eps_1_5000000000e_03__minus",
+    "D2_filtered_seed2026__eps_5_0000000000e_03__plus",
+    "D2_filtered_seed2026__eps_5_0000000000e_03__minus",
+    "D2_filtered_seed2026__eps_1_5000000000e_02__plus",
+    "D2_filtered_seed2026__eps_1_5000000000e_02__minus",
+    "D2_filtered_seed2026__eps_5_0000000000e_02__plus",
+    "D2_filtered_seed2026__eps_5_0000000000e_02__minus"
+  ],
+  "formal_criteria_registered": false,
+  "interpretation": "Incomplete Kaggle execution at the requested 7200-second limit. The saved result is partial and lacks 9 of 47 registered runs; the last log event starts the first missing D2 case. This is infrastructure/runtime incompleteness, not a scientific FAIL. The registered analyzer was not run because the expected inventory and final output manifest are incomplete.",
+  "kaggle_status": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel has status \"KernelWorkerStatus.CANCEL_ACKNOWLEDGED\"",
+  "kernel_checkout_commit_log": "HEAD is now at b098d1a evidence(fd08): rehearse fixed calibration wrapper",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_version": 2,
+  "last_kaggle_log_event": {
+    "data": "RUN /tmp/cfd_xfidc_bgo98d5r/julia-1.12.6/bin/julia --startup-file=no --project=/tmp/cfd_xfidc_bgo98d5r/source/julia/CFDSDFWaterLilyT4 /tmp/cfd_xfidc_bgo98d5r/source/scripts/waterlily_xfid_candidate_c_job.jl /kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-calibration/states/D2_filtered_seed2026__eps_5_0000000000e_04__minus.phi_f4_fortran.raw /kaggle/working/fd08_calibration/states/D2_filtered_seed2026__eps_5_0000000000e_04__minus\n",
+    "stream_name": "stdout",
+    "time": 7189.427361917
+  },
+  "nvidia_smi_csv": "0, Tesla T4, GPU-50e6a32c-34d2-fffc-fc16-7dc5ed92e2d5, 15360 MiB, 580.178.04\n1, Tesla T4, GPU-0448a424-17a0-51bb-47e7-103f4c477362, 15360 MiB, 580.178.04",
+  "nvidia_smi_csv_sha256": "acb8f0e4db72ca617bc6d7fe33d8ba5dc80ea5d8e57e24dd1a86d6ffaf1afb95",
+  "observed_completed_result_count": 38,
+  "observed_completed_status_counts": {
+    "COMPLETED": 38
+  },
+  "per_completed_state_force_hashes_match_result": true,
+  "per_completed_state_force_hashes_match_state_result": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_source_commit": "b098d1a60992e217fd131e0b02c383bb39b0a8f5",
+  "requested_kernel_timeout_seconds": 7200,
+  "runner_status_partial": true,
+  "source_input_count": 29,
+  "source_input_mismatches": [],
+  "source_inputs_match_registered_commit": true,
+  "state_directories_downloaded": 39
+}

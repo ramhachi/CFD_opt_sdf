@@ -951,3 +951,41 @@ yet available. The submission record is
 Runtime identity, completed artifacts, and calibration analysis remain
 pending. No solver terminal or calibration verdict exists; no formal epsilon
 has been selected, and all six qualification flags remain literal `false`.
+
+
+## Calibration round 4 kernel v2 terminal record (2026-10-05)
+
+Kaggle kernel version 2 terminated with
+`KernelWorkerStatus.CANCEL_ACKNOWLEDGED` at its requested 7,200-second runtime
+limit. The final execution marker names
+`state_D2_filtered_seed2026__eps_5_0000000000e_04__minus`, and the last log
+event at 7,189.427 seconds starts that run. `result.json` contains 38 completed
+state records out of the 47-state inventory; nine D2 records are missing. The
+result is `partial: true`. This is a runtime/infrastructure terminal, not a
+scientific FAIL.
+
+The returned result criteria hash matches R4 (`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`),
+and all 29 registered source inputs match source commit
+`b098d1a60992e217fd131e0b02c383bb39b0a8f5`. Each of the 38 available force CSV
+hashes matches the result record and corresponding saved state-result record.
+The runtime smoke recorded two Tesla T4 devices, compute capability 7.5.0,
+Julia 1.12.6, CUDA driver API 13.3.0/runtime 12.8.0, CUDA.jl 6.3.1, WaterLily
+1.8.0, and driver 580.178.04. R4 marks driver version as recorded, not gated.
+
+The downloaded kernel outputs, raw Kaggle logs/status, and host inventory are
+preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v2_terminal/`.
+The 200-file output inventory SHA-256 is
+`c2fa76d425669da1d97f1e03d370c84209937ee27061cdb3551681d83691ee10`; the
+terminal audit SHA-256 is
+`accc34a667d40ebe73e29e041bdf3e63575518b2e240281c4353c69a7a15dddf`.
+The registered calibration analyzer was not run because the expected state
+inventory and final output manifest are incomplete. No calibration verdict,
+response floor, or epsilon selection is issued, and all six qualification
+flags remain literal `false`.
+
+An infrastructure retry will use the same immutable R4 criteria, source, and
+dataset with a 10,800-second Kaggle run limit. The execution allowance does
+not change the registered 5,400-second aggregate solver budget or any
+scientific criterion. The v2 partial data remain isolated and will not be
+mixed with retry outputs.
