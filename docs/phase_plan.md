@@ -5967,3 +5967,23 @@ attempt and its SHA are preserved at
 the corrected bounded rehearsal then passed. R4 criteria registration remains
 the next gate. No Kaggle calibration or formal criteria are active; all six
 qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 calibration retry round 4 preregistered
+
+Immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r4` is
+registered on reviewed integration source
+`b098d1a60992e217fd131e0b02c383bb39b0a8f5`. Criteria SHA-256 is
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`; the
+host registration and inventory audit SHA-256 is
+`5c9ec766f0eeac5679ae28db7ccfd0af598615fe5b0224a55cbbaab789c25042`.
+All 29 source inputs verify against the registered integration commit and
+all 89 staged dataset files verify with inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+R4 keeps the registered 47-state inventory and seven calibration-only
+epsilon candidates; it does not select a formal ladder. The bounded CPU
+rehearsal is bound as setup-only evidence. Next: create and download-verify
+the private dataset's version 4, then submit the corrected kernel. No
+calibration measurement or verdict exists; all six qualification flags remain
+literal `false`.

@@ -467,6 +467,7 @@ rules; no epsilon has yet been selected. These seven epsilons are calibration
 candidates only; no formal epsilon ladder is registered. All six qualification
 flags remain literal `false`.
 
+
 Stationarity is recorded and reported only under the explicit
 `waterlily_side_rules.stationarity` and the runner's gate set; it does not stop
 a state. The inherited XFID-C JSON also carries `measurement.stationarity_gate
@@ -878,3 +879,34 @@ CPU attempt registered criteria or entered calibration evidence. R4's
 immutable calibration criteria have not yet been registered; no T4
 measurement, formal epsilon, or verdict exists, and all six qualification
 flags remain literal `false`.
+
+
+## Calibration retry round 4 preregistered (2026-10-05)
+
+After fixing the R3 wrapper's Python global binding and passing the bounded
+CPU rehearsal, immutable calibration round
+`fd08_candidate_c_calibration_2026_10_04_r4` was registered against clean,
+pushed integration source `b098d1a60992e217fd131e0b02c383bb39b0a8f5`.
+Criteria SHA-256 is
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`; the
+host registration audit SHA-256 is
+`5c9ec766f0eeac5679ae28db7ccfd0af598615fe5b0224a55cbbaab789c25042`.
+
+R4 preserves the same Candidate C identity, canonical v17 state, `flow_24`,
+`[80,120] tU/L` measurement window, force semantics, 47-state inventory,
+five repeated baselines, and seven broad calibration-only epsilon candidates.
+It has no formal epsilon ladder. All 29 source-input hashes match the
+registered commit (inventory SHA-256
+`e2ea45bb8eb509b36e2b0b06827645dde1aeab0f9fd39b5e5d2c9a9f98a3bedf`); all
+89 staged data-file hashes pass (inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`). The
+preregistration audit verifies the exact criteria sidecar and dataset file
+inventory and binds the passing setup-only CPU rehearsal from source
+`91bb6f4175435cc0259f3ff7d83c7dd260352ec2`.
+
+The R4 criteria and audit are at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/`. The remote
+private dataset is not yet versioned with R4; version 4 download/hash
+verification is required before submitting the corrected T4 kernel. No
+calibration measurement, epsilon selection, formal registration, or FD-08
+verdict exists. All six qualification flags remain literal `false`.
