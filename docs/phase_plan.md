@@ -5636,3 +5636,12 @@ pre-registered split-half check of the 1/sqrt(M) averaging model passed for both
 unshifted baseline sits 0.6-0.8% away from the ensemble mean (symmetric-phase outlier), so contrasts must use matched-phase
 ensembles. This is calibration, not an XFID response; no floor is adopted, formal XFID criteria remain unregistered, all six
 qualification flags remain false. See `docs/issues/45_x3_calibration_result_2026_10_04.md`.
+
+### 2026-10-04 — #45 XFID part B (WaterLily Candidate C) executed; part A still blind
+
+Part B (criteria `39974802...775b`, source commit `1d17457`, kernel `ramhachi888/cfd-opt-sdf-xfid-candidate-c` v1) completed on Kaggle T4
+in 28 minutes: 8/8 states COMPLETED with all registered gates passing (baseline, baseline repeat, D0/D1/D2 at -/+5 mm, flow_24,
+Candidate C composite identity, window [80,120] tU/L); the 49-file manifest was host-verified (0 mismatches) and the baseline repeat is
+bit-identical to the baseline. Per-state forces are in `docs/evidence/xfid_candidate_c_2026_10_04/result/`. No XFID verdict exists:
+the OpenFOAM part A data (kernel `...-gridphase-x3-formal`) are not analyzed (blind hold) and the verdict script has not been run.
+All six qualification flags remain false.
