@@ -144,6 +144,84 @@ No immutable FD-08 criteria, numeric epsilon ladder, resolution floor,
 uncertainty model, measurement artifact, or qualification result was created
 by this audit. The #44 composite operator contract remains unfrozen.
 
+## Decision-rule implementation checkpoint (2026-10-04)
+
+The #44 Candidate C identity is now frozen on the integration branch, and the
+FD-08 calibration/formal tooling implements the reviewed decision-rule changes.
+This is source and contract implementation evidence only. Calibration criteria
+have not been registered, no GPU or CPU CFD rehearsal has been executed, and no
+measurement, formal verdict, or qualification flag has changed.
+
+The implementation keeps three state hashes separate: the canonical NPZ file
+SHA-256, the canonical `SDFDesignState` identity SHA-256, and the raw
+Fortran-order Float32 `phi` SHA-256. The calibration registrar binds each one,
+the regenerated D0/D1/D2 direction hashes, every state NPZ/raw-phi hash, and a
+full rectangular direction × epsilon × sign inventory. It rejects signed
+Float32 perturbations that round away and pairs whose realized centered
+direction differs from the requested direction by more than 5% relative L2.
+
+Calibration criteria require exactly five same-state baseline repeats and at
+least seven strictly increasing positive epsilon values spanning at least
+100×. The host recomputes exact endpoint-clipped trapezoidal means over
+`[80,120] tU/L` from raw histories and converts each primary response to N.
+Per response, the frozen floor formula is
+`max(max(baseline)-min(baseline), 1e-8*max(1,abs(median(baseline))))` N. The
+host examines every contiguous five-point window in ascending epsilon order;
+all six direction/response cells must be above their own floor, sign-stable,
+and within the 5% median-slope plateau rule. It selects the first passing
+window; no common window stops before formal registration.
+
+Formal registration accepts only that immutable, hash-bound host analysis. It
+independently recomputes the five-repeat floors and common-window selection,
+then builds three new baselines plus the complete `3 × 5 × 2` perturbation
+grid. Formal classification gives a resolved sign or plateau failure `FAIL`
+precedence over any sub-floor epsilon; otherwise any sub-floor point or fewer
+than three resolved points is `UNRESOLVED`. Global precedence is `FAIL`, then
+`UNRESOLVED`, then `PASS`. All six qualification flags remain literal `false`.
+
+The CPU rehearsal procedure verifies the staged dataset hashes and runs one
+baseline plus the smallest-epsilon D0 positive state for one CPU solver step
+through the same flow_24 Candidate C composite body. It records this strictly
+as setup/operator rehearsal evidence, outside the registered force window and
+outside calibration/formal analysis. Both host analyzers independently check
+the complete staged dataset and every file in the saved runner SHA manifest;
+the formal verifier also rechecks the six-cell inventory and calibration
+selection from saved analysis data.
+
+A dry-run of the calibration input builder generated the expected 47-state
+inventory (five baselines plus 21 signed pairs) using the candidate ladder
+`[0.00005, 0.00015, 0.0005, 0.0015, 0.005, 0.015, 0.05]` m. The ratio is
+1000× and all Float32 direction and SDF-margin gates passed. Those numbers are
+only a solver-free builder dry-run; no immutable criteria or epsilon ladder
+has been registered, and they are not measurement evidence.
+
+Verification at this checkpoint:
+
+- focused FD-08 contract/calibration tests: **22 passed**;
+- Python compileall for the changed Python modules, scripts and Kaggle
+  wrappers: **passed**;
+- Julia parser check for `scripts/waterlily_fd08_cpu_rehearsal.jl`: **passed**;
+- calibration builder dry-run: **47 inventory rows**, no criteria/dataset
+  write;
+- `git diff --check`: **passed**.
+
+The full repository suite was run as
+`PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -m pytest -q --tb=no`
+from the issue worktree. The suite reported **37 failed, 1421 passed, 9
+skipped**; comparison against
+`docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256
+`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`) found
+**0 new and 0 resolved failure IDs**. The initial run had one extra failure
+because a worktree does not receive the ignored v17 NPZ; after copying that
+input into the worktree and confirming its SHA-256 matched the canonical
+`7a972b33…feb31`, the extra failure disappeared. Full log:
+[`work/fd08_preparation/full_pytest_2026_10_04_with_ignored_state.log`](../../work/fd08_preparation/full_pytest_2026_10_04_with_ignored_state.log),
+SHA-256 `970fd76e77ebcc63d81f70145e0b5daaf6311b91d845fe914caa82663f890d82`
+(local ignored worktree artifact).
+
+Kaggle registration, the CPU solver rehearsal, calibration execution, formal
+registration, formal execution, and issue posting remain outstanding steps.
+
 The preceding paragraph preserves the state at the original preparation
 checkpoint. The following addendum supersedes it only for the operator identity
 freeze and registrar/preflight implementation status.
@@ -173,3 +251,68 @@ validator; the resolution floor remains unset until independent Candidate C
 calibration. Its run IDs and caller-declared T4 metadata do not establish fresh
 solver executions or actual device/runtime identity; those remain requirements
 for the future Kaggle runner and host verifier.
+
+## Final implementation verification addendum (2026-10-04)
+
+The legacy summary verdict helper now follows the same fail-closed precedence as
+the formal host evaluator: a resolved sign disagreement or a plateau failure
+supported by at least three resolved points remains `FAIL` even when another
+epsilon is unresolved. With too few resolved points and no established failure,
+the response remains `UNRESOLVED`. A regression test covers both mixed-evidence
+cases.
+
+Final source checks on the issue-specific worktree:
+
+- FD-08 focused tests: **23 passed**; Python compileall, Julia parser, CLI
+  import checks, calibration builder dry-run, and `git diff --check` passed.
+- The full repository suite reported **37 failed, 1422 passed, 9 skipped**.
+  Its 37 failure IDs exactly match
+  `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256
+  `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`):
+  **0 new and 0 resolved IDs**. The one additional passing test is the new
+  verdict-precedence regression test. Local full-suite log SHA-256:
+  `d9c1706c9d55302a25a69f5695f18bbf5046c80ba6a237958f9db5513bf84c4f`
+  (ignored worktree artifact at
+  `work/fd08_preparation/full_pytest_2026_10_04_final.log`).
+- The source-only calibration builder preview produced the registered 47-row
+  inventory and did not write criteria or dataset files.
+
+No solver or CPU rehearsal ran. Calibration criteria remain unregistered;
+formal fresh-33 criteria and verdict do not exist; all six qualification flags
+remain literal `false`.
+
+## Source-integrity review addendum (2026-10-05)
+
+The final review added checks that uploaded calibration/formal kernel wrappers
+and core runners match their criteria-bound hashes, the host analyzers compare
+the executed core-runner hash with the terminal artifact, and the formal
+verifier checks its own registered source hash, all formal source inputs, the
+frozen Candidate C identity, canonical v17 hashes, and both calibration/formal
+runner hashes. Formal registration also rejects calibration analyses whose
+immutable status, kind, or literal-false flags do not match the registered
+contract.
+
+After these changes, FD-08 focused tests passed (**24 passed**), Python
+compileall, Julia parsing, CLI import checks, the 47-row solver-free builder
+preview, runner-reuse checks, and `git diff --check` all passed. The full suite
+reported **37 failed, 1423 passed, 9 skipped**; comparison with the same pinned
+37-ID baseline found **0 new and 0 resolved IDs**. Final full-suite log SHA-256:
+`9bf484797761703175f87eb53e77fc72af0f5fc072f512bad775bd48a8447d19`
+(ignored worktree artifact at
+`work/fd08_preparation/full_pytest_2026_10_04_final_verified.log`).
+
+No CPU or Kaggle solver ran. Calibration criteria remain unregistered, there is
+no fresh-33 formal verdict, and all six qualification flags remain literal
+`false`.
+
+## Exact-final-tree revalidation (2026-10-05)
+
+The full suite was rerun after the last source-integrity guard landed. It again
+reported **37 failed, 1423 passed, 9 skipped**; all failure IDs exactly match
+the pinned baseline, with **0 new and 0 resolved IDs**. Final log SHA-256:
+`00fb00231edff7670c0d8c254c9ab6c412cbb0cf74186d5ad8e8a428621eb09f`
+(ignored worktree artifact at
+`work/fd08_preparation/full_pytest_2026_10_05_final.log`). The final-tree
+focused suite passed **24 tests**; compileall, Julia parsing, CLI imports,
+solver-free builder preview, and `git diff --check` passed. No solver,
+calibration registration, or formal registration was performed.

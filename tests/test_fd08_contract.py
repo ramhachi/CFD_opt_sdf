@@ -56,6 +56,34 @@ def test_fd08_verdict_keeps_resolution_plateau_and_sign_separate():
     )["verdict"] == "FAIL"
 
 
+def test_fd08_resolved_failure_takes_precedence_over_an_unresolved_epsilon():
+    rows = _rows() + _rows()[:1]
+    rows[0] = {
+        "response_n": 5e-6,
+        "plateau_relative_deviation": 0.0,
+        "resolved": False,
+        "sign": 1,
+    }
+    rows[1]["plateau_relative_deviation"] = 0.051
+    rows[2]["plateau_relative_deviation"] = 0.051
+    rows[3]["plateau_relative_deviation"] = 0.051
+    result = evaluate_fd08_response(rows, resolution_floor_n=1e-5)
+    assert result["verdict"] == "FAIL"
+    assert result["all_resolved"] is False
+    assert result["resolved_count"] == 3
+    assert result["plateau_pass"] is False
+
+    rows = _rows()
+    rows[0] = {
+        "response_n": 0.0,
+        "plateau_relative_deviation": 0.0,
+        "resolved": False,
+        "sign": 0,
+    }
+    rows[2] = {**rows[2], "response_n": -2e-5, "sign": -1}
+    assert evaluate_fd08_response(rows, resolution_floor_n=1e-5)["verdict"] == "FAIL"
+
+
 def test_fd08_cannot_call_a_subfloor_response_resolved():
     with pytest.raises(ValueError, match="cannot be resolved"):
         evaluate_fd08_response(_rows(resolved=True), resolution_floor_n=2e-5)
@@ -121,7 +149,8 @@ def test_fd08_binding_fails_closed_without_the_frozen_candidate_c_identity(tmp_p
             qualification_backend="Kaggle-T4",
             flow_id="flow_24",
             window_tu_l=(80, 120),
-            canonical_state_sha256="02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+            canonical_state_identity_sha256="02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+            canonical_state_npz_sha256="7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
             canonical_phi_fortran_f32_sha256="e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
         )
     with pytest.raises(ValueError, match="Kaggle-T4"):
@@ -131,7 +160,8 @@ def test_fd08_binding_fails_closed_without_the_frozen_candidate_c_identity(tmp_p
             qualification_backend="CPU",
             flow_id="flow_24",
             window_tu_l=(80, 120),
-            canonical_state_sha256="02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+            canonical_state_identity_sha256="02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+            canonical_state_npz_sha256="7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
             canonical_phi_fortran_f32_sha256="e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
         )
 
