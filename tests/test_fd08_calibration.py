@@ -485,6 +485,7 @@ def test_fd08_kaggle_script_embeds_exact_core_and_matches_kernel_slug():
     metadata = json.loads((kernel_dir / "kernel-metadata.json").read_text())
     title_slug = "-".join(metadata["title"].lower().split())
     assert metadata["id"].split("/", 1)[1] == title_slug
+    assert metadata["id"] != metadata["dataset_sources"][0]
 
 
 def test_calibration_retry_registration_uses_append_only_round_paths():
@@ -499,6 +500,7 @@ def test_calibration_retry_registration_uses_append_only_round_paths():
     )
     assert criteria["round_id"] == "fd08_candidate_c_calibration_2026_10_04_r2"
     assert criteria["criteria_path"].endswith("_r2/xfidc_criteria.json")
+    assert criteria["kernel_id"] != criteria["input_dataset_id"]
     assert criteria["artifact_namespaces"]["calibration_result_root"].endswith("_r2/result/fd08_calibration")
     assert len(criteria["state_order"]) == 47
     assert criteria["qualification_flags"] == {key: False for key in (
