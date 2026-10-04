@@ -5872,3 +5872,9 @@ manifest, and terminal were verified. This is setup evidence only. Exact test
 and artifact hashes are in `docs/issues/46_fd08_preparation.md`. R3 criteria
 registration is the next gate; no T4 measurement or formal ladder exists, and
 all six qualification flags remain false.
+
+The first R3 registrar invocation correctly stopped before writing because
+two valid rehearsal `.log` files were ignored by Git and absent from the
+pushed evidence commit. The failed registration and their hashes are recorded
+append-only; the logs are being added to the evidence commit without rerunning
+CPU or changing criteria.

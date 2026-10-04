@@ -723,3 +723,14 @@ R3 criteria are not yet registered; registration follows after these rehearsal
 artifacts are committed and pushed. No T4 calibration or epsilon selection has
 occurred, the formal ladder remains unregistered, and all six qualification
 flags remain literal `false`.
+
+The first R3 registration attempt stopped before writing criteria because the
+two valid rehearsal `.log` files matched `.gitignore` rule `*.log` and were not
+present in the pushed rehearsal commit. The fail-closed registrar reported the
+missing committed D0+ log; it did not write criteria or a staged dataset. The
+attempt record is
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry4/r3_registration_attempt1.json`
+(SHA-256
+`6a48a72b3a9c5dc91c8f84ed6dabedcd4958fa452501321a3cc12a976a0fd9b7`). The
+two existing logs' hashes are preserved there and will be force-added to the
+evidence commit; no solver rerun or criteria change is needed.

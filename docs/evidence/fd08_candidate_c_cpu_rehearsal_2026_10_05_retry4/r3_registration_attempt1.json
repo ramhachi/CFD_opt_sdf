@@ -1,0 +1,28 @@
+{
+  "attempt": 1,
+  "attempted_against_source_commit": "4c82d667da08132f9515084e63e0a56ef4d1b1a7",
+  "calibration_measurement_started": false,
+  "cpu_rehearsal_itself_passed": true,
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/xfidc_criteria.json",
+  "criteria_written": false,
+  "dataset_staging_path": "work/fd08_candidate_c_calibration_dataset_r3",
+  "dataset_staging_written": false,
+  "error": "git show 4c82d667da08132f9515084e63e0a56ef4d1b1a7:docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry4/runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.log failed because the rehearsal .log exists in the worktree but was not tracked at that commit",
+  "failure_class": "host_evidence_commit_completeness",
+  "formal_measurement_started": false,
+  "ignored_rule": ".gitignore:11:*.log",
+  "kind": "fd08_candidate_c_calibration_r3_registration_attempt",
+  "observed_at_utc": "2026-10-04T19:03:09.779144Z",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "uncommitted_log_files": {
+    "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.log": "30a5b96e87e0d9a13ae60f97110fb5cdd56ec3a4147329d4e05fc73e7967ea47",
+    "runner_output/cal_baseline_01.log": "7b5d1f0e2021ededfc59dd71c3333e21359cc76799fa2636855431193ef8b4cd"
+  }
+}
