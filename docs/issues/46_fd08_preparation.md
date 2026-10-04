@@ -655,3 +655,27 @@ The host verification record is in the same directory (SHA-256
 dataset's existing private visibility was unchanged. The corrected calibration
 kernel has not yet been submitted; no T4 measurement or calibration verdict
 exists, and all six qualification flags remain literal `false`.
+
+
+## Calibration round 2 kernel submission identity terminal (2026-10-05)
+
+Kaggle rejected the R2 kernel before creating a kernel or starting computation.
+HTTP 409 returned `ALREADY_EXISTS`: the requested title
+`CFD Opt SDF FD08 Calibration` is already in use by a dataset. The immutable
+R2 criteria currently bind the same slug for `kernel_id` and
+`input_dataset_id`: `ramhachi888/cfd-opt-sdf-fd08-calibration`. Kaggle rejects
+that cross-resource slug collision. The new kernel ID is absent from the
+owned-kernel listing; the older R1 kernel remains separately preserved at its
+old slug and is still an infrastructure ERROR.
+
+The exact criteria/source, metadata and runner identities and API response are
+preserved at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/kernel_submission_terminal.json`
+(SHA-256
+`9ff9cf57d007ee3a100edb1df9ef569f83a03f93434805363f547f1e25648360`). No
+Julia, T4, solver or calibration measurement ran. R2 criteria, dataset
+version 2 and their hashes remain unchanged. A separate R3 source round must
+bind a distinct kernel ID and be followed by its own CPU rehearsal and
+immutable criteria registration; no calibration epsilon was selected, no
+formal evidence exists, and all six qualification flags remain literal
+`false`.

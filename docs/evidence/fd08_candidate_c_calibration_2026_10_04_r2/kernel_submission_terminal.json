@@ -1,0 +1,48 @@
+{
+  "calibration_measurement_started": false,
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/xfidc_criteria.json",
+  "criteria_sha256": "27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d",
+  "criteria_source_commit": "d69a6ed94cd6fd8cc4b4be676f971f3620daa5e5",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "diagnostic_api_response": {
+    "body": {
+      "error": {
+        "code": 409,
+        "message": "The requested title \"CFD Opt SDF FD08 Calibration\" is already in use by a dataset. Please choose another title.",
+        "status": "ALREADY_EXISTS"
+      }
+    },
+    "http_status": 409,
+    "request_date": "Sun, 04 Oct 2026 18:47:53 GMT"
+  },
+  "evidence_class": "infrastructure_identity_collision_before_kernel_creation",
+  "formal_criteria_registered": false,
+  "formal_epsilon_selected": false,
+  "gpu_measurement_started": false,
+  "julia_started": false,
+  "kaggle_cli_error": "409 Client Error: Conflict for url: https://api.kaggle.com/v1/kernels.KernelsApiService/SaveKernel",
+  "kaggle_cli_exit_code": 1,
+  "kernel_and_dataset_ids_collide": true,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "kernel_metadata_sha256": "42153936f9fa1704c49cc25eb8b99c3eb7836ced4b01a190e7ac50d50205d200",
+  "kernel_title": "CFD Opt SDF FD08 Calibration",
+  "kernel_wrapper_sha256": "dd0fb63c61a53d47a1d4960faae1d28061fb2084d031c9aff3b1196876ed4e6b",
+  "kind": "fd08_candidate_c_calibration_kernel_submission_terminal",
+  "observed_at_utc": "2026-10-04T18:50:32.380090Z",
+  "preexisting_r1_kernel": "ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration remains KernelWorkerStatus.ERROR",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "r2_criteria_or_dataset_modified": false,
+  "remote_kernel_search": "kaggle kernels list --mine --search fd08-calibration returned Not found; no r2 kernel was created",
+  "requested_machine_shape": "NvidiaTeslaT4",
+  "round_id": "fd08_candidate_c_calibration_2026_10_04_r2",
+  "solver_started": false,
+  "submission_attempt_commit": "22fbc3985c9f3c27d3c8b0af847290d75c034810",
+  "terminal_class": "submission_rejected_before_kernel_creation"
+}

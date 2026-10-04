@@ -5632,6 +5632,8 @@ candidate epsilon span and passed the builder's Float32 and margin checks.
 These values were not written as immutable criteria. Calibration criteria are
 not registered, the CPU rehearsal and Kaggle solver have not run, no FD-08
 measurement or verdict exists, and all six qualification flags remain false.
+
+
 See `docs/issues/46_fd08_preparation.md` for the implementation contract and
 validation evidence. This checkpoint does not advance the roadmap beyond
 preparation; the calibration registration/execution and subsequent fresh-33
@@ -5847,3 +5849,14 @@ and audit hashes are recorded in `docs/issues/46_fd08_preparation.md` and
 `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/`. Dataset visibility
 was unchanged. The corrected T4 kernel is not yet submitted; no calibration
 measurement or verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 retry round 2 kernel identity terminal
+
+Kaggle rejected R2 before kernel creation with HTTP 409 `ALREADY_EXISTS`:
+the bound kernel ID and input dataset ID share the same slug, which Kaggle
+rejects when creating the kernel. The exact response and source identities are
+preserved in the R2 evidence directory. R2 criteria and dataset v2 remain
+unchanged; no Julia, T4 or solver measurement started. The next allowed step
+is a new immutable retry round with a distinct kernel ID, new source identity,
+and passing bounded CPU rehearsal. All six qualification flags remain false.
