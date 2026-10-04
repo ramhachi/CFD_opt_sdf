@@ -5724,3 +5724,16 @@ The complete CPU diagnostic and reporting failure are preserved under
 hashes are in `docs/issues/46_fd08_preparation.md`. This is a harness terminal,
 not a scientific FD result. No criteria or T4 run has started, and all six
 qualification flags remain false.
+
+
+### 2026-10-05 — #46 bounded CPU rehearsal PASS
+
+After two preserved criteria-neutral harness repairs, source
+`b47769662dc78981b5c3b3f09aaa7056a2b276d3` passed the bounded baseline and
+smallest-epsilon D0+ one-step CPU rehearsal. Host parsing, force sign/component
+semantics and the complete runner manifest passed. The evidence and hashes are
+in `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/` and
+`docs/issues/46_fd08_preparation.md`. This is setup/operator evidence only: it
+does not measure the registered `[80,120] tU/L` response. Criteria remain
+unregistered, no T4 or fresh33 run has started, and all six qualification
+flags remain false.

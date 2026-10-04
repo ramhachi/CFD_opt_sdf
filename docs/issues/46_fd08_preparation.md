@@ -379,3 +379,35 @@ inside the repository at the start of preflight, before invoking Julia. A new
 source SHA and new output directory are required for the next attempt. No
 calibration criteria or Kaggle run has been registered or started; all six
 qualification flags remain false.
+
+
+## CPU rehearsal retry 2 PASS (2026-10-05)
+
+After the criteria-neutral GridSDF scalar-type and output-path repairs, the
+full bounded CPU rehearsal passed under integration source
+`b47769662dc78981b5c3b3f09aaa7056a2b276d3`. The builder-derived preview
+SHA-256 is `897ffbea3f1a4a5f56169f5a7dce5cb77d8337a0f558802c90a9fce9685fc4f0`.
+The prescribed first baseline and smallest-epsilon D0+ state each completed
+one CPU Array step; Julia 1.12.6 and WaterLily 1.8.0 were recorded, both
+Float32 phi margins were about 0.35 m against the registered 0.15 m margin
+requirement, and both two-row raw force histories passed host parsing and the
+registered force-component/sign audit. The terminal is 2/2 `COMPLETED`. The
+runner manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`; its
+verified inventory digest is
+`04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac`.
+
+The full evidence, including input phi files, raw histories, per-state logs and
+summaries, DONE marker, and host rehearsal result/sidecar, is under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/`. Rehearsal
+result SHA-256 is
+`27ec4db23c68a3fd6568796b3bc15d5187f5e34f718dab20666e56057155edf1`; the
+append-only attempt inventory SHA-256 is
+`b02ec6cb75612f57c23440af74fcbca7cfa13275f5a563551c675b1fb52e2522`. These
+one-step CPU forces are setup diagnostics only; they are outside `[80,120]
+tU/L`, are not calibration responses, and are not used to set any threshold.
+The two earlier harness failures remain preserved under their separate paths.
+
+This completes the bounded setup rehearsal only. Calibration criteria remain
+unregistered, Kaggle T4 calibration and fresh33 have not run, no FD-08 verdict
+exists, and all six qualification flags remain literal `false`.

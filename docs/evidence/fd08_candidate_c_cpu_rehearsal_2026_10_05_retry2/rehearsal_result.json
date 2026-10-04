@@ -1,0 +1,218 @@
+{
+  "calibration_evidence": false,
+  "criteria_registered": false,
+  "evidence_class": "cpu_setup_operator_rehearsal_only",
+  "formal_qualification": false,
+  "gpu_qualification_started": false,
+  "input_state_bindings": [
+    {
+      "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "raw_phi_evidence_path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "raw_phi_evidence_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "role": "baseline",
+      "run_id": "cal_baseline_01"
+    },
+    {
+      "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+      "raw_phi_evidence_path": "inputs/D0_interface_offset__eps_5_0000000000e_05__plus.phi_f4_fortran.raw",
+      "raw_phi_evidence_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+      "role": "perturbation",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus"
+    }
+  ],
+  "kind": "fd08_cpu_rehearsal",
+  "preview_dataset_audit": {
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_candidate_c_calibration_preview_retry2",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "preview_sha256": "897ffbea3f1a4a5f56169f5a7dce5cb77d8337a0f558802c90a9fce9685fc4f0",
+    "verified_file_count": 89
+  },
+  "preview_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/cpu_rehearsal_preview.json",
+  "preview_sha256": "897ffbea3f1a4a5f56169f5a7dce5cb77d8337a0f558802c90a9fce9685fc4f0",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_force_measurement_started": false,
+  "runner_output_file_inventory": [
+    {
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.forces.csv",
+      "sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1"
+    },
+    {
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.log",
+      "sha256": "30a5b96e87e0d9a13ae60f97110fb5cdd56ec3a4147329d4e05fc73e7967ea47"
+    },
+    {
+      "path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.summary.json",
+      "sha256": "18cca20442d0db81733f33d0e572e8e64910579dd01734a19b66c86ab9d9a142"
+    },
+    {
+      "path": "runner_output/DONE",
+      "sha256": "66e92da75144c4c2ffd71a51a6825b4880ea1a60b340ec446062a5cdfc020778"
+    },
+    {
+      "path": "runner_output/cal_baseline_01.forces.csv",
+      "sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2"
+    },
+    {
+      "path": "runner_output/cal_baseline_01.log",
+      "sha256": "7b5d1f0e2021ededfc59dd71c3333e21359cc76799fa2636855431193ef8b4cd"
+    },
+    {
+      "path": "runner_output/cal_baseline_01.summary.json",
+      "sha256": "dfc0ad447dd6af323514891ccfd9ac4c07e7c5b3ab394f0534da0713a6a5a696"
+    },
+    {
+      "path": "runner_output/cpu_runner_result.json",
+      "sha256": "08b35d04aa3ad60f327bcf673c81fd40da37289a56c473ccf80c0f5b996c4821"
+    },
+    {
+      "path": "runner_output/sha256.json",
+      "sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108"
+    }
+  ],
+  "runner_output_manifest_audit": {
+    "inventory_sha256": "04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac",
+    "manifest_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/runner_output/sha256.json",
+    "manifest_sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108",
+    "terminal_marker_path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/runner_output/DONE",
+    "terminal_marker_sha256": "66e92da75144c4c2ffd71a51a6825b4880ea1a60b340ec446062a5cdfc020778",
+    "terminal_status_counts": {
+      "COMPLETED": 2
+    },
+    "verified_file_count": 7
+  },
+  "runner_output_path": "runner_output",
+  "runner_terminal_path": "runner_output/cpu_runner_result.json",
+  "source_commit": "b47769662dc78981b5c3b3f09aaa7056a2b276d3",
+  "states": [
+    {
+      "cpu_runtime": {
+        "backend": "Array",
+        "force_csv_sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2",
+        "force_row_count": 2,
+        "julia_version": "1.12.6",
+        "phi_margin_m": 0.3499999939931499,
+        "solver_steps": 1,
+        "waterlily_version": "1.8.0"
+      },
+      "force_csv_path": "runner_output/cal_baseline_01.forces.csv",
+      "force_csv_sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2",
+      "force_history_host_audit": {
+        "force_component_audit": {
+          "absolute_tolerance": 1e-08,
+          "relative_tolerance": 1e-06,
+          "row_count": 2,
+          "semantics": "drag=+Fx; downforce=-Fz; total=pressure+viscous",
+          "verified": true
+        },
+        "force_n": {
+          "downforce": 10.321124635810135,
+          "drag": 6.729260213667025
+        },
+        "force_scale_n_per_solver_force": 0.0011111111111111111,
+        "path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/runner_output/cal_baseline_01.forces.csv",
+        "row_count": 2,
+        "sha256": "db18ce449fef9f0bd9901ee04321ec082e16814ea2bd875a7afde6bebb3b6ff2",
+        "stationarity_relative_half_window_drift": {
+          "downforce": 0.9999999999999998,
+          "drag": 0.9999999999999999
+        },
+        "window_t_u_l": [
+          0.0,
+          0.010416666977107525
+        ]
+      },
+      "log_path": "runner_output/cal_baseline_01.log",
+      "log_sha256": "7b5d1f0e2021ededfc59dd71c3333e21359cc76799fa2636855431193ef8b4cd",
+      "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "role": "baseline",
+      "run_id": "cal_baseline_01",
+      "solver_steps": 1,
+      "status": "CPU_REHEARSAL_PASS",
+      "summary_path": "runner_output/cal_baseline_01.summary.json",
+      "summary_sha256": "dfc0ad447dd6af323514891ccfd9ac4c07e7c5b3ab394f0534da0713a6a5a696"
+    },
+    {
+      "cpu_runtime": {
+        "backend": "Array",
+        "force_csv_sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1",
+        "force_row_count": 2,
+        "julia_version": "1.12.6",
+        "phi_margin_m": 0.34999999925494196,
+        "solver_steps": 1,
+        "waterlily_version": "1.8.0"
+      },
+      "force_csv_path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.forces.csv",
+      "force_csv_sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1",
+      "force_history_host_audit": {
+        "force_component_audit": {
+          "absolute_tolerance": 1e-08,
+          "relative_tolerance": 1e-06,
+          "row_count": 2,
+          "semantics": "drag=+Fx; downforce=-Fz; total=pressure+viscous",
+          "verified": true
+        },
+        "force_n": {
+          "downforce": 10.317799081275982,
+          "drag": 6.726339238046886
+        },
+        "force_scale_n_per_solver_force": 0.0011111111111111111,
+        "path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.forces.csv",
+        "row_count": 2,
+        "sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1",
+        "stationarity_relative_half_window_drift": {
+          "downforce": 0.9999999999999998,
+          "drag": 1.0
+        },
+        "window_t_u_l": [
+          0.0,
+          0.010416666977107525
+        ]
+      },
+      "log_path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.log",
+      "log_sha256": "30a5b96e87e0d9a13ae60f97110fb5cdd56ec3a4147329d4e05fc73e7967ea47",
+      "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+      "role": "perturbation",
+      "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus",
+      "solver_steps": 1,
+      "status": "CPU_REHEARSAL_PASS",
+      "summary_path": "runner_output/D0_interface_offset__eps_5_0000000000e_05__plus.summary.json",
+      "summary_sha256": "18cca20442d0db81733f33d0e572e8e64910579dd01734a19b66c86ab9d9a142"
+    }
+  ],
+  "verified_source_inputs": {
+    "calibration_analysis": "e24846e833a29265f8405e4ae948c1e8967c2286e58354d8989657bcd5aa68d5",
+    "calibration_analyzer": "581b5342db68ac2e58fec1efd225220303002ad71514aeea7e61a9bf973fc0a9",
+    "calibration_registrar": "e2b0ef705b1307691fba2752db02825f74e05249e2c946c2c0648c6b97086014",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "case_module": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0",
+    "cpu_julia_manifest": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "cpu_julia_project": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "cpu_rehearsal_cli": "25466796fd354a3f16b6b2e2900abfe6cdaf5120a9029504176b93dd250db57d",
+    "cpu_rehearsal_job": "fef3171eaaf44346bd8373a6417eb40a250c1eeaaaaa0a0e97521da8453fabfd",
+    "device_grid": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "fd08_contract": "192099966fa2c6a224a5f1e9afc76ccb6c9704b8caf93c45d476b64a79da3405",
+    "formal_registrar": "7f40b044a72f664fd9e6daf3a87000146a470b60edd90abb56ecc0e961ba9263",
+    "formal_verifier": "9099de4169e2efb9cb8a0a9cf227870890f61e5e3396b6f3da1d586df6143b4e",
+    "job": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+    "kaggle_smoke": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666",
+    "kernel_base_runner": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+    "kernel_metadata": "4d32fe28d7af9f58fa21cb457b882446c98b6416942283cb03547c519ad501f4",
+    "kernel_wrapper": "6315fa487608d697034963839a09df93bb087332f502d363f0f238e7c641e76f",
+    "manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity_dependency": "8a4e33e54290ba97b9357599b0dc711c1d9a4d7f87634d89d0890b5cc58e70a8",
+    "operator_identity_helper": "f1da148c9ff11683c3afba7ccb252133dc193a1948d55cd4f418f12f7afbade5",
+    "operator_identity_record": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "operator_identity_sha256": "6fc91a0c413c3b0d5e3f1dff5139f2981b518311d4fe1fb0a24cfb23ca8292d4",
+    "owner_run_type": "695872cbc31a35fee222c6304e51daa7a193a8dee2c64438ea51b8af658e35fe",
+    "profile_adapter": "17011858795ab6521c5ed4eed2702c5553fbc97fbf97d1bf88b370c18851b1be",
+    "project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  }
+}

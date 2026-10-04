@@ -1,0 +1,32 @@
+{
+  "cpu_runtime": {
+    "backend": "Array",
+    "force_csv_sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1",
+    "force_row_count": 2,
+    "julia_version": "1.12.6",
+    "phi_margin_m": 0.34999999925494196,
+    "solver_steps": 1,
+    "waterlily_version": "1.8.0"
+  },
+  "evidence_class": "cpu_one_step_diagnostic_only",
+  "force_component_audit": {
+    "absolute_tolerance": 1e-08,
+    "relative_tolerance": 1e-06,
+    "row_count": 2,
+    "semantics": "drag=+Fx; downforce=-Fz; total=pressure+viscous",
+    "verified": true
+  },
+  "force_csv_sha256": "6236e8b099b4d0fb892e68b3bae1a75a9ae5364ff50930e82c0b9ebb918fb8c1",
+  "host_recomputed_force_n": {
+    "downforce": 10.317799081275982,
+    "drag": 6.726339238046886
+  },
+  "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+  "role": "perturbation",
+  "row_count": 2,
+  "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus",
+  "window_t_u_l": [
+    0.0,
+    0.010416666977107525
+  ]
+}
