@@ -346,3 +346,36 @@ margin value through unchanged. It does not alter the margin, its tolerance,
 the state, direction, epsilon, operator, force convention, or measurement
 window. A fresh source SHA and CPU-rehearsal retry evidence are required; the
 original failure record remains unchanged. Qualification flags remain false.
+
+
+## CPU rehearsal retry 1 terminal (2026-10-05)
+
+Source `3fabdcac99d67f34a1704d8bc7bbc77efd75b809` regenerated the same
+unregistered 47-state preview (SHA-256
+`a2b84fb59160ddc5d096956bcf6da5f8e58bf104afccce5fc3fd49ea183acb61`).
+The CPU baseline and smallest-epsilon D0+ each completed exactly one Array
+solver step. The host parsed both two-row force histories and verified the
+registered component semantics. The runner terminal is 2/2 `COMPLETED`; its
+SHA manifest and DONE marker verify, with manifest SHA-256
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108` and
+inventory digest `04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac`.
+
+The outer rehearsal then stopped while serializing its result: a repository-
+relative output path was passed to `Path.relative_to(ROOT)` before resolving
+it. This is a reporting-path harness failure after the bounded setup steps;
+the CPU force values are not calibration data and were not analyzed as an FD
+response. All attempt outputs are preserved under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/`, including
+raw input states, raw histories, summaries, logs, CPU terminal, DONE marker,
+and the complete runner manifest. The host exception record SHA-256 is
+`91fc9ad135889db6a4faa4463c32170632387677f568878faebf85a215f4704b`, its
+traceback text SHA-256 is
+`e49fe053a83650caee443f051697364430a0ea0622d17f03da26d78bbea832f8`, and the
+append-only attempt manifest SHA-256 is
+`46eda1584781be7443ea1bf7ee96576b6c857446168120b2aa279b53f79baa2f`.
+
+The criteria-neutral repair is to resolve and validate the output directory
+inside the repository at the start of preflight, before invoking Julia. A new
+source SHA and new output directory are required for the next attempt. No
+calibration criteria or Kaggle run has been registered or started; all six
+qualification flags remain false.

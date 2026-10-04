@@ -5711,3 +5711,16 @@ and its hashes are preserved in
 `docs/issues/46_fd08_preparation.md`. This is an infrastructure/harness
 terminal, not a scientific verdict. No calibration criteria were registered,
 no T4 kernel was submitted, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 CPU rehearsal retry 1 terminal
+
+Under source `3fabdcac99d67f34a1704d8bc7bbc77efd75b809`, the bounded baseline
+and smallest-epsilon D0+ setup states each completed one CPU solver step. Host
+parsing, component semantics, runner manifest and terminal checks passed. The
+outer result writer then failed to resolve a repository-relative output path.
+The complete CPU diagnostic and reporting failure are preserved under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/`; details and
+hashes are in `docs/issues/46_fd08_preparation.md`. This is a harness terminal,
+not a scientific FD result. No criteria or T4 run has started, and all six
+qualification flags remain false.
