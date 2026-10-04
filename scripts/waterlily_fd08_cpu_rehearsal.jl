@@ -38,7 +38,7 @@ const TRANSITION_WIDTH = Float32(1.1444091796875e-4)
 margin = zero_level_margin_m(phi, DESIGN_ORIGIN, DESIGN_H)
 margin >= margin_gate_m - margin_tolerance_m || error("$run_id: SDF boundary margin failed: $margin m")
 grid = GridSDF(phi; origin=DESIGN_ORIGIN, h=DESIGN_H,
-    outside_value=3.0, margin_m=Float32(margin_gate_m))
+    outside_value=3.0, margin_m=margin_gate_m)
 floor_body = NormalFloorWaterLilyBody(
     grid, Float32.(FLOW_ORIGIN), FLOW_SPACING, 0.25f0)
 candidate = CandidateCWaterLilyBody(floor_body;
