@@ -5987,3 +5987,18 @@ rehearsal is bound as setup-only evidence. Next: create and download-verify
 the private dataset's version 4, then submit the corrected kernel. No
 calibration measurement or verdict exists; all six qualification flags remain
 literal `false`.
+
+
+### 2026-10-05 — #46 private Kaggle calibration dataset version 4 verified
+
+The private dataset's latest download contains R4 criteria SHA-256
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`. All 91
+catalog entries match the downloaded archive names and byte sizes; the 89
+registered data inputs, criteria, and sidecar pass host verification. Archive
+SHA-256 is `d6f95b717b8e65039728a74ce2e3f1d70ec66c525b088f8a70a9453216f03741`,
+catalog SHA-256 is
+`43f5cb16ebf3af8f67d91a70ef145b1796fa133ee30695f5272cc8d5c54f88e9`, and
+host verification audit SHA-256 is
+`521f8c6e4311c27bd9e147ce21655b3624c62827221be1fb852cd49b223e6ec7`.
+Next: submit the corrected calibration kernel against version 4. No solver
+measurement has started; all six qualification flags remain literal `false`.

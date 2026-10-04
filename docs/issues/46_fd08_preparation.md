@@ -910,3 +910,26 @@ private dataset is not yet versioned with R4; version 4 download/hash
 verification is required before submitting the corrected T4 kernel. No
 calibration measurement, epsilon selection, formal registration, or FD-08
 verdict exists. All six qualification flags remain literal `false`.
+
+
+## Private Kaggle calibration dataset version 4 verified (2026-10-05)
+
+The private calibration dataset now downloads with R4's immutable criteria,
+SHA-256
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`. The
+91-file catalog matches every archive filename and byte size; all 89
+registered input hashes, criteria hash, and sidecar pass host verification
+with input inventory digest
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The downloaded archive is 21,834,722 bytes, SHA-256
+`d6f95b717b8e65039728a74ce2e3f1d70ec66c525b088f8a70a9453216f03741`. The
+remote file catalog is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/remote_dataset_catalog_v4.json`
+(SHA-256
+`43f5cb16ebf3af8f67d91a70ef145b1796fa133ee30695f5272cc8d5c54f88e9`); the
+download and hash audit is in the same directory (SHA-256
+`521f8c6e4311c27bd9e147ce21655b3624c62827221be1fb852cd49b223e6ec7`). The
+corrected T4 kernel has not yet been submitted. No calibration solver
+measurement or verdict exists; all six qualification flags remain literal
+`false`.
