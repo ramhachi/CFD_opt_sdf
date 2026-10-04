@@ -830,3 +830,51 @@ logs and output inventory are under
 The repair will be registered as a new source-bound round after a regression
 test and bounded CPU rehearsal. No epsilon was selected, no formal criteria
 were registered, and all six qualification flags remain literal `false`.
+
+
+## R3 kernel harness repair and R4 CPU rehearsal (2026-10-05)
+
+Source commit `91bb6f4175435cc0259f3ff7d83c7dd260352ec2` fixes R3's
+pre-solver namespace-binding defect. The wrapper now updates the `__globals__`
+used by the embedded core's `main` function, binding criteria SHA, mounted
+input root, and output root before calling it. The added integration regression
+test renders and runs the wrapper with a synthetic core whose initial globals
+contain stale values, then checks that the criteria digest and both paths
+reach the function.
+
+Validation on that source passed: focused FD-08/contract tests **39 passed**;
+Python compileall, Julia parse of `scripts/waterlily_fd08_cpu_rehearsal.jl`,
+FD-08 module imports, and `git diff --check`. Full pytest reported **37 failed,
+1438 passed, 9 skipped**. The observed failure-ID set exactly matches the
+pinned baseline file (`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`):
+**0 new, 0 resolved**. Log SHA-256 is
+`1884d55fa49fdb7ea54af5efdedfd6fb476026a67ba7ad867058951f4d1d7456`; the
+machine-readable validation and set comparison are in
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/source_validation.json`.
+
+The bounded rehearsal passed for `cal_baseline_01` and the smallest registered
+epsilon's D0+ state, each with one CPU `Array` step. Julia 1.12.6 and WaterLily
+1.8.0 were observed. Both raw histories passed host force-component/sign
+checks over their initial and post-step rows; this short interval was
+`[0, 0.010416666977107525] tU/L`, not the calibration window. Margins were
+`0.3499999939931499 m` and `0.34999999925494196 m`. Preview SHA-256 is
+`5ac384c3d034f79acb3c5f2e724eaa0dc9f5c74206899ea16c9f7ee0cc8a521b`, result
+SHA-256 is
+`b7265211f71206ec7f377f556d758ae097e6bb7e477cc3076507d9dbf9c11cfd`, and
+runner output manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`. All 29
+source inputs passed verification with inventory digest
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`. Full
+artifacts are under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/`.
+
+One initial host rehearsal invocation stopped before Julia because the command
+pointed at an empty dataset root, while the builder had staged the 89 inputs
+and preview contract together elsewhere. This input-validation attempt and
+its sidecar are preserved at
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5_attempt1/`;
+the corrected command used the existing full inventory and passed. Neither
+CPU attempt registered criteria or entered calibration evidence. R4's
+immutable calibration criteria have not yet been registered; no T4
+measurement, formal epsilon, or verdict exists, and all six qualification
+flags remain literal `false`.

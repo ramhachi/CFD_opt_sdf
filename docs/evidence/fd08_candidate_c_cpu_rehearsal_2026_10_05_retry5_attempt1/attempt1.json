@@ -1,0 +1,22 @@
+{
+  "calibration_evidence": false,
+  "command": "scripts/preflight_fd08_cpu.py --preview-contract docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5/cpu_rehearsal_preview.json --dataset work/fd08_candidate_c_calibration_dataset_r4 --output docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5",
+  "criteria_registered": false,
+  "error": "CPU rehearsal preview SHA-256 sidecar is missing or unsafe",
+  "error_type": "ValueError",
+  "failure_stage": "host preview dataset inventory validation, before Julia process startup",
+  "formal_qualification": false,
+  "julia_started": false,
+  "kind": "fd08_cpu_rehearsal_input_validation_attempt",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "root_cause": "The generated preview and its 89 staged inputs were placed under the preview directory, but the command passed a separate dataset directory that had not been populated with the preview contract and sidecar.",
+  "solver_started": false,
+  "source_commit": "91bb6f4175435cc0259f3ff7d83c7dd260352ec2"
+}

@@ -5934,3 +5934,36 @@ Python global binding, add a regression test, rerun the bounded CPU rehearsal,
 and register a new append-only calibration round before resubmitting. No
 calibration result or formal epsilon exists; all six qualification flags
 remain literal `false`.
+
+
+### 2026-10-05 — #46 R3 wrapper repair and bounded CPU rehearsal
+
+Source commit `91bb6f4175435cc0259f3ff7d83c7dd260352ec2` repairs the
+`runpy.run_path` binding by updating the embedded core `main` function's actual
+globals. A regression test exercises criteria SHA, input root, and output root
+binding with a synthetic stale core. Focused FD-08/contract tests passed 39;
+compileall, Julia parse, module imports, and `git diff --check` passed. Full
+pytest reported 37 failures, 1438 passes, and 9 skips; all 37 failure IDs match
+the pinned baseline (0 new, 0 resolved). The log hash and ID-set comparison
+are preserved in the CPU rehearsal evidence directory.
+
+The bounded CPU rehearsal passed for the first registered baseline and
+smallest-epsilon D0+ state, one `Array` step each, using Julia 1.12.6 and
+WaterLily 1.8.0. Both raw histories and signs passed the host audit; the window
+was `[0, 0.0104167] tU/L`, and margins were about 0.35 m. This is setup-only
+evidence, not Candidate C calibration data. Preview SHA-256 is
+`5ac384c3d034f79acb3c5f2e724eaa0dc9f5c74206899ea16c9f7ee0cc8a521b`; result
+SHA-256 is
+`b7265211f71206ec7f377f556d758ae097e6bb7e477cc3076507d9dbf9c11cfd`; runner
+manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`. All 29
+source inputs passed with inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The first host invocation stopped before Julia because it passed an empty
+dataset root instead of the builder's staged input directory. That validation
+attempt and its SHA are preserved at
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry5_attempt1/`;
+the corrected bounded rehearsal then passed. R4 criteria registration remains
+the next gate. No Kaggle calibration or formal criteria are active; all six
+qualification flags remain literal `false`.
