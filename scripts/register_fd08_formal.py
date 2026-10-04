@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from cfd_sdf.design.sdf_state import SDFDesignState
 from cfd_sdf.fd08_calibration import (
     audit_float32_centered_pair,
+    classify_calibration_screen,
     derive_response_floor,
     recompute_force_history,
     select_formal_epsilon_ladder,
@@ -29,6 +30,9 @@ from cfd_sdf.fd08_calibration import (
     validate_formal_epsilon_ladder,
     verify_output_manifest,
     verify_registered_dataset,
+    verify_runner_state_gates,
+    verify_runtime_artifacts,
+    verify_source_inputs,
 )
 from cfd_sdf.fd08_contract import validate_fd08_design
 from cfd_sdf.gradients.directional_fd import (
@@ -120,6 +124,16 @@ def build(state_path: Path, calibration_criteria_path: Path, calibration_result_
             or result.get("criteria_registered") is not False
             or result.get("qualification_flags") != expected_flags):
         raise ValueError("formal registration requires immutable calibration criteria and host analysis with false flags")
+    verified_calibration_sources = verify_source_inputs(cal.get("source_inputs", {}), root=ROOT)
+    required_calibration_sources = {
+        "calibration_registrar", "calibration_analyzer", "calibration_analysis",
+        "formal_registrar", "formal_verifier",
+        "kernel_wrapper", "kernel_base_runner", "cpu_rehearsal_cli", "cpu_rehearsal_job",
+        "cpu_julia_project", "cpu_julia_manifest",
+    }
+    if (not required_calibration_sources.issubset(verified_calibration_sources)
+            or result.get("verified_source_inputs") != verified_calibration_sources):
+        raise ValueError("calibration source inventory changed after its host analysis")
     cal_dataset = ROOT / cal["dataset_staging_path"]
     dataset_audit = verify_registered_dataset(cal, cal_sha, cal_dataset)
     calibration_namespace = cal.get("artifact_namespaces", {}).get("calibration_result_root")
@@ -136,6 +150,35 @@ def build(state_path: Path, calibration_criteria_path: Path, calibration_result_
             or not isinstance(runner_source, dict)
             or runner_terminal.get("runner_sha256") != runner_source.get("sha256")):
         raise ValueError("calibration output manifest changed after host analysis")
+    terminal_states = runner_terminal.get("states", {})
+    expected_calibration_ids = [row.get("name") for row in cal.get("state_order", [])]
+    if (runner_terminal.get("criteria_sha256") != cal_sha
+            or runner_terminal.get("source_commit") != cal.get("source_commit")
+            or runner_terminal.get("all_states_completed") is not True
+            or runner_terminal.get("status_counts") != {"COMPLETED": len(expected_calibration_ids)}
+            or set(terminal_states) != set(expected_calibration_ids)
+            or manifest_audit.get("terminal_status_counts") != {"COMPLETED": len(expected_calibration_ids)}):
+        raise ValueError("calibration terminal does not confirm the full immutable state inventory")
+    runtime_audit = verify_runtime_artifacts(result_root, cal["backend"])
+    if runtime_audit != result.get("runtime_artifact_audit"):
+        raise ValueError("calibration T4 runtime inventory changed after host analysis")
+    execution_environment = {
+        "platform": runner_terminal.get("platform"),
+        "python_version": runner_terminal.get("python"),
+        "gpu_inventory": runner_terminal.get("gpu_inventory"),
+        "host_driver_version_recorded_not_gated": runner_terminal.get("host_driver_version_recorded_not_gated"),
+    }
+    if (result.get("observed_execution_environment") != execution_environment
+            or any(not isinstance(execution_environment[key], str) or not execution_environment[key]
+                   for key in ("platform", "python_version", "host_driver_version_recorded_not_gated"))
+            or execution_environment["gpu_inventory"] != [", ".join(row) for row in runtime_audit["gpu_rows"]]
+            or execution_environment["host_driver_version_recorded_not_gated"]
+            != runtime_audit["driver_version_recorded_not_gated"]):
+        raise ValueError("calibration OS/Python/GPU runtime record differs from its hashed runner artifacts")
+    component_tolerances = (
+        float(cal["measurement"]["force_component_relative_tolerance"]),
+        float(cal["measurement"]["force_component_absolute_tolerance"]),
+    )
     for run_id, binding in result.get("raw_force_history_inventory", {}).items():
         raw_path = (result_root / binding["path"]).resolve()
         if result_root not in raw_path.parents or sha256(raw_path) != binding.get("sha256"):
@@ -143,14 +186,21 @@ def build(state_path: Path, calibration_criteria_path: Path, calibration_result_
         recomputed = recompute_force_history(
             raw_path,
             force_scale_n_per_solver_force=float(result["force_scale_n_per_solver_force"]),
+            force_component_tolerances=component_tolerances,
         )
-        if recomputed["force_n"] != binding.get("host_recomputed_force_n"):
+        gates = verify_runner_state_gates(terminal_states[run_id], run_id)
+        if (recomputed["force_n"] != binding.get("host_recomputed_force_n")
+                or recomputed["force_component_audit"] != binding.get("force_component_audit")
+                or recomputed["stationarity_relative_half_window_drift"]
+                != binding.get("stationarity_relative_half_window_drift")):
             raise ValueError(f"calibration raw force response no longer matches saved host analysis: {run_id}")
     selection = result.get("formal_ladder_selection", {})
     if (cal.get("kind") != "fd08_candidate_c_calibration"
             or result.get("calibration_criteria_sha256") != cal_sha
             or result.get("fresh_solver_execution_verified") is not True
             or result.get("formal_qualification") is not False
+            or result.get("calibration_verdict") != "PASS"
+            or result.get("formal_phase_allowed") is not True
             or selection.get("status") != "COMMON_PLATEAU_FOUND"
             or selection.get("registration_allowed") is not True):
         raise ValueError("a host-recomputed calibration with a common plateau is required")
@@ -188,6 +238,18 @@ def build(state_path: Path, calibration_criteria_path: Path, calibration_result_
     )
     if recomputed_selection != selection:
         raise ValueError("formal epsilon selection differs from independent recomputation of saved calibration responses")
+    recomputed_screen = classify_calibration_screen(
+        epsilons_m=calibration_epsilons,
+        pairs={direction: {
+            response: pair_data[direction][response] for response in ("drag", "downforce")
+        } for direction in DIRECTION_IDS},
+        response_floors_n={key: value["response_floor_n"] for key, value in floors.items()},
+        selection=recomputed_selection,
+    )
+    if (result.get("calibration_screen") != recomputed_screen
+            or result.get("calibration_verdict") != recomputed_screen["verdict"]
+            or result.get("formal_phase_allowed") is not True):
+        raise ValueError("calibration verdict differs from independent raw-data classification")
     floors = {
         response: float(result["baseline_resolution_floors"][response]["response_floor_n"])
         for response in ("drag", "downforce")
@@ -315,7 +377,8 @@ def build(state_path: Path, calibration_criteria_path: Path, calibration_result_
         "formal_epsilon_ladder_m": list(epsilons),
         "response_resolution_floor_n": floors,
         "observed_calibration_runtime_identity": source_runtime,
-        "runtime_rule": "formal T4 must match the observed calibration Julia, WaterLily, CUDA.jl, GPU model and selected GPU UUID; driver is recorded as not gated. Runtime identity is re-observed and host-verified from formal output.",
+        "observed_calibration_execution_environment": execution_environment,
+        "runtime_rule": "formal T4 must match the registered Julia, WaterLily, CUDA.jl, CUDA runtime/driver API, compute capability and GPU model. The actual GPU UUID and host driver are recorded per kernel but not used as cross-kernel equality gates, following the Candidate C/W4 runtime policy.",
         "formal_baseline_repeat_count": 3,
         "formal_run_count": 33,
         "formal_design_validation": design,

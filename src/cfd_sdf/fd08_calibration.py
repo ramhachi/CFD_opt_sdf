@@ -35,6 +35,11 @@ FORCE_COLUMNS = (
     "pressure_fy_solver", "pressure_fz_solver", "viscous_fx_solver",
     "viscous_fy_solver", "viscous_fz_solver",
 )
+RUNNER_STATE_GATES = frozenset({
+    "solver_step_markers", "force_components_consistent", "host_metrics_match_summary",
+    "finite", "t_end_reached", "state_identity", "body_and_backend", "vram",
+})
+CROSS_KERNEL_RUNTIME_FIELDS = ("julia_version", "waterlily_version", "cuda_jl_version", "gpu_name")
 
 
 def _finite_number(value: object, name: str) -> float:
@@ -98,6 +103,7 @@ def recompute_force_history(
     *,
     force_scale_n_per_solver_force: float = 1.0 / 900.0,
     window_t_u_l: tuple[float, float] = (80.0, 120.0),
+    force_component_tolerances: tuple[float, float] | None = None,
 ) -> dict[str, object]:
     """Hash and independently recompute drag/downforce in N from a raw CSV."""
     path = Path(path)
@@ -119,16 +125,81 @@ def recompute_force_history(
         raise ValueError(f"invalid raw force-history CSV: {path}") from exc
     if not rows or any(right["step"] <= left["step"] for left, right in zip(rows, rows[1:])):
         raise ValueError("raw force history must contain strictly increasing solver steps")
+    component_audit = None
+    if force_component_tolerances is not None:
+        if len(force_component_tolerances) != 2:
+            raise ValueError("force-component tolerances must be (relative, absolute)")
+        component_audit = verify_force_component_semantics(
+            rows,
+            relative_tolerance=force_component_tolerances[0],
+            absolute_tolerance=force_component_tolerances[1],
+        )
     start, end = map(float, window_t_u_l)
+    middle = (start + end) / 2.0
     means = {
         "drag": clipped_time_mean_from_rows(rows, "drag_solver", start_t_u_l=start, end_t_u_l=end) * scale,
         "downforce": clipped_time_mean_from_rows(rows, "downforce_solver", start_t_u_l=start, end_t_u_l=end) * scale,
     }
+    stationarity = {}
+    for response, column in (("drag", "drag_solver"), ("downforce", "downforce_solver")):
+        whole = clipped_time_mean_from_rows(rows, column, start_t_u_l=start, end_t_u_l=end)
+        first = clipped_time_mean_from_rows(rows, column, start_t_u_l=start, end_t_u_l=middle)
+        second = clipped_time_mean_from_rows(rows, column, start_t_u_l=middle, end_t_u_l=end)
+        stationarity[response] = abs(first - second) / max(abs(whole), np.finfo(np.float64).eps)
     return {
         "path": path.as_posix(), "sha256": digest, "row_count": len(rows),
         "window_t_u_l": [start, end], "force_scale_n_per_solver_force": scale,
-        "force_n": means,
+        "force_n": means, "force_component_audit": component_audit,
+        "stationarity_relative_half_window_drift": stationarity,
     }
+
+
+def verify_force_component_semantics(
+    rows: Sequence[Mapping[str, float]], *, relative_tolerance: float, absolute_tolerance: float
+) -> dict[str, object]:
+    """Independently check force-on-body projections and pressure/viscous closure."""
+    rel = _finite_number(relative_tolerance, "force component relative tolerance")
+    absolute = _finite_number(absolute_tolerance, "force component absolute tolerance")
+    if rel < 0.0 or absolute < 0.0 or not rows:
+        raise ValueError("force component tolerances must be nonnegative and rows nonempty")
+    checked = 0
+    for index, row in enumerate(rows):
+        consistent = (
+            math.isclose(row["fx_solver"], row["drag_solver"], rel_tol=rel, abs_tol=absolute)
+            and math.isclose(row["downforce_solver"], -row["fz_solver"], rel_tol=rel, abs_tol=absolute)
+            and all(math.isclose(
+                row[f"{axis}_solver"],
+                row[f"pressure_{axis}_solver"] + row[f"viscous_{axis}_solver"],
+                rel_tol=rel, abs_tol=absolute,
+            ) for axis in ("fx", "fy", "fz"))
+        )
+        if not consistent:
+            raise ValueError(f"force-on-body component/sign semantics failed at raw row {index}")
+        checked += 1
+    return {"verified": True, "row_count": checked,
+            "relative_tolerance": rel, "absolute_tolerance": absolute,
+            "semantics": "drag=+Fx; downforce=-Fz; total=pressure+viscous"}
+
+
+def inspect_runner_state_gates(state: Mapping[str, object], run_id: str) -> dict[str, bool]:
+    """Validate a terminal gate record while preserving registered gate failures."""
+    gates = state.get("gates")
+    if (state.get("status") not in {"COMPLETED", "GATE_FAILED"}
+            or not isinstance(gates, dict) or set(gates) != RUNNER_STATE_GATES
+            or any(value is not True and value is not False for value in gates.values())):
+        raise ValueError(f"solver state has a failed/missing gate record: {run_id}")
+    expected_status = "COMPLETED" if all(value is True for value in gates.values()) else "GATE_FAILED"
+    if state.get("status") != expected_status:
+        raise ValueError(f"solver state status does not match its registered gates: {run_id}")
+    return dict(gates)
+
+
+def verify_runner_state_gates(state: Mapping[str, object], run_id: str) -> dict[str, bool]:
+    """Require the complete runner gate schema with every gate literally true."""
+    gates = inspect_runner_state_gates(state, run_id)
+    if any(value is not True for value in gates.values()):
+        raise ValueError(f"solver state has a failed registered gate: {run_id}")
+    return gates
 
 
 def derive_response_floor(baseline_values_n: Iterable[float]) -> dict[str, float | int]:
@@ -178,6 +249,15 @@ def verify_output_manifest(result_root: Path, runner_result_path: Path | None = 
     manifest_path = root / "sha256.json"
     if not manifest_path.is_file() or manifest_path.is_symlink():
         raise ValueError("runner output SHA-256 manifest is missing or unsafe")
+    done_path = root / "DONE"
+    if not done_path.is_file() or done_path.is_symlink():
+        raise ValueError("runner terminal DONE marker is missing or unsafe")
+    try:
+        done = json.loads(done_path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("runner terminal DONE marker is invalid JSON") from exc
+    if not isinstance(done, dict) or done.get("status") != "FINISHED_STATE_LOOP":
+        raise ValueError("runner terminal DONE marker does not report a finished state loop")
     try:
         manifest = json.loads(manifest_path.read_text())
     except (OSError, json.JSONDecodeError) as exc:
@@ -224,11 +304,106 @@ def verify_output_manifest(result_root: Path, runner_result_path: Path | None = 
     return {
         "manifest_path": manifest_path.as_posix(),
         "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "terminal_marker_path": done_path.as_posix(),
+        "terminal_marker_sha256": hashlib.sha256(done_path.read_bytes()).hexdigest(),
+        "terminal_status_counts": done.get("status_counts"),
         "verified_file_count": len(expected),
         "inventory_sha256": hashlib.sha256(
             "\n".join(f"{name}  {expected[name]}" for name in sorted(expected)).encode()
         ).hexdigest(),
     }
+
+
+def verify_runtime_artifacts(result_root: Path, backend: Mapping[str, object]) -> dict[str, object]:
+    """Independently verify the runner's pinned T4 smoke and observed GPU inventory."""
+    root = Path(result_root).resolve()
+    inventory_path = root / "nvidia_smi.csv"
+    smoke_path = root / "julia_smoke.log"
+    if not inventory_path.is_file() or inventory_path.is_symlink() or not smoke_path.is_file() or smoke_path.is_symlink():
+        raise ValueError("Kaggle runtime inventory or Julia smoke log is missing or unsafe")
+    try:
+        with inventory_path.open(newline="") as handle:
+            rows = [[cell.strip() for cell in row] for row in csv.reader(handle) if row]
+    except (OSError, csv.Error) as exc:
+        raise ValueError("Kaggle nvidia-smi inventory is invalid") from exc
+    expected_count = backend.get("gpu_count")
+    if (isinstance(expected_count, bool) or not isinstance(expected_count, int)
+            or expected_count <= 0 or len(rows) != expected_count
+            or any(len(row) != 5 for row in rows)):
+        raise ValueError("Kaggle GPU inventory does not match the registered device count/schema")
+    if ([row[0] for row in rows] != [str(index) for index in range(expected_count)]
+            or len({row[2] for row in rows}) != expected_count
+            or any(not row[2].startswith("GPU-") for row in rows)
+            or any(str(backend.get("gpu_name", "")) not in row[1] for row in rows)
+            or len({row[4] for row in rows}) != 1):
+        raise ValueError("observed Kaggle GPU inventory differs from the registered T4 backend")
+    smoke = smoke_path.read_text(errors="replace")
+    markers = (
+        "W0B_SMOKE_DONE", "CUDA_FUNCTIONAL true",
+        f"GPU_COMPUTE_CAPABILITY {backend.get('compute_capability')}",
+        f"CUDA_DRIVER_VERSION {backend.get('cuda_driver_api_version')}",
+        f"CUDA_RUNTIME_VERSION {backend.get('cuda_runtime_version')}",
+        f"JULIA_VERSION {backend.get('julia_version')}",
+        f"CUDA_JL_VERSION {backend.get('cuda_jl_version')}",
+        f"WATERLILY_VERSION {backend.get('waterlily_version')}",
+        f"GPU_NAME {backend.get('gpu_name')}", "NO_SOLVER_STEP",
+    )
+    if any(marker not in smoke for marker in markers):
+        raise ValueError("observed Kaggle runtime does not match the registered T4 smoke contract")
+    return {
+        "gpu_inventory_path": inventory_path.relative_to(root).as_posix(),
+        "gpu_inventory_sha256": hashlib.sha256(inventory_path.read_bytes()).hexdigest(),
+        "gpu_rows": rows,
+        "selected_gpu_uuid": rows[0][2],
+        "driver_version_recorded_not_gated": rows[0][4],
+        "julia_smoke_path": smoke_path.relative_to(root).as_posix(),
+        "julia_smoke_sha256": hashlib.sha256(smoke_path.read_bytes()).hexdigest(),
+        "pinned_smoke_markers": list(markers),
+        "gpu_uuid_policy": "recorded_for_each_kernel; physical T4 UUID is not a cross-kernel equality gate",
+    }
+
+
+def verify_cross_kernel_runtime(actual: Mapping[str, object], reference: Mapping[str, object]) -> tuple[str, ...]:
+    """Compare the qualified software/GPU model while recording per-kernel UUID and driver."""
+    for field in CROSS_KERNEL_RUNTIME_FIELDS:
+        if actual.get(field) != reference.get(field):
+            raise ValueError(f"cross-kernel runtime differs from calibration identity: {field}")
+    return CROSS_KERNEL_RUNTIME_FIELDS
+
+
+def verify_source_inputs(source_inputs: Mapping[str, object], *, root: Path) -> dict[str, str]:
+    """Verify every criteria-bound repository source file without following symlinks."""
+    if not isinstance(source_inputs, Mapping) or not source_inputs:
+        raise ValueError("criteria source input inventory is missing")
+    source_root = Path(root).resolve()
+    verified: dict[str, str] = {}
+    for name, entry in source_inputs.items():
+        if not isinstance(name, str) or not isinstance(entry, Mapping):
+            raise ValueError("criteria source input entry is invalid")
+        relative, expected = entry.get("path"), entry.get("sha256")
+        if (not isinstance(relative, str) or not relative or Path(relative).is_absolute()
+                or ".." in Path(relative).parts or relative != Path(relative).as_posix()
+                or entry.get("location") != "source_repo"
+                or not isinstance(expected, str) or len(expected) != 64):
+            raise ValueError(f"criteria source input binding is invalid: {name}")
+        try:
+            int(expected, 16)
+        except ValueError as exc:
+            raise ValueError(f"criteria source input SHA-256 is not hexadecimal: {name}") from exc
+        candidate = source_root / relative
+        current = source_root
+        for component in Path(relative).parts:
+            current = current / component
+            if current.is_symlink():
+                raise ValueError(f"criteria source input uses a symlink: {name}")
+        path = candidate.resolve()
+        if source_root not in path.parents or not path.is_file():
+            raise ValueError(f"criteria source input is missing or unsafe: {name}")
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != expected:
+            raise ValueError(f"criteria source input SHA-256 mismatch: {name}")
+        verified[name] = actual
+    return verified
 
 
 def verify_registered_dataset(
@@ -430,6 +605,55 @@ def select_formal_epsilon_ladder(
     }
 
 
+def classify_calibration_screen(
+    *, epsilons_m: Iterable[float],
+    pairs: Mapping[str, Mapping[str, Sequence[Mapping[str, object]]]],
+    response_floors_n: Mapping[str, float],
+    selection: Mapping[str, object],
+) -> dict[str, object]:
+    """Classify a failed selector without masking any resolved five-point failure."""
+    epsilons = validate_calibration_ladder(epsilons_m)
+    if selection.get("registration_allowed") is True:
+        return {
+            "verdict": "PASS",
+            "resolved_failure_windows": [],
+            "formal_registration_allowed": True,
+            "rule": "a deterministic common five-point plateau was selected for all six series",
+        }
+
+    failures = []
+    for start in range(len(epsilons) - FORMAL_EPSILON_COUNT + 1):
+        window = epsilons[start:start + FORMAL_EPSILON_COUNT]
+        for direction in sorted(pairs):
+            for response in ("drag", "downforce"):
+                rows_by_epsilon = {
+                    float(row["epsilon_m"]): row
+                    for row in pairs[direction][response]
+                }
+                rows = [rows_by_epsilon[epsilon] for epsilon in window]
+                outcome = evaluate_formal_direction_response(
+                    rows, response_floor_n=float(response_floors_n[response]),
+                )
+                if outcome["verdict"] == "FAIL":
+                    failures.append({
+                        "epsilon_window_m": list(window),
+                        "direction_id": direction,
+                        "response": response,
+                        "failure_gates": outcome["failure_gates"],
+                        "resolved_epsilon_m": outcome["resolved_epsilon_m"],
+                    })
+    verdict = "FAIL" if failures else "UNRESOLVED"
+    return {
+        "verdict": verdict,
+        "resolved_failure_windows": failures,
+        "formal_registration_allowed": False,
+        "rule": (
+            "when no common plateau exists, FAIL takes precedence if any contiguous five-point "
+            "window has a resolved sign or plateau failure; otherwise UNRESOLVED"
+        ),
+    }
+
+
 def evaluate_formal_direction_response(
     rows: Iterable[Mapping[str, object]], *, response_floor_n: float
 ) -> dict[str, object]:
@@ -474,8 +698,9 @@ def evaluate_formal_direction_response(
 
 def aggregate_formal_verdict(
     results: Mapping[str, Mapping[str, object]],
+    *, integrity_failures: Iterable[Mapping[str, object]] = (),
 ) -> dict[str, object]:
-    """Combine the exact six direction/response verdicts with FAIL precedence."""
+    """Combine the six response verdicts and preserve formal-integrity FAIL precedence."""
     expected = {f"{direction}/{response}" for direction in FORMAL_DIRECTION_IDS
                 for response in ("drag", "downforce")}
     if set(results) != expected:
@@ -483,10 +708,18 @@ def aggregate_formal_verdict(
     verdicts = [results[key].get("verdict") for key in sorted(expected)]
     if any(value not in {"PASS", "FAIL", "UNRESOLVED"} for value in verdicts):
         raise ValueError("each formal combination requires PASS, FAIL, or UNRESOLVED")
-    overall = "FAIL" if "FAIL" in verdicts else "UNRESOLVED" if "UNRESOLVED" in verdicts else "PASS"
+    integrity = tuple(integrity_failures)
+    if any(not isinstance(item, Mapping) or not item for item in integrity):
+        raise ValueError("formal integrity failures must be nonempty records")
+    overall = (
+        "FAIL" if "FAIL" in verdicts or integrity
+        else "UNRESOLVED" if "UNRESOLVED" in verdicts
+        else "PASS"
+    )
     return {"verdict": overall, "combination_verdicts": dict(results),
             "pass_count": verdicts.count("PASS"), "fail_count": verdicts.count("FAIL"),
             "unresolved_count": verdicts.count("UNRESOLVED"),
+            "integrity_failure_count": len(integrity),
             "qualification_flags": {key: False for key in (
                 "shape_update_allowed", "fd_oracle", "field_gradient", "reverse", "optimizer", "topology")}}
 
@@ -496,8 +729,10 @@ __all__ = [
     "FLOAT32_DIRECTION_RELATIVE_L2_ERROR_LIMIT", "FORMAL_DIRECTION_IDS",
     "aggregate_formal_verdict",
     "audit_float32_centered_pair", "centered_pair", "clipped_time_mean_from_rows",
-    "derive_response_floor", "evaluate_formal_direction_response",
+    "classify_calibration_screen", "derive_response_floor", "evaluate_formal_direction_response",
     "recompute_force_history", "select_formal_epsilon_ladder",
     "validate_calibration_ladder", "validate_formal_epsilon_ladder",
-    "verify_output_manifest", "verify_registered_dataset",
+    "verify_force_component_semantics", "verify_output_manifest", "verify_registered_dataset",
+    "verify_cross_kernel_runtime", "inspect_runner_state_gates", "verify_runner_state_gates", "verify_runtime_artifacts",
+    "verify_source_inputs",
 ]

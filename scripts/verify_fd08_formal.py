@@ -17,6 +17,7 @@ from cfd_sdf.fd08_calibration import (
     FORMAL_DIRECTION_IDS,
     aggregate_formal_verdict,
     centered_pair,
+    classify_calibration_screen,
     derive_response_floor,
     evaluate_formal_direction_response,
     recompute_force_history,
@@ -24,6 +25,11 @@ from cfd_sdf.fd08_calibration import (
     validate_formal_epsilon_ladder,
     verify_output_manifest,
     verify_registered_dataset,
+    inspect_runner_state_gates,
+    verify_runner_state_gates,
+    verify_runtime_artifacts,
+    verify_cross_kernel_runtime,
+    verify_source_inputs,
 )
 from cfd_sdf.candidate_c_identity import load_candidate_c_identity
 from cfd_sdf.fd08_contract import (
@@ -50,33 +56,6 @@ def load_immutable(path: Path) -> tuple[dict, str]:
     if sidecar.read_text().strip() != digest:
         raise ValueError("formal criteria SHA-256 sidecar mismatch")
     return json.loads(path.read_text()), digest
-
-
-def verify_source_inputs(source_inputs: dict, *, root: Path = ROOT) -> dict[str, str]:
-    """Check the complete criteria-bound source inventory against this checkout."""
-    if not isinstance(source_inputs, dict) or not source_inputs:
-        raise ValueError("criteria source input inventory is missing")
-    verified = {}
-    root = Path(root).resolve()
-    for name, entry in source_inputs.items():
-        if not isinstance(name, str) or not isinstance(entry, dict):
-            raise ValueError("criteria source input entry is invalid")
-        relative = entry.get("path")
-        expected = entry.get("sha256")
-        if (not isinstance(relative, str) or not relative or Path(relative).is_absolute()
-                or ".." in Path(relative).parts or relative != Path(relative).as_posix()
-                or entry.get("location") != "source_repo"
-                or not isinstance(expected, str) or len(expected) != 64):
-            raise ValueError(f"criteria source input binding is invalid: {name}")
-        candidate = root / relative
-        path = candidate.resolve()
-        if candidate.is_symlink() or root not in path.parents or not path.is_file():
-            raise ValueError(f"criteria source input is missing or unsafe: {name}")
-        actual = sha256(path)
-        if actual != expected:
-            raise ValueError(f"criteria source input SHA-256 mismatch: {name}")
-        verified[name] = actual
-    return verified
 
 
 def _write_once(path: Path, value: dict) -> str:
@@ -107,7 +86,7 @@ def _write_once(path: Path, value: dict) -> str:
 
 def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dataset_dir: Path) -> dict:
     criteria, criteria_sha = load_immutable(criteria_path)
-    verified_sources = verify_source_inputs(criteria.get("source_inputs", {}))
+    verified_sources = verify_source_inputs(criteria.get("source_inputs", {}), root=ROOT)
     if not {"formal_verifier", "formal_kernel_wrapper", "formal_kernel_base_runner"}.issubset(verified_sources):
         raise ValueError("formal criteria do not bind the host verifier and uploaded kernel sources")
     frozen_identity = load_candidate_c_identity(ROOT)
@@ -197,6 +176,8 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
             or calibration_terminal.get("status_counts") != {"COMPLETED": len(calibration_ids)}
             or set(calibration_terminal.get("states", {})) != set(calibration_ids)):
         raise ValueError("calibration runner terminal is incomplete or not bound to the registered criteria")
+    if calibration_manifest.get("terminal_status_counts") != {"COMPLETED": len(calibration_ids)}:
+        raise ValueError("calibration DONE marker does not confirm the complete inventory")
 
     calibration_case = calibration_criteria["case"]
     calibration_force_scale = (
@@ -209,6 +190,28 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
     calibration_state_map = {row["name"]: row for row in calibration_states}
     calibration_force_n: dict[str, dict[str, float]] = {}
     calibration_runtimes = {}
+    calibration_measurement = calibration_criteria["measurement"]
+    calibration_component_tolerances = (
+        float(calibration_measurement["force_component_relative_tolerance"]),
+        float(calibration_measurement["force_component_absolute_tolerance"]),
+    )
+    calibration_runtime_audit = verify_runtime_artifacts(calibration_root, calibration_criteria["backend"])
+    if calibration_runtime_audit != calibration_result.get("runtime_artifact_audit"):
+        raise ValueError("calibration runtime logs or GPU inventory changed after host analysis")
+    calibration_environment = {
+        "platform": calibration_terminal.get("platform"),
+        "python_version": calibration_terminal.get("python"),
+        "gpu_inventory": calibration_terminal.get("gpu_inventory"),
+        "host_driver_version_recorded_not_gated": calibration_terminal.get("host_driver_version_recorded_not_gated"),
+    }
+    if (calibration_environment != calibration_result.get("observed_execution_environment")
+            or calibration_environment != criteria.get("observed_calibration_execution_environment")
+            or any(not isinstance(calibration_environment[key], str) or not calibration_environment[key]
+                   for key in ("platform", "python_version", "host_driver_version_recorded_not_gated"))
+            or calibration_environment["gpu_inventory"] != [", ".join(row) for row in calibration_runtime_audit["gpu_rows"]]
+            or calibration_environment["host_driver_version_recorded_not_gated"]
+            != calibration_runtime_audit["driver_version_recorded_not_gated"]):
+        raise ValueError("registered calibration OS/Python/GPU runtime record changed after preregistration")
     for run_id in calibration_ids:
         binding = calibration_raw[run_id]
         raw_path = (calibration_root / binding["path"]).resolve()
@@ -216,14 +219,16 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
             raise ValueError(f"unsafe calibration force-history path: {run_id}")
         raw_record = recompute_force_history(
             raw_path, force_scale_n_per_solver_force=calibration_force_scale,
+            force_component_tolerances=calibration_component_tolerances,
         )
         terminal_state = calibration_terminal["states"][run_id]
         state = calibration_state_map[run_id]
+        terminal_gates = verify_runner_state_gates(terminal_state, run_id)
         if (raw_record["sha256"] != binding.get("sha256")
                 or raw_record["row_count"] != binding.get("row_count")
                 or raw_record["force_n"] != binding.get("host_recomputed_force_n")
-                or terminal_state.get("status") != "COMPLETED"
-                or not all(terminal_state.get("gates", {}).values())):
+                or raw_record["stationarity_relative_half_window_drift"]
+                != binding.get("stationarity_relative_half_window_drift")):
             raise ValueError(f"calibration raw history or terminal state failed independent verification: {run_id}")
         summary_path = raw_path.parent / "flow_24.summary.json"
         if not summary_path.is_file():
@@ -242,6 +247,12 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
         }
         if any(not isinstance(value, str) or not value for value in runtime.values()):
             raise ValueError(f"calibration runtime identity is incomplete: {run_id}")
+        if (runtime["julia_version"] != calibration_criteria["backend"]["julia_version"]
+                or runtime["waterlily_version"] != calibration_criteria["backend"]["waterlily_version"]
+                or runtime["cuda_jl_version"] != calibration_criteria["backend"]["cuda_jl_version"]
+                or calibration_criteria["backend"]["gpu_name"] not in runtime["gpu_name"]
+                or runtime["gpu_uuid"] != calibration_runtime_audit["selected_gpu_uuid"]):
+            raise ValueError(f"calibration runtime summary differs from its independently checked T4 inventory: {run_id}")
         calibration_runtimes[run_id] = runtime
         calibration_force_n[run_id] = raw_record["force_n"]
     if len({json.dumps(value, sort_keys=True) for value in calibration_runtimes.values()}) != 1:
@@ -306,6 +317,17 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
     if (recalculated_selection != calibration_result.get("formal_ladder_selection")
             or recalculated_selection.get("selected_formal_epsilon_ladder_m") != list(formal_epsilon)):
         raise ValueError("formal ladder does not match independent calibration-selection recomputation")
+    recalculated_calibration_screen = classify_calibration_screen(
+        epsilons_m=ladder,
+        pairs=calculated_pair_rows,
+        response_floors_n={key: row["response_floor_n"] for key, row in recalculated_floors.items()},
+        selection=recalculated_selection,
+    )
+    if (recalculated_calibration_screen.get("verdict") != "PASS"
+            or calibration_result.get("calibration_screen") != recalculated_calibration_screen
+            or calibration_result.get("calibration_verdict") != "PASS"
+            or calibration_result.get("formal_phase_allowed") is not True):
+        raise ValueError("calibration did not independently verify as a formal-phase PASS")
 
     states = criteria.get("state_order")
     run_ids = [row.get("name") for row in states] if isinstance(states, list) else []
@@ -340,6 +362,7 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
     if Path(result_root).resolve() != (ROOT / formal_root).resolve():
         raise ValueError("formal result files are outside their immutable registered namespace")
 
+    runtime_audit = verify_runtime_artifacts(result_root, criteria["backend"])
     terminal_path = Path(runner_result_path)
     manifest_audit = verify_output_manifest(result_root, terminal_path)
     runner_result = json.loads(terminal_path.read_text())
@@ -349,13 +372,21 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
             or runner_result.get("source_commit") != criteria.get("source_commit")
             or not isinstance(formal_runner_source, dict)
             or runner_result.get("runner_sha256") != formal_runner_source.get("sha256")
-            or runner_result.get("all_states_completed") is not True
-            or runner_result.get("status_counts") != {"COMPLETED": FRESH_QUALIFICATION_RUNS}
             or not isinstance(actual, dict) or set(actual) != set(run_ids)):
         raise ValueError("terminal runner result is incomplete or not bound to formal criteria/source")
+    observed_counts = {}
+    for state_result in actual.values():
+        status = state_result.get("status") if isinstance(state_result, dict) else None
+        if status not in {"COMPLETED", "GATE_FAILED"}:
+            raise ValueError("formal runner has an incomplete state or infrastructure terminal failure")
+        observed_counts[status] = observed_counts.get(status, 0) + 1
+    all_states_completed = observed_counts == {"COMPLETED": FRESH_QUALIFICATION_RUNS}
+    if (runner_result.get("status_counts") != observed_counts
+            or manifest_audit.get("terminal_status_counts") != observed_counts
+            or runner_result.get("all_states_completed") is not all_states_completed):
+        raise ValueError("formal runner and DONE marker state counts are inconsistent")
 
     expected_runtime = criteria["observed_calibration_runtime_identity"]
-    runtime_fields = ("julia_version", "waterlily_version", "cuda_jl_version", "gpu_name", "gpu_uuid")
     output_root = Path(result_root).resolve()
     case = criteria["case"]
     force_scale = float(case["density_kg_m3"]) * float(case["freestream_mps"][0]) ** 2 * float(case["flow_spacing_m"]) ** 2
@@ -363,11 +394,34 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
     force_n: dict[str, dict[str, float]] = {}
     raw_artifacts: dict[str, dict[str, object]] = {}
     observed_runtimes = {}
+    formal_integrity_failures: list[dict[str, str]] = []
+    observed_execution_environment = {
+        "platform": runner_result.get("platform"),
+        "python_version": runner_result.get("python"),
+        "gpu_inventory": runner_result.get("gpu_inventory"),
+        "host_driver_version_recorded_not_gated": runner_result.get("host_driver_version_recorded_not_gated"),
+    }
+    if (any(not isinstance(observed_execution_environment[key], str)
+            or not observed_execution_environment[key]
+            for key in ("platform", "python_version", "host_driver_version_recorded_not_gated"))
+            or observed_execution_environment["gpu_inventory"]
+            != [", ".join(row) for row in runtime_audit["gpu_rows"]]
+            or observed_execution_environment["host_driver_version_recorded_not_gated"]
+            != runtime_audit["driver_version_recorded_not_gated"]):
+        formal_integrity_failures.append({"run_id": "all", "gate": "body_and_backend_runtime_record"})
+    measurement = criteria["measurement"]
+    component_tolerances = (
+        float(measurement["force_component_relative_tolerance"]),
+        float(measurement["force_component_absolute_tolerance"]),
+    )
     for run_id in run_ids:
         state = state_map[run_id]
         state_result = actual[run_id]
-        if state_result.get("status") != "COMPLETED" or not all(state_result.get("gates", {}).values()):
-            raise ValueError(f"formal solver state failed a registered gate: {run_id}")
+        state_gates = inspect_runner_state_gates(state_result, run_id)
+        formal_integrity_failures.extend(
+            {"run_id": run_id, "gate": gate}
+            for gate, passed in state_gates.items() if passed is not True
+        )
         state_dir = (output_root / "states" / run_id).resolve()
         if output_root not in state_dir.parents:
             raise ValueError(f"unsafe formal state path: {run_id}")
@@ -376,13 +430,30 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
         if not summary_path.is_file():
             raise ValueError(f"formal per-state summary is missing: {run_id}")
         summary = json.loads(summary_path.read_text())
-        history = recompute_force_history(csv_path, force_scale_n_per_solver_force=force_scale)
-        if (history["sha256"] != state_result.get("force_csv_sha256")
-                or summary.get("force_csv_sha256") != history["sha256"]
-                or summary.get("state_sha256") != state["state_sha256"]
-                or summary.get("phi_fortran_sha256") != state["phi_fortran_sha256"]
-                or history["window_t_u_l"] != list(WINDOW_TU_L)):
-            raise ValueError(f"formal raw force/state integrity mismatch: {run_id}")
+        try:
+            history = recompute_force_history(
+                csv_path, force_scale_n_per_solver_force=force_scale,
+                force_component_tolerances=component_tolerances,
+            )
+        except ValueError as exc:
+            if "force-on-body component/sign semantics failed" not in str(exc):
+                raise
+            formal_integrity_failures.append({"run_id": run_id, "gate": "force_components_consistent"})
+            history = recompute_force_history(csv_path, force_scale_n_per_solver_force=force_scale)
+            history["force_component_audit"] = {
+                "verified": False, "failure": str(exc),
+                "relative_tolerance": component_tolerances[0],
+                "absolute_tolerance": component_tolerances[1],
+            }
+        if history["sha256"] != state_result.get("force_csv_sha256"):
+            formal_integrity_failures.append({"run_id": run_id, "gate": "raw_force_history_binding"})
+        if summary.get("force_csv_sha256") != history["sha256"]:
+            formal_integrity_failures.append({"run_id": run_id, "gate": "host_metrics_match_summary"})
+        if (summary.get("state_sha256") != state["state_sha256"]
+                or summary.get("phi_fortran_sha256") != state["phi_fortran_sha256"]):
+            formal_integrity_failures.append({"run_id": run_id, "gate": "state_identity"})
+        if history["window_t_u_l"] != list(WINDOW_TU_L):
+            raise ValueError(f"formal raw force history did not use the registered window: {run_id}")
         runtime = {
             "julia_version": summary.get("julia_version"),
             "waterlily_version": summary.get("waterlily_version"),
@@ -390,18 +461,30 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
             "gpu_name": summary.get("gpu_name"), "gpu_uuid": summary.get("gpu_uuid"),
             "driver_version": runner_result.get("host_driver_version_recorded_not_gated"),
         }
-        for field in runtime_fields:
-            if runtime[field] != expected_runtime.get(field):
-                raise ValueError(f"formal runtime differs from calibration identity: {field}")
+        try:
+            verify_cross_kernel_runtime(runtime, expected_runtime)
+        except ValueError:
+            formal_integrity_failures.append({"run_id": run_id, "gate": "cross_kernel_runtime"})
+        if (any(not isinstance(runtime[field], str) or not runtime[field]
+                for field in ("julia_version", "waterlily_version", "cuda_jl_version", "gpu_name", "gpu_uuid"))
+                or runtime["julia_version"] != criteria["backend"]["julia_version"]
+                or runtime["waterlily_version"] != criteria["backend"]["waterlily_version"]
+                or runtime["cuda_jl_version"] != criteria["backend"]["cuda_jl_version"]
+                or not isinstance(runtime["gpu_name"], str)
+                or criteria["backend"]["gpu_name"] not in runtime["gpu_name"]
+                or runtime["gpu_uuid"] != runtime_audit["selected_gpu_uuid"]):
+            formal_integrity_failures.append({"run_id": run_id, "gate": "body_and_backend"})
         observed_runtimes[run_id] = runtime
         force_n[run_id] = history["force_n"]
         raw_artifacts[run_id] = {
             "relative_path": csv_path.relative_to(output_root).as_posix(),
             "sha256": history["sha256"], "row_count": history["row_count"],
             "host_recomputed_force_n": history["force_n"],
+            "force_component_audit": history["force_component_audit"],
+            "stationarity_relative_half_window_drift": history["stationarity_relative_half_window_drift"],
         }
     if len({json.dumps(value, sort_keys=True) for value in observed_runtimes.values()}) != 1:
-        raise ValueError("formal states do not share one observed runtime identity")
+        formal_integrity_failures.append({"run_id": "all", "gate": "body_and_backend_runtime_consistency"})
 
     baseline_ids = [row["name"] for row in states if row["role"] == "baseline"]
     baseline = {
@@ -435,7 +518,15 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
         for direction in criteria["direction_inventory"]
         for response in ("drag", "downforce")
     }
-    aggregate = aggregate_formal_verdict(combinations)
+    formal_integrity_failures = [
+        {"run_id": run_id, "gate": gate}
+        for run_id, gate in sorted({
+            (item["run_id"], item["gate"]) for item in formal_integrity_failures
+        })
+    ]
+    aggregate = aggregate_formal_verdict(
+        combinations, integrity_failures=formal_integrity_failures,
+    )
     return {
         "kind": "fd08_candidate_c_formal_host_verification",
         "evidence_class": "host_recomputed_formal_directional_fd_verdict",
@@ -443,6 +534,8 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
         "runner_result_path": terminal_path.as_posix(), "runner_result_sha256": sha256(terminal_path),
         "registered_dataset_audit": dataset_audit,
         "runner_output_manifest": manifest_audit,
+        "runtime_artifact_audit": runtime_audit,
+        "observed_execution_environment": observed_execution_environment,
         "source_commit": criteria["source_commit"], "formal_run_ids": run_ids,
         "verified_source_input_count": len(verified_sources),
         "formal_verifier_sha256": verified_sources.get("formal_verifier"),
@@ -453,6 +546,7 @@ def verify(criteria_path: Path, runner_result_path: Path, result_root: Path, dat
         "response_resolution_floor_n": criteria["response_resolution_floor_n"],
         "observed_runtime_identity": next(iter(observed_runtimes.values())),
         "direction_response_verdicts": combinations,
+        "formal_integrity_failures": formal_integrity_failures,
         "verdict": aggregate["verdict"], "pass_count": aggregate["pass_count"],
         "fail_count": aggregate["fail_count"], "unresolved_count": aggregate["unresolved_count"],
         "qualification_flags": aggregate["qualification_flags"],
