@@ -5698,3 +5698,16 @@ unchanged part A rules after part A was held blind. Six required sign contrasts:
 and agree in sign; the two D1 contrasts are unresolved on the OpenFOAM side (|S| below 3 SE). **Verdict UNRESOLVED**: no resolved DISAGREE, so Track C is not
 stopped, and AGREE is not reached. Scope: uncertified geometry, Re = 80 profile. Report `docs/issues/45_xfid_verdict_2026_10_04.md`; the next step (more matched
 phases or a larger epsilon for D1) needs a new registration and the user's decision. All six qualification flags remain false.
+
+
+### 2026-10-05 — #46 CPU rehearsal attempt 1 terminal
+
+After source review and `--no-ff` integration, the 47-state calibration
+builder preview passed its Float32/margin checks. The bounded CPU setup
+rehearsal stopped before the first solver step on a Julia `GridSDF` constructor
+type mismatch (Float64 spatial values with Float32 margin). The failed attempt
+and its hashes are preserved in
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05/` and detailed in
+`docs/issues/46_fd08_preparation.md`. This is an infrastructure/harness
+terminal, not a scientific verdict. No calibration criteria were registered,
+no T4 kernel was submitted, and all six qualification flags remain false.

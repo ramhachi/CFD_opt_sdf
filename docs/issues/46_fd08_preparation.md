@@ -316,3 +316,33 @@ the pinned baseline, with **0 new and 0 resolved IDs**. Final log SHA-256:
 focused suite passed **24 tests**; compileall, Julia parsing, CLI imports,
 solver-free builder preview, and `git diff --check` passed. No solver,
 calibration registration, or formal registration was performed.
+
+
+## CPU rehearsal attempt 1 terminal (2026-10-05)
+
+The exact integration source `81c19623bc3d24d64c36691a38cbec0affbdb364`
+generated an unregistered 47-state builder preview (preview contract SHA-256
+`2912e1c0600291f8e19aee10db3c008e6de36b0e3f6a992f57872cd280e5583e`). The
+bounded CPU rehearsal stopped on `cal_baseline_01` before the first solver
+step. Julia reported a `MethodError` constructing `GridSDF`: the job supplied
+Float64 origin, spacing, and outside-value arguments but passed the registered
+margin as Float32, while `GridSDF` requires those constructor values to share
+one scalar type. This is a CPU harness type mismatch, not a scientific FAIL,
+calibration observation, or formal result. No force history was generated.
+
+The failure is preserved append-only under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05/`: the preview and its
+sidecar, selected baseline Float32 input and hash, exact Julia log, and
+`rehearsal_failure.json` with its SHA-256 sidecar. The failure JSON SHA-256 is
+`714bd411215e7a86e27cc30f6cb6be2a2f0f779545a47b7e25f0290a6f1f0299`; the
+log SHA-256 is
+`245d43e388651056f254e9b858372eda98f766f0388e65542ed7681ad1c51375`.
+The append-only file inventory is `attempt_manifest.json` (SHA-256
+`29b3be09bed137710187dbb311a9028cc35b35a209e66d784e77789f5c6611a9`).
+Criteria were not registered, and no Kaggle/T4 solver execution started.
+
+The fix is limited to constructor type consistency: pass the parsed Float64
+margin value through unchanged. It does not alter the margin, its tolerance,
+the state, direction, epsilon, operator, force convention, or measurement
+window. A fresh source SHA and CPU-rehearsal retry evidence are required; the
+original failure record remains unchanged. Qualification flags remain false.
