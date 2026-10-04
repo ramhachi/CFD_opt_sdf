@@ -5749,3 +5749,24 @@ skips; failure IDs exactly match the pinned baseline (0 new, 0 resolved). The
 log and comparison-record hashes are documented in
 `docs/issues/46_fd08_preparation.md`. Calibration criteria remain unregistered
 and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration criteria preregistered
+
+Immutable FD-08 calibration round `fd08_candidate_c_calibration_2026_10_04_r1`
+is registered against integration source `b559c56a123fc62f73da1bea3429f18ec22b3f8f`.
+The criteria SHA-256 is
+`23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75`; the
+host registration audit SHA-256 is
+`44ff025d541865ec8c4a0f68af205f69923a2c746f33335539063237526c6685`.
+The fixed calibration inventory contains five baseline repeats and all 42
+D0/D1/D2 signed perturbations across the pre-registered seven-value, 1000x
+calibration epsilon span. The complete 89-file local dataset and 27 source
+inputs passed hash verification before measurement. The immutable selector
+requires one common deterministic five-point plateau across all six response
+series; no epsilon has been selected, and no formal ladder is registered.
+Stationarity remains report-only under the explicit Candidate C side rule and
+the runner/analyzer gate set. No Kaggle measurement has started, and all six
+qualification flags remain false. Full details and inventory digests are in
+`docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/registration_audit.json`.

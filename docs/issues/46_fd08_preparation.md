@@ -434,3 +434,48 @@ The 37 failures are known repository baseline failures, not FD-08 regressions.
 The rehearsal result remains setup-only; calibration criteria are still not
 registered, no Kaggle run has started, and all qualification flags remain
 literal `false`.
+
+
+## Calibration criteria preregistered (2026-10-05)
+
+After the source and bounded CPU rehearsal checkpoints above, immutable
+calibration round `fd08_candidate_c_calibration_2026_10_04_r1` was registered
+on integration source `b559c56a123fc62f73da1bea3429f18ec22b3f8f`. Criteria are
+at `docs/evidence/fd08_candidate_c_calibration_2026_10_04/xfidc_criteria.json`
+(SHA-256 `23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75`);
+the append-only host registration and inventory audit is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/registration_audit.json`
+(SHA-256 `44ff025d541865ec8c4a0f68af205f69923a2c746f33335539063237526c6685`).
+
+The registered inventory is 47 states: five identical-input baseline repeats
+and 42 signed perturbations from D0/D1/D2 over the exact calibration-only
+epsilon ladder `0.00005, 0.00015, 0.0005, 0.0015, 0.005, 0.015, 0.05 m` (1000x
+span). The 89 input files in the ignored local staging directory passed the
+registered filename/hash inventory and criteria-sidecar checks; inventory
+SHA-256 is `593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+All 27 source inputs also matched their registered SHA-256 values (sorted
+source inventory digest `b22b4d25b73f156a5eb18b38500c36b2a32b05244bfae341aef9347fa27ac29e`).
+
+The criteria bind Candidate C identity, canonical v17 state and phi hashes,
+`flow_24`, physical-force conversion, exact `[80,120] tU/L` window, perturbation
+directions, actual Float32 changed-node audits, runner/verifier and expected
+artifact schemas. Per response, the resolution floor is derived from exactly
+five baseline repeats. The deterministic selector examines every contiguous
+five-epsilon window in all six direction/response series and chooses the
+smallest common passing window, with the registered 5% deviation and sign
+rules; no epsilon has yet been selected. These seven epsilons are calibration
+candidates only; no formal epsilon ladder is registered. All six qualification
+flags remain literal `false`.
+
+Stationarity is recorded and reported only under the explicit
+`waterlily_side_rules.stationarity` and the runner's gate set; it does not stop
+a state. The inherited XFID-C JSON also carries `measurement.stationarity_gate
+= true`, but that field is not consumed by the FD-08 runner or host analyzer.
+The registered calibration runner records stationarity separately from its
+completion gates. No stationarity threshold or other scientific criterion was
+changed.
+
+At this checkpoint the criteria and local staged inventory are registered and
+host-verified, but the remote Kaggle dataset has not yet been created, no
+calibration kernel has been submitted, and no calibration measurement or
+verdict exists.

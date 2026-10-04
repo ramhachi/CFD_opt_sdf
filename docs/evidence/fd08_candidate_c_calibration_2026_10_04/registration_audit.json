@@ -1,0 +1,70 @@
+{
+  "baseline_repeat_count": 5,
+  "calibration_criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04/xfidc_criteria.json",
+  "calibration_criteria_sha256": "23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75",
+  "calibration_epsilon_ladder_m": [
+    5e-05,
+    0.00015,
+    0.0005,
+    0.0015,
+    0.005,
+    0.015,
+    0.05
+  ],
+  "candidate_identity": {
+    "body_source_sha256": {
+      "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+      "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+    },
+    "contract_path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25",
+    "physical_qualification": false,
+    "qualification_flags": {
+      "fd_oracle": false,
+      "field_gradient": false,
+      "optimizer": false,
+      "reverse": false,
+      "shape_update_allowed": false,
+      "topology": false
+    }
+  },
+  "canonical_v17_phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+  "canonical_v17_state_identity_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+  "case_id": "flow_24",
+  "created_at_utc": "2026-10-04T17:59:51.850467Z",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_local_audit": {
+    "criteria_sha256": "23e5eef9f1b7c6a878ea5267c26738089d0cffd3a88b6144a89418ddf9b7ad75",
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_candidate_c_calibration_dataset",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "verified_file_count": 89
+  },
+  "evidence_class": "host_side_registration_and_inventory_integrity",
+  "force_scale_n_per_solver_force": 0.0011111111111111111,
+  "formal_epsilon_ladder_registered": false,
+  "formal_measurement_started": false,
+  "kind": "fd08_candidate_c_calibration_preregistration_audit",
+  "measurement_window_t_u_l": [
+    80.0,
+    120.0
+  ],
+  "perturbation_state_count": 42,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run_count": 47,
+  "source_commit": "b559c56a123fc62f73da1bea3429f18ec22b3f8f",
+  "source_input_count": 27,
+  "source_inventory_sha256": "b22b4d25b73f156a5eb18b38500c36b2a32b05244bfae341aef9347fa27ac29e",
+  "stationarity_contract": {
+    "inherited_measurement_stationarity_gate_field": true,
+    "runner_semantics": "reported only; stationarity is not in the runner or host analyzer gate set",
+    "specific_rule": "drift is recorded per state and reported; it does not stop the run (W4-C registered 0.02 for the unperturbed state)"
+  }
+}
