@@ -797,3 +797,36 @@ verified. The append-only submission identity record is
 terminal artifacts or host analysis exist yet. No epsilon has been selected,
 no FD-08 verdict exists, and all six qualification flags remain literal
 `false`.
+
+
+## Calibration round 3 kernel v1 terminal (2026-10-05)
+
+Kaggle kernel v1 ended with `KernelWorkerStatus.ERROR` in the
+`criteria_discovery` stage. Its log reports `RuntimeError: criteria SHA
+mismatch` at `runner_base.py:255`, 1.76 seconds into startup. The output only
+contains the `execution_state.json` stage marker and the Kaggle log; no Julia,
+T4 smoke test, or solver step started. No runtime criteria digest or backend
+identity was emitted.
+
+The harness cause is a Python namespace-binding bug. The single-file wrapper
+computes the attached criteria digest and validates its sidecar, then executes
+the embedded core with `runpy.run_path`. Mutating the returned mapping does
+not mutate the `__globals__` used by the returned `main` function. The core
+therefore still compared the attached digest with its stale embedded value
+`39974802c43a55bde53da2afc6e04149ef7fec148d8b678e1f8b92a4523d775b` instead of
+R3's registered criteria SHA-256
+`a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5`. A local
+Python reproduction confirmed the mapping and function globals are distinct.
+The host had independently verified the version-3 dataset archive before
+submission, but the failed kernel did not emit its mounted criteria hash, so
+the runtime artifact does not independently bind that mounted file to R3.
+
+The immutable R3 criteria, dataset v3 and original terminal evidence are
+preserved. This is a pre-solver harness failure, not a scientific FAIL or
+calibration verdict. The terminal audit SHA-256 is
+`27e408bf578c1dbe5c355800a0e635a84e30aa72fbbe0eb8aea20bf94254363b`; its raw
+logs and output inventory are under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/kernel_v1_terminal/`.
+The repair will be registered as a new source-bound round after a regression
+test and bounded CPU rehearsal. No epsilon was selected, no formal criteria
+were registered, and all six qualification flags remain literal `false`.

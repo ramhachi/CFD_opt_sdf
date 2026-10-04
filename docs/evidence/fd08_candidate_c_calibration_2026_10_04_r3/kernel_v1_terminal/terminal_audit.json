@@ -1,0 +1,50 @@
+{
+  "calibration_measurement_started": false,
+  "calibration_verdict_exists": false,
+  "criteria_or_scientific_gates_modified": false,
+  "criteria_sha256": "a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5",
+  "dataset_host_verification_sha256": "84d66a022e0eb5ccc8762207a6a7c5ddd3e68b30bcea514ac6a59da5ab0382f9",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_version_registered": 3,
+  "downloaded_log_sha256": "bc8555cefd3030cb934e6bf68bbf68ae11bcc9b7977699d79b9d5815d90f26ad",
+  "error": "RuntimeError: criteria SHA mismatch",
+  "evidence_class": "pre_solver_harness_binding_failure",
+  "failure_stage": "criteria_discovery",
+  "formal_epsilon_selected": false,
+  "julia_started": false,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_url": "https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_version": 1,
+  "kind": "fd08_candidate_c_calibration_infrastructure_terminal",
+  "preserved_output_files": [
+    {
+      "path": "cfd-opt-sdf-fd08-calibration-kernel.log",
+      "sha256": "bc8555cefd3030cb934e6bf68bbf68ae11bcc9b7977699d79b9d5815d90f26ad",
+      "size_bytes": 1695
+    },
+    {
+      "path": "xfid_candidate_c/execution_state.json",
+      "sha256": "1362e385eb21044ccaa3537fb256864acff57b572bc12d1fc4bd825e8eaf211f",
+      "size_bytes": 36
+    }
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_kernel_core_sha256": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+  "registered_kernel_wrapper_sha256": "dd0fb63c61a53d47a1d4960faae1d28061fb2084d031c9aff3b1196876ed4e6b",
+  "root_cause": "runpy.run_path returns a globals mapping distinct from the function __globals__. The wrapper assigned criteria SHA, INPUT_ROOT and OUT to the returned mapping, but the core main function continued reading the stale CRITERIA_SHA256 constant 39974802c43a55bde53da2afc6e04149ef7fec148d8b678e1f8b92a4523d775b.",
+  "root_cause_validation": "Reproduced locally: mutating the runpy result mapping does not change a function's __globals__; the core main therefore retained its stale SHA constant. The wrapper had already checked that the mounted criteria file and sidecar agreed with each other. The core then compared that digest to the stale constant.",
+  "round_id": "fd08_candidate_c_calibration_2026_10_04_r3",
+  "runtime_criteria_digest_emitted": false,
+  "solver_step_started": false,
+  "source_commit": "05c9c59c475f24e3da41e582b49dec3e1e844604",
+  "t4_smoke_started": false,
+  "terminal_observed_at_utc": "2026-10-04T19:16:51Z",
+  "terminal_status": "KernelWorkerStatus.ERROR"
+}

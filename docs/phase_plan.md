@@ -5913,3 +5913,24 @@ version 3. Its first status was `KernelWorkerStatus.RUNNING`; stdout was not
 yet available, so runtime identity and solver progress remain pending. The
 submission identity is preserved in the R3 evidence directory. No terminal
 result or FD-08 verdict exists, and all six qualification flags remain false.
+
+
+### 2026-10-05 — #46 calibration round 3 kernel v1 terminal
+
+Kernel v1 ended with `KernelWorkerStatus.ERROR` at `criteria_discovery` with
+`RuntimeError: criteria SHA mismatch`. The wrapper validated that the mounted
+criteria file and sidecar agreed, then attempted to inject the digest into the
+core via the mapping returned by `runpy.run_path`. That mapping is distinct
+from the functions' `__globals__`, so the core retained its old embedded digest
+`39974802…` and stopped before dataset verification, Julia, T4 smoke, or solver
+steps. The failure is a harness binding defect; the runtime did not emit the
+mounted criteria digest, so this terminal is not calibration evidence.
+
+The complete terminal log, `criteria_discovery` state, output inventory, and
+hash audit are preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/kernel_v1_terminal/`.
+R3 criteria, dataset version 3, and prior evidence remain unchanged. Repair the
+Python global binding, add a regression test, rerun the bounded CPU rehearsal,
+and register a new append-only calibration round before resubmitting. No
+calibration result or formal epsilon exists; all six qualification flags
+remain literal `false`.

@@ -1,0 +1,15 @@
+[{"stream_name":"stderr","time":1.761278203,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":1.7615137939999999,"data":"  File \"/kaggle/src/script.py\", line 151, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":1.761523279,"data":"    namespace[\"main\"]()\n"}
+,{"stream_name":"stderr","time":1.761527283,"data":"    ~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":1.761530839,"data":"  File \"/tmp/fd08_calibration_core_gb4us_b4/runner_base.py\", line 413, in main\n"}
+,{"stream_name":"stderr","time":1.761534668,"data":"  File \"/tmp/fd08_calibration_core_gb4us_b4/runner_base.py\", line 255, in read_criteria\n"}
+,{"stream_name":"stderr","time":1.761538372,"data":"  File \"/tmp/fd08_calibration_core_gb4us_b4/runner_base.py\", line 241, in require\n"}
+,{"stream_name":"stderr","time":1.761542191,"data":"RuntimeError: criteria SHA mismatch\n"}
+,{"stream_name":"stderr","time":4.701470931,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":4.701497764,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":5.358774264,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":5.358803854,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7.946838543,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":9.399978343,"data":"[NbConvertApp] Writing 298987 bytes to __results__.html\n"}
+]
