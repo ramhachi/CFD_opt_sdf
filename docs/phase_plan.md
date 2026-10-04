@@ -5645,3 +5645,11 @@ Candidate C composite identity, window [80,120] tU/L); the 49-file manifest was 
 bit-identical to the baseline. Per-state forces are in `docs/evidence/xfid_candidate_c_2026_10_04/result/`. No XFID verdict exists:
 the OpenFOAM part A data (kernel `...-gridphase-x3-formal`) are not analyzed (blind hold) and the verdict script has not been run.
 All six qualification flags remain false.
+
+### 2026-10-04 — #45 XFID-01 formal verdict: UNRESOLVED
+
+Part A (OpenFOAM, 7 states x 32 matched phases, 224/224, hash-verified) and part B (Candidate C, T4, 8/8, hash-verified) were analyzed once under the
+unchanged part A rules after part A was held blind. Six required sign contrasts: four (D0 downforce, D0 drag, D2 downforce, D2 drag) are resolved in both solvers
+and agree in sign; the two D1 contrasts are unresolved on the OpenFOAM side (|S| below 3 SE). **Verdict UNRESOLVED**: no resolved DISAGREE, so Track C is not
+stopped, and AGREE is not reached. Scope: uncertified geometry, Re = 80 profile. Report `docs/issues/45_xfid_verdict_2026_10_04.md`; the next step (more matched
+phases or a larger epsilon for D1) needs a new registration and the user's decision. All six qualification flags remain false.
