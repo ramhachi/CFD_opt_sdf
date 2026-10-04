@@ -5737,3 +5737,15 @@ in `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry2/` and
 does not measure the registered `[80,120] tU/L` response. Criteria remain
 unregistered, no T4 or fresh33 run has started, and all six qualification
 flags remain false.
+
+
+### 2026-10-05 — #46 post-rehearsal full-suite verification
+
+After the bounded CPU rehearsal and harness-only repairs, integration source
+`41d84ab1a6f6c8f5f339f89354d411297cec1f30` passed the FD-08 focused suite
+(38), Python compileall, Julia constructor regression (2/2), Julia parse and
+CLI imports. The full repository suite reported 37 failures, 1435 passes and 9
+skips; failure IDs exactly match the pinned baseline (0 new, 0 resolved). The
+log and comparison-record hashes are documented in
+`docs/issues/46_fd08_preparation.md`. Calibration criteria remain unregistered
+and all six qualification flags remain false.

@@ -411,3 +411,26 @@ The two earlier harness failures remain preserved under their separate paths.
 This completes the bounded setup rehearsal only. Calibration criteria remain
 unregistered, Kaggle T4 calibration and fresh33 have not run, no FD-08 verdict
 exists, and all six qualification flags remain literal `false`.
+
+
+## Full validation after harness repairs (2026-10-05)
+
+On pushed integration source `41d84ab1a6f6c8f5f339f89354d411297cec1f30`,
+the final bounded-rehearsal code tree passed 38 focused FD-08/identity tests,
+Python `compileall src tests`, the Julia GridSDF constructor regression (2/2),
+Julia parsing, CLI imports, and `git diff --check`. The full suite reported
+**37 failed, 1435 passed, 9 skipped**. Sorted failure IDs exactly match the
+pinned 37-ID baseline at
+`docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256
+`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): **0 new
+and 0 resolved IDs**. Full log SHA-256 is
+`c17933f90bb98db8356e04891eef8668769a18e6c732835b715a2e7fdc727976` at
+`work/fd08_preparation/full_pytest_after_harness_repairs_2026_10_05.log`
+(local ignored artifact); the machine-readable comparison record SHA-256 is
+`0a6ca9d0af306302c3ff2e8d64ef1c2820352465d823d8c5f3ca9910acf60f7d` at
+`work/fd08_preparation/full_pytest_after_harness_repairs_2026_10_05.json`.
+
+The 37 failures are known repository baseline failures, not FD-08 regressions.
+The rehearsal result remains setup-only; calibration criteria are still not
+registered, no Kaggle run has started, and all qualification flags remain
+literal `false`.
