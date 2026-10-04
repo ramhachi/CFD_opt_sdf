@@ -5860,3 +5860,15 @@ preserved in the R2 evidence directory. R2 criteria and dataset v2 remain
 unchanged; no Julia, T4 or solver measurement started. The next allowed step
 is a new immutable retry round with a distinct kernel ID, new source identity,
 and passing bounded CPU rehearsal. All six qualification flags remain false.
+
+
+### 2026-10-05 — #46 distinct kernel identity and CPU rehearsal retry 4
+
+Source `483067ddf926c1df2d23ee47124422099dc0ab93` separates the Kaggle kernel
+slug from the input dataset slug while preserving the dataset and all
+scientific criteria. The bounded baseline and smallest-epsilon D0+ CPU states
+both passed their one-step setup checks; source hashes, raw force semantics,
+manifest, and terminal were verified. This is setup evidence only. Exact test
+and artifact hashes are in `docs/issues/46_fd08_preparation.md`. R3 criteria
+registration is the next gate; no T4 measurement or formal ladder exists, and
+all six qualification flags remain false.

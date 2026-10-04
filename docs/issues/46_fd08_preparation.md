@@ -679,3 +679,47 @@ bind a distinct kernel ID and be followed by its own CPU rehearsal and
 immutable criteria registration; no calibration epsilon was selected, no
 formal evidence exists, and all six qualification flags remain literal
 `false`.
+
+
+## Kernel/dataset identity repair and CPU rehearsal retry 4 (2026-10-05)
+
+The R2 Kaggle 409 showed that the registered dataset and kernel IDs cannot
+share a slug. R2 criteria and dataset version 2 remain immutable. Source
+`483067ddf926c1df2d23ee47124422099dc0ab93` changes only the registrar's kernel
+ID, the matching private-kernel metadata title/ID, and a regression assertion;
+the dataset remains
+`ramhachi888/cfd-opt-sdf-fd08-calibration`, while the corrected kernel is
+`ramhachi888/cfd-opt-sdf-fd08-calibration-kernel`. Its title-derived slug
+matches the new ID, and Kaggle's owned-kernel search showed that the new slug
+was unused before submission.
+
+Focused FD-08/contract/identity tests passed **40/40**, Python
+`compileall src tests` and `git diff --check` passed. Full pytest reported
+**37 failed, 1437 passed, 9 skipped**; exact failure IDs match the pinned
+baseline (**0 new, 0 resolved**). The full log SHA-256 is
+`20c66f171be96a30c0cc59d9a69e6b3247c0567be530ab677b159d839d11ac53` at
+`work/fd08_preparation/full_pytest_after_r2_kernel_slug_fix_2026_10_05.log`
+(local ignored artifact); the comparison record SHA-256 is
+`607fc798958ef1867df53630d2832ba29507ff5b3637afd73e0a42ce59de876a` at
+`work/fd08_preparation/r2_kernel_slug_fix_full_pytest_comparison_2026_10_05.json`.
+
+The setup-only CPU rehearsal passed under the new source: baseline and
+smallest-epsilon D0+ each completed one `Array` step. Julia 1.12.6 and
+WaterLily 1.8.0 were recorded; both raw histories passed host force-component
+and sign checks. Both phi margins were about 0.35 m. The sampled force interval
+was `[0, 0.0104167] tU/L`, not the registered `[80,120]` measurement window;
+the forces are not FD responses. The 47-state preview SHA-256 is
+`5dc0e7fa7170d3796c7dfbaf2c023cb45da92850110a172cec913eba39d3a1a7`; the
+rehearsal result SHA-256 is
+`bff2b597dda142ef133c66e2ff4cc895836be7f0f8ec58d7d3fda3d678060d99`; the
+runner manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`. All 29
+source inputs verify with sorted inventory digest
+`c8d1399b2a82646d474911031cb6063cd87f647d0c0de40f14caf4bdbf71ba9f`.
+Evidence is under
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry4/`.
+
+R3 criteria are not yet registered; registration follows after these rehearsal
+artifacts are committed and pushed. No T4 calibration or epsilon selection has
+occurred, the formal ladder remains unregistered, and all six qualification
+flags remain literal `false`.
