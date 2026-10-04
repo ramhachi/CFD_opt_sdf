@@ -632,3 +632,26 @@ resolved**. The full log SHA-256 is
 (local ignored artifact); the exact-set comparison record SHA-256 is
 `5c8855cad85c2644de79b269a9ca204593f2f5f9a5743d829824e1545fb05305` at
 `work/fd08_preparation/r2_registration_full_pytest_comparison_2026_10_05.json`.
+
+
+## Private Kaggle calibration dataset version 2 verified (2026-10-05)
+
+The registered private dataset
+`ramhachi888/cfd-opt-sdf-fd08-calibration` reached status `ready` after adding
+version 2 with R2 criteria SHA-256
+`27e4e159960576afcd297f116ca6545c640ea783dcc5fbdc9b78d1aecc0bb64d`. The
+downloaded archive SHA-256 is
+`3baaa9a22d1b696935684d1a8d6f05c51c748cbbf31e6ed8abad36be48852eb0` (21,834,718
+bytes). All 91 remote catalog entries matched the archive's extracted names
+and byte sizes; the 89 registered input hashes, criteria JSON, and criteria
+sidecar then passed the host verifier. Input inventory SHA-256 remains
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The raw 91-file catalog is preserved at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/remote_dataset_catalog_v2.json`
+(SHA-256 `a7d9015283bb47d71aac64cf5eb59ca7cce696154cc4b4de0467505da55f355a`).
+The host verification record is in the same directory (SHA-256
+`1ca9925eeaff67621502e0034c4b0a81d5b75fa7bdb2d7dfac1ebadb93503126`). The
+dataset's existing private visibility was unchanged. The corrected calibration
+kernel has not yet been submitted; no T4 measurement or calibration verdict
+exists, and all six qualification flags remain literal `false`.

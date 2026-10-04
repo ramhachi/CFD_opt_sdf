@@ -5835,3 +5835,15 @@ Focused FD-08 tests passed 40/40, compileall and `git diff --check` passed.
 Full pytest reported 37 failures, 1437 passes and 9 skips; the exact sorted
 failure IDs match the pinned baseline (0 new, 0 resolved). Log and comparison
 record hashes are preserved in `docs/issues/46_fd08_preparation.md`.
+
+
+### 2026-10-05 — #46 private Kaggle dataset version 2 verified
+
+The existing private calibration dataset reached `ready` after version 2 was
+created with the immutable R2 criteria. The downloaded archive's 91-file
+catalog matched every extracted name and size; all 89 registered inputs and
+the criteria plus sidecar passed the host verifier. Archive, catalog, criteria
+and audit hashes are recorded in `docs/issues/46_fd08_preparation.md` and
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r2/`. Dataset visibility
+was unchanged. The corrected T4 kernel is not yet submitted; no calibration
+measurement or verdict exists, and all six qualification flags remain false.
