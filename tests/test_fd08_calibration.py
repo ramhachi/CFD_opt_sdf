@@ -35,6 +35,7 @@ from verify_fd08_formal import verify_source_inputs
 from preflight_fd08_cpu import (
     audit_cpu_force_history,
     parse_cpu_completion_marker,
+    resolve_output_directory,
     verify_preview_dataset,
 )
 from register_fd08_calibration import write_cpu_preview
@@ -232,6 +233,16 @@ def test_cpu_rehearsal_history_uses_production_host_parser(tmp_path: Path):
         audit_cpu_force_history(
             path, force_scale=1 / 900, component_tolerances=(1e-6, 1e-8),
         )
+
+
+def test_cpu_rehearsal_resolves_repo_relative_output_before_running_solver(tmp_path: Path):
+    from preflight_fd08_cpu import ROOT
+
+    assert resolve_output_directory(Path("docs/evidence/cpu_rehearsal")) == (
+        ROOT / "docs/evidence/cpu_rehearsal"
+    ).resolve()
+    with pytest.raises(ValueError, match="inside the repository"):
+        resolve_output_directory(tmp_path / "outside")
 
 
 def test_cpu_rehearsal_terminal_marker_binds_inputs_runtime_and_raw_history():

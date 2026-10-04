@@ -275,6 +275,15 @@ def _write_failure(output_dir: Path, source_commit: str, preview_sha: str,
     sidecar.write_text(hashlib.sha256(payload).hexdigest() + "\n")
 
 
+def resolve_output_directory(output_dir: Path) -> Path:
+    """Resolve a commit-ready rehearsal directory and reject paths outside this checkout."""
+    root = ROOT.resolve()
+    resolved = Path(output_dir).resolve()
+    if resolved == root or root not in resolved.parents:
+        raise ValueError("CPU rehearsal output must resolve inside the repository")
+    return resolved
+
+
 def rehearse(preview_path: Path, dataset_dir: Path, output_dir: Path, julia: str | None = None) -> dict:
     preview, preview_sha = load_preview(preview_path)
     dataset_audit = verify_preview_dataset(preview, preview_sha, dataset_dir)
@@ -294,7 +303,7 @@ def rehearse(preview_path: Path, dataset_dir: Path, output_dir: Path, julia: str
     exe = julia or shutil.which("julia")
     if not exe:
         raise ValueError("Julia executable was not found; pass --julia")
-    output_dir = Path(output_dir)
+    output_dir = resolve_output_directory(output_dir)
     reserved_roots = (
         ROOT / "docs/evidence/fd08_candidate_c_calibration_2026_10_04/result",
         ROOT / "docs/evidence/fd08_candidate_c_formal_2026_10_04/result",
