@@ -89,3 +89,31 @@ def test_runner_end_to_end_with_fake_openfoam_and_state_selection(tmp_path):
     c = result["cases"][0]
     assert c["status"] == "COMPLETED" and c["state"] == "baseline" and c["shift_m"] == [0.001, -0.002, 0.003]
     assert abs(c["forces"]["drag_n"]["window_mean"] - 0.37426349429041095) < 1e-9
+
+
+def test_formal_analysis_recovers_planted_contrasts_and_verdict_rules():
+    import analyze_xfid_formal_openfoam as fo
+
+    rng = np.random.default_rng(5)
+    cases = []
+    planted = {"D0_interface_offset": (-6e-4, 3.7e-3), "D1_filtered_seed11": (-3e-4, -5e-4), "D2_filtered_seed2026": (-8e-4, -5e-4)}
+    for c0 in prep.formal_cases():
+        state = c0["state"]
+        v = np.array(c0["shift_m"]) * 1000
+        d = next((k for k in planted if state.startswith(k)), None)
+        sgn = {"plus": 1, "minus": -1}.get(state.rsplit("_", 1)[-1], 0)
+        def val(i, scale):
+            base = 0.3 + scale * 2e-5 * v[0] + rng.normal(0, 1e-4 * scale)
+            return base + (sgn * planted[d][i] if d else 0.0)
+        cases.append({"id": c0["id"], "status": "COMPLETED", "shift_m": c0["shift_m"],
+                      "forces": {"drag_n": {"window_mean": val(0, 1.0)}, "downforce_n": {"window_mean": val(1, 5.0)}}})
+    res = fo.analyze({"cases": cases})
+    c = res["contrasts"]["D0_interface_offset:downforce_n"]
+    assert abs(c["S_n"] - 3.7e-3) < 5 * c["SE_n"] and c["resolved"] and c["sign"] == 1 and c["matched_phases"] == 32
+    wl_ok = {k: {"S_n": v["S_n"] * 1.1, "floor_n": 1e-9} for k, v in res["contrasts"].items()}
+    resolved = all(v["resolved"] for v in res["contrasts"].values())
+    assert fo.verdict(res, wl_ok) == ("AGREE" if resolved else "UNRESOLVED")
+    wl_bad = dict(wl_ok); wl_bad["D0_interface_offset:downforce_n"] = {"S_n": -3.7e-3, "floor_n": 1e-9}
+    assert fo.verdict(res, wl_bad) == "DISAGREE"
+    wl_float = dict(wl_ok); wl_float["D0_interface_offset:downforce_n"] = {"S_n": 3.7e-3, "floor_n": 1.0}
+    assert fo.verdict(res, wl_float) == "UNRESOLVED"
