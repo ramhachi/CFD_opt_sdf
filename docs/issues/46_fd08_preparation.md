@@ -734,3 +734,29 @@ attempt record is
 `6a48a72b3a9c5dc91c8f84ed6dabedcd4958fa452501321a3cc12a976a0fd9b7`). The
 two existing logs' hashes are preserved there and will be force-added to the
 evidence commit; no solver rerun or criteria change is needed.
+
+
+## Calibration retry round 3 preregistered (2026-10-05)
+
+After the distinct kernel identity and complete CPU rehearsal evidence were
+pushed, immutable calibration round
+`fd08_candidate_c_calibration_2026_10_04_r3` was registered against source
+`05c9c59c475f24e3da41e582b49dec3e1e844604`. Criteria SHA-256 is
+`a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5`; the host
+registration audit SHA-256 is
+`f8a5f19d195dc0d3dcc1ac8a51d8533a05bcc5d9c9b4c9625da35934175624cc`.
+
+R3 has the same 47-state inventory, five repeated baselines, seven
+calibration-only epsilon candidates, Candidate C identity, force semantics,
+response-floor rule, deterministic common-five-point selector, and [80,120]
+`tU/L` window. It binds the committed CPU rehearsal and 29-source inventory.
+All 89 local staged inputs passed verification (inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`). The
+kernel ID `ramhachi888/cfd-opt-sdf-fd08-calibration-kernel` is now distinct
+from dataset ID `ramhachi888/cfd-opt-sdf-fd08-calibration`. R2 criteria and
+dataset version 2 remain unchanged.
+
+The private dataset still needs a new version carrying R3 criteria and a fresh
+download/hash audit before T4 submission. No calibration measurement or
+epsilon selection has occurred; no formal ladder is registered, no verdict
+exists, and all six qualification flags remain literal `false`.

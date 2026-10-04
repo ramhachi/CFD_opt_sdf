@@ -5878,3 +5878,18 @@ two valid rehearsal `.log` files were ignored by Git and absent from the
 pushed evidence commit. The failed registration and their hashes are recorded
 append-only; the logs are being added to the evidence commit without rerunning
 CPU or changing criteria.
+
+
+### 2026-10-05 — #46 calibration retry round 3 preregistered
+
+Immutable calibration round `fd08_candidate_c_calibration_2026_10_04_r3` is
+registered on source `05c9c59c475f24e3da41e582b49dec3e1e844604`. Criteria
+SHA-256 is `a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5`;
+host registration audit SHA-256 is
+`f8a5f19d195dc0d3dcc1ac8a51d8533a05bcc5d9c9b4c9625da35934175624cc`.
+The 47-state calibration inventory and epsilon candidates are unchanged; the
+kernel slug is now separate from the dataset slug. The committed CPU rehearsal
+is bound and the full local input inventory passed hash verification. Next:
+publish and verify the private dataset's next version, then submit the T4
+calibration kernel. No calibration result or formal epsilon exists, and all
+six qualification flags remain false.
