@@ -6055,3 +6055,24 @@ with a 10,800-second Kaggle run limit. This changes only the execution time
 allowance, not the 5,400-second aggregate solver budget or any measurement,
 response, epsilon, or verdict rule. The v2 partial outputs remain separate
 and will not be combined with retry results.
+
+
+### 2026-10-05 — #46 calibration round 4 retry kernel v3 submitted
+
+After preserving the v2 timeout terminal, the same immutable R4 criteria,
+registered integration source, dataset version 4, runner, and 47-state inventory
+were resubmitted as Kaggle kernel version 3 (retry attempt 2). The requested
+Kaggle execution limit is 10,800 seconds; R4's 5,400-second aggregate solver
+budget and all per-case, measurement, response-floor, epsilon-selection, and
+verdict rules remain unchanged. Version 2's partial artifacts are not mixed
+with version 3.
+
+The first v3 status is `KernelWorkerStatus.RUNNING`; initial logs are empty.
+The submission record and initial captures are in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/`;
+submission record SHA-256 is
+`9d5381339fbd5deba922d1a96e881f996d406ca71765619acb3e6f41457cb2db`.
+Issue checkpoint:
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5984879282.
+No calibration analyzer or formal registrar has run; no calibration verdict
+exists and all six qualification flags remain literal `false`.

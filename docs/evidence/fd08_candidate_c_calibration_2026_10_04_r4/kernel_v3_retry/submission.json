@@ -1,0 +1,38 @@
+{
+  "accelerator_request": "NvidiaTeslaT4",
+  "attempt_number": 2,
+  "calibration_verdict": "NOT_ISSUED",
+  "captured_at_utc": "2026-10-04T22:02:57Z",
+  "criteria_sha256": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+  "dataset_version": 4,
+  "evidence_class": "submission identity only; not calibration measurement",
+  "formal_criteria_registered": false,
+  "initial_logs_empty": true,
+  "initial_status": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel has status \"KernelWorkerStatus.RUNNING\"",
+  "issue_comment_url": "https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5984879282",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+  "kernel_version": 3,
+  "prior_attempt_kernel_version": 2,
+  "prior_attempt_status": "KernelWorkerStatus.CANCEL_ACKNOWLEDGED",
+  "push_result": "Kernel version 3 successfully pushed.",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_aggregate_solver_wall_time_limit_s": 5400,
+  "registered_kernel_inputs_sha256": {
+    "embedded_core": "508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8",
+    "kernel_metadata": "98f03f52b6fb53a29ba6b0a77655ff612ff7f6b74ee442683dc8b7faa33fa36d",
+    "wrapper": "c1c9e495fc457fe8667ad546e71ce45c128a0d2353fcc316f5cfa840bdb6a78c"
+  },
+  "requested_execution_timeout_seconds": 10800,
+  "round_id": "fd08_candidate_c_calibration_2026_10_04_r4",
+  "source_commit": "b098d1a60992e217fd131e0b02c383bb39b0a8f5",
+  "submitter_integration_head_sha": "e70603c73a8ef6ee3bd9a8f85e2f0533c0b13f3b",
+  "timeout_change_scope": "Kaggle wall-clock execution allowance only; criteria, source, dataset, state inventory, per-case limit, aggregate solver budget, measurement semantics, and verdict rules unchanged"
+}
