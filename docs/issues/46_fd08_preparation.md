@@ -479,3 +479,22 @@ At this checkpoint the criteria and local staged inventory are registered and
 host-verified, but the remote Kaggle dataset has not yet been created, no
 calibration kernel has been submitted, and no calibration measurement or
 verdict exists.
+
+
+## Private Kaggle calibration dataset verified (2026-10-05)
+
+The registered dataset `ramhachi888/cfd-opt-sdf-fd08-calibration` was created
+privately and reached Kaggle status `ready`. The downloaded archive SHA-256 is
+`76edd195c74b5590fdc649dfade14a124d8d72c9154a471fdbbe26ced90e20e4`; Kaggle's
+91-file catalog SHA-256 is
+`a66e4ad3dcbcccd60f205cfc7c0d0fa6140c04e381cd17b908d684e1834bb665`. All
+catalog names and byte sizes matched the downloaded archive. The extracted
+dataset passed the registered verifier: its 89 input hashes, criteria JSON,
+and criteria SHA sidecar all match; input inventory SHA-256 remains
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The append-only per-file host verification record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/remote_dataset_verification.json`
+(SHA-256 `3af66a93b1487ab4c195e7e543b694cf11f1ba0a2245cc8d084c0ac2e8899148`).
+The T4 calibration kernel has not yet been submitted, so no calibration solver
+measurements or verdict exist.

@@ -5770,3 +5770,12 @@ the runner/analyzer gate set. No Kaggle measurement has started, and all six
 qualification flags remain false. Full details and inventory digests are in
 `docs/issues/46_fd08_preparation.md` and
 `docs/evidence/fd08_candidate_c_calibration_2026_10_04/registration_audit.json`.
+
+The private Kaggle input dataset is now `ready`. A fresh archive download
+matched the 91-file catalog and passed host verification for all 89 registered
+input hashes plus the criteria and sidecar. Download archive SHA-256 is
+`76edd195c74b5590fdc649dfade14a124d8d72c9154a471fdbbe26ced90e20e4`; the
+append-only remote inventory audit is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04/remote_dataset_verification.json`.
+The calibration T4 kernel has not yet been submitted; no solver measurement
+or calibration verdict exists.
