@@ -44,7 +44,10 @@ with tempfile.TemporaryDirectory(prefix="fd08_calibration_core_") as temp:
     core_path = Path(temp) / "runner_base.py"
     core_path.write_bytes(core_source)
     namespace = runpy.run_path(core_path, run_name="fd08_xfid_runner_core")
-    namespace["CRITERIA_SHA256"] = criteria_sha
-    namespace["INPUT_ROOT"] = INPUT_ROOT
-    namespace["OUT"] = Path(os.environ.get("FD08_OUT_ROOT", "/kaggle/working")) / "fd08_calibration"
-    namespace["main"]()
+    core_main = namespace["main"]
+    core_main.__globals__.update({
+        "CRITERIA_SHA256": criteria_sha,
+        "INPUT_ROOT": INPUT_ROOT,
+        "OUT": Path(os.environ.get("FD08_OUT_ROOT", "/kaggle/working")) / "fd08_calibration",
+    })
+    core_main()

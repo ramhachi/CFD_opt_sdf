@@ -488,6 +488,58 @@ def test_fd08_kaggle_script_embeds_exact_core_and_matches_kernel_slug():
     assert metadata["id"] != metadata["dataset_sources"][0]
 
 
+def test_fd08_kaggle_wrapper_binds_values_into_core_function_globals(tmp_path, monkeypatch):
+    repo = Path(__file__).resolve().parents[1]
+    kernel_dir = repo / "infra/kaggle/kernel_fd08_calibration"
+    core = b'''import hashlib, json
+from pathlib import Path
+CRITERIA_SHA256 = "stale embedded value"
+INPUT_ROOT = Path("/stale")
+OUT = Path("/stale")
+def main():
+    criteria_path = next(INPUT_ROOT.rglob("xfidc_criteria.json"))
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "binding.json").write_text(json.dumps({
+        "criteria_sha256": CRITERIA_SHA256,
+        "actual_sha256": hashlib.sha256(criteria_path.read_bytes()).hexdigest(),
+        "input_root": str(INPUT_ROOT),
+    }))
+'''
+    rendered = render_kernel_source((kernel_dir / "runner.py.template").read_bytes(), core)
+    script_path = tmp_path / "runner.py"
+    script_path.write_bytes(rendered)
+
+    input_root = tmp_path / "input"
+    dataset_dir = input_root / "fd08-dataset"
+    dataset_dir.mkdir(parents=True)
+    criteria_path = dataset_dir / "xfidc_criteria.json"
+    criteria_path.write_text(json.dumps({
+        "kind": "fd08_candidate_c_calibration",
+        "immutable": True,
+        "registered_before_computation": True,
+        "status": "registered_not_run",
+        "source_inputs": {
+            "kernel_wrapper": {"sha256": hashlib.sha256(rendered).hexdigest()},
+            "kernel_base_runner": {"sha256": hashlib.sha256(core).hexdigest()},
+        },
+    }))
+    criteria_sha = hashlib.sha256(criteria_path.read_bytes()).hexdigest()
+    criteria_path.with_suffix(".json.sha256").write_text(criteria_sha + "\n")
+    output_root = tmp_path / "output"
+    monkeypatch.setenv("XC_INPUT", str(input_root))
+    monkeypatch.setenv("FD08_OUT_ROOT", str(output_root))
+
+    exec(compile(rendered, str(script_path), "exec"),
+         {"__file__": str(script_path), "__name__": "fd08_wrapper_binding_test"})
+
+    result = json.loads((output_root / "fd08_calibration" / "binding.json").read_text())
+    assert result == {
+        "criteria_sha256": criteria_sha,
+        "actual_sha256": criteria_sha,
+        "input_root": str(input_root),
+    }
+
+
 def test_calibration_retry_registration_uses_append_only_round_paths():
     criteria = build_calibration_criteria(
         DEFAULT_STATE,
