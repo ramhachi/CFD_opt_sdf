@@ -5615,6 +5615,51 @@ No qualification flag changes; all six remain false.
 - Formal XFID criteria (X3) will be registered only after the X2 result; #46 may run in parallel per the 2026-10-04 decision.
   All six qualification flags remain false.
 
+### 2026-10-04 — #46 FD-08 decision-rule implementation checkpoint
+
+FD-08 calibration/formal source tooling now encodes the reviewed hash
+separation, five-repeat Candidate C response floors, broad preregistered
+calibration epsilon ladder, Float32 realized-direction audit, deterministic
+common five-point window selection, fresh 33-run formal inventory, and
+`FAIL`-before-`UNRESOLVED` verdict precedence. The host analysis paths bind and
+recompute raw force histories and verify complete runner manifests. A bounded
+CPU setup rehearsal is available for one baseline and one registered D0
+perturbation step; it does not feed the `[80,120] tU/L` calibration or formal
+verdict.
+
+The input-builder dry-run produced 47 calibration state rows with a 1000×
+candidate epsilon span and passed the builder's Float32 and margin checks.
+These values were not written as immutable criteria. Calibration criteria are
+not registered, the CPU rehearsal and Kaggle solver have not run, no FD-08
+measurement or verdict exists, and all six qualification flags remain false.
+See `docs/issues/46_fd08_preparation.md` for the implementation contract and
+validation evidence. This checkpoint does not advance the roadmap beyond
+preparation; the calibration registration/execution and subsequent fresh-33
+formal phase remain pending.
+
+Final implementation verification later on 2026-10-04: the focused FD-08
+suite passed 23 tests and the full suite reported 37 failures, 1422 passes and
+9 skips, with 0 new and 0 resolved failure IDs against the pinned baseline.
+The added regression test confirms resolved plateau/sign failures take
+precedence over a separate unresolved epsilon. No CPU or Kaggle solver ran;
+calibration criteria remain unregistered and all six qualification flags
+remain false. Detailed commands and hashes are recorded in
+`docs/issues/46_fd08_preparation.md`.
+
+The final source-integrity review also binds the uploaded kernel wrapper/core
+hashes, checks the runner hashes in the calibration and formal terminals, and
+has the formal verifier compare its registered source hash, the complete
+source inventory, Candidate C identity and canonical v17 hashes. The final
+focused suite passed 24 tests; full-suite failure IDs remain exactly equal to
+the pinned baseline (37 failures, 1423 passes, 9 skips). No solver or
+calibration ran; all six qualification flags remain false.
+
+The complete final source tree was rerun on 2026-10-05: 24 focused tests
+passed; the full suite had 37 baseline failures, 1423 passes and 9 skips, with
+no new or resolved failure IDs. Compileall, Julia parsing, CLI imports, the
+47-row builder preview and `git diff --check` passed. No solver or criteria
+registration occurred; qualification flags remain false.
+
 ### 2026-10-04 — #45 X2 OpenFOAM grid-phase probe result
 
 Round 1 stopped fail-closed on Kaggle host-image drift (Jammy-only OS gate; preserved, not a measurement). Round 2 (kernel v2,
