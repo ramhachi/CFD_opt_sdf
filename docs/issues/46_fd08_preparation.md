@@ -760,3 +760,24 @@ The private dataset still needs a new version carrying R3 criteria and a fresh
 download/hash audit before T4 submission. No calibration measurement or
 epsilon selection has occurred; no formal ladder is registered, no verdict
 exists, and all six qualification flags remain literal `false`.
+
+
+## Private Kaggle calibration dataset version 3 verified (2026-10-05)
+
+The existing private dataset reached a version-3 listing size of 21,834,724
+bytes. The downloaded archive SHA-256 is
+`2f164a7f921085d2fb039d7be7c385a47031e1f2310a0ae8b771deec039c6941`. All 91
+remote catalog entries matched the downloaded archive's extracted names and
+byte sizes. The R3 criteria JSON and sidecar match SHA-256
+`a7a8437394f7b34afc591b45db150b0c5d899e86765acdcb49db783272cd31c5`; all 89
+registered input hashes pass the host verifier with inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The raw catalog is preserved at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r3/remote_dataset_catalog_v3.json`
+(SHA-256 `e509c957ddbb7a6e7676e5e6e11efd99e13e364888eb4a19a1ac18c7854c7bb6`).
+The host download/hash verification record is in the same directory (SHA-256
+`84d66a022e0eb5ccc8762207a6a7c5ddd3e68b30bcea514ac6a59da5ab0382f9`). The
+corrected private kernel has not yet been submitted. No T4 calibration
+measurement or verdict exists; no formal epsilon ladder is registered and all
+six qualification flags remain literal `false`.

@@ -5893,3 +5893,14 @@ is bound and the full local input inventory passed hash verification. Next:
 publish and verify the private dataset's next version, then submit the T4
 calibration kernel. No calibration result or formal epsilon exists, and all
 six qualification flags remain false.
+
+
+### 2026-10-05 — #46 private Kaggle dataset version 3 verified
+
+The private calibration dataset's version 3 reached its current listing at
+21,834,724 bytes. All 91 catalog entries matched the downloaded archive, and
+all 89 inputs plus the R3 criteria and sidecar passed host verification. The
+archive, catalog, and audit hashes are recorded in
+`docs/issues/46_fd08_preparation.md` and the R3 evidence directory. No T4
+kernel has yet been submitted and no calibration verdict exists; all six
+qualification flags remain false.
