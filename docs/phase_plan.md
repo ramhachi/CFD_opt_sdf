@@ -5626,3 +5626,13 @@ adds a ~0.5% even-in-shift jump), centered secants S have drag RMS 9e-5 N / max 
 (upper bounds; they include any real translation response). This is a diagnostic, not an XFID response; no floor is adopted and
 formal XFID criteria (X3) remain unregistered. See `docs/issues/45_xfid_gridphase_x2_result_2026_10_04.md`. All six qualification
 flags remain false.
+
+### 2026-10-04 — #45 X3 calibration result (grid-phase ensemble)
+
+User-approved X3 defaults (epsilon 5 mm, M = 32 with a 3x standard-error rule, six centered-S sign contrasts required, ordering
+reported only). The calibration kernel (criteria `ea66bb60...d8ac3`) completed 32/32 cases on Ubuntu 24.04 in 0.65 h; the 229-file
+manifest was host-verified. Single-state phase noise is 1.05e-4 N (0.028%) in drag and 5.94e-4 N (0.243%) in downforce; the
+pre-registered split-half check of the 1/sqrt(M) averaging model passed for both (ratios 1.16 and 1.21, band 0.5-2.0). The
+unshifted baseline sits 0.6-0.8% away from the ensemble mean (symmetric-phase outlier), so contrasts must use matched-phase
+ensembles. This is calibration, not an XFID response; no floor is adopted, formal XFID criteria remain unregistered, all six
+qualification flags remain false. See `docs/issues/45_x3_calibration_result_2026_10_04.md`.
