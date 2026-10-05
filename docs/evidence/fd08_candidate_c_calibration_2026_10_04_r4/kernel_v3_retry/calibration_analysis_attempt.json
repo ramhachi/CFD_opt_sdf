@@ -1,0 +1,39 @@
+{
+  "analysis_output_created": false,
+  "analyzer_expected_schema": {
+    "flow": "top-level flow_id=flow_24",
+    "time_window": "top-level window_tu_l=[80,120]"
+  },
+  "analyzer_path": "scripts/analyze_fd08_calibration.py",
+  "analyzer_sha256_observed": "581b5342db68ac2e58fec1efd225220303002ad71514aeea7e61a9bf973fc0a9",
+  "analyzer_sha256_registered": "581b5342db68ac2e58fec1efd225220303002ad71514aeea7e61a9bf973fc0a9",
+  "attempt_kind": "registered_fd08_calibration_analyzer_preflight_failure",
+  "calibration_verdict": "NOT_ISSUED",
+  "captured_at_utc": "2026-10-05T05:13:26+00:00",
+  "criteria_modified": false,
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/xfidc_criteria.json",
+  "criteria_sha256": "81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5",
+  "disposition": "The criteria and run remain immutable. The analyzer source hash is registered, so correcting this harness schema defect requires a new source commit and new calibration criteria lineage; this attempt cannot be treated as a calibration result.",
+  "exception": "calibration criteria must bind flow_24 and exact [80,120] tU/L",
+  "exception_type": "ValueError",
+  "failure_stage": "schema gate before source inventory, raw force histories, response recomputation, or scientific classification",
+  "invocation": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python scripts/analyze_fd08_calibration.py --criteria docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/xfidc_criteria.json --runner-result docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration/result.json --result-root docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration --dataset work/fd08_candidate_c_calibration_dataset_r4 --output docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/calibration_analysis.json",
+  "observed_registered_schema": {
+    "flow": "case.case_id=flow_24",
+    "time_window": "measurement.force_window_t_u_l=[80,120]"
+  },
+  "preserved_traceback": "ValueError at scripts/analyze_fd08_calibration.py:98: calibration criteria must bind flow_24 and exact [80,120] tU/L",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "result_root_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration",
+  "runner_artifacts_modified": false,
+  "runner_result_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/fd08_calibration/result.json",
+  "runner_result_sha256": "73cf5bc6b10909bc2d057dadad84541827463a43f93e0bf73697b3d9bab1ca26",
+  "scientific_analysis_performed": false
+}

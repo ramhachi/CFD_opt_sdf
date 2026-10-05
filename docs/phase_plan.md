@@ -6076,3 +6076,49 @@ Issue checkpoint:
 https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5984879282.
 No calibration analyzer or formal registrar has run; no calibration verdict
 exists and all six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R4 v3 complete; registered analyzer schema defect
+
+Kaggle kernel v3 reached `KernelWorkerStatus.COMPLETE` after 9,297.601 seconds.
+Its terminal result binds R4 criteria SHA-256
+`81434dc9f5b4424b9d1057053bbbfd6465487de0e05035fad81f01db9245b6c5`, integration
+source `b098d1a60992e217fd131e0b02c383bb39b0a8f5`, and runner SHA-256
+`508f818d638691f421961103aabd3c6c183b72fab9d128d343f3091ab4d13dd8`. All 47
+registered states completed. The runner manifest covers 244 files and passes
+host SHA-256 verification; output inventory digest is
+`a6ecfc7c658a96242a9cd37b37370612ce5f80ef838ab32fe917e6926f9939bb`, manifest
+SHA-256 is
+`348867206996a78ba2763b1c7b784f590b54d86c3808ce9f7ae9ddb321fb35ae`, and the
+terminal audit SHA-256 is
+`6ca8e72dfb7bf8dac5c0f1f357a77dc6f7938ec0959007d9eca4c18d21f79aa4`.
+
+Host checks matched the registered source and dataset inventories (29 and 89
+files), exact criteria/source/runner identities, all state IDs, and every raw
+force-history file. Runtime records two Tesla T4 GPUs, Julia 1.12.6, CUDA.jl
+6.3.1, CUDA runtime 12.8.0, WaterLily 1.8.0, and driver 580.178.04 (recorded,
+not gated). Full outputs are under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/`.
+
+The byte-exact `instantiate.log` is preserved as
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/runner_logs_exact/instantiate.log.gz`;
+its raw SHA-256 is recorded in the adjacent archive metadata and in the runner
+manifest. Its trailing space requires decompression to the registered result
+path before rerunning the complete output-manifest audit from a fresh checkout.
+
+The registered analyzer stopped before reading histories or computing
+responses. R4 stores flow and time window at `case.case_id=flow_24` and
+`measurement.force_window_t_u_l=[80,120]`; the analyzer incorrectly requires
+absent top-level `flow_id` and `window_tu_l`. The failed preflight record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/calibration_analysis_attempt.json`
+(SHA-256 `72153f39c22ec1a90a8d7ef97e5ef762da89808aed4e17cb9d9747d48f1d92e0`).
+No response floor, epsilon selection, calibration verdict, or formal
+registration was produced. R4 criteria, solver outputs, and scientific rules
+remain unchanged; all six qualification flags remain literal `false`.
+
+Because R4 binds the analyzer source hash, this defect cannot be repaired
+in-place and attributed to R4. Fix the schema mapping with regression coverage,
+create a new source and criteria lineage, repeat the bounded setup-only CPU
+rehearsal for that lineage, then run a new calibration round. Keep R4 recorded
+as a complete solver execution whose responses remain unclassified by its
+registered analyzer.

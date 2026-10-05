@@ -1011,3 +1011,36 @@ checkpoint comment is
 [issue comment](https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5984879282).
 No calibration analyzer, formal registrar, or verdict has run; all six
 qualification flags remain literal `false`.
+
+## R4 v3 terminal and analyzer schema defect, 2026-10-05
+
+Kaggle kernel v3 completed all **47/47** registered states in 9,297.601 s.
+Its criteria, integration source, and runner hashes match R4. All 244 files in
+the runner SHA manifest pass host verification, as do the complete state
+inventory, every per-state force-history hash, all 29 source inputs, all 89
+registered dataset inputs, and the registered T4/Julia/WaterLily runtime
+checks. Output inventory SHA-256 is
+`a6ecfc7c658a96242a9cd37b37370612ce5f80ef838ab32fe917e6926f9939bb`; terminal
+audit SHA-256 is
+`6ca8e72dfb7bf8dac5c0f1f357a77dc6f7938ec0959007d9eca4c18d21f79aa4`. Full
+outputs are saved under
+[`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/`](../../docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/result/).
+The byte-exact `instantiate.log` is stored as a gzip archive in the adjacent
+R4 v3 evidence directory because its trailing space fails `git diff --check`;
+the archive metadata records its raw SHA-256 and restore command.
+
+The registered analyzer failed at its schema gate before recomputation. R4
+stores `flow_24` in `case.case_id` and `[80,120]` in
+`measurement.force_window_t_u_l`; the analyzer instead requires top-level
+`flow_id` and `window_tu_l`. The preserved attempt record is
+[`calibration_analysis_attempt.json`](../../docs/evidence/fd08_candidate_c_calibration_2026_10_04_r4/kernel_v3_retry/calibration_analysis_attempt.json),
+SHA-256 `72153f39c22ec1a90a8d7ef97e5ef762da89808aed4e17cb9d9747d48f1d92e0`.
+No raw histories were scientifically analyzed, so no response floor, epsilon
+selection, calibration verdict, or formal criteria exist. R4 criteria and
+measurements remain immutable; all six qualification flags remain literal
+`false`.
+
+R4 binds the analyzer hash, so the schema defect must be fixed in a new source
+and criteria lineage. Repeat the bounded setup-only CPU rehearsal and
+calibration under that lineage. Do not relabel the R4 analyzer failure as a
+scientific result.
