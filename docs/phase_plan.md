@@ -6234,3 +6234,30 @@ https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5988913154.
 `RUNNING` is not a calibration result. No terminal artifact has been
 downloaded or host-verified, no response analysis or verdict exists, and all
 six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R5 T4 calibration terminal integrity verified
+
+Kaggle kernel version 4 reached `KernelWorkerStatus.COMPLETE`. The host
+verified all 47 registered states completed, the exact state inventory, 244
+runner-manifest file hashes and terminal marker, all 89 registered dataset
+inputs, all 29 source-input hashes, and the registered criteria/source/runner
+bindings. The original downloaded output and a byte-identical copy at the
+preregistered result namespace are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/`
+and `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/result/fd08_calibration/`.
+The copy inventory SHA-256 is
+`0db862f4743387b0b06f648c684b26be63d6b5072c966d1dce417b3c8e75eb81`; the
+registered output-manifest SHA-256 is
+`1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e`.
+
+Observed runtime identity: two Tesla T4 GPUs, driver `580.178.04` (recorded,
+not gated for cross-run equality), CUDA driver API 13.3.0, CUDA runtime 12.8.0,
+Julia 1.12.6, CUDA.jl 6.3.1, and WaterLily 1.8.0. Aggregate solver wall time
+was 5,109.380774 s / 5,400 s; maximum per-case solver wall time was
+110.081359 s / 1,800 s. Kernel elapsed time was 8,596.544 s.
+
+This checkpoint verifies terminal completion and artifact integrity only.
+The registered host analyzer has not run, so no response floor, epsilon
+selection, plateau, sign, calibration verdict, or formal-phase eligibility is
+established. All six qualification flags remain literal `false`.

@@ -1157,3 +1157,42 @@ https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5988913154.
 The `RUNNING` state is not a scientific result. No terminal outputs have been
 downloaded or host-verified, and no response analysis or calibration verdict
 exists. All six qualification flags remain literal `false`.
+
+
+## R5 calibration kernel v4 terminal integrity checkpoint, 2026-10-05
+
+Kaggle kernel version 4 reached `KernelWorkerStatus.COMPLETE`. The runner
+reports all 47 registered states `COMPLETED`; the host matched the exact state
+inventory, verified the 244-file runner SHA manifest and `DONE` marker, and
+rechecked the 89 registered dataset inputs plus all 29 registered source-input
+hashes. Runner criteria, source commit, and kernel-core SHA-256 match the
+immutable R5 registration. The byte-identical output was staged at the
+preregistered result namespace; the staging audit records 246 files and
+inventory SHA-256
+`0db862f4743387b0b06f648c684b26be63d6b5072c966d1dce417b3c8e75eb81`.
+
+The observed runtime contained two Tesla T4 GPUs; the selected device reported
+driver `580.178.04` (recorded, not a cross-run equality gate), CUDA driver API
+13.3.0, CUDA runtime 12.8.0, Julia 1.12.6, CUDA.jl 6.3.1, and WaterLily 1.8.0.
+The aggregate solver wall time was 5,109.380774 s against the registered
+5,400 s budget; the maximum per-case solver wall time was 110.081359 s against
+the 1,800 s limit. Runtime completion took 8,596.544 s and is operational
+elapsed time, not a scientific gate.
+
+Terminal result, exact Kaggle output catalog and download records, runtime
+logs, integrity audit, and restoration metadata are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/`.
+The manifest audit is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/result/fd08_calibration/sha256.json`
+(SHA-256
+`1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e`); the
+terminal integrity record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_terminal/terminal_integrity_audit.json`
+(SHA-256
+`65c10ef2e8caff6c38c252173c1d739d266fea2c4ee6784ae128e8bdba248b03`).
+
+This is only a complete solver terminal and artifact-integrity checkpoint.
+The registered host scientific analyzer has not yet run; no response floor,
+epsilon selection, plateau, sign, calibration verdict, or formal-phase
+eligibility has been established. All six qualification flags remain literal
+`false`.

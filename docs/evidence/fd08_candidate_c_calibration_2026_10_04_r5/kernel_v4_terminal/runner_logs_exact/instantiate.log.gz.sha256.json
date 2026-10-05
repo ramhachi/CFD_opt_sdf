@@ -1,0 +1,8 @@
+{
+  "archive_path": "runner_logs_exact/instantiate.log.gz",
+  "archive_sha256": "784828e53a832ddcd6c7ccabc54279513abcc2b5345f53aee0716cbd1a68b260",
+  "raw_path": "fd08_calibration/instantiate.log",
+  "raw_sha256": "647dba22672fa8acd814331ce061f4b84b7ea790aef37b0fecfd70d75e5c1f11",
+  "raw_size_bytes": 1749,
+  "restore_command": "gzip -dc runner_logs_exact/instantiate.log.gz > fd08_calibration/instantiate.log"
+}
