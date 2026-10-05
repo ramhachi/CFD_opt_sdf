@@ -6228,6 +6228,8 @@ preflight, Kaggle response, initial status, and runtime-log capture, is under
 `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_submission/`;
 submission record SHA-256 is
 `e3239ac0a6f7764635ae90d3930b18810836578430e00a478029b75ee9a0c5eb`.
+The GitHub submission checkpoint is
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5988913154.
 
 `RUNNING` is not a calibration result. No terminal artifact has been
 downloaded or host-verified, no response analysis or verdict exists, and all
