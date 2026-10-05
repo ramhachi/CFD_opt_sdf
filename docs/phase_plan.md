@@ -6289,3 +6289,19 @@ The detailed per-series slopes and failure windows are in
 `docs/issues/46_fd08_preparation.md` and the immutable analysis JSON above.
 The final Issue #46 checkpoint is
 https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5991085590.
+
+
+### 2026-10-05 — #46 post-R5 plan approved (diagnose first, no run)
+
+User approved `docs/issues/46_fd08_post_r5_plan_2026_10_05.md`. Order: P1
+solver-free post-hoc diagnostic of the R5 evidence (unregistered, sets no
+threshold, changes no gate) -> P2 user decision on how to proceed -> P3 a new
+preregistered R6 calibration only if P2 approves it -> P4 fresh33 only after
+an R6 PASS. R5 stays `FAIL`; the plan does not reinterpret it and does not
+choose an epsilon from it. Any change to the epsilon ladder, a plateau/sign
+gate, the FD-08 definition, or the directions needs separate user approval at
+P2 and a new registration. If R6 also fails scientifically, calibration is not
+repeated; whether the FD-08 gate is attainable is re-discussed with the user.
+Implementation is assigned to codex. #45 XFID D1 add-on waits for the P1
+effective-displacement result. All six qualification flags remain literal
+`false`.
