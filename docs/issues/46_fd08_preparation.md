@@ -1105,6 +1105,28 @@ files passed registration verification. Dataset inventory SHA-256 is
 `593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`. R5
 preserves the existing 47-state builder inventory, the same seven broad
 calibration-only epsilon candidates, and the 5,400 s aggregate solver budget.
-No measurement has started and no formal epsilon exists. Next is private
-dataset versioning and T4 kernel submission. All six qualification flags
-remain literal `false`.
+No measurement had started and no formal epsilon existed. At this registration
+checkpoint, private dataset versioning and T4 submission were pending. All six
+qualification flags remained literal `false`.
+
+
+## R5 remote dataset v5 integrity checkpoint, 2026-10-05
+
+The private Kaggle dataset `ramhachi888/cfd-opt-sdf-fd08-calibration` was
+versioned as v5 using directory-preserving tar upload. Its complete remote
+catalog contains 91 files: 89 registered inputs, the immutable criteria, and
+the criteria SHA sidecar. A fresh download passed `verify_registered_dataset`;
+all 91 names, sizes, and content hashes matched the registration. Criteria
+SHA-256 remains
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, dataset
+input inventory SHA-256 is
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`, and
+remote catalog SHA-256 is
+`256d97bc909f11db93c5c09fd4c43fb49dda5849234ae76f079af7d26e2ad3a9`. The
+verification record and exact upload/download logs are stored in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/remote_dataset_v5/`.
+All 29 registered source-input hashes also passed a fresh host recheck.
+
+This checkpoint establishes dataset transport and source integrity only; it
+contains no solver measurement or scientific classification. The R5 Kaggle
+kernel is the next action. All six qualification flags remain literal `false`.

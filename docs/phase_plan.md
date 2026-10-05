@@ -5988,7 +5988,6 @@ the private dataset's version 4, then submit the corrected kernel. No
 calibration measurement or verdict exists; all six qualification flags remain
 literal `false`.
 
-
 ### 2026-10-05 — #46 private Kaggle calibration dataset version 4 verified
 
 The private dataset's latest download contains R4 criteria SHA-256
@@ -6186,7 +6185,27 @@ The registrar verified all 29 source inputs, the CPU rehearsal result and
 manifest, and all 89 staged dataset hashes (inventory SHA-256
 `593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`). R5
 retains the same 47-state inventory and seven calibration-only epsilon values;
-its aggregate solver wall budget is 5,400 s and per-case limit 1,800 s. Next:
-version and download-verify the private Kaggle dataset, then submit the T4
-kernel. No solver measurement has started; all six qualification flags remain
-literal `false`.
+its aggregate solver wall budget is 5,400 s and per-case limit 1,800 s. At this
+registration checkpoint, private dataset versioning and T4 submission were
+pending. No solver measurement had started; all six qualification flags
+remained literal `false`.
+
+
+### 2026-10-05 — #46 R5 Kaggle dataset v5 integrity verified
+
+Private dataset `ramhachi888/cfd-opt-sdf-fd08-calibration` version 5 was
+uploaded with directory-preserving `tar` mode. Its complete remote catalog
+contains 91 entries: the 89 registered data files, criteria JSON, and criteria
+SHA sidecar. A fresh download passed the registered host dataset verifier;
+all 91 file paths, sizes, and hashes match. Criteria SHA-256 remains
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, and the
+remote verification record is
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/remote_dataset_v5/remote_dataset_verification.json`
+(SHA-256 recorded in its adjacent sidecar). Catalog SHA-256 is
+`256d97bc909f11db93c5c09fd4c43fb49dda5849234ae76f079af7d26e2ad3a9`.
+
+All 29 registered source inputs were reverified against the current checkout.
+This is transport and source-integrity evidence only. No calibration kernel
+has been submitted and no solver measurement has started. Next: submit the
+immutable R5 kernel to Kaggle T4. All six qualification flags remain literal
+`false`.
