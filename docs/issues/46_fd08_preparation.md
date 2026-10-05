@@ -1252,3 +1252,31 @@ remain literal `false`.
 
 The final R5 calibration disposition was recorded on Issue #46:
 https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5991085590.
+
+
+## P2a Step A solver-free descriptive diagnostics, 2026-10-05
+
+Step A was run from the reviewed integration source `8e736c1f01a617fe5a29eb7945ea1f1042bf45d1` against the immutable R5 calibration data. It is an unregistered descriptive analysis only. R5 remains `FAIL`; the registered criteria, gate, directions and epsilon ladder were not changed. No R6 or fresh33 criteria were registered or executed, and all six qualification flags remain literal `false`.
+
+The analysis binds R5 criteria SHA-256 `928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, registered analysis SHA-256 `dc769d6f2b5a2d6dfa45c6a5aeddfde726dd75f6e44ac564b128effecce3fb8b`, and runner manifest SHA-256 `1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e`. All 89 registered dataset hashes, 47/47 force CSV hashes and 47/47 `state_result.json` hashes matched. The runner manifest directory has one missing, non-input file, `instantiate.log`; the analysis note and integrity record disclose this explicitly. All 42 signed Float32 states reproduced the registered state arrays exactly.
+
+The diagnostic evaluated the seven registered R5 epsilon values and 40 logarithmically spaced descriptive values from 0.05 to 50 mm. Exact overlap handling produced 43 unique epsilon values. The best of the three consecutive five-point windows for each force series was:
+
+| Series | Window (mm) | Maximum deviation (%) |
+| --- | ---: | ---: |
+| D0 drag | 0.05–5 | 23.734760 |
+| D0 downforce | 0.05–5 | 5.090531 |
+| D1 drag | 0.05–5 | 8.193359 |
+| D1 downforce | 0.05–5 | 23.752657 |
+| D2 drag | 0.05–5 | 3.318256 |
+| D2 downforce | 0.15–15 | 7.506237 |
+
+These are descriptive per-series values; they do not alter the existing six-series registered selector. LOO errors are reported numerically where at least four signal-selected points allow the specified fit, but the three-valued classification remains `undeterminable` because Step A defines no pass/fail error boundary. The SDF soft-volume functionals are continuous grid proxies and do not establish WaterLily fluid-cell cut/mask stability. The result makes no claim about gate attainability or the FD-08 definition.
+
+A blind independent implementation recomputed A1–A4 from the written definitions and raw inputs. Across 3,388 numeric comparisons, it found zero mismatches at absolute and relative tolerance `5e-12`; the maximum absolute difference was `9.15e-14` percentage points in an interval-spread summary. Independent checker source, output and comparison are preserved under `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/independent_verification/`. The final checker SHA-256 is `882dbc6af417f89ef558afa5fe51aafa91ce7ff83020092b2c314f48c6ac84b2`; its result SHA-256 is `5978c022eaac294c198b1970300615179eaff9cd8feb318b393de8edef7b4711`.
+
+Primary result JSON SHA-256 is `df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc`; the Japanese note SHA-256 is `1e6839d4f85df2d90447ee8830290a1f63767767bbfa95fe26f4064918c66dd9`. Both and the PNGs are under `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/`. Full validation records and compressed JUnit output are under its `validation/` directory.
+
+Focused FD-08 tests passed 46, Python compileall and `git diff --check` passed. The final full pytest run reported 37 failed, 1,445 passed and 9 skipped. Its failure-ID set exactly matched the pinned 37-ID baseline: zero new and zero resolved. The first feature-worktree full run had two extra `FileNotFoundError` failures because its ignored canonical `sdf_design_state.npz` fixture was absent. Both tests passed after binding the byte-identical existing integration-worktree fixture; the full suite was then rerun and matched baseline. Commands, exact JUnit artifacts, failure IDs, fixture hash and manifests are in `post_hoc_p2a/validation/`.
+
+Step A is complete. Stop at B for the user's decision on how to treat the FD-08 definition and gate. Do not register R6 or run fresh33 before that decision.

@@ -6370,3 +6370,47 @@ the English analysis after excluding renderer, script, and HEAD provenance.
 Final Japanese diagnostic JSON SHA-256:
 `ed381c38d30d8665972dc9f26fdbc08c0e7c1c6a13cafbb7be38e89021ef8022`.
 R5 remains `FAIL` / `NO_COMMON_PLATEAU`; no gate, criteria, or solver run changed.
+
+
+### 2026-10-05 — #46 P2a Step A completed; stop at B
+
+The approved Step A ran only solver-free descriptive diagnostics against the
+saved R5 calibration. It did not revise the R5 criteria, gate, directions or
+epsilon ladder, and it did not register R6 or formal fresh33. The original R5
+`FAIL` and all six false qualification flags remain unchanged. The diagnostic
+combines the seven R5 epsilon values with the 40-point descriptive log grid
+(43 unique values after exact overlap handling), records A1–A5, and provides
+Japanese plateau and SDF soft-volume figures. Per-series best five-point
+window deviations are D0 drag 23.7348%, D0 downforce 5.0905%, D1 drag 8.1934%,
+D1 downforce 23.7527%, D2 drag 3.3183%, and D2 downforce 7.5062%; these are
+descriptive values and do not change the registered selector result. LOO status
+remains `undeterminable` where numeric errors are computable because no
+pass/fail error boundary was registered. The SDF continuous functionals are
+grid proxies and do not establish WaterLily cut/mask stability.
+
+An independent checker recomputed A1–A4 from the registered definitions and
+inputs. Dataset hashes were 89/89, force CSV hashes 47/47, and `state_result`
+hashes 47/47. Its final comparison checked 3,388 numeric values with zero
+mismatches at absolute/relative tolerance `5e-12`. The source, raw output and
+comparison are preserved under
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/`;
+the runner manifest has one missing non-input file, `instantiate.log`, which is
+disclosed in the note and integrity record.
+
+Validation: focused FD-08 tests passed 46; compileall and `git diff --check`
+passed. The final full suite reported 37 failed, 1,445 passed and 9 skipped;
+the sorted failure-ID set exactly matched the pinned 37 IDs (zero new and zero
+resolved). An initial feature-worktree run had two extra failures because the
+ignored canonical `sdf_design_state.npz` fixture was absent there. Both tests
+passed after the feature worktree referenced the byte-identical existing
+integration fixture, and the full suite was rerun. Exact JUnit files, failure
+IDs, fixture binding and hashes are preserved under the P2a `validation/`
+directory.
+
+The result is recorded at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/P2a_diagnostic_note.md`
+(SHA-256 `1e6839d4f85df2d90447ee8830290a1f63767767bbfa95fe26f4064918c66dd9`)
+and `diagnostic_result.json` (SHA-256
+`df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc`). Stop at
+the user decision point B; the gate and FD-08 definition remain for the user to
+decide.
