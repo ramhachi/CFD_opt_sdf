@@ -1128,5 +1128,30 @@ verification record and exact upload/download logs are stored in
 All 29 registered source-input hashes also passed a fresh host recheck.
 
 This checkpoint establishes dataset transport and source integrity only; it
-contains no solver measurement or scientific classification. The R5 Kaggle
-kernel is the next action. All six qualification flags remain literal `false`.
+contains no scientific classification. At that checkpoint, the R5 Kaggle
+kernel had not yet been submitted. All six qualification flags remained
+literal `false`.
+
+
+## R5 calibration kernel v4 submitted, 2026-10-05
+
+Kaggle accepted private kernel version 4 for
+[`CFD Opt SDF FD08 Calibration Kernel`](https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-calibration-kernel).
+The first host status was `KernelWorkerStatus.RUNNING`; the initial runtime
+logs contained no non-whitespace output. Kernel metadata requests
+`NvidiaTeslaT4`; the requested execution timeout is 10,800 s and does not
+change the registered 5,400 s aggregate solver budget or 1,800 s per-case
+limit.
+
+The submission binds R5 criteria SHA-256
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, registered
+source commit `95bd9cbf8e67f0c718e346f7edca3f343ed1091f`, and integrity-verified
+private dataset version 5. Preflight rechecked all 29 registered source-input
+hashes. Submission record SHA-256 is
+`e3239ac0a6f7764635ae90d3930b18810836578430e00a478029b75ee9a0c5eb`; the
+preflight, response, first status, and log capture are preserved in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/kernel_v4_submission/`.
+
+The `RUNNING` state is not a scientific result. No terminal outputs have been
+downloaded or host-verified, and no response analysis or calibration verdict
+exists. All six qualification flags remain literal `false`.
