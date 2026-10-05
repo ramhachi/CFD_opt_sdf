@@ -31,6 +31,90 @@ FIGURE_FILES = (
     "stationarity_half_window_drift.png",
     "paired_response_half_window_sensitivity.png",
 )
+PLOT_TEXT = {
+    "en": {
+        "font_family": None,
+        "response_names": {"drag": "Drag", "downforce": "Downforce"},
+        "direction": "Direction",
+        "x_epsilon": "Registered nominal epsilon, mm",
+        "q_y": "Centered-response slope q(epsilon), N/m",
+        "q_title": "R5 raw-recomputed q(epsilon) — post-hoc diagnostic; R5 remains FAIL",
+        "x_epsilon_squared": "Nominal epsilon squared, (mm)^2",
+        "q_fit_y": "q(epsilon), N/m",
+        "tail4": "last 4 points",
+        "tail3": "last 3 points",
+        "q_fit_title": "Exploratory suffix fits q = q0 + c epsilon²; no fit is selected as a gate",
+        "residual_y": "S - q_ref epsilon, N",
+        "residual_title": "Signed centered-response residual; q_ref is the first-three-epsilon median",
+        "metric_max": "Maximum |delta phi|, mm",
+        "metric_rms_all": "RMS delta phi over all nodes, mm",
+        "metric_rms_changed": "RMS delta phi over changed nodes, mm",
+        "metric_count": "Changed Float32 phi nodes",
+        "metric_projection": "Projected realized epsilon / nominal epsilon",
+        "max_title": "Maximum pointwise phi change",
+        "rms_all_title": "RMS over entire phi grid",
+        "rms_changed_title": "RMS over changed nodes",
+        "count_title": "Actual changed-node count",
+        "projection_title": "Direction-projected scale",
+        "grid_epsilon_y": "Nominal epsilon / spacing",
+        "grid_epsilon_title": "Perturbation size in grid units",
+        "epsilon_lattice": "epsilon / SDF lattice",
+        "epsilon_cell": "epsilon / flow cell",
+        "lattice_annotation": "SDF lattice 25 mm",
+        "cell_annotation": "flow cell 33.3 mm",
+        "perturbation_title": "Float32-realized perturbations; error bars span plus/minus states",
+        "stationarity_x": "R5 registered state order (47 states)",
+        "stationarity_y": "Relative half-window drift, [80,100] vs [100,120]",
+        "stationarity_axis_title": "Independent stationarity recomputation from raw force histories",
+        "stationarity_title": "Stationarity cross-check; not a new qualification",
+        "drag_short": "drag",
+        "downforce_short": "downforce",
+        "paired_y": "|S_first - S_second| / |S_full|, %",
+        "paired_title": "Paired-response sensitivity to [80,100] vs [100,120] windows — descriptive, no gate",
+        "d1_max": "D1 max {value:.1f}% @ {epsilon:g} mm",
+    },
+    "ja": {
+        "font_family": "Hiragino Sans",
+        "response_names": {"drag": "抗力", "downforce": "ダウンフォース"},
+        "direction": "方向",
+        "x_epsilon": "登録済み名目 ε [mm]",
+        "q_y": "中心差分応答の傾き q(ε) [N/m]",
+        "q_title": "R5 生データから再計算した q(ε)（事後診断、R5判定はFAILのまま）",
+        "x_epsilon_squared": "名目 ε² [mm²]",
+        "q_fit_y": "q(ε) [N/m]",
+        "tail4": "末尾4点",
+        "tail3": "末尾3点",
+        "q_fit_title": "探索的な末尾点 fit: q = q₀ + c ε²（判定gateには不使用）",
+        "residual_y": "S − q_ref ε [N]",
+        "residual_title": "符号付き中心応答残差（q_ref は最初の3つの ε の中央値）",
+        "metric_max": "最大 |Δφ| [mm]",
+        "metric_rms_all": "全φ格子上の RMS Δφ [mm]",
+        "metric_rms_changed": "変更ノード上の RMS Δφ [mm]",
+        "metric_count": "変更された Float32 φ ノード数",
+        "metric_projection": "方向射影による実現 ε / 名目 ε",
+        "max_title": "最大点のφ変化量",
+        "rms_all_title": "全φ格子上の RMS",
+        "rms_changed_title": "変更ノード上の RMS",
+        "count_title": "実際に変化したノード数",
+        "projection_title": "方向への射影比",
+        "grid_epsilon_y": "名目 ε / 格子幅",
+        "grid_epsilon_title": "格子幅を単位とした摂動量",
+        "epsilon_lattice": "ε / SDF格子幅",
+        "epsilon_cell": "ε / 流体セル幅",
+        "lattice_annotation": "SDF格子幅 25 mm",
+        "cell_annotation": "流体セル幅 33.3 mm",
+        "perturbation_title": "Float32で実現した摂動（誤差棒は±状態間の範囲）",
+        "stationarity_x": "R5の登録状態順（47状態）",
+        "stationarity_y": "半窓間の相対ドリフト（[80,100] と [100,120]）",
+        "stationarity_axis_title": "生の力履歴から独立再計算した時間窓内の定常性",
+        "stationarity_title": "時間窓ドリフトの照合（新たな適格性判定ではない）",
+        "drag_short": "抗力",
+        "downforce_short": "ダウンフォース",
+        "paired_y": "|S前半 − S後半| / |S全窓| [%]",
+        "paired_title": "半窓ごとのペア応答感度（記述診断、合否gateではない）",
+        "d1_max": "D1 最大 {value:.1f}%（ε={epsilon:g} mm）",
+    },
+}
 
 
 def sha256(path: Path) -> str:
@@ -107,6 +191,7 @@ def make_figures(
     paired_half_window: dict[str, Any],
     sdf_spacing_mm: float,
     flow_spacing_mm: float,
+    plot_language: str,
 ) -> dict[str, str]:
     import matplotlib
 
@@ -114,9 +199,13 @@ def make_figures(
     import matplotlib.pyplot as plt
     import numpy as np
 
+    text = PLOT_TEXT[plot_language]
+    if text["font_family"]:
+        plt.rcParams["font.family"] = text["font_family"]
+    plt.rcParams["axes.unicode_minus"] = False
     colors = {DIRECTIONS[0]: "#2463a6", DIRECTIONS[1]: "#d17a00", DIRECTIONS[2]: "#18835d"}
     labels = {DIRECTIONS[0]: "D0", DIRECTIONS[1]: "D1", DIRECTIONS[2]: "D2"}
-    names = {"drag": "Drag", "downforce": "Downforce"}
+    names = text["response_names"]
     figures = {}
 
     fig, axes = plt.subplots(1, 2, figsize=(12.5, 5.2), constrained_layout=True)
@@ -127,12 +216,12 @@ def make_figures(
                     color=colors[direction], label=labels[direction])
         ax.axhline(0, color="#555555", linewidth=0.8)
         ax.set_xscale("log")
-        ax.set_xlabel("Registered nominal epsilon, mm")
-        ax.set_ylabel("Centered-response slope q(epsilon), N/m")
+        ax.set_xlabel(text["x_epsilon"])
+        ax.set_ylabel(text["q_y"])
         ax.set_title(names[response])
         ax.grid(True, which="both", alpha=0.23)
-    axes[1].legend(title="Direction", frameon=False)
-    fig.suptitle("R5 raw-recomputed q(epsilon) — post-hoc diagnostic; R5 remains FAIL", fontsize=13)
+    axes[1].legend(title=text["direction"], frameon=False)
+    fig.suptitle(text["q_title"], fontsize=13)
     figures["q_epsilon"] = "q_by_epsilon.png"
     fig.savefig(output / figures["q_epsilon"], dpi=180, facecolor="white")
     plt.close(fig)
@@ -144,19 +233,19 @@ def make_figures(
             q = [row["q_n_per_m"] for row in series[direction][response]]
             ax.plot(x_all, q, marker="o", markersize=4, linewidth=1.4,
                     color=colors[direction], label=labels[direction])
-            for start, style, suffix in ((3, "--", "last 4"), (4, ":", "last 3")):
+            for start, style, suffix in ((3, "--", text["tail4"]), (4, ":", text["tail3"])):
                 fit = line_fit(x_all[start:], q[start:])
                 x_fit = np.linspace(x_all[start], x_all[-1], 80)
                 y_fit = fit["intercept"] + fit["slope"] * x_fit
                 ax.plot(x_fit, y_fit, style, linewidth=1.0, color=colors[direction],
-                        alpha=0.8, label=f"{labels[direction]} tail fit ({suffix})")
+                        alpha=0.8, label=f"{labels[direction]} fit ({suffix})")
         ax.set_xscale("log")
-        ax.set_xlabel("Nominal epsilon squared, (mm)^2")
-        ax.set_ylabel("q(epsilon), N/m")
+        ax.set_xlabel(text["x_epsilon_squared"])
+        ax.set_ylabel(text["q_fit_y"])
         ax.set_title(names[response])
         ax.grid(True, which="both", alpha=0.23)
     axes[1].legend(fontsize=7.5, ncol=2, frameon=False)
-    fig.suptitle("Exploratory suffix fits q = q0 + c epsilon²; no fit is selected as a gate", fontsize=12.5)
+    fig.suptitle(text["q_fit_title"], fontsize=12.5)
     figures["curvature"] = "q_vs_epsilon_squared_tail_fits.png"
     fig.savefig(output / figures["curvature"], dpi=180, facecolor="white")
     plt.close(fig)
@@ -169,23 +258,23 @@ def make_figures(
                     color=colors[direction], label=labels[direction])
         ax.set_xscale("log")
         ax.set_yscale("symlog", linthresh=1e-7)
-        ax.set_xlabel("Registered nominal epsilon, mm")
-        ax.set_ylabel("S - q_ref epsilon, N")
+        ax.set_xlabel(text["x_epsilon"])
+        ax.set_ylabel(text["residual_y"])
         ax.axhline(0, color="#555555", linewidth=0.8)
         ax.set_title(names[response])
         ax.grid(True, which="both", alpha=0.23)
-    axes[1].legend(title="Direction", frameon=False)
-    fig.suptitle("Signed centered-response residual; q_ref is the first-three-epsilon median", fontsize=12.5)
+    axes[1].legend(title=text["direction"], frameon=False)
+    fig.suptitle(text["residual_title"], fontsize=12.5)
     figures["response_residual"] = "centered_response_residual.png"
     fig.savefig(output / figures["response_residual"], dpi=180, facecolor="white")
     plt.close(fig)
 
     figure_metrics = (
-        ("maximum_abs_change_mm", "Maximum |delta phi|, mm", True),
-        ("rms_all_nodes_mm", "RMS delta phi over all nodes, mm", True),
-        ("rms_changed_nodes_mm", "RMS delta phi over changed nodes, mm", True),
-        ("changed_node_count", "Changed Float32 phi nodes", True),
-        ("projection_epsilon_over_nominal", "Projected realized epsilon / nominal epsilon", False),
+        ("maximum_abs_change_mm", text["metric_max"], True),
+        ("rms_all_nodes_mm", text["metric_rms_all"], True),
+        ("rms_changed_nodes_mm", text["metric_rms_changed"], True),
+        ("changed_node_count", text["metric_count"], True),
+        ("projection_epsilon_over_nominal", text["metric_projection"], False),
     )
     fig, axes = plt.subplots(2, 3, figsize=(14.2, 8.2), constrained_layout=True)
     for ax, (key, ylabel, log_y) in zip(axes.flat, figure_metrics):
@@ -204,60 +293,63 @@ def make_figures(
         ax.set_xscale("log")
         if log_y:
             ax.set_yscale("log")
-        ax.set_xlabel("Registered nominal epsilon, mm")
+        ax.set_xlabel(text["x_epsilon"])
         ax.set_ylabel(ylabel)
         ax.grid(True, which="both", alpha=0.23)
     for ax in axes.flat[:3]:
         ax.axvline(sdf_spacing_mm, color="#555555", linestyle="--", linewidth=1.0)
         ax.axvline(flow_spacing_mm, color="#888888", linestyle=":", linewidth=1.1)
-    axes[0, 0].set_title("Maximum pointwise motion")
-    axes[0, 1].set_title("RMS over entire phi grid")
-    axes[0, 2].set_title("RMS over changed nodes")
-    axes[1, 0].set_title("Actual changed-node count")
+    axes[0, 0].set_title(text["max_title"])
+    axes[0, 1].set_title(text["rms_all_title"])
+    axes[0, 2].set_title(text["rms_changed_title"])
+    axes[1, 0].set_title(text["count_title"])
     axes[1, 1].axhline(1.0, color="#555555", linewidth=0.8)
     axes[1, 1].set_ylim(0.95, 1.05)
     axes[1, 1].set_yticks([0.95, 1.0, 1.05], labels=["0.95", "1.00", "1.05"])
-    axes[1, 1].set_title("Direction-projected scale")
+    axes[1, 1].set_title(text["projection_title"])
     axes[1, 2].plot(eps_mm, [value / sdf_spacing_mm for value in eps_mm],
-                    marker="o", linewidth=1.4, color="#2463a6", label="epsilon / SDF lattice")
+                    marker="o", linewidth=1.4, color="#2463a6", label=text["epsilon_lattice"])
     axes[1, 2].plot(eps_mm, [value / flow_spacing_mm for value in eps_mm],
-                    marker="s", linewidth=1.4, color="#d17a00", label="epsilon / flow cell")
+                    marker="s", linewidth=1.4, color="#d17a00", label=text["epsilon_cell"])
     axes[1, 2].axhline(1.0, color="#555555", linewidth=0.8)
     axes[1, 2].set_xscale("log")
     axes[1, 2].set_yscale("log")
-    axes[1, 2].set_xlabel("Registered nominal epsilon, mm")
-    axes[1, 2].set_ylabel("Nominal epsilon / spacing")
-    axes[1, 2].set_title("Perturbation size in grid units")
+    axes[1, 2].set_xlabel(text["x_epsilon"])
+    axes[1, 2].set_ylabel(text["grid_epsilon_y"])
+    axes[1, 2].set_title(text["grid_epsilon_title"])
     axes[1, 2].grid(True, which="both", alpha=0.23)
     axes[1, 2].legend(frameon=False, fontsize=8)
-    axes[0, 0].annotate("SDF lattice 25 mm", (sdf_spacing_mm, 0.98),
+    axes[0, 0].annotate(text["lattice_annotation"], (sdf_spacing_mm, 0.98),
                         xycoords=("data", "axes fraction"), xytext=(3, -2),
                         textcoords="offset points", fontsize=8, rotation=90,
                         va="top", ha="left", color="#555555")
-    axes[0, 0].annotate("flow cell 33.3 mm", (flow_spacing_mm, 0.98),
+    axes[0, 0].annotate(text["cell_annotation"], (flow_spacing_mm, 0.98),
                         xycoords=("data", "axes fraction"), xytext=(3, -2),
                         textcoords="offset points", fontsize=8, rotation=90,
                         va="top", ha="left", color="#777777")
-    axes[0, 1].legend(title="Direction", frameon=False)
-    fig.suptitle("Float32-realized perturbations; error bars span plus/minus states", fontsize=13)
+    axes[0, 1].legend(title=text["direction"], frameon=False)
+    fig.suptitle(text["perturbation_title"], fontsize=13)
     figures["realized_perturbation"] = "float32_realized_perturbation.png"
     fig.savefig(output / figures["realized_perturbation"], dpi=180, facecolor="white")
     plt.close(fig)
 
     fig, ax = plt.subplots(figsize=(12.7, 4.7), constrained_layout=True)
     x = list(range(len(stationarity)))
-    for response, marker in (("drag", "o"), ("downforce", "s")):
+    for response, marker, response_label in (
+        ("drag", "o", text["drag_short"]),
+        ("downforce", "s", text["downforce_short"]),
+    ):
         y = [row[f"{response}_relative_drift"] for row in stationarity]
-        ax.plot(x, y, marker=marker, markersize=2.5, linewidth=0.8, label=response)
+        ax.plot(x, y, marker=marker, markersize=2.5, linewidth=0.8, label=response_label)
     for boundary in (4.5, 18.5, 32.5):
         ax.axvline(boundary, color="#888888", linestyle=":", linewidth=0.8)
     ax.set_yscale("log")
-    ax.set_xlabel("R5 registered state order (47 states)")
-    ax.set_ylabel("Relative half-window drift, [80,100] vs [100,120]")
-    ax.set_title("Independent stationarity recomputation from raw force histories")
+    ax.set_xlabel(text["stationarity_x"])
+    ax.set_ylabel(text["stationarity_y"])
+    ax.set_title(text["stationarity_axis_title"])
     ax.grid(True, which="both", alpha=0.23)
     ax.legend(frameon=False)
-    fig.suptitle("Stationarity cross-check; not a new qualification", fontsize=13)
+    fig.suptitle(text["stationarity_title"], fontsize=13)
     figures["stationarity"] = "stationarity_half_window_drift.png"
     fig.savefig(output / figures["stationarity"], dpi=180, facecolor="white")
     plt.close(fig)
@@ -275,8 +367,8 @@ def make_figures(
         ax.set_xscale("log")
         ax.set_yscale("symlog", linthresh=1.0)
         ax.set_ylim(bottom=0.0)
-        ax.set_xlabel("Registered nominal epsilon, mm")
-        ax.set_ylabel("|S_first - S_second| / |S_full|, %")
+        ax.set_xlabel(text["x_epsilon"])
+        ax.set_ylabel(text["paired_y"])
         ax.set_title(names[response])
         ax.grid(True, which="both", alpha=0.23)
         highlighted = max(
@@ -284,18 +376,17 @@ def make_figures(
             key=lambda row: row["relative_half_window_response_difference"],
         )
         ax.annotate(
-            f"D1 max {highlighted['relative_half_window_response_difference'] * 100:.1f}% "
-            f"@ {highlighted['epsilon_mm']:g} mm",
+            text["d1_max"].format(
+                value=highlighted["relative_half_window_response_difference"] * 100.0,
+                epsilon=highlighted["epsilon_mm"],
+            ),
             xy=(highlighted["epsilon_mm"],
                 highlighted["relative_half_window_response_difference"] * 100.0),
             xytext=(8, -16), textcoords="offset points", fontsize=8,
             color=colors[DIRECTIONS[1]],
         )
-    axes[1].legend(title="Direction", frameon=False)
-    fig.suptitle(
-        "Paired-response sensitivity to [80,100] vs [100,120] windows — descriptive, no gate",
-        fontsize=12.5,
-    )
+    axes[1].legend(title=text["direction"], frameon=False)
+    fig.suptitle(text["paired_title"], fontsize=12.5)
     figures["paired_response_half_window_sensitivity"] = "paired_response_half_window_sensitivity.png"
     fig.savefig(output / figures["paired_response_half_window_sensitivity"], dpi=180, facecolor="white")
     plt.close(fig)
@@ -311,6 +402,8 @@ def main() -> int:
                         help="freshly downloaded immutable R5 dataset")
     parser.add_argument("--output-dir", type=Path,
                         help="defaults to the R5 evidence directory's post_hoc_p1 child")
+    parser.add_argument("--plot-language", choices=tuple(PLOT_TEXT), default="en",
+                        help="language for plot titles, labels, legends, and annotations")
     args = parser.parse_args()
     repo = args.repo_root.resolve()
     dataset_root = args.dataset_root.resolve()
@@ -663,9 +756,10 @@ def main() -> int:
         base_head = None
     sdf_spacing_mm = float(criteria["geometry"]["design_lattice_spacing_m"]) * 1000.0
     flow_spacing_mm = float(criteria["case"]["flow_spacing_m"]) * 1000.0
-    figures = make_figures(output, eps_mm, eps_m, series, realized, stationarity_rows,
-                           paired_half_window,
-                           sdf_spacing_mm, flow_spacing_mm)
+    figures = make_figures(
+        output, eps_mm, eps_m, series, realized, stationarity_rows,
+        paired_half_window, sdf_spacing_mm, flow_spacing_mm, args.plot_language,
+    )
     import matplotlib
 
     script_sha = sha256(script)
@@ -747,6 +841,8 @@ def main() -> int:
         "plotting_environment": {
             "matplotlib_version": matplotlib.__version__,
             "backend": "Agg",
+            "figure_language": args.plot_language,
+            "font_family": PLOT_TEXT[args.plot_language]["font_family"] or "Matplotlib default",
         },
         "figures": figures,
         "limitations": [
@@ -802,6 +898,7 @@ def main() -> int:
         f"- 診断スクリプト SHA-256: {script_sha}",
         f"- 診断JSON SHA-256: {result_sha}",
         f"- 描画環境: Matplotlib {matplotlib.__version__}",
+        f"- 図のタイトル・軸・凡例・注記の言語: {'日本語' if args.plot_language == 'ja' else 'English'}",
         f"- 基準 integration HEAD: {base_head}",
         "",
         "## P2向けの観測",

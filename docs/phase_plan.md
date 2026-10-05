@@ -6345,3 +6345,16 @@ and zero resolved IDs. JUnit output was captured at
 P1 does not choose B1/B1-prime/B2/B3 or register R6. Stop at P2 for the user's
 decision on whether to proceed and which approved change, if any, to make. R6
 and fresh33 remain unregistered and unrun.
+
+### 2026-10-05 — #46 P1 Japanese chart companion
+
+A Japanese-rendered companion set was generated from the same immutable R5
+download and post-hoc analysis at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1_ja/`.
+It translates figure titles, axes, legends, and annotations; the English P1
+files remain unchanged and their existing SHA-256 manifest still verifies.
+The scientific result payload is unchanged after excluding renderer metadata
+and the recorded integration-head provenance. Japanese diagnostic JSON
+SHA-256: `2b13484f52b63a7504bb34954e3fe18bea45efa65bb7b79f5394118be555ce12`.
+R5 remains `FAIL` / `NO_COMMON_PLATEAU`; this is a presentation-only companion,
+not a new gate, criteria registration, or solver run. P2 remains the stop point.
