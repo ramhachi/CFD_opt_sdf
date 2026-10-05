@@ -1,0 +1,80 @@
+{
+  "bound_inputs": {
+    "analysis": "dc769d6f2b5a2d6dfa45c6a5aeddfde726dd75f6e44ac564b128effecce3fb8b",
+    "criteria": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+    "runner_sha256_json": "1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e"
+  },
+  "checker_draft_corrections": [
+    "The first LOO draft required four training points after holdout; it was corrected to the written rule: four eligible interval points, then fit the remaining three points to the fixed two-parameter q=g+c*epsilon_mm^2 model.",
+    "The first plateau draft used one whole-series reference median; it was corrected to the explicit median and normalizer computed independently in each consecutive five-point window.",
+    "The first assumed-sigma draft retained only each window start; it was corrected to include all five epsilons in each window."
+  ],
+  "comparison_summary_sha256": "d2dbc3cd40b12d978fc0b1704a0402b03145db8bdbe4e101f8cf6074b5c99eab",
+  "independent_checker_sha256": "882dbc6af417f89ef558afa5fe51aafa91ce7ff83020092b2c314f48c6ac84b2",
+  "independent_result_sha256": "5978c022eaac294c198b1970300615179eaff9cd8feb318b393de8edef7b4711",
+  "integrity": {
+    "analysis_sha256_match": true,
+    "criteria_sha256_match": true,
+    "dataset_file_hashes_matched": 89,
+    "dataset_file_hashes_verified": 89,
+    "force_csv_hashes_matched": 47,
+    "force_csv_present": 47,
+    "missing_runner_manifest_files": [
+      "instantiate.log"
+    ],
+    "runner_manifest_entries": 244,
+    "runner_manifest_sha256_match": true,
+    "state_result_hashes_matched": 47,
+    "state_result_present": 47
+  },
+  "numeric_comparison": {
+    "checks_by_section": {
+      "A1": 210,
+      "A1 count": 6,
+      "A2": 216,
+      "A2 n": 54,
+      "A2 spread": 18,
+      "A3": 90,
+      "A3 windows": 6,
+      "A3double": 540,
+      "A3double qref": 270,
+      "A3prime": 688,
+      "A4": 1290
+    },
+    "comparison_tolerance": {
+      "absolute": 5e-12,
+      "relative": 5e-12
+    },
+    "independent_dataset_hash_count": 89,
+    "independent_force_csv_verified": {
+      "matched": 47,
+      "present": 47
+    },
+    "independent_json_sha256": "5978c022eaac294c198b1970300615179eaff9cd8feb318b393de8edef7b4711",
+    "independent_runner_manifest_missing_files": [
+      "instantiate.log"
+    ],
+    "independent_state_result_verified": {
+      "matched": 47,
+      "present": 47
+    },
+    "max_abs_numeric_difference": 9.14823772291129e-14,
+    "max_difference_check": {
+      "abs_diff": 9.14823772291129e-14,
+      "independent": 4.285903877454207,
+      "label": "A2 spread/D1_filtered_seed11/downforce/50_micro_n",
+      "ok": true,
+      "primary": 4.285903877454116
+    },
+    "mismatch_count": 0,
+    "mismatch_counts_by_section": {},
+    "mismatches": [],
+    "primary_runner_manifest_missing_files": [
+      "instantiate.log"
+    ],
+    "primary_vs_independent_numeric_checks": 3388
+  },
+  "primary_diagnostic_sha256": "df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc",
+  "schema": "fd08_p2a_independent_verification_record_v1",
+  "scope": "Independent descriptive recomputation of A1-A4 only; it makes no gate or verdict decision."
+}
