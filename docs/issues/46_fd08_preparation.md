@@ -1065,3 +1065,31 @@ R4 remains complete as a solver run but has no analyzer result: its immutable
 source inventory binds the defective analyzer. The corrected source will be
 used only with a new CPU rehearsal and a separately registered calibration
 round. All six qualification flags remain literal `false`.
+
+## Corrected-source CPU rehearsal checkpoint, 2026-10-05
+
+The builder regenerated the 47-state preview against integration HEAD
+`529f8d13a8d99d927ca4036afed85c4fe7853f03`, with the previously registered
+seven calibration-only epsilon candidates unchanged. Preview SHA-256 is
+`394dad9ee63c9a914256cbb2a51e76fe47f62f13a414e88e085c2b644df707b6`; all 89
+staged input hashes match inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The bounded CPU setup rehearsal passed the first baseline and smallest-epsilon
+D0+ state, one `Array` step each. Julia 1.12.6 and WaterLily 1.8.0 were
+observed. Both raw histories pass host force/sign checks over
+`[0, 0.010416666977107525] tU/L`; that is only the one-step diagnostic
+interval. Runner manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`, result
+SHA-256 is
+`919c24bd96ef52a106fa2c1de57e4e19fa4f42ae1252f63a019862d45699b2ee`, and
+terminal audit SHA-256 is
+`d1a668d05967490bf4f9d55dc17966d2718e5cd1c16b9ef333a4f06e3ad1fc66`. This
+rehearsal is setup-only and contributes no calibration or formal measurements.
+
+One stale-source preview failed before Julia was invoked; its preserved audit
+is `preview_attempt1.json` (SHA-256
+`d8ce534607b2d99caa78bcba961b5a354a4c8269cd4e15cfc469817928cb5f7a`). The
+current-source rehearsal passed. Next is immutable R5 criteria registration
+and dataset verification. All six qualification flags remain literal
+`false`.

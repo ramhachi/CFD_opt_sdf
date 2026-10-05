@@ -6147,3 +6147,36 @@ source, then preregister a new calibration round with the same builder-derived
 inventory and unchanged broad candidate epsilon set. Do not analyze R4 with
 the modified analyzer or register formal fresh33 until a new calibration
 round produces an eligible PASS.
+
+
+### 2026-10-05 — #46 corrected-source CPU rehearsal passed
+
+The R5 builder preview was regenerated against clean integration HEAD
+`529f8d13a8d99d927ca4036afed85c4fe7853f03`, retaining the same 47-state
+inventory and seven calibration-only epsilon candidates. Preview SHA-256 is
+`394dad9ee63c9a914256cbb2a51e76fe47f62f13a414e88e085c2b644df707b6`; all 89
+staged input hashes match inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`.
+
+The bounded setup rehearsal passed the first identical-input baseline and the
+smallest-epsilon D0+ state, one CPU `Array` step each. Julia 1.12.6 and
+WaterLily 1.8.0 were observed. Both two-row raw histories pass host
+force-component/sign checks; the short diagnostic interval is
+`[0, 0.010416666977107525] tU/L`, not the registered calibration window.
+Runner output manifest SHA-256 is
+`04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108`, rehearsal
+result SHA-256 is
+`919c24bd96ef52a106fa2c1de57e4e19fa4f42ae1252f63a019862d45699b2ee`, and
+terminal audit SHA-256 is
+`d1a668d05967490bf4f9d55dc17966d2718e5cd1c16b9ef333a4f06e3ad1fc66`. This is
+setup-only CPU evidence and does not enter calibration or formal analysis.
+
+An earlier preview was rejected before Julia because it recorded source
+`f6eaac3` while integration HEAD had advanced to `529f8d1`; no solver started.
+That preview-binding attempt is preserved at
+`docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview_attempt1.json`
+(SHA-256 `d8ce534607b2d99caa78bcba961b5a354a4c8269cd4e15cfc469817928cb5f7a`).
+The corrected rehearsal is bound to the analyzer fix and current preview. Next:
+register R5 criteria and staged dataset against the pushed source/evidence
+commit, then submit a new T4 calibration kernel. All six qualification flags
+remain literal `false`.

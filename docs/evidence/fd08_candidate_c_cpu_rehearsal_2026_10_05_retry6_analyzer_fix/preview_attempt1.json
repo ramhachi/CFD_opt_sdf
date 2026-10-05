@@ -1,0 +1,22 @@
+{
+  "attempted_command": "PYTHONPATH=src /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python scripts/preflight_fd08_cpu.py --preview-contract docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview/cpu_rehearsal_preview.json --dataset docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview --output docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/rehearsal",
+  "captured_at_utc": "2026-10-05T05:30:14+00:00",
+  "criteria_registered": false,
+  "current_integration_head": "529f8d13a8d99d927ca4036afed85c4fe7853f03",
+  "disposition": "The preview recorded the previous code commit while a documentation checkpoint had advanced integration HEAD. Preserve this unused preview and generate a new preview against the current clean pushed HEAD.",
+  "exception": "CPU rehearsal must run on the exact integration source commit frozen in the preview",
+  "exception_type": "ValueError",
+  "kind": "fd08_cpu_rehearsal_preview_binding_attempt",
+  "preview_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview/cpu_rehearsal_preview.json",
+  "preview_sha256": "9b1ab3d5ab4920e13dd27b5f7fdbd3995eb0ad0c0f7531ec636287a6665033fa",
+  "preview_source_commit": "f6eaac3eb11eb26d1b9bcc5e13ab20f1cb942ce1",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "solver_started": false
+}
