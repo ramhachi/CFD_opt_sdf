@@ -1196,3 +1196,56 @@ The registered host scientific analyzer has not yet run; no response floor,
 epsilon selection, plateau, sign, calibration verdict, or formal-phase
 eligibility has been established. All six qualification flags remain literal
 `false`.
+
+
+## R5 host calibration analysis and gate disposition, 2026-10-05
+
+The registered `scripts/analyze_fd08_calibration.py` was run once against the
+immutable R5 criteria and host-verified raw force histories. Analysis JSON
+SHA-256 is
+`dc769d6f2b5a2d6dfa45c6a5aeddfde726dd75f6e44ac564b128effecce3fb8b`; its
+adjacent sidecar matches. It binds criteria SHA-256
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, runner
+result SHA-256
+`485bcceb805bf51fbed7d937fe1b1be40299c63add61e188e49939c17ccd60ac`, and
+output manifest SHA-256
+`1b04c3c2243459d2889dc16aa0f3c02c2ff6a5555a64406bb8177b9ee0b8600e`. The
+machine-readable result, including each centered slope and raw-history hash,
+is `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/calibration_analysis.json`.
+
+The five baseline repeats had zero span at the reported response level: drag
+median `0.32390396997432236 N` and span `0 N`; downforce median
+`0.3316344583180616 N` and span `0 N`. The registered response floor is
+`1e-8 N` for each response. All 42 direction/epsilon/response samples were
+resolved above that floor. The deterministic selector found zero common
+five-point windows at the registered epsilon ladder
+`[5e-5, 1.5e-4, 5e-4, 1.5e-3, 5e-3, 1.5e-2, 5e-2] m`.
+
+Host-recomputed centered slopes `q(epsilon)` in N/m, in the epsilon order
+above, are:
+
+| Direction / response | q(epsilon), N/m |
+| --- | --- |
+| D0 drag | -0.097861, -0.082767, -0.104619, -0.106342, -0.129450, -0.203223, -0.452185 |
+| D0 downforce | 0.803584, 0.815039, 0.808934, 0.791065, 0.762677, 0.488439, 0.213534 |
+| D1 drag | -0.068897, -0.064382, -0.059862, -0.065204, -0.067861, -0.055171, -0.111698 |
+| D1 downforce | -0.075169, -0.102135, -0.096155, -0.110830, -0.098586, -0.066390, 0.019562 |
+| D2 drag | -0.164224, -0.172579, -0.170593, -0.169457, -0.169861, -0.163518, -0.027879 |
+| D2 downforce | -0.138288, -0.087895, -0.095029, -0.095367, -0.097336, -0.092885, -0.049603 |
+
+All three possible contiguous five-epsilon windows contain resolved plateau
+failures. The high-epsilon window `[5e-4, 1.5e-3, 5e-3, 1.5e-2, 5e-2] m`
+also contains a resolved sign inconsistency for D1 downforce: its slope is
+negative through `1.5e-2 m` and positive at `5e-2 m`. There were no registered
+state gate failures; the terminal and integrity checks passed. The failure is
+therefore the registered scientific plateau/sign result, not an infrastructure
+terminal.
+
+**Disposition: R5 calibration verdict `FAIL`; formal registration is not
+allowed.** Under the immutable precedence rule, the resolved plateau failures
+(and D1 downforce sign reversal) prevent an `UNRESOLVED` classification. No
+formal 33-run criteria were registered, and fresh33 was not run. The FD-08
+oracle gate is failed at calibration; this result does not qualify gradients,
+reverse mode, optimization, or shape updates. Do not select a favorable
+epsilon post hoc or widen the registered ladder. All six qualification flags
+remain literal `false`.

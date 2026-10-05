@@ -6261,3 +6261,29 @@ This checkpoint verifies terminal completion and artifact integrity only.
 The registered host analyzer has not run, so no response floor, epsilon
 selection, plateau, sign, calibration verdict, or formal-phase eligibility is
 established. All six qualification flags remain literal `false`.
+
+
+### 2026-10-05 — #46 R5 calibration FAIL at the preregistered gate
+
+The registered host analyzer ran once against R5 criteria SHA-256
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`, the
+host-verified 47-state runner output, and its raw force histories. Analysis
+SHA-256 is
+`dc769d6f2b5a2d6dfa45c6a5aeddfde726dd75f6e44ac564b128effecce3fb8b` at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/calibration_analysis.json`.
+Baseline repeats had zero reported span; the registered drag and downforce
+response floors were both `1e-8 N`. All 42 directional response samples were
+resolved. The immutable selector found no common five-point plateau on the
+registered seven-value epsilon ladder. Every possible five-point window had
+resolved plateau failures; the largest window also had a resolved D1
+downforce sign reversal at `epsilon=0.05 m`.
+
+**R5 calibration disposition is `FAIL`; formal fresh33 registration is
+blocked and the 33-run phase was not executed.** This is the registered
+scientific gate result after intact solver completion and artifact
+verification, not an infrastructure failure. Do not pick another epsilon or
+expand the ladder based on these results. FD-08 cannot authorize downstream
+gradient/oracle/optimizer work from this calibration. All six qualification
+flags remain literal `false`; no #47 solver campaign follows this terminal.
+The detailed per-series slopes and failure windows are in
+`docs/issues/46_fd08_preparation.md` and the immutable analysis JSON above.
