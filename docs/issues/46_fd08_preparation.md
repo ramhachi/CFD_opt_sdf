@@ -1280,3 +1280,12 @@ Primary result JSON SHA-256 is `df003b46056c00e609f93550438e088f7a9955147acea81b
 Focused FD-08 tests passed 46, Python compileall and `git diff --check` passed. The final full pytest run reported 37 failed, 1,445 passed and 9 skipped. Its failure-ID set exactly matched the pinned 37-ID baseline: zero new and zero resolved. The first feature-worktree full run had two extra `FileNotFoundError` failures because its ignored canonical `sdf_design_state.npz` fixture was absent. Both tests passed after binding the byte-identical existing integration-worktree fixture; the full suite was then rerun and matched baseline. Commands, exact JUnit artifacts, failure IDs, fixture hash and manifests are in `post_hoc_p2a/validation/`.
 
 Step A is complete. Stop at B for the user's decision on how to treat the FD-08 definition and gate. Do not register R6 or run fresh33 before that decision.
+
+### Post-merge verification on integration commit `853893307be7c6f130118b714e37611be9ea24c2`
+
+After the `--no-ff` merge, the focused command
+`.venv/bin/python -m pytest -q tests/test_fd08_calibration.py tests/test_fd08_contract.py tests/test_fd08_p2a_diagnostic.py`
+passed 46 tests; `.venv/bin/python -m compileall -q src tests scripts/diagnose_fd08_r5_posthoc_p2a.py`
+and `git diff HEAD^..HEAD --check && git diff --check` also passed. The full command
+`.venv/bin/python -m pytest -q --junitxml=/tmp/fd08_p2a_integration_postmerge_20261005.xml`
+reported 37 failed, 1,445 passed and 9 skipped (1,491 tests; process exit 1 due to the known failures). JUnit failure IDs were normalized to the saved path format and compared as sets against `docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256 `71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): exact match, zero new and zero resolved IDs. The compressed JUnit, validation record, and their hashes are preserved under `docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p2a/validation/integration_postmerge_8538933/`; the uncompressed JUnit SHA-256 is `b87770308e79491576e2d1fa5fd56b0acf761be675bdbbd2dbda7fbb20203b6a`.
