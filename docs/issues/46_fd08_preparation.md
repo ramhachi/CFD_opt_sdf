@@ -1249,3 +1249,6 @@ oracle gate is failed at calibration; this result does not qualify gradients,
 reverse mode, optimization, or shape updates. Do not select a favorable
 epsilon post hoc or widen the registered ladder. All six qualification flags
 remain literal `false`.
+
+The final R5 calibration disposition was recorded on Issue #46:
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5991085590.

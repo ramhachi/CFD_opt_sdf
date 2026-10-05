@@ -6287,3 +6287,5 @@ gradient/oracle/optimizer work from this calibration. All six qualification
 flags remain literal `false`; no #47 solver campaign follows this terminal.
 The detailed per-series slopes and failure windows are in
 `docs/issues/46_fd08_preparation.md` and the immutable analysis JSON above.
+The final Issue #46 checkpoint is
+https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-5991085590.
