@@ -35,6 +35,7 @@ from cfd_sdf.fd08_calibration import (
     verify_runtime_artifacts,
 )
 from verify_fd08_formal import verify_source_inputs
+from analyze_fd08_calibration import validate_registered_measurement_binding
 from build_fd08_calibration_kernel import render_kernel_source
 from preflight_fd08_cpu import (
     audit_cpu_force_history,
@@ -79,6 +80,25 @@ def test_calibration_epsilon_ladder_requires_broad_unique_positive_range():
         validate_calibration_ladder((1e-3, 2e-3, 3e-3, 4e-3, 5e-3, 6e-3, 1e-2))
     with pytest.raises(ValueError, match="strictly increasing"):
         validate_calibration_ladder((1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 3e-2))
+
+
+def test_calibration_analyzer_reads_nested_registered_flow_and_window():
+    criteria = {
+        "case": {"case_id": "flow_24"},
+        "measurement": {"force_window_t_u_l": [80.0, 120.0]},
+    }
+    assert validate_registered_measurement_binding(criteria) is None
+
+    with pytest.raises(ValueError, match="flow_24 and exact \\[80,120\\]"):
+        validate_registered_measurement_binding({
+            "case": {"case_id": "flow_24"},
+            "measurement": {"force_window_t_u_l": [80.0, 119.0]},
+        })
+    with pytest.raises(ValueError, match="flow_24 and exact \\[80,120\\]"):
+        validate_registered_measurement_binding({
+            "case": {"case_id": "flow_23"},
+            "measurement": {"force_window_t_u_l": [80.0, 120.0]},
+        })
 
 
 def test_formal_epsilon_ladder_is_exactly_five_selected_points():

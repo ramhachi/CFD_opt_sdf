@@ -82,6 +82,16 @@ def _write_once(path: Path, value: dict) -> str:
     return digest
 
 
+def validate_registered_measurement_binding(criteria: dict) -> None:
+    """Check flow and window in the nested, registered calibration schema."""
+    case = criteria.get("case")
+    measurement = criteria.get("measurement")
+    if (not isinstance(case, dict) or case.get("case_id") != CALIBRATION_FLOW
+            or not isinstance(measurement, dict)
+            or measurement.get("force_window_t_u_l") != list(WINDOW_TU_L)):
+        raise ValueError("calibration criteria must bind flow_24 and exact [80,120] tU/L")
+
+
 def analyze(criteria_path: Path, runner_result_path: Path, result_root: Path, dataset_dir: Path) -> dict:
     criteria, criteria_sha = load_immutable_json(criteria_path)
     expected_root = criteria.get("artifact_namespaces", {}).get("calibration_result_root")
@@ -94,8 +104,7 @@ def analyze(criteria_path: Path, runner_result_path: Path, result_root: Path, da
             or criteria.get("registered_before_computation") is not True
             or criteria.get("status") != "registered_not_run"):
         raise ValueError("input must be immutable preregistered FD-08 calibration criteria")
-    if criteria.get("flow_id") != CALIBRATION_FLOW or criteria.get("window_tu_l") != list(WINDOW_TU_L):
-        raise ValueError("calibration criteria must bind flow_24 and exact [80,120] tU/L")
+    validate_registered_measurement_binding(criteria)
     states = criteria.get("state_order")
     if not isinstance(states, list) or not states:
         raise ValueError("calibration state_order inventory is missing")
