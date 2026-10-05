@@ -6305,3 +6305,43 @@ repeated; whether the FD-08 gate is attainable is re-discussed with the user.
 Implementation is assigned to codex. #45 XFID D1 add-on waits for the P1
 effective-displacement result. All six qualification flags remain literal
 `false`.
+
+### 2026-10-05 — #46 P1 post-R5 diagnostic completed; stop at P2
+
+The solver-free, unregistered P1 diagnostic recomputed all 47 raw force
+histories and all 42 directional response pairs from the immutable R5 evidence.
+The original R5 `FAIL` / `NO_COMMON_PLATEAU` and all six false qualification
+flags are unchanged. The descriptive local-window scan found no common
+six-series interval; individual windows on some D0/D2 series do not replace the
+registered five-point selector. Float32 perturbations changed 4,718 nodes in
+each of 42 states; changed-node RMS per nominal epsilon averaged 1.0000 for D0,
+0.2894 for D1, and 0.2897 for D2, so projection-equivalent epsilon does not
+establish equal RMS displacement across directions.
+
+The added paired-response half-window sensitivity check compared each
+`S=(R(+epsilon)-R(-epsilon))/2` on `[80,100]` and `[100,120]` against full-window
+`S` in `[80,120]`. Its largest relative difference was 72.324% for D1 downforce
+at 0.05 mm; the check is post-hoc and has no pass/fail threshold. Small
+state-level force stationarity and bit-identical baseline repeats therefore do
+not exclude deterministic time-window sensitivity in micro-responses. The P1
+plots and exact bindings are recorded in
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1/`
+(`diagnostic_result.json` SHA-256
+`ef243a6f3fda133f60c0c347817f919608fdfe4644da83bcc8137054e3831820`).
+
+Validation on the feature worktree: `python -m compileall src tests
+scripts/diagnose_fd08_r5_posthoc_p1.py` passed. The first full pytest run had
+two extra failures because the worktree lacked the ignored shared fixture
+`work/sdf_native_genesis_v17/sdf_design_state.npz`; restoring the byte-identical
+fixture (SHA-256 `7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31`)
+made both isolated tests pass. The final full run was `37 failed, 1439 passed,
+9 skipped`; its sorted failure-ID set exactly matched
+`docs/evidence/four_track_baseline_2026_10_02/failure_ids.json` (SHA-256
+`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`): zero new
+and zero resolved IDs. JUnit output was captured at
+`/tmp/fd08_r5_p1_pytest_20261005_final.xml` (SHA-256
+`dba16059a64ed5f14da9ecf83d2327fc3265ccd2758f1fa67d1cc9c9e01ff006`).
+
+P1 does not choose B1/B1-prime/B2/B3 or register R6. Stop at P2 for the user's
+decision on whether to proceed and which approved change, if any, to make. R6
+and fresh33 remain unregistered and unrun.
