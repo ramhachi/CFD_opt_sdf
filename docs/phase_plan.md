@@ -6176,7 +6176,17 @@ An earlier preview was rejected before Julia because it recorded source
 That preview-binding attempt is preserved at
 `docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/preview_attempt1.json`
 (SHA-256 `d8ce534607b2d99caa78bcba961b5a354a4c8269cd4e15cfc469817928cb5f7a`).
-The corrected rehearsal is bound to the analyzer fix and current preview. Next:
-register R5 criteria and staged dataset against the pushed source/evidence
-commit, then submit a new T4 calibration kernel. All six qualification flags
-remain literal `false`.
+The corrected rehearsal is bound to the analyzer fix and current preview. R5
+criteria were then registered against clean pushed source
+`95bd9cbf8e67f0c718e346f7edca3f343ed1091f`. Criteria SHA-256 is
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`;
+registration audit SHA-256 is
+`6c45ba460daf53bceb28af371217d45924e9445babf13254bb790fa78e7c9f3e`.
+The registrar verified all 29 source inputs, the CPU rehearsal result and
+manifest, and all 89 staged dataset hashes (inventory SHA-256
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`). R5
+retains the same 47-state inventory and seven calibration-only epsilon values;
+its aggregate solver wall budget is 5,400 s and per-case limit 1,800 s. Next:
+version and download-verify the private Kaggle dataset, then submit the T4
+kernel. No solver measurement has started; all six qualification flags remain
+literal `false`.

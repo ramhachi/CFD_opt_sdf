@@ -1,0 +1,71 @@
+{
+  "aggregate_solver_wall_time_limit_s": 5400.0,
+  "cpu_rehearsal_binding": {
+    "evidence_class": "cpu_setup_operator_rehearsal_only",
+    "input_state_bindings": [
+      {
+        "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "raw_phi_evidence_path": "inputs/cal_baseline_01.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+        "role": "baseline",
+        "run_id": "cal_baseline_01"
+      },
+      {
+        "phi_fortran_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "raw_phi_evidence_path": "inputs/D0_interface_offset__eps_5_0000000000e_05__plus.phi_f4_fortran.raw",
+        "raw_phi_evidence_sha256": "355fdaaf4edba8b96fa33d676271bc931fbca987446f6366a423cf167d710e63",
+        "role": "perturbation",
+        "run_id": "D0_interface_offset__eps_5_0000000000e_05__plus"
+      }
+    ],
+    "observed_cpu_runtime": {
+      "backend": "Array",
+      "julia_version": "1.12.6",
+      "waterlily_version": "1.8.0"
+    },
+    "preview_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/rehearsal_retry1/cpu_rehearsal_preview.json",
+    "preview_sha256": "394dad9ee63c9a914256cbb2a51e76fe47f62f13a414e88e085c2b644df707b6",
+    "result_path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry6_analyzer_fix/rehearsal_retry1/rehearsal_result.json",
+    "result_sha256": "919c24bd96ef52a106fa2c1de57e4e19fa4f42ae1252f63a019862d45699b2ee",
+    "runner_output_inventory_sha256": "04ca27c1785976b079c68746bfcb95b0756c75e0bcd6a7e06e35ba2ced63a2ac",
+    "runner_output_manifest_sha256": "04f2534b5b0307ba2d42ceeb372e29bc8fdb2d469d4f5cc4ad82d65546dd1108",
+    "source_commit": "529f8d13a8d99d927ca4036afed85c4fe7853f03"
+  },
+  "criteria_path": "docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/xfidc_criteria.json",
+  "criteria_sha256": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+  "criteria_sha256_sidecar": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+  "epsilon_ladder_m": [
+    5e-05,
+    0.00015,
+    0.0005,
+    0.0015,
+    0.005,
+    0.015,
+    0.05
+  ],
+  "epsilon_ratio": 1000.0,
+  "formal_measurement_started": false,
+  "formal_qualification": false,
+  "immutable": true,
+  "kind": "fd08_calibration_r5_preregistration_audit",
+  "per_case_wall_time_limit_s": 1800.0,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_before_computation": true,
+  "registered_dataset_audit": {
+    "criteria_sha256": "928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c",
+    "dataset_root": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/fd08_candidate_c_calibration_dataset_r5",
+    "inventory_sha256": "593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954",
+    "verified_file_count": 89
+  },
+  "source_commit": "95bd9cbf8e67f0c718e346f7edca3f343ed1091f",
+  "source_input_inventory_sha256": "0c08ec97e7c832098154d15cd7e193b8bb4b2738bb14e2e7f80210649f9b23b4",
+  "source_inputs_verified": 29,
+  "state_count": 47
+}

@@ -1090,6 +1090,21 @@ rehearsal is setup-only and contributes no calibration or formal measurements.
 One stale-source preview failed before Julia was invoked; its preserved audit
 is `preview_attempt1.json` (SHA-256
 `d8ce534607b2d99caa78bcba961b5a354a4c8269cd4e15cfc469817928cb5f7a`). The
-current-source rehearsal passed. Next is immutable R5 criteria registration
-and dataset verification. All six qualification flags remain literal
-`false`.
+current-source rehearsal passed.
+
+## Calibration round 5 preregistered, 2026-10-05
+
+Immutable R5 criteria are registered against clean pushed integration source
+`95bd9cbf8e67f0c718e346f7edca3f343ed1091f`. Criteria SHA-256 is
+`928292ca1911875a564e74ffbe64b7d3d4790d9e49b81272ed39dedd9ebdce6c`; the
+registration audit SHA-256 is
+`6c45ba460daf53bceb28af371217d45924e9445babf13254bb790fa78e7c9f3e`.
+
+All 29 source inputs, the bound setup-only CPU rehearsal, and 89 staged dataset
+files passed registration verification. Dataset inventory SHA-256 is
+`593386fa48e1d004b9ad28ddff1b054c456bb903c8e5ebd83b475ac6a40f6954`. R5
+preserves the existing 47-state builder inventory, the same seven broad
+calibration-only epsilon candidates, and the 5,400 s aggregate solver budget.
+No measurement has started and no formal epsilon exists. Next is private
+dataset versioning and T4 kernel submission. All six qualification flags
+remain literal `false`.
