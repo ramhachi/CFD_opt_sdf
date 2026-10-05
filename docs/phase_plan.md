@@ -6358,3 +6358,15 @@ and the recorded integration-head provenance. Japanese diagnostic JSON
 SHA-256: `2b13484f52b63a7504bb34954e3fe18bea45efa65bb7b79f5394118be555ce12`.
 R5 remains `FAIL` / `NO_COMMON_PLATEAU`; this is a presentation-only companion,
 not a new gate, criteria registration, or solver run. P2 remains the stop point.
+
+### 2026-10-05 — #46 P1 Japanese chart copy refinement
+
+The final Japanese chart rendering is recorded at
+`docs/evidence/fd08_candidate_c_calibration_2026_10_04_r5/post_hoc_p1_ja_v2/`.
+It replaces the remaining English words in Japanese titles and legends; the
+earlier Japanese rendering is retained at `post_hoc_p1_ja/`, and the original
+English P1 set remains unchanged. The scientific result payload still matches
+the English analysis after excluding renderer, script, and HEAD provenance.
+Final Japanese diagnostic JSON SHA-256:
+`ed381c38d30d8665972dc9f26fdbc08c0e7c1c6a13cafbb7be38e89021ef8022`.
+R5 remains `FAIL` / `NO_COMMON_PLATEAU`; no gate, criteria, or solver run changed.
