@@ -43,6 +43,7 @@ PLOT_TEXT = {
         "q_fit_y": "q(epsilon), N/m",
         "tail4": "last 4 points",
         "tail3": "last 3 points",
+        "fit_label": "{direction} tail fit ({suffix})",
         "q_fit_title": "Exploratory suffix fits q = q0 + c epsilon²; no fit is selected as a gate",
         "residual_y": "S - q_ref epsilon, N",
         "residual_title": "Signed centered-response residual; q_ref is the first-three-epsilon median",
@@ -84,7 +85,8 @@ PLOT_TEXT = {
         "q_fit_y": "q(ε) [N/m]",
         "tail4": "末尾4点",
         "tail3": "末尾3点",
-        "q_fit_title": "探索的な末尾点 fit: q = q₀ + c ε²（判定gateには不使用）",
+        "fit_label": "{direction} 末尾点近似（{suffix}）",
+        "q_fit_title": "探索的な末尾点近似: q = q₀ + c ε²（判定条件には不使用）",
         "residual_y": "S − q_ref ε [N]",
         "residual_title": "符号付き中心応答残差（q_ref は最初の3つの ε の中央値）",
         "metric_max": "最大 |Δφ| [mm]",
@@ -111,7 +113,7 @@ PLOT_TEXT = {
         "drag_short": "抗力",
         "downforce_short": "ダウンフォース",
         "paired_y": "|S前半 − S後半| / |S全窓| [%]",
-        "paired_title": "半窓ごとのペア応答感度（記述診断、合否gateではない）",
+        "paired_title": "半窓ごとのペア応答感度（記述診断、合否判定ではない）",
         "d1_max": "D1 最大 {value:.1f}%（ε={epsilon:g} mm）",
     },
 }
@@ -238,7 +240,10 @@ def make_figures(
                 x_fit = np.linspace(x_all[start], x_all[-1], 80)
                 y_fit = fit["intercept"] + fit["slope"] * x_fit
                 ax.plot(x_fit, y_fit, style, linewidth=1.0, color=colors[direction],
-                        alpha=0.8, label=f"{labels[direction]} fit ({suffix})")
+                        alpha=0.8,
+                        label=text["fit_label"].format(
+                            direction=labels[direction], suffix=suffix,
+                        ))
         ax.set_xscale("log")
         ax.set_xlabel(text["x_epsilon_squared"])
         ax.set_ylabel(text["q_fit_y"])
