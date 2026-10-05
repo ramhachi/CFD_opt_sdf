@@ -6122,3 +6122,28 @@ create a new source and criteria lineage, repeat the bounded setup-only CPU
 rehearsal for that lineage, then run a new calibration round. Keep R4 recorded
 as a complete solver execution whose responses remain unclassified by its
 registered analyzer.
+
+
+### 2026-10-05 — #46 analyzer schema defect repaired
+
+Integration commit `f6eaac3eb11eb26d1b9bcc5e13ab20f1cb942ce1` fixes the
+calibration analyzer to read the registered nested flow and window fields and
+adds a regression test for the accepted schema and rejected mismatches.
+Analyzer SHA-256 is
+`f96e4521b6ab73b0bd195fa9427e5d18eeaa9cccf35c92453f842bb8158f7206`; test
+SHA-256 is
+`fce527006ac8c5bc692bea29f2f4e471df56023ecabcf3c9950f4989eaf04477`. Focused
+FD-08 tests passed **40**, compileall and `git diff --check` passed. Full pytest
+reported **37 failed, 1,439 passed, 9 skipped**; comparison to the pinned
+baseline (`71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a`)
+found **0 new and 0 resolved IDs**. Validation details and log/XML hashes are
+in `docs/evidence/fd08_analyzer_schema_fix/source_validation.json` (SHA-256
+`965a029cf3f8cbdce63a262b358a494acbee3f4f7b60162a72cc781b3c223942`).
+
+This reporting/schema correction changes no scientific criterion or solver
+output. R4 remains immutable and unclassified because its registered analyzer
+hash is the old one. Repeat the bounded CPU setup rehearsal for the corrected
+source, then preregister a new calibration round with the same builder-derived
+inventory and unchanged broad candidate epsilon set. Do not analyze R4 with
+the modified analyzer or register formal fresh33 until a new calibration
+round produces an eligible PASS.

@@ -1044,3 +1044,24 @@ R4 binds the analyzer hash, so the schema defect must be fixed in a new source
 and criteria lineage. Repeat the bounded setup-only CPU rehearsal and
 calibration under that lineage. Do not relabel the R4 analyzer failure as a
 scientific result.
+
+## Analyzer schema fix checkpoint, 2026-10-05
+
+Integration commit `f6eaac3eb11eb26d1b9bcc5e13ab20f1cb942ce1` updates the
+analyzer to validate `case.case_id` and
+`measurement.force_window_t_u_l`, matching the registered criteria schema.
+A regression test covers the exact accepted flow/window and rejects altered
+values. This changes no solver, force, response-floor, epsilon, threshold,
+plateau, sign, time-window, or verdict semantics.
+
+Focused FD-08 tests: **40 passed**. Required Python compileall and
+`git diff --check`: **passed**. Full repository suite: **37 failed, 1,439
+passed, 9 skipped**; the 37 failure IDs exactly match the pinned baseline
+(new 0, resolved 0). The validation record is
+[`source_validation.json`](../evidence/fd08_analyzer_schema_fix/source_validation.json),
+SHA-256 `965a029cf3f8cbdce63a262b358a494acbee3f4f7b60162a72cc781b3c223942`.
+
+R4 remains complete as a solver run but has no analyzer result: its immutable
+source inventory binds the defective analyzer. The corrected source will be
+used only with a new CPU rehearsal and a separately registered calibration
+round. All six qualification flags remain literal `false`.
