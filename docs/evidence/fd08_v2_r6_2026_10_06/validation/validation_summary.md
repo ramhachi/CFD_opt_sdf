@@ -34,3 +34,7 @@ verifier, and analyzer read only their registered v2 inputs and result paths.
 The full-suite failures are not reported as passing tests. The acceptance for
 this validation step is unchanged baseline failure identity with no additional
 failure, not a clean full-suite run.
+
+### Kernel slug metadata correction validation
+
+Command: `PYTHONPATH=.:src:scripts .venv/bin/pytest -q --junitxml=/tmp/fd08v2_fullpytest_metaslug.xml`. Result: 37 failed, 1494 passed, 9 skipped. The 37 failure IDs exactly match the pinned baseline (zero new, zero resolved). The raw JUnit SHA-256 is `d011700be2123a021bbec342686cbc77bd14b5aa0a6df152abdefc6006f55b00`; the losslessly compressed artifact is `metadata_slug_fix_full_pytest.xml.gz` with SHA-256 `c47250224534efb5234c9af64c7039f747e721a4d20e05bcccdf65d413f6c0e3`.
