@@ -6499,3 +6499,23 @@ This records preregistration and input delivery only; R6 terminal evidence and
 scientific verdict are pending. R6 remains the last calibration. R5 remains
 `FAIL`, the 17 historical Stage 1 strict mismatches remain unchanged, and all
 six qualification flags remain literal `false`.
+
+### 2026-10-06 — #46 FD-08 v2 R6 submitted
+
+After the immutable criteria and complete remote input payload passed exact
+hash verification, Kaggle CLI 2.2.4 submitted private kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/3` on Nvidia Tesla T4 with the
+registered 11,200-second kernel allowance and 6,600-second aggregate solver
+cap. The immediate CLI status was `RUNNING`. Submission identity, command,
+status/log snapshots, output hashes, criteria SHA, source SHA, and dataset
+version are recorded in
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_submission.json` and its SHA sidecar.
+This is an execution checkpoint only; no R6 terminal artifact has been
+verified and no scientific analysis or verdict has been made.
+
+The criteria remains bound to source
+`2a09610e6a7aa7d1c464e675e56b3d547beea930` and SHA-256
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`. R6 is
+the last calibration. R5 remains `FAIL`, the 17 historical Stage 1 strict
+mismatches remain unchanged, and all six qualification flags remain literal
+`false`. Formal remains conditional on an 8/8 R6 PASS.
