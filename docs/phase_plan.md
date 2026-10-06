@@ -6453,3 +6453,9 @@ At this checkpoint source-ready integration, bounded setup rehearsal, R6
 criteria registration, and solver execution are still pending. No Kaggle
 dataset or kernel has been created or submitted for this round. R6/formal
 criteria remain unregistered; no response result is claimed.
+
+### 2026-10-06 — setup rehearsal attempt 1 rejected; kernel slug corrected
+
+The private setup dataset version 1 reached `ready`; its 8 remote files matched the local registered inventory by path, size, and SHA-256. Kaggle CLI submitted kernel version 1, which completed the bounded two-state setup check and emitted no force history. Kaggle created it under the title-derived slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`, while setup criteria expected `ramhachi888/cfd-opt-sdf-fd08-v2-r6`; this attempt is preserved but rejected as a setup preflight. No R6 scientific result was evaluated.
+
+The private kernel metadata title was corrected to resolve to the criteria ID. Fix feature commit `03980df` was merged with `--no-ff` as `3b9d6a5082f90a4a394d107d25260ba4c99030ab`. The post-fix full suite remained 37 failed / 1,494 passed / 9 skipped, with the exact pinned 37 failure IDs (zero new, zero resolved). Attempt 1 outputs and CLI status/log captures are archived under `docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt1_artifacts.tar.gz`; rejection record SHA-256 is `06821952b6b1bafb6dc6cf14317da71f44e4fe8e8ed3f23f8723345f13eb310a`. All flags remain false; R6/formal criteria are unregistered. A new setup criteria/dataset version is required before proceeding.

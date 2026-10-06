@@ -1,0 +1,56 @@
+{
+  "captured_utc": "2026-10-06T13:32:32.239230Z",
+  "cli_version": "Kaggle CLI 2.2.4",
+  "criteria_sha256": "30e52279bfe3d15f6258a2d37a5e5f6916fcacc5b7cfbf146e0edf578ef2b4a3",
+  "dataset_files_stdout": "[\n  {\n    \"name\": \"P1_upstream_lobe__e0.5mm__plus.phi.f32f\",\n    \"size\": 1541540,\n    \"creationDate\": \"2026-10-06T13:30:56.009000\"\n  },\n  {\n    \"name\": \"P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz\",\n    \"size\": 211571,\n    \"creationDate\": \"2026-10-06T13:30:56.080000\"\n  },\n  {\n    \"name\": \"baseline_v17.phi.f32f\",\n    \"size\": 1541540,\n    \"creationDate\": \"2026-10-06T13:30:56.009000\"\n  },\n  {\n    \"name\": \"baseline_v17.sdf_design_state.npz\",\n    \"size\": 200028,\n    \"creationDate\": \"2026-10-06T13:30:55.992000\"\n  },\n  {\n    \"name\": \"criteria.json\",\n    \"size\": 11209,\n    \"creationDate\": \"2026-10-06T13:30:55.980000\"\n  },\n  {\n    \"name\": \"criteria.json.sha256\",\n    \"size\": 65,\n    \"creationDate\": \"2026-10-06T13:30:56.080000\"\n  },\n  {\n    \"name\": \"fd08_v2_dataset_manifest.json\",\n    \"size\": 895,\n    \"creationDate\": \"2026-10-06T13:30:55.974000\"\n  },\n  {\n    \"name\": \"kaggle_budget_preflight.json\",\n    \"size\": 1189,\n    \"creationDate\": \"2026-10-06T13:30:56.015000\"\n  }\n]\n",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_status_stdout": "{\"status\": \"ready\", \"current_version_number\": 1}",
+  "dataset_version": 1,
+  "exact_paths_sizes_sha256_match": true,
+  "expected_and_downloaded_file_count": 8,
+  "files": [
+    {
+      "path": "P1_upstream_lobe__e0.5mm__plus.phi.f32f",
+      "sha256": "a908fc5ecc0d38a7140d7116d93680056844e4fb0e26b1ae8ab5548a16b83b37",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz",
+      "sha256": "944f57be1f5343ee6673d5b70c8a9ad41f6476ccd6f9cb30d836552e772df663",
+      "size_bytes": 211571
+    },
+    {
+      "path": "baseline_v17.phi.f32f",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "size_bytes": 1541540
+    },
+    {
+      "path": "baseline_v17.sdf_design_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "size_bytes": 200028
+    },
+    {
+      "path": "criteria.json",
+      "sha256": "30e52279bfe3d15f6258a2d37a5e5f6916fcacc5b7cfbf146e0edf578ef2b4a3",
+      "size_bytes": 11209
+    },
+    {
+      "path": "criteria.json.sha256",
+      "sha256": "d5e9de24a2bdb2dff5c9d6c3d6c3b4916e1b0e08e0a9be2d330fe65da130a86c",
+      "size_bytes": 65
+    },
+    {
+      "path": "fd08_v2_dataset_manifest.json",
+      "sha256": "b90ed1a23095fc7d3202e95538ea338dbf3653d8a73ea242734b623b7dac0588",
+      "size_bytes": 895
+    },
+    {
+      "path": "kaggle_budget_preflight.json",
+      "sha256": "779af2b875ffa36e06890daba484b5d1d5c620ad127117859f017cbe6c7018f0",
+      "size_bytes": 1189
+    }
+  ],
+  "kind": "fd08_v2_setup_dataset_remote_verification",
+  "manifest_sha256": "b90ed1a23095fc7d3202e95538ea338dbf3653d8a73ea242734b623b7dac0588",
+  "remote_status": "ready"
+}
