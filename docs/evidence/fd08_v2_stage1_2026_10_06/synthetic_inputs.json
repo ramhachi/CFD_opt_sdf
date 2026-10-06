@@ -1,0 +1,989 @@
+{
+  "base_seed": 461006,
+  "cases": [
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "a01_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -8.5e-05,
+        -0.000134715921359,
+        -0.000213510346678,
+        -0.00033839109497,
+        -0.000536313742808,
+        -0.00085
+      ],
+      "scenario": {
+        "absolute_sigma_n": 0.0,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "a",
+        "g_true_n_per_m": -0.17,
+        "id": "a01",
+        "number": 1,
+        "relative_w": 0.0
+      },
+      "seed": 1362012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "a01_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.1e-05,
+        -7.62289604894e-05,
+        -0.000113938321908,
+        -0.000170301957626,
+        -0.00025454786665,
+        -0.000380469005284,
+        -0.000568681505319,
+        -0.00085
+      ],
+      "scenario": {
+        "absolute_sigma_n": 0.0,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "a",
+        "g_true_n_per_m": -0.17,
+        "id": "a01",
+        "number": 1,
+        "relative_w": 0.0
+      },
+      "seed": 1362014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "a02_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.213e-05,
+        -8.29319853297e-05,
+        -0.000132678455589,
+        -0.000215218174166,
+        -0.000360752342739,
+        -0.00065
+      ],
+      "scenario": {
+        "absolute_sigma_n": 0.0,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "a",
+        "g_true_n_per_m": -0.104,
+        "id": "a02",
+        "number": 2,
+        "relative_w": 0.0
+      },
+      "seed": 1363012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "a02_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -3.122808e-05,
+        -4.67279538478e-05,
+        -7.0016553337e-05,
+        -0.000105230278678,
+        -0.000159214763411,
+        -0.000244416056014,
+        -0.000386830124036,
+        -0.00065
+      ],
+      "scenario": {
+        "absolute_sigma_n": 0.0,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "a",
+        "g_true_n_per_m": -0.104,
+        "id": "a02",
+        "number": 2,
+        "relative_w": 0.0
+      },
+      "seed": 1363014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "b03_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -8.50049927768e-05,
+        -0.000133762372911,
+        -0.00021027310013,
+        -0.000338255682789,
+        -0.000536630516198,
+        -0.000849095266741
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "b",
+        "g_true_n_per_m": -0.17,
+        "id": "b03",
+        "number": 3,
+        "relative_w": 0.0
+      },
+      "seed": 1364012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "b03_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.03983118263e-05,
+        -7.72634595258e-05,
+        -0.000113554636583,
+        -0.000167910822664,
+        -0.000255534315208,
+        -0.000380767099772,
+        -0.000567107351787,
+        -0.000850435596148
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "b",
+        "g_true_n_per_m": -0.17,
+        "id": "b03",
+        "number": 3,
+        "relative_w": 0.0
+      },
+      "seed": 1364014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "b07_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.31511659193e-05,
+        -8.38337745786e-05,
+        -0.000140596847204,
+        -0.000210071153229,
+        -0.000360780583307,
+        -0.00065267250091
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "b",
+        "g_true_n_per_m": -0.104,
+        "id": "b07",
+        "number": 7,
+        "relative_w": 0.0
+      },
+      "seed": 1368012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "b07_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -3.35766278182e-05,
+        -4.61470960936e-05,
+        -6.87550997883e-05,
+        -0.000104813005995,
+        -0.000158336753457,
+        -0.000247555637976,
+        -0.000393495944455,
+        -0.000645614865956
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": true,
+        "family": "b",
+        "g_true_n_per_m": -0.104,
+        "id": "b07",
+        "number": 7,
+        "relative_w": 0.0
+      },
+      "seed": 1368014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "c09_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -8.98540197039e-05,
+        -0.000132294107545,
+        -0.000210359175861,
+        -0.000336829849835,
+        -0.000577240673056,
+        -0.000839400735635
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "c",
+        "g_true_n_per_m": -0.17,
+        "id": "c09",
+        "number": 9,
+        "relative_w": 0.04
+      },
+      "seed": 1370012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "c09_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.43227115065e-05,
+        -7.78315767444e-05,
+        -0.000104103094814,
+        -0.000165576769549,
+        -0.000248053109758,
+        -0.000359351722116,
+        -0.00056889315528,
+        -0.000894891830037
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "c",
+        "g_true_n_per_m": -0.17,
+        "id": "c09",
+        "number": 9,
+        "relative_w": 0.04
+      },
+      "seed": 1370014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "c12_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.71979035937e-05,
+        -8.95824692497e-05,
+        -0.000127874775972,
+        -0.000236837039673,
+        -0.000382733713648,
+        -0.000610994133196
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "c",
+        "g_true_n_per_m": -0.104,
+        "id": "c12",
+        "number": 12,
+        "relative_w": 0.07
+      },
+      "seed": 1373012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "c12_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -2.84627622981e-05,
+        -3.9711939251e-05,
+        -7.42770169858e-05,
+        -9.97420152889e-05,
+        -0.000162103407374,
+        -0.00024217177326,
+        -0.000380404548232,
+        -0.000652220820191
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": -0.00104,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "c",
+        "g_true_n_per_m": -0.104,
+        "id": "c12",
+        "number": 12,
+        "relative_w": 0.07
+      },
+      "seed": 1373014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "d15_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.18329162348e-05,
+        -8.44589294827e-05,
+        -0.000139545003109,
+        -0.000227812785859,
+        -0.000375785528568,
+        -0.000654417952671
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.25,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.104,
+        "id": "d15",
+        "number": 15,
+        "relative_w": 0.0
+      },
+      "seed": 1376012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "d15_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -3.12276724239e-05,
+        -4.87999499168e-05,
+        -7.32365052816e-05,
+        -0.000110240379339,
+        -0.000166365711489,
+        -0.000257447491864,
+        -0.000409091579736,
+        -0.000650728785539
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.25,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.104,
+        "id": "d15",
+        "number": 15,
+        "relative_w": 0.0
+      },
+      "seed": 1376014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "d23_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -8.8621515578e-05,
+        -0.000148467079735,
+        -0.000239150272551,
+        -0.000405564618033,
+        -0.000706959871472,
+        -0.00127395205669
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.5,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.17,
+        "id": "d23",
+        "number": 23,
+        "relative_w": 0.0
+      },
+      "seed": 1384012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "d23_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.2155968806e-05,
+        -7.85361954201e-05,
+        -0.000120176678412,
+        -0.000188541127455,
+        -0.000291791635398,
+        -0.000466643863377,
+        -0.00075954783949,
+        -0.00127623949917
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.5,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.17,
+        "id": "d23",
+        "number": 23,
+        "relative_w": 0.0
+      },
+      "seed": 1384014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "d18_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.93393830133e-05,
+        -0.000101766267718,
+        -0.000177700165147,
+        -0.000333855524117,
+        -0.000637001197277,
+        -0.00130063635412
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 1.5,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.104,
+        "id": "d18",
+        "number": 18,
+        "relative_w": 0.0
+      },
+      "seed": 1379012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "d18_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -3.25849493878e-05,
+        -5.17142199047e-05,
+        -8.28376267984e-05,
+        -0.000133579982161,
+        -0.000226905333354,
+        -0.000390574237125,
+        -0.000697388014848,
+        -0.0012993825834
+      ],
+      "scenario": {
+        "absolute_sigma_n": 1.5e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 1.5,
+        "false_rejection_applicable": false,
+        "family": "d",
+        "g_true_n_per_m": -0.104,
+        "id": "d18",
+        "number": 18,
+        "relative_w": 0.0
+      },
+      "seed": 1379014
+    },
+    {
+      "epsilon_mm": [
+        0.5,
+        0.792446596231,
+        1.25594321575,
+        1.99053585277,
+        3.1547867224,
+        5.0
+      ],
+      "id": "e27_n6",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -5.17834540022e-06,
+        -2.42401155044e-05,
+        -2.3428658471e-05,
+        -3.70876791024e-05,
+        -6.72657720778e-05,
+        -0.000102752888791
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "e",
+        "g_true_n_per_m": -0.02,
+        "id": "e27",
+        "number": 27,
+        "relative_w": 0.0
+      },
+      "seed": 1388012
+    },
+    {
+      "epsilon_mm": [
+        0.3,
+        0.448405649938,
+        0.670225422986,
+        1.00177622133,
+        1.49734039206,
+        2.23805297226,
+        3.34518532541,
+        5.0
+      ],
+      "id": "e27_n8",
+      "params": {
+        "k_mag": 5,
+        "nested_drop": 2,
+        "rho": 0.05,
+        "sigma0_n": 3e-06,
+        "tol_hold": 0.15,
+        "tol_model": 0.15,
+        "tol_nested": 0.15,
+        "tol_se": 0.1
+      },
+      "response_n": [
+        -2.77024163464e-06,
+        -1.18134590682e-05,
+        -1.5198468522e-05,
+        -1.87559644886e-05,
+        -3.25121624215e-05,
+        -4.18447412214e-05,
+        -6.86192472518e-05,
+        -0.000101856550317
+      ],
+      "scenario": {
+        "absolute_sigma_n": 3e-06,
+        "c_q_n_per_m_per_mm2": 0.0,
+        "curvature_ratio_at_5mm": 0.0,
+        "false_rejection_applicable": false,
+        "family": "e",
+        "g_true_n_per_m": -0.02,
+        "id": "e27",
+        "number": 27,
+        "relative_w": 0.0
+      },
+      "seed": 1388014
+    }
+  ],
+  "mapping": [
+    {
+      "id": "a01_n6",
+      "ladder_points": 6,
+      "scenario_number": 1,
+      "seed": 1362012
+    },
+    {
+      "id": "a01_n8",
+      "ladder_points": 8,
+      "scenario_number": 1,
+      "seed": 1362014
+    },
+    {
+      "id": "a02_n6",
+      "ladder_points": 6,
+      "scenario_number": 2,
+      "seed": 1363012
+    },
+    {
+      "id": "a02_n8",
+      "ladder_points": 8,
+      "scenario_number": 2,
+      "seed": 1363014
+    },
+    {
+      "id": "b03_n6",
+      "ladder_points": 6,
+      "scenario_number": 3,
+      "seed": 1364012
+    },
+    {
+      "id": "b03_n8",
+      "ladder_points": 8,
+      "scenario_number": 3,
+      "seed": 1364014
+    },
+    {
+      "id": "b07_n6",
+      "ladder_points": 6,
+      "scenario_number": 7,
+      "seed": 1368012
+    },
+    {
+      "id": "b07_n8",
+      "ladder_points": 8,
+      "scenario_number": 7,
+      "seed": 1368014
+    },
+    {
+      "id": "c09_n6",
+      "ladder_points": 6,
+      "scenario_number": 9,
+      "seed": 1370012
+    },
+    {
+      "id": "c09_n8",
+      "ladder_points": 8,
+      "scenario_number": 9,
+      "seed": 1370014
+    },
+    {
+      "id": "c12_n6",
+      "ladder_points": 6,
+      "scenario_number": 12,
+      "seed": 1373012
+    },
+    {
+      "id": "c12_n8",
+      "ladder_points": 8,
+      "scenario_number": 12,
+      "seed": 1373014
+    },
+    {
+      "id": "d15_n6",
+      "ladder_points": 6,
+      "scenario_number": 15,
+      "seed": 1376012
+    },
+    {
+      "id": "d15_n8",
+      "ladder_points": 8,
+      "scenario_number": 15,
+      "seed": 1376014
+    },
+    {
+      "id": "d23_n6",
+      "ladder_points": 6,
+      "scenario_number": 23,
+      "seed": 1384012
+    },
+    {
+      "id": "d23_n8",
+      "ladder_points": 8,
+      "scenario_number": 23,
+      "seed": 1384014
+    },
+    {
+      "id": "d18_n6",
+      "ladder_points": 6,
+      "scenario_number": 18,
+      "seed": 1379012
+    },
+    {
+      "id": "d18_n8",
+      "ladder_points": 8,
+      "scenario_number": 18,
+      "seed": 1379014
+    },
+    {
+      "id": "e27_n6",
+      "ladder_points": 6,
+      "scenario_number": 27,
+      "seed": 1388012
+    },
+    {
+      "id": "e27_n8",
+      "ladder_points": 8,
+      "scenario_number": 27,
+      "seed": 1388014
+    }
+  ],
+  "numpy_version": "2.5.2",
+  "seed_offset": 900000
+}
