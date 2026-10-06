@@ -1,0 +1,204 @@
+{
+  "T2_parameter_sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba",
+  "all_series_pass": true,
+  "analysis_runs": 1,
+  "analyzer_source_sha256": "01c6a8f306b5ffa6a54d2e187a6a400b5d7dc146188c475df2bdfd1fcce92bc6",
+  "criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+  "criteria_source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "kind": "fd08_v2_r6_retry2_analysis_summary",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "result_sha256": "b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be",
+  "series": [
+    {
+      "direction_id": "D0_interface_offset",
+      "g_A_n_per_m": -0.10398729014231183,
+      "holdout_max_error_over_limit": 0.24845711591790903,
+      "magnitude_count": 6,
+      "model_difference": 0.05599862289382184,
+      "nested_max_relative_shift": 0.016583020852608564,
+      "relative_se": 0.03212780097389451,
+      "response": "drag",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "D0_interface_offset",
+      "g_A_n_per_m": 0.8014915523435178,
+      "holdout_max_error_over_limit": 0.14460303542855354,
+      "magnitude_count": 6,
+      "model_difference": 0.01287306304280424,
+      "nested_max_relative_shift": 0.011634804877512166,
+      "relative_se": 0.02570225805796556,
+      "response": "downforce",
+      "sign": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "D1_filtered_seed11",
+      "g_A_n_per_m": -0.06372394066171688,
+      "holdout_max_error_over_limit": 0.2746101301048093,
+      "magnitude_count": 6,
+      "model_difference": 0.03209237332233175,
+      "nested_max_relative_shift": 0.057507037868770615,
+      "relative_se": 0.03673951786455647,
+      "response": "drag",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "D1_filtered_seed11",
+      "g_A_n_per_m": -0.10643781759208808,
+      "holdout_max_error_over_limit": 0.38844213013629086,
+      "magnitude_count": 6,
+      "model_difference": 0.0018125065186661668,
+      "nested_max_relative_shift": 0.06632919420578569,
+      "relative_se": 0.03120789474545462,
+      "response": "downforce",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "D2_filtered_seed2026",
+      "g_A_n_per_m": -0.1697629387636076,
+      "holdout_max_error_over_limit": 0.02362132289964012,
+      "magnitude_count": 6,
+      "model_difference": 0.00038516364558595947,
+      "nested_max_relative_shift": 0.0009828408015329006,
+      "relative_se": 0.028209673848121227,
+      "response": "drag",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "D2_filtered_seed2026",
+      "g_A_n_per_m": -0.09172298102069233,
+      "holdout_max_error_over_limit": 0.33035210493581385,
+      "magnitude_count": 6,
+      "model_difference": 0.02161395344199805,
+      "nested_max_relative_shift": 0.030498401040348063,
+      "relative_se": 0.03261335096543791,
+      "response": "downforce",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "P1_upstream_lobe",
+      "g_A_n_per_m": -0.21429781188666328,
+      "holdout_max_error_over_limit": 0.019638475002462377,
+      "magnitude_count": 6,
+      "model_difference": 0.004303392217750819,
+      "nested_max_relative_shift": 0.0015600066658908508,
+      "relative_se": 0.027452129029887296,
+      "response": "drag",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "direction_id": "P1_upstream_lobe",
+      "g_A_n_per_m": -0.38519518769124206,
+      "holdout_max_error_over_limit": 0.08502251527995511,
+      "magnitude_count": 6,
+      "model_difference": 0.007843230151989155,
+      "nested_max_relative_shift": 0.0026419299593342335,
+      "relative_se": 0.026425410764160526,
+      "response": "downforce",
+      "sign": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "series_count": 8,
+  "status": "PASS",
+  "terminal": {
+    "aggregate_solver_wall_seconds": 5354.966737747192,
+    "dataset_version": 6,
+    "download_manifest_file_count": 254,
+    "elapsed_kernel_seconds": 8976.249856567001,
+    "kernel_allowance_seconds": 11200,
+    "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+    "kernel_version": 5,
+    "solver_cap_seconds": 6600,
+    "state_count": 49,
+    "unexpected_state_count": 0
+  },
+  "terminal_verification_sha256": "dd0b1c9bd3643adc0d36fcb70d38ac19d4f223d880b840f03a30b8106422f06f",
+  "verdict": "PASS"
+}

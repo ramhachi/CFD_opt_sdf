@@ -6649,3 +6649,39 @@ thresholds, and budget are unchanged. R6 remains the last calibration; R5
 remains `FAIL`, the 17 historical Stage 1 mismatches remain unchanged, formal
 remains conditional on 8/8 R6 `PASS`, and all six qualification flags remain
 literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 PASS; formal preregistration blocked
+
+Kaggle CLI 2.2.4 reported kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/5` complete. The registered
+host verifier passed terminal integrity for all 49 expected states, zero
+unexpected states, 254 manifest-verified output files, criteria/source/runtime
+identity, every state and force-history hash, and host force recomputation.
+Aggregate solver time was 5,354.967 s / 6,600 s; kernel elapsed time was
+8,976.250 s / 11,200 s. Terminal archive SHA-256 is
+`17e57c020cb9bd398c1d794748bdf876f111b11f5982716a589fadf89f930856`.
+
+The registered R6 analyzer ran exactly once after terminal verification and
+returned `PASS` for all 8/8 direction-response series under COV-A. Criteria SHA
+is `90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`; result
+SHA is `b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be`. The detailed fit, uncertainty, nested,
+model-comparison, holdout, magnitude, and sign metrics are preserved in
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_analysis_summary.json`.
+
+The formal CLI budget preflight also passed for 3,300 s solver cap and 5,600 s
+kernel allowance. Formal criteria registration then stopped before writing any
+formal criteria or preflight: the R6-prehashed formal registrar
+`7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c` initializes `raw_states` as a dict
+and calls `.add()` at line 106, raising `AttributeError: 'dict' object has no
+attribute 'add'`. Its current SHA still matches the formal registrar hash fixed
+in the R6 criteria. No formal criteria was registered, no formal dataset
+version was uploaded, and no formal solver was submitted. The blocker record is
+`docs/evidence/fd08_v2_formal_2026_10_06/formal_retry2_registration_failure.json`.
+
+This is a formal preregistration implementation blocker, not a scientific
+formal `FAIL` or `UNRESOLVED`; no formal verdict exists. The hash-frozen source
+was not repaired or bypassed after observing R6. Campaign status is
+`BLOCKED_PREREGISTRATION`; R6 remains the last calibration. R5 remains `FAIL`,
+the 17 historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.
