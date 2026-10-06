@@ -6519,3 +6519,36 @@ The criteria remains bound to source
 the last calibration. R5 remains `FAIL`, the 17 historical Stage 1 strict
 mismatches remain unchanged, and all six qualification flags remain literal
 `false`. Formal remains conditional on an 8/8 R6 PASS.
+
+### 2026-10-07 — R6 attempt 1 terminal integrity passed; analyzer infrastructure failure
+
+Kaggle CLI kernel version 3 completed. Its output was downloaded through the
+CLI, archived, and checked by the registered host verifier before analysis:
+49/49 states, zero unexpected states, 254 manifested output files, and all
+criteria/source/runner/dataset/runtime/raw-history hashes verified. Host
+reconstruction of every drag/downforce history matched the registered
+summaries. Aggregate solver wall time was 5,221.153 s against the 6,600 s cap;
+kernel elapsed time was 9,115.770 s against the 11,200 s allowance. The
+terminal archive, CLI captures, and verification record are preserved under
+`docs/evidence/fd08_v2_r6_2026_10_06/`.
+
+The registered analyzer was invoked once for criteria
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`, bound to
+source `2a09610e6a7aa7d1c464e675e56b3d547beea930`. It completed the numerical
+computations but failed while serializing C5 `Decimal` diagnostics, so it
+produced no analysis artifact and no scientific verdict. This is preserved as
+an infrastructure failure, not R6 `FAIL` or `UNRESOLVED`. The source repair
+serializes exact `Decimal` diagnostics as strings and NumPy scalar values as
+JSON scalars without changing numerical decisions. Synthetic focused tests
+passed 41; full pytest reported 1,497 passed, 37 failed, and 9 skipped. The 37
+failure IDs exactly match the pinned baseline (zero new or resolved); the
+normalized comparison is
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry1_source_fix_pytest_comparison_r2.json`.
+
+The failed analyzer attempt and original R6 criteria remain immutable. Under
+the registered retry policy, any corrected R6 evaluation must use a new clean
+integration source identity and a new immutable R6 criteria/dataset identity;
+the completed version 3 output will not be reused for a verdict. No scientific
+result is claimed, formal remains unregistered, R5 remains `FAIL`, the 17
+historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.

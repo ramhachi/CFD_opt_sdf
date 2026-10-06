@@ -1,0 +1,51 @@
+{
+  "captured_utc": "2026-10-06T17:17:14.346805+00:00",
+  "captures": {
+    "logs_stderr": {
+      "path": "r6_kernel_v3_terminal_logs_terminal.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "logs_stdout": {
+      "path": "r6_kernel_v3_terminal_logs_terminal.stdout",
+      "sha256": "1a92aa6f72859fefb6e838ee1a5c6e9840ecac75f7d17d91ae7f3d41db805a65",
+      "size_bytes": 23825
+    },
+    "output_stderr": {
+      "path": "r6_kernel_v3_terminal_output.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "output_stdout": {
+      "encoding": "gzip",
+      "original_content_sha256": "a39f6b685aa5bff2344279a93dcc42691dc9433fcb60c0b2a615a79a0a4ee6d4",
+      "original_size_bytes": 34712,
+      "path": "r6_kernel_v3_terminal_output.stdout.gz",
+      "sha256": "a1e0cca74e47f36b61a145094f83035c5fb41e89149ffc2d0a1a7f57cbc2eaf8",
+      "size_bytes": 1264
+    },
+    "status_stderr": {
+      "path": "r6_kernel_v3_terminal_status_terminal.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "status_stdout": {
+      "path": "r6_kernel_v3_terminal_status_terminal.stdout",
+      "sha256": "195ad48988116e95d10c37d22e2231b7a67f6a3f130b95f4d475bbc875ff7c05",
+      "size_bytes": 89
+    }
+  },
+  "commands": {
+    "logs": "kaggle kernels logs ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/3",
+    "output": "kaggle kernels output ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/3 --path work/kaggle_fd08_v2_r6_v3/download --force",
+    "status": "kaggle kernels status ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/3"
+  },
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+  "kernel_version": 3,
+  "kind": "fd08_v2_r6_kernel_terminal_cli_capture",
+  "terminal_archive": {
+    "path": "r6_kernel_v3_terminal_artifacts.tar.gz",
+    "sha256": "6b9e9118cb4576697d16b6767479b6d5e3c394494d572f4f8ccaed6a68dcd40f",
+    "size_bytes": 4649140
+  }
+}

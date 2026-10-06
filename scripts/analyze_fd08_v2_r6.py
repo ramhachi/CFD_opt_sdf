@@ -35,6 +35,15 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _json_default(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        # C5 diagnostic arithmetic is intentionally retained at Decimal precision.
+        return str(value)
+    if isinstance(value, np.generic):
+        return value.item()
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
+
+
 def flatten_map(value: Any, prefix: str = "") -> dict[str, Any]:
     if isinstance(value, dict):
         result = {}
@@ -276,7 +285,8 @@ def analyze(args) -> dict:
         "analysis_runs": 1,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, sort_keys=True, indent=2, allow_nan=False) + "\n")
+    args.output.write_text(json.dumps(result, sort_keys=True, indent=2, allow_nan=False,
+                                      default=_json_default) + "\n")
     args.output.with_suffix(args.output.suffix + ".sha256").write_text(sha(args.output) + "\n")
     return result
 
