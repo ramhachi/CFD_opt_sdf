@@ -6627,3 +6627,25 @@ No solver execution has started at this checkpoint. No criteria or source
 change is planned. R6 remains the last calibration; R5 remains `FAIL`, the 17
 historical Stage 1 mismatches remain unchanged, and all six qualification
 flags remain literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 submitted
+
+After the source-ready and exact dataset-version-6 checks passed, pinned Kaggle
+CLI 2.2.4 submitted kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/5` on Nvidia Tesla T4. It is
+bound to immutable criteria SHA
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`, source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`, and the fully verified 103-file private input
+dataset version 6. The initial CLI status was `KernelWorkerStatus.RUNNING`. The
+registered limits remain 6,600 s aggregate solver time and 11,200 s kernel
+allowance; these are caps, not runtime guarantees.
+
+Submission identity, commands, version/status captures, and their SHA sidecars
+are preserved in `docs/evidence/fd08_v2_r6_2026_10_06/`. This is an execution
+checkpoint only: terminal integrity, actual runtime, and scientific analysis
+are pending. The criteria, source, state inventory, directions, ladder, model,
+thresholds, and budget are unchanged. R6 remains the last calibration; R5
+remains `FAIL`, the 17 historical Stage 1 mismatches remain unchanged, formal
+remains conditional on 8/8 R6 `PASS`, and all six qualification flags remain
+literal `false`.
