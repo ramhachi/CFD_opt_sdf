@@ -1,0 +1,283 @@
+{
+  "budget_feasibility": {
+    "captured_utc": "2026-10-06T17:33:41.440513Z",
+    "cli_version": "Kaggle CLI 2.2.4",
+    "evidence_sha256": "cc04cc112e41870a459697814954e228f01284807e37cbda4bea81c4dbba5b7d",
+    "gpu_quota_remaining_hours": 19.77,
+    "platform_max_cpu_gpu_session_seconds": 43200,
+    "requested_kernel_execution_allowance_s": 7200,
+    "status": "PASS_CAPABILITY_PREFLIGHT"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "dataset_files": {
+    "P1_upstream_lobe__e0.5mm__plus.phi.f32f": "a908fc5ecc0d38a7140d7116d93680056844e4fb0e26b1ae8ab5548a16b83b37",
+    "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz": "944f57be1f5343ee6673d5b70c8a9ad41f6476ccd6f9cb30d836552e772df663",
+    "baseline_v17.phi.f32f": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "baseline_v17.sdf_design_state.npz": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "kaggle_budget_preflight.json": "cc04cc112e41870a459697814954e228f01284807e37cbda4bea81c4dbba5b7d"
+  },
+  "evidence_class": "setup_only_not_calibration_or_formal",
+  "expected_state_count": 2,
+  "immutable": true,
+  "input_dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+  "kind": "fd08_v2_setup_rehearsal",
+  "not_claimed": [
+    "force response",
+    "FD-08 calibration",
+    "formal result",
+    "qualification"
+  ],
+  "per_state_timeout_s": 900,
+  "preflight_sha256": "8eab67329b66082a23d1c5ef5957671ab1d6c083e7bca8e246564c2de93a911d",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runtime": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_minor_version_policy": "recorded_not_gated",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "memory": "CuArray",
+    "precision": "Float32",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "schema_version": 1,
+  "source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+  "source_inputs": {
+    "campaign": {
+      "path": "src/cfd_sdf/fd08_v2_campaign.py",
+      "sha256": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91"
+    },
+    "campaign_artifacts": {
+      "path": "scripts/fd08_v2_campaign_io.py",
+      "sha256": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2"
+    },
+    "campaign_tests": {
+      "path": "tests/test_fd08_v2_campaign.py",
+      "sha256": "cee4caf02b66074a1764f749e11ca0ec425dc91c6e94441e4d55e81623fd4b2c"
+    },
+    "candidate_c_body": {
+      "path": "julia/CFDSDFWaterLily/src/CandidateCWaterLilyBody.jl",
+      "sha256": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6"
+    },
+    "candidate_c_contract": {
+      "path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json",
+      "sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc"
+    },
+    "candidate_c_contract_sha": {
+      "path": "docs/evidence/candidate_c_composite_operator_identity_v1_2026_10.json.sha256",
+      "sha256": "6fc91a0c413c3b0d5e3f1dff5139f2981b518311d4fe1fb0a24cfb23ca8292d4"
+    },
+    "candidate_c_identity_loader": {
+      "path": "src/cfd_sdf/candidate_c_identity.py",
+      "sha256": "f1da148c9ff11683c3afba7ccb252133dc193a1948d55cd4f418f12f7afbade5"
+    },
+    "candidate_c_job": {
+      "path": "scripts/waterlily_xfid_candidate_c_job.jl",
+      "sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+    },
+    "direction_generator": {
+      "path": "src/cfd_sdf/gradients/directional_fd.py",
+      "sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837"
+    },
+    "flow24_precedent": {
+      "path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+      "sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1"
+    },
+    "formal_analyzer": {
+      "path": "scripts/analyze_fd08_v2_formal.py",
+      "sha256": "47026ff884d396ded1a8b2bb45da1059c093920fc37787767889e7d0c3f1f93a"
+    },
+    "formal_prediction_source": {
+      "path": "src/cfd_sdf/fd08_v2_campaign.py",
+      "sha256": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91"
+    },
+    "formal_registrar": {
+      "path": "scripts/register_fd08_v2_formal.py",
+      "sha256": "7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c"
+    },
+    "formal_verifier": {
+      "path": "scripts/verify_fd08_v2_formal.py",
+      "sha256": "34d370e37772d861f8d4b8f63e3bc81fffb9d3b914559dd35b4e792045ddfc96"
+    },
+    "gate": {
+      "path": "src/cfd_sdf/fd08_v2_gate.py",
+      "sha256": "4e4af8f3d0817b60e58f8d1a00ed382b2d1e6deed03425f398b5eb81040cc582"
+    },
+    "gate_tests": {
+      "path": "tests/test_fd08_v2_gate.py",
+      "sha256": "acd72db6a057c9eb691d998517f61fec040cd2c7d5390e8629511a51a3bf9017"
+    },
+    "julia_manifest": {
+      "path": "julia/CFDSDFWaterLilyT4/Manifest.toml",
+      "sha256": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707"
+    },
+    "julia_project": {
+      "path": "julia/CFDSDFWaterLilyT4/Project.toml",
+      "sha256": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+    },
+    "kaggle_budget_preflight": {
+      "path": "scripts/check_fd08_v2_kaggle_budget.py",
+      "sha256": "baca728b54e6a70f3833128b7b0a147d34597487d544abf95a0df96831c1f7cd"
+    },
+    "kernel_metadata": {
+      "path": "infra/kaggle/kernel_fd08_v2_r6/kernel-metadata.json",
+      "sha256": "824eac21f365d362e230db11a8e8c824944c64a9d49804588a270779a8268f20"
+    },
+    "kernel_runner": {
+      "path": "infra/kaggle/kernel_fd08_v2_r6/runner.py",
+      "sha256": "43cb6e75f08bf2a3333f0e0827422c041cbe572944bdd7644cf5520616f39baf"
+    },
+    "normal_floor_body": {
+      "path": "julia/CFDSDFWaterLily/src/WaterLilyNormalFloorBody.jl",
+      "sha256": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf"
+    },
+    "numeric_c4_reference": {
+      "path": "scripts/analyze_fd08_v2_numeric_contract.py",
+      "sha256": "9e149f4baa558402b8c41cb1ac69b8853ceb77f7e94e99954f6b2fd20fb71bc3"
+    },
+    "numeric_c5_envelope": {
+      "path": "scripts/fd08_v2_forward_error.py",
+      "sha256": "d7fbf493f8c5fb6803c3068730d38506ca814f62c3d8a789a77041945e2ee473"
+    },
+    "params": {
+      "path": "src/cfd_sdf/fd08_v2_gate_params.json",
+      "sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba"
+    },
+    "preflight_evidence": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/preflight.json",
+      "sha256": "8eab67329b66082a23d1c5ef5957671ab1d6c083e7bca8e246564c2de93a911d"
+    },
+    "r6_analyzer": {
+      "path": "scripts/analyze_fd08_v2_r6.py",
+      "sha256": "01c6a8f306b5ffa6a54d2e187a6a400b5d7dc146188c475df2bdfd1fcce92bc6"
+    },
+    "r6_registrar": {
+      "path": "scripts/register_fd08_v2_r6.py",
+      "sha256": "28e1e0b17079eab8b958cbce4bbcb413bf3fdff876f7707d805b78fd33ea1980"
+    },
+    "r6_verifier": {
+      "path": "scripts/verify_fd08_v2_r6.py",
+      "sha256": "c6adc6290a47591d46db0221ceeaf25a8a9cd3900f23b36098b5e189c0189a98"
+    },
+    "setup_preparer": {
+      "path": "scripts/prepare_fd08_v2_setup_rehearsal.py",
+      "sha256": "f8b2049d45453987bd484aa4a710d6e8f46978f780343e2289af217c68d9714a"
+    },
+    "setup_rehearsal_job": {
+      "path": "scripts/waterlily_fd08_v2_setup_rehearsal.jl",
+      "sha256": "0816c072813da36f90d5b521a6f29eab64f52ee8ba95085ff0e89139bbb31217"
+    },
+    "setup_rehearsal_verifier": {
+      "path": "scripts/verify_fd08_v2_setup_rehearsal.py",
+      "sha256": "a03e6da4b769df0a63ee6ebbd6ddfb504468f73f309eaefa71a71a39de98cf5b"
+    },
+    "state_identity": {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    "t4_smoke": {
+      "path": "scripts/w0b_t4_smoke.jl",
+      "sha256": "7c6fef06d3c5fb8dc29ca7461ae599761c37c4d0d3eb878fd30e4beb0d794666"
+    },
+    "w4_sensitivity_module": {
+      "path": "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl",
+      "sha256": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0"
+    }
+  },
+  "state_inventory": [
+    {
+      "direction_id": null,
+      "epsilon_mm": null,
+      "kind": "baseline",
+      "margin_m": 0.3499999939931499,
+      "name": "baseline_v17",
+      "npz_file": "baseline_v17.sdf_design_state.npz",
+      "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+      "phi_fortran_order_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "phi_raw_file": "baseline_v17.phi.f32f",
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "sign": 0,
+      "spacing_m": 0.025,
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+    },
+    {
+      "changed_node_count": 4718,
+      "direction_id": "P1_upstream_lobe",
+      "epsilon_m": 0.0005,
+      "epsilon_mm": 0.5,
+      "kind": "calibration",
+      "margin_gate_m": 0.15,
+      "margin_m": 0.34977214905084114,
+      "masks_equal": true,
+      "maximum_pointwise_change_m": 0.0005000000237487257,
+      "name": "P1_upstream_lobe__e0.5mm__plus",
+      "npz_file": "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz",
+      "npz_sha256": "944f57be1f5343ee6673d5b70c8a9ad41f6476ccd6f9cb30d836552e772df663",
+      "origin_m": [
+        -1.0,
+        -0.8,
+        -0.6
+      ],
+      "phi_c_order_sha256": "1c21e728583479bd4d3b8b17b47e79b9a7da00c4c554b4864663d823603221f0",
+      "phi_fortran_order_sha256": "a908fc5ecc0d38a7140d7116d93680056844e4fb0e26b1ae8ab5548a16b83b37",
+      "phi_raw_file": "P1_upstream_lobe__e0.5mm__plus.phi.f32f",
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "sign": 1,
+      "sign_label": "plus",
+      "spacing_m": 0.025,
+      "state_sha256": "c3bea1f9525d795ed6dadad0ad44a2a81f4f09b4de7ae30dc28436f92f414774",
+      "support_outside_active_exactly_unchanged": true,
+      "zero_level_margin_m": 0.34977214905084114
+    }
+  ],
+  "time_limit_scope": "bounded single setup step; not scientific solver wall time"
+}
