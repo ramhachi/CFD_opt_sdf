@@ -1,0 +1,60 @@
+{
+  "accelerator": "NvidiaTeslaT4",
+  "budget_preflight_sha256": "f60656b5898492507412587d948da9f55d90c69357e5e1d0efe82911addaa736",
+  "captured_utc": "2026-10-06T14:41:19.803690Z",
+  "cli_captures": {
+    "kernel_logs_stderr": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_logs_1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "kernel_logs_stdout": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_logs_1.stdout",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size_bytes": 1
+    },
+    "kernel_push_stderr": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_push.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "kernel_push_stdout": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_push.stdout",
+      "sha256": "83ca66030d677188c113ce7cec89b0917ab49c9e561698e2dbeb70af2bf7183b",
+      "size_bytes": 138
+    },
+    "kernel_status_stderr": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_status_1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "kernel_status_stdout": {
+      "path": "docs/evidence/fd08_v2_r6_2026_10_06/r6_kernel_v3_status_1.stdout",
+      "sha256": "70d9ec286e17e3f649d9e04decebca2fe7f94af48f0989f5073e2166483f62bd",
+      "size_bytes": 88
+    }
+  },
+  "criteria_sha256": "80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_remote_inventory_sha256": "b144b20ac70e07fc602ca23bf134f98001097e26b813b89bb53c2e8d2034fae4",
+  "dataset_version": 4,
+  "kaggle_cli_version": "Kaggle CLI 2.2.4",
+  "kernel_execution_allowance_s": 11200,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+  "kernel_status_at_capture": "RUNNING",
+  "kernel_version": 3,
+  "kind": "fd08_v2_r6_submission",
+  "no_scientific_result_claimed": true,
+  "push_command": "kaggle kernels push -p infra/kaggle/kernel_fd08_v2_r6 --accelerator NvidiaTeslaT4 --timeout 11200",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "solver_wall_time_cap_s": 6600,
+  "source_commit": "2a09610e6a7aa7d1c464e675e56b3d547beea930",
+  "status": "SUBMITTED"
+}
