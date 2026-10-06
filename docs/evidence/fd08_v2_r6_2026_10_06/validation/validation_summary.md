@@ -38,3 +38,7 @@ failure, not a clean full-suite run.
 ### Kernel slug metadata correction validation
 
 Command: `PYTHONPATH=.:src:scripts .venv/bin/pytest -q --junitxml=/tmp/fd08v2_fullpytest_metaslug.xml`. Result: 37 failed, 1494 passed, 9 skipped. The 37 failure IDs exactly match the pinned baseline (zero new, zero resolved). The raw JUnit SHA-256 is `d011700be2123a021bbec342686cbc77bd14b5aa0a6df152abdefc6006f55b00`; the losslessly compressed artifact is `metadata_slug_fix_full_pytest.xml.gz` with SHA-256 `c47250224534efb5234c9af64c7039f747e721a4d20e05bcccdf65d413f6c0e3`.
+
+### Kernel identity unification validation
+
+Focused FD-08 v2 tests: 50 passed. Full suite: 37 failed / 1,495 passed / 9 skipped. Failure IDs exactly match the pinned 37 (zero new, zero resolved). `compileall`, Kaggle metadata JSON parse, and `git diff --check` passed. Raw JUnit SHA-256: `dbcca87144fae0e91e8797fd7fc1be1bffd147b9d4195e5676ac2802c4b63ccd`; compressed evidence: `kernel_identity_fix_full_pytest.xml.gz`, SHA-256 `e0840c8741d59a3a51bac260cb65ce181e98a77add2e78ce01b88ffcdd7652c0`.
