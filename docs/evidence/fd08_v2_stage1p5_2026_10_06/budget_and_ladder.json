@@ -1,0 +1,297 @@
+{
+  "budget_rows": [
+    {
+      "elapsed_20pct_s": 10742.76,
+      "elapsed_s": 8952.3,
+      "label": "4directions_6epsilon_baseline1_jitter0_per_direction",
+      "solver_20pct_s": 6391.56,
+      "solver_s": 5326.3,
+      "states": 49,
+      "within_current_kernel_with_margin": true,
+      "within_current_solver_with_margin": false
+    },
+    {
+      "elapsed_20pct_s": 12496.68,
+      "elapsed_s": 10413.9,
+      "label": "4directions_6epsilon_baseline1_jitter2_per_direction",
+      "solver_20pct_s": 7435.08,
+      "solver_s": 6195.9,
+      "states": 57,
+      "within_current_kernel_with_margin": false,
+      "within_current_solver_with_margin": false
+    },
+    {
+      "elapsed_20pct_s": 14250.6,
+      "elapsed_s": 11875.5,
+      "label": "4directions_6epsilon_baseline1_jitter4_per_direction",
+      "solver_20pct_s": 8478.6,
+      "solver_s": 7065.5,
+      "states": 65,
+      "within_current_kernel_with_margin": false,
+      "within_current_solver_with_margin": false
+    },
+    {
+      "elapsed_20pct_s": 14250.6,
+      "elapsed_s": 11875.5,
+      "label": "4directions_8epsilon_baseline1_nojitter",
+      "solver_20pct_s": 8478.6,
+      "solver_s": 7065.5,
+      "states": 65,
+      "within_current_kernel_with_margin": false,
+      "within_current_solver_with_margin": false
+    },
+    {
+      "elapsed_20pct_s": 5261.76,
+      "elapsed_s": 4384.8,
+      "label": "formal_pairs_only",
+      "solver_20pct_s": 3130.56,
+      "solver_s": 2608.8,
+      "states": 24,
+      "within_current_kernel_with_margin": true,
+      "within_current_solver_with_margin": true
+    },
+    {
+      "elapsed_20pct_s": 5481.0,
+      "elapsed_s": 4567.5,
+      "label": "formal_with_baseline1",
+      "solver_20pct_s": 3261.0,
+      "solver_s": 2717.5,
+      "states": 25,
+      "within_current_kernel_with_margin": true,
+      "within_current_solver_with_margin": true
+    },
+    {
+      "elapsed_20pct_s": 16223.76,
+      "elapsed_s": 13519.8,
+      "label": "recommended_total_two_separate_rounds",
+      "solver_20pct_s": 9652.56,
+      "solver_s": 8043.8,
+      "states": 74,
+      "within_current_kernel_with_margin": false,
+      "within_current_solver_with_margin": false
+    }
+  ],
+  "current_limits": {
+    "kernel_s": 10800,
+    "solver_s": 5400
+  },
+  "evidence_class": "solver_free_contract_design_unregistered",
+  "ladder_options": [
+    {
+      "conditions": [
+        {
+          "model": "A",
+          "normal_cond2": 2018.4830045514282,
+          "unweighted_cond2": 44.927530585949505,
+          "variant": "N1"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 12371735250.025427,
+          "unweighted_cond2": 111228.30237860068,
+          "variant": "N2"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 18.870770805870272,
+          "unweighted_cond2": 4.3440500464279035,
+          "variant": "N3"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 211.9258397169205,
+          "unweighted_cond2": 14.557672881230726,
+          "variant": "N1"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 595598.6336546357,
+          "unweighted_cond2": 771.750370038548,
+          "variant": "N2"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 41.927938363091094,
+          "unweighted_cond2": 6.475178635612387,
+          "variant": "N3"
+        }
+      ],
+      "dof": 4,
+      "epsilon_mm": [
+        0.5,
+        0.7924465962305568,
+        1.25594321575479,
+        1.9905358527674866,
+        3.1547867224009667,
+        5.0
+      ],
+      "formal_epsilon_mm": [
+        0.6294627058970836,
+        1.5811388300841898,
+        3.971641173621408
+      ],
+      "formal_interval_indices": [
+        0,
+        2,
+        4
+      ],
+      "holdout_fit_dof": 3,
+      "holdouts": 4,
+      "id": "L6",
+      "minimum_nested_sign_points": 3,
+      "minimum_nested_stability_points": 4,
+      "n": 6,
+      "span": 10.0
+    },
+    {
+      "conditions": [
+        {
+          "model": "A",
+          "normal_cond2": 1796.4517430648466,
+          "unweighted_cond2": 42.38456963406431,
+          "variant": "N1"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 12397981323.79305,
+          "unweighted_cond2": 111346.22276392249,
+          "variant": "N2"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 17.974719374451627,
+          "unweighted_cond2": 4.239660289982162,
+          "variant": "N3"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 194.35717770558736,
+          "unweighted_cond2": 13.941204313314806,
+          "variant": "N1"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 586516.5885878564,
+          "unweighted_cond2": 765.8437102881086,
+          "variant": "N2"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 39.946956763644984,
+          "unweighted_cond2": 6.32036049317165,
+          "variant": "N3"
+        }
+      ],
+      "dof": 6,
+      "epsilon_mm": [
+        0.3,
+        0.44840564993756443,
+        0.670225422986432,
+        1.0017762213297001,
+        1.4973403920578057,
+        2.2380529722614937,
+        3.3451853254053754,
+        5.0
+      ],
+      "formal_epsilon_mm": [
+        0.36677199318005366,
+        1.2247448713915892,
+        4.089734297851986
+      ],
+      "formal_interval_indices": [
+        0,
+        3,
+        6
+      ],
+      "holdout_fit_dof": 5,
+      "holdouts": 6,
+      "id": "L8",
+      "minimum_nested_sign_points": 5,
+      "minimum_nested_stability_points": 6,
+      "n": 8,
+      "span": 16.666666666666668
+    },
+    {
+      "conditions": [
+        {
+          "model": "A",
+          "normal_cond2": 193203.60632289664,
+          "unweighted_cond2": 439.5493218319153,
+          "variant": "N1"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 153049055.0091666,
+          "unweighted_cond2": 12371.299649154353,
+          "variant": "N2"
+        },
+        {
+          "model": "A",
+          "normal_cond2": 20.390600589528763,
+          "unweighted_cond2": 4.515595264140572,
+          "variant": "N3"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 1915.1541148467977,
+          "unweighted_cond2": 43.762473820006996,
+          "variant": "N1"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 65370.40886058658,
+          "unweighted_cond2": 255.67637524923296,
+          "variant": "N2"
+        },
+        {
+          "model": "B",
+          "normal_cond2": 43.35777967995009,
+          "unweighted_cond2": 6.5846624575562025,
+          "variant": "N3"
+        }
+      ],
+      "dof": 5,
+      "epsilon_mm": [
+        0.5,
+        0.8813671916338075,
+        1.5536162529769297,
+        2.738612787525831,
+        4.827446923028151,
+        8.509506674621173,
+        15.0
+      ],
+      "formal_epsilon_mm": [
+        0.6638400378230465,
+        2.0627053442774095,
+        11.297902465471969
+      ],
+      "formal_interval_indices": [
+        0,
+        2,
+        5
+      ],
+      "holdout_fit_dof": 4,
+      "holdouts": 5,
+      "id": "L15",
+      "minimum_nested_sign_points": 4,
+      "minimum_nested_stability_points": 5,
+      "n": 7,
+      "span": 30.0
+    }
+  ],
+  "recommended": false,
+  "runtime_assumptions": {
+    "elapsed_s_per_state": 182.7,
+    "overhead_s_per_state": 74.0,
+    "provenance": "fixed Stage1 design table and supplied R5 aggregate; no R5 raw read",
+    "solver_s_per_state": 108.7
+  },
+  "source_anchors": {
+    "kernel_limit": "docs/phase_plan.md:6053",
+    "ladder_min_count": "src/cfd_sdf/fd08_calibration.py:28",
+    "ladder_span": "src/cfd_sdf/fd08_calibration.py:29",
+    "ladder_validator": "src/cfd_sdf/fd08_calibration.py:225",
+    "r5_kernel_limit": "docs/phase_plan.md:6219",
+    "solver_budget": "docs/evidence/xfid_candidate_c_2026_10_04/xfidc_criteria.json:100"
+  }
+}
