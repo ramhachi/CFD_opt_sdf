@@ -1,0 +1,60 @@
+{
+  "R5_evaluator_applied": false,
+  "baseline": {
+    "failed": 37,
+    "failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "passed": 1445,
+    "raw_xml_gzip_sha256": "2b816dca21587dcd3fccabd765a1c312abcbc748d2f7be957f9391ab50a493d7",
+    "raw_xml_sha256": "a3b800d65c07f489a22b6a80d3bf2e3bc1c11b453f393281458bdfc8fc8715d8",
+    "readable_xml_sha256": "de91bf4fff14e327e96e2a9360ad4f317f715b28710ff64edb28e1fe171e7cc5",
+    "skipped": 9,
+    "total": 1491
+  },
+  "baseline_clean_before_and_after": true,
+  "baseline_commit": "4eef5829e1965d56fbcc81ff81b92fedf64b660e",
+  "compileall_exit_code": 0,
+  "evidence_class": "solver_free_design_and_simulation_unregistered",
+  "exact_replay": {
+    "primary_fixed20_results.json": {
+      "first_sha256": "6cc1690bf9601272d1076ad2d2eb5aaeab65c40a244d747692c47b5424f4ec27",
+      "identical": true,
+      "replay_sha256": "6cc1690bf9601272d1076ad2d2eb5aaeab65c40a244d747692c47b5424f4ec27"
+    },
+    "simulation_result.json": {
+      "first_sha256": "0279d06556c488b9da598fdb86604434c2b42a45344293299afd631245ca84f2",
+      "identical": true,
+      "replay_sha256": "0279d06556c488b9da598fdb86604434c2b42a45344293299afd631245ca84f2"
+    },
+    "synthetic_inputs.json": {
+      "first_sha256": "870477620ea9cf23ce3069b4be785c2ceeee994e7d464ea4835cbc0f4b816897",
+      "identical": true,
+      "replay_sha256": "870477620ea9cf23ce3069b4be785c2ceeee994e7d464ea4835cbc0f4b816897"
+    }
+  },
+  "failure_id_comparison": {
+    "identical_to_pinned_37": true,
+    "new": [],
+    "resolved": []
+  },
+  "feature_base_commit": "82cb953",
+  "focused_tests_passed": 18,
+  "frozen_inputs_unchanged": true,
+  "ignored_fixture": {
+    "binding": "Both test worktrees reference byte-identical existing canonical fixture; no R5 state loaded by v2 code.",
+    "path": "work/sdf_native_genesis_v17/sdf_design_state.npz",
+    "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+  },
+  "numpy_version": "2.5.2",
+  "postchange": {
+    "failed": 37,
+    "failure_ids_sha256": "71c9d7cec4639d4443ff1f7e239e68d735dd0e9d26559eca047a380b21a2bf3a",
+    "passed": 1463,
+    "raw_xml_gzip_sha256": "b6c41e62b66a0ec2c17f0fe73b37c8c1cc0f655961e752a6e4a0af8073a199f4",
+    "raw_xml_sha256": "087c769ae4be277afae0559d84cf59f3f192da297e3cbdcc9fca51494d1937d2",
+    "readable_xml_sha256": "cb9f58f9f2ca86e057bac2a84cd5da579ce44bb20e91955bc40ec067f3c6fdec",
+    "skipped": 9,
+    "total": 1509
+  },
+  "python_version": "3.12.13",
+  "solver_executed": false
+}

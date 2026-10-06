@@ -1,0 +1,482 @@
+{
+  "epsilon_m_affected_functions_design_only": [
+    {
+      "function": "perturbation_case_id",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:160"
+    },
+    {
+      "function": "perturbed_state",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:177"
+    },
+    {
+      "function": "classify_direction",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:297"
+    },
+    {
+      "function": "validate_calibration_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:225"
+    },
+    {
+      "function": "validate_formal_epsilon_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:236"
+    },
+    {
+      "function": "audit_float32_centered_pair",
+      "location": "src/cfd_sdf/fd08_calibration.py:461"
+    },
+    {
+      "function": "centered_pair",
+      "location": "src/cfd_sdf/fd08_calibration.py:516"
+    },
+    {
+      "function": "_plateau_metrics",
+      "location": "src/cfd_sdf/fd08_calibration.py:530"
+    },
+    {
+      "function": "select_formal_epsilon_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:550"
+    },
+    {
+      "function": "classify_calibration_screen",
+      "location": "src/cfd_sdf/fd08_calibration.py:608"
+    },
+    {
+      "function": "evaluate_formal_direction_response",
+      "location": "src/cfd_sdf/fd08_calibration.py:657"
+    },
+    {
+      "function": "validate_fd08_design",
+      "location": "src/cfd_sdf/fd08_contract.py:48"
+    },
+    {
+      "function": "audit_float32_perturbation",
+      "location": "src/cfd_sdf/fd08_contract.py:151"
+    },
+    {
+      "function": "evaluate_fd08_response",
+      "location": "src/cfd_sdf/fd08_contract.py:185"
+    },
+    {
+      "function": "epsilon_tag",
+      "location": "scripts/register_fd08_calibration.py:89"
+    },
+    {
+      "function": "build",
+      "location": "scripts/register_fd08_calibration.py:367"
+    },
+    {
+      "function": "bind_cpu_rehearsal",
+      "location": "scripts/register_fd08_calibration.py:140"
+    },
+    {
+      "function": "epsilon_tag",
+      "location": "scripts/register_fd08_formal.py:97"
+    },
+    {
+      "function": "build",
+      "location": "scripts/register_fd08_formal.py:111"
+    },
+    {
+      "function": "analyze",
+      "location": "scripts/analyze_fd08_calibration.py:95"
+    },
+    {
+      "function": "verify",
+      "location": "scripts/verify_fd08_formal.py:87"
+    }
+  ],
+  "epsilon_semantics_note": "Current epsilon_m is the nominal scalar coefficient of max=1 phi direction; realized float32 direction/physical normal displacement are audited separately. No effective-epsilon redefinition is made.",
+  "evidence_class": "solver_free_design_and_simulation_unregistered",
+  "jitter_interpretation": "two signs at one shifted magnitude epsilon_mid*(1+0.001); one centered S contrast per direction/response",
+  "numpy_version": "2.5.2",
+  "pending_decisions": [
+    "B-3",
+    "B-4",
+    "B-5",
+    "B-6",
+    "B-7",
+    "ladder",
+    "baseline_count",
+    "budget"
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_code_changes_design_only": [
+    {
+      "change_needed_if_approved": "formal \u306e 5 \u70b9\u56fa\u5b9a\u3068 calibration \u90e8\u5206\u96c6\u5408\u6761\u4ef6",
+      "location": "src/cfd_sdf/fd08_calibration.py:24"
+    },
+    {
+      "change_needed_if_approved": "D0/D1/D2 \u306e\u56fa\u5b9a inventory\u3002B-4/B-6 \u306f\u672a\u6c7a",
+      "location": "src/cfd_sdf/fd08_calibration.py:25"
+    },
+    {
+      "change_needed_if_approved": "7 \u70b9\u4ee5\u4e0a\u3068 6 \u70b9\u6848\u306e\u885d\u7a81",
+      "location": "src/cfd_sdf/fd08_calibration.py:28"
+    },
+    {
+      "change_needed_if_approved": "100 \u500d\u4ee5\u4e0a\u3068 10/16.7 \u500d\u6848\u306e\u885d\u7a81",
+      "location": "src/cfd_sdf/fd08_calibration.py:29"
+    },
+    {
+      "change_needed_if_approved": "\u70b9\u6570\u30fbspan \u5236\u7d04\u3068\u65b0 ladder \u306e\u5225\u5951\u7d04",
+      "location": "src/cfd_sdf/fd08_calibration.py:225"
+    },
+    {
+      "change_needed_if_approved": "5 \u70b9\u56fa\u5b9a\u30fbcalibration \u90e8\u5206\u96c6\u5408\u304b\u3089\u5185\u90e8\u65b0\u70b9\u3078",
+      "location": "src/cfd_sdf/fd08_calibration.py:236"
+    },
+    {
+      "change_needed_if_approved": "median-slope 5% \u304b\u3089 WLS \u3068 6 \u9805\u76ee\u3078\u306e\u5225\u5951\u7d04",
+      "location": "src/cfd_sdf/fd08_calibration.py:530"
+    },
+    {
+      "change_needed_if_approved": "3 \u65b9\u5411\u5171\u901a\u306e\u9023\u7d9a 5 \u70b9\u7a93\u3001\u5168 6 \u7cfb\u5217\u306e gate",
+      "location": "src/cfd_sdf/fd08_calibration.py:550"
+    },
+    {
+      "change_needed_if_approved": "5 \u70b9\u7a93\u3092\u5217\u6319\u3059\u308b\u65e7 gate \u306e\u505c\u6b62\u898f\u5247",
+      "location": "src/cfd_sdf/fd08_calibration.py:608"
+    },
+    {
+      "change_needed_if_approved": "5 \u89b3\u6e2c\u30fbfloor\u30fbplateau \u56fa\u5b9a",
+      "location": "src/cfd_sdf/fd08_calibration.py:657"
+    },
+    {
+      "change_needed_if_approved": "\u5168 6 \u7cfb\u5217\u56fa\u5b9a\u3002B-4 \u306e\u88ab\u8986\u898f\u5247\u306f\u672a\u6c7a",
+      "location": "src/cfd_sdf/fd08_calibration.py:699"
+    },
+    {
+      "change_needed_if_approved": "baseline span \u306e\u5e8a\u3068 jitter \u306b\u57fa\u3065\u304f \u03c3 \u63a8\u5b9a\u306f\u7570\u306a\u308b",
+      "location": "src/cfd_sdf/fd08_calibration.py:205"
+    },
+    {
+      "change_needed_if_approved": "33 state \u56fa\u5b9a\u3068 predict-then-run 24 state",
+      "location": "src/cfd_sdf/fd08_contract.py:17"
+    },
+    {
+      "change_needed_if_approved": "5% \u56fa\u5b9a\u3002\u65b0 tolerance \u306f\u66ab\u5b9a\u6848\u30fb\u672a\u627f\u8a8d",
+      "location": "src/cfd_sdf/fd08_contract.py:18"
+    },
+    {
+      "change_needed_if_approved": "3 plateau \u70b9\u3068 v2 gate \u306e\u70b9\u6570\u8981\u4ef6",
+      "location": "src/cfd_sdf/fd08_contract.py:19"
+    },
+    {
+      "change_needed_if_approved": "3 baseline + 3\u00d75\u00d72 \u306e\u56fa\u5b9a\u77e9\u5f62",
+      "location": "src/cfd_sdf/fd08_contract.py:48"
+    },
+    {
+      "change_needed_if_approved": "fresh33 \u56fa\u5b9a\u3002disjoint inventory \u306f\u7dad\u6301",
+      "location": "src/cfd_sdf/fd08_contract.py:27"
+    },
+    {
+      "change_needed_if_approved": "calibration \u306e\u9023\u7d9a 5 \u70b9\u90e8\u5206\u96c6\u5408\u30fb\u65e7 sources \u3068 gate \u306e hash \u7d50\u5408",
+      "location": "scripts/register_fd08_formal.py:111"
+    },
+    {
+      "change_needed_if_approved": "fresh33\u30fb3 \u65b9\u5411\u30fbcalibration \u306e 5 baseline\u30fb\u5168\u65e7 gate \u306e\u518d\u8a08\u7b97",
+      "location": "scripts/verify_fd08_formal.py:87"
+    },
+    {
+      "change_needed_if_approved": "\u65e7 ladder \u691c\u8a3c\u3001D0/D1/D2\u3001baseline 5\u3001signed inventory\u3001criteria \u7d50\u5408",
+      "location": "scripts/register_fd08_calibration.py:367"
+    },
+    {
+      "change_needed_if_approved": "\u65e7 pair \u5206\u6bcd\u30fbbaseline floor\u30fb\u5171\u901a plateau selector\u30fb\u65b0 jitter roles",
+      "location": "scripts/analyze_fd08_calibration.py:95"
+    }
+  ],
+  "runtime_assumptions": {
+    "R5_handwritten_elapsed_s": 8596.5,
+    "R5_handwritten_solver_s": 5109.38,
+    "R5_raw_overhead_s_per_state": 74.1940425532,
+    "R5_raw_solver_s_per_state": 108.710212766,
+    "R5_states": 47,
+    "budget_source": "docs/evidence/xfid_candidate_c_2026_10_04/xfidc_criteria.json:100; docs/phase_plan.md:6053-6054",
+    "kernel_limit_s": 10800.0,
+    "overhead_s_per_state": 74.0,
+    "solver_limit_s": 5400.0,
+    "solver_s_per_state": 108.7,
+    "source": "docs/issues/46_fd08_v2_stage1_instruction_2026_10_06.md \u00a74; docs/phase_plan.md:6257-6258"
+  },
+  "runtime_rows": [
+    {
+      "baseline_states": 1,
+      "directions": 3,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 7856.1,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 2943.9,
+      "overhead_s": 3182.0,
+      "signed_ladder_states": 36,
+      "solver_limit_exceeded": false,
+      "solver_margin_s": 725.9,
+      "solver_s": 4674.1,
+      "total_states": 43
+    },
+    {
+      "baseline_states": 5,
+      "directions": 3,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 8586.9,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 2213.1,
+      "overhead_s": 3478.0,
+      "signed_ladder_states": 36,
+      "solver_limit_exceeded": false,
+      "solver_margin_s": 291.1,
+      "solver_s": 5108.9,
+      "total_states": 47
+    },
+    {
+      "baseline_states": 1,
+      "directions": 3,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 8952.3,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 1847.7,
+      "overhead_s": 3626.0,
+      "signed_ladder_states": 42,
+      "solver_limit_exceeded": false,
+      "solver_margin_s": 73.7,
+      "solver_s": 5326.3,
+      "total_states": 49
+    },
+    {
+      "baseline_states": 5,
+      "directions": 3,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 9683.1,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 1116.9,
+      "overhead_s": 3922.0,
+      "signed_ladder_states": 42,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -361.1,
+      "solver_s": 5761.1,
+      "total_states": 53
+    },
+    {
+      "baseline_states": 1,
+      "directions": 3,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 10048.5,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 751.5,
+      "overhead_s": 4070.0,
+      "signed_ladder_states": 48,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -578.5,
+      "solver_s": 5978.5,
+      "total_states": 55
+    },
+    {
+      "baseline_states": 5,
+      "directions": 3,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 10779.3,
+      "jitter_states": 6,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 20.7,
+      "overhead_s": 4366.0,
+      "signed_ladder_states": 48,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -1013.3,
+      "solver_s": 6413.3,
+      "total_states": 59
+    },
+    {
+      "baseline_states": 1,
+      "directions": 4,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 10413.9,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": false,
+      "kernel_margin_s": 386.1,
+      "overhead_s": 4218.0,
+      "signed_ladder_states": 48,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -795.9,
+      "solver_s": 6195.9,
+      "total_states": 57
+    },
+    {
+      "baseline_states": 5,
+      "directions": 4,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 11144.7,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -344.7,
+      "overhead_s": 4514.0,
+      "signed_ladder_states": 48,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -1230.7,
+      "solver_s": 6630.7,
+      "total_states": 61
+    },
+    {
+      "baseline_states": 1,
+      "directions": 4,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 11875.5,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -1075.5,
+      "overhead_s": 4810.0,
+      "signed_ladder_states": 56,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -1665.5,
+      "solver_s": 7065.5,
+      "total_states": 65
+    },
+    {
+      "baseline_states": 5,
+      "directions": 4,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 12606.3,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -1806.3,
+      "overhead_s": 5106.0,
+      "signed_ladder_states": 56,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -2100.3,
+      "solver_s": 7500.3,
+      "total_states": 69
+    },
+    {
+      "baseline_states": 1,
+      "directions": 4,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 13337.1,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -2537.1,
+      "overhead_s": 5402.0,
+      "signed_ladder_states": 64,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -2535.1,
+      "solver_s": 7935.1,
+      "total_states": 73
+    },
+    {
+      "baseline_states": 5,
+      "directions": 4,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 14067.9,
+      "jitter_states": 8,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -3267.9,
+      "overhead_s": 5698.0,
+      "signed_ladder_states": 64,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -2969.9,
+      "solver_s": 8369.9,
+      "total_states": 77
+    },
+    {
+      "baseline_states": 1,
+      "directions": 5,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 12971.7,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -2171.7,
+      "overhead_s": 5254.0,
+      "signed_ladder_states": 60,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -2317.7,
+      "solver_s": 7717.7,
+      "total_states": 71
+    },
+    {
+      "baseline_states": 5,
+      "directions": 5,
+      "epsilon_points": 6,
+      "estimated_elapsed_s": 13702.5,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -2902.5,
+      "overhead_s": 5550.0,
+      "signed_ladder_states": 60,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -2752.5,
+      "solver_s": 8152.5,
+      "total_states": 75
+    },
+    {
+      "baseline_states": 1,
+      "directions": 5,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 14798.7,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -3998.7,
+      "overhead_s": 5994.0,
+      "signed_ladder_states": 70,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -3404.7,
+      "solver_s": 8804.7,
+      "total_states": 81
+    },
+    {
+      "baseline_states": 5,
+      "directions": 5,
+      "epsilon_points": 7,
+      "estimated_elapsed_s": 15529.5,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -4729.5,
+      "overhead_s": 6290.0,
+      "signed_ladder_states": 70,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -3839.5,
+      "solver_s": 9239.5,
+      "total_states": 85
+    },
+    {
+      "baseline_states": 1,
+      "directions": 5,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 16625.7,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -5825.7,
+      "overhead_s": 6734.0,
+      "signed_ladder_states": 80,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -4491.7,
+      "solver_s": 9891.7,
+      "total_states": 91
+    },
+    {
+      "baseline_states": 5,
+      "directions": 5,
+      "epsilon_points": 8,
+      "estimated_elapsed_s": 17356.5,
+      "jitter_states": 10,
+      "kernel_limit_exceeded": true,
+      "kernel_margin_s": -6556.5,
+      "overhead_s": 7030.0,
+      "signed_ladder_states": 80,
+      "solver_limit_exceeded": true,
+      "solver_margin_s": -4926.5,
+      "solver_s": 10326.5,
+      "total_states": 95
+    }
+  ],
+  "state_formula": "2 * directions * epsilon_points + baseline_states + 2 * directions"
+}
