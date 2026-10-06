@@ -77,6 +77,7 @@ RUNTIME = {
     "precision": "Float32",
     "memory": "CuArray",
 }
+KERNEL_ID = "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal"
 SOURCE_FILES = {
     "kaggle_budget_preflight": "scripts/check_fd08_v2_kaggle_budget.py",
     "campaign": "src/cfd_sdf/fd08_v2_campaign.py",
@@ -280,7 +281,7 @@ def make_contract(state: SDFDesignState, state_path: Path, dataset_dir: Path,
         "registered_before_computation": True,
         "status": "registered_not_run",
         "criteria_id": "FD08-V2-R6-2026-10-06",
-        "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "kernel_id": KERNEL_ID,
         "input_dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
         "source_commit": source_commit,
         "canonical_state": preflight["canonical"],
