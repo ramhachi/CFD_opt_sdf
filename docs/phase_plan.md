@@ -6610,3 +6610,20 @@ submission remains pending. The criteria still bind source H6
 coverage remain unchanged. R5 remains `FAIL`, the 17 historical Stage 1
 mismatches remain unchanged, and all six qualification flags remain literal
 `false`.
+
+
+### 2026-10-07 — R6 retry 2 source-ready checkpoint
+
+Before submitting the retry-2 kernel, a clean pushed integration checkout
+`480085e95072618e9789efb2427338e20ea88913` was checked against all 35 source/input hashes bound by the
+immutable criteria. They match; the criteria remains bound to source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9` and SHA-256
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`. The exact remote dataset version 6 is ready and
+all 103 downloaded files passed the registered inventory comparison. The T4
+kernel identity is `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`; solver and kernel allowances
+remain 6,600 s and 11,200 s. The source-ready check is recorded at
+`docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_kernel_pre_submit_check.json`.
+No solver execution has started at this checkpoint. No criteria or source
+change is planned. R6 remains the last calibration; R5 remains `FAIL`, the 17
+historical Stage 1 mismatches remain unchanged, and all six qualification
+flags remain literal `false`.
