@@ -6583,3 +6583,30 @@ attempt remain untouched. R6 remains the last calibration, R5 remains `FAIL`,
 the 17 historical Stage 1 mismatches remain unchanged, formal remains
 conditional on an 8/8 R6 `PASS`, and all six qualification flags remain
 literal `false`.
+
+
+### 2026-10-07 — R6 retry 2 Kaggle dataset version 6 verified
+
+Using the repository Kaggle batch runbook with pinned Kaggle CLI 2.2.4, the
+immutable retry-2 payload was appended as private dataset version 6. Kaggle
+reported `ready` and `current_version_number: 6`. CLI download and host-side
+SHA-256 comparison passed for all 103 remote files against the complete
+registered upload, criteria SHA
+`90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`, and the
+dataset manifest. The canonical remote inventory SHA-256 is
+`f1c5f614ee89a4210746fe34a5a6a2933c36da88534a13a4715e492e7b709972`. The upload, download, status, and
+comparison captures are archived under
+`docs/evidence/fd08_v2_r6_2026_10_06/`.
+
+The first local comparison record compared the criteria's 100-file payload map
+with the 103-file complete remote upload and marked that scope mismatch as a
+content failure. Its byte comparisons showed the local payload files matched;
+the corrected append-only comparison includes `criteria.json`, its SHA sidecar,
+and the dataset manifest, and all six exact-content checks pass. Both records
+are retained, with the corrected record explicitly superseding the initial
+comparison. No solver was submitted or run during dataset transfer. Kernel
+submission remains pending. The criteria still bind source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`; all fixed R6 parameters and
+coverage remain unchanged. R5 remains `FAIL`, the 17 historical Stage 1
+mismatches remain unchanged, and all six qualification flags remain literal
+`false`.

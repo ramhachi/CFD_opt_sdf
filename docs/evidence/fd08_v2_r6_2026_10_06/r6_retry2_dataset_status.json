@@ -1,0 +1,9 @@
+{
+  "command": "uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets status ramhachi888/cfd-opt-sdf-fd08-v2-r6 --format 'json(status,current_version_number)'",
+  "criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_version": 6,
+  "kind": "fd08_v2_r6_retry2_dataset_status_capture",
+  "status": "ready",
+  "stdout": "{\"status\": \"ready\", \"current_version_number\": 6}\n"
+}
