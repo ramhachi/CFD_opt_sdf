@@ -1,0 +1,75 @@
+{
+  "captured_utc": "2026-10-06T14:04:24.412783Z",
+  "cli_version": "Kaggle CLI 2.2.4",
+  "criteria_sha256": "461e0fb89003a3a9bab7e1b36c5d23176b883ce16774f7f3e89083e92abb348f",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_version": 3,
+  "download_mode": "CLI per-file downloads because full archive returned 404 in prior versions",
+  "exact_paths_sizes_sha256_match": true,
+  "expected_and_downloaded_file_count": 8,
+  "files": [
+    {
+      "path": "P1_upstream_lobe__e0.5mm__plus.phi.f32f",
+      "sha256": "a908fc5ecc0d38a7140d7116d93680056844e4fb0e26b1ae8ab5548a16b83b37",
+      "size_bytes": 1541540,
+      "stderr_sha256": "0ef0230ec9051201ab21169fc60c4522cc5a8459ee1b6f124b84fd1f6b9bd692",
+      "stdout_sha256": "342eeeb1e30560d0e52c352f1c44652bfd6e5efc1752b912e48d5e10e377a0ee"
+    },
+    {
+      "path": "P1_upstream_lobe__e0.5mm__plus.sdf_design_state.npz",
+      "sha256": "944f57be1f5343ee6673d5b70c8a9ad41f6476ccd6f9cb30d836552e772df663",
+      "size_bytes": 211571,
+      "stderr_sha256": "b2868bcb57fcbdf588dd8506bc1bb38b7a720abc77c1d8eb1afe5712b32616f0",
+      "stdout_sha256": "7a6a603d5c09c13d99373618c468e6e5e0b6ed5e06b09ea36c2796837cf0b84d"
+    },
+    {
+      "path": "baseline_v17.phi.f32f",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "size_bytes": 1541540,
+      "stderr_sha256": "051cf413d032ece8c69e0763f0df4e03273336beff67307edaa8f81c6b46d993",
+      "stdout_sha256": "0aeef5564f587571d7df73ba78d1faed8ad8ee37025a54d64d1c668995cb8d19"
+    },
+    {
+      "path": "baseline_v17.sdf_design_state.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "size_bytes": 200028,
+      "stderr_sha256": "6b34e63b7fa6d1ef85f98f3bc7766ff168962705db05c59b43279f2794956fe1",
+      "stdout_sha256": "d28dc2b15550174db6e888c609ac1a300c3a10f8ca871fe5142b11cb751afbfb"
+    },
+    {
+      "path": "criteria.json",
+      "sha256": "461e0fb89003a3a9bab7e1b36c5d23176b883ce16774f7f3e89083e92abb348f",
+      "size_bytes": 11220,
+      "stderr_sha256": "83aeafa7410f8d91364ad2d60a6454d15822276cd47ddf718789cabc4d2c77cd",
+      "stdout_sha256": "20fd87c5b61b1a1266e85e4f4edfeb932728a2ede74d3b483cbe8814ed0b3de8"
+    },
+    {
+      "path": "criteria.json.sha256",
+      "sha256": "dfcbc747ac68276cdc241a508aa42fba82e523224069282001b6bef52cfa9515",
+      "size_bytes": 65,
+      "stderr_sha256": "76bcf90fb6bfe9b04860301693f60c27bd9d574e4483caa15bf02a1482c6ac69",
+      "stdout_sha256": "8afe83291aa01f6911f57813b735339051a5f5765873e670a9e33edeca2674dd"
+    },
+    {
+      "path": "fd08_v2_dataset_manifest.json",
+      "sha256": "513a3e1c181b948facbb4237280e63b910544aeb34cc68d703c0f75e557a5f52",
+      "size_bytes": 895,
+      "stderr_sha256": "0a12be660332e53efd40006a31dd0b918604a7c3545a47e268d405c5fd18e3d9",
+      "stdout_sha256": "bcf318b7a8d9a12eb60b9c5e84fcb52140041a2c325644ddb27087b42a033e25"
+    },
+    {
+      "path": "kaggle_budget_preflight.json",
+      "sha256": "b366bf37005d6a0af698eea24992590bf16fd0fe5bc04b8a591cdf62f519aa13",
+      "size_bytes": 1189,
+      "stderr_sha256": "299c240be221b28d55f6fc9339a3f787257bbb1b408251b089b7c3e7223448ad",
+      "stdout_sha256": "8b0e235957227f3038221f0b140af4ae6f545391470404f290cab875cfd761fc"
+    }
+  ],
+  "kind": "fd08_v2_setup_dataset_remote_verification",
+  "manifest_sha256": "513a3e1c181b948facbb4237280e63b910544aeb34cc68d703c0f75e557a5f52",
+  "remote_list_sha256": "42e49f7c97dea3419a757f247364a3c5ff355518b6931390a7116aa857668b98",
+  "remote_status_before_and_after": {
+    "current_version_number": 3,
+    "status": "ready"
+  }
+}
