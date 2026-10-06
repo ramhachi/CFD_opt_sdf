@@ -1,0 +1,121 @@
+{
+  "captured_utc": "2026-10-06T17:45:37.566585+00:00",
+  "captures": {
+    "dataset_upload_stderr": {
+      "content_sha256": "0d400a8e76b90d5787c311e44f905f1786338208f443b181a55356443c776ca1",
+      "content_size_bytes": 1449,
+      "encoding": "gzip",
+      "path": "setup_retry1_dataset_upload_stderr.capture.gz",
+      "sha256": "d7262caa16d84f498f8ee0172891dfb4628617dd2dfd9fbc4d37d416070fc75c",
+      "size_bytes": 304
+    },
+    "dataset_upload_stdout": {
+      "content_sha256": "625d90efbdddb9524f399b1c835bb022d2f7cc8389fb715014b2d8ef3a3960c4",
+      "content_size_bytes": 1016,
+      "encoding": "gzip",
+      "path": "setup_retry1_dataset_upload_stdout.capture.gz",
+      "sha256": "4a32afb2262710be2c73723e98ce967069ba00debda6212c2051d0b20187f0ad",
+      "size_bytes": 337
+    },
+    "kernel_push_stderr": {
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_size_bytes": 0,
+      "encoding": "gzip",
+      "path": "setup_retry1_kernel_push_stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "size_bytes": 20
+    },
+    "kernel_push_stdout": {
+      "content_sha256": "b8e6068f0689e58b375a767480df97957d8ccc7d0f4192f915861cc29f923b94",
+      "content_size_bytes": 138,
+      "encoding": "gzip",
+      "path": "setup_retry1_kernel_push_stdout.capture.gz",
+      "sha256": "394cc2d5f719a7634f56d91032274a5509cf0f2a180b1bbde4c67fc5ba92963f",
+      "size_bytes": 136
+    },
+    "output_stderr": {
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_size_bytes": 0,
+      "encoding": "gzip",
+      "path": "setup_retry1_output_stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "size_bytes": 20
+    },
+    "output_stdout": {
+      "content_sha256": "a5b10c9ce973f59b489f9a1cc4faef9e78f50ddf57542bcc93ffe58b78f1f458",
+      "content_size_bytes": 1771,
+      "encoding": "gzip",
+      "path": "setup_retry1_output_stdout.capture.gz",
+      "sha256": "25ab7f1a50b3a7026a7b05bebc0958783e33d1cea41aba751a403c5c66fcb339",
+      "size_bytes": 285
+    },
+    "running_logs_permission_stderr": {
+      "content_sha256": "a72559e824725545f8d75f87331d547095b42c743572b699f58d630fe64908b3",
+      "content_size_bytes": 227,
+      "encoding": "gzip",
+      "path": "setup_retry1_running_logs_permission_stderr.capture.gz",
+      "sha256": "7134ce18443981e90f8be9c66c325a54911756a8044fc1140cda995ab95844e6",
+      "size_bytes": 200
+    },
+    "running_status_1_stdout": {
+      "content_sha256": "12c91c16f857e58b2d5c106cacf972490a1de372ad401bf0c01d51eaa9fdfdd6",
+      "content_size_bytes": 88,
+      "encoding": "gzip",
+      "path": "setup_retry1_running_status_1_stdout.capture.gz",
+      "sha256": "609c9365b22f4625413502981b1292fa44d159ab219fa95c124736f164e746a2",
+      "size_bytes": 105
+    },
+    "terminal_logs_stderr": {
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_size_bytes": 0,
+      "encoding": "gzip",
+      "path": "setup_retry1_terminal_logs_stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "size_bytes": 20
+    },
+    "terminal_logs_stdout": {
+      "content_sha256": "f658bdae772fd036814b41a164727df27a7e06e764860c668b18145e4b8693b5",
+      "content_size_bytes": 2814,
+      "encoding": "gzip",
+      "path": "setup_retry1_terminal_logs_stdout.capture.gz",
+      "sha256": "c5e390691803b32d3792328b7050fcc254d6353c8914a05599df60ec727fb4bf",
+      "size_bytes": 930
+    },
+    "terminal_status_stderr": {
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_size_bytes": 0,
+      "encoding": "gzip",
+      "path": "setup_retry1_terminal_status_stderr.capture.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "size_bytes": 20
+    },
+    "terminal_status_stdout": {
+      "content_sha256": "de6f741e104014b61304b5edfbdd3620db2f68d379e346e1443dd9cf7a663f9d",
+      "content_size_bytes": 89,
+      "encoding": "gzip",
+      "path": "setup_retry1_terminal_status_stdout.capture.gz",
+      "sha256": "7b9e56510a45d71b5615f898c134ac26b9075a41557714bf32f67417698faeed",
+      "size_bytes": 106
+    }
+  },
+  "commands": {
+    "dataset_version": "kaggle datasets version -p work/kaggle_fd08_v2_setup_dataset_retry1 -m 'FD08 v2 source-bound setup rehearsal retry 1; integration f8ee8ae' --dir-mode zip",
+    "kernel_push": "kaggle kernels push -p infra/kaggle/kernel_fd08_v2_r6 --accelerator NvidiaTeslaT4 --timeout 7200",
+    "logs": "kaggle kernels logs ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/4",
+    "output": "kaggle kernels output ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/4 --path work/kaggle_fd08_v2_setup_retry1_output --force",
+    "status": "kaggle kernels status ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal/4"
+  },
+  "dataset_criteria_sha256": "b94da00eb7ee771058d6e1d827cc2a45e808eda5f28efeed6b4b7efc816ca8cb",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+  "dataset_version": 5,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+  "kernel_status": "KernelWorkerStatus.COMPLETE",
+  "kernel_version": 4,
+  "kind": "fd08_v2_setup_retry1_kernel_terminal_capture",
+  "setup_verification_sha256": "de87aafe92985497d7a686d6867be1add2284b1c6250f46c75b46516c17cb795",
+  "terminal_archive": {
+    "path": "setup_retry1_kernel_v4_terminal_artifacts.tar.gz",
+    "sha256": "98551902db5ff8331f1cd911104e7d58020487c92507e763e0eee4995b54d6b9",
+    "size_bytes": 4891
+  }
+}

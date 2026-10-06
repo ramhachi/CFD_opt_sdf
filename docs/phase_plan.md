@@ -6552,3 +6552,34 @@ the completed version 3 output will not be reused for a verdict. No scientific
 result is claimed, formal remains unregistered, R5 remains `FAIL`, the 17
 historical Stage 1 mismatches remain unchanged, and all six qualification
 flags remain literal `false`.
+
+
+### 2026-10-07 — #46 FD-08 v2 R6 retry 2 immutable preregistration
+
+The first R6 attempt's complete solver output remains preserved but was not used
+for a scientific verdict: its registered analyzer stopped on a serialization
+error before producing an analysis artifact. The serialization-only fix was
+merged and pushed in integration source `f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`.
+A new setup-only T4 rehearsal on that exact source passed for baseline plus the
+smallest P1 signed state and produced no force history.
+
+Retry 2 was preregistered as a new immutable identity before its solver run.
+Criteria SHA-256 is `90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837`; it binds source H6
+`f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`. The T2 params hash remains
+`c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba`, and regenerated solver-free
+preflight SHA-256 `8eab67329b66082a23d1c5ef5957671ab1d6c083e7bca8e246564c2de93a911d` matches the earlier
+frozen geometry inventory exactly. The approved four directions, P1 hash, six
+epsilon ladder, Float32 audits, 49 states, and no-jitter rule are unchanged.
+All 98 state payload files match the previous frozen state inventory before
+criteria/support files are added.
+
+The retry-2 Kaggle CLI preflight passed for the unchanged 6,600 s solver cap and
+11,200 s kernel allowance. Its setup rehearsal source identity is exact and
+force-history-free. Criteria, setup, budget, precheck, and registration records
+are stored append-only under `docs/evidence/fd08_v2_r6_2026_10_06/`. This is a
+registration checkpoint only: no retry-2 solver execution or scientific
+analysis has started. The previous immutable R6 criteria and failed analyzer
+attempt remain untouched. R6 remains the last calibration, R5 remains `FAIL`,
+the 17 historical Stage 1 mismatches remain unchanged, formal remains
+conditional on an 8/8 R6 `PASS`, and all six qualification flags remain
+literal `false`.
