@@ -6414,3 +6414,42 @@ and `diagnostic_result.json` (SHA-256
 `df003b46056c00e609f93550438e088f7a9955147acea81be2cd54e389a743bc`). Stop at
 the user decision point B; the gate and FD-08 definition remain for the user to
 decide.
+
+
+### 2026-10-06 — #46 RCFG-1 approved; R6 execution preparation
+
+The user approved RCFG-1 for the FD-08 v2 diagnostic operating contract. T2
+remains arbitrary-provisional and diagnostic only; it does not set #23's
+numerical precision delta or qualify gradient accuracy, physical truth, grid
+independence, or an epsilon-to-zero derivative. Historical Stage 1 strict
+numeric mismatches remain 17, and R5 remains `FAIL` without reinterpretation.
+
+The approved next calibration is R6 and it is the last calibration. It uses
+COV-A (all four registered directions by drag and downforce, 8/8 required), the
+six-value L6 ladder `geomspace(0.5, 5, 6) mm`, no jitter, and the frozen P1
+upstream-lobe direction. Formal, only after R6 PASS, uses the pre-frozen
+predict-then-run rule at interior interval indices `{0, 2, 4}` with geometric
+means of adjacent calibration magnitudes. Scientific FAIL or UNRESOLVED does
+not permit threshold, direction, model, or ladder adjustment or a new
+calibration. All six qualification flags remain literal `false`.
+
+Solver-free R6 geometry, direction, Float32 centered-direction, and byte
+uniqueness preflight passed for the 49-state inventory. The T2 parameter file
+SHA-256 was recorded before any R6 setup or scientific solver invocation.
+Kaggle CLI 2.2.4 confirmed the requested timeout interface; the captured
+setup-only allowance is 7,200 seconds, within the documented 43,200-second
+CPU/GPU session ceiling and the then-current 22.55-hour GPU quota. R6 and
+formal capability snapshots will be refreshed immediately before their
+respective registrations. These are capacity checks, not runtime guarantees.
+
+Implementation validation on the feature worktree: focused v2 tests passed
+49; `compileall`, command-line import smoke, Julia parse, and `git diff --check`
+passed. Full pytest reported 37 failed, 1,494 passed, and 9 skipped. The 37
+failure IDs exactly match the pinned baseline (zero new and zero resolved),
+with comparison and JUnit evidence under
+`docs/evidence/fd08_v2_r6_2026_10_06/validation/`.
+
+At this checkpoint source-ready integration, bounded setup rehearsal, R6
+criteria registration, and solver execution are still pending. No Kaggle
+dataset or kernel has been created or submitted for this round. R6/formal
+criteria remain unregistered; no response result is claimed.
