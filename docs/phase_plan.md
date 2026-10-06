@@ -6465,3 +6465,37 @@ The private kernel metadata title was corrected to resolve to the criteria ID. F
 Setup criteria/dataset v2 were prepared from integration `b1a8bd3`; Kaggle dataset version 2 reached `ready` and all 8 files matched the registered inventory. A kernel push using slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6` returned HTTP 409 from `SaveKernel`; no kernel version was created and no solver step ran. The requested kernel slug equals the private dataset slug; resource-ID collision is the likely cause, recorded as an inference because Kaggle returned no structured reason.
 
 Attempt 2 is preserved at `docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt2_conflict.json`. The source now centralizes a distinct kernel ID matching the existing title-derived slug `ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal`, while keeping the dataset ID `ramhachi888/cfd-opt-sdf-fd08-v2-r6`. R6/formal remain unregistered; scientific contract, params and state inventory are unchanged; all flags remain false.
+
+### 2026-10-06 — #46 FD-08 v2 R6 immutable preregistration
+
+The bounded T4 setup rehearsal passed as infrastructure-only evidence under
+source commit `2a09610e6a7aa7d1c464e675e56b3d547beea930`: baseline plus the
+smallest P1 signed state completed the setup path, with no force history and no
+R6 measurement. Its two-state criteria, terminal output, runtime logs, host
+verification, and hashes are preserved in
+`docs/evidence/fd08_v2_r6_2026_10_06/setup_attempt3_artifacts.tar.gz` and the
+adjacent append-only records.
+
+R6 was preregistered before R6 solver execution. Immutable criteria SHA-256 is
+`80d2526c6ef4f41b5f3772a54960968a6a58685e41c5968fb42304bf0f6d049b`, bound to
+clean pushed integration source `2a09610e6a7aa7d1c464e675e56b3d547beea930`.
+The frozen inventory contains the baseline and 48 signed states (49 total),
+with four approved directions, six L6 epsilon values, and no jitter. All
+geometry, P1 independence, Float32 centered-direction, margin, mask, and
+byte-uniqueness pre-registration gates passed. The T2 params hash remains
+`c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba`.
+
+The R6 Kaggle CLI budget preflight passed for 6,600 s aggregate solver cap and
+11,200 s kernel allowance; the observed GPU quota remaining was 22.3 h and the
+platform CPU/GPU session ceiling was 43,200 s. These are capability checks,
+not runtime guarantees. The private R6 input dataset version 4 is ready, and
+all 103 remote files match the registered paths, sizes, and SHA-256 values.
+Remote inventory SHA-256 is
+`b144b20ac70e07fc602ca23bf134f98001097e26b813b89bb53c2e8d2034fae4`; the
+criteria, sidecar, data manifest, setup evidence, budget evidence, and 49-state
+payload hashes are archived in the same evidence directory.
+
+This records preregistration and input delivery only; R6 terminal evidence and
+scientific verdict are pending. R6 remains the last calibration. R5 remains
+`FAIL`, the 17 historical Stage 1 strict mismatches remain unchanged, and all
+six qualification flags remain literal `false`.
