@@ -1,0 +1,399 @@
+{
+  "candidates_analytical_diagnostics_only": [
+    {
+      "analytic_phi_coefficient_stats": {
+        "l2_norm": 33.0194374286,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 8339,
+        "rms_active": 0.100748178573,
+        "rms_full_grid_zero_extension": 0.0531890539966
+      },
+      "centers_m": [
+        [
+          -0.1125,
+          0.0,
+          5.55111512313e-17
+        ]
+      ],
+      "comparison_to_protected_directions": [
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": -0.869314487045,
+          "discrete_integral_inner_product_m3": -0.0308067284974,
+          "discrete_l2_inner_product": -1971.63062383,
+          "protected_id": "D0_interface_offset",
+          "reference_support_in_candidate_fraction": 1.0,
+          "support_intersection": 8339,
+          "support_jaccard": 1.0,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": -0.0239745665775,
+          "discrete_integral_inner_product_m3": -0.00024589092372,
+          "discrete_l2_inner_product": -15.7370191181,
+          "protected_id": "D1_filtered_seed11",
+          "reference_support_in_candidate_fraction": 1.0,
+          "support_intersection": 8339,
+          "support_jaccard": 1.0,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": -0.00260716546124,
+          "discrete_integral_inner_product_m3": -2.67706314302e-05,
+          "discrete_l2_inner_product": -1.71332041153,
+          "protected_id": "D2_filtered_seed2026",
+          "reference_support_in_candidate_fraction": 1.0,
+          "support_intersection": 8339,
+          "support_jaccard": 1.0,
+          "support_union": 8339
+        }
+      ],
+      "float32_audit_executed": false,
+      "id": "P1_upstream_lobe",
+      "new_direction_generated": false,
+      "new_direction_sha256": null,
+      "physical_normal_displacement_per_nominal_epsilon_stats": {
+        "l2_norm": 35.7265801995,
+        "max_abs": 1.00173750854,
+        "nonzero_active_nodes": 8339,
+        "rms_active": 0.109008152835,
+        "rms_full_grid_zero_extension": 0.057549829777
+      },
+      "raw_phi_normalizer": 0.998048973566,
+      "widths_in_grid_spacings": [
+        58.8,
+        27.2,
+        24.0
+      ],
+      "widths_m": [
+        1.47,
+        0.68,
+        0.6
+      ]
+    },
+    {
+      "analytic_phi_coefficient_stats": {
+        "l2_norm": 16.5325127813,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 5562,
+        "rms_active": 0.0504436380405,
+        "rms_full_grid_zero_extension": 0.0266312446094
+      },
+      "centers_m": [
+        [
+          1.1125,
+          0.0,
+          5.55111512313e-17
+        ]
+      ],
+      "comparison_to_protected_directions": [
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": -0.552681519189,
+          "discrete_integral_inner_product_m3": -0.00980647225885,
+          "discrete_l2_inner_product": -627.614224567,
+          "protected_id": "D0_interface_offset",
+          "reference_support_in_candidate_fraction": 0.666986449215,
+          "support_intersection": 5562,
+          "support_jaccard": 0.666986449215,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": 0.060041631673,
+          "discrete_integral_inner_product_m3": 0.000308328320547,
+          "discrete_l2_inner_product": 19.733012515,
+          "protected_id": "D1_filtered_seed11",
+          "reference_support_in_candidate_fraction": 0.666986449215,
+          "support_intersection": 5562,
+          "support_jaccard": 0.666986449215,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": 0.0849070395225,
+          "discrete_integral_inner_product_m3": 0.000436518763862,
+          "discrete_l2_inner_product": 27.9372008872,
+          "protected_id": "D2_filtered_seed2026",
+          "reference_support_in_candidate_fraction": 0.666986449215,
+          "support_intersection": 5562,
+          "support_jaccard": 0.666986449215,
+          "support_union": 8339
+        }
+      ],
+      "float32_audit_executed": false,
+      "id": "P2_downstream_lobe",
+      "new_direction_generated": false,
+      "new_direction_sha256": null,
+      "physical_normal_displacement_per_nominal_epsilon_stats": {
+        "l2_norm": 18.0322948422,
+        "max_abs": 1.03246506105,
+        "nonzero_active_nodes": 5562,
+        "rms_active": 0.0550197399566,
+        "rms_full_grid_zero_extension": 0.0290471546076
+      },
+      "raw_phi_normalizer": 0.532945969002,
+      "widths_in_grid_spacings": [
+        58.8,
+        27.2,
+        24.0
+      ],
+      "widths_m": [
+        1.47,
+        0.68,
+        0.6
+      ]
+    },
+    {
+      "analytic_phi_coefficient_stats": {
+        "l2_norm": 25.1047259461,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 8324,
+        "rms_active": 0.0765989856158,
+        "rms_full_grid_zero_extension": 0.040439714541
+      },
+      "centers_m": [
+        [
+          0.5,
+          0.0,
+          0.1875
+        ],
+        [
+          0.5,
+          0.0,
+          -0.1875
+        ]
+      ],
+      "comparison_to_protected_directions": [
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": 0.0744978543897,
+          "discrete_integral_inner_product_m3": 0.00200723510528,
+          "discrete_l2_inner_product": 128.463046738,
+          "protected_id": "D0_interface_offset",
+          "reference_support_in_candidate_fraction": 0.998201223168,
+          "support_intersection": 8324,
+          "support_jaccard": 0.998201223168,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": 0.100643880512,
+          "discrete_integral_inner_product_m3": 0.000784810712556,
+          "discrete_l2_inner_product": 50.2278856036,
+          "protected_id": "D1_filtered_seed11",
+          "reference_support_in_candidate_fraction": 0.998201223168,
+          "support_intersection": 8324,
+          "support_jaccard": 0.998201223168,
+          "support_union": 8339
+        },
+        {
+          "candidate_support_in_reference_fraction": 1.0,
+          "cosine": 0.0365836403692,
+          "discrete_integral_inner_product_m3": 0.000285602993423,
+          "discrete_l2_inner_product": 18.2785915791,
+          "protected_id": "D2_filtered_seed2026",
+          "reference_support_in_candidate_fraction": 0.998201223168,
+          "support_intersection": 8324,
+          "support_jaccard": 0.998201223168,
+          "support_union": 8339
+        }
+      ],
+      "float32_audit_executed": false,
+      "id": "P3_vertical_signed_pair",
+      "new_direction_generated": false,
+      "new_direction_sha256": null,
+      "physical_normal_displacement_per_nominal_epsilon_stats": {
+        "l2_norm": 27.3605941071,
+        "max_abs": 0.999999985099,
+        "nonzero_active_nodes": 8324,
+        "rms_active": 0.0834820407502,
+        "rms_full_grid_zero_extension": 0.0440735588088
+      },
+      "raw_phi_normalizer": 0.980415908613,
+      "widths_in_grid_spacings": [
+        78.4,
+        27.2,
+        18.0
+      ],
+      "widths_m": [
+        1.96,
+        0.68,
+        0.45
+      ]
+    }
+  ],
+  "canonical": {
+    "active_bbox_max_m": [
+      1.725,
+      0.425,
+      0.375
+    ],
+    "active_bbox_min_m": [
+      -0.725,
+      -0.425,
+      -0.375
+    ],
+    "active_node_count": 107415,
+    "gradient_magnitude_max": 1.11904988495,
+    "gradient_magnitude_min": 0.0,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration/work/sdf_native_genesis_v17/sdf_design_state.npz",
+    "phi_float32_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "spacing_m": 0.025,
+    "state_content_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+    "total_nodes": 385385,
+    "zero_gradient_active_nodes": 120
+  },
+  "evidence_class": "solver_free_design_and_numeric_contract_unregistered",
+  "frozen_definition": {
+    "a_rule": "sum coefficient*max(1-sum(((x-center)/width)^2),0)^3",
+    "array_restriction": "temporary Float64 active-node expressions only; no new full-grid direction, Float32 array, candidate hash, signed state or dataset",
+    "coordinate_rule": "centers=active_min+fraction*active_span; widths=fraction*active_span",
+    "gradient_rule": "second-order central differences on interior nodes; first-order one-sided at box edges; zero-gradient raw remains zero",
+    "normal_convention": "n=+gradient_phi/norm(gradient_phi); negative phi is solid; delta_phi=-u dot gradient_phi",
+    "phi_rule": "raw=-a*norm(gradient_phi)*interface_taper; active_node_values=raw/max(abs(raw))",
+    "presets": [
+      {
+        "centers_fraction": [
+          [
+            0.25,
+            0.5,
+            0.5
+          ]
+        ],
+        "coefficients": [
+          1.0
+        ],
+        "id": "P1_upstream_lobe",
+        "widths_fraction": [
+          0.6,
+          0.8,
+          0.8
+        ]
+      },
+      {
+        "centers_fraction": [
+          [
+            0.75,
+            0.5,
+            0.5
+          ]
+        ],
+        "coefficients": [
+          1.0
+        ],
+        "id": "P2_downstream_lobe",
+        "widths_fraction": [
+          0.6,
+          0.8,
+          0.8
+        ]
+      },
+      {
+        "centers_fraction": [
+          [
+            0.5,
+            0.5,
+            0.75
+          ],
+          [
+            0.5,
+            0.5,
+            0.25
+          ]
+        ],
+        "coefficients": [
+          1.0,
+          -1.0
+        ],
+        "id": "P3_vertical_signed_pair",
+        "widths_fraction": [
+          0.8,
+          0.8,
+          0.6
+        ]
+      }
+    ],
+    "recommendation_before_diagnostics": "P1 as simplest single localized normal mode, conditional on future approved artifact/float32/geometry gates; no change after correlations"
+  },
+  "initial_pre_diagnostic_note_sha256": "57d54c0fb4deb2bdafc9b926af06434896a7f3165ae45fee7d134124cbed024c",
+  "numpy_version": "2.5.2",
+  "preset_freeze_sha256": "2b38c7be0151a5a4fe1864d8b5cf83a0d33a8fb653c9f156d0ba0d281a249acb",
+  "protected_direction_regeneration": [
+    {
+      "C_contiguous": true,
+      "dtype": "float32",
+      "id": "D0_interface_offset",
+      "sha256": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "stats": {
+        "l2_norm": 68.6876990443,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 8339,
+        "rms_active": 0.209578391032,
+        "rms_full_grid_zero_extension": 0.110644941825
+      }
+    },
+    {
+      "C_contiguous": true,
+      "dtype": "float32",
+      "id": "D1_filtered_seed11",
+      "sha256": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "stats": {
+        "l2_norm": 19.8793435069,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 8339,
+        "rms_active": 0.0606554140685,
+        "rms_full_grid_zero_extension": 0.0320224557881
+      }
+    },
+    {
+      "C_contiguous": true,
+      "dtype": "float32",
+      "id": "D2_filtered_seed2026",
+      "sha256": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "stats": {
+        "l2_norm": 19.9021651196,
+        "max_abs": 1.0,
+        "nonzero_active_nodes": 8339,
+        "rms_active": 0.0607250468695,
+        "rms_full_grid_zero_extension": 0.0320592177709
+      }
+    }
+  ],
+  "protected_source_sha256": "ac49c4e3a6f3b14a6c254c6cbdf7dcda26da7e3c62d40d7c735ae473cbc52837",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "source_locations": [
+    "src/cfd_sdf/gradients/directional_fd.py:43",
+    "src/cfd_sdf/gradients/directional_fd.py:47",
+    "src/cfd_sdf/gradients/directional_fd.py:51",
+    "src/cfd_sdf/gradients/directional_fd.py:96",
+    "src/cfd_sdf/gradients/directional_fd.py:115",
+    "src/cfd_sdf/gradients/directional_fd.py:243",
+    "src/cfd_sdf/fd08_contract.py:21",
+    "src/cfd_sdf/fd08_contract.py:22",
+    "src/cfd_sdf/fd08_calibration.py:461",
+    "src/cfd_sdf/fd08_calibration.py:31"
+  ],
+  "status": "canonical_geometry_diagnostics_completed_unregistered"
+}

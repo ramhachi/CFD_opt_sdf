@@ -1,0 +1,176 @@
+{
+  "epsilon_semantics": [
+    {
+      "function": "perturbation_case_id",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:160"
+    },
+    {
+      "function": "perturbed_state",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:177"
+    },
+    {
+      "function": "classify_direction",
+      "location": "src/cfd_sdf/gradients/directional_fd.py:297"
+    },
+    {
+      "function": "validate_calibration_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:225"
+    },
+    {
+      "function": "validate_formal_epsilon_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:236"
+    },
+    {
+      "function": "audit_float32_centered_pair",
+      "location": "src/cfd_sdf/fd08_calibration.py:461"
+    },
+    {
+      "function": "centered_pair",
+      "location": "src/cfd_sdf/fd08_calibration.py:516"
+    },
+    {
+      "function": "_plateau_metrics",
+      "location": "src/cfd_sdf/fd08_calibration.py:530"
+    },
+    {
+      "function": "select_formal_epsilon_ladder",
+      "location": "src/cfd_sdf/fd08_calibration.py:550"
+    },
+    {
+      "function": "classify_calibration_screen",
+      "location": "src/cfd_sdf/fd08_calibration.py:608"
+    },
+    {
+      "function": "evaluate_formal_direction_response",
+      "location": "src/cfd_sdf/fd08_calibration.py:657"
+    },
+    {
+      "function": "validate_fd08_design",
+      "location": "src/cfd_sdf/fd08_contract.py:48"
+    },
+    {
+      "function": "audit_float32_perturbation",
+      "location": "src/cfd_sdf/fd08_contract.py:151"
+    },
+    {
+      "function": "evaluate_fd08_response",
+      "location": "src/cfd_sdf/fd08_contract.py:185"
+    },
+    {
+      "function": "epsilon_tag",
+      "location": "scripts/register_fd08_calibration.py:89"
+    },
+    {
+      "function": "build",
+      "location": "scripts/register_fd08_calibration.py:367"
+    },
+    {
+      "function": "bind_cpu_rehearsal",
+      "location": "scripts/register_fd08_calibration.py:140"
+    },
+    {
+      "function": "epsilon_tag",
+      "location": "scripts/register_fd08_formal.py:97"
+    },
+    {
+      "function": "build",
+      "location": "scripts/register_fd08_formal.py:111"
+    },
+    {
+      "function": "analyze",
+      "location": "scripts/analyze_fd08_calibration.py:95"
+    },
+    {
+      "function": "verify",
+      "location": "scripts/verify_fd08_formal.py:87"
+    }
+  ],
+  "existing_files_modified": 0,
+  "proposed_only": true,
+  "source_changes": [
+    {
+      "change_needed_if_approved": "formal \u306e 5 \u70b9\u56fa\u5b9a\u3068 calibration \u90e8\u5206\u96c6\u5408\u6761\u4ef6",
+      "location": "src/cfd_sdf/fd08_calibration.py:24"
+    },
+    {
+      "change_needed_if_approved": "D0/D1/D2 \u306e\u56fa\u5b9a inventory\u3002B-4/B-6 \u306f\u672a\u6c7a",
+      "location": "src/cfd_sdf/fd08_calibration.py:25"
+    },
+    {
+      "change_needed_if_approved": "7 \u70b9\u4ee5\u4e0a\u3068 6 \u70b9\u6848\u306e\u885d\u7a81",
+      "location": "src/cfd_sdf/fd08_calibration.py:28"
+    },
+    {
+      "change_needed_if_approved": "100 \u500d\u4ee5\u4e0a\u3068 10/16.7 \u500d\u6848\u306e\u885d\u7a81",
+      "location": "src/cfd_sdf/fd08_calibration.py:29"
+    },
+    {
+      "change_needed_if_approved": "\u70b9\u6570\u30fbspan \u5236\u7d04\u3068\u65b0 ladder \u306e\u5225\u5951\u7d04",
+      "location": "src/cfd_sdf/fd08_calibration.py:225"
+    },
+    {
+      "change_needed_if_approved": "5 \u70b9\u56fa\u5b9a\u30fbcalibration \u90e8\u5206\u96c6\u5408\u304b\u3089\u5185\u90e8\u65b0\u70b9\u3078",
+      "location": "src/cfd_sdf/fd08_calibration.py:236"
+    },
+    {
+      "change_needed_if_approved": "median-slope 5% \u304b\u3089 WLS \u3068 6 \u9805\u76ee\u3078\u306e\u5225\u5951\u7d04",
+      "location": "src/cfd_sdf/fd08_calibration.py:530"
+    },
+    {
+      "change_needed_if_approved": "3 \u65b9\u5411\u5171\u901a\u306e\u9023\u7d9a 5 \u70b9\u7a93\u3001\u5168 6 \u7cfb\u5217\u306e gate",
+      "location": "src/cfd_sdf/fd08_calibration.py:550"
+    },
+    {
+      "change_needed_if_approved": "5 \u70b9\u7a93\u3092\u5217\u6319\u3059\u308b\u65e7 gate \u306e\u505c\u6b62\u898f\u5247",
+      "location": "src/cfd_sdf/fd08_calibration.py:608"
+    },
+    {
+      "change_needed_if_approved": "5 \u89b3\u6e2c\u30fbfloor\u30fbplateau \u56fa\u5b9a",
+      "location": "src/cfd_sdf/fd08_calibration.py:657"
+    },
+    {
+      "change_needed_if_approved": "\u5168 6 \u7cfb\u5217\u56fa\u5b9a\u3002B-4 \u306e\u88ab\u8986\u898f\u5247\u306f\u672a\u6c7a",
+      "location": "src/cfd_sdf/fd08_calibration.py:699"
+    },
+    {
+      "change_needed_if_approved": "baseline span \u306e\u5e8a\u3068 jitter \u306b\u57fa\u3065\u304f \u03c3 \u63a8\u5b9a\u306f\u7570\u306a\u308b",
+      "location": "src/cfd_sdf/fd08_calibration.py:205"
+    },
+    {
+      "change_needed_if_approved": "33 state \u56fa\u5b9a\u3068 predict-then-run 24 state",
+      "location": "src/cfd_sdf/fd08_contract.py:17"
+    },
+    {
+      "change_needed_if_approved": "5% \u56fa\u5b9a\u3002\u65b0 tolerance \u306f\u66ab\u5b9a\u6848\u30fb\u672a\u627f\u8a8d",
+      "location": "src/cfd_sdf/fd08_contract.py:18"
+    },
+    {
+      "change_needed_if_approved": "3 plateau \u70b9\u3068 v2 gate \u306e\u70b9\u6570\u8981\u4ef6",
+      "location": "src/cfd_sdf/fd08_contract.py:19"
+    },
+    {
+      "change_needed_if_approved": "3 baseline + 3\u00d75\u00d72 \u306e\u56fa\u5b9a\u77e9\u5f62",
+      "location": "src/cfd_sdf/fd08_contract.py:48"
+    },
+    {
+      "change_needed_if_approved": "fresh33 \u56fa\u5b9a\u3002disjoint inventory \u306f\u7dad\u6301",
+      "location": "src/cfd_sdf/fd08_contract.py:27"
+    },
+    {
+      "change_needed_if_approved": "calibration \u306e\u9023\u7d9a 5 \u70b9\u90e8\u5206\u96c6\u5408\u30fb\u65e7 sources \u3068 gate \u306e hash \u7d50\u5408",
+      "location": "scripts/register_fd08_formal.py:111"
+    },
+    {
+      "change_needed_if_approved": "fresh33\u30fb3 \u65b9\u5411\u30fbcalibration \u306e 5 baseline\u30fb\u5168\u65e7 gate \u306e\u518d\u8a08\u7b97",
+      "location": "scripts/verify_fd08_formal.py:87"
+    },
+    {
+      "change_needed_if_approved": "\u65e7 ladder \u691c\u8a3c\u3001D0/D1/D2\u3001baseline 5\u3001signed inventory\u3001criteria \u7d50\u5408",
+      "location": "scripts/register_fd08_calibration.py:367"
+    },
+    {
+      "change_needed_if_approved": "\u65e7 pair \u5206\u6bcd\u30fbbaseline floor\u30fb\u5171\u901a plateau selector\u30fb\u65b0 jitter roles",
+      "location": "scripts/analyze_fd08_calibration.py:95"
+    }
+  ]
+}
