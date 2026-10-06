@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from register_fd08_v2_r6 import RUNTIME, load_budget_evidence, source_inventory, write_json
+from register_fd08_v2_r6 import KERNEL_ID, RUNTIME, load_budget_evidence, source_inventory, write_json
 
 
 DEFAULT_FULL_DATASET = ROOT / "work/kaggle_fd08_v2_r6_dataset"
@@ -70,7 +70,7 @@ def main() -> int:
         "immutable": True,
         "evidence_class": "setup_only_not_calibration_or_formal",
         "source_commit": args.source_commit,
-        "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "kernel_id": KERNEL_ID,
         "input_dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
         "runtime": RUNTIME,
         "canonical_state": preflight["canonical"],
