@@ -1,0 +1,167 @@
+{
+  "amended_registrar_sha256": "0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6",
+  "findings": [
+    {
+      "checks": {
+        "parameters": {
+          "k_mag": 5,
+          "nested_drop": 2,
+          "rho": 0.05,
+          "sigma0_n": 3e-06,
+          "tol_hold": 0.15,
+          "tol_model": 0.15,
+          "tol_nested": 0.15,
+          "tol_se": 0.1
+        },
+        "parameters_match_pre_R6_literals": true
+      },
+      "conclusion": "No tolerance or acceptance-threshold amendment is visible.",
+      "evidence": [
+        "decision packet lines 15-24: full-set OLS pilot then one WLS, nominal covariance without chi-square scale, COV-A, T2 parameters fixed before measurement",
+        "formal design lines 5, 9-11: no refit/model or point selection/tolerance changes; max(3*sigma_pred,tol_hold*abs(S_pred)); nonzero same sign; both magnitudes at least 5*sigma0",
+        "frozen representation lines 40-61: identical prediction/error/magnitude rules and all eight parameter values",
+        "production.diff: no modification of a scientific tolerance, prediction formula, fitted-model choice, coverage criterion, epsilon construction, inventory construction, or scientific decision tree is present"
+      ],
+      "id": "B01",
+      "limit": "A frozen covariance and a 3-sigma pointwise conditional model bound do not establish unbiased derivatives, an application error budget, noise validity, or a joint 95 percent guarantee. The review does not inspect fit operands or computed outcomes.",
+      "severity": "none"
+    },
+    {
+      "checks": {
+        "independently_recomputed_from_pre_R6_L6_mm": [
+          0.6294627058970836,
+          1.5811388300841898,
+          3.971641173621408
+        ],
+        "maximum_absolute_difference_from_frozen_mm": 0.0
+      },
+      "conclusion": "The three formal epsilon magnitudes preserve the pre-R6 geometric-interior rule.",
+      "evidence": [
+        "formal design line 7: interval indices {0,2,4} for six calibration points and epsilon=sqrt(e_i*e_(i+1)); byte duplicates require registration to stop rather than replacement",
+        "decision packet line 22: L6=geomspace(0.5,5,6) mm",
+        "frozen representation lines 22-32: the same formula, indices and three numerical magnitudes",
+        "production.diff: no change to formal epsilon or uniqueness construction is present"
+      ],
+      "id": "B02",
+      "limit": "Numerical epsilon equality is not proof of byte disjointness. The excluded state artifacts and registration gates must separately demonstrate unused Float32 phi bytes.",
+      "severity": "none"
+    },
+    {
+      "conclusion": "Prediction, model meaning and coverage remain the registered conditional interior-interpolation test.",
+      "evidence": [
+        "formal design lines 5, 9, 13: frozen Model A coefficients/covariance from all calibration points; x=(epsilon_mm,epsilon_mm^3); S_pred=x^T(g,c); sigma_pred^2=sigma0^2+(rho*S_pred)^2+x^T*C*x; every direction-response-point must PASS",
+        "decision packet lines 15-19, 59-61, 76-77: Model A primary/B contrast, all four directions including D1 and both responses, no retuning after calibration, no broader physical qualification",
+        "frozen representation lines 8-21, 38-51: all 24 comparisons, no refit/model switch, four registered directions, fixed six-point Model A, half of the paired host-recomputed response difference in N",
+        "production.diff lines 182-184: comparison_count=24 and all_24_pass remain unchanged context"
+      ],
+      "id": "B03",
+      "limit": "The frozen representation is consistent with the specified odd-response model. This review does not read the unchanged analyzer/prediction implementations or validate their numerical execution. The evidence scope remains deterministic interpolation; it does not extend to true epsilon-to-zero derivatives, extrapolation, direction generalization, grid independence, or target physics.",
+      "severity": "none"
+    },
+    {
+      "checks": {
+        "baseline_states": 1,
+        "direction_response_magnitude_comparisons": 24,
+        "signed_phi_states": 24,
+        "total_states": 25
+      },
+      "conclusion": "State-inventory and budget meanings remain unchanged.",
+      "evidence": [
+        "formal design line 15 and decision packet lines 19, 32-34: four directions by three magnitudes by two signs gives 24 paired-input signed states plus one independent-round identity/sanity baseline, for 25 states",
+        "frozen representation lines 7, 16-36, 63-64: baseline=1, signed_state_count=24, state_count=25, solver cap=3300 s and kernel allowance=5600 s",
+        "production.diff lines 149-156: canonical baseline byte-identity check is preserved; no state construction change is shown",
+        "production.diff lines 212-215: summary reports existing inventory/formal signed counts and epsilon values, rather than filtering states"
+      ],
+      "id": "B04",
+      "limit": "The baseline is for identity/sanity and must not become a noise estimator. The 1500 s per-state timeout is present in the frozen representation, is unchanged in the diff, and was not specified in the two prose inputs; its prior implementation provenance is not independently checked here.",
+      "severity": "none"
+    },
+    {
+      "conclusion": "Exact immutable R6 parent binding is an identity restriction, with no newly introduced result-dependent scientific tuning visible.",
+      "evidence": [
+        "production.diff lines 32-35, 48-53, 129-137: retry2 defaults and equality against exact source/criteria/result/terminal hashes require one named parent before registration",
+        "production.diff lines 92-126: original registrar SHA and pre-observation failure evidence identity are required; unchanged scientific/source entries are compared exactly against the parent except the amended registrar and kernel metadata",
+        "formal design lines 5, 15 and decision packet lines 59-61: formal uses a frozen calibration parent; failed/unresolved calibration cannot trigger retuning or formal promotion",
+        "frozen representation lines 2-4: original source commit and original registrar SHA agree with the corresponding constants shown in the diff"
+      ],
+      "id": "B05",
+      "limit": "The excluded parent artifacts and their histories were not inspected. Therefore this review cannot establish that the selected parent was authorized, that its calibration verdict is valid, or that its selection was free from an external adaptive choice. It establishes only that no such numerical tuning mechanism is added in the supplied diff.",
+      "scientific_impact": "The new equality checks restrict admissible input artifacts and reject alternatives. They do not branch on observed force size, residual, sign, fitted coefficient, noise estimate, or formal prediction, and they do not relax the preregistered formulas or thresholds. Binding the exact already-existing calibration result is scientifically appropriate for a predict-then-run dependency provided that it is the authorized immutable parent.",
+      "severity": "none"
+    },
+    {
+      "conclusion": "A distinct formal execution identity preserves the scientific-source identity requirement through explicit equality rather than reuse of the parent commit label.",
+      "evidence": [
+        "production.diff lines 70-89: an exact 40-character formal commit must differ from the R6 commit; each packaged source must match that commit tree",
+        "production.diff lines 104-106: all parent source entries other than formal_registrar and kernel_metadata must remain identical",
+        "production.diff lines 138-145: non-dry registration requires clean pushed integration HEAD equal to the requested formal source commit",
+        "production.diff lines 157-181: formal round/criteria/kernel/dataset identifiers and source_commit label change; canonical state and calibration binding are retained",
+        "formal design line 15: separate calibration/formal rounds with canonical/direction/solver/tolerance/source identity joined to parent artifact hashes"
+      ],
+      "id": "B06",
+      "limit": "The source equality checks are reviewed statically. This review does not verify the current Git tree, remote HEAD, source_inventory completeness, or the bytes of unchanged numerical/solver sources.",
+      "scientific_impact": "Changing the commit label is necessary when the registrar implementation changes. Keeping numerical/physics source entries identical while distinguishing the execution commit avoids falsely claiming that the R6 commit contains the amended registrar. It changes provenance representation and executable packaging, not the registered physical experiment or acceptance criterion.",
+      "severity": "none"
+    },
+    {
+      "conclusion": "The raw-state container correction and packaging/dry-run changes do not introduce scientific conditional behavior.",
+      "evidence": [
+        "production.diff lines 57-65: raw_states changes from dict to set while the per-state byte hash validation loop remains unchanged",
+        "production.diff lines 149-154, 185-224: dataset directory/write timing and preflight serialization change; the same preflight bytes are hashed in memory and a SHA companion is added",
+        "production.diff lines 207-253: explicit formal dataset metadata, a summary, and dry-run return mode are added; dry-run constructs/validates before returning and non-dry writes the same constructed objects"
+      ],
+      "id": "B07",
+      "limit": "The supplied diff does not show every unchanged operation on raw_states or the full serialization path. This review does not execute either branch, prove byte-for-byte dataset equivalence, or certify runtime behavior.",
+      "scientific_impact": "A set is the intended representation for a collection of unique state byte values used for membership/disjointness checks. The shown change repairs the representation without changing allowed state values or their hashes. Serialization, output locations, formal dataset identifiers and deferred writes affect packaging and auditability. The dry-run branch depends on an explicit execution flag, not response values.",
+      "severity": "none"
+    },
+    {
+      "conclusion": "The amendment review gate is an additional preregistration safeguard, not scientific evidence or formal validation.",
+      "evidence": [
+        "production.diff lines 107-124: both independent review files must report PASS, scientific_contract_changed=false, and the exact amended registrar SHA",
+        "formal design lines 11, 13, 15 and decision packet lines 71-77: conditional noise/covariance and interpolation limitations remain"
+      ],
+      "id": "B08",
+      "limit": "This static review accepts scientific equivalence within its declared inputs. It neither verifies implementation lineage nor anticipates solver results.",
+      "scientific_impact": "Requiring reviews before registration does not supply new force observations or increase the inferential scope. Review PASS must not be represented as calibration PASS, formal PASS, physical qualification, or independent noise validation.",
+      "severity": "limitation"
+    }
+  ],
+  "review_type": "Independent Review B: static scientific equivalence of formal registrar amendment",
+  "reviewed_inputs": [
+    {
+      "path": "docs/evidence/fd08_v2_stage1p5_2026_10_06/formal_predict_then_run_design.md",
+      "read_scope": "full specified document",
+      "sha256": "f843b9120f4828b408f650731020666405656c49416245b786302a90ada79c59"
+    },
+    {
+      "path": "docs/issues/46_fd08_v2_stage1p5_decision_packet_2026_10_06.md",
+      "read_scope": "full specified pre-R6 scientific specification",
+      "sha256": "aa674181b56b053bcd84a3659afcbf51baad0f374033c301ac8167ceca57dcad"
+    },
+    {
+      "path": "work/formal_lineage_validation/production.diff",
+      "read_scope": "full supplied original-to-amended registrar diff",
+      "sha256": "124a70ccbdb379708d6130344a905db4962ce8f3178c7d515579ba6dcec12222"
+    },
+    {
+      "path": "docs/evidence/fd08_v2_formal_2026_10_07_amend1/scientific_contract_frozen.json",
+      "read_scope": "full canonical scientific representation",
+      "sha256": "00aef791f5ae65f6c9498b37213cc45cb821428e07762c14d06f29e430fd9a66"
+    },
+    {
+      "path": "scripts/register_fd08_v2_formal.py",
+      "read_scope": "bytes read solely to compute SHA256; source text not inspected",
+      "sha256": "0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6"
+    }
+  ],
+  "role": "scientific",
+  "scientific_contract_changed": false,
+  "scope": {
+    "assessment": "Equivalence of the supplied production diff and frozen scientific representation to the specified pre-R6 scientific design. PASS is limited to that static equivalence assessment.",
+    "execution": "No registrar, solver, Kaggle job, tests, or repository mutation was executed. Only these two review evidence files are written.",
+    "independence": "No source-lineage primary conclusion was supplied or inspected. No R6 criteria, result, terminal verification, raw histories, formal force values, formal results, or formal verdicts were inspected.",
+    "limits": "The amended registrar was hashed without inspecting its source text. The supplied diff is treated as the original-to-amended change representation; completeness and Git lineage of that diff are outside this restricted-input review. Hash constants and unchanged-source assertions in the diff are reviewed as code requirements, not as independently verified contents of the excluded artifacts."
+  },
+  "verdict": "PASS"
+}
