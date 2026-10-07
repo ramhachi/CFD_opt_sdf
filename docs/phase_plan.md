@@ -6948,3 +6948,24 @@ a verdict, a registered contract or a qualification flag; all six flags remain f
 
 An independent numerical review re-derived every quoted number (PASS); its wording findings were applied.
 Gradient accuracy, ε→0 derivatives, grid independence and physical truth are not claimed.
+
+## #22 GRAD-02 follow-up: CPU forward-mode AD spike, result PARTIAL (2026-10-08)
+
+A CPU-only capability spike asked whether ForwardDiff Dual numbers can differentiate a few WaterLily 1.8.0
+`sim_step!`s of the Candidate C composite body with respect to a perturbation `phi + t·d` of the SDF design field.
+No Kaggle or T4 was used; the six qualification flags remain false; #23's scope and error gate are unchanged.
+The decision rule was fixed before the registered runs (`prerun_note.md`, `prerun_freeze.json`); a one-step toy smoke
+run preceding the freeze is disclosed there.
+
+Registered result: **PARTIAL**. Forward AD completes on the toy and on the real canonical v17 state (D0, flow
+150×72×54, two steps) with finite tangents and AD-vs-plain primal agreement of about 1e-13. Against centered FD of the
+same discrete model at the registered reference ε, the canonical tier is grade A (about 1e-5), while the toy is grade C
+and misses the GO-forward threshold B. A post-hoc diagnostic shows AD agreeing with FD to 2e-9–1.4e-7 for ε ≤ 1e-6 on the
+toy; the toy's non-smooth scale is not Candidate C's blend (inert there). An independent review confirmed the harness and
+the PARTIAL grade and corrected two claims. A concrete-typed Enzyme reverse probe moved the failure to `pressure_force`
+and is inconclusive.
+
+Open items (user decisions): whether to test Dual numbers on CuArray/T4 (the oracle runs ~8,700 Float32 steps), how to
+restore reverse for a reverse-vs-forward check, and how the GRAD-03 error gate should account for the difference between
+a pointwise AD derivative and the FD-08 mesoscale regression slope. This is not a gradient qualification.
+Evidence: `docs/evidence/grad02_forward_ad_spike_2026_10_08/`; note: `docs/issues/22_forward_ad_spike_2026_10_08.md`.
