@@ -6845,3 +6845,25 @@ formal publication. No candidate report is reused as this post-registration
 execution evidence. At this checkpoint its terminal is pending, formal
 observations/comparisons are 0/24, and all six flags remain false. R6 remains
 PASS 8/8 without rerun/reanalysis; historical artifacts remain unchanged.
+
+## #46 AMEND2 registered-byte execution gate PASS (2026-10-07)
+
+The newly executed registered-byte rehearsal kernel version 3 passed actual
+production execution through the pre-solver boundary: 43 source inputs,
+54 mounted registered files, 25/25 state verification/preparation, exact frozen
+source `f072bc7c5a9e98cc84f7a6a225c0780ad10e31be` and registered criteria SHA
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+Its distinct report SHA is
+`9d6ee7899d131e18f066876ff81f432d1ecc99c43d3ee69ef7feaa52c10badd4`;
+host verification PASS, actual runner elapsed 286.500020805 s. The same private
+rehearsal input version 2 was reused only after every mounted byte was matched
+to the newly immutable registration; the new execution did not reuse a
+candidate report. Solver_started=false, force history absent, formal
+observations 0 and no scientific verdict. All six flags remain false.
+
+This completes the post-registration publication gate. The dedicated private
+formal dataset may now be uploaded and must pass exact remote-version inventory
+and SHA checks before the formal kernel submit. Criteria/source/model/T2/
+directions/epsilon/caps remain frozen; R6 and AMEND1 are unchanged. A complete
+25/25 formal terminal and host integrity PASS remain prerequisites for the
+single scientific analyzer invocation.
