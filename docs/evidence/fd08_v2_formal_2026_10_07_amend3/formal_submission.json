@@ -1,0 +1,31 @@
+{
+  "accelerator": "NvidiaTeslaT4",
+  "attempt_count": 1,
+  "captured_utc": "2026-10-07T11:41:19Z",
+  "criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3",
+  "dataset_version": 1,
+  "evidence_class": "submission_record_only_not_formal_science",
+  "formal_solver_executed_before_submission": false,
+  "http_error": null,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3",
+  "kernel_metadata_sha256": "63b8e04360dc092f413dd9f85e76d7d742196195aa790175559d08583187a422",
+  "kernel_title": "CFD Opt SDF FD08 V2 Formal Run A3",
+  "kernel_version": 1,
+  "kind": "fd08_v2_formal_amend3_submission",
+  "method": "Kaggle CLI 2.2.4 kernels push",
+  "push_log_sha256": "c16ac9911b143d287f238b118f64fb921bc3841abf6c0055719452530ef500c0",
+  "push_log_tail": "Kernel version 1 successfully pushed.  Please check progress at https://www.kaggle.com/code/ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "source_commit": "b1d4330f919b682d50f28a4d2267eb3058340a19",
+  "stop_flag_used": false,
+  "timeout_s": 5600
+}

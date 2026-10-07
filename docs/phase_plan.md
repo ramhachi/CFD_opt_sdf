@@ -6893,3 +6893,37 @@ immutable PASS 8/8 with no rerun/reanalysis, AMEND1 remains unchanged historical
 superseded registration, R5 FAIL and Stage 1/1.5 remain unchanged. All six flags
 remain false. This infrastructure stop makes no scientific FAIL, UNRESOLVED or
 qualification PASS claim. Main and unrelated worktrees are untouched.
+
+## #46 AMEND3 formal result: PASS 24/24 (2026-10-07)
+
+AMEND3 repaired only the Kaggle kernel identity (kernel title slug no longer equals
+the dataset slug; scientific projection SHA `8d76b3b4…` and all 25 state byte files
+equal AMEND2). Immutable criteria SHA
+`31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be`, frozen execution
+source `b1d4330f919b682d50f28a4d2267eb3058340a19`. Exact-source and registered-byte
+T4 pre-solver rehearsals (kernel `…-formal-amend3-pre-solver` versions 1 and 2)
+passed (44 source inputs, 54 mounted files, 25/25 states, solver not started).
+The private formal dataset `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3` v1 was
+verified 54/54 against the registered bytes. The formal kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3` was submitted once (version 1) and
+raised no Kaggle error.
+
+Host terminal verification: `PASS_TERMINAL_INTEGRITY`, 25/25 states, 0 unexpected,
+aggregate solver 2,817.845 s (cap 3,300 s), kernel elapsed 5,059.814 s (allowance
+5,600 s). The registered analyzer ran once, without refit: **formal verdict PASS,
+24/24 comparisons**. Worst absolute error / threshold 0.263; worst standardized
+error 0.79 (D2 downforce, 1.581 mm); worst relative error 7.6% (D1 drag, 0.629 mm,
+absolute error 3.0 µN against an 11.7 µN threshold). All magnitude and same-sign
+checks passed. R6 remains PASS 8/8, not rerun or reanalyzed; R5 FAIL, the 17
+historical Stage 1 mismatches and AMEND1/AMEND2 records are unchanged.
+
+Claim limit: this is deterministic-solver interior-interpolation validation of the
+frozen six-point Model A at three unused interior epsilons for four registered
+directions. It is not noise validation, extrapolation, direction generalization,
+grid independence, physical truth, high-Re validity, an epsilon-to-zero derivative,
+a full-field gradient, reverse AD, optimizer or topology qualification, and it
+makes no joint-confidence statement. All six qualification flags remain false
+(`fd_oracle`, `field_gradient`, `reverse`, `optimizer`, `topology`,
+`shape_update_allowed`); any change to them needs a separate user decision.
+Evidence: `docs/evidence/fd08_v2_formal_2026_10_07_amend3/` (`campaign_final.json`,
+`formal_analysis.json`, `formal_terminal_verification.json`).
