@@ -6779,3 +6779,41 @@ execution, or formal verdict exists. Campaign status is
 (8/8) with immutable evidence and no rerun/reanalysis. R5 FAIL, Stage 1's 17
 historical strict mismatches and Stage 1.5 remain unchanged. All six flags remain
 literal false. No result-dependent adjustment or scientific retry occurred.
+
+## #46 AMEND2 runner schema / pre-solver checkpoint (2026-10-07)
+
+The user authorized **Formal Infrastructure AMEND2 — Runner Schema Repair**.
+AMEND1 criteria `857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`
+and its registered payload/source/blocker remain immutable historical evidence.
+The new registration will supersede its unrun infrastructure identity; no
+AMEND1 evidence is patched. R6 remains immutable PASS 8/8, without rerun or
+reanalysis. R5 FAIL, Stage 1's 17 strict mismatches and Stage 1.5 remain unchanged.
+
+The [AMEND2 design](issues/46_fd08_v2_formal_amend2_runner_schema_2026_10_07.md)
+dispatches formal geometry to `geometry`, preserving R6's
+`geometry_reject_gates` and setup behavior. It adds a guarded hook immediately
+before the measured solver invocation. The new registrar copies AMEND1's
+scientific contract and state bytes, changing only execution/lineage/package
+identities. The scientific projection remains exactly
+`8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f`.
+Independent schema and scientific reviews both PASS at the final source hashes.
+
+Implementation source `e42fc8f0c8cae1e54ad9349d441117fe49986894` passed focused
+tests (152 passed, 5 skipped), compile/import/diff checks and full pytest
+(1551 passed, 37 failed, 14 skipped). The 37 failure IDs exactly match the
+frozen baseline: new failures 0, resolved failures 0. Logs and comparisons are
+saved in `docs/evidence/fd08_v2_formal_2026_10_07_amend2/` with SHA sidecars.
+
+The actual hash-bound production runner passed private T4 pre-solver rehearsal
+kernel `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver/1` using the
+separate rehearsal input version 1. Host verification confirms source 43/43,
+mounted files 54/54 and state preparation/verification 25/25; elapsed runner
+time 295.52815814 s. Terminal is `PASS_PRE_SOLVER_EXECUTION_PATH`,
+solver_started=false, force history absent and formal observations 0. This
+is runtime execution-path evidence, not formal scientific qualification.
+
+AMEND2 formal criteria are **NOT REGISTERED** and the formal scientific dataset
+and kernel are **NOT UPLOADED / NOT SUBMITTED / NOT RUN** at this checkpoint.
+After the no-ff integration merge, the exact final-source candidate must pass
+the same actual rehearsal before registration. Registered bytes must then
+pass again before publication. All six qualification flags remain false.
