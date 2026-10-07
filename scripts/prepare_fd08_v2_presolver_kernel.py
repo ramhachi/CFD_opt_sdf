@@ -2,6 +2,7 @@
 """Stage a private T4 notebook that executes the exact runner with the stop flag."""
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -9,8 +10,14 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--dataset-id", required=True)
+    p.add_argument("--kernel-id", required=True)
+    p.add_argument("--title", required=True)
     p.add_argument("--source-ref", default="refs/heads/codex/kaggle-batch-migration")
     args = p.parse_args()
+    if args.kernel_id.split("/", 1)[1] != re.sub(r"[^a-z0-9]+", "-", args.title.lower()).strip("-"):
+        p.error("kernel id slug must equal the slug of the title")
+    if args.kernel_id.split("/", 1)[1] == args.dataset_id.split("/", 1)[1]:
+        p.error("kernel slug must differ from the dataset slug")
     require_code = '''import hashlib, json, os, pathlib, runpy, urllib.request
 criteria_paths = sorted(pathlib.Path('/kaggle/input').rglob('criteria.json'))
 assert len(criteria_paths) == 1
@@ -40,8 +47,7 @@ print('REHEARSAL_ONLY_NO_FORMAL_OBSERVATIONS', flush=True)
         "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
         "cells": [{"cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [],
                    "source": source.splitlines(keepends=True)}]}
-    metadata = {"id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver",
-        "title": "CFD Opt SDF FD08 V2 Formal Amend2 Pre Solver", "code_file": "rehearsal.ipynb",
+    metadata = {"id": args.kernel_id, "title": args.title, "code_file": "rehearsal.ipynb",
         "language": "python", "kernel_type": "notebook", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "dataset_sources": [args.dataset_id],
         "competition_sources": [], "kernel_sources": []}

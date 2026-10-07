@@ -1,0 +1,40 @@
+{
+  "amend2_criteria_sha256": "ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e",
+  "baseline_commit": "e3b2ce0853a7e94454c8073902fe88ae046ff00a",
+  "checks": {
+    "decisions_unchanged": "PASS: epsilons, 25 states, Model A/no refit, T2, COV-A, rules, aggregation, 3300/5600 caps untouched; runner/verifier/analyzer do not depend on kernel_id/title/amend strings",
+    "delta_after_fixes": "PASS: new source_inventory guard rejects a modified runner.py or runner_schema_tests; pinned projection hash rejects a mutated epsilon; legitimate entries accepted",
+    "flags_and_claims": "PASS: six flags literally false; no qualification/physical claims",
+    "hidden_science_paths": "PASS: every scientific-code source entry equals AMEND2; only registrar/metadata/tests/doc/reviews/presolver builder/amend2 registrar differ",
+    "identity_fields_guard": "PASS: 12 identity keys, 23 scientific keys; deny-list design fails closed for any new key",
+    "payload_bytes": "PASS: 50/50 state files byte-identical to AMEND2 archive; only kaggle_budget_preflight.json replaced; criteria/sidecar/manifest regenerated consistently",
+    "projection_hash": "PASS: independently computed 8d76b3b4... for AMEND1, AMEND2 and simulated AMEND3"
+  },
+  "findings_resolved_before_freeze": [
+    {
+      "finding": "source_inputs outside the equality guard (runner re-digested from working tree)",
+      "id": "B-P1",
+      "priority": "P1",
+      "resolution": "all entries outside the explicit changed set must equal the parent's"
+    },
+    {
+      "finding": "projection hash not pinned; test field list incomplete",
+      "id": "B-P2",
+      "priority": "P2",
+      "resolution": "SCIENTIFIC_PROJECTION_SHA constant and tests added"
+    }
+  ],
+  "kind": "fd08_v2_formal_amend3_independent_scientific_review",
+  "limitations": [
+    "Reviewer simulated git show/review files/budget evidence; the real committed dry-run is a separate operational gate",
+    "Residual non-blocking: amend1_registrar and amend2_registrar sit in the allowed-changed set unpinned (historical, non-scientific; the amend2 registrar is tested against frozen commit e3b2ce0)"
+  ],
+  "presolver_builder_sha256": "2b779dcfaa3a2bf1838f4579d04ff4e0ba4114f9cb619cac02fa2ea916de313a",
+  "prospective_scientific_content_sha256": "8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f",
+  "recording": "Primary condensed the independent reviewer's reports (initial review plus one delta re-review of the post-review fixes); the primary's conclusion was not supplied to the reviewer. The reviewer's text is a model report, not a user statement.",
+  "registrar_sha256": "a1b2aba5a00449be96d51bd1b2cd5514c76093e10360a8bb7245d546b69f0cb9",
+  "review_role": "Independent Review B \u2014 scientific contract equivalence",
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "scientific_contract_changed": false,
+  "verdict": "PASS"
+}

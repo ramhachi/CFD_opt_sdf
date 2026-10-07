@@ -3091,3 +3091,28 @@ require all names, sizes and SHA, without replacing payload bytes.
 After complete 25/25 terminal, use explicit AMEND2 paths with the unchanged
 formal verifier and analyzer. Run the analyzer exactly once after integrity
 PASS. R6 is not rerun/reanalyzed; no formal refit/tuning/scientific retry.
+
+## FD-08 v2 formal AMEND3: kernel identity separation (2026-10-07)
+
+AMEND2 stays immutable, uploaded and unsubmitted (Kaggle HTTP 409: the kernel title
+slugified to its own dataset slug). Follow the
+[AMEND3 design](issues/46_fd08_v2_formal_amend3_kernel_identity_2026_10_07.md) and use
+`scripts/register_fd08_v2_formal_amend3.py`. Formal private dataset
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3`; formal kernel
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3` (title "CFD Opt SDF FD08 V2 Formal Run A3").
+Rehearsal dataset `…-formal-amend3-rehearsal`, rehearsal kernel `…-formal-amend3-pre-solver`.
+Kernel and dataset share one Kaggle slug namespace: **a kernel title must never slugify to
+any dataset slug.** Before creating any new dataset, run
+`scripts/check_fd08_v2_kaggle_identity_free.py --slug <each intended slug> --output <new file>`.
+
+Order: budget preflight (`check_fd08_v2_kaggle_budget.py --phase formal`, < 24 h old) → identity-free
+check → exact-source rehearsal (`prepare_fd08_v2_presolver_kernel.py --kernel-id
+ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver --title "CFD Opt SDF FD08 V2 Formal Amend3 Pre Solver"
+--dataset-id ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal`; both flags are required) →
+register once with `--rehearsal-evidence` → registered-byte rehearsal → create the formal dataset and
+verify all 54 remote files → push the formal kernel once with
+`--accelerator NvidiaTeslaT4 --timeout 5600`, no stop flag. The registered formal kernel id itself
+cannot be rehearsed (the stop hook needs a notebook wrapper); the identity gates stand in for it.
+Any Kaggle error is recorded without retry, rename or patch; a new amendment needs a user decision.
+After complete 25/25 terminal use explicit AMEND3 paths with the unchanged verifier and analyzer;
+run the analyzer exactly once after integrity PASS. No R6 rerun, refit, tuning or scientific retry.
