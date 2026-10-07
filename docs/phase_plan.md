@@ -6817,3 +6817,31 @@ and kernel are **NOT UPLOADED / NOT SUBMITTED / NOT RUN** at this checkpoint.
 After the no-ff integration merge, the exact final-source candidate must pass
 the same actual rehearsal before registration. Registered bytes must then
 pass again before publication. All six qualification flags remain false.
+
+## #46 AMEND2 immutable registration checkpoint (2026-10-07)
+
+The no-ff integration merge `f072bc7c5a9e98cc84f7a6a225c0780ad10e31be`
+is the frozen AMEND2 execution source. Its exact-source T4 rehearsal kernel
+version 2 passed all 43 source inputs, 54 mounted files and 25 states; actual
+runner elapsed 307.809623341 s. The host verification passed with no solver,
+force history, observation or scientific verdict. A fresh 3300/5600 capability
+recheck passed. The [source-ready checkpoint](https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-6032722158)
+was posted before registration.
+
+The new immutable criteria `FD08-V2-FORMAL-AMEND2-2026-10-07` were first
+registered with SHA-256
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+AMEND1 is retained unchanged and explicitly superseded as
+`REGISTERED_NOT_RUN_SUPERSEDED_INFRASTRUCTURE`. The new criteria retain exact
+R6 parent provenance, frozen fits/covariances and every AMEND1 scientific field.
+The 55-file registered payload archive (54 mounted inputs plus metadata) was
+independently read back with every SHA verified.
+
+Registration did not publish the formal dataset or submit the formal kernel.
+The registered 54 bytes/files were independently matched to rehearsal dataset
+version 2, and a new actual runner execution (rehearsal kernel version 3) was
+submitted against those exact registered bytes. Its PASS is required before
+formal publication. No candidate report is reused as this post-registration
+execution evidence. At this checkpoint its terminal is pending, formal
+observations/comparisons are 0/24, and all six flags remain false. R6 remains
+PASS 8/8 without rerun/reanalysis; historical artifacts remain unchanged.

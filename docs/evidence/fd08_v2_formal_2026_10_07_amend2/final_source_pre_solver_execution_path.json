@@ -1,0 +1,1051 @@
+{
+  "criteria_kind": "fd08_v2_formal_validation",
+  "criteria_sha256": "ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+  "dataset_inventory_sha256": "4e6c68060b61fe889efe22d9b436fc1de2cb6569cf658ae92cf77c0377c0f2c4",
+  "dataset_manifest_sha256": "4b133d9bb7d18ac3744bbb284e30dd26557c9cfb12d75e29a98bf1588935a269",
+  "elapsed_kernel_seconds": 307.809623341,
+  "evidence_class": "runtime_execution_path_only_not_formal_science",
+  "expected_state_count": 25,
+  "finished_utc": "2026-10-07T05:43:18.295391Z",
+  "force_history_present": false,
+  "gpu_inventory": [
+    "0, Tesla T4, GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897, 15360 MiB, 580.178.04",
+    "1, Tesla T4, GPU-e3738fcc-8c75-cff5-76c7-319931c7e0bc, 15360 MiB, 580.178.04"
+  ],
+  "host_driver_version_recorded_not_gated": "580.178.04",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+  "kind": "fd08_v2_pre_solver_execution_path",
+  "last_stage": "pre_solver_invocation",
+  "measurement": {
+    "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+    "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+    "case": {
+      "case_id": "flow_24",
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "flow_dims": [
+        150,
+        72,
+        54
+      ],
+      "flow_spacing_m": 0.03333333333333333,
+      "freestream_mps": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+      "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 24.0,
+      "solver_time_unit_s": 0.03333333333333333,
+      "solver_viscosity": 0.3
+    },
+    "case_id": "flow_24",
+    "force_unit": "N",
+    "kernel_execution_allowance_s": 5600,
+    "per_state_timeout_s": 1500,
+    "qualification_claim": "frozen Candidate C/v17/flow_24 local diagnostic only",
+    "solver_wall_time_cap_s": 3300,
+    "time_window_t_u_l": [
+      80.0,
+      120.0
+    ]
+  },
+  "prepared_state_count": 25,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "runtime": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_minor_version_policy": "recorded_not_gated",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "memory": "CuArray",
+    "precision": "Float32",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "runtime_smoke_sha256": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+  "scientific_verdict": null,
+  "solver_started": false,
+  "source_commit": "f072bc7c5a9e98cc84f7a6a225c0780ad10e31be",
+  "source_input_count": 43,
+  "source_inputs_sha256": "cb8b9dd5374650cf1641ffa4263308e651784ba793c3bb466f01378d13b7caa1",
+  "source_ref": "refs/heads/codex/kaggle-batch-migration",
+  "started_utc": "2026-10-07T05:38:10.485756Z",
+  "state_count": 25,
+  "state_verification_count": 25,
+  "states": {
+    "D0_interface_offset__e0.62946270589708364mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e0.62946270589708364mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e0.62946270589708364mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3493705312954262",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "add8a0b896c15d17a881035de1deeabe7d8e163792ec666d3e58fbf7ae151808",
+          "W4_PHI_FORTRAN_SHA256": "837d80d7281eead4f846b68a35498e0be43e8468e4926749ad53985cbe70f28a",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "78bf39ea5d7ee0ae7963d1f3f9f8b3e863ca1efc8f1f5d0eb90fd724168d7c4a",
+          "W4_STATE_SHA256": "92e017f2e4d71ec4f84fb1466c738d539418a387d7f186a499f2644cfa3fc0e8"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e0.62946270589708364mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "20ac1245fc0c82d627dd6386d5eebd511e0f845b9b06592a6d63d6d0fa7fecf1",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e0.62946270589708364mm__minus",
+      "state_sha256": "92e017f2e4d71ec4f84fb1466c738d539418a387d7f186a499f2644cfa3fc0e8",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D0_interface_offset__e0.62946270589708364mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e0.62946270589708364mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e0.62946270589708364mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "afa5e93e2e6624a18873be83bbd0ddaf697c254c532d853fc1a13d4e2a874d36",
+          "W4_PHI_FORTRAN_SHA256": "08e4d8b9a5770fabd51a7b3b4db0141556347c35a847009e19d27470a75b0ca5",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "a716b037ed611f8e95793b6552b9c29189204b04050596029034d3004da9bed1",
+          "W4_STATE_SHA256": "86f5de895ede212bdb39f289903e638fbb20daa195ec5292f274a28a706c7565"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e0.62946270589708364mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "4f6474440e5d3d77efdf3e06b8683b354bcc0ccaf10cf95bf103894a804703f6",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e0.62946270589708364mm__plus",
+      "state_sha256": "86f5de895ede212bdb39f289903e638fbb20daa195ec5292f274a28a706c7565",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D0_interface_offset__e1.5811388300841898mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e1.5811388300841898mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e1.5811388300841898mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3484188551316038",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "c610b8c24b9115d86afc8d7f2c33805d8298f41c9ba186b08cb487328ca56e58",
+          "W4_PHI_FORTRAN_SHA256": "ed9ce4f3226b2eb4977541c99d3b73dedc70780202a8363b4f63bb11fa6d1861",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "5b127a438d5bc609161f825702e1e5b599f1786af9be3ad7a4cf0883d26f08e6",
+          "W4_STATE_SHA256": "db470100b199bfaeca984538067b4d579074006ef8d46c55cafd09b0dcdb88a8"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e1.5811388300841898mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "5b17caa2182f5841b380e664f712173be17f65bdd851584bec0c347a74dc9268",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e1.5811388300841898mm__minus",
+      "state_sha256": "db470100b199bfaeca984538067b4d579074006ef8d46c55cafd09b0dcdb88a8",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D0_interface_offset__e1.5811388300841898mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e1.5811388300841898mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e1.5811388300841898mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "b3460a34237878422b3cdd81e96d2fc7747442cfddf133a0eb3e4f483b2aa223",
+          "W4_PHI_FORTRAN_SHA256": "fee3683e1f98eef97e02a17772ef780a87887ad8a96947e071f33a743aba7ce2",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "b11934bba571856ad843ac286fa7b35c2cf4b40281ac1b1e1a6ca18eba833888",
+          "W4_STATE_SHA256": "f9363bb0bb0475d20ab678d5aa7fa9bf15fdb276c916111cdd664e3cbde33667"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e1.5811388300841898mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "e811dd1d4d9ad5d3cbab3001187695646f6741858fac6cae1855f9e1d863eb7f",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e1.5811388300841898mm__plus",
+      "state_sha256": "f9363bb0bb0475d20ab678d5aa7fa9bf15fdb276c916111cdd664e3cbde33667",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D0_interface_offset__e3.9716411736214079mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e3.9716411736214079mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e3.9716411736214079mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3460283529944718",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "b6176eb750a8052c31f8378c246bd032075bf25b3b7fcbe49a46b15e4174d3d9",
+          "W4_PHI_FORTRAN_SHA256": "d8fa1212dbc0b5ddb8e4a1c04e4e4a774dbda0d97460dc6e6f8a6a6861706d31",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "c9ef63937e0802fa24bdc578e0152f9f855e84de87539f6c91399f3d9aada771",
+          "W4_STATE_SHA256": "b060c382c86f13fcf3f3ba72ef07ffe854e31c603de6b7ee316eed2deb0af1b3"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e3.9716411736214079mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "5d005f703c3ec9349858477cffc1bde27db5ae8ecdaf76de1e7e1c07b5aeec33",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e3.9716411736214079mm__minus",
+      "state_sha256": "b060c382c86f13fcf3f3ba72ef07ffe854e31c603de6b7ee316eed2deb0af1b3",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D0_interface_offset__e3.9716411736214079mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D0_interface_offset__e3.9716411736214079mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e3.9716411736214079mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "d56f5c91e082a7057d001a22b295e316d2b4fda712c4c9428ae5c8a667330c97",
+          "W4_PHI_FORTRAN_SHA256": "c110d57e6c841f8b0033bfc6b2ddebc4b96b4f1ec1a47bb13fdc3c8d76729754",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "5e076ea087988c557ed29e8d43b91453b0a0260b888b9656a6784a3e810d8130",
+          "W4_STATE_SHA256": "74023bc44e09adb95e8577026d49eb1eabafc9159ee3bb92a41576939ded3681"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D0_interface_offset__e3.9716411736214079mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "67dac25ef1e8a782bcbdec30fb9a005790bc72392711852a0542d0f5edc66959",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D0_interface_offset__e3.9716411736214079mm__plus",
+      "state_sha256": "74023bc44e09adb95e8577026d49eb1eabafc9159ee3bb92a41576939ded3681",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e0.62946270589708364mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e0.62946270589708364mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e0.62946270589708364mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3493705372908153",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "333a93eac6ed9baf9cc61f0cdb331132bd4f54302c513500077225b7361c8370",
+          "W4_PHI_FORTRAN_SHA256": "f99956cea14b003659c92c97e54516866381af8d51e5f91b158a9e5434352252",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "5fb266a8302b0d3e431319ff86cbf8a977fdc4f5c42f7e27ffa4da4ad572e5e9",
+          "W4_STATE_SHA256": "893cd5c93803ddad0372bb46da1ecf845ccb6b0d50fe12ece29e9ebd8fc9b874"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e0.62946270589708364mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "ccc916dd72821bad9aec179734427cc6c4266aa126b2c44f7dd665d9c41e040c",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e0.62946270589708364mm__minus",
+      "state_sha256": "893cd5c93803ddad0372bb46da1ecf845ccb6b0d50fe12ece29e9ebd8fc9b874",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e0.62946270589708364mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e0.62946270589708364mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e0.62946270589708364mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3494700271636248",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "e06d16a39fef5249b4a443de9735377d6da646c234c9474401ca567e20295ce7",
+          "W4_PHI_FORTRAN_SHA256": "465d757d9259000f2438b871ea790ab31711af71aa8a2224bc7e708c332b6fab",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "9075a4a2d90e28d18c21d118291ce18549170d61d1535b35b0b79eb5ed660d73",
+          "W4_STATE_SHA256": "e748a544d7a484b888e4ce998649106af6ab47a7e61a765e619f6577ca102d57"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e0.62946270589708364mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "39b5e2f92f72179e0814f86679b5b11e6db3f9fd63aaa39a1cc3007ad8988329",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e0.62946270589708364mm__plus",
+      "state_sha256": "e748a544d7a484b888e4ce998649106af6ab47a7e61a765e619f6577ca102d57",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e1.5811388300841898mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e1.5811388300841898mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e1.5811388300841898mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34841886118520055",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "6b2770f33b1f4221486730136d29952cf1a5d9d5f98d54cb918f2e99235d9441",
+          "W4_PHI_FORTRAN_SHA256": "648441152d016cfe830f19095aa3d756d4106028802b5677b03e41001c52188a",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "50b423894f8988553b32063f82814c5f6ad26160168ad460eff17726c796e5f3",
+          "W4_STATE_SHA256": "7807bdfc7497226c01d0c0c90305f5cb9cd1a24ce5854e21c1b60ce52187349a"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e1.5811388300841898mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "a7338f2d7c414f30d3065d7508fabad205640bcdacc4b5f5ede8db733580492f",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e1.5811388300841898mm__minus",
+      "state_sha256": "7807bdfc7497226c01d0c0c90305f5cb9cd1a24ce5854e21c1b60ce52187349a",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e1.5811388300841898mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e1.5811388300841898mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e1.5811388300841898mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34866876844316724",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "4ff4c30e9cbb63c7bfb265403de8bc71f5ca388df3f862336b46b4df7af5e5dc",
+          "W4_PHI_FORTRAN_SHA256": "63e070b31924862720959911354bb8141f23255a48ea51f595d4702985f92ced",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "b8cfc3466e53339f7c6113169cc3bd872641cac56801dfd04718081ddfa08c9b",
+          "W4_STATE_SHA256": "4aaf3e3eaf7094d530197c9401db1b24093950a1b7f485002c6e6019fba2777a"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e1.5811388300841898mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "3c14c8e55d1ce7536c1ae6da4a6d56b6442c91ce02e3a4905f540af176323474",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e1.5811388300841898mm__plus",
+      "state_sha256": "4aaf3e3eaf7094d530197c9401db1b24093950a1b7f485002c6e6019fba2777a",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e3.9716411736214079mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e3.9716411736214079mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e3.9716411736214079mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34602835904806856",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "cb2a7ff885bafb59eb572db2efdba8d63c59b0281f75aafaeb3b32ff178ebb56",
+          "W4_PHI_FORTRAN_SHA256": "b893216e1e24b899bf5cfd9420c5aa5481a8a2b7bebde8a86d52068cf84a8a3a",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "ab014c7e1a2d155b56824f95df1e2368d12fcd49b7a16e9a21b12f97727b9623",
+          "W4_STATE_SHA256": "79c104189ff22663156d5787be968f42b2059110e67f5d0a7b05b8fc6928517d"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e3.9716411736214079mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "ed7b18bd64b2aca5ae719fe016ba2b060ac27cf46a252818fcd31b1041695662",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e3.9716411736214079mm__minus",
+      "state_sha256": "79c104189ff22663156d5787be968f42b2059110e67f5d0a7b05b8fc6928517d",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D1_filtered_seed11__e3.9716411736214079mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D1_filtered_seed11__e3.9716411736214079mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e3.9716411736214079mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34665609747171405",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "939d9383128686b0fb8994a011680bd7abd11896a7a1d6e3c19212a3d000034f",
+          "W4_PHI_FORTRAN_SHA256": "4ceafb61fd9922392c4007462084025b2e45c89a81b12b8fdddb518b6337582d",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "a0780e11e534fbb5cd5b5837381470993f86fbfa9871a4a0eb17c3ece2fe118f",
+          "W4_STATE_SHA256": "fe593807238c681a63245838245afbd73fcf52026de526e7f3b5b49987f1cf52"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D1_filtered_seed11__e3.9716411736214079mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "a1fd2635ba9f4451da37ad864d87a9248752dac1e60cd953b9ad632cf0243b39",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D1_filtered_seed11__e3.9716411736214079mm__plus",
+      "state_sha256": "fe593807238c681a63245838245afbd73fcf52026de526e7f3b5b49987f1cf52",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e0.62946270589708364mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e0.62946270589708364mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e0.62946270589708364mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3495045113610104",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "4fcb3f7f161272cb4dec0600df333d0a70bb40a9fa2bf233f18cd351ef430ecb",
+          "W4_PHI_FORTRAN_SHA256": "e870d7e1e2afc162f75bbd3fd481bf7cfa78f6e01ac5c1dfef7007deb5166e2a",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "17ebd73b3affb586f459f519e1de9d177e25b98e6ecaa66047496d444dc57360",
+          "W4_STATE_SHA256": "abf22be1bad385528a9fbd855f99875f1207b035c8039af8c56a1847cd2839c1"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e0.62946270589708364mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "a69754e839d2e696622845e9f77eafddada743d273e7bc4a441929f37183c52b",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e0.62946270589708364mm__minus",
+      "state_sha256": "abf22be1bad385528a9fbd855f99875f1207b035c8039af8c56a1847cd2839c1",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e0.62946270589708364mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e0.62946270589708364mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e0.62946270589708364mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34947402661200616",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "d6045e22907a6ac7cae889106aa0dcb63fa924cd16d63839b415a7a227171509",
+          "W4_PHI_FORTRAN_SHA256": "4b9bd64e200a185ec6b3d340f6adeb0830196f5207a6f6faa1c629b98bbd6ba3",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "69468a9a37be95d1eaa105fb06eb393846fdfa2164c861c178567e0848494f72",
+          "W4_STATE_SHA256": "844bf2ab514906543bcaf4e6674c43e62c587cd687eb57cf364467836921029e"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e0.62946270589708364mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "c1dbb2bec31f2e8d6a7f7061f12b15efca5b3b26d7d2dacf6b31297ef5dcf7e7",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e0.62946270589708364mm__plus",
+      "state_sha256": "844bf2ab514906543bcaf4e6674c43e62c587cd687eb57cf364467836921029e",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e1.5811388300841898mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e1.5811388300841898mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e1.5811388300841898mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34875538877677176",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "1914357938e1eb97adbd0968606c19a6fa51cd176147192d6360d8bc1cf18572",
+          "W4_PHI_FORTRAN_SHA256": "286b9bb081d9de1736f49b615e362f1445a5493c759a9ee2b642aa0002ef4bc0",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "188a9e4423e4e9618aed6e40b6a0419999c4295f506f5edbf5ab4d847660d4b0",
+          "W4_STATE_SHA256": "3e7c9118128bb992f2e235aa96a33d50512f5283ed629414fe43b9e6542b0458"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e1.5811388300841898mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "8aa03ae00795bdcc97445debfd7ac9dd6314b06c6305134d306bc88f38ff53d3",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e1.5811388300841898mm__minus",
+      "state_sha256": "3e7c9118128bb992f2e235aa96a33d50512f5283ed629414fe43b9e6542b0458",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e1.5811388300841898mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e1.5811388300841898mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e1.5811388300841898mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3486788146197796",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "e8a9a9c879542d458985d211994484709eb560fb036982f232a9ff1573dcd69f",
+          "W4_PHI_FORTRAN_SHA256": "a9d461ad5dc92ffd449495663d96007100d7420fa3cc5abb401c7ade80cf521b",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "428bf84011b2ab0823d974a368c670834e5023ae9ab8d0bc252d59336c0e2f1f",
+          "W4_STATE_SHA256": "eff9e25240478525d91f5bdc856fbf5def4855c8928e4fd4672da59c4bc586c7"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e1.5811388300841898mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "460fa03ad528bd60fcc234e17d3c192405d55bf7d3554b706800ed9b2c116c92",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e1.5811388300841898mm__plus",
+      "state_sha256": "eff9e25240478525d91f5bdc856fbf5def4855c8928e4fd4672da59c4bc586c7",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e3.9716411736214079mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e3.9716411736214079mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e3.9716411736214079mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34687367794103924",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "624484ad6223c9610ec807ea11ac8061cc12e6c363fd13dff438e2e4eb361887",
+          "W4_PHI_FORTRAN_SHA256": "dc13558ceb812d1294cb915da9e360cc5fc1dee88632a5a903148ef0741a8744",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "eac4059e701153030d3f0cae9bb59d5e5069122790d1a61b574e9bcfd80d323b",
+          "W4_STATE_SHA256": "2d8cefedefcbb5f5d2a71a833489354764e419b0861a751e2ef29ab0c242c481"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e3.9716411736214079mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "f11b45771075c33325aef4d8b40ac88c7036357cf151e218f2aa8e52351346be",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e3.9716411736214079mm__minus",
+      "state_sha256": "2d8cefedefcbb5f5d2a71a833489354764e419b0861a751e2ef29ab0c242c481",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "D2_filtered_seed2026__e3.9716411736214079mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/D2_filtered_seed2026__e3.9716411736214079mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e3.9716411736214079mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3466813323553652",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "756924eb1897a120d5c016814ea88bffa57dfcd3a2c4a9cf166a6813e6b1c7c1",
+          "W4_PHI_FORTRAN_SHA256": "d3755b1a37d40f2d28fd787069d1542f8f8002d9776597f733cd673daefcca4e",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "3a916e90c0e2bb6902d8ed8ddbd2874f3d60083708fa7578641b588fb46b0d2b",
+          "W4_STATE_SHA256": "1106a3786f38ec72e6d9c460acd8d76f2fbd9f4aecf9c095c0fc401570eeafc0"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/D2_filtered_seed2026__e3.9716411736214079mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "ca6759da5db077bdab9f96f626b9e604cbdb372b9514aa7fce71c8cb8c1ca7b3",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "D2_filtered_seed2026__e3.9716411736214079mm__plus",
+      "state_sha256": "1106a3786f38ec72e6d9c460acd8d76f2fbd9f4aecf9c095c0fc401570eeafc0",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e0.62946270589708364mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e0.62946270589708364mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e0.62946270589708364mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "98dfa8b0161d1ffc3ea51f50480742b3421a541db960074c6f837237f76ccaf7",
+          "W4_PHI_FORTRAN_SHA256": "92ac425b53f8d2d5fa474470deca09750bcc5966b1a8fa139fb32ebc5258b629",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "cfe1ebae67aa01c075561cbbcea747a6ef1f745dd2fc6e755fa99b60d23b9c78",
+          "W4_STATE_SHA256": "c76638b2f2e33b499113514c19b2447750e94abd6932d35538fe73848fbef315"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e0.62946270589708364mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "216796dfdb3803f37fdc107334a1b42554f40821d20b38eee3a286e862490a3b",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e0.62946270589708364mm__minus",
+      "state_sha256": "c76638b2f2e33b499113514c19b2447750e94abd6932d35538fe73848fbef315",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e0.62946270589708364mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e0.62946270589708364mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e0.62946270589708364mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34971315264701847",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "dfc68f52e96bb8d8219f5189fb21f5389b0d99a06fa8142700a1c49390aa9e1a",
+          "W4_PHI_FORTRAN_SHA256": "4b7088c82e4aefe96e1b62ede0d574eb7022b82ed7f9315a38df2a20988a2e28",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "b3448c508474e1299a4997d277f08afc08e27d427263658444f9ca0b1f6255a6",
+          "W4_STATE_SHA256": "cb78276db9b320fe71077c976e7464cd1c9dd889cde61cf3de8120286216069d"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e0.62946270589708364mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "bd055fe30b8223ef6b7d947c4397c4d7c106203e26b55e29a2b815760d4e708b",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e0.62946270589708364mm__plus",
+      "state_sha256": "cb78276db9b320fe71077c976e7464cd1c9dd889cde61cf3de8120286216069d",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e1.5811388300841898mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e1.5811388300841898mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e1.5811388300841898mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "929ba7a1f2d5c715977638cba516b1800025154a4f19937a392821ab7919a94b",
+          "W4_PHI_FORTRAN_SHA256": "bce8d98d46cbd9c12aa6d6e982a9386e837cdba2848cf9a5425624a5ba792e39",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "1cf0a5cef478b27e3de41c2b72a9791ef4252f35daa1afe1e2b4cb299d541a64",
+          "W4_STATE_SHA256": "c1cc5a385cfc71ad6033ffff4f7fd5229b41cba892befa83bd6ac2825bf7ccc2"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e1.5811388300841898mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "e5a5dcbc4fa95efdd51574d21b5f1d6cf1bfe578ce212543643f6019a3d57b0d",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e1.5811388300841898mm__minus",
+      "state_sha256": "c1cc5a385cfc71ad6033ffff4f7fd5229b41cba892befa83bd6ac2825bf7ccc2",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e1.5811388300841898mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e1.5811388300841898mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e1.5811388300841898mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34927947204560045",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "c5bf0b586d490acdcb57f03b9d6e515d67b10ebdd5c3d56f2b8fa199b92a2127",
+          "W4_PHI_FORTRAN_SHA256": "3511c004b5f375bf5b378bf58cd99ce1ab314f55f4bc535e5fce3838f3803f0d",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "6ae973c8abad9669d5dbd2fca82dbc2b3a9143d0e7ad7335041945601be77fb9",
+          "W4_STATE_SHA256": "549de8662f07b77138d0f511c442eba0f42f67f02febda20d619b98f47b3484f"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e1.5811388300841898mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "136c5f38a1879ce0e4a26debbc2fec544625b446f3590b23d63064da4dde3561",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e1.5811388300841898mm__plus",
+      "state_sha256": "549de8662f07b77138d0f511c442eba0f42f67f02febda20d619b98f47b3484f",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e3.9716411736214079mm__minus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e3.9716411736214079mm__minus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e3.9716411736214079mm__minus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.34999999925494196",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "c037e19ef1e93b9e69e50a0c0875fb52a74e43c942c7b748e23413a1030f77cb",
+          "W4_PHI_FORTRAN_SHA256": "747e97608be6f1ead62319a8c695d8e57535b9e9c5927190ebe2d6c60e427ee3",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "b3cb47a6a35f6c5ebb7bd5c14a7b0b04970af82be27526f1484de9408125c665",
+          "W4_STATE_SHA256": "3e16f6c071b309b6697cdbf8610bbfb8eeebbb5613ce46904e74f5e909c9029e"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e3.9716411736214079mm__minus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "d3758712d6e6f20c667b952433ba6b2af22781b8c61ae86252212d1a43c038e0",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e3.9716411736214079mm__minus",
+      "state_sha256": "3e16f6c071b309b6697cdbf8610bbfb8eeebbb5613ce46904e74f5e909c9029e",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "P1_upstream_lobe__e3.9716411736214079mm__plus": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/P1_upstream_lobe__e3.9716411736214079mm__plus.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e3.9716411736214079mm__plus"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3481901156716049",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "5ff665379da94b3061ef08e1f93afb2cd1146ef3176cd56c1442fd4af9316749",
+          "W4_PHI_FORTRAN_SHA256": "274676c4b07031949a1786c018015eda8af0d102673785626ff383c09611f3a5",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "96e1932540f413e9e1d383decf22e81a6ab7f17eb8ddc06bfc026b792d9f1d9f",
+          "W4_STATE_SHA256": "ca64c0a4dcd6c803d8257145010a591df6164b19a1199d2c8bf65c86dcfb25a8"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/P1_upstream_lobe__e3.9716411736214079mm__plus/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "4a442b4557afc1a9379fc11c35e793bd435a10f7fc6e6b1c5a498f2e73687645",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "P1_upstream_lobe__e3.9716411736214079mm__plus",
+      "state_sha256": "ca64c0a4dcd6c803d8257145010a591df6164b19a1199d2c8bf65c86dcfb25a8",
+      "status": "PRE_SOLVER_PREPARED"
+    },
+    "baseline_v17": {
+      "config": {
+        "args": [
+          "/tmp/fd08_v2_zv_fwja2/julia-1.12.6/bin/julia",
+          "--startup-file=no",
+          "--project=/tmp/fd08_v2_zv_fwja2/source/julia/CFDSDFWaterLilyT4",
+          "/tmp/fd08_v2_zv_fwja2/source/scripts/waterlily_xfid_candidate_c_job.jl",
+          "/kaggle/input/datasets/ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal/baseline_v17.phi.f32f",
+          "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/baseline_v17"
+        ],
+        "environment": {
+          "CUDA_VISIBLE_DEVICES": "0",
+          "JULIA_NUM_THREADS": "1",
+          "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+          "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+          "W4_CANONICAL_STATE_LABEL": "v17",
+          "W4_CELL_SHAPE": "120,64,48",
+          "W4_EXPECTED_MARGIN_M": "0.3499999939931499",
+          "W4_MARGIN_GATE_M": "0.15",
+          "W4_MARGIN_TOLERANCE_M": "1e-6",
+          "W4_PHI_C_ORDER_SHA256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+          "W4_PHI_FORTRAN_SHA256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+          "W4_POINT_SHAPE": "121,65,49",
+          "W4_SELECTED_GPU_UUID": "GPU-9b1abb88-c9c4-5e3f-0254-377cdbe15897",
+          "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+          "W4_STATE_NPZ_SHA256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+          "W4_STATE_SHA256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+        },
+        "log_path": "/kaggle/working/fd08_v2_formal_2026_10_07_amend2/states/baseline_v17/job.log",
+        "timeout_s": 1500
+      },
+      "config_sha256": "e57a0902e58a8d6f3ff9734c9a3597fd630cc65f6f418b85e622dee32f6dcdba",
+      "solver_source_sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+      "solver_started": false,
+      "state_name": "baseline_v17",
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+      "status": "PRE_SOLVER_PREPARED"
+    }
+  },
+  "status": "PASS_PRE_SOLVER_EXECUTION_PATH",
+  "verified_state_count": 25
+}
