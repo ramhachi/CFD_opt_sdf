@@ -6750,3 +6750,32 @@ with an independently byte-checked archive inventory. This checkpoint records
 registration only: host execution-path verification is required before upload
 or submission. No formal response, solver execution, analyzer or verdict exists;
 all six flags remain false. The criteria and payload are immutable.
+
+### 2026-10-07 — formal amend1 host gate BLOCKED_INFRASTRUCTURE
+
+After the first immutable formal registration above, the actual registered
+runner passed criteria loading, the exact 54-file mounted dataset inventory,
+and 40-source-input Git-tree SHA verification. It then failed in
+`validate_state_files()` at `infra/kaggle/kernel_fd08_v2_r6/runner.py:253` with
+`KeyError: 'geometry_reject_gates'`: the formal criteria stores the unchanged
+geometry conditions as `geometry`, while the shared runner consumes
+`geometry_reject_gates`. This pre-existing consumer/schema mismatch was not
+covered by the earlier dry-run's runner source verification. The passing
+registrar audits and tests must not be interpreted as a complete host execution
+path pass.
+
+The [host blocker record](issues/46_fd08_v2_formal_amend1_host_blocker_2026_10_07.md)
+and `registration_host_verification.json` preserve the traceback and identities.
+The registered criteria SHA remains
+`857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`;
+its source remains `30aa20a6891ccabefaa2ef6d41a2e2b5e26701b5`. Neither has been
+patched or superseded. The user's post-registration source-repair rule requires
+a new amendment/source/preregistration identity, so work stops at this gate.
+
+Formal is REGISTERED / NOT UPLOADED / NOT SUBMITTED / NOT RUN. No remote dataset
+or kernel version, formal response, terminal verification, scientific analyzer
+execution, or formal verdict exists. Campaign status is
+**BLOCKED_INFRASTRUCTURE**, not a scientific FAIL or UNRESOLVED. R6 remains PASS
+(8/8) with immutable evidence and no rerun/reanalysis. R5 FAIL, Stage 1's 17
+historical strict mismatches and Stage 1.5 remain unchanged. All six flags remain
+literal false. No result-dependent adjustment or scientific retry occurred.
