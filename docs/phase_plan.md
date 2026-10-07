@@ -6685,3 +6685,38 @@ was not repaired or bypassed after observing R6. Campaign status is
 `BLOCKED_PREREGISTRATION`; R6 remains the last calibration. R5 remains `FAIL`,
 the 17 historical Stage 1 mismatches remain unchanged, and all six qualification
 flags remain literal `false`.
+
+### 2026-10-07 — #46 Formal Preregistration Lineage Amendment source preparation
+
+The user explicitly authorized the post-R6 Formal Preregistration Lineage
+Amendment. The original preregistration dict/set failure and the subsequent
+source-lineage/dataset-identity blockers remain historical evidence. R6 remains
+PASS (8/8), with source/criteria/result/terminal/dataset/raw outputs unchanged.
+The registrar now uses a set for the 49 raw parent arrays, binds a separate
+formal execution commit, preserves exact R6 parent provenance, and emits
+amendment lineage plus distinct formal criteria/round/dataset/kernel identities.
+The shared Kaggle runner and all scientific sources remain byte-identical.
+
+Implementation commit is `bf7e6ae`; independent review/parent-input checkpoint
+is `9c2aa51cc02207308ad11307b2dc6633fd7c1026`. Amended registrar SHA-256 is
+`0570d34a06fa9469b9db7a96f780fc8f95d3535867fe48f8e53b162dd81467b6`.
+Both independent reviews passed. Solver-free canonical dry construction passed
+25-state byte uniqueness, disjointness from 49 parent states, geometry/masks,
+Float32 centered-direction audits, unchanged epsilon/scientific-contract checks,
+and a fresh checkout using the unchanged runner's 40-source-input verification.
+
+Focused FD-08 tests passed 107/107. Full pytest returned 37 failed / 1506 passed /
+9 skipped, with exactly the pinned 37 baseline IDs (zero new and zero resolved).
+Compileall, py_compile, CLI imports and diff check passed. The first focused
+run's missing canonical fixture is preserved and was resolved solely by placing
+the exact canonical NPZ in this worktree's ignored work directory.
+Evidence is in `docs/evidence/fd08_v2_formal_2026_10_07_amend1/` and design in
+`docs/issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md`.
+
+Formal is still NOT REGISTERED / NOT RUN at this source-preparation checkpoint.
+After no-ff integration and push, the resulting clean remote-synced integration
+HEAD will be bound as the formal execution source. Registration still requires
+fresh budget capability and full lineage/state integrity. RCFG-1, T2, four
+directions, COV-A, epsilon rule, 25 states, prediction/aggregation and caps are
+unchanged. R5 FAIL and the 17 Stage 1 historical strict mismatches remain;
+all six qualification flags are false. No R6 reanalysis or solver was executed.

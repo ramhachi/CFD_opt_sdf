@@ -2977,3 +2977,73 @@ rounds 1-5 unchanged. Any runner/verifier repair and retry must use a new
 immutable round with fresh 33-run outputs. FD, gradient, reverse, optimizer,
 topology, and shape-update qualification remain false; keep
 `shape_update_allowed=false`.
+
+## FD-08 v2 formal amend1: separate execution lineage (2026-10-07)
+
+The user-authorized [Formal Preregistration Lineage Amendment](issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md)
+repairs the registrar's set initialization and separates formal execution
+source/identities from immutable R6 provenance. It changes no scientific rule.
+The shared `infra/kaggle/kernel_fd08_v2_r6/runner.py` remains byte-identical.
+Formal uses a dedicated private kernel and dataset, both with slug
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1`. Do not version/update the R6
+dataset for this round.
+
+After passing tests and two reviews, merge with `--no-ff` and push integration.
+Use that clean pushed integration SHA for `--source-commit`; the registrar
+checks its tree against every source-input SHA and keeps the old R6 source in
+`calibration_binding`. The new criteria/round namespace is
+`docs/evidence/fd08_v2_formal_2026_10_07_amend1/`. Original failed preregistration
+artifacts remain under the old namespace.
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 python \
+  scripts/check_fd08_v2_kaggle_budget.py --phase formal \
+  --output work/formal_lineage_validation/registration_budget_preflight.json
+.venv/bin/python scripts/register_fd08_v2_formal.py \
+  --source-commit <clean-pushed-integration-SHA> \
+  --state work/sdf_native_genesis_v17/sdf_design_state.npz \
+  --budget-evidence work/formal_lineage_validation/registration_budget_preflight.json
+```
+
+Use `--dry-run` for identical in-memory construction without criteria/preflight
+or dataset writes. Actual registration requires clean local HEAD and remote
+integration to equal the supplied commit. The parent R6 dataset defaults to
+`work/r6_parent_v6`, downloaded with the versioned CLI reference
+`ramhachi888/cfd-opt-sdf-fd08-v2-r6/6` and fully hash-checked. The registrar
+requires the exact immutable R6 PASS tuple and independently reviewed amendment
+hash. No R6 analyzer or solver is invoked.
+
+For the first immutable formal payload, create the dedicated private dataset:
+
+```bash
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle datasets create \
+  -p work/kaggle_fd08_v2_formal_amend1_dataset
+```
+
+Before submit, verify remote readiness, exact file names/sizes, downloaded
+bytes/SHA, criteria SHA, and dataset version. Stage only byte-identical copies
+of the registered shared runner and formal metadata template:
+
+```bash
+mkdir -p work/kaggle_fd08_v2_formal_amend1_kernel
+cp infra/kaggle/kernel_fd08_v2_r6/runner.py \
+  work/kaggle_fd08_v2_formal_amend1_kernel/runner.py
+cp infra/kaggle/kernel_fd08_v2_formal_amend1/kernel-metadata.json \
+  work/kaggle_fd08_v2_formal_amend1_kernel/kernel-metadata.json
+uvx --index https://pypi.org/simple --from kaggle==2.2.4 kaggle kernels push \
+  -p work/kaggle_fd08_v2_formal_amend1_kernel \
+  --accelerator NvidiaTeslaT4 --timeout 5600
+```
+
+Bind the returned version to status/log/output commands and evidence paths.
+The unchanged runner consumes the formal criteria's amended source commit,
+never the parent R6 execution commit. The dataset contains formal signed states
+and baseline only; R6 responses are not runtime recomputation targets.
+
+After exact 25/25 terminal completion, first run
+`scripts/verify_fd08_v2_formal.py` with explicit criteria, dataset, kernel-version,
+and evidence arguments. Only a complete verified terminal permits one execution
+of `scripts/analyze_fd08_v2_formal.py`, with the exact immutable R6 analysis
+path supplied. Preserve all raw outputs/manifests and SHA sidecars. Partial
+artifacts never produce a scientific verdict. Formal FAIL/UNRESOLVED is terminal;
+no scientific retry, tuning, refit, model switch, or alternative epsilon is allowed.
