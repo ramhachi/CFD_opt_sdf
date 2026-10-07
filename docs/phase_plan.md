@@ -6720,3 +6720,33 @@ fresh budget capability and full lineage/state integrity. RCFG-1, T2, four
 directions, COV-A, epsilon rule, 25 states, prediction/aggregation and caps are
 unchanged. R5 FAIL and the 17 Stage 1 historical strict mismatches remain;
 all six qualification flags are false. No R6 reanalysis or solver was executed.
+
+### 2026-10-07 — formal amend1 immutable registration checkpoint
+
+The Formal Preregistration Lineage Amendment was merged with `--no-ff` and
+pushed to integration at `30aa20a6891ccabefaa2ef6d41a2e2b5e26701b5`. This clean,
+remote-synced commit is the formal execution source; immutable R6 parent source
+remains `f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9`. The pre-registration
+[source-ready issue checkpoint](https://github.com/ramhachi/CFD_opt_sdf/issues/46#issuecomment-6029850353)
+was posted while formal remained unregistered and unrun.
+
+The first immutable formal criteria was then registered successfully under
+`FD08-V2-FORMAL-AMEND1-2026-10-07`, round
+`fd08_v2_formal_2026_10_07_amend1`. Criteria SHA-256 is
+`857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe`;
+formal preflight SHA-256 is
+`417ca756e49de1a6f6355c47cb10f5da41edcebc533c05626c0be844a05dee2f`.
+The registered 25-state inventory consists of one baseline and 24 signed states.
+Interior epsilons are exactly 0.6294627058970836, 1.5811388300841898, and
+3.971641173621408 mm. Registrar audits passed uniqueness, disjointness from the
+49 parent arrays, geometry/masks and Float32 centered-direction requirements.
+The formal dataset/kernel identities are distinct from R6:
+`ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1`.
+
+All 55 local packaging files (54 mounted input files and metadata) are preserved
+losslessly in `formal_registered_payload.tar.gz`, SHA-256
+`b8102a7ed16c6e5925bc2876d8289b8e75a076015c644bf48aca2094d3fcde1b`,
+with an independently byte-checked archive inventory. This checkpoint records
+registration only: host execution-path verification is required before upload
+or submission. No formal response, solver execution, analyzer or verdict exists;
+all six flags remain false. The criteria and payload are immutable.
