@@ -1,0 +1,73 @@
+{
+  "archive_sha256": "942d41605bca27f713072adfd037b41fbcd3d072098c3a13babb2b212dd9f04d",
+  "attempt_count": 2,
+  "attempts": [
+    {
+      "accelerator": "NvidiaTeslaT4",
+      "attempt": 1,
+      "exit_code": 1,
+      "http_status": 409,
+      "log_sha256": "44605697b20313ad09402e4b6824b8d522588fa7156a7a696ff79dcd13f9f5dd",
+      "method": "Kaggle CLI2.2.4 kernels push",
+      "timeout_s": 5600
+    },
+    {
+      "accelerator": "NvidiaTeslaT4",
+      "attempt": 2,
+      "diagnostic": {
+        "attempt": 2,
+        "http_status": 409,
+        "same_registered_request": true,
+        "server_error_fields": {
+          "error": {
+            "code": 409,
+            "message": "The requested title \"CFD Opt SDF FD08 V2 Formal Amend2\" is already in use by a dataset. Please choose another title.",
+            "status": "ALREADY_EXISTS"
+          }
+        },
+        "status": "SAVE_KERNEL_HTTP_ERROR"
+      },
+      "diagnostic_sha256": "9554f517e858e30241330dcf387323ff309dd0e61f1e352b729c056f8a2116a6",
+      "exit_code": 1,
+      "http_status": 409,
+      "method": "pinned Kaggle CLI2.2.4 client kernels_push; identical registered request with whitelisted HTTP error diagnostics",
+      "timeout_s": 5600
+    }
+  ],
+  "captured_utc": "2026-10-07T07:18:47.843020+00:00",
+  "classification": "registered_kernel_packaging_identity_collision_requires_new_amendment",
+  "criteria_or_source_modified_after_registration": false,
+  "criteria_sha256": "ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e",
+  "dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+  "dataset_manifest_sha256": "4b133d9bb7d18ac3744bbb284e30dd26557c9cfb12d75e29a98bf1588935a269",
+  "dataset_version": 1,
+  "formal_analyzer_executed": false,
+  "formal_comparison_count": 0,
+  "formal_kernel_submitted": false,
+  "formal_observation_count": 0,
+  "formal_solver_executed": false,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+  "kernel_metadata_sha256": "cb3333e62173f320b89edd059f5fc8d99c22767dd26761ee3b0844b8f78880ed",
+  "kernel_version": null,
+  "kind": "fd08_v2_formal_amend2_submission_failure",
+  "payload_archive_sha256": "bb08ed8a9649c2e5842a1ac8a8c9d9956727ca7346c674e39512833760c1face",
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "registered_dataset_inventory_sha256": "df3eaef4bc627d84c010ba758391940f3f5d458bc5f5848448180fe33d4ecff0",
+  "registrar_sha256": "b00805dafa86d1c3abe9740575597f665af21ab8dc77f359fc177ca66a18624a",
+  "remote_dataset_is_private": true,
+  "remote_dataset_numeric_id": 12418766,
+  "remote_files_verified": 54,
+  "required_next_protocol": "AMEND3 with separate formal kernel identity and newly bound source/metadata; current criteria remain immutable",
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "scientific_contract_changed": false,
+  "scientific_verdict": null,
+  "source_commit": "f072bc7c5a9e98cc84f7a6a225c0780ad10e31be",
+  "terminal_verification": null
+}

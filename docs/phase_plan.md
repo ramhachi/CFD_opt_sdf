@@ -6867,3 +6867,29 @@ and SHA checks before the formal kernel submit. Criteria/source/model/T2/
 directions/epsilon/caps remain frozen; R6 and AMEND1 are unchanged. A complete
 25/25 formal terminal and host integrity PASS remain prerequisites for the
 single scientific analyzer invocation.
+
+## #46 AMEND2 immutable submission stop (2026-10-07)
+
+Registered-byte rehearsal PASS permitted dedicated private formal dataset
+upload. Dataset `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2` version 1 is
+ready, with all 54 remote files independently downloaded and SHA-verified
+against immutable criteria
+`ccbe6abd4f41c0900a3dd69612e31af7013d01040b7554b9e394d2f9eef0cf6e`.
+
+Formal `SaveKernel` failed with HTTP 409. One identical-request diagnostic
+retry, without source/criteria/dataset/cap changes, returned the same 409:
+`The requested title "CFD Opt SDF FD08 V2 Formal Amend2" is already in use by a dataset. Please choose another title.`
+The registered metadata binds the colliding kernel identity; fixing that
+bound metadata now requires a new source/protocol/preregistration amendment.
+**AMEND3 is required.** No title/slug/source/criteria repair or further retry
+was performed. The [submission blocker](issues/46_fd08_v2_formal_amend2_submission_blocker_2026_10_07.md)
+and SHA-fixed attempts preserve the exact error and identities.
+
+Campaign stops at **BLOCKED_INFRASTRUCTURE**. AMEND2 is REGISTERED / UPLOADED /
+NOT SUBMITTED / NOT RUN, with no successful formal kernel version. Completion
+is 0/25 and comparisons 0/24; formal runtime/solver time and scientific verdict
+do not exist. No terminal verifier or scientific analyzer was run. R6 remains
+immutable PASS 8/8 with no rerun/reanalysis, AMEND1 remains unchanged historical
+superseded registration, R5 FAIL and Stage 1/1.5 remain unchanged. All six flags
+remain false. This infrastructure stop makes no scientific FAIL, UNRESOLVED or
+qualification PASS claim. Main and unrelated worktrees are untouched.
