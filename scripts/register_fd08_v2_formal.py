@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -39,7 +40,6 @@ from register_fd08_v2_r6 import (
     CANONICAL_SOURCE_SURFACE_SHA256,
     CANONICAL_STATE_SHA256,
     EXPECTED_PROTECTED_DIRECTIONS,
-    KERNEL_ID,
     RUNTIME,
     SOURCE_FILES,
     digest,
@@ -50,13 +50,28 @@ from register_fd08_v2_r6 import (
 
 
 DEFAULT_STATE = Path("/Users/sota/projects/FomulaTMU/CFD2026_09/work/sdf_native_genesis_v17/sdf_design_state.npz")
-DEFAULT_R6_CRITERIA = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/r6_criteria.json"
-DEFAULT_R6_RESULT = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/r6_analysis.json"
-DEFAULT_R6_TERMINAL = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/terminal_verification.json"
-DEFAULT_R6_DATASET = ROOT / "work/kaggle_fd08_v2_r6_dataset"
-DEFAULT_DATASET = ROOT / "work/kaggle_fd08_v2_formal_dataset"
-DEFAULT_CRITERIA = ROOT / "docs/evidence/fd08_v2_formal_2026_10_06/formal_criteria.json"
-DEFAULT_PREFLIGHT = ROOT / "docs/evidence/fd08_v2_formal_2026_10_06/formal_preflight.json"
+DEFAULT_R6_CRITERIA = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_criteria.json"
+DEFAULT_R6_RESULT = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_analysis.json"
+DEFAULT_R6_TERMINAL = ROOT / "docs/evidence/fd08_v2_r6_2026_10_06/r6_retry2_terminal_verification.json"
+DEFAULT_R6_DATASET = ROOT / "work/r6_parent_v6"
+ROUND_ID = "fd08_v2_formal_2026_10_07_amend1"
+CRITERIA_ID = "FD08-V2-FORMAL-AMEND1-2026-10-07"
+DATASET_ID = "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1"
+KERNEL_ID = "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend1"
+EVIDENCE = ROOT / "docs/evidence" / ROUND_ID
+DEFAULT_DATASET = ROOT / "work/kaggle_fd08_v2_formal_amend1_dataset"
+DEFAULT_CRITERIA = EVIDENCE / "formal_criteria.json"
+DEFAULT_PREFLIGHT = EVIDENCE / "formal_preflight.json"
+AMENDMENT_DOCUMENT = ROOT / "docs/issues/46_fd08_v2_formal_lineage_amendment_2026_10_07.md"
+FAILURE_EVIDENCE = ROOT / "docs/evidence/fd08_v2_formal_2026_10_06/formal_retry2_registration_failure.json"
+ORIGINAL_REGISTRAR_SHA256 = "7882195db39b01a3178c9ef1b8bc8c014ba1a579c81c768cf8fdb7df22b5c92c"
+FAILURE_EVIDENCE_SHA256 = "5aee6ab0bfc57afc45bdefa7f1ab7a1255989d71d7aa1703a136642bd8ce8d05"
+R6_PARENT = {
+    "source_commit": "f8ee8ae9ff433efc009258c29c230c5c9cdeb7b9",
+    "criteria_sha256": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837",
+    "result_sha256": "b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be",
+    "terminal_verification_sha256": "dd0b1c9bd3643adc0d36fcb70d38ac19d4f223d880b840f03a30b8106422f06f",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -98,7 +113,7 @@ def read_r6_parent(r6_criteria_path: Path, r6_result_path: Path,
     for name, expected in expected_dataset.items():
         path = r6_dataset_dir / name
         require(path.is_file() and digest(path) == expected, f"R6 dataset source hash mismatch: {name}")
-    raw_states = {}
+    raw_states = set()
     for row in r6_criteria["state_inventory"]:
         raw = (r6_dataset_dir / row["phi_raw_file"]).read_bytes()
         require(hashlib.sha256(raw).hexdigest() == row["phi_fortran_order_sha256"],
@@ -122,10 +137,82 @@ def load_canonical(path: Path) -> tuple[SDFDesignState, bytes]:
     return state, blob
 
 
+def formal_source_inventory(source_commit: str) -> dict[str, dict[str, str]]:
+    require(len(source_commit) == 40 and all(c in "0123456789abcdef" for c in source_commit),
+            "formal execution source must be an exact Git commit")
+    require(source_commit != R6_PARENT["source_commit"], "formal execution cannot reuse R6 source commit")
+    sources = source_inventory()
+    additions = {
+        "kernel_metadata": "infra/kaggle/kernel_fd08_v2_formal_amend1/kernel-metadata.json",
+        "formal_lineage_tests": "tests/test_fd08_v2_formal_lineage.py",
+        "formal_scientific_contract": f"docs/evidence/{ROUND_ID}/scientific_contract_frozen.json",
+        "formal_amendment_document": AMENDMENT_DOCUMENT.relative_to(ROOT).as_posix(),
+        "formal_lineage_review": f"docs/evidence/{ROUND_ID}/review_lineage.json",
+        "formal_scientific_review": f"docs/evidence/{ROUND_ID}/review_scientific.json",
+    }
+    sources.update({name: {"path": path, "sha256": digest(ROOT / path)}
+                    for name, path in additions.items()})
+    for name, entry in sources.items():
+        blob = subprocess.check_output(["git", "show", f"{source_commit}:{entry['path']}"], cwd=ROOT)
+        require(hashlib.sha256(blob).hexdigest() == entry["sha256"],
+                f"formal execution commit/tree source SHA mismatch: {name}")
+    return sources
+
+
+def amendment_lineage(source_commit: str, r6: dict, sources: dict) -> dict:
+    original = subprocess.check_output(
+        ["git", "show", f"{R6_PARENT['source_commit']}:scripts/register_fd08_v2_formal.py"], cwd=ROOT
+    )
+    require(hashlib.sha256(original).hexdigest() == ORIGINAL_REGISTRAR_SHA256
+            == r6["formal_preregistration_template"]["formal_registrar_sha256"],
+            "original pre-R6 registrar identity mismatch")
+    failure, failure_sha = verified_json(FAILURE_EVIDENCE)
+    require(failure_sha == FAILURE_EVIDENCE_SHA256
+            and failure.get("formal_criteria_registered") is False
+            and failure.get("formal_solver_started") is False,
+            "original pre-observation failure evidence mismatch")
+    for name, entry in r6["source_inputs"].items():
+        if name not in {"formal_registrar", "kernel_metadata"}:
+            require(sources[name] == entry, f"non-amended R6/scientific source changed: {name}")
+    reviews = {}
+    for role in ("lineage", "scientific"):
+        path = EVIDENCE / f"review_{role}.json"
+        review, review_sha = verified_json(path)
+        require(review.get("verdict") == "PASS" and review.get("scientific_contract_changed") is False
+                and review.get("amended_registrar_sha256") == sources["formal_registrar"]["sha256"],
+                f"independent {role} review does not accept the exact amended source")
+        reviews[role] = {"path": path.relative_to(ROOT).as_posix(), "sha256": review_sha}
+    return {
+        "original_pre_r6_registrar_sha256": ORIGINAL_REGISTRAR_SHA256,
+        "preregistration_failure_evidence_path": FAILURE_EVIDENCE.relative_to(ROOT).as_posix(),
+        "preregistration_failure_evidence_sha256": failure_sha,
+        "amended_registrar_sha256": sources["formal_registrar"]["sha256"],
+        "amended_source_commit": source_commit,
+        "amendment_document_path": AMENDMENT_DOCUMENT.relative_to(ROOT).as_posix(),
+        "amendment_document_sha256": digest(AMENDMENT_DOCUMENT),
+        "independent_reviews": reviews,
+        "scientific_contract_changed": False,
+        "reason": "formal preregistration implementation/source-lineage repair before any formal registration or observation",
+    }
+
+
 def build_formal(args: argparse.Namespace):
     r6, r6_result, r6_terminal, r6_criteria_sha, r6_result_sha, r6_terminal_sha, calibration_bytes = read_r6_parent(
         args.r6_criteria, args.r6_result, args.r6_terminal, args.r6_dataset_dir
     )
+    require({"source_commit": r6["source_commit"], "criteria_sha256": r6_criteria_sha,
+             "result_sha256": r6_result_sha, "terminal_verification_sha256": r6_terminal_sha} == R6_PARENT,
+            "formal amendment requires the exact immutable R6 parent")
+    sources = formal_source_inventory(args.source_commit)
+    lineage = amendment_lineage(args.source_commit, r6, sources)
+    if not args.dry_run:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        remote = subprocess.check_output(
+            ["git", "ls-remote", "origin", "refs/heads/codex/kaggle-batch-migration"], cwd=ROOT, text=True
+        ).split()[0]
+        require(head == remote == args.source_commit
+                and not subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT),
+                "formal registration requires clean pushed integration HEAD")
     if args.criteria.exists() or args.criteria.with_suffix(args.criteria.suffix + ".sha256").exists():
         raise FileExistsError(f"refusing to overwrite formal criteria: {args.criteria}")
     if args.dataset_dir.exists() and any(args.dataset_dir.iterdir()):
@@ -156,7 +243,6 @@ def build_formal(args: argparse.Namespace):
     require(raw["baseline_v17.phi.f32f"] in calibration_bytes,
             "formal baseline is not byte-identical to canonical calibration baseline")
 
-    args.dataset_dir.mkdir(parents=True, exist_ok=True)
     files: dict[str, bytes] = {"baseline_v17.sdf_design_state.npz": baseline_npz}
     for row in inventory:
         raw_name = row["phi_raw_file"]
@@ -197,13 +283,15 @@ def build_formal(args: argparse.Namespace):
         "schema_version": 1,
         "kind": "fd08_v2_formal_validation",
         "evidence_class": "predict_then_run_deterministic_interior_interpolation_validation",
-        "criteria_id": "FD08-V2-FORMAL-2026-10-06",
+        "criteria_id": CRITERIA_ID,
+        "round_id": ROUND_ID,
         "kernel_id": KERNEL_ID,
-        "input_dataset_id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "input_dataset_id": DATASET_ID,
         "immutable": True,
         "registered_before_computation": True,
         "status": "registered_not_run",
-        "source_commit": r6["source_commit"],
+        "source_commit": args.source_commit,
+        "formal_preregistration_amendment": lineage,
         "candidate_c_identity": load_candidate_c_identity(ROOT),
         "canonical_state": r6["canonical_state"],
         "calibration_binding": {
@@ -280,7 +368,7 @@ def build_formal(args: argparse.Namespace):
             "sha_manifest": "fd08_v2_formal/sha256.json",
             "terminal_marker": "fd08_v2_formal/DONE",
         },
-        "source_inputs": source_inventory(),
+        "source_inputs": sources,
         "decision_tree": {
             "comparison_count": 24,
             "all_24_pass": "formal PASS",
@@ -308,11 +396,13 @@ def build_formal(args: argparse.Namespace):
         "float32_centered_direction_audits": audits,
         "state_inventory": inventory,
     }
-    if args.preflight.exists() or args.criteria.exists():
+    if any(path.exists() for path in (args.preflight, args.criteria,
+            args.preflight.with_suffix(args.preflight.suffix + ".sha256"),
+            args.criteria.with_suffix(args.criteria.suffix + ".sha256"))):
         raise FileExistsError("refusing to overwrite formal preflight/criteria")
-    args.preflight.parent.mkdir(parents=True, exist_ok=True)
-    args.preflight.write_text(json.dumps(preflight, sort_keys=True, indent=2, allow_nan=False) + "\n")
-    contract["preflight"] = {"path": args.preflight.relative_to(ROOT).as_posix(), "sha256": digest(args.preflight)}
+    preflight_blob = (json.dumps(preflight, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
+    contract["preflight"] = {"path": args.preflight.relative_to(ROOT).as_posix(),
+                             "sha256": hashlib.sha256(preflight_blob).hexdigest()}
     criteria_blob = json.dumps(contract, sort_keys=True, indent=2, allow_nan=False).encode() + b"\n"
     criteria_sha = hashlib.sha256(criteria_blob).hexdigest()
     files["criteria.json"] = criteria_blob
@@ -325,6 +415,21 @@ def build_formal(args: argparse.Namespace):
     files["fd08_v2_dataset_manifest.json"] = json.dumps(
         dataset_manifest, sort_keys=True, indent=2, allow_nan=False
     ).encode() + b"\n"
+    metadata = {
+        "title": "CFD Opt SDF FD08 V2 Formal Amend1 Private Inputs",
+        "id": DATASET_ID,
+        "licenses": [{"name": "other"}],
+    }
+    summary = {"criteria_sha256": criteria_sha, "source_commit": contract["source_commit"],
+               "state_count": len(inventory), "formal_signed_count": len(signed_formal),
+               "epsilon_mm": list(formal_values), "byte_disjointness": True,
+               "formal_registered": not args.dry_run}
+    if args.dry_run:
+        print(json.dumps(summary, sort_keys=True, indent=2))
+        return {"criteria": contract, "preflight": preflight, "files": files, "metadata": metadata}
+    args.preflight.parent.mkdir(parents=True, exist_ok=True)
+    args.preflight.write_bytes(preflight_blob)
+    args.preflight.with_suffix(args.preflight.suffix + ".sha256").write_text(contract["preflight"]["sha256"] + "\n")
     args.criteria.parent.mkdir(parents=True, exist_ok=True)
     args.criteria.write_bytes(criteria_blob)
     args.criteria.with_suffix(args.criteria.suffix + ".sha256").write_text(criteria_sha + "\n")
@@ -335,16 +440,9 @@ def build_formal(args: argparse.Namespace):
             raise FileExistsError(f"refusing to overwrite formal dataset input: {path}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(blob)
-    write_json(args.dataset_dir / "dataset-metadata.json", {
-        "title": "CFD Opt SDF FD08 V2 Private Inputs",
-        "id": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
-        "licenses": [{"name": "other"}],
-    })
-    print(json.dumps({"criteria_sha256": criteria_sha, "source_commit": contract["source_commit"],
-                      "state_count": len(inventory), "formal_signed_count": len(signed_formal),
-                      "epsilon_mm": list(formal_values), "byte_disjointness": True},
-                     sort_keys=True, indent=2))
-    return 0
+    write_json(args.dataset_dir / "dataset-metadata.json", metadata)
+    print(json.dumps(summary, sort_keys=True, indent=2))
+    return {"criteria": contract, "preflight": preflight, "files": files, "metadata": metadata}
 
 
 def main() -> int:
@@ -358,7 +456,10 @@ def main() -> int:
     parser.add_argument("--criteria", type=Path, default=DEFAULT_CRITERIA)
     parser.add_argument("--preflight", type=Path, default=DEFAULT_PREFLIGHT)
     parser.add_argument("--budget-evidence", type=Path, required=True)
-    return build_formal(parser.parse_args())
+    parser.add_argument("--source-commit", required=True, help="clean pushed formal integration source commit")
+    parser.add_argument("--dry-run", action="store_true", help="construct and validate without writing criteria/dataset")
+    build_formal(parser.parse_args())
+    return 0
 
 
 if __name__ == "__main__":
