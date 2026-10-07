@@ -1,0 +1,204 @@
+{
+  "consumption_rules": [
+    "only the listed direction/response rows; anything else must fail closed",
+    "the six qualification flags below are literal false; a later change needs a separate user decision and new record",
+    "a GRAD-01 loader may build CenteredDirectionalFD(qualified=True) from a row only after verifying every cited SHA and supplying its own registered gate"
+  ],
+  "evidence": {
+    "campaign_final.json": "6cd5a22e291eb4d22accb22c1ed8aaf68da3687fcd75eaabf8c985e73bb8f13f",
+    "formal_analysis.json": "3da59ac9b1086ed286cb0109cd669dac804f4fb99785986515ce35db1acf0466",
+    "formal_criteria.json": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "formal_terminal_verification.json": "13841237ca95142c45761963c5e61f68310de63ca5f70e3386e6ca465333e6ef",
+    "r6_retry2_analysis.json": "b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be",
+    "r6_retry2_criteria.json": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837"
+  },
+  "evidence_class": "scope_limited_fd_oracle_status_record_unregistered_not_a_flag_change",
+  "fd08_v2_scope_limited_oracle_status": "R6_PASS_AND_FORMAL_INTERIOR_INTERPOLATION_PASS_WITHIN_SCOPE",
+  "grad01_bridge": {
+    "absolute_noise_floor": null,
+    "direction_hash_rule": "GRAD-01 field_direction_sha256 over the registered float32 direction cast to float64 (C order)",
+    "fd_backend_fingerprint_rule": "sha256_json of formal runtime block, Candidate C operator/contract/body source hashes and formal source commit",
+    "fd_backend_fingerprint_sha256": "d17c81e430aaf2667009847ebaa18df0c57e203f7315ddeb2ddd61ddb9559b8e",
+    "gate_note": "no numeric delta is recorded: the GRAD-03 error gate is a separate user decision (see delta options note)",
+    "relative_error_tolerance": null,
+    "response_semantics_rule": "fd08_v2_campaign.sha256_json({response_id, definition, formal measurement block})",
+    "response_semantics_sha256": {
+      "downforce": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "drag": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b"
+    }
+  },
+  "kind": "fd08_v2_oracle_scope_record",
+  "not_claimed": [
+    "noise validation",
+    "extrapolation",
+    "direction generalization",
+    "grid independence",
+    "physical truth",
+    "high-Re validity",
+    "epsilon-to-zero exact derivative",
+    "full field gradient",
+    "reverse AD",
+    "optimizer",
+    "topology",
+    "joint 95% confidence"
+  ],
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "rows": [
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D0_interface_offset",
+      "direction_sha256_f32_c_order": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "direction_sha256_grad01_f64": "fb35072c59fa34bc1e5366e7385bdb9d84f79ba216bbd4e885db1ef2353abc2b",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.10398729014231183,
+      "relative_se": 0.03212780097389451,
+      "response_id": "drag",
+      "response_semantics_sha256": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b",
+      "se_g_n_per_m": 0.003340882961506817
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D0_interface_offset",
+      "direction_sha256_f32_c_order": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "direction_sha256_grad01_f64": "fb35072c59fa34bc1e5366e7385bdb9d84f79ba216bbd4e885db1ef2353abc2b",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": 0.8014915523435178,
+      "relative_se": 0.02570225805796556,
+      "response_id": "downforce",
+      "response_semantics_sha256": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "se_g_n_per_m": 0.02060014270961251
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D1_filtered_seed11",
+      "direction_sha256_f32_c_order": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "direction_sha256_grad01_f64": "ae5b2f6f8afdda4fc68dfc3a284c9b8d260c9d0d52d59c840daa37801e7bffa1",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.06372394066171688,
+      "relative_se": 0.03673951786455647,
+      "response_id": "drag",
+      "response_semantics_sha256": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b",
+      "se_g_n_per_m": 0.0023411868563410834
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D1_filtered_seed11",
+      "direction_sha256_f32_c_order": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "direction_sha256_grad01_f64": "ae5b2f6f8afdda4fc68dfc3a284c9b8d260c9d0d52d59c840daa37801e7bffa1",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.10643781759208808,
+      "relative_se": 0.03120789474545462,
+      "response_id": "downforce",
+      "response_semantics_sha256": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "se_g_n_per_m": 0.003321700208349783
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D2_filtered_seed2026",
+      "direction_sha256_f32_c_order": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "direction_sha256_grad01_f64": "6b6d9b121f800ab4ee876c8a0ae02e177a5328933dd2596c11b27b335178fe59",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.1697629387636076,
+      "relative_se": 0.028209673848121227,
+      "response_id": "drag",
+      "response_semantics_sha256": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b",
+      "se_g_n_per_m": 0.004788957134019947
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "D2_filtered_seed2026",
+      "direction_sha256_f32_c_order": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "direction_sha256_grad01_f64": "6b6d9b121f800ab4ee876c8a0ae02e177a5328933dd2596c11b27b335178fe59",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.09172298102069233,
+      "relative_se": 0.03261335096543791,
+      "response_id": "downforce",
+      "response_semantics_sha256": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "se_g_n_per_m": 0.0029913937716240396
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "P1_upstream_lobe",
+      "direction_sha256_f32_c_order": "93631cba7024fc5592bb2a0999ed33b580142fbf7a50f1542b41692bc26c0fd7",
+      "direction_sha256_grad01_f64": "ca5cec41ddd601ee37494738c3b0f751a0aa4f2483a1b3196d1a45fc5ea6f966",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.21429781188666328,
+      "relative_se": 0.027452129029887296,
+      "response_id": "drag",
+      "response_semantics_sha256": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b",
+      "se_g_n_per_m": 0.005882931182735196
+    },
+    {
+      "calibration_epsilon_range_mm": [
+        0.5,
+        5.0
+      ],
+      "direction_id": "P1_upstream_lobe",
+      "direction_sha256_f32_c_order": "93631cba7024fc5592bb2a0999ed33b580142fbf7a50f1542b41692bc26c0fd7",
+      "direction_sha256_grad01_f64": "ca5cec41ddd601ee37494738c3b0f751a0aa4f2483a1b3196d1a45fc5ea6f966",
+      "estimate_kind": "weighted least-squares slope g of Model A (S = g eps + c eps^3) over the six-point ladder; not a single-epsilon difference and not an epsilon-to-zero derivative claim",
+      "g_hat_n_per_m": -0.38519518769124206,
+      "relative_se": 0.026425410764160526,
+      "response_id": "downforce",
+      "response_semantics_sha256": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "se_g_n_per_m": 0.010178941059118983
+    }
+  ],
+  "scope": {
+    "calibration_epsilon_range_mm": [
+      0.5,
+      5.0
+    ],
+    "canonical_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "canonical_state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+    "case": "flow_24",
+    "directions": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "formal_claim": "deterministic_solver_interior_interpolation_validation",
+    "formal_interior_epsilon_mm": [
+      0.6294627058970836,
+      1.5811388300841898,
+      3.971641173621408
+    ],
+    "operator": "candidate_c_moment_blend+normal_floor_0.25",
+    "responses": [
+      "downforce",
+      "drag"
+    ],
+    "series_count": 8
+  },
+  "t2_classification": "arbitrary-provisional diagnostic operating contract; not a gradient error gate",
+  "t2_parameters_sha256": "c5f3fe1a3875c44d5fd0b87d48fd0bd0c06bdf22fb74581cb399e382dbac95ba"
+}

@@ -6927,3 +6927,24 @@ makes no joint-confidence statement. All six qualification flags remain false
 `shape_update_allowed`); any change to them needs a separate user decision.
 Evidence: `docs/evidence/fd08_v2_formal_2026_10_07_amend3/` (`campaign_final.json`,
 `formal_analysis.json`, `formal_terminal_verification.json`).
+
+## #46 FD-08 v2 post-PASS solver-free records (2026-10-08)
+
+Three solver-free artifacts follow the AMEND3 formal PASS (24/24, interior interpolation only). None changes
+a verdict, a registered contract or a qualification flag; all six flags remain false.
+
+- **Oracle scope record** (`docs/evidence/fd08_v2_oracle_scope_record_2026_10_08/`): binds R6 PASS 8/8 and the
+  formal PASS to Candidate C / canonical v17 / flow_24 / D0, D1, D2, P1 × drag, downforce / ε 0.5–5 mm, with the
+  GRAD-01 bridge identities (float64 direction hashes regenerated from the canonical state and checked against the
+  registered float32 hashes; response-semantics hash; FD backend fingerprint). It uses a scoped status key, no
+  `fd_oracle` or `*_qualified` true key, and records no error gate. Flipping any flag needs a separate user decision.
+- **Trust radius** (`docs/evidence/fd08_v2_trust_radius_2026_10_08/`): extrapolation of the frozen Model A/B fits.
+  Binding series is D0 drag: the 10% higher-order radius is about 3.1 mm (Model A) and 1.6 mm (Model B), with
+  plug-in 5th percentiles 2.5 mm and 1.0 mm. Radii beyond the 0.5–5 mm calibrated range are extrapolations; ε is a
+  max-nominal coefficient. Implication for #47 STEP-01 (2.5–12.5 mm steps): the upper half has no FD-08 support.
+- **GRAD-03 delta options** (`docs/issues/46_fd08_v2_grad03_delta_options_2026_10_08.md`): oracle uncertainty table
+  and four gate options. No δ is chosen; numeric examples are labelled arbitrary illustrations. #23's "every
+  registered direction" is unchanged.
+
+An independent numerical review re-derived every quoted number (PASS); its wording findings were applied.
+Gradient accuracy, ε→0 derivatives, grid independence and physical truth are not claimed.
