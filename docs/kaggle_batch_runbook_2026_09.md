@@ -3047,3 +3047,47 @@ of `scripts/analyze_fd08_v2_formal.py`, with the exact immutable R6 analysis
 path supplied. Preserve all raw outputs/manifests and SHA sidecars. Partial
 artifacts never produce a scientific verdict. Formal FAIL/UNRESOLVED is terminal;
 no scientific retry, tuning, refit, model switch, or alternative epsilon is allowed.
+
+## FD-08 v2 formal AMEND2: actual pre-solver execution gate (2026-10-07)
+
+AMEND1 stays immutable and unrun. Follow the
+[AMEND2 design](issues/46_fd08_v2_formal_amend2_runner_schema_2026_10_07.md)
+and use `scripts/register_fd08_v2_formal_amend2.py`. Dedicated formal private
+dataset/kernel: `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2`; separate
+setup-only rehearsal dataset: `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal`.
+The rehearsal kernel is `ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver`.
+Use the pinned CLI and exact dataset/kernel versions. Keep formal publication
+separate from temporary rehearsal inputs. Preserve every attempt and SHA.
+
+Build a dry candidate with the prospective final criteria/preflight paths and
+fresh unchanged 3300/5600 budget evidence. Stage a rehearsal notebook with
+`scripts/prepare_fd08_v2_presolver_kernel.py`; it downloads and SHA-checks the
+exact registered runner, sets `FD08_V2_STOP_BEFORE_SOLVER=1`, and retains real
+upstream GPU/source/Julia/runtime verification. Feature candidate rehearsal
+may set `--source-ref refs/heads/exp/issue46-fd08v2-formal-amend2-runner-schema-2026-10-07`.
+Final-source and registered-byte rehearsals use integration. Require an actual
+25/25 `PASS_PRE_SOLVER_EXECUTION_PATH`, no measured solver process, no force
+history and no scientific verdict. Unit mocks are not this gate.
+
+After clean pushed integration and its exact-source rehearsal, register once:
+
+```bash
+.venv/bin/python scripts/register_fd08_v2_formal_amend2.py \
+  --source-commit <clean-pushed-integration-SHA> \
+  --budget-evidence <exact-candidate-budget-file> \
+  --rehearsal-evidence <actual-exact-candidate-pre-solver-report>
+```
+
+Repeat the actual runner on the registered bytes before publishing the formal
+dataset. A failure preserves criteria and stops: do not patch this instance.
+Only then create the dedicated formal dataset, verify remote version/files/SHA,
+stage byte-identical runner/AMEND2 metadata, and push with
+`--accelerator NvidiaTeslaT4 --timeout 5600`, without the stop flag.
+Use `datasets files --page-size 200` for the full 54-file inventory. If the
+versioned bulk archive endpoint returns 404 while individual files are ready,
+versioned CLI downloads for each file may verify the same immutable version;
+require all names, sizes and SHA, without replacing payload bytes.
+
+After complete 25/25 terminal, use explicit AMEND2 paths with the unchanged
+formal verifier and analyzer. Run the analyzer exactly once after integrity
+PASS. R6 is not rerun/reanalyzed; no formal refit/tuning/scientific retry.

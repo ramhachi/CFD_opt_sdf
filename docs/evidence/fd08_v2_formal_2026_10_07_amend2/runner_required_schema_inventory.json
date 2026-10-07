@@ -1,0 +1,76 @@
+{
+  "COMMON_PATHS": [
+    "canonical_state.origin_m",
+    "canonical_state.shape",
+    "canonical_state.source_surface_sha256",
+    "canonical_state.spacing_m",
+    "immutable",
+    "input_dataset_id",
+    "kernel_id",
+    "kind",
+    "runtime.compute_capability",
+    "runtime.cuda_driver_api_version",
+    "runtime.cuda_jl_version",
+    "runtime.cuda_runtime_version",
+    "runtime.cuda_visible_devices",
+    "runtime.gpu_count",
+    "runtime.gpu_name",
+    "runtime.julia_archive_sha256",
+    "runtime.julia_threads",
+    "runtime.julia_version",
+    "runtime.waterlily_version",
+    "source_commit",
+    "source_inputs",
+    "source_inputs.julia_manifest.sha256",
+    "source_inputs.julia_project.sha256",
+    "source_inputs.kernel_runner.sha256",
+    "state_inventory"
+  ],
+  "MEASUREMENT_PATHS": [
+    "expected_state_count",
+    "measurement.kernel_execution_allowance_s",
+    "measurement.per_state_timeout_s",
+    "measurement.solver_wall_time_cap_s",
+    "qualification_flags",
+    "registered_before_computation",
+    "status"
+  ],
+  "MOUNTED_FILES": [
+    "criteria.json",
+    "criteria.json.sha256",
+    "fd08_v2_dataset_manifest.json"
+  ],
+  "NPZ_MEMBERS": [
+    "design_mask",
+    "fixed_solid_mask",
+    "forbidden_mask",
+    "metadata",
+    "phi",
+    "root_mask"
+  ],
+  "STATE_KEYS": [
+    "kind",
+    "margin_m",
+    "name",
+    "npz_file",
+    "npz_sha256",
+    "phi_c_order_sha256",
+    "phi_fortran_order_sha256",
+    "phi_raw_file",
+    "state_sha256"
+  ],
+  "extra_paths": [
+    "setup_rehearsal.evidence_sha256",
+    "NPZ metadata.state_sha256",
+    "dataset manifest.criteria_sha256",
+    "dataset manifest.files"
+  ],
+  "formal_geometry_path": "geometry.minimum_zero_level_margin_m",
+  "kind": "fd08_v2_runner_required_schema_inventory",
+  "optional_defaults": [
+    "dataset_files",
+    "artifact_paths.output_root"
+  ],
+  "r6_geometry_path": "geometry_reject_gates.minimum_zero_level_margin_m",
+  "setup_state_validation": "skipped as in original setup main; per_state_timeout_s used by setup invocation"
+}

@@ -1,0 +1,35 @@
+{
+  "AMEND1_criteria_sha256": "857c21231eb48708daba784318445c43d115dca48567dfd3378c3ba177bd57fe",
+  "AMEND1_scientific_projection_sha256": "8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f",
+  "AMEND2_candidate_scientific_projection_sha256": "8d76b3b4b5837dda38259d560f163223be92531d83b62236a21f5788a01cdb0f",
+  "checks": {
+    "T2": "All eight T2 values and parameter SHA unchanged.",
+    "aggregation_claims": "all24PASS/anyFAIL/otherwiseUNRESOLVED, evidence class, flags and not_claimed unchanged.",
+    "directions_P1": "All four IDs/hashes, P1 generation/sign convention and Float32 audits unchanged.",
+    "epsilon": "Exact [0.6294627058970836,1.5811388300841898,3.971641173621408] mm, geometric means at indices [0,2,4], no replacement search.",
+    "equations_thresholds": "Unchanged x, frozen S_pred, sigma prediction covariance, centered observation in N, max(3*sigma_pred,tol_hold*abs(S_pred)), magnitude/sign rules and verdict definitions.",
+    "import_repair": "Only import sys plus scripts-directory sys.path bootstrap; removing them reconstructs prior reviewed registrar SHA ba9f572e...; constructor/scientific logic unchanged.",
+    "measurement_runtime": "flow_24/operator/window/units, solver3300/kernel5600/per-state1500 caps and all runtime fields unchanged.",
+    "model_coverage": "Model A, eight frozen coefficient/covariance arrays, calibration provenance/analysis_runs=1, no refit or model switch; 24 signed + baseline =25 states and24 comparisons.",
+    "registrar": "Deepcopy immutable AMEND1; exact scientific/state equality guard; verified archive byte copy; no geometry regeneration/refit/analyzer. Exact rehearsal criteria/manifest/source-map/source/runner/count/solver-not-started bindings required.",
+    "runner": "Geometry dispatch only by criteria kind. Explicit stop hook returns before measured process and ordinary result/DONE. Default measurement behavior preserved, no response-dependent behavior.",
+    "states_geometry": "Canonical identity and all25 state definitions, file/byte hashes, geometry thresholds and byte-disjointness contract unchanged."
+  },
+  "findings": [],
+  "limitations": [
+    "Prospective scientific equivalence at exact hashes only, not formal scientific qualification/registration/T4 evidence.",
+    "Full source-bound dry construction, actual registered payload equality and actual T4 pre-solver evidence were not inspected or executed.",
+    "Zero observations was supplied premise; stop/host evidence outside reviewer inputs.",
+    "No raw forces, R6 analysis, primary conclusion, helper/support/test implementations, solver, analyzer or Kaggle operation used.",
+    "Import repair verified statically and by source reconstruction; registrar was not executed; no files edited or commits/pushes performed."
+  ],
+  "method": "Independent byte equality and recursive type-sensitive comparison of both projections against immutable AMEND1, excluding only the 12 permitted identity/lineage/source/package fields; static registrar/runner review; exact source reconstruction for import-only repair.",
+  "previous_reviewed_registrar_sha256": "ba9f572e000bd29c3d06c6b05678405186ee5a891a434a2fc2ae46c46e74cfcc",
+  "recording": "Decision, checks and scope faithfully transcribed from the independent agent final response; prose condensed by primary.",
+  "registrar_sha256": "b00805dafa86d1c3abe9740575597f665af21ab8dc77f359fc177ca66a18624a",
+  "review_role": "Independent Review B \u2014 scientific equivalence",
+  "reviewer_agent": "/root/amend2_scientific_review",
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "scientific_contract_changed": false,
+  "verdict": "PASS"
+}

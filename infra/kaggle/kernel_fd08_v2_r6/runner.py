@@ -22,7 +22,7 @@ import urllib.request
 INPUT_ROOT = Path(os.environ.get("FD08_V2_INPUT", "/kaggle/input"))
 OUT_ROOT = Path(os.environ.get("FD08_V2_OUT", "/kaggle/working"))
 SOURCE_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
-SOURCE_REF = "refs/heads/codex/kaggle-batch-migration"
+SOURCE_REF = os.environ.get("FD08_V2_SOURCE_REF", "refs/heads/codex/kaggle-batch-migration")
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 FORCE_COLUMNS = [
     "step", "t_u_l", "fx_solver", "fy_solver", "fz_solver", "drag_solver",
@@ -213,9 +213,20 @@ def margin_m(phi, spacing):
     return float(np.min(face_gap[solid] + phi[solid]))
 
 
+def geometry_contract(criteria: dict):
+    key = {"fd08_v2_r6_calibration": "geometry_reject_gates",
+           "fd08_v2_setup_rehearsal": "geometry_reject_gates",
+           "fd08_v2_formal_validation": "geometry"}[criteria["kind"]]
+    geometry = criteria.get(key)
+    require(isinstance(geometry, dict) and "minimum_zero_level_margin_m" in geometry,
+            f"{key}: geometry contract requires minimum_zero_level_margin_m")
+    return geometry
+
+
 def validate_state_files(dataset: Path, criteria: dict):
     import numpy as np
     canonical = criteria["canonical_state"]
+    geometry = geometry_contract(criteria)
     shape = tuple(canonical["shape"])
     baseline = next(row for row in criteria["state_inventory"] if row["kind"] == "baseline")
     with np.load(dataset / baseline["npz_file"], allow_pickle=False) as archive:
@@ -250,7 +261,7 @@ def validate_state_files(dataset: Path, criteria: dict):
         measured_margin = margin_m(phi, float(canonical["spacing_m"]))
         require(math.isfinite(measured_margin)
                 and abs(measured_margin - row["margin_m"]) <= 1e-10
-                and measured_margin >= criteria["geometry_reject_gates"]["minimum_zero_level_margin_m"],
+                and measured_margin >= geometry["minimum_zero_level_margin_m"],
                 f"{row['name']}: zero-level margin failure")
     require(len(byte_set) == criteria["expected_state_count"], "state byte uniqueness count mismatch")
 
@@ -318,9 +329,21 @@ def run_measurement_state(row, dataset: Path, source: Path, project: Path, julia
     log = outdir / "job.log"
     state_started_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     state_started_mono = time.monotonic()
-    command([str(julia), "--startup-file=no", f"--project={project}", str(job),
-             str(dataset / row["phi_raw_file"]), str(outdir)],
-            log, env=env, timeout=criteria["measurement"]["per_state_timeout_s"])
+    args = [str(julia), "--startup-file=no", f"--project={project}", str(job),
+            str(dataset / row["phi_raw_file"]), str(outdir)]
+    timeout = criteria["measurement"]["per_state_timeout_s"]
+    if env.get("FD08_V2_STOP_BEFORE_SOLVER") == "1":
+        config = {"args": args, "log_path": str(log), "timeout_s": timeout,
+                  "environment": {key: value for key, value in sorted(env.items())
+                                  if key.startswith("W4_") or key in
+                                  {"JULIA_NUM_THREADS", "CUDA_VISIBLE_DEVICES"}}}
+        set_stage(out, "pre_solver_invocation", current=row["name"], solver_started=False)
+        return {"status": "PRE_SOLVER_PREPARED", "state_name": row["name"],
+                "state_sha256": row["state_sha256"], "solver_started": False,
+                "config": config, "config_sha256": sha256_bytes(
+                    json.dumps(config, sort_keys=True, allow_nan=False).encode()),
+                "solver_source_sha256": sha256(job)}
+    command(args, log, env=env, timeout=timeout)
     state_elapsed = time.monotonic() - state_started_mono
     state_finished_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     summary_path = outdir / "flow_24.summary.json"
@@ -362,6 +385,11 @@ def main():
     dataset = find_dataset()
     criteria_path, criteria, criteria_sha = load_criteria(dataset)
     mode = criteria["kind"]
+    stop_flag = os.environ.get("FD08_V2_STOP_BEFORE_SOLVER")
+    require(stop_flag in {None, "0", "1"}, "FD08_V2_STOP_BEFORE_SOLVER must be absent, 0, or 1")
+    stop_before_solver = stop_flag == "1"
+    require(not stop_before_solver or mode != "fd08_v2_setup_rehearsal",
+            "pre-solver execution rehearsal requires a measurement criteria kind")
     out = OUT_ROOT / criteria.get("artifact_paths", {}).get(
         "output_root", "fd08_v2_setup_rehearsal" if mode == "fd08_v2_setup_rehearsal" else "fd08_v2"
     )
@@ -437,9 +465,62 @@ def main():
                           expected=criteria["expected_state_count"])
                 result = run_measurement_state(row, dataset, source, project, julia, env, gpu_uuid, criteria, out)
                 results[row["name"]] = result
-                write_json(out / "partial_result.json", {"criteria_sha256": criteria_sha,
-                            "source_commit": criteria["source_commit"], "completed_count": index,
-                            "expected_count": criteria["expected_state_count"], "states": results})
+                if not stop_before_solver:
+                    write_json(out / "partial_result.json", {"criteria_sha256": criteria_sha,
+                                "source_commit": criteria["source_commit"], "completed_count": index,
+                                "expected_count": criteria["expected_state_count"], "states": results})
+            if stop_before_solver:
+                require(len(results) == criteria["expected_state_count"]
+                        and all(row["status"] == "PRE_SOLVER_PREPARED"
+                                and row["solver_started"] is False for row in results.values()),
+                        "pre-solver prepared state inventory mismatch")
+                require(not any(path.is_file() for path in (out / "states").rglob("*")),
+                        "pre-solver rehearsal unexpectedly emitted state output")
+                set_stage(out, "pre_solver_execution_path", completed=len(results),
+                          expected=criteria["expected_state_count"], solver_started=False)
+                rehearsal = {
+                    "kind": "fd08_v2_pre_solver_execution_path",
+                    "criteria_kind": mode,
+                    "evidence_class": "runtime_execution_path_only_not_formal_science",
+                    "status": "PASS_PRE_SOLVER_EXECUTION_PATH",
+                    "last_stage": "pre_solver_invocation",
+                    "solver_started": False,
+                    "force_history_present": False,
+                    "scientific_verdict": None,
+                    "criteria_sha256": criteria_sha,
+                    "source_commit": criteria["source_commit"],
+                    "source_ref": SOURCE_REF,
+                    "source_inputs_sha256": sha256_bytes(json.dumps(
+                        criteria["source_inputs"], sort_keys=True, allow_nan=False).encode()),
+                    "source_input_count": len(criteria["source_inputs"]),
+                    "runner_sha256": runner_sha,
+                    "dataset_manifest_sha256": sha256(dataset / "fd08_v2_dataset_manifest.json"),
+                    "dataset_inventory_sha256": sha256_bytes(json.dumps({
+                        path.relative_to(dataset).as_posix(): sha256(path)
+                        for path in sorted(dataset.rglob("*")) if path.is_file()
+                    }, sort_keys=True, allow_nan=False).encode()),
+                    "kernel_id": criteria["kernel_id"],
+                    "dataset_id": criteria["input_dataset_id"],
+                    "gpu_inventory": gpu_rows,
+                    "host_driver_version_recorded_not_gated": driver,
+                    "runtime_smoke_sha256": sha256(out / "julia_smoke.log"),
+                    "measurement": criteria["measurement"],
+                    "runtime": criteria["runtime"],
+                    "states": results,
+                    "state_count": len(results),
+                    "state_verification_count": len(results),
+                    "verified_state_count": len(results),
+                    "prepared_state_count": len(results),
+                    "expected_state_count": criteria["expected_state_count"],
+                    "started_utc": started_utc,
+                    "finished_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                    "elapsed_kernel_seconds": time.monotonic() - started,
+                    "qualification_flags": criteria["qualification_flags"],
+                }
+                write_json(out / "pre_solver_execution_path.json", rehearsal)
+                (out / "PASS_PRE_SOLVER_EXECUTION_PATH").write_text("PASS_PRE_SOLVER_EXECUTION_PATH\n")
+                print("FD08_V2_TERMINAL PASS_PRE_SOLVER_EXECUTION_PATH", flush=True)
+                return
             (out / "partial_result.json").unlink(missing_ok=True)
             aggregate_solver = sum(row["summary"]["wall_seconds"] for row in results.values())
             measurement = criteria["measurement"]

@@ -1,0 +1,61 @@
+{
+  "criteria_sha256": "564333a076d0e39960ea6ecd3192f8185c94a77c0ba054aca5b00e79e0be5634",
+  "driver_recorded_not_gated": "580.178.04",
+  "elapsed_seconds": 295.52815814,
+  "evidence_class": "actual_registered_runner_execution_path_not_formal_science",
+  "execution_report_sha256": "f76f87ea3d66c3ecefd6ec114306eb7e63f6bb6d240d06efb3c13189ce20ae61",
+  "finished_utc": "2026-10-07T05:30:44.560439Z",
+  "formal_observation_count": 0,
+  "formal_registered": false,
+  "gpu_inventory": [
+    "0, Tesla T4, GPU-d6f2ea97-9028-a6b0-1874-4ddf6a4ca3a3, 15360 MiB, 580.178.04",
+    "1, Tesla T4, GPU-bab82695-91dd-d3ef-171f-eb6e1fab7c49, 15360 MiB, 580.178.04"
+  ],
+  "kernel_id": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver",
+  "kernel_version": 1,
+  "kind": "fd08_v2_actual_pre_solver_host_verification",
+  "mounted_file_count": 54,
+  "output_files": {
+    "cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver.log": "aa2d639f320497d13dcf26847d95526354d2872a53c3312f971cb88352195bb5",
+    "fd08_v2_formal_2026_10_07_amend2/PASS_PRE_SOLVER_EXECUTION_PATH": "e552ad28a84b44fa3f367778dc6a0a94699108b07cdd04a6801349c862cd28ba",
+    "fd08_v2_formal_2026_10_07_amend2/execution_state.json": "d9bfa4c31548094440a18f7e403d4d6c303e692e1641f2744b715ef20ba3c599",
+    "fd08_v2_formal_2026_10_07_amend2/git_checkout.log": "11c5fa0a6f60e0dcf6d7356c2a8062c4b5ffafe7bfa7679547376027d783a7c3",
+    "fd08_v2_formal_2026_10_07_amend2/git_fetch.log": "06a9854bc6f5f22f0101a2f1a07149b8eb599218b8e13199c462b6619626b14b",
+    "fd08_v2_formal_2026_10_07_amend2/git_init.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fd08_v2_formal_2026_10_07_amend2/instantiate.log": "83c5ae432ea2f3d1770e14e5d6070a6125a438694edd05db22546d8021127406",
+    "fd08_v2_formal_2026_10_07_amend2/julia_extract.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fd08_v2_formal_2026_10_07_amend2/julia_smoke.log": "1c4267ee8c6d9f6a30055a571d8174b30dddbf0abfc07eb2ce41393f7cb1beeb",
+    "fd08_v2_formal_2026_10_07_amend2/nvidia_smi.csv": "590c6aaae559ab32624f1a512f9c9f1b5962bfba479cde8d5a7cf501a8657bf9",
+    "fd08_v2_formal_2026_10_07_amend2/pre_solver_execution_path.json": "f76f87ea3d66c3ecefd6ec114306eb7e63f6bb6d240d06efb3c13189ce20ae61",
+    "pre_solver_runner.py": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runner_sha256": "d7fe9bc013bf8770c0c34a891be982907295b94f52bd62ce46030b2325a8950a",
+  "runtime_markers": [
+    "W0B_SMOKE_DONE",
+    "NO_SOLVER_STEP",
+    "CUDA_FUNCTIONAL true",
+    "GPU_COMPUTE_CAPABILITY 7.5.0",
+    "CUDA_DRIVER_VERSION 13.3.0",
+    "CUDA_RUNTIME_VERSION 12.8.0",
+    "JULIA_VERSION 1.12.6",
+    "CUDA_JL_VERSION 6.3.1",
+    "WATERLILY_VERSION 1.8.0",
+    "GPU_NAME Tesla T4"
+  ],
+  "scientific_verdict": null,
+  "solver_started": false,
+  "source_commit": "e42fc8f0c8cae1e54ad9349d441117fe49986894",
+  "source_input_count": 43,
+  "started_utc": "2026-10-07T05:25:49.032280Z",
+  "state_count": 25,
+  "state_verification_count": 25,
+  "status": "PASS"
+}
