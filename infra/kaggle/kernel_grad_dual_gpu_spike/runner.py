@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""Run the non-qualifying ForwardDiff-Dual-on-CuArray capability spike (G1) on Kaggle T4.
+
+Diagnostic only: no dataset, no registered criteria, no qualification claim. Source, project, script and input
+hashes are pinned below and verified before anything runs; every stage is recorded in the output manifest.
+"""
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import tempfile
+import traceback
+import urllib.request
+from pathlib import Path
+
+SOURCE_COMMIT = "0319a34d07c2e1de78d275395c822574ed64e699"
+REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
+JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
+JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
+PROJECT = "julia/CFDSDFWaterLilyT4"
+PINS = {
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "scripts/waterlily_grad_dual_gpu_spike_2026_10_08.jl": "a2798b7b281a306236c7647437cc4dd9ef0f4fc5cfb826879336de7e77d64813",
+}
+PHI_RAW = "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw"
+PHI_SHA256 = "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+DIR_RAW = "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw"
+DIR_SHA256 = "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+SCRIPT = "scripts/waterlily_grad_dual_gpu_spike_2026_10_08.jl"
+SPARSE = ["julia", "scripts", "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs",
+          "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs"]
+OUT = Path("/kaggle/working/grad_dual_gpu_spike")
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def write_json(path, value):
+    Path(path).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def run(args, log_path, env=None, timeout=3600, cwd=None):
+    print("RUN", " ".join(map(str, args)), flush=True)
+    with Path(log_path).open("w") as log:
+        result = subprocess.run(args, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT, timeout=timeout, check=False)
+    for line in Path(log_path).read_text(errors="replace").splitlines()[-60:]:
+        print(line, flush=True)
+    return result.returncode
+
+
+def install_julia(base):
+    archive = base / "julia.tar.gz"
+    digest = hashlib.sha256()
+    with urllib.request.urlopen(JULIA_URL, timeout=120) as response, archive.open("wb") as output:
+        while block := response.read(1 << 20):
+            digest.update(block)
+            output.write(block)
+    if digest.hexdigest() != JULIA_SHA256:
+        raise RuntimeError("Julia archive SHA-256 mismatch")
+    subprocess.run(["tar", "-xzf", str(archive), "-C", str(base)], check=True)
+    return base / "julia-1.12.6/bin/julia"
+
+
+def fetch_source(base):
+    source = base / "source"
+    source.mkdir()
+    git = ["git", "-C", str(source)]
+    subprocess.run(git + ["init", "-q"], check=True)
+    subprocess.run(git + ["remote", "add", "origin", REPO_URL], check=True)
+    subprocess.run(git + ["config", "core.sparseCheckout", "true"], check=True)
+    (source / ".git/info/sparse-checkout").write_text("\n".join("/" + p + "/" for p in SPARSE) + "\n")
+    fetched = subprocess.run(git + ["fetch", "-q", "--depth", "1", "--filter=blob:none", "origin", SOURCE_COMMIT]).returncode == 0
+    if not fetched:  # server refused the partial-clone filter: plain shallow fetch
+        subprocess.run(git + ["fetch", "-q", "--depth", "1", "origin", SOURCE_COMMIT], check=True)
+    subprocess.run(git + ["checkout", "-q", "--detach", "FETCH_HEAD"], check=True)
+    head = subprocess.check_output(git + ["rev-parse", "HEAD"], text=True).strip()
+    if head != SOURCE_COMMIT:
+        raise RuntimeError(f"checked-out commit {head} != pinned {SOURCE_COMMIT}")
+    return source, fetched
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    stage = "gpu_inventory"
+    identity = {"source_commit": SOURCE_COMMIT, "pins": PINS, "phi_sha256": PHI_SHA256, "dir_sha256": DIR_SHA256, "failure_stage": None}
+    write_json(OUT / "run_identity.json", identity)
+    try:
+        gpu = subprocess.check_output(["nvidia-smi", "--query-gpu=index,name,uuid,memory.total,driver_version", "--format=csv,noheader"], text=True)
+        (OUT / "nvidia_smi.csv").write_text(gpu)
+        if not gpu.strip() or any("Tesla T4" not in row for row in gpu.strip().splitlines()):
+            raise RuntimeError("requested T4 worker was not present")
+        with tempfile.TemporaryDirectory(prefix="grad-dual-gpu-", dir="/kaggle/working") as temp:
+            base = Path(temp)
+            stage = "source_checkout"
+            source, partial = fetch_source(base)
+            identity["partial_clone_filter_used"] = partial
+            for rel, expected in PINS.items():
+                actual = sha256(source / rel)
+                identity.setdefault("verified", {})[rel] = actual
+                if actual != expected:
+                    raise RuntimeError(f"pinned file SHA-256 mismatch: {rel}")
+            write_json(OUT / "run_identity.json", identity)
+            stage = "julia_installation"
+            julia = install_julia(base)
+            env = os.environ.copy()
+            env.update({"CUDA_VISIBLE_DEVICES": "0", "CUDA_DEVICE_ORDER": "PCI_BUS_ID", "JULIA_NUM_THREADS": "1",
+                        "G1_BACKEND": "cuda", "SPIKE_STEPS": "2", "G1_FP64": "1"})
+            project = f"--project={source / PROJECT}"
+            stage = "instantiate"
+            if run([str(julia), project, "-e", "using Pkg; Pkg.instantiate()"], OUT / "instantiate.log", env, 3600):
+                raise RuntimeError("Pkg.instantiate failed")
+            for rel in ("Project.toml", "Manifest.toml"):
+                if sha256(source / PROJECT / rel) != PINS[f"{PROJECT}/{rel}"]:
+                    raise RuntimeError(f"{rel} changed during instantiate")
+            stage = "spike"
+            code = run([str(julia), project, str(source / SCRIPT), str(source / PHI_RAW), PHI_SHA256, str(source / DIR_RAW), DIR_SHA256,
+                        str(OUT / "result_g1.json")], OUT / "spike.log", env, 3000)
+            identity["spike_exit_code"] = code
+            identity["failure_stage"] = None if code == 0 else "spike_nonzero_exit"
+            write_json(OUT / "run_identity.json", identity)
+        (OUT / "DONE").write_text("G1 script returned; see result_g1.json status.\n")
+        stage = "completed"
+    except Exception:
+        identity["failure_stage"] = stage
+        write_json(OUT / "run_identity.json", identity)
+        (OUT / "ERROR.txt").write_text(traceback.format_exc())
+        print((OUT / "ERROR.txt").read_text(), flush=True)
+    finally:
+        files = {p.name: sha256(p) for p in sorted(OUT.iterdir()) if p.is_file() and p.name != "output_manifest.json"}
+        write_json(OUT / "output_manifest.json", {"files": files})
+        print("OUTPUT_MANIFEST_SHA256", sha256(OUT / "output_manifest.json"), flush=True)
+
+
+if __name__ == "__main__":
+    main()
