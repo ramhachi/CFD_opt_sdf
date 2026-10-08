@@ -88,7 +88,7 @@ DRY = E / "cpu_dryrun_diagnostic"
 def test_dryrun_all_arms_ran_identity_holds_for_tangent_only_arms_only():
     d = DRY / "all_arms"
     index = json.loads((d / "diag_index.json").read_text())
-    assert index["dryrun"] is True and index["baseline"]["identity_and_complete"] is True and list(index["arm_results"]) == A.ARM_NAMES
+    assert index["dryrun"] is True and index["baseline"]["identity_and_complete"] is True and sorted(index["arm_results"]) == sorted(A.ARM_NAMES) and index["arms"] == A.ARM_NAMES
     assert not any("exception" in r for r in index["arm_results"].values()) and all(v["steps_run"] == 8 for v in index["arm_results"].values())
     ident = index["identity_primal_values"]
     assert all(ident[a] for a in A.ARM_NAMES if a.startswith(("A0", "A1")))                       # the primal never moves under tangent-only continuation
