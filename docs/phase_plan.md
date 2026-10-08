@@ -7066,3 +7066,29 @@ explained by residual size alone. Kill variants cannot see regrowth below the ne
 no GRAD-03 verdict, reverse untouched, six flags false, no Float64 run. Next step is a user decision; the natural candidate is a
 pre-registered diagnostic of a tangent-aware Poisson stopping rule (iteration-count scan and a long horizon).
 Evidence: `docs/evidence/grad03_g2_diag2_d0_tangent_counterfactual_2026_10_08/`.
+
+## #23 G2-DIAG3: tangent-only Poisson continuation, result TANGENT_ONLY_NO_SUPPORT (2026-10-08)
+
+G2-DIAG2 found that forcing 32 Poisson iterations suppresses the corner tangent growth, but that also changes the primal.
+G2-DIAG3 was pre-registered (freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the run) to
+separate the two: the primal Poisson solve is left exactly as in WaterLily (primal-only stop rule) and only the tangent
+part of the pressure solution is converged further (value-only multigrid on the same operator, `dA x` included, tangent
+mean of the active set removed, primal bytes never written). 24 arms from a step-780 fork (A0 baseline; A1 tangent-only with
+tau 1e-4..1e-7 and fixed counts 1..64; D Dual stop on primal AND tangent residual; forced 32 Dual iterations), one T4 run
+(source `f097dcd`), Stage B (held-out D0 long horizon) only for a mechanically selected candidate.
+
+Result under the registered rules: **TANGENT_ONLY_NO_SUPPORT**. A0 is bit-identical to the plain replay and reproduces the
+growth (0.1009 decade/step). All 18 tangent-only arms keep the primal values bit-identical at every step and bring the
+tangent Poisson residual from 2.7e-2 down to 1e-7, yet **the growth is unchanged** (0.1006-0.1058 decade/step, same onset
+step ~836-838): no plateau, no Stage B candidate. The Dual-stop arms (primal and tangent residuals 1e-6..4e-8 at both
+projections) do not suppress it either; the forced-32 arm reproduces the DIAG2 suppression and moves the primal by 3.3e-6
+(u, relative L2), 5e-4 (p), 4e-5 / 8e-5 (fx / fz). F32 and Dual-stop(1e-7) have the same drift and residual level but opposite
+outcomes, and the tangent mean (gauge) is negligible (2e-13 of max|dz|).
+
+Interpretation (post-hoc, unverified): the tangent Poisson convergence (H11) and a tangent-aware stopping rule are not the
+mechanism or the fix; the suppression by forced iterations may be a delay of the onset rather than an elimination (the
+window is 200 steps; Dual-stop(1e-7) delays the onset by ~27 steps). No bridge value, delta unset, no GRAD-03 verdict,
+reverse untouched, six flags false, no Float64 run. Next step is a user decision: a long-horizon replay of the forced-32 arm
+(delay or elimination), the internal split of the corner mode (BDIM / conv_diff boundary closures), Float64, or abandoning the
+long-window bridge.
+Evidence: `docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/`.
