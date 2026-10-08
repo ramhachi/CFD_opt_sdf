@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/kaggle/src/script.py", line 148, in main
+    raise RuntimeError(f"measurement script exited {code}")
+RuntimeError: measurement script exited 2

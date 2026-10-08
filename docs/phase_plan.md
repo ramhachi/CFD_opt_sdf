@@ -6984,3 +6984,22 @@ oracle. It is not a gradient qualification, reverse is untouched, #23's scope an
 qualification flags remain false. Next, only after a separate pre-registration written from this result: a full-window
 forward bridge (four directions in one run) as calibration data for the GRAD-03 gate.
 Evidence: `docs/evidence/grad03_gpu_dual_spike_2026_10_08/`.
+
+## #23 G2: full-window forward-AD bridge, attempt 1 result G2-BLOCKED (2026-10-08)
+
+G1 (T4, 2 steps, one direction) remains capability evidence only. G2 pre-registered a full-window measurement of the
+point derivative of the exact FD-08 observable (Candidate C, canonical v17, flow_24, [80,120] tU/L window) for D0, D1, D2
+and P1 as four independent Dual{Float32,1} runs plus a plain baseline, to compare with the FD-08 Model-A regression
+slopes. It chose no delta, gives no GRAD-03 verdict, leaves reverse untouched and changes no flag
+(`docs/evidence/grad03_g2_full_window_forward_bridge_2026_10_08/`, freeze, two independent reviews PASS, source
+`e44d0f0`, T4 kernel version 1).
+
+Result: **G2-BLOCKED** under the registered rule. The plain Float32 baseline completed (8,740 steps, 1,093 samples) and its
+host-recomputed window mean reproduced the registered `baseline_v17` measurement bit-for-bit (drag 0.3239039699743226 N,
+downforce 0.3316344583180616 N), validating measurement reuse on the T4. The D0 Dual run aborted on a non-finite
+force/tangent at step 1200 (t=16.41, start-up transient); the remaining directions were not run, no DONE marker was
+written, the runner exited non-zero, the host terminal verifier returned FAIL and the bridge analyzer was not run. No bridge
+value exists. The harness saved no partial history for the failed run, so the cause (tangent overflow versus another
+non-finite quantity) is undetermined. Any retry needs a new source identity and pre-registration; the options are a
+D0-only diagnostic run that saves partial histories, a Float64 Dual run, or abandoning the long-window bridge. Not a
+gradient qualification; delta unset; six qualification flags false.
