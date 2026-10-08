@@ -7003,3 +7003,30 @@ value exists. The harness saved no partial history for the failed run, so the ca
 non-finite quantity) is undetermined. Any retry needs a new source identity and pre-registration; the options are a
 D0-only diagnostic run that saves partial histories, a Float64 Dual run, or abandoning the long-window bridge. Not a
 gradient qualification; delta unset; six qualification flags false.
+
+## #23 G2-DIAG1: D0 long-horizon Dual failure localization, result DIAG_LOCALIZED (2026-10-08)
+
+G2 attempt 1 (G2-BLOCKED) lost its partial history, so the cause of the D0 `Dual{Float32,1}` failure at step 1200 was
+unknown. G2-DIAG1 was pre-registered (freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the
+run) as an observation-only diagnostic: D0 only, same scientific state as G2, one reference run (plain `sim_step!`, G2's
+sampling) and one instrumented run (read-only probes inside copies of WaterLily 1.8.0's `mom_step!` stages), per-step
+durable ledgers, no clipping/reset/Float64/bridge/delta. One T4 run (kernel version 1, source `2cd713a`).
+
+Result under the registered rules: **DIAG_LOCALIZED**. The reference run reproduced G2's failure exactly (step 1200,
+t=16.409412384033203); reference and instrumented states agree bit-for-bit at all 1197 steps (observation did not change
+the state). The first non-finite value is a **tangent** (`Inf`) while the primal stays finite and bounded (max|u|=1.231,
+steady since step ~500): step 1196, stage `correct_conv_diff`, field `f`, cell (24,61,40), a far-field cell (sdf 38.5).
+The tangent grew roughly exponentially (~x1.26/step, 0.0975 decade/step, R^2 0.992) up to 6e37 (Float32 max 3.4e38) before
+overflowing. The Poisson solve converged in one iteration (itmx 32 never reached) and the Candidate C geometry audit is
+finite. Mechanical classification: Case A; H1 and H2 supports, H3-H6 refutes.
+
+Post-hoc observation (outside the registered rules): the exponential growth started at step ~849 (t~11.6 tU/L), not at
+the start-up; before that the tangent was steady near the body. It then grew from far-field boundary-corner cells
+(sdf ~50 cells), not from the body. A constant-rate extrapolation also overflows Float64 near step ~4000, whereas the
+registered window needs ~8,740 steps, so a Float64 run alone may not complete the long-window bridge. The cause (boundary
+treatment, exit BC, time-Dual propagation, an unstable linearized mode) is not identified by this diagnostic.
+
+No bridge value exists; delta unset; no GRAD-03 verdict; reverse untouched; six qualification flags false. Next step is a
+user decision: Float64 precision discriminator, local diagnostic of the far-field tangent mode, Poisson derivative
+diagnostic, or abandoning the long-window forward bridge.
+Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/`.
