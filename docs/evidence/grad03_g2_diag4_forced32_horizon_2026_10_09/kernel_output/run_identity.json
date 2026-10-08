@@ -1,0 +1,28 @@
+{
+  "direction_sha256": {
+    "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+  },
+  "failure_stage": null,
+  "partial_clone_filter_used": true,
+  "phi_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+  "pins": {
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/arm_F32_forced_dual_32.steps.csv": "b6da9fed99da146d70d684fcdbcf94b0fafaf6fcc23804e90c1775290b987a40",
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/straight_checksums.csv": "2cdada4cbf05e7c30a4c449e528eddfeb51dc9a523b9934e26b4f55d203471ac",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_diag1_stages.jl": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "scripts/waterlily_grad_g2_diag3_stages.jl": "bcdcd5399561bfc6f2e2dc2623bf5d7c7705d6170c204f11ed456a2bfcacc3db",
+    "scripts/waterlily_grad_g2_diag4_forced32_horizon_2026_10_09.jl": "1da31094688e683c43bb4302d3a97aeb50b2fbc2da8764689b311062e217e073"
+  },
+  "source_commit": "a6ecbc61ff48b266ce0770faeeae59d486b0f3ff",
+  "spike_exit_code": 0,
+  "verified": {
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/arm_F32_forced_dual_32.steps.csv": "b6da9fed99da146d70d684fcdbcf94b0fafaf6fcc23804e90c1775290b987a40",
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/straight_checksums.csv": "2cdada4cbf05e7c30a4c449e528eddfeb51dc9a523b9934e26b4f55d203471ac",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_diag1_stages.jl": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "scripts/waterlily_grad_g2_diag3_stages.jl": "bcdcd5399561bfc6f2e2dc2623bf5d7c7705d6170c204f11ed456a2bfcacc3db",
+    "scripts/waterlily_grad_g2_diag4_forced32_horizon_2026_10_09.jl": "1da31094688e683c43bb4302d3a97aeb50b2fbc2da8764689b311062e217e073"
+  }
+}
