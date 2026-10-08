@@ -1,0 +1,256 @@
+{
+  "analysis_constants": {
+    "EXP_MIN_R2": 0.95,
+    "EXP_MIN_SLOPE": 0.01,
+    "FLOAT32_FAR_LOG10": 20.0,
+    "FLOAT32_NEAR_LIMIT_LOG10": 30.0,
+    "G2_FAIL_STEP": 1200,
+    "G2_FAIL_TIME_REPR": "16.409412384033203",
+    "H2_SUPPORT_DECADES": 3.0,
+    "H2_WEAK_DECADES": 1.0,
+    "ITMX": 32,
+    "MONOTONE_FRACTION": 0.9,
+    "PRE_FAILURE_STEPS": 100,
+    "SUDDEN_JUMP_DECADES": 1.0
+  },
+  "candidate_c_identity": {
+    "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "case_priority": [
+    "E",
+    "D",
+    "F",
+    "A",
+    "C",
+    "B",
+    "unclassified"
+  ],
+  "decision_table": {
+    "A": "primal finite, tangent grows gradually toward overflow -> Float64 Dual precision discriminator strongly justified",
+    "B": "tangent jumps from finite to huge in one step -> local diagnostic of the offending stage/operation first",
+    "C": "Poisson tangent diverges first -> new pre-registered tolerance/iteration sensitivity diagnostic candidate",
+    "D": "geometry coefficient tangent extreme/non-finite from setup -> investigate Candidate C derivative semantics first",
+    "E": "state tangents finite, only the force computation is non-finite -> diagnose/repair the force derivative path locally",
+    "F": "the primal went non-finite first -> investigate the offending stage's primal arithmetic locally",
+    "unclassified": "no mechanical proposal; report to the user"
+  },
+  "declarations": {
+    "bridge_value": null,
+    "d1_d2_p1_run": false,
+    "float64_run": false,
+    "grad03_verdict": null,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "directions": {
+    "baseline_phi": {
+      "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "fortran_raw_sha256_d0_only": {
+      "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "inputs_manifest_sha256": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711"
+  },
+  "file_hashes": {
+    "analyzer": "c0e1a0f6f8af0d07a8efc4bc74c42ceb9d2c9cc4c19d67bb5a457be7bcc79461",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "device_grid_sdf": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "g2_parent_runner": "d0d942ebf56ddb006b0b38c24cc8216974804f31d1387d30ab2ed63a2933efc9",
+    "g2_parent_script": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
+    "grid_sdf_body": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "identity_free_check": "81d04557bc28728549027db64aae91bdb34779149b99684a098e593a84d6a84f",
+    "kernel_metadata": "aef80963fd9c2981f83bc13d74e930cf4019a423ea7b64100f50f892666f8c52",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "prerun_note": "9ed0ba0b6c1a747c076c67d819e166655ab1589f0b7d56f19f3cf667e5b8193c",
+    "runner": "472761666509e27b05953e8a9814b52ae8f3d0de613c94a32e81155099fb867f",
+    "script": "33cdbea8425b3815d75b5ea8eb5c4913771397c750d94f62bd630c248e2c163f",
+    "stages": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "frozen_utc": "2026-10-08T11:12:35.328216+00:00",
+  "g2_attempt1": {
+    "failure": {
+      "step": 1200,
+      "t_u_l_repr": "16.409412384033203"
+    },
+    "runner_sha256": "d0d942ebf56ddb006b0b38c24cc8216974804f31d1387d30ab2ed63a2933efc9",
+    "script_sha256": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
+    "source_commit": "e44d0f08c07bde902017cc49854ef85b6ac6be64",
+    "verdict": "G2-BLOCKED"
+  },
+  "g2_attempt1_evidence_sha256": {
+    "SHA256SUMS": "eb1f683f46f05f7b953ab9cc99cb519840760e9fe4fd48aae7678eb3c27222b1",
+    "identity_free_check.json": "15117eaff857c6b3eaa50bbb454cf35aaff7bb01d40a576ba5a780249babb9f2",
+    "independent_reviews.md": "e230311f280d4ecb23036ea77adbe5a37d8f6d28aafd88f10f97c62d7f48252a",
+    "kernel_attempt1/ERROR.txt": "fee717f81a21655c68a4db9c99e1ccadc9997249221b7d35d3406e42601cb2d0",
+    "kernel_attempt1/g2_run_index.json": "b2c94a1571953ee2ea78a1b8cead6eee737237585d52b34f251962f8ce06c158",
+    "kernel_attempt1/output_manifest.json": "792fdb02fd295b6b2e9f98cc5e9fc46fca23ec0e1403a53c4f8cf92fac2eb5e2",
+    "kernel_attempt1/plain.history.csv": "d27538aaa1bbb6885d05ed18511d26bbbd5da53b5b1000f61709a4697d14369a",
+    "kernel_attempt1/plain.summary.json": "35b8422e92256c8ad6976d9171d72bea19e01e708108bf18d3b8645877ae89db",
+    "kernel_attempt1/run_identity.json": "1d13d2a2f4680bc85434db4904665657179a8af2ae3b2f00072f41ebf986aa85",
+    "note.md": "7c5ea48d171e34e1d281e2deace2b42d6243d49d5670488e55dd511fb416581d",
+    "prerun_freeze.json": "19e759746292ee9397a7ee4cff82ee8a5f01193905dbddeaea8f20c571f1292d",
+    "prerun_note.md": "568cf0eb6176091e9e82cfecbbeaee4ca27b664f459cfc5a7110866151dc31c1",
+    "terminal_verification_attempt1.json": "531c4e2e0d65ae71d40a468bda9e24684dd931218fa41428ad9339fa56f3d64f"
+  },
+  "hypotheses": {
+    "H1": "Float32 tangent dynamic-range overflow",
+    "H2": "finite but unstable tangent dynamics during the start-up transient",
+    "H3": "Candidate C / near-degenerate immersed-boundary coefficient derivative amplification",
+    "H4": "finite-iteration Poisson derivative amplification",
+    "H5": "force post-processing only is non-finite while state tangents are finite",
+    "H6": "instrumentation-independent reproducibility failure / non-determinism"
+  },
+  "kernel_identity": {
+    "id": "ramhachi888/cfd-opt-sdf-grad-g2-d0-nonfinite-diag1",
+    "machine_shape": "NvidiaTeslaT4",
+    "title": "CFD Opt SDF Grad G2 D0 Nonfinite Diag1",
+    "type": "script"
+  },
+  "kind": "grad03_g2_diag1_d0_nonfinite_prerun_freeze",
+  "parent_integration_commit": "62f039c8dca72f28a9a5751597ab64bb9e8eff80",
+  "pins": {
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_diag1_d0_nonfinite_2026_10_08.jl": "33cdbea8425b3815d75b5ea8eb5c4913771397c750d94f62bd630c248e2c163f",
+    "scripts/waterlily_grad_g2_diag1_stages.jl": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c"
+  },
+  "prohibitions": {
+    "bridge_analyzer": true,
+    "candidate_c_change": true,
+    "d1_d2_p1": true,
+    "float64_dual": true,
+    "grad03_verdict": true,
+    "poisson_tolerance_change": true,
+    "precision_change": true,
+    "reverse": true,
+    "selected_delta": true,
+    "tangent_clipping_or_reset": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run": {
+    "directions": [
+      "D0_interface_offset"
+    ],
+    "first_bad_rule": "first stage checkpoint, in execution order, whose field has a non-finite primal or tangent element; component = primal|tangent|both",
+    "flush": "every step",
+    "horizon": {
+      "fail_fast": "stop after the step in which B first sees a non-finite value",
+      "max_steps": 2000,
+      "min_steps": 1400,
+      "min_t_u_l": 20.0,
+      "rule": "first step with both"
+    },
+    "order": [
+      "A_reference_plain_sim_step",
+      "B_instrumented_stage_copies"
+    ],
+    "ring_steps": 12,
+    "sha256_every_steps": 25,
+    "snapshot_late": {
+      "every": 25,
+      "from": 1000
+    },
+    "snapshot_steps": [
+      0,
+      2,
+      100,
+      500,
+      900,
+      1000,
+      1050,
+      1100,
+      1150,
+      1175,
+      1190,
+      1195,
+      1198,
+      1199
+    ],
+    "stage_order": [
+      "measure",
+      "pre_scale",
+      "predict_conv_diff",
+      "predict_accelerate",
+      "predict_bdim",
+      "predict_bc",
+      "predict_exitbc",
+      "project1_rhs",
+      "project1_solve",
+      "project1_gradient",
+      "project1_bc",
+      "correct_conv_diff",
+      "correct_accelerate",
+      "correct_bdim",
+      "correct_scale",
+      "correct_bc",
+      "project2_rhs",
+      "project2_solve",
+      "project2_gradient",
+      "project2_bc",
+      "cfl",
+      "cfl_dt",
+      "force_candidate_pressure",
+      "force_candidate_viscous",
+      "force_candidate_total",
+      "force_ground_pressure",
+      "force_ground_viscous",
+      "force_ground_total"
+    ]
+  },
+  "runtime_pins": {
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "runtime_source_hashes": {
+    "waterlily_flow_jl_sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+    "waterlily_git_tree_sha1": "8e1d973f428df4bae450e1a45f19d0dba3ac6857",
+    "waterlily_multilevelpoisson_jl_sha256": "f6a7b6fb60a27be07133ae3c04a93141defb7a79f70e88a252c3e55399c83009"
+  },
+  "scientific_state": {
+    "alpha_unit": "metre",
+    "case_id": "flow_24",
+    "device": "CuArray (T4)",
+    "dual_width": 1,
+    "float": "Float32",
+    "force_semantics": "candidate only, -(pressure+viscous); drag=Fx, downforce=-Fz",
+    "poisson_itmx": 32,
+    "poisson_tol": 0.0001,
+    "remeasure": true,
+    "sample_every_steps_reference": 8
+  },
+  "source_commit": "2cd713a588da47416b598a2c26f8c22fbabe2d2c"
+}

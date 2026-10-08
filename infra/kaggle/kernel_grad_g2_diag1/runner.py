@@ -14,7 +14,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
+SOURCE_COMMIT = "2cd713a588da47416b598a2c26f8c22fbabe2d2c"
 REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
