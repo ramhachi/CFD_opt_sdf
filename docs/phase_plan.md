@@ -7030,3 +7030,16 @@ No bridge value exists; delta unset; no GRAD-03 verdict; reverse untouched; six 
 user decision: Float64 precision discriminator, local diagnostic of the far-field tangent mode, Poisson derivative
 diagnostic, or abandoning the long-window forward bridge.
 Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/`.
+
+## #23 G2-DIAG1 post-hoc addendum (2026-10-08, exploratory; the DIAG1 record is unchanged)
+
+Corrects one DIAG1 classification and records four post-hoc observations that motivate G2-DIAG2. **H4 (finite-iteration
+Poisson derivative) "refutes" is withdrawn**: the registered rule used "itmx reached" as a proxy, but the Poisson stop
+test uses only the primal residual, so it says nothing about tangent convergence. From step 31 on the solver runs one
+iteration; the primal relative residual is ~1e-3 while the tangent relative residual is 1.7-4.3 % throughout.
+Observations: 99.97 % of the u-tangent energy at step 900 lies in a corner box (x-min / y-min / top, 3-8 cells inside the
+faces, sign-alternating in x) where the primal is uniform free stream; the box tangent was steady at ~1e-2 until step 500
+and grows ~0.093 decade/step from an extrapolated onset near step 800; the dt tangent is steady until step 860 (a
+consequence, not a cause); the per-step gain ~x1.31 is made in the two BDIM stages and partly cancelled by projections.
+Interpretation (unverified): an AD artefact of a stopped iterative solver / boundary handling rather than physical growth.
+Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/posthoc_addendum.{md,json}`.
