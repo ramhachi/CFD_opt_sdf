@@ -1,0 +1,335 @@
+{
+  "analysis_constants": {
+    "BOX_ENERGY_FRACTION": 0.9,
+    "BOX_MAX_GATE": 1000.0,
+    "DOMINANCE_FACTOR": 100.0,
+    "END_STEP": 1500,
+    "FORK_STEP": 780,
+    "GLOBAL_MAX_GATE": 1000000.0,
+    "GROWTH_R2": 0.9,
+    "GROWTH_SLOPE": 0.02,
+    "MIN_POINTS": 10,
+    "MODE_OUTSIDE_FRACTION": 0.5,
+    "MODE_WINDOW": 25,
+    "REF_LAST_STEP": 980
+  },
+  "candidate_c_identity": {
+    "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "classification": [
+    "FORCED32_NO_ONSET_OBSERVED_TO_1500",
+    "FORCED32_DELAYED_ONSET",
+    "FORCED32_DIFFERENT_MODE",
+    "FORCED32_GROWTH_UNLOCALIZED",
+    "DIAG4_INCOMPLETE"
+  ],
+  "declarations": {
+    "bridge_value": null,
+    "d1_d2_p1_run": false,
+    "float64_run": false,
+    "forced32_is_a_different_solver_candidate": true,
+    "grad03_verdict": null,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "diag1_evidence_sha256": {
+    "diag1_analysis.json": "d3e2deee97a3e276056e71cd55c560db9d9c9272e33fb5e7c58ade825657b770",
+    "posthoc_addendum.json": "c933e8dccce0fd58ad8ec42c277ae2fa3dce82ad8d633c1f3fd87f7fb46655ca",
+    "prerun_freeze.json": "215ed319e591788d8791d3bb2034c4bcbaeff8bf59ea807363291d376416e7aa"
+  },
+  "diag2_evidence_sha256": {
+    "diag2_analysis.json": "1f126dccede6222aef366fda6e69b4a6461f7d53112aa357ba84a7fd695c3390",
+    "kernel_output/variant_V1c_poisson_n32.steps.csv": "3a38424f6f5541c80add4e442550e61357f195f8f132e45c1f9186454fd3929c",
+    "prerun_freeze.json": "7077cff669de8fef866f6a718c1aa88540df92296161cdc6c2bb782212cafc7a"
+  },
+  "diag3_evidence_sha256": {
+    "diag3_analysis.json": "30cbe1501279080035b63dae16a7951ca9c373ab949da26392ebadb6bbf70b25",
+    "kernel_output/diag_index.json": "ad6f8cf434a24f85f66e3fe09071459edf7ab61d01eba10b5bea4a25c9da0264",
+    "kernel_output/output_manifest.json": "1f3913d1cd46eb1b5f6eb75155e668c35d1bed9ab3541419c922be1b2df78fe3",
+    "prerun_freeze.json": "42ccd79094ed842b3ea0846a7df0ea9f75dba8c1a02c4418a5a7f8f415092150"
+  },
+  "directions": {
+    "baseline_phi": {
+      "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "fortran_raw_sha256_d0_only": {
+      "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "inputs_manifest_sha256": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711"
+  },
+  "file_hashes": {
+    "analyzer": "ebadb6d648308b0a729cea474f57df4809899dc3c328e375c8b9d282e8c6820a",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "device_grid_sdf": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "diag2_job": "4dc4f2de64a33c839a359b2c9f61d14e5f347de15947391a8d541a37c72eb28a",
+    "diag2_stages": "a21e44371afd467a61a379004deb62f4ee0f61a7b02094b8b776ac77d4d8d8c0",
+    "diag3_job": "959b50dd27ebf0b34d6b4cab54f6fbfd899211761b2176a0583419c4540598b7",
+    "g2_parent_script": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
+    "grid_sdf_body": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "identity_free_check": "6a036bd6ecf58157509e0d5ddda1b0f719f2fa1b120ad57ab1b7eb62ae457463",
+    "kernel_metadata": "9981826d5967c891d506bcc34e7643c4816689f76b512ac445c8c15fd260874a",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "prerun_note": "be2c2557dc38c65b0eb839acf3c0677d1fbe95189f6d2db0b9daf148bdc00205",
+    "ref_f32": "b6da9fed99da146d70d684fcdbcf94b0fafaf6fcc23804e90c1775290b987a40",
+    "ref_straight": "2cdada4cbf05e7c30a4c449e528eddfeb51dc9a523b9934e26b4f55d203471ac",
+    "runner": "069d40be5a06db38a41b47bebef162e19d06215e5c55d0f600b5949e8d37bd30",
+    "script": "1da31094688e683c43bb4302d3a97aeb50b2fbc2da8764689b311062e217e073",
+    "stages_diag1": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "stages_diag3": "bcdcd5399561bfc6f2e2dc2623bf5d7c7705d6170c204f11ed456a2bfcacc3db",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "frozen_utc": "2026-10-08T15:35:11.425893+00:00",
+  "kernel_identity": {
+    "id": "ramhachi888/cfd-opt-sdf-grad-g2-d0-forced32-horizon-diag4",
+    "machine_shape": "NvidiaTeslaT4",
+    "title": "CFD Opt SDF Grad G2 D0 Forced32 Horizon Diag4",
+    "type": "script"
+  },
+  "kind": "grad03_g2_diag4_forced32_horizon_prerun_freeze",
+  "parent_integration_commit": "25a6a3a739edbc8601b15564fd90c1fcd59cee49",
+  "pins": {
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/arm_F32_forced_dual_32.steps.csv": "b6da9fed99da146d70d684fcdbcf94b0fafaf6fcc23804e90c1775290b987a40",
+    "docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/kernel_output/straight_checksums.csv": "2cdada4cbf05e7c30a4c449e528eddfeb51dc9a523b9934e26b4f55d203471ac",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_diag1_stages.jl": "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    "scripts/waterlily_grad_g2_diag3_stages.jl": "bcdcd5399561bfc6f2e2dc2623bf5d7c7705d6170c204f11ed456a2bfcacc3db",
+    "scripts/waterlily_grad_g2_diag4_forced32_horizon_2026_10_09.jl": "1da31094688e683c43bb4302d3a97aeb50b2fbc2da8764689b311062e217e073"
+  },
+  "prior_results": {
+    "baseline_slope": 0.1009,
+    "diag2": "DIAG2_LOCALIZED",
+    "diag3": "TANGENT_ONLY_NO_SUPPORT",
+    "forced32_slope_880_980": -0.0003,
+    "forced32_vs_diag2_v1c_bitwise_equal_steps": 200
+  },
+  "prohibitions": {
+    "adaptive_extra_arm": true,
+    "automatic_full_window_run": true,
+    "bridge_analyzer": true,
+    "d1_d2_p1": true,
+    "diag5_internal_decomposition": true,
+    "fd08_comparison": true,
+    "flag_change": true,
+    "float64_dual": true,
+    "forced32_as_ad_fix": true,
+    "grad03_verdict": true,
+    "reverse": true,
+    "selected_delta": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "run": {
+    "arms": {
+      "B0": "original semantics (plain sim_step!), step 0 -> 1500",
+      "B32fork": "exact clone of B0 at step 780, forced solver!(b; tol=0.0, itmx=32) for steps 781 -> 1500 (PRIMARY)",
+      "B32fresh": "forced 32 from step 0 -> 1500, independent (SECONDARY: history dependence only, never used for the primary verdict)"
+    },
+    "box_1based": {
+      "i": [
+        1,
+        12
+      ],
+      "j": [
+        1,
+        8
+      ],
+      "k": [
+        49,
+        56
+      ]
+    },
+    "end_step": 1500,
+    "fork_step": 780,
+    "intervals": [
+      [
+        880,
+        980
+      ],
+      [
+        980,
+        1100
+      ],
+      [
+        1100,
+        1200
+      ],
+      [
+        1200,
+        1350
+      ],
+      [
+        1350,
+        1500
+      ]
+    ],
+    "reference_last_step": 980,
+    "regression_gates": [
+      "B0 steps 1..980 == DIAG3 straight (full bits)",
+      "B32fork steps 781..980 == DIAG3 F32 arm (= DIAG2 V1c) (full bits)",
+      "clone bit-identical at the fork step"
+    ],
+    "rolling_windows": [
+      [
+        800,
+        900
+      ],
+      [
+        825,
+        925
+      ],
+      [
+        850,
+        950
+      ],
+      [
+        875,
+        975
+      ],
+      [
+        900,
+        1000
+      ],
+      [
+        925,
+        1025
+      ],
+      [
+        950,
+        1050
+      ],
+      [
+        975,
+        1075
+      ],
+      [
+        1000,
+        1100
+      ],
+      [
+        1025,
+        1125
+      ],
+      [
+        1050,
+        1150
+      ],
+      [
+        1075,
+        1175
+      ],
+      [
+        1100,
+        1200
+      ],
+      [
+        1125,
+        1225
+      ],
+      [
+        1150,
+        1250
+      ],
+      [
+        1175,
+        1275
+      ],
+      [
+        1200,
+        1300
+      ],
+      [
+        1225,
+        1325
+      ],
+      [
+        1250,
+        1350
+      ],
+      [
+        1275,
+        1375
+      ],
+      [
+        1300,
+        1400
+      ],
+      [
+        1325,
+        1425
+      ],
+      [
+        1350,
+        1450
+      ],
+      [
+        1375,
+        1475
+      ],
+      [
+        1400,
+        1500
+      ]
+    ],
+    "snapshot_steps": [
+      1000,
+      1250,
+      1500
+    ]
+  },
+  "runtime_pins": {
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "runtime_source_hashes": {
+    "waterlily_flow_jl_sha256": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0",
+    "waterlily_git_tree_sha1": "8e1d973f428df4bae450e1a45f19d0dba3ac6857",
+    "waterlily_multilevelpoisson_jl_sha256": "f6a7b6fb60a27be07133ae3c04a93141defb7a79f70e88a252c3e55399c83009",
+    "waterlily_poisson_jl_sha256": "a77c631c88a7637fa5ffdd80d52610acad9aba7346904cb4a90df55c3d0077fb"
+  },
+  "scientific_state": {
+    "alpha_unit": "metre",
+    "case_id": "flow_24",
+    "device": "CuArray (T4)",
+    "dual_width": 1,
+    "float": "Float32",
+    "force_semantics": "candidate only, -(pressure+viscous); drag=Fx, downforce=-Fz",
+    "poisson_itmx": 32,
+    "poisson_tol": 0.0001,
+    "remeasure": true,
+    "sample_every_steps_reference": 8
+  },
+  "source_commit": "a6ecbc61ff48b266ce0770faeeae59d486b0f3ff"
+}
