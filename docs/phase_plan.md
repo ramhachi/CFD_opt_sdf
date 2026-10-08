@@ -6969,3 +6969,18 @@ Open items (user decisions): whether to test Dual numbers on CuArray/T4 (the ora
 restore reverse for a reverse-vs-forward check, and how the GRAD-03 error gate should account for the difference between
 a pointwise AD derivative and the FD-08 mesoscale regression slope. This is not a gradient qualification.
 Evidence: `docs/evidence/grad02_forward_ad_spike_2026_10_08/`; note: `docs/issues/22_forward_ad_spike_2026_10_08.md`.
+
+## #22/#23 G1: T4 Dual-number capability gate, result G1-PASS (2026-10-08)
+
+A one-shot diagnostic on Kaggle T4 asked whether ForwardDiff `Dual{Tag,Float32,1}` numbers go through a few WaterLily
+1.8.0 `sim_step!`s of the Candidate C composite body on the canonical v17 state with CuArray storage. The decision rule
+was fixed before the run (`prerun_note.md`, `prerun_freeze.json`; CPU dry-runs were disclosed, no GPU result had been seen).
+Result under the registered rule: **G1-PASS**. The kernel completed (Tesla T4, CUDA.jl 6.3.1, WaterLily 1.8.0), tangents
+and partial-carrying fields are finite and nonzero, the Dual primal matches the plain primal to 2.2e-6, and the Float32
+GPU tangents agree with the CPU Float64 AD tangents to 0.6% (Fx) and 8.0% (Fz, close to the 10% limit).
+
+Scope: two-step instantaneous force, one direction (D0); not the FD-08 window mean and not a comparison with the FD-08
+oracle. It is not a gradient qualification, reverse is untouched, #23's scope and error gate are unchanged, and all six
+qualification flags remain false. Next, only after a separate pre-registration written from this result: a full-window
+forward bridge (four directions in one run) as calibration data for the GRAD-03 gate.
+Evidence: `docs/evidence/grad03_gpu_dual_spike_2026_10_08/`.

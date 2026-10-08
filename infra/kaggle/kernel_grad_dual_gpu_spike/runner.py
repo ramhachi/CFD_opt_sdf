@@ -14,7 +14,7 @@ import traceback
 import urllib.request
 from pathlib import Path
 
-SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
+SOURCE_COMMIT = "0319a34d07c2e1de78d275395c822574ed64e699"
 REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -22,7 +22,7 @@ PROJECT = "julia/CFDSDFWaterLilyT4"
 PINS = {
     "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
     "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
-    "scripts/waterlily_grad_dual_gpu_spike_2026_10_08.jl": "PIN_SCRIPT_SHA256",
+    "scripts/waterlily_grad_dual_gpu_spike_2026_10_08.jl": "a2798b7b281a306236c7647437cc4dd9ef0f4fc5cfb826879336de7e77d64813",
 }
 PHI_RAW = "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw"
 PHI_SHA256 = "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
