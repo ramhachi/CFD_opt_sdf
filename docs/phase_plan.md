@@ -7092,3 +7092,27 @@ reverse untouched, six flags false, no Float64 run. Next step is a user decision
 (delay or elimination), the internal split of the corner mode (BDIM / conv_diff boundary closures), Float64, or abandoning the
 long-window bridge.
 Evidence: `docs/evidence/grad03_g2_diag3_tangent_poisson_2026_10_08/`.
+
+## #23 G2-DIAG4: forced-32 long-horizon replay, result FORCED32_DELAYED_ONSET (2026-10-09)
+
+G2-DIAG2/DIAG3 showed that forcing 32 Poisson iterations suppresses the D0 corner tangent growth over a 200-step window. G2-DIAG4 was
+pre-registered (freeze, two independent reviews, findings applied before the run) to ask whether this is an elimination or a delay.
+One T4 run (source `a6ecbc61`), three independent lock-step simulations: B0 (original semantics, 0..1500), B32fork (PRIMARY: bitwise
+clone of B0 at step 780, then forced 32 iterations, 781..1500) and B32fresh (SECONDARY: forced-32 from step 0, never used for the
+primary verdict). Mandatory regression gates passed bit for bit (B0 steps 1..980 = DIAG3 straight; B32fork steps 781..980 = DIAG3 F32 arm
+= DIAG2 V1c; clone exact at the fork).
+
+Result under the registered rules: **FORCED32_DELAYED_ONSET**. B0 reproduces the corner mode (box max > 1 at step 838, tangent
+non-finite at 1196). B32fork stays suppressed (slope ~0 through step ~1200) and then grows again in the same corner: box max > 1 at
+1216, magnitude gate at 1261, persistent growth declared at 1300, slope 0.046 / 0.039 decade/step (B0: ~0.10), reaching 9e9 by step 1500
+with primal and tangent finite; mode localised in the corner (energy fraction 0.9999). The onset is delayed ~1.45x and the rate roughly
+halved, but the mode is not removed. B32fresh (forced-32 from step 0) grows from step 838 as fast as B0 (registered classification
+DIFFERENT_MODE, evaluated at an isolated body-side spike at step 445; descriptively its growth starts at (6;70;51), outside the
+registered box); fork x fresh reading: unstable x unstable, so the DIAG2/3 200-step suppression was a delay/transient. Primal differences
+B32fork vs B0 are small (u 3.7e-6 rel L2, p 2.3e-3, drag 4.2e-5, downforce 8.5e-5) but forced-32 is not an AD fix.
+
+No bridge value, no FD-08 comparison, delta unset, no GRAD-03 verdict, reverse untouched, six flags false, no Float64 run; the horizon
+was not extended and the 8740-step bridge was not run. Next step is a user decision: per the registered expectation the delay result
+argues against Path A (adopting fixed32 as candidate semantics) and for Path B (keep the original semantics; decompose the corner
+mode: BDIM / conv_diff boundary closures, x-min/y-min/z-max coupling = DIAG5); Float64 stays low priority.
+Evidence: `docs/evidence/grad03_g2_diag4_forced32_horizon_2026_10_09/`.

@@ -1,0 +1,549 @@
+{
+  "arms": {
+    "B0": {
+      "classification": "DELAYED_ONSET",
+      "data_defects": [],
+      "first_nonfinite_step": 1196,
+      "first_step_box_gt_1": 838,
+      "growth_event": true,
+      "growth_event_step": 864,
+      "intervals": {
+        "1100-1200": {
+          "box": {
+            "complete": false,
+            "points": 96,
+            "r2": 0.9910337869421179,
+            "slope": 0.09710138538226502
+          },
+          "global": {
+            "complete": false,
+            "points": 96,
+            "r2": 0.9909062169881035,
+            "slope": 0.09726609070890577
+          },
+          "growth": false
+        },
+        "1200-1350": {
+          "box": {
+            "complete": false,
+            "points": 0,
+            "r2": NaN,
+            "slope": NaN
+          },
+          "global": {
+            "complete": false,
+            "points": 0,
+            "r2": NaN,
+            "slope": NaN
+          },
+          "growth": false
+        },
+        "1350-1500": {
+          "box": {
+            "complete": false,
+            "points": 0,
+            "r2": NaN,
+            "slope": NaN
+          },
+          "global": {
+            "complete": false,
+            "points": 0,
+            "r2": NaN,
+            "slope": NaN
+          },
+          "growth": false
+        },
+        "880-980": {
+          "box": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.9848884985115719,
+            "slope": 0.10092786503043646
+          },
+          "global": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.9848884985115719,
+            "slope": 0.10092786503043646
+          },
+          "growth": true
+        },
+        "980-1100": {
+          "box": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.9850421604687363,
+            "slope": 0.11179068531966548
+          },
+          "global": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.9850421604687363,
+            "slope": 0.11179068531966548
+          },
+          "growth": true
+        }
+      },
+      "last_step": 1500,
+      "magnitude_breach_step": 864,
+      "mode": {
+        "corner_localised": true,
+        "evaluated": true,
+        "first_dominant_step": 867,
+        "fraction_of_steps_with_argmax_outside_box": 0.0,
+        "median_box_energy_fraction": 0.9997289098080993,
+        "steps": 25
+      },
+      "near_body_floor": 20.980531692504883,
+      "persistent_declared_at_step": 925,
+      "persistent_pair_first_window": "800-900",
+      "primal_nonfinite_step": null,
+      "rolling_growth_flags": {
+        "1000-1100": true,
+        "1025-1125": true,
+        "1050-1150": true,
+        "1075-1175": true,
+        "1100-1200": false,
+        "1125-1225": false,
+        "1150-1250": false,
+        "1175-1275": false,
+        "1200-1300": false,
+        "1225-1325": false,
+        "1250-1350": false,
+        "1275-1375": false,
+        "1300-1400": false,
+        "1325-1425": false,
+        "1350-1450": false,
+        "1375-1475": false,
+        "1400-1500": false,
+        "800-900": true,
+        "825-925": true,
+        "850-950": true,
+        "875-975": true,
+        "900-1000": true,
+        "925-1025": true,
+        "950-1050": true,
+        "975-1075": true
+      },
+      "steps": 1500
+    },
+    "B32fork": {
+      "classification": "DELAYED_ONSET",
+      "data_defects": [],
+      "first_nonfinite_step": null,
+      "first_step_box_gt_1": 1216,
+      "growth_event": true,
+      "growth_event_step": 1261,
+      "intervals": {
+        "1100-1200": {
+          "box": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.012835648743571777,
+            "slope": -0.0009508676665569487
+          },
+          "global": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.9794981694520324,
+            "slope": -5.0503843987705684e-08
+          },
+          "growth": false
+        },
+        "1200-1350": {
+          "box": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.7609611860253906,
+            "slope": 0.046311988781958094
+          },
+          "global": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.7059810947618276,
+            "slope": 0.03252177646201081
+          },
+          "growth": false
+        },
+        "1350-1500": {
+          "box": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.8322174561261515,
+            "slope": 0.03885731628678415
+          },
+          "global": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.8715783068517573,
+            "slope": 0.04170775123042556
+          },
+          "growth": false
+        },
+        "880-980": {
+          "box": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.0019908757802340913,
+            "slope": 0.0005713468902569054
+          },
+          "global": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.012049735668454504,
+            "slope": -0.00029638359683693876
+          },
+          "growth": false
+        },
+        "980-1100": {
+          "box": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.10158668324334436,
+            "slope": 0.0018568891665097368
+          },
+          "global": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.9555405122418497,
+            "slope": -1.1272021140265469e-07
+          },
+          "growth": false
+        }
+      },
+      "last_step": 1500,
+      "magnitude_breach_step": 1261,
+      "mode": {
+        "corner_localised": true,
+        "evaluated": true,
+        "first_dominant_step": 1263,
+        "fraction_of_steps_with_argmax_outside_box": 0.0,
+        "median_box_energy_fraction": 0.9999025056556261,
+        "steps": 25
+      },
+      "near_body_floor": 20.980531692504883,
+      "persistent_declared_at_step": 1300,
+      "persistent_pair_first_window": "1175-1275",
+      "primal_nonfinite_step": null,
+      "rolling_growth_flags": {
+        "1000-1100": false,
+        "1025-1125": false,
+        "1050-1150": false,
+        "1075-1175": false,
+        "1100-1200": false,
+        "1125-1225": false,
+        "1150-1250": false,
+        "1175-1275": true,
+        "1200-1300": true,
+        "1225-1325": false,
+        "1250-1350": false,
+        "1275-1375": false,
+        "1300-1400": false,
+        "1325-1425": false,
+        "1350-1450": false,
+        "1375-1475": false,
+        "1400-1500": false,
+        "800-900": false,
+        "825-925": false,
+        "850-950": false,
+        "875-975": false,
+        "900-1000": false,
+        "925-1025": false,
+        "950-1050": false,
+        "975-1075": false
+      },
+      "steps": 720
+    },
+    "B32fresh": {
+      "classification": "DIFFERENT_MODE",
+      "data_defects": [],
+      "first_nonfinite_step": null,
+      "first_step_box_gt_1": 853,
+      "growth_event": true,
+      "growth_event_step": 838,
+      "intervals": {
+        "1100-1200": {
+          "box": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.5586228974896313,
+            "slope": 0.023136899261518438
+          },
+          "global": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.5303696774525435,
+            "slope": 0.021187062876898623
+          },
+          "growth": false
+        },
+        "1200-1350": {
+          "box": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.9828896771187275,
+            "slope": 0.056540238441506935
+          },
+          "global": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.9828896771187275,
+            "slope": 0.056540238441506935
+          },
+          "growth": true
+        },
+        "1350-1500": {
+          "box": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.9010607693217161,
+            "slope": 0.023426027324566636
+          },
+          "global": {
+            "complete": true,
+            "points": 151,
+            "r2": 0.9012354724634833,
+            "slope": 0.023423165811075997
+          },
+          "growth": true
+        },
+        "880-980": {
+          "box": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.5382304137935904,
+            "slope": 0.017155378433216347
+          },
+          "global": {
+            "complete": true,
+            "points": 101,
+            "r2": 0.4704140095579792,
+            "slope": 0.0305971459236601
+          },
+          "growth": false
+        },
+        "980-1100": {
+          "box": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.8100822109830603,
+            "slope": 0.030385651545148648
+          },
+          "global": {
+            "complete": true,
+            "points": 121,
+            "r2": 0.6504056432017282,
+            "slope": -0.03110137724087286
+          },
+          "growth": false
+        }
+      },
+      "last_step": 1500,
+      "magnitude_breach_step": 838,
+      "mode": {
+        "corner_localised": false,
+        "evaluated": true,
+        "first_dominant_step": 445,
+        "fraction_of_steps_with_argmax_outside_box": 1.0,
+        "median_box_energy_fraction": 1.2772592402816278e-09,
+        "steps": 25
+      },
+      "near_body_floor": 20.980531692504883,
+      "persistent_declared_at_step": 925,
+      "persistent_pair_first_window": "800-900",
+      "primal_nonfinite_step": null,
+      "rolling_growth_flags": {
+        "1000-1100": false,
+        "1025-1125": false,
+        "1050-1150": false,
+        "1075-1175": false,
+        "1100-1200": false,
+        "1125-1225": false,
+        "1150-1250": false,
+        "1175-1275": false,
+        "1200-1300": true,
+        "1225-1325": true,
+        "1250-1350": true,
+        "1275-1375": true,
+        "1300-1400": false,
+        "1325-1425": false,
+        "1350-1450": false,
+        "1375-1475": false,
+        "1400-1500": false,
+        "800-900": true,
+        "825-925": true,
+        "850-950": false,
+        "875-975": false,
+        "900-1000": true,
+        "925-1025": true,
+        "950-1050": true,
+        "975-1075": true
+      },
+      "steps": 1500
+    }
+  },
+  "comparisons": {
+    "B32fork_vs_B0": {
+      "box_rel_l2_u": {
+        "last": 9.196131902372554e-08,
+        "max": 1.951505967226144e-07,
+        "median": 9.923428827576501e-08
+      },
+      "downforce_rel_diff": {
+        "last": 8.36864390224204e-05,
+        "max": 8.460726413634767e-05,
+        "median": 6.130475016790827e-05
+      },
+      "drag_rel_diff": {
+        "last": 1.3502255630004288e-05,
+        "max": 4.209595705597821e-05,
+        "median": 1.774807300315599e-05
+      },
+      "first_step": 781,
+      "largest_primal_p_difference": {
+        "index": "62;50;21",
+        "step": 1492,
+        "value": 0.004074216
+      },
+      "largest_primal_u_difference": {
+        "index": "61;50;21;3",
+        "step": 1500,
+        "value": 0.0016450584
+      },
+      "last_step": 1500,
+      "rel_l2_p": {
+        "last": 0.002285557708530797,
+        "max": 0.002287525539072942,
+        "median": 0.0009690714592270515
+      },
+      "rel_l2_u": {
+        "last": 3.6490748684179534e-06,
+        "max": 3.657864559648258e-06,
+        "median": 3.601146994001026e-06
+      },
+      "steps": 720
+    },
+    "B32fresh_vs_B0": {
+      "box_rel_l2_u": {
+        "last": 1.0407949942726064e-07,
+        "max": 9.203762686797608e-05,
+        "median": 2.496907874104715e-07
+      },
+      "downforce_rel_diff": {
+        "last": 0.0001114409420453557,
+        "max": 0.02260912890511379,
+        "median": 8.227263241801253e-05
+      },
+      "drag_rel_diff": {
+        "last": 1.1521169984955814e-05,
+        "max": 0.02069006593634337,
+        "median": 2.2313350894177817e-05
+      },
+      "first_step": 1,
+      "largest_primal_p_difference": {
+        "index": "150;35;55",
+        "step": 24,
+        "value": 0.066280186
+      },
+      "largest_primal_u_difference": {
+        "index": "88;41;37;3",
+        "step": 62,
+        "value": 0.008148074
+      },
+      "last_step": 1500,
+      "rel_l2_p": {
+        "last": 0.0035347147623440134,
+        "max": 0.4690884892483533,
+        "median": 0.00176204105128942
+      },
+      "rel_l2_u": {
+        "last": 1.1955213429216037e-05,
+        "max": 0.0005294143464148085,
+        "median": 1.2024631818186191e-05
+      },
+      "steps": 1500
+    },
+    "B32fresh_vs_B32fork": {
+      "box_rel_l2_u": {
+        "last": 6.977485082439574e-08,
+        "max": 2.765463764891003e-07,
+        "median": 7.457605886435665e-08
+      },
+      "downforce_rel_diff": {
+        "last": 2.7752180541770645e-05,
+        "max": 2.7752180541770645e-05,
+        "median": 1.8702675817233435e-05
+      },
+      "drag_rel_diff": {
+        "last": 1.981058896284838e-06,
+        "max": 1.6197106452473156e-05,
+        "median": 1.2963907132032975e-06
+      },
+      "first_step": 781,
+      "largest_primal_p_difference": {
+        "index": "62;50;21",
+        "step": 782,
+        "value": 0.003712505
+      },
+      "largest_primal_u_difference": {
+        "index": "84;51;36;2",
+        "step": 785,
+        "value": 0.002737701
+      },
+      "last_step": 1500,
+      "rel_l2_p": {
+        "last": 0.0012529566422215868,
+        "max": 0.0012529566422215868,
+        "median": 0.0008776074310063647
+      },
+      "rel_l2_u": {
+        "last": 1.1431230789691348e-05,
+        "max": 1.1969344690678224e-05,
+        "median": 1.143501568554415e-05
+      },
+      "steps": 720
+    }
+  },
+  "control_b0_reproduces_the_corner_mode": true,
+  "forced32_is_a_different_solver_candidate": true,
+  "grad03_verdict": null,
+  "history_dependence_reading_secondary_only": {
+    "fork": "DELAYED_ONSET",
+    "fresh": "DIFFERENT_MODE",
+    "reading": "the DIAG2/3 200-step suppression was probably a delay or a transient"
+  },
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "interpretation": "B32fork shows a sustained or magnitude-gated corner-localised tangent growth after step 780: forced-32 delayed but did not remove the onset (not an AD fix)",
+  "kind": "grad03_g2_diag4_analysis",
+  "missing_arms": [],
+  "next_decision": "user decision; the registered expectation is not to extend the horizon further and to consider the internal linearised-mode decomposition (DIAG5); Float64 stays low priority",
+  "no_bridge_value": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "regression": {
+    "b0_vs_diag3_straight": {
+      "checked": 980,
+      "expected_steps": 980,
+      "mismatch_steps": []
+    },
+    "b32fork_vs_diag3_f32": {
+      "checked": 200,
+      "expected_steps": 200,
+      "mismatch_steps": []
+    },
+    "pass": true
+  },
+  "selected_delta": null,
+  "status": "COMPLETE",
+  "verdict": "FORCED32_DELAYED_ONSET",
+  "verdict_from_kernel": "DIAG4_RECORDED"
+}
