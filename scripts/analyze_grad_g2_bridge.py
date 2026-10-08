@@ -73,6 +73,9 @@ def main():
         sys.exit("refusing to overwrite evidence")
     if hashlib.sha256(SCOPE_RECORD.read_bytes()).hexdigest() != SCOPE_RECORD_SHA256:
         sys.exit("FD-08 scope record SHA mismatch")
+    sidecar = args.verification.with_name(args.verification.name + ".sha256")
+    if not sidecar.is_file() or sidecar.read_text().strip() != hashlib.sha256(args.verification.read_bytes()).hexdigest():
+        sys.exit("terminal verification file does not match its SHA sidecar")
     result = analyze(json.loads(args.verification.read_text()), json.loads(SCOPE_RECORD.read_text()))
     data = (json.dumps(result, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
     args.output.write_bytes(data)

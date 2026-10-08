@@ -35,7 +35,8 @@ def test_consistent_output_passes_and_the_tangent_is_scaled_to_n_per_m(good):
 
 
 @pytest.mark.parametrize("damage", ["no_done", "error_file", "extra_history", "missing_run", "bad_pin", "bad_sha", "not_t4",
-                                    "zero_tangent", "primal_gate", "baseline_gate", "window_short", "summary_mismatch"])
+                                    "zero_tangent", "primal_gate", "baseline_gate", "window_short", "summary_mismatch",
+                                    "summary_missing", "summary_wrong_label"])
 def test_every_damage_is_rejected(good, damage):
     out, freeze, formal = good
     if damage == "no_done":
@@ -69,6 +70,11 @@ def test_every_damage_is_rejected(good, damage):
         formal.write_text(formal.read_text().replace('"drag_n": ', '"drag_n": 1'))
     elif damage == "window_short":
         syn.write_history(out / "D1_filtered_seed11.history.csv", syn.make_rows(0.0, k=2.0, steps=range(8, 6000, 8)))
+    elif damage == "summary_missing":
+        (out / "D1_filtered_seed11.summary.json").unlink()
+    elif damage == "summary_wrong_label":
+        summary = json.loads((out / "D0_interface_offset.summary.json").read_text()); summary["label"] = "other"
+        (out / "D0_interface_offset.summary.json").write_text(json.dumps(summary))
     elif damage == "summary_mismatch":
         summary = json.loads((out / "D2_filtered_seed2026.summary.json").read_text())
         summary["window_mean_fx_dual_time"]["tangent"] *= 1.001

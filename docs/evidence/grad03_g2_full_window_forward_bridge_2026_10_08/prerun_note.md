@@ -44,3 +44,9 @@ terminal の host 検証（`PASS_G2_TERMINAL_INTEGRITY`）の後にのみ、`scr
 ## retry 規則
 転送・download の一時的な失敗で、意味のある力・tangent が 1 件も生成されておらず、source・登録・kernel の同一性が不変なら retry 可。
 source や infra の bug は attempt を保存し、source を変えるなら同じ freeze を上書きせず新しい identity を作る。科学的な不一致（大きな差・符号の不一致）は結果であり、retry しない。
+
+## 追記（独立レビューの指摘を反映、freeze 前）
+- tangent は有限回反復の Poisson 解（収束判定は primal の値だけで行う）と、CFL の `max` の枝、最終サンプル「t ≥ 120 になった最初のステップ」の選択を、そのまま微分する。
+  したがって `g_forward` は「この離散アルゴリズムの点別の微分」であり、FD oracle が ε の有限振幅で見るこれらの分岐の影響とは一致しないことがありうる。大きな差を「AD の誤り」とは読まない。
+- 流れが非定常なら、時刻の tangent を伝播する値と固定した値の差が大きくなりうる。差は `time_tangent_effect_relative` に記録する。解釈は「測定した、検証してはいない」に留める。
+- plain と登録済み `baseline_v17` の 1e-6 の gate は、同じ T4 型で Float32 の reduction が決定論的であることを前提にする。不一致なら G2-BLOCKED（登録した規則）。

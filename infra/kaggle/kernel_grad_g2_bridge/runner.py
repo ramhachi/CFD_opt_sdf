@@ -10,10 +10,11 @@ import subprocess
 import sys
 import tempfile
 import traceback
+import time
 import urllib.request
 from pathlib import Path
 
-SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
+SOURCE_COMMIT = "e44d0f08c07bde902017cc49854ef85b6ac6be64"
 REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -22,7 +23,7 @@ SCRIPT = "scripts/waterlily_grad_g2_full_window_bridge_2026_10_08.jl"
 PINS = {
     "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
     "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
-    SCRIPT: "PIN_SCRIPT_SHA256",
+    SCRIPT: "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
 }
 PHI_RAW = "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw"
 PHI_SHA256 = "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
@@ -37,6 +38,8 @@ SPARSE = ["julia", "scripts", INPUT_DIR, "docs/evidence/fd08_candidate_c_cpu_reh
 OUT = Path("/kaggle/working/grad_g2_bridge")
 INSTANTIATE_TIMEOUT_S = 3600
 SCRIPT_TIMEOUT_S = 6000
+KERNEL_TIMEOUT_S = 7200   # must equal the `kaggle kernels push --timeout` value
+MARGIN_S = 300            # leave time to write ERROR.txt and the manifest before Kaggle kills the kernel
 
 
 def sha256(path):
@@ -58,6 +61,13 @@ def run(args, log_path, env=None, timeout=3600, cwd=None):
     for line in Path(log_path).read_text(errors="replace").splitlines()[-60:]:
         print(line, flush=True)
     return result.returncode
+
+
+def remaining(started):
+    left = KERNEL_TIMEOUT_S - MARGIN_S - (time.time() - started)
+    if left <= 60:
+        raise RuntimeError("kernel time budget exhausted before the next stage")
+    return left
 
 
 def install_julia(base):
@@ -92,6 +102,7 @@ def fetch_source(base):
 
 
 def main():
+    started = time.time()
     OUT.mkdir(parents=True, exist_ok=True)
     stage = "gpu_inventory"
     identity = {"source_commit": SOURCE_COMMIT, "pins": PINS, "phi_sha256": PHI_SHA256,
@@ -121,7 +132,7 @@ def main():
             env.pop("G2_DRYRUN_T_END", None)
             project = f"--project={source / PROJECT}"
             stage = "instantiate"
-            if run([str(julia), project, "-e", "using Pkg; Pkg.instantiate()"], OUT / "instantiate.log", env, INSTANTIATE_TIMEOUT_S):
+            if run([str(julia), project, "-e", "using Pkg; Pkg.instantiate()"], OUT / "instantiate.log", env, min(INSTANTIATE_TIMEOUT_S, remaining(started))):
                 raise RuntimeError("Pkg.instantiate failed")
             for rel in ("Project.toml", "Manifest.toml"):
                 if sha256(source / PROJECT / rel) != PINS[f"{PROJECT}/{rel}"]:
@@ -130,7 +141,7 @@ def main():
             args = [str(julia), project, str(source / SCRIPT), str(source / PHI_RAW), PHI_SHA256, str(OUT)]
             for name, digest in DIRECTION_INPUTS:
                 args += [str(source / INPUT_DIR / f"{name}.dir_f4_fortran.raw"), digest]
-            code = run(args, OUT / "measurement.log", env, SCRIPT_TIMEOUT_S)
+            code = run(args, OUT / "measurement.log", env, min(SCRIPT_TIMEOUT_S, remaining(started)))
             identity["spike_exit_code"] = code
             write_json(OUT / "run_identity.json", identity)
             if code != 0:

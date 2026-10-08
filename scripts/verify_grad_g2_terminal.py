@@ -84,7 +84,12 @@ def verify(out_dir: Path, freeze: dict, formal_verification: Path = FORMAL_VERIF
         except Exception as error:  # noqa: BLE001 - recorded as a verification failure
             note(f"{label}: history unreadable: {error}"); continue
         histories[label] = rows
-        summary = json.loads((out_dir / f"{label}.summary.json").read_text())
+        try:
+            summary = json.loads((out_dir / f"{label}.summary.json").read_text())
+        except (OSError, ValueError) as error:
+            note(f"{label}: summary unreadable: {error}"); continue
+        if summary.get("label") != label or (label == "plain") != (summary.get("real_type") == "Float32"):
+            note(f"{label}: summary label/real_type does not match the registered run")
         if rows[0]["t_u_l"] > WINDOW[0] or rows[-1]["t_u_l"] < WINDOW[1]:
             note(f"{label}: window not reached"); continue
         entry = {"samples": len(rows), "t_last": rows[-1]["t_u_l"], "steps": summary.get("steps"),

@@ -80,3 +80,23 @@ def test_non_t4_worker_fails_closed(runner, monkeypatch):
     with pytest.raises(SystemExit):
         runner.main()
     assert not (runner.OUT / "DONE").exists()
+
+
+def test_script_timeout_is_clamped_to_the_remaining_kernel_budget(runner, monkeypatch):
+    seen = []
+    calls = fake_environment(runner, monkeypatch)
+    original = runner.run
+    def spy(args, log, env=None, timeout=0, cwd=None):
+        seen.append(timeout); return original(args, log, env, timeout, cwd)
+    monkeypatch.setattr(runner, "run", spy)
+    monkeypatch.setattr(runner, "KERNEL_TIMEOUT_S", 1000)
+    runner.main()
+    assert max(seen) <= 1000 - runner.MARGIN_S
+
+
+def test_exhausted_budget_fails_closed(runner, monkeypatch):
+    fake_environment(runner, monkeypatch)
+    monkeypatch.setattr(runner, "KERNEL_TIMEOUT_S", 300)
+    with pytest.raises(SystemExit):
+        runner.main()
+    assert not (runner.OUT / "DONE").exists()

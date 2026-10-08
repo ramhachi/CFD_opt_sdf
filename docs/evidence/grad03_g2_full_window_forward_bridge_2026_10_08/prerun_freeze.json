@@ -1,0 +1,223 @@
+{
+  "alpha_unit": "metre",
+  "candidate_c_identity": {
+    "candidate_c_body_source": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "contract_sha256": "516cfb26b9cc11f920918f08224ec2cfa5ed89d1e7372fa8d8dd7d4807bd5efc",
+    "normal_floor_body_source": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "operator_identity": "candidate_c_moment_blend+normal_floor_0.25"
+  },
+  "canonical_state": {
+    "active_node_count": 107415,
+    "narrow_band_width_m": 0.025,
+    "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "spacing_m": 0.025,
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "declarations": {
+    "dual4": false,
+    "fd08_refit": false,
+    "grad03_verdict": null,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "directions": {
+    "baseline_phi": {
+      "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+      "sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
+    },
+    "fortran_raw_sha256": {
+      "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+      "D1_filtered_seed11": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+      "D2_filtered_seed2026": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+      "P1_upstream_lobe": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    },
+    "inputs_manifest_sha256": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711",
+    "order": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "registered_c_order_f32_sha256": {
+      "D0_interface_offset": "8b5773b7d404cc21819078085eddeae437cad619472910fcac17430b2b6be3b5",
+      "D1_filtered_seed11": "4da3513780c3ba9b2ab91837911d46a2cab362e9a561eedb18468b424f81d4f5",
+      "D2_filtered_seed2026": "bb1eeaf0cdd43bc71085499c853f24eae6335e030851dfc0f9b581f4f5aa8fe8",
+      "P1_upstream_lobe": "93631cba7024fc5592bb2a0999ed33b580142fbf7a50f1542b41692bc26c0fd7"
+    }
+  },
+  "dual_width": 1,
+  "fd08": {
+    "evidence_pins": {
+      "campaign_final.json": "6cd5a22e291eb4d22accb22c1ed8aaf68da3687fcd75eaabf8c985e73bb8f13f",
+      "formal_analysis.json": "3da59ac9b1086ed286cb0109cd669dac804f4fb99785986515ce35db1acf0466",
+      "formal_criteria.json": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+      "formal_terminal_verification.json": "13841237ca95142c45761963c5e61f68310de63ca5f70e3386e6ca465333e6ef",
+      "r6_retry2_analysis.json": "b5d55b77f750f447fd486a600f9e52a66a3f6c2610c5dba5ce6792018cc647be",
+      "r6_retry2_criteria.json": "90e9e40ffebffc96891af12bdc7942a0a038d877fe6e7bffe7a88574679e1837"
+    },
+    "fd_backend_fingerprint_sha256": "d17c81e430aaf2667009847ebaa18df0c57e203f7315ddeb2ddd61ddb9559b8e",
+    "formal_criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "g_hat_rows": [
+      [
+        "D0_interface_offset",
+        "drag",
+        -0.10398729014231183,
+        0.003340882961506817
+      ],
+      [
+        "D0_interface_offset",
+        "downforce",
+        0.8014915523435178,
+        0.02060014270961251
+      ],
+      [
+        "D1_filtered_seed11",
+        "drag",
+        -0.06372394066171688,
+        0.0023411868563410834
+      ],
+      [
+        "D1_filtered_seed11",
+        "downforce",
+        -0.10643781759208808,
+        0.003321700208349783
+      ],
+      [
+        "D2_filtered_seed2026",
+        "drag",
+        -0.1697629387636076,
+        0.004788957134019947
+      ],
+      [
+        "D2_filtered_seed2026",
+        "downforce",
+        -0.09172298102069233,
+        0.0029913937716240396
+      ],
+      [
+        "P1_upstream_lobe",
+        "drag",
+        -0.21429781188666328,
+        0.005882931182735196
+      ],
+      [
+        "P1_upstream_lobe",
+        "downforce",
+        -0.38519518769124206,
+        0.010178941059118983
+      ]
+    ],
+    "measurement_block": {
+      "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+      "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+      "case": {
+        "case_id": "flow_24",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 0.01,
+        "flow_dims": [
+          150,
+          72,
+          54
+        ],
+        "flow_spacing_m": 0.03333333333333333,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+        "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+        "reference_area_m2": 0.64,
+        "reference_length_m": 0.8,
+        "reynolds": 80.0,
+        "solver_length": 24.0,
+        "solver_time_unit_s": 0.03333333333333333,
+        "solver_viscosity": 0.3
+      },
+      "case_id": "flow_24",
+      "force_unit": "N",
+      "kernel_execution_allowance_s": 5600,
+      "per_state_timeout_s": 1500,
+      "qualification_claim": "frozen Candidate C/v17/flow_24 local diagnostic only",
+      "solver_wall_time_cap_s": 3300,
+      "time_window_t_u_l": [
+        80.0,
+        120.0
+      ]
+    },
+    "response_semantics_sha256": {
+      "downforce": "346fcec44db9829121709dc9a541b270568c76eaf3c834a6cd4d2a950ce708ef",
+      "drag": "068eb21bf0f4e33f8c3275210bea3369e10bc0d56e9fb80be73f31b2071d765b"
+    },
+    "scope_record_sha256": "3f8b7d3e43f32633aa67106ba57f36e5be16f3e74e655bc54f862e463cc608d0"
+  },
+  "file_hashes": {
+    "bridge_analyzer": "ba4a7b99f1fcb14a683476261062a3d01cbd31e957704456fd3fb2f55e706b64",
+    "candidate_c_body": "2a4b056a1a4a23dc5699ad340faed8ad35bfab4c103302169a93150feedd04c6",
+    "device_grid_sdf": "2f02c840f4fad5ba5d26d42f4c24bc83f413502b15487427a7dc52f06a80a874",
+    "grid_sdf_body": "fa6aecccecbf140158396c9c8e5f3a6c16d3810f792ba45b9c8f4ee481709058",
+    "host_window": "f2f3fe5b91cd4f3d0da1fc2c61e0ff97e53e6ae575fca878cacb3bc60add6f7c",
+    "kernel_metadata": "37df8ea19823aa3466333ab493d11c9496f0191ebd4d1f4e4062bea5835f2b17",
+    "normal_floor_body": "6686585c205eb07508979b3fdba8bf7aab28c0b29a0d021606a2a1280d031ecf",
+    "prerun_note": "568cf0eb6176091e9e82cfecbbeaee4ca27b664f459cfc5a7110866151dc31c1",
+    "runner": "d0d942ebf56ddb006b0b38c24cc8216974804f31d1387d30ab2ed63a2933efc9",
+    "script": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "terminal_verifier": "003b68ae7265fa53754a32da64009ecb3d4eed878be59191d89a3e21c15695e4"
+  },
+  "frozen_utc": "2026-10-08T08:39:50.492098+00:00",
+  "gates": {
+    "dual_vs_plain_window_mean_primal_rel": 0.001,
+    "host_vs_kernel_summary_rel": 1e-09,
+    "plain_vs_formal_baseline_v17_rel": 1e-06
+  },
+  "kernel_identity": {
+    "id": "ramhachi888/cfd-opt-sdf-grad-g2-full-window-bridge",
+    "machine_shape": "NvidiaTeslaT4",
+    "title": "CFD Opt SDF Grad G2 Full Window Bridge",
+    "type": "script"
+  },
+  "kind": "grad03_g2_full_window_forward_bridge_prerun_freeze",
+  "pins": {
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/waterlily_grad_g2_full_window_bridge_2026_10_08.jl": "1a458c8bbd26a3992665727cda3db730dd0f78cbb344fa13314e98d1463550b3"
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "remeasure": "default (as the registered FD-08 job)",
+  "run_inventory": [
+    "plain_float32",
+    "D0_interface_offset_dual1",
+    "D1_filtered_seed11_dual1",
+    "D2_filtered_seed2026_dual1",
+    "P1_upstream_lobe_dual1"
+  ],
+  "runtime_pins": {
+    "cuda_jl": "6.3.1",
+    "forwarddiff": "1.4.5",
+    "julia": "1.12.6",
+    "waterlily": "1.8.0"
+  },
+  "sample_every_steps": 8,
+  "source_commit": "e44d0f08c07bde902017cc49854ef85b6ac6be64"
+}
