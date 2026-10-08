@@ -7030,3 +7030,39 @@ No bridge value exists; delta unset; no GRAD-03 verdict; reverse untouched; six 
 user decision: Float64 precision discriminator, local diagnostic of the far-field tangent mode, Poisson derivative
 diagnostic, or abandoning the long-window forward bridge.
 Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/`.
+
+## #23 G2-DIAG1 post-hoc addendum (2026-10-08, exploratory; the DIAG1 record is unchanged)
+
+Corrects one DIAG1 classification and records four post-hoc observations that motivate G2-DIAG2. **H4 (finite-iteration
+Poisson derivative) "refutes" is withdrawn**: the registered rule used "itmx reached" as a proxy, but the Poisson stop
+test uses only the primal residual, so it says nothing about tangent convergence. From step 31 on the solver runs one
+iteration; the primal relative residual is ~1e-3 while the tangent relative residual is 1.7-4.3 % throughout.
+Observations: 99.97 % of the u-tangent energy at step 900 lies in a corner box (x-min / y-min / top, 3-8 cells inside the
+faces, sign-alternating in x) where the primal is uniform free stream; the box tangent was steady at ~1e-2 until step 500
+and grows ~0.093 decade/step from an extrapolated onset near step 800; the dt tangent is steady until step 860 (a
+consequence, not a cause); the per-step gain ~x1.31 is made in the two BDIM stages and partly cancelled by projections.
+Interpretation (unverified): an AD artefact of a stopped iterative solver / boundary handling rather than physical growth.
+Evidence: `docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/posthoc_addendum.{md,json}`.
+
+## #23 G2-DIAG2: D0 far-field tangent mode, counterfactual fork replay, result DIAG2_LOCALIZED (2026-10-08)
+
+G2-DIAG1 left a tangent-only exponential growth (primal steady) in a far-field corner box. G2-DIAG2 was pre-registered
+(freeze, two independent reviews PASS-WITH-FINDINGS, all findings applied before the run) as a counterfactual fork replay:
+one T4 kernel replays D0 to step 780, restores that state into fresh simulations and runs 200 steps for 12 variants (baseline;
+Poisson iterations forced to 4/16/32; dt tangent frozen; tangent of u zeroed in the corner box, three face slabs, all slabs,
+ghost layers, exit slab). The interventions are counterfactual perturbations, not fixes. Source `6742b68`, T4 kernel v1.
+
+Result under the registered rules: **DIAG2_LOCALIZED**. The baseline V0 is bit-identical to the straight replay for all 200
+steps and reproduces the growth (0.101 decade/step). Forcing 32 Poisson iterations **suppresses** the growth (the global
+tangent stays at the near-body steady value ~21 at step 980 versus 1e15), 16 iterations reduces it, and 4 iterations makes it
+worse (0.171). Zeroing the tangent in the corner box or in any one of the three face slabs (each contains the corner)
+suppresses it; freezing the dt tangent, zeroing the ghost layers and zeroing the exit slab have no effect. Mechanical
+status: H11 (tangent Poisson solve unconverged under a primal-only stop test) supports, H8 (corner tangent path) supports;
+H12, H7, H13 refute.
+
+Limits: the V1 variants change the primal solve too (primal relative residual 1e-3 to 3e-8), and the effect is not monotone in
+the residual (4 iterations has a 500x smaller tangent residual than the baseline yet grows faster), so the mechanism is not
+explained by residual size alone. Kill variants cannot see regrowth below the near-body floor. No bridge value, delta unset,
+no GRAD-03 verdict, reverse untouched, six flags false, no Float64 run. Next step is a user decision; the natural candidate is a
+pre-registered diagnostic of a tangent-aware Poisson stopping rule (iteration-count scan and a long horizon).
+Evidence: `docs/evidence/grad03_g2_diag2_d0_tangent_counterfactual_2026_10_08/`.

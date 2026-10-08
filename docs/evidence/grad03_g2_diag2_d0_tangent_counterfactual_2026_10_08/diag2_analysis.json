@@ -1,0 +1,375 @@
+{
+  "classes_match_kernel": true,
+  "faces_that_suppress": [
+    "x-min",
+    "y-min",
+    "z-max"
+  ],
+  "grad03_verdict": null,
+  "hypotheses": {
+    "H11": "supports",
+    "H12": "refutes",
+    "H13": "refutes",
+    "H7": "refutes",
+    "H8": "supports",
+    "note": "interventions are counterfactual perturbations; 'supports' means the growth disappears when the mechanism is removed, not a proof of cause"
+  },
+  "integrity": {
+    "failures": [],
+    "pass": true
+  },
+  "kind": "grad03_g2_diag2_analysis",
+  "missing_variants": [],
+  "next_experiment_proposal": [
+    "pre-register a tangent-aware Poisson stopping rule (iterate until the primal and the tangent residual have converged) and re-check the long window",
+    "local diagnostic of the boundary tangent path (second wave: split conv_diff!/BDIM, boundary closures)"
+  ],
+  "no_bridge_value": true,
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "selected_delta": null,
+  "status": "COMPLETE",
+  "v0": {
+    "bitwise_equal_to_straight": true,
+    "box_slope_decade_per_step": 0.10092786503043646,
+    "complete_run": true,
+    "slope_decade_per_step": 0.10092786503043646,
+    "steps": 200
+  },
+  "variant_exceptions": [],
+  "variants": {
+    "V0_baseline": {
+      "box_slope_decade_per_step": 0.10092786503043646,
+      "class": "baseline",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 1040607560597504.0,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": 0.10092786503043646,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.6904363200560257,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.3578233260854726,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.570140133844491,
+        "project1_bc->correct_bdim": 2.6503726257138998,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.020120433783730976
+    },
+    "V1a_poisson_n4": {
+      "box_slope_decade_per_step": 0.17133133499369618,
+      "class": "no_effect",
+      "final_glob_max_primal_u": 1.231164813041687,
+      "final_glob_max_tangent_u": 1.0172284801797382e+24,
+      "iterations_last_step": [
+        4.0,
+        4.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 1.046474784495457e-06,
+      "slope_decade_per_step": 0.17133133499369618,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.7011950801411309,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.443796930531174,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.6195893420284415,
+        "project1_bc->correct_bdim": 3.1055076068799234,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 4.260392646535693e-05
+    },
+    "V1b_poisson_n16": {
+      "box_slope_decade_per_step": 0.039384067147279565,
+      "class": "reduces",
+      "final_glob_max_primal_u": 1.2311650514602661,
+      "final_glob_max_tangent_u": 2123889115136.0,
+      "iterations_last_step": [
+        16.0,
+        16.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 3.817837792505153e-08,
+      "slope_decade_per_step": 0.039384067147279565,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.7198136612525065,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.0642880299828925,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.5887076956465558,
+        "project1_bc->correct_bdim": 3.0381136180320323,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 9.223848714544477e-07
+    },
+    "V1c_poisson_n32": {
+      "box_slope_decade_per_step": 0.0005713468902569054,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311649322509766,
+      "final_glob_max_tangent_u": 20.978857040405273,
+      "iterations_last_step": [
+        32.0,
+        32.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 2.9084348026583632e-08,
+      "slope_decade_per_step": -0.00029638359683693876,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.8486219043036123,
+        "correct_bdim->correct_scale": 0.5012294720342835,
+        "correct_scale->correct_bc": 0.9976077945613878,
+        "pre_scale->predict_bdim": 1.782020713481367,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.7033209055562507,
+        "project1_bc->correct_bdim": 2.4110117587988777,
+        "project1_gradient->project1_bc": 0.9882621643525604,
+        "project2_gradient->project2_bc": 0.9939187150286977
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 4.588311786224706e-07
+    },
+    "V2_dt_tangent_frozen": {
+      "box_slope_decade_per_step": 0.10092783819108475,
+      "class": "no_effect",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 1039902179328000.0,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": 0.10092783819108475,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.6904363630198473,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.3578227891986763,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.5701401317937642,
+        "project1_bc->correct_bdim": 2.650372520635025,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.020120433597763342
+    },
+    "V3_kill_corner_box": {
+      "box_slope_decade_per_step": -7.771129663773409e-06,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 20.980207443237305,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": -2.400953063459209e-08,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 1.179303272083485,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": null,
+        "predict_bc->predict_exitbc": 0.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": null,
+        "project1_bc->correct_bdim": 1.485771650014436,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.04108463610997623
+    },
+    "V4a_kill_slab_xmin": {
+      "box_slope_decade_per_step": 0.0025772346649980725,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 20.974044799804688,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": 0.00047004143396883887,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.9480523563203072,
+        "correct_bdim->correct_scale": 0.5026889935738863,
+        "correct_scale->correct_bc": 0.9955697031047929,
+        "pre_scale->predict_bdim": 1.3958714537765753,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 0.9564537789253776,
+        "predict_exitbc->project1_gradient": 0.9260222675901637,
+        "project1_bc->correct_bdim": 2.0488063573331377,
+        "project1_gradient->project1_bc": 0.9798628433416556,
+        "project2_gradient->project2_bc": 0.9965082747314596
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.03893425011139077
+    },
+    "V4b_kill_slab_ymin": {
+      "box_slope_decade_per_step": -0.004890896501208719,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 20.97084617614746,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": -3.184464378445678e-07,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 4.026287359288455,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": null,
+        "predict_bc->predict_exitbc": 0.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": null,
+        "project1_bc->correct_bdim": 0.5114789614464281,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.04069258529645383
+    },
+    "V4c_kill_slab_zmax": {
+      "box_slope_decade_per_step": -0.005664102944520937,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 20.962635040283203,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": -1.1351243655372685e-06,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 4.7223761404235765,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": null,
+        "predict_bc->predict_exitbc": 0.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": null,
+        "project1_bc->correct_bdim": 0.43395804097779417,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.042067289657028016
+    },
+    "V4d_kill_slabs_all": {
+      "box_slope_decade_per_step": -0.0033276709225053195,
+      "class": "suppresses",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 20.941606521606445,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": -2.548493609365092e-06,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 1271.4124191220146,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": null,
+        "predict_bc->predict_exitbc": 0.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": null,
+        "project1_bc->correct_bdim": 0.002098838439485145,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.04172085767824145
+    },
+    "V5_kill_ghost_layers": {
+      "box_slope_decade_per_step": 0.09167249977385696,
+      "class": "no_effect",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 15290070990848.0,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": 0.09167249977385696,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.6999813316631746,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.2436337072262855,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.5698598726662126,
+        "project1_bc->correct_bdim": 2.786209446218592,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.021150865976793134
+    },
+    "V6_kill_exit_slab": {
+      "box_slope_decade_per_step": 0.10092780118293355,
+      "class": "no_effect",
+      "final_glob_max_primal_u": 1.2311642169952393,
+      "final_glob_max_tangent_u": 1145131696652288.0,
+      "iterations_last_step": [
+        1.0,
+        1.0
+      ],
+      "primal_relative_residual_first_projection_mean_last50": 0.0010035833562439423,
+      "slope_decade_per_step": 0.10092780118293355,
+      "stage_gain_box_mean_last50": {
+        "correct_bc->project2_gradient": 0.6904364041937279,
+        "correct_bdim->correct_scale": 0.5,
+        "correct_scale->correct_bc": 1.0,
+        "pre_scale->predict_bdim": 2.357821959488142,
+        "predict_bc->predict_exitbc": 1.0,
+        "predict_bdim->predict_bc": 1.0,
+        "predict_exitbc->project1_gradient": 0.5701401270875877,
+        "project1_bc->correct_bdim": 2.6503727673046638,
+        "project1_gradient->project1_bc": 1.0,
+        "project2_gradient->project2_bc": 1.0
+      },
+      "steps": 200,
+      "stopped_nonfinite_at_step": null,
+      "tangent_relative_residual_first_projection_mean_last50": 0.020120432771740727
+    }
+  },
+  "verdict": "DIAG2_LOCALIZED",
+  "verdict_from_kernel": "DIAG2_LOCALIZED",
+  "verdict_matches_kernel": true
+}
