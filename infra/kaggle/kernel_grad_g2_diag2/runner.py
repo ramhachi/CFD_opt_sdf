@@ -14,7 +14,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
+SOURCE_COMMIT = "6742b68012e23f4b9ffaeb212e845c57eed7f9c6"
 REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
@@ -25,9 +25,9 @@ STAGES = "scripts/waterlily_grad_g2_diag2_stages.jl"
 PINS = {
     "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
     "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
-    SCRIPT: "PIN_SCRIPT_SHA",
-    STAGES_DIAG1: "PIN_STAGES1_SHA",
-    STAGES: "PIN_STAGES2_SHA",
+    SCRIPT: "4dc4f2de64a33c839a359b2c9f61d14e5f347de15947391a8d541a37c72eb28a",
+    STAGES_DIAG1: "8c8423946d6ad165a6886ce5dfafd7a3fbb370b8044f75f9809209bc94fb865c",
+    STAGES: "a21e44371afd467a61a379004deb62f4ee0f61a7b02094b8b776ac77d4d8d8c0",
 }
 PHI_RAW = "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw"
 PHI_SHA256 = "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
