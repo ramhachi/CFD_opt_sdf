@@ -1,0 +1,47 @@
+{
+  "kernel": "a",
+  "states": [
+    {
+      "complete": true,
+      "exit_code": 0,
+      "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+      "kind": "baseline",
+      "matches_w4_v17_flow32_baseline": true,
+      "name": "lowdim02a__baseline",
+      "seconds": 391.8855609893799
+    },
+    {
+      "complete": true,
+      "exit_code": 0,
+      "forces_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+      "kind": "baseline_repeat",
+      "name": "lowdim02a__baseline_repeat",
+      "seconds": 392.87862515449524
+    },
+    {
+      "complete": true,
+      "exit_code": 0,
+      "forces_csv_sha256": "0b4866f5ea52fd6838b3be7b2ed935b011786242cd48ddf9cb81a7e210a58e05",
+      "kind": "candidate",
+      "name": "lowdim02a__prop__s1.25mm",
+      "seconds": 392.8397343158722
+    },
+    {
+      "complete": true,
+      "exit_code": 0,
+      "forces_csv_sha256": "d4bbf921a697785f502f3c362eb75ee108cbf8b229d9720e71aa541e14ec2ae5",
+      "kind": "control",
+      "name": "lowdim02a__ctrl_reverse__s1.25mm",
+      "seconds": 392.7083625793457
+    },
+    {
+      "complete": true,
+      "exit_code": 0,
+      "forces_csv_sha256": "928d85b7610c405caaa1199ae85e5da32729d1ec7d0d2bf2847c9de7c4bbae73",
+      "kind": "descriptive",
+      "name": "lowdim02a__prop__s2.5mm",
+      "seconds": 393.02049350738525
+    }
+  ],
+  "status": "COMPLETE"
+}

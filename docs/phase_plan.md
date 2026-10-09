@@ -7181,3 +7181,18 @@ This is a capability statement for a fixed four-direction basis (one trial, one 
 replacing it needs a separate phase-plan supersession), not a general descent direction, not grid-independent downforce. No flag, FD-08 verdict, delta or GRAD-03 verdict changes.
 Next step is a user decision: iterate from the accepted state, widen the basis, handle curvature, or address reinitialization (#28).
 Evidence: `docs/evidence/lowdim01_four_direction_capability_2026_10_09/`.
+
+## #49 LOWDIM-02A: flow_32 cross-grid check of the LOWDIM-01 accepted step, result STAGE_A_CONSTRAINT_FAIL (2026-10-09)
+
+The LOWDIM-01 accepted state (+1.25 mm along the fixed four-direction proposal) and its -1.25 mm reverse control were re-evaluated on flow_32 (200x96x72) with a baseline, a baseline
+repeat and a descriptive +2.5 mm state (one T4 kernel, five runs; flow_32 copy of the XFID per-state job; host recomputation with the flow_32 force scale). Pre-registered (freeze, two
+independent reviews with all findings applied), source `972fcce9`. The flow_32 baseline force CSV was byte-identical to the W4 v17 round-2 flow_32 baseline and the repeat was byte-identical.
+
+Registered result: **STAGE_A_CONSTRAINT_FAIL**. +1.25 mm: downforce +7.31e-4 N (+0.20%; flow_24: +4.05e-4 N), reverse control -1.09e-3 N, geometry gates passed, but the drag change was
++5.4e-5 N against the registered allowance 3e-5 N (the nominal flow_24 floor; the byte-identical repeat measured no flow_32 noise), so the registered conditions were not all met. Descriptive:
+the odd part is 1.13x and the even (curvature) part 0.45x of flow_24, so the sign and size of the first-order response carried over while the curvature roughly halved; +2.5 mm gains +1.2e-3 N on
+flow_32 (flow_24: -5e-5 N), i.e. the useful step size is grid dependent. The verdict is not re-read after the fact; Stage B is not registered.
+
+One direction, one step, one window: not GRID-01 (#26), not grid-converged or physical downforce, not a gradient qualification, not OPT-01 (#30). No flag, FD-08 verdict, delta or GRAD-03
+verdict changes. Next step is a user decision (Stage B with an explicit post hoc drag rule, a flow_32 drag-resolution measurement first, or another direction).
+Evidence: `docs/evidence/lowdim02a_flow32_cross_grid_2026_10_09/`.
