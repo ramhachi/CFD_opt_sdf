@@ -7142,3 +7142,23 @@ No bridge value, no FD-08 comparison, delta unset, no GRAD-03 verdict, reverse u
 decision: (a) as registered, stop the exact-AD programme and pivot to #47 STEP-01 and #48 LOWDIM-01, or (b) additionally pre-register an investigation of the
 tie-averaged derivative as a separate gradient contract.
 Evidence: `docs/evidence/grad03_g2_diag5_one_step_gain_2026_10_09/`.
+
+## #47 STEP-01: finite-step secant oracle, result STEP01_RECORDED (2026-10-09)
+
+STEP-01 measured the response of the Candidate C operator to finite design steps of 0.1-0.5 h (2.5-12.5 mm) along the four FD-08 directions (D0, D1, D2, P1; 5 steps x +-)
+and two combined directions (D0+P1, D1+D2, +-0.3 h, renormalised to max SDF displacement 7.5 mm). Pre-registered (freeze, two independent reviews with all findings applied),
+47 runs on three T4 kernels (A 21, B 21, C 5 states; each kernel has its own baseline), the unchanged FD-08 per-state Julia job, source `d7bd1fda`. The three baselines are
+byte-identical to FD-08's `baseline_v17` force CSV. Primary quantity: the centered secant g_sec = [R(+s)-R(-s)]/(2s) with eta_even = |R(+s)+R(-s)-2R(0)|/|R(+s)-R(-s)|.
+This is not a gradient qualification; no flag, FD-08 verdict, delta or GRAD-03 verdict changes.
+
+Registered result: the centered secant keeps its sign and the sign of FD-08's g-hat through 12.5 mm for all 8 direction x response series (30% agreement radius 12.5 mm for
+7 series, 10 mm for D0 drag; agreement radii are descriptive, g-hat is the Model-A local slope and 5 mm+ is outside its calibrated range). eta_even exceeds 1 at 2.5 mm for
+several series (D0 downforce 1.37 -> 8.75 at 12.5 mm): the even (curvature) part, which scales with s^2, dominates the odd part. Combined directions: D1+D2 is additive within
+0.8-25%, D0+P1 is strongly non-additive (130-450%).
+
+Post-hoc description: the one-sided responses of the steps an optimizer would take do not follow the sign of g-hat for the downforce-increasing side in any of the four directions
+(already at 2.5-5 mm), while the drag-decreasing side does through 12.5 mm; the even part is negative for every series and step. The origin of the even part is untested
+(possibly physical curvature, possibly the loss of the signed-distance property under phi + eps*d). For #48 LOWDIM-01 this means the step-size contract has to rest on
+accept/reject of the actual one-sided primal response and on curvature, not on the centered slope; reinitialisation and the use of combined directions need their own decisions.
+Next step is a user decision (#48 is not started).
+Evidence: `docs/evidence/step01_finite_step_secant_2026_10_09/`.
