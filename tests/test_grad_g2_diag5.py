@@ -293,8 +293,9 @@ def test_spearman_and_ranks():
 def test_driver_refuses_a_dirty_tree_or_an_unknown_source_commit(tmp_path, monkeypatch):
     spec = importlib.util.spec_from_file_location("driver5c", DRIVER)
     drv = importlib.util.module_from_spec(spec); spec.loader.exec_module(drv)
+    monkeypatch.setattr(drv, "SOURCE_COMMIT", "0" * 40)
     head, bad = drv.git_state()
-    assert head and any("pinned source commit" in b for b in bad)          # the placeholder PIN_SOURCE_COMMIT is not an ancestor of HEAD
+    assert head and any("pinned source commit" in b for b in bad)          # a commit that is not an ancestor of HEAD
     monkeypatch.setattr(drv, "PINS", {})
     monkeypatch.setattr("sys.argv", ["x", "--snapdir", str(tmp_path), "--out", str(tmp_path / "o")])
     with pytest.raises(SystemExit):

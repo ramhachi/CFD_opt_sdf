@@ -17,18 +17,18 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
+SOURCE_COMMIT = "e06e3364c3436db1b681e8934ec6a43ed498814f"
 SRC_TREE = "julia/CFDSDFWaterLily/src"      # every file the job `include`s lives here; pinned as one tree hash
 JOB = "scripts/waterlily_grad_g2_diag5_one_step_gain_2026_10_09.jl"
 STAGES = "scripts/waterlily_grad_g2_diag5_stages.jl"
 PINS = {
-    JOB: "PIN_JOB_SHA",
-    STAGES: "PIN_STAGES_SHA",
-    "julia/CFDSDFWaterLily/Project.toml": "PIN_PROJECT_SHA",
-    "julia/CFDSDFWaterLily/Manifest.toml": "PIN_MANIFEST_SHA",
-    SRC_TREE: "PIN_SRC_TREE_SHA",
-    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/snapshot_index.json": "PIN_SNAPSHOT_INDEX_SHA",
-    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/instrumented_checksums.csv": "PIN_CHECKSUMS_SHA",
+    JOB: "85a032c29d9008a8404ddba61f027144a9300408030a588aa9f2687d1e75eb87",
+    STAGES: "b0aa40bfe3c33b75a639853eaf86d36a93b70f0a40b11f100a6020872cbee06a",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    SRC_TREE: "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/snapshot_index.json": "38ee230b0e3b139cb3f185358fed08e839b18c4d0d8707c60727d27879d8d2e2",
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/instrumented_checksums.csv": "776779dab31eb1c79d3c4599c9faafae30fb14dd56860f803450be49b0744f8c",
 }
 PHI = "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw"
 PHI_SHA = "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431"
