@@ -7116,3 +7116,29 @@ was not extended and the 8740-step bridge was not run. Next step is a user decis
 argues against Path A (adopting fixed32 as candidate semantics) and for Path B (keep the original semantics; decompose the corner
 mode: BDIM / conv_diff boundary closures, x-min/y-min/z-max coupling = DIAG5); Float64 stays low priority.
 Evidence: `docs/evidence/grad03_g2_diag4_forced32_horizon_2026_10_09/`.
+
+## #23 G2-DIAG5: one-step gain of the corner tangent, registered result R4_INCONCLUSIVE (2026-10-09)
+
+DIAG1-DIAG4 showed that the D0 corner tangent grows from step ~838 in the AD of the implemented map and that forced-32 Poisson only delays it. G2-DIAG5 was
+the pre-registered last local diagnostic (freeze, two independent reviews with all findings applied before the run; CPU, Float32, Dual width 1, one process
+per state x group): re-evaluate the one-step map at stored T4 states (steps 900 and 1000) and ask where the one-step gain is made (E1 stages/terms), whether
+the AD tangent agrees with a finite-amplitude response of the implemented map (E3, eps 1e-6..1e-2, ||eps t||_inf = eps, persistent state (u incl. ghosts, p),
+Delta t = CFL(u)), whether a derivative-convention counterfactual at the nonsmooth QUICK/median limiter (E4: value unchanged, partials tie-averaged) removes it,
+whether a finite perturbation grows over 40 steps (E5, variants A/B/C), and how it reacts to +-1 ulp noise (E6).
+
+Registered result: **R4_INCONCLUSIVE** in both states (the bounded No-Go of the CURRENT long-window forward-AD qualification programme, not a statement about
+full-field AD in general). All mechanical gates passed. R2 was not testable (the corner box has branch flips at every eps, 3% at 1e-6); R3 failed (AD never agrees
+with the finite difference); R1 failed on the registered conditions (mismatch is O(1) already at eps 1e-6 so it does not grow with the flip rate; the tie-averaged
+derivative removes 88-89% of the mismatch but its relative L2 error 0.126/0.157 is above the 0.10 agreement threshold; S1000's 40-step AD rate is below +0.02).
+
+Post-hoc descriptive observations (not part of the classification): the finite-amplitude one-step gain in the corner box is 0.53-0.59 (S900) / 0.53-0.55 (S1000) for
+every eps 1e-6..1e-2 and for variants B and C, while the baseline AD gain is 1.33-1.39 / 1.44-1.49; the tie-averaged derivative gives 0.586 / 0.538. Over 20 steps the
+finite perturbation decays (2.08 -> 0.0053) while the baseline AD tangent grows (2.08 -> 1240); the tie-averaged AD decays like the finite response. The gain is made by
+the (i=1, j=1) advected-field term of conv_diff through the limiter. The AD tangent pattern changes by ~60% under +-1 ulp noise on the primal, the finite response
+by 0.1%. A genuine finite-perturbation instability (R3) is not observed. The tie-averaged surrogate is not the derivative of the implemented map; adopting it would be
+a different gradient contract with its own pre-registration (GRAD-03 work, not a DIAG).
+
+No bridge value, no FD-08 comparison, delta unset, no GRAD-03 verdict, reverse untouched, six flags false, no Float64 simulation, no T4 run. Next step is a user
+decision: (a) as registered, stop the exact-AD programme and pivot to #47 STEP-01 and #48 LOWDIM-01, or (b) additionally pre-register an investigation of the
+tie-averaged derivative as a separate gradient contract.
+Evidence: `docs/evidence/grad03_g2_diag5_one_step_gain_2026_10_09/`.

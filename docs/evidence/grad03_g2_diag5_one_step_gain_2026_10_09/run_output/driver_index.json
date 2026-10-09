@@ -1,0 +1,254 @@
+{
+  "tier": "G2-DIAG5",
+  "source_commit": "e06e3364c3436db1b681e8934ec6a43ed498814f",
+  "git_head_at_run": "0d0794800002bb22df03431aa4ada1a50ec7a0f9",
+  "pins": {
+    "scripts/waterlily_grad_g2_diag5_one_step_gain_2026_10_09.jl": "85a032c29d9008a8404ddba61f027144a9300408030a588aa9f2687d1e75eb87",
+    "scripts/waterlily_grad_g2_diag5_stages.jl": "b0aa40bfe3c33b75a639853eaf86d36a93b70f0a40b11f100a6020872cbee06a",
+    "julia/CFDSDFWaterLily/Project.toml": "5abca50d507cd809e6950ec654703cd1887977aab14ba5b864bcf066b4865e27",
+    "julia/CFDSDFWaterLily/Manifest.toml": "65638d8164df7853821ee6cb52b2163df491700c6f96b903b76558bc2bd0ea1c",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/snapshot_index.json": "38ee230b0e3b139cb3f185358fed08e839b18c4d0d8707c60727d27879d8d2e2",
+    "docs/evidence/grad03_g2_diag1_d0_nonfinite_2026_10_08/kernel_output/instrumented_checksums.csv": "776779dab31eb1c79d3c4599c9faafae30fb14dd56860f803450be49b0744f8c"
+  },
+  "matrix": [
+    [
+      "R1188",
+      "E0"
+    ],
+    [
+      "S900",
+      "E1"
+    ],
+    [
+      "S900",
+      "E2"
+    ],
+    [
+      "S900",
+      "E3"
+    ],
+    [
+      "S900",
+      "E3C"
+    ],
+    [
+      "S900",
+      "E5AD"
+    ],
+    [
+      "S900",
+      "E5FD:1e-5"
+    ],
+    [
+      "S900",
+      "E5FD:1e-4"
+    ],
+    [
+      "S900",
+      "E5FD:1e-3"
+    ],
+    [
+      "S900",
+      "E5FD:1e-2"
+    ],
+    [
+      "S900",
+      "E6"
+    ],
+    [
+      "S1000",
+      "E1"
+    ],
+    [
+      "S1000",
+      "E2"
+    ],
+    [
+      "S1000",
+      "E3"
+    ],
+    [
+      "S1000",
+      "E3C"
+    ],
+    [
+      "S1000",
+      "E5AD"
+    ],
+    [
+      "S1000",
+      "E5FD:1e-5"
+    ],
+    [
+      "S1000",
+      "E5FD:1e-4"
+    ],
+    [
+      "S1000",
+      "E5FD:1e-3"
+    ],
+    [
+      "S1000",
+      "E5FD:1e-2"
+    ],
+    [
+      "S1000",
+      "E6"
+    ]
+  ],
+  "julia": "julia",
+  "jobs": 8,
+  "started_utc": "2026-10-09T02:30:50Z",
+  "processes": [
+    {
+      "state": "R1188",
+      "group": "E0",
+      "exit": 0,
+      "ok": true,
+      "seconds": 58.06028509140015
+    },
+    {
+      "state": "S900",
+      "group": "E1",
+      "exit": 0,
+      "ok": true,
+      "seconds": 86.27294206619263
+    },
+    {
+      "state": "S900",
+      "group": "E2",
+      "exit": 0,
+      "ok": true,
+      "seconds": 56.4413161277771
+    },
+    {
+      "state": "S900",
+      "group": "E3",
+      "exit": 0,
+      "ok": true,
+      "seconds": 126.65268206596375
+    },
+    {
+      "state": "S900",
+      "group": "E3C",
+      "exit": 0,
+      "ok": true,
+      "seconds": 132.02495002746582
+    },
+    {
+      "state": "S900",
+      "group": "E5AD",
+      "exit": 0,
+      "ok": true,
+      "seconds": 298.05503010749817
+    },
+    {
+      "state": "S900",
+      "group": "E5FD:1e-5",
+      "exit": 0,
+      "ok": true,
+      "seconds": 143.7340109348297
+    },
+    {
+      "state": "S900",
+      "group": "E5FD:1e-4",
+      "exit": 0,
+      "ok": true,
+      "seconds": 302.9113368988037
+    },
+    {
+      "state": "S900",
+      "group": "E5FD:1e-3",
+      "exit": 0,
+      "ok": true,
+      "seconds": 316.01412200927734
+    },
+    {
+      "state": "S900",
+      "group": "E5FD:1e-2",
+      "exit": 0,
+      "ok": true,
+      "seconds": 160.21661019325256
+    },
+    {
+      "state": "S900",
+      "group": "E6",
+      "exit": 0,
+      "ok": true,
+      "seconds": 143.6102147102356
+    },
+    {
+      "state": "S1000",
+      "group": "E1",
+      "exit": 0,
+      "ok": true,
+      "seconds": 106.37205386161804
+    },
+    {
+      "state": "S1000",
+      "group": "E2",
+      "exit": 0,
+      "ok": true,
+      "seconds": 73.01204705238342
+    },
+    {
+      "state": "S1000",
+      "group": "E3",
+      "exit": 0,
+      "ok": true,
+      "seconds": 147.92385411262512
+    },
+    {
+      "state": "S1000",
+      "group": "E3C",
+      "exit": 0,
+      "ok": true,
+      "seconds": 151.81169891357422
+    },
+    {
+      "state": "S1000",
+      "group": "E5AD",
+      "exit": 0,
+      "ok": true,
+      "seconds": 265.4408507347107
+    },
+    {
+      "state": "S1000",
+      "group": "E5FD:1e-5",
+      "exit": 0,
+      "ok": true,
+      "seconds": 155.03414583206177
+    },
+    {
+      "state": "S1000",
+      "group": "E5FD:1e-4",
+      "exit": 0,
+      "ok": true,
+      "seconds": 260.4060900211334
+    },
+    {
+      "state": "S1000",
+      "group": "E5FD:1e-3",
+      "exit": 0,
+      "ok": true,
+      "seconds": 241.4576497077942
+    },
+    {
+      "state": "S1000",
+      "group": "E5FD:1e-2",
+      "exit": 0,
+      "ok": true,
+      "seconds": 140.16521382331848
+    },
+    {
+      "state": "S1000",
+      "group": "E6",
+      "exit": 0,
+      "ok": true,
+      "seconds": 124.80170392990112
+    }
+  ],
+  "finished_utc": "2026-10-09T02:39:43Z",
+  "status": "COMPLETE"
+}

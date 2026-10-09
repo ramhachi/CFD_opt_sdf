@@ -161,8 +161,9 @@ def test_driver_pins_and_fail_closed(tmp_path, monkeypatch):
     assert drv.SRC_TREE in drv.PINS and drv.sha256(ROOT / drv.SRC_TREE) == drv.sha256(ROOT / drv.SRC_TREE) and len(drv.sha256(ROOT / drv.SRC_TREE)) == 64
     assert drv.PHI_SHA == "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431" and drv.D0_SHA == "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
     out = tmp_path / "out"
+    monkeypatch.setattr(drv, "PINS", {drv.JOB: "0" * 64})          # a mismatching pin: nothing runs (the real pins would start the real matrix)
     monkeypatch.setattr("sys.argv", ["x", "--snapdir", str(tmp_path), "--out", str(out)])
-    with pytest.raises(SystemExit):                        # unfilled / mismatching pins: nothing runs
+    with pytest.raises(SystemExit):
         drv.main()
     assert (out / "ERROR.txt").is_file() and not (out / "DONE").exists()
     monkeypatch.setattr("sys.argv", ["x", "--snapdir", str(tmp_path), "--out", str(out)])
@@ -296,7 +297,7 @@ def test_driver_refuses_a_dirty_tree_or_an_unknown_source_commit(tmp_path, monke
     monkeypatch.setattr(drv, "SOURCE_COMMIT", "0" * 40)
     head, bad = drv.git_state()
     assert head and any("pinned source commit" in b for b in bad)          # a commit that is not an ancestor of HEAD
-    monkeypatch.setattr(drv, "PINS", {})
+    monkeypatch.setattr(drv, "PINS", {drv.JOB: "0" * 64})
     monkeypatch.setattr("sys.argv", ["x", "--snapdir", str(tmp_path), "--out", str(tmp_path / "o")])
     with pytest.raises(SystemExit):
         drv.main()
