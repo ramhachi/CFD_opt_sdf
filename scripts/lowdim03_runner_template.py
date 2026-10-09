@@ -149,6 +149,10 @@ def expected_plan(inventory):
         raise ValueError("state inventory differs from the frozen LOWDIM-03 plan")
     if inventory["grids"][KERNEL]["case_id"] != CASE_ID or inventory["grids"][KERNEL]["job"] != JOB:
         raise ValueError("wrong grid/job binding")
+    if inventory["grids"][KERNEL]["baseline_reference"]["forces_csv_path"] != BASELINE_FORCE_CSV or inventory["baseline"]["path"] != BASELINE_RAW:
+        raise ValueError("baseline reference paths differ from the pinned runner constants")
+    if BASELINE_RAW not in PINS or BASELINE_FORCE_CSV not in PINS or PROPOSAL_RAW not in PINS:
+        raise ValueError("a baseline or proposal input is not pinned")
     for row in rows[1:]:
         if row["geometry_gates"]["all_hard_gates_pass"] is not True or not all(v is True for v in row["geometry_gates"]["gates"].values()):
             raise ValueError("preflight geometry gate failed")

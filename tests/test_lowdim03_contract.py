@@ -87,7 +87,7 @@ def test_raw_rho_odd_even_and_robust_references_have_distinct_semantics():
     d = diagnostic["flow_32"]
     assert d["downforce"]["odd_part_n"] == pytest.approx(.0004)
     assert d["downforce"]["even_part_n"] == pytest.approx(.0001)
-    assert d["downforce"]["combined_direction_secant_n_per_m"] == pytest.approx(.32)
+    assert d["downforce"]["odd_part_secant_n_per_m_of_max_norm_step"] == pytest.approx(.32)
     assert d["downforce"]["rho_actual_over_raw_linear"] == pytest.approx(.8)
     assert d["forward_predictions"]["l1_robust_downforce_lower_prediction_n"] == pytest.approx(.0005)
     assert d["drag"]["prediction_error_n"] == pytest.approx(.000085)

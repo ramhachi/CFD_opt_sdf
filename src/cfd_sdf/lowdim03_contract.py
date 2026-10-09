@@ -79,12 +79,12 @@ def evaluate_candidate(baselines: dict, responses: dict, hard_gates_pass: bool) 
         gain, drag = changes["downforce"], changes["drag"]
         per_grid[grid] = {
             "downforce_change_n": gain, "drag_change_n": drag,
-            "downforce_gain_resolved": gain > MIN_DOWNFORCE_GAIN_N,
-            "drag_constraint_ok": drag <= DRAG_ALLOWANCE_N,
+            "downforce_gain_exceeds_threshold": gain > MIN_DOWNFORCE_GAIN_N,  # nominal threshold, not a noise-resolved claim
+            "drag_computed_nonincrease": drag <= DRAG_ALLOWANCE_N,  # computed sign only; not noise-resolved or physical
             "small_computed_drag_margin": abs(drag) <= SMALL_DRAG_MARGIN_N,
         }
     accepted = hard_gates_pass and all(
-        v["downforce_gain_resolved"] and v["drag_constraint_ok"] for v in per_grid.values())
+        v["downforce_gain_exceeds_threshold"] and v["drag_computed_nonincrease"] for v in per_grid.values())
     return {"per_grid": per_grid, "hard_geometry_gates_pass": hard_gates_pass,
             "worst_grid_downforce_gain_n": min(v["downforce_change_n"] for v in per_grid.values()),
             "accepted": accepted}
@@ -100,6 +100,8 @@ def select_trial(evaluations: dict, steps_mm: dict) -> dict:
             raise ValueError("candidate accepted field is not a boolean")
         gain = finite(evaluation.get("worst_grid_downforce_gain_n"), "worst-grid gain")
         if evaluation["accepted"]:
+            if gain <= MIN_DOWNFORCE_GAIN_N:
+                raise ValueError("an accepted candidate must exceed the registered downforce threshold")
             accepted.append((-gain, steps_mm[name], name))
     selected = min(accepted)[2] if accepted else None
     return {"verdict": "LOWDIM03_ACCEPT" if selected else "LOWDIM03_NO_ACCEPT",
@@ -144,11 +146,16 @@ def model_diagnostics(baselines: dict, plus: dict, minus: dict, reference: dict,
             raw = pred[grid][f"raw_{q}_prediction_n"]
             row[q] = {"forward_change_n": gain, "reverse_change_n": reverse,
                       "odd_part_n": odd, "even_part_n": even,
-                      "combined_direction_secant_n_per_m": odd / (step_mm / 1000),
+                      "odd_part_secant_n_per_m_of_max_norm_step": odd / (step_mm / 1000),
+                      "raw_linear_secant_n_per_m_of_max_norm_step": raw / (step_mm / 1000),
                       "prediction_error_n": gain - raw}
             if q == "downforce":
-                row[q]["rho_actual_over_raw_linear"] = gain / raw if raw > PREDICTION_DENOMINATOR_FLOOR_N else None
-                row[q]["rho_denominator_usable"] = raw > PREDICTION_DENOMINATOR_FLOOR_N
-                row[q]["rho_reason"] = "raw_prediction_positive" if raw > 0 else "raw_prediction_nonpositive"
+                usable = raw > PREDICTION_DENOMINATOR_FLOOR_N
+                rho = gain / raw if usable else None
+                if rho is not None and not math.isfinite(rho):
+                    rho, usable = None, False
+                row[q]["rho_actual_over_raw_linear"] = rho
+                row[q]["rho_denominator_usable"] = usable
+                row[q]["rho_reason"] = "raw_prediction_positive" if usable else ("raw_prediction_nonpositive" if not raw > 0 else "ratio_not_finite")
         out[grid] = row
     return out

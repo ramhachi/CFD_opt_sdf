@@ -49,8 +49,8 @@ positive existing-resource access controls, including title/slug collisions.
 Before submission all six perturbations must pass the existing LOWDIM five gates:
 clearance >=0.15m; exact masks/outside-support preservation; face-connected solid
 cell components equal baseline1; absolute relative smoothed-volume change <=10%;
-narrow-band median ||grad phi|-1| <=0.10. Do not remove failed candidates or change
-the direction/ladder. Sharp volume, Eikonal p95/max and node6 components remain
+narrow-band median ||grad phi|-1| <=0.10. If any of the six fails before submission the trial is not frozen; no candidate is dropped and the
+direction/ladder is not changed. Sharp volume, Eikonal p95/max and node6 components remain
 recorded-only. These five gates do not close GEOM-01's full geometry contract.
 Positive states can have two node6 components; the prior read-only node26 check
 showed one component and no registered #31 topology event. No threshold changes.
@@ -66,7 +66,7 @@ LOWDIM03_INCOMPLETE, with analysis --write forbidden.
 
 Record signed drag margins and |Δdrag|<=3e-5N as a small-margin diagnostic. The
 nominal floor is not a measured statistical noise bound, especially on flow_32.
-A sign pass establishes computed feasibility only in this frozen measurement.
+A sign pass establishes a computed sign only in this frozen measurement. GRID-01 predicts the flow_32 drag change at 1.25 mm as about -8.9e-6 N (raw) and about 0 N (L1 upper bound), both inside the nominal 3e-5 N floor, so the flow_32 drag sign is not expected to be noise-resolved before the run; a NO_ACCEPT caused only by a flow_32 drag change within +/-3e-5 N is not evidence about physical drag, and an ACCEPT is not evidence of physical drag non-increase.
 The L1 sensitivity model likewise is not an empirical uncertainty guarantee.
 
 ## Model diagnostics, integrity and stop
@@ -78,6 +78,8 @@ Nonpositive/nonfinite pL has null rho plus explicit diagnostic reason.
 Rho is not an acceptance or radius-update rule. Report all three paired odd/even
 responses O=(Rplus-Rminus)/2, E=(Rplus+Rminus-2Rbase)/2 for lift and drag.
 Do not uniquely attribute mismatch to curvature, nonadditivity or numerical effects.
+
+A solver divergence, non-finite field/force or timeout in ANY of the 14 runs (including a reverse diagnostic or the 2.5 mm candidate) makes the trial LOWDIM03_INCOMPLETE (no analysis --write, no repair, no resubmission); it is accepted as registered that this conflates a possible physical divergence with an infrastructure failure.
 
 Bind reviewed source, registration, input, helper and test closure by hashes.
 Both kernels require COMPLETE, DONE without ERROR, exact seven-state order,

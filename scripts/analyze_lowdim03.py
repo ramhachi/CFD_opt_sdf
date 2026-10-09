@@ -385,6 +385,26 @@ def check_kernel(out: Path, kernel: str, freeze: dict, inventory: dict) -> dict:
     return states
 
 
+INTERPRETATION = {
+    "common": ("One frozen combined direction (the GRID-01 L1-sensitivity robust proposal; 'robust' means only the registered secant sensitivity, not a measured error bound), three shared positive "
+               "steps and three paired reverse diagnostics; actual computed forces and geometry decide. A strict computed drag non-increase is a computed sign, not noise-resolved or physical "
+               "non-increase (the GRID-01 flow_32 drag prediction is inside the nominal 3e-5 N floor, so a flow_32 drag sign is not expected to be noise-resolved). Finite-step model agreement is "
+               "descriptive, not a trust-region/filter optimizer, gradient or grid qualification."),
+    "LOWDIM03_ACCEPT": "A common step passed every registered condition on both grids: a bounded computed capability for this direction and ladder only.",
+    "LOWDIM03_NO_ACCEPT": ("No common step passed every condition: a bounded No-Go for this direction and ladder, not proof that the four-direction basis is insufficient, and not evidence about physical "
+                           "drag when the deciding drag change lies within +/-3e-5 N."),
+    "LOWDIM03_INCOMPLETE": "The integrity gates failed: nothing is concluded.",
+}
+
+
+def selected_drag_note(report, candidates):
+    name = report.get("selected")
+    if not name:
+        return ""
+    near = [g for g, v in candidates[name]["per_grid"].items() if v["small_computed_drag_margin"]]
+    return f" On the selected step the drag change is within +/-3e-5 N on: {', '.join(near)} (computed sign only)." if near else ""
+
+
 def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None = None) -> dict:
     report = {"kind": "lowdim03_dual_grid_actual_primal_analysis", "verdict": "LOWDIM03_INCOMPLETE",
               "integrity": {"pass": False, "failures": []}, "selected_delta": None, "grad03_verdict": None,
@@ -415,7 +435,7 @@ def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None =
                                  "rho_denominator": "raw finite-step linear gain, not sensitivity lower bound",
                                  "rho_denominator_floor_n": C.PREDICTION_DENOMINATOR_FLOOR_N,
                                  "reverse_controls_eligible": False, "rho_is_acceptance_gate": False},
-                       "interpretation": "One frozen combined direction, three shared positive steps and three paired reverse diagnostics; actual computed forces and geometry decide. Strict computed drag nonincrease is not noise-resolved or physical nonincrease. Finite-step model agreement is descriptive, not a trust-region/filter optimizer or gradient qualification.",
+                       "interpretation": INTERPRETATION["common"] + " " + INTERPRETATION[report["verdict"]] + selected_drag_note(report, candidates),
                        "provenance": {"source_commit": freeze["source_commit"], "inventory_sha256": freeze["inventory_sha256"],
                                       "analyzer_sha256": sha256(Path(__file__)),
                                       "kernel_manifest_sha256": {"a": sha256(Path(kernel_a) / "output_manifest.json"),
@@ -425,6 +445,7 @@ def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None =
         report["verdict"] = "LOWDIM03_INCOMPLETE"
         report.pop("selected", None)
         report.pop("selected_step_mm", None)
+        report.pop("selection_objective", None)
     return report
 
 

@@ -122,7 +122,7 @@ def manifest(out):
          for p in out.rglob("*") if p.is_file() and p != out / "output_manifest.json"}})
 
 
-def output(out, kernel, root, inventory, freeze):
+def output(out, kernel, root, inventory, freeze, reverse_shift=0.0):
     out.mkdir()
     grid = A.KERNELS[kernel]
     config, runtime = inventory["grids"][kernel], freeze["runtime"][kernel]
@@ -150,6 +150,8 @@ def output(out, kernel, root, inventory, freeze):
         else:
             gain = row["sign"] * .0001 * row["step_mm"] / .625
             drag = 1e-5 if kernel == "b" and row["step_mm"] == 2.5 and row["sign"] == 1 else -1e-5
+            if row["sign"] == -1:
+                gain, drag = gain + reverse_shift, drag + reverse_shift
             force_csv(csv_path, base["downforce_n"] + gain, base["drag_n"] + drag, scale)
         host = recompute_force_n(csv_path, {"measurement": config["measurement"]})
         job_env = inventory["job_env_common"]
@@ -352,3 +354,49 @@ def test_integrity_valid_no_accept_writes_once_and_refuses_overwrite(valid, tmp_
     original = target.read_bytes()
     with pytest.raises(SystemExit): A.main()
     assert target.read_bytes() == original
+
+
+def test_reverse_states_are_inert_for_the_verdict_and_selection_and_only_change_diagnostics(valid, tmp_path, registered):
+    root, inventory, freeze = registered
+    base = run(valid)
+    a, b = tmp_path / "wild_a" / "lowdim03_a", tmp_path / "wild_b" / "lowdim03_b"
+    a.parent.mkdir(); b.parent.mkdir()
+    output(a, "a", root, inventory, freeze, reverse_shift=7.0)
+    output(b, "b", root, inventory, freeze, reverse_shift=-5.0)
+    wild = A.analyze(a, b, deepcopy(freeze), deepcopy(inventory))
+    assert wild["integrity"]["pass"] is True
+    for key in ("verdict", "selected", "selected_step_mm", "candidates"):
+        assert wild[key] == base[key]
+    assert wild["paired_model_diagnostics"] != base["paired_model_diagnostics"]
+
+
+def test_swapped_kernel_directories_and_one_directory_for_both_are_incomplete(valid):
+    a, b, freeze, inv = valid
+    assert A.analyze(b, a, freeze, inv)["verdict"] == "LOWDIM03_INCOMPLETE"
+    assert A.analyze(a, a, freeze, inv)["verdict"] == "LOWDIM03_INCOMPLETE"
+
+
+def test_report_shape_has_rho_prediction_error_odd_even_and_verdict_specific_interpretation(valid):
+    r = run(valid)
+    for step in ("0.625", "1.25", "2.5"):
+        for grid in C.GRIDS:
+            d = r["paired_model_diagnostics"][step][grid]
+            assert {"odd_part_n", "even_part_n", "prediction_error_n", "odd_part_secant_n_per_m_of_max_norm_step", "raw_linear_secant_n_per_m_of_max_norm_step"} <= set(d["downforce"])
+            assert "rho_actual_over_raw_linear" in d["downforce"] and "rho_reason" in d["downforce"] and "rho_actual_over_raw_linear" not in d["drag"]
+            assert d["downforce"]["odd_part_n"] == pytest.approx((d["downforce"]["forward_change_n"] - d["downforce"]["reverse_change_n"]) / 2)
+            assert d["downforce"]["even_part_n"] == pytest.approx((d["downforce"]["forward_change_n"] + d["downforce"]["reverse_change_n"]) / 2)
+    assert "not a measured error bound" in r["interpretation"] and "bounded computed capability" in r["interpretation"] and "not proof" not in r["interpretation"]
+    cand = r["candidates"][C.state_name(1.25, 1)]["per_grid"]["flow_24"]
+    assert "downforce_gain_exceeds_threshold" in cand and "drag_computed_nonincrease" in cand and "downforce_gain_resolved" not in cand
+
+
+def test_contract_guards_a_forged_accept_flag_and_a_nonfinite_rho():
+    ev = {C.state_name(s, 1): {"accepted": True, "worst_grid_downforce_gain_n": -1.0} for s in C.STEPS_MM}
+    with pytest.raises(ValueError):
+        C.select_trial(ev, {C.state_name(s, 1): s for s in C.STEPS_MM})
+    ref = {"m_max_abs_sum": 1.0, "per_grid": {g: {"raw_downforce_slope_n_per_m": 1e-320, "raw_drag_slope_n_per_m": 0.0,
+           "l1_robust_downforce_lower_slope_n_per_m": 0.0, "l1_robust_drag_upper_slope_n_per_m": 0.0} for g in C.GRIDS}}
+    resp = {g: {"downforce_n": 1.0, "drag_n": 1.0} for g in C.GRIDS}
+    plus = {g: {"downforce_n": 1.5, "drag_n": 1.0} for g in C.GRIDS}
+    d = C.model_diagnostics(resp, plus, resp, ref, 1.25)["flow_24"]["downforce"]
+    assert d["rho_actual_over_raw_linear"] is None and d["rho_denominator_usable"] is False

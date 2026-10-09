@@ -98,6 +98,10 @@ def freeze(source_commit):
     inv=json.loads((E/'inventory.json').read_text());proof=json.loads(IDENTITY.read_text());require_identity(proof)
     files=set(A.required_file_paths(inv))|{str(IDENTITY.relative_to(ROOT)),str(IDENTITY.with_suffix('.json.sha256').relative_to(ROOT)),
                                       str((E/'prerun_note.md').relative_to(ROOT))}
+    if subprocess.run(['git','-C',str(ROOT),'status','--porcelain','--untracked-files=no'],capture_output=True,text=True).stdout.strip():
+        raise ValueError('tracked files have uncommitted changes; freeze only committed reviewed bytes')
+    if not subprocess.run(['git','-C',str(ROOT),'branch','-r','--contains',source_commit],capture_output=True,text=True).stdout.strip():
+        raise ValueError('the source commit is not on a remote branch; push it before freezing (the Kaggle runner fetches it from GitHub)')
     K.verify_source(source_commit,files)
     if subprocess.run(['git','-C',str(ROOT),'merge-base','--is-ancestor',PARENT,source_commit]).returncode:
         raise ValueError('source does not descend from the approved integration checkpoint')

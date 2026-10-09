@@ -52,3 +52,20 @@ def test_rendered_runner_matches_registered_phi_and_preserves_runtime(inputs,ker
     with pytest.raises(ValueError):worker.expected_plan(bad)
     bad=copy.deepcopy(inv);bad['grids'][kernel]['case_id']='wrong_grid'
     with pytest.raises(ValueError):worker.expected_plan(bad)
+
+
+def test_every_file_the_freeze_binds_is_committed_at_head_and_the_runner_constants_are_pinned():
+    import subprocess
+    import analyze_lowdim03 as A
+    import freeze_lowdim03 as F
+    inv = json.loads((K.EVIDENCE / 'inventory.json').read_text())
+    files = set(A.required_file_paths(inv)) | {str(F.IDENTITY.relative_to(ROOT)), str(F.IDENTITY.with_suffix('.json.sha256').relative_to(ROOT)), str((K.EVIDENCE / 'prerun_note.md').relative_to(ROOT))}
+    for rel in sorted(files):
+        path = ROOT / rel
+        names = sorted(str(p.relative_to(ROOT)) for p in path.rglob('*') if p.is_file() and '__pycache__' not in p.parts) if path.is_dir() else [rel]
+        for name in names:
+            assert subprocess.run(['git', '-C', str(ROOT), 'cat-file', '-e', f'HEAD:{name}']).returncode == 0, f'not committed: {name}'
+    for kernel in ('a', 'b'):
+        pins = K.pins(kernel)
+        g = inv['grids'][kernel]
+        assert inv['baseline']['path'] in pins and g['baseline_reference']['forces_csv_path'] in pins and inv['proposal']['file'] in pins
