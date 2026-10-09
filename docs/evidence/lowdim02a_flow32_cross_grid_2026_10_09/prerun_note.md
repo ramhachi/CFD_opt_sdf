@@ -21,14 +21,14 @@ phi は `lowdim01` の inventory と同一（SHA を `inventory.json` に hash �
 - 各 state の phi・state・NPZ の SHA、margin、有限性、t_end ≥ 120、threads=1、host 再計算と Julia summary の相対 1e-9 一致、manifest・pin・GPU（Tesla T4）。
 
 ## 判定（actual primal のみ。予測は使わない）
-分解能 res = max(3e-5 N, 10 × |baseline repeat − baseline|)（downforce と drag に別々に適用。3e-5 N は FD-08 の名目 σ0 の 10 倍で、flow_24 の値。flow_32 の実測 noise は repeat から入る）。
+分解能 res = max(3e-5 N, 10 × |baseline repeat − baseline|)（downforce と drag に別々に適用。3e-5 N は FD-08 の名目 σ0 の 10 倍で、flow_24 の値）。repeat が byte 同一なら flow_32 の noise の証拠は得られず、分解能は flow_24 の名目 floor のまま（`resolution_source` = `nominal_floor`、報告に明記）。flow_32 の半窓ドリフトは約 1e-5 N なので、3e-5 N との余裕は約 3 倍しかない。gain が 3 × res 以下の PASS は `marginal` と報告する。
 gain = D(+1.25) − D(baseline)、control = D(−1.25) − D(baseline)。
-- `STAGE_A_PASS`: gain > res_df、drag(+1.25) − drag(baseline) ≤ res_dr、control < gain − res_df（reverse が分解能以上に悪い）、+1.25 mm の geometry gate（LOWDIM-01 で評価済み・全通過）。
-- `STAGE_A_SIGN_FLIP`: gain < −res_df。flow_24 への過適合として停止（Stage B に進まない）。
+- `STAGE_A_PASS`: gain > res_df、drag(+1.25) − drag(baseline) ≤ res_dr、control < −res_df（reverse control が分解能以上に downforce を失う。reverse も増えるなら応答は偶関数（曲率）だけで、FD 提案の符号の確認にならない）、+1.25 mm の geometry gate（LOWDIM-01 で評価済み・全通過）。
+- `STAGE_A_SIGN_FLIP`: gain < −res_df（+1.25 mm が分解能以上に downforce を失う）。gain は奇関数部 + 偶関数部（曲率）の和なので、原因（提案の奇関数部が失われたか、曲率が増えたか）は断定せず、報告する奇関数部・偶関数部から読む。Stage B は、ユーザー判断なしに登録しない。
 - `STAGE_A_UNRESOLVED`: |gain| ≤ res_df。次はユーザー判断。
 - `STAGE_A_CONSTRAINT_FAIL`: gain > res_df だが drag・control・gate のいずれかが満たされない。次はユーザー判断。
 - `STAGE_A_INCOMPLETE`: integrity gate の失敗。何も結論しない。
-記述的に併記: flow_32 と flow_24 の gain の比と符号一致、odd/even 部分、baseline の差、+2.5 mm、baseline repeat の byte 一致。
+記述的に併記: 各 baseline に対する相対変化、flow_32 と flow_24 の gain の比（±1.25 mm のみ）、flow_32 で分解できた符号、奇関数部・偶関数部とその比、baseline の差、+2.5 mm（flow_24 側が分解能すれすれなので比・符号は出さない）、baseline repeat の byte 一致。
 
 ## 事前の既知事項（開示）
 - flow_24 → flow_32 で baseline downforce は +8.9%（0.3316 → 0.3613 N）。格子感度が大きい。受理 gain は +0.12% しかないので、flow_32 の符号は予測できない（SIGN_FLIP も UNRESOLVED も十分ありうる）。

@@ -23,9 +23,9 @@ def resolution_n(noise_n: float) -> float:
 def stage_a_verdict(base: dict, repeat: dict, plus: dict, minus: dict, hard_gates_pass: bool) -> dict:
     """base / repeat / plus / minus: {'downforce_n', 'drag_n'} of the flow_32 baseline, its repeat, +1.25 mm along the proposal and -1.25 mm (reverse control).
 
-    PASS: the +1.25 mm downforce gain is resolved and positive, the drag change is within the drag resolution, the reverse control is resolvably worse than the forward step and the geometry
-    gates pass.  SIGN_FLIP: the forward step resolvably LOSES downforce (stop: flow_24 overfit).  UNRESOLVED: |gain| within the resolution.  CONSTRAINT_FAIL: a resolved gain but the drag,
-    control or gate condition fails."""
+    PASS: the +1.25 mm downforce gain is resolved and positive, the drag change is within the drag resolution, the reverse control resolvably LOSES downforce (control < -resolution, so the
+    response is not a pure even/curvature response) and the geometry gates pass.  SIGN_FLIP: the forward step resolvably loses downforce (gain = odd + even part: the cause is read from the
+    reported odd/even parts, not asserted).  UNRESOLVED: |gain| within the resolution.  CONSTRAINT_FAIL: a resolved gain but the drag, control or gate condition fails."""
     vals = [v[k] for v in (base, repeat, plus, minus) for k in ("downforce_n", "drag_n")]
     if not all(isfinite(float(x)) for x in vals):
         raise ValueError("responses must be finite")
@@ -36,9 +36,12 @@ def stage_a_verdict(base: dict, repeat: dict, plus: dict, minus: dict, hard_gate
     ctrl = minus["downforce_n"] - base["downforce_n"]
     drag = plus["drag_n"] - base["drag_n"]
     drag_ok = drag <= res_dr
-    control_worse = ctrl < gain - res_df
+    control_worse = ctrl < -res_df
+    odd, even = (gain - ctrl) / 2.0, (gain + ctrl) / 2.0
     out = {"downforce_gain_n": gain, "control_downforce_change_n": ctrl, "drag_change_n": drag, "baseline_repeat_downforce_diff_n": noise_df, "baseline_repeat_drag_diff_n": noise_dr,
-           "downforce_resolution_n": res_df, "drag_resolution_n": res_dr, "drag_constraint_ok": drag_ok, "control_resolvably_worse": control_worse, "hard_geometry_gates_pass": bool(hard_gates_pass)}
+           "downforce_resolution_n": res_df, "drag_resolution_n": res_dr,
+           "resolution_source": "repeat_noise" if NOISE_FACTOR * noise_df > MIN_RESOLVED_N else "nominal_floor", "odd_part_n": odd, "even_part_n": even, "odd_part_resolved_positive": odd > res_df,
+           "marginal": res_df < abs(gain) <= 3.0 * res_df, "drag_constraint_ok": drag_ok, "control_resolvably_loses_downforce": control_worse, "hard_geometry_gates_pass": bool(hard_gates_pass)}
     if gain < -res_df:
         out["verdict"] = "STAGE_A_SIGN_FLIP"
     elif abs(gain) <= res_df:

@@ -32,21 +32,35 @@ def v(base=(0.36, 0.35), rep=(0.36, 0.35), plus=(0.3602, 0.3499), minus=(0.359, 
 
 def test_a_resolved_positive_gain_with_the_drag_control_and_gates_is_a_pass():
     r = v()
-    assert r["verdict"] == "STAGE_A_PASS" and r["downforce_gain_n"] == pytest.approx(2e-4) and r["control_resolvably_worse"] and r["drag_constraint_ok"]
+    assert r["verdict"] == "STAGE_A_PASS" and r["downforce_gain_n"] == pytest.approx(2e-4) and r["control_resolvably_loses_downforce"] and r["drag_constraint_ok"]
 
 
 def test_a_resolved_loss_is_a_sign_flip_and_a_small_change_is_unresolved():
     assert v(plus=(0.36 - 1e-4, 0.35))["verdict"] == "STAGE_A_SIGN_FLIP"
     assert v(plus=(0.36 + 2e-5, 0.35))["verdict"] == "STAGE_A_UNRESOLVED" and v(plus=(0.36 - 2e-5, 0.35))["verdict"] == "STAGE_A_UNRESOLVED"
-    assert v(plus=(0.36 + C.MIN_RESOLVED_N, 0.35))["verdict"] == "STAGE_A_UNRESOLVED"                      # exactly at the resolution is not resolved
-    assert v(plus=(0.36 - C.MIN_RESOLVED_N, 0.35))["verdict"] == "STAGE_A_UNRESOLVED"
+    z = lambda plus, minus=-1.0, rep=0.0, drag=0.0: C.stage_a_verdict({"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": rep, "drag_n": 0.0}, {"downforce_n": plus, "drag_n": drag},  # noqa: E731
+                                                                      {"downforce_n": minus, "drag_n": 0.0}, True)
+    assert z(C.MIN_RESOLVED_N)["verdict"] == "STAGE_A_UNRESOLVED" and z(-C.MIN_RESOLVED_N)["verdict"] == "STAGE_A_UNRESOLVED"        # exactly at the resolution is not resolved
+    assert z(C.MIN_RESOLVED_N * 1.0001)["verdict"] == "STAGE_A_PASS" and z(-C.MIN_RESOLVED_N * 1.0001)["verdict"] == "STAGE_A_SIGN_FLIP"
 
 
 def test_a_resolved_gain_with_a_failed_condition_is_a_constraint_fail_and_never_a_pass():
     assert v(plus=(0.3602, 0.35 + 1e-3))["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                          # the drag grew
     assert v(minus=(0.36 + 2e-4, 0.35))["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                          # the reverse control is not worse than the forward step
-    assert v(minus=(0.36 + 2e-4 - 2e-5, 0.35))["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                   # worse by less than the resolution
+    assert v(minus=(0.36 + 1.5e-4, 0.35))["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                        # the reverse control GAINS too: a pure even (curvature) response is no pass
+    assert v(minus=(0.36 - 2e-5, 0.35))["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                          # the control loses by less than the resolution
+    z = lambda minus, drag=0.0: C.stage_a_verdict({"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": 1e-3, "drag_n": drag}, {"downforce_n": minus, "drag_n": 0.0}, True)  # noqa: E731
+    assert z(-C.MIN_RESOLVED_N)["verdict"] == "STAGE_A_CONSTRAINT_FAIL" and z(-C.MIN_RESOLVED_N * 1.0001)["verdict"] == "STAGE_A_PASS"      # the control boundary is strict
+    assert z(-1e-3, drag=C.MIN_RESOLVED_N)["verdict"] == "STAGE_A_PASS" and z(-1e-3, drag=C.MIN_RESOLVED_N * 1.0001)["verdict"] == "STAGE_A_CONSTRAINT_FAIL"   # the drag boundary is inclusive
     assert v(gates=False)["verdict"] == "STAGE_A_CONSTRAINT_FAIL"
+
+
+def test_the_odd_and_even_parts_and_the_resolution_source_are_reported_and_a_sign_flip_does_not_assert_its_cause():
+    r = C.stage_a_verdict({"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": -1e-4, "drag_n": 0.0}, {"downforce_n": -1.3e-3, "drag_n": 0.0}, True)
+    assert r["verdict"] == "STAGE_A_SIGN_FLIP" and r["odd_part_n"] == pytest.approx(6e-4) and r["even_part_n"] == pytest.approx(-7e-4) and r["odd_part_resolved_positive"] is True    # the odd part survived
+    assert r["resolution_source"] == "nominal_floor"
+    r2 = C.stage_a_verdict({"downforce_n": 0.0, "drag_n": 0.0}, {"downforce_n": 1e-4, "drag_n": 0.0}, {"downforce_n": 5e-3, "drag_n": 0.0}, {"downforce_n": -5e-3, "drag_n": 0.0}, True)
+    assert r2["resolution_source"] == "repeat_noise" and r2["marginal"] is False and C.stage_a_verdict(*[{"downforce_n": x, "drag_n": 0.0} for x in (0.0, 0.0, 4e-5, -1e-3)], True)["marginal"] is True
 
 
 def test_the_baseline_repeat_raises_the_resolution_and_non_finite_responses_raise():
@@ -66,7 +80,9 @@ def test_the_default_synthetic_run_is_a_pass_and_carries_the_descriptive_compari
     r, *_ = run(tmp_path)
     assert r["verdict"] == "STAGE_A_PASS" and r["integrity"]["pass"] is True and r["qualification_flags"] == {k: False for k in A.FLAGS} and r["selected_delta"] is None and r["not_grid01"]
     d = r["descriptive_comparison_with_flow_24"]
-    assert d["same_sign_as_flow24"]["+1.25"] is True and d["flow32_over_flow24_downforce_change"]["+1.25"] == pytest.approx(2e-4 / 4.0517653513449936e-4, rel=1e-6)
+    assert d["resolved_sign_positive_on_flow32"]["+1.25"] is True and d["resolved_sign_positive_on_flow32"]["-1.25"] is False and d["resolved_sign_positive_on_flow24"]["+1.25"] is True
+    assert d["flow32_over_flow24_downforce_change"]["+1.25"] == pytest.approx(2e-4 / 4.0517653513449936e-4, rel=1e-6) and "+2.5" not in d["flow32_over_flow24_downforce_change"]
+    assert d["odd_part_n"]["flow_32"] == pytest.approx(6e-4) and d["baseline_downforce_n"]["relative_difference"] == pytest.approx(0.0894, abs=1e-3) and "byte-identical" in r["interpretation"] and "no flow_32 noise evidence" in r["interpretation"]
     assert d["baseline_repeat_forces_csv_byte_identical"] is True and r["stage_a"]["downforce_gain_n"] == pytest.approx(2e-4, rel=1e-6)
 
 
@@ -76,6 +92,9 @@ def test_each_verdict_is_reachable_through_the_analyzer(tmp_path):
     assert run(tmp_path / "c", drag_plus=1e-3)[0]["verdict"] == "STAGE_A_CONSTRAINT_FAIL"
     assert run(tmp_path / "d", gates_fail=True)[0]["verdict"] == "STAGE_A_CONSTRAINT_FAIL"
     assert run(tmp_path / "e", repeat_shift=5e-5)[0]["verdict"] == "STAGE_A_UNRESOLVED"
+    assert run(tmp_path / "f", minus=1.5e-4)[0]["verdict"] == "STAGE_A_CONSTRAINT_FAIL"                      # the reverse control also gains: no pass
+    r = run(tmp_path / "g", repeat_shift=1e-6)[0]
+    assert r["stage_a"]["resolution_source"] == "nominal_floor" and "differed" in r["interpretation"]
 
 
 def test_the_plus_2p5_state_never_changes_the_verdict(tmp_path):

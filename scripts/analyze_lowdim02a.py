@@ -161,34 +161,50 @@ def analyze(out: Path, freeze: dict, inventory: dict | None = None, formal: dict
     return report
 
 
+GATE_KEYS = {"clearance", "masks_and_support_preserved", "cell_components_equal_baseline", "smoothed_volume_band", "eikonal_median_within_limit"}
+
+
 def decide(res: dict, inventory: dict) -> dict:
     rows = {r["name"]: r for r in inventory["states"]}
     g = rows[NAMES["plus"]]["geometry_gates"]
-    if g["all_hard_gates_pass"] is not all(g["gates"].values()):
+    if set(g["gates"]) != GATE_KEYS or g["all_hard_gates_pass"] is not all(g["gates"].values()):
         raise ValueError("the registered geometry gates are inconsistent")
     r = {k: {"downforce_n": res[n]["downforce_n"], "drag_n": res[n]["drag_n"]} for k, n in NAMES.items()}
     v = C.stage_a_verdict(r["base"], r["repeat"], r["plus"], r["minus"], g["all_hard_gates_pass"])
     ref24 = inventory["flow24_reference_lowdim01"]
-    d32 = {"+1.25": r["plus"]["downforce_n"] - r["base"]["downforce_n"], "-1.25": r["minus"]["downforce_n"] - r["base"]["downforce_n"], "+2.5": r["plus25"]["downforce_n"] - r["base"]["downforce_n"]}
+    res_df = v["downforce_resolution_n"]
+    base32, base24 = r["base"]["downforce_n"], ref24["baseline"]["downforce_n"]
+    d32 = {"+1.25": r["plus"]["downforce_n"] - base32, "-1.25": r["minus"]["downforce_n"] - base32, "+2.5": r["plus25"]["downforce_n"] - base32}
     dr32 = {"+1.25": r["plus"]["drag_n"] - r["base"]["drag_n"], "-1.25": r["minus"]["drag_n"] - r["base"]["drag_n"], "+2.5": r["plus25"]["drag_n"] - r["base"]["drag_n"]}
     d24 = ref24["downforce_change_n"]
+    odd32, even32 = (d32["+1.25"] - d32["-1.25"]) / 2.0, (d32["+1.25"] + d32["-1.25"]) / 2.0
+    odd24, even24 = (d24["+1.25"] - d24["-1.25"]) / 2.0, (d24["+1.25"] + d24["-1.25"]) / 2.0
+    sign = lambda x: (x > 0) if abs(x) > res_df else None  # noqa: E731  a sign is reported only when the change is resolved on flow_32
     desc = {"downforce_change_n": {"flow_32": d32, "flow_24_lowdim01": d24},
+            "downforce_change_relative_to_own_baseline": {"flow_32": {k: x / base32 for k, x in d32.items()}, "flow_24_lowdim01": {k: x / base24 for k, x in d24.items()}},
             "drag_change_n": {"flow_32": dr32, "flow_24_lowdim01": ref24["drag_change_n"]},
-            "flow32_over_flow24_downforce_change": {k: (d32[k] / d24[k] if d24[k] else None) for k in d32},
-            "same_sign_as_flow24": {k: (d32[k] > 0) == (d24[k] > 0) for k in d32},
-            "odd_part_n": {"flow_32": (d32["+1.25"] - d32["-1.25"]) / 2.0, "flow_24_lowdim01": (d24["+1.25"] - d24["-1.25"]) / 2.0},
-            "even_part_n": {"flow_32": (d32["+1.25"] + d32["-1.25"]) / 2.0, "flow_24_lowdim01": (d24["+1.25"] + d24["-1.25"]) / 2.0},
-            "baseline_downforce_n": {"flow_32": r["base"]["downforce_n"], "flow_24": ref24["baseline"]["downforce_n"]},
+            "resolved_sign_positive_on_flow32": {"+1.25": sign(d32["+1.25"]), "-1.25": sign(d32["-1.25"])},
+            "resolved_sign_positive_on_flow24": {"+1.25": d24["+1.25"] > 0, "-1.25": d24["-1.25"] > 0},
+            "flow32_over_flow24_downforce_change": {k: (d32[k] / d24[k] if d24[k] else None) for k in ("+1.25", "-1.25")},
+            "odd_part_n": {"flow_32": odd32, "flow_24_lowdim01": odd24, "flow32_over_flow24": odd32 / odd24 if odd24 else None},
+            "even_part_n": {"flow_32": even32, "flow_24_lowdim01": even24, "flow32_over_flow24": even32 / even24 if even24 else None},
+            "baseline_downforce_n": {"flow_32": base32, "flow_24": base24, "relative_difference": base32 / base24 - 1.0},
+            "plus_2p5_mm_flow_32_n": d32["+2.5"], "plus_2p5_mm_flow_24_n_barely_resolved_on_flow_24": d24["+2.5"],
             "baseline_repeat_forces_csv_byte_identical": res[NAMES["repeat"]]["csv_sha256"] == res[NAMES["base"]]["csv_sha256"],
-            "note": "descriptive only; the +2.5 mm state is not part of the verdict (flow_24: a near-zero change, so its sign is not informative)"}
+            "note": "descriptive only; the +2.5 mm state is not part of the verdict and its flow_24 value is barely resolved, so no ratio or sign comparison is made for it"}
+    identical = desc["baseline_repeat_forces_csv_byte_identical"]
     return {"verdict": v.pop("verdict"), "stage_a": v, "flow_32": r, "descriptive_comparison_with_flow_24": desc,
             "rules": {"min_resolved_n": C.MIN_RESOLVED_N, "noise_factor": C.NOISE_FACTOR, "authority": "actual primal responses (host-recomputed, flow_32 scale); the geometry gates are those of the same LOWDIM-01 state"},
-            "interpretation": INTERPRETATION[None]}
+            "interpretation": INTERPRETATION + (REPEAT_IDENTICAL if identical else REPEAT_DIFFERENT)}
 
 
-INTERPRETATION = {None: ("Stage A compares the sign of the LOWDIM-01 accepted +1.25 mm step on flow_32 with flow_24 (one direction, one step, the [80,120] tU/L time-weighted force, deterministic Float32 T4 runs, "
-                         "no reinitialization). It is a bounded cross-grid sign check, not GRID-01 (#26), not a grid-converged or physical downforce, not a gradient qualification and not OPT-01 (#30); "
-                         "STAGE_A_PASS only permits pre-registering Stage B, it does not authorise it.")}
+INTERPRETATION = ("Stage A compares the sign of the LOWDIM-01 accepted +1.25 mm step on flow_32 with flow_24 (one direction, one step, the [80,120] tU/L time-weighted force, Float32 T4 runs, no "
+                  "reinitialization). The downforce change of a step is odd + even (curvature) part; a PASS only means the sign survived at this one step and grid with the reverse control losing, "
+                  "and a SIGN_FLIP only means the step lost downforce (the cause is read from the reported odd/even parts, not asserted). It is a bounded cross-grid sign check, not GRID-01 (#26), "
+                  "not a grid-converged or physical downforce, not a gradient qualification and not OPT-01 (#30); a PASS only permits pre-registering Stage B, it does not authorise it. ")
+REPEAT_IDENTICAL = ("The baseline repeat was byte-identical, so it gives no flow_32 noise evidence and the resolution stays at the nominal floor (10 x the flow_24 nominal sigma0 = 3e-5 N), "
+                    "against a flow_32 half-window drift of about 1e-5 N.")
+REPEAT_DIFFERENT = "The baseline repeat differed; the resolution includes 10 x its downforce difference (resolution_source says whether it binds)."
 
 
 def clean(x):
