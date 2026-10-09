@@ -1,0 +1,223 @@
+{
+  "declarations": {
+    "agreement_radius_is_descriptive": true,
+    "fd08_verdict_unchanged": true,
+    "g_hat_is_model_a_local_slope_not_the_epsilon_to_zero_derivative": true,
+    "grad03_verdict": null,
+    "gradient_qualification": false,
+    "reverse": "untouched",
+    "selected_delta": null
+  },
+  "definitions": {
+    "agreement_radius_name": "30% / 50% agreement radius (descriptive; not a validity claim)",
+    "agreement_tolerances": [
+      0.3,
+      0.5
+    ],
+    "baseline_rel": 1e-12,
+    "interpolations": [
+      "pchip",
+      "linear"
+    ],
+    "min_t_end": 120.0,
+    "nominal_sigma0_n": 3e-06,
+    "resolved_factor": 10.0,
+    "summary_rel": 1e-09
+  },
+  "design": {
+    "baseline_per_kernel": true,
+    "combo_component_step_mm": {
+      "D0_interface_offset+P1_upstream_lobe": 7.500000189323295,
+      "D1_filtered_seed11+D2_filtered_seed2026": 4.673768630900108
+    },
+    "combo_step_mm": 7.5,
+    "combos": [
+      [
+        "D0_interface_offset",
+        "P1_upstream_lobe"
+      ],
+      [
+        "D1_filtered_seed11",
+        "D2_filtered_seed2026"
+      ]
+    ],
+    "fractions_h": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "kernel_ids": {
+      "a": "ramhachi888/cfd-opt-sdf-step01-a",
+      "b": "ramhachi888/cfd-opt-sdf-step01-b",
+      "c": "ramhachi888/cfd-opt-sdf-step01-c"
+    },
+    "kernel_timeout_s": {
+      "a": 7200,
+      "b": 7200,
+      "c": 3600
+    },
+    "kernels": {
+      "a": 21,
+      "b": 21,
+      "c": 5
+    },
+    "nonlinearity_index": "eta_even(s) = |R(+s)+R(-s)-2R(0)| / |R(+s)-R(-s)|",
+    "primary_quantity": "g_sec(s) = [R(+s) - R(-s)] / (2 s)",
+    "response": "[80,120] tU/L endpoint-clipped trapezoid mean, drag=+Fx, downforce=-Fz, N",
+    "signs": [
+      -1,
+      1
+    ],
+    "single_directions": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "states": 47,
+    "step_mm": [
+      2.5,
+      5.0,
+      7.5,
+      10.0,
+      12.5
+    ]
+  },
+  "diag5_evidence_sha256": {
+    "diag5_analysis.json": "552cb03c3d1293eb2593cd0fb60fa6e3298ab6c680dcb049e0935c5d786b6ae3",
+    "prerun_freeze.json": "c54aee5e0ba3998ac239906f663580c62efb8e616f313ee39c0662827b5061a0"
+  },
+  "direction_files": {
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "docs/evidence/step01_finite_step_secant_2026_10_09/inputs/combo_D0_P1.dir_f4_fortran.raw": "dcc46497d2f3a046a2eede0934c66eef97234c43cd61c769c33c9eaf1274f1c4",
+    "docs/evidence/step01_finite_step_secant_2026_10_09/inputs/combo_D1_D2.dir_f4_fortran.raw": "b2142dca343a8035559af50bc6550984fe04684fb97f330d512612ed23ed8928"
+  },
+  "fd08_baseline": {
+    "forces_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+    "host_recomputed_n": {
+      "downforce_n": 0.3316344583180616,
+      "drag_n": 0.3239039699743226
+    }
+  },
+  "fd08_g_hat_fits": {
+    "D0_interface_offset|downforce": {
+      "g_n_per_m": 0.8014915523435178,
+      "se_g_n_per_m": 0.02060014270961251
+    },
+    "D0_interface_offset|drag": {
+      "g_n_per_m": -0.10398729014231183,
+      "se_g_n_per_m": 0.003340882961506817
+    },
+    "D1_filtered_seed11|downforce": {
+      "g_n_per_m": -0.10643781759208808,
+      "se_g_n_per_m": 0.003321700208349783
+    },
+    "D1_filtered_seed11|drag": {
+      "g_n_per_m": -0.06372394066171688,
+      "se_g_n_per_m": 0.0023411868563410834
+    },
+    "D2_filtered_seed2026|downforce": {
+      "g_n_per_m": -0.09172298102069233,
+      "se_g_n_per_m": 0.0029913937716240396
+    },
+    "D2_filtered_seed2026|drag": {
+      "g_n_per_m": -0.1697629387636076,
+      "se_g_n_per_m": 0.004788957134019947
+    },
+    "P1_upstream_lobe|downforce": {
+      "g_n_per_m": -0.38519518769124206,
+      "se_g_n_per_m": 0.010178941059118983
+    },
+    "P1_upstream_lobe|drag": {
+      "g_n_per_m": -0.21429781188666328,
+      "se_g_n_per_m": 0.005882931182735196
+    }
+  },
+  "file_hashes": {
+    "analyzer": "23a9fe68ca440a754cf55b671a3a81308a9da602501c6ade7f1b2b2a571edb55",
+    "contract": "9e6bc125a3f5f48da1d8e72aacd71da8f58bf45f6ccd567a8346a4d0697b2b0a",
+    "direction_manifest": "7c01c0ddbc4269bf679361d98c8527e5158797a8d2e5d36d6c040c00f102b711",
+    "force_io": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "formal_criteria": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "identity_free_check": "f0b2c6fd6346d85605b63eeee5e076d1c5512986735a650d856ce4fc7ef9788e",
+    "inputs_builder": "698502685ce93bd33242c7a8b922b65f5c65c6c6de237073dffde0de5eeb065f",
+    "inventory": "34a21fe6c88a8aa951502adcf29bbbd8619a354c7ec7838df5ae8e1df327547a",
+    "inventory_canonical_json": "34a21fe6c88a8aa951502adcf29bbbd8619a354c7ec7838df5ae8e1df327547a",
+    "job": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+    "kernel_builder": "84957083408f7ab21edcbbfd8389d5ed442910c342dfd6c2fca19f97a9095439",
+    "metadata_a": "15b295432192c4b4ba00a26d630a4b3dfb781102b590b5279feb2efaa56af496",
+    "metadata_b": "7031c6340eb37d6acfdeca4c072cb46cc1d858b5bd79a34820fec5f8f7fcf51c",
+    "metadata_c": "36ae671e1d539292a71351ec6d415dc75a850cd3cec84d2de2a3f4f65cde9727",
+    "prerun_note": "b3416fe11a3e0dd9789e63638d9fc23b7e717008a92e8c86e14760aa43eabcc3",
+    "runner_a": "899f528a8330952e63a58ea744ad1eebfc13157e5c6a38e5c75f1ca63b6cd633",
+    "runner_b": "49daf0ad5f0b244449b3bc693a9a7e93be7b4e4bfce39ca5a3c3e6877e8246bf",
+    "runner_c": "02d10390cd9a566828ba2f9932df874ece0f9360103fb703919f11cdbc0120fb",
+    "runner_template": "1ae9a98704bb930c912ea08d8253cbfbec593843cf88cfe9f5505b5fc8732719",
+    "states_module": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "frozen_utc": "2026-10-09T03:29:33.062780+00:00",
+  "kind": "step01_finite_step_secant_prerun_freeze",
+  "parent_integration_commit": "9530b5d8f272b5a34da3465f59298d54b2432450",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/step01_finite_step_secant_2026_10_09/inventory.json": "34a21fe6c88a8aa951502adcf29bbbd8619a354c7ec7838df5ae8e1df327547a",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+  },
+  "prohibitions": {
+    "ad_or_tangent": true,
+    "calling_agreement_radius_a_validity_claim": true,
+    "diag6": true,
+    "fd08_verdict_change": true,
+    "flag_change": true,
+    "grad03_verdict": true,
+    "gradient_claim": true,
+    "post_hoc_steps_thresholds_or_directions": true,
+    "reuse_of_fd08_run_records": true,
+    "reverse": true,
+    "selected_delta": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "runtime": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_minor_version_policy": "recorded_not_gated",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "memory": "CuArray",
+    "precision": "Float32",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "source_commit": "d7bd1fda5198dab609e3dee8662714b5153b58b9",
+  "verdicts": [
+    "STEP01_RECORDED",
+    "STEP01_INCOMPLETE"
+  ],
+  "waterlily_flow_jl_sha256_local": "6138c88f48b04db7ed6861f1f1bec9c450e04214160caef177d85bdad326b7f0"
+}
