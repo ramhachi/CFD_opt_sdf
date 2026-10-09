@@ -7230,3 +7230,23 @@ numerical evidence and verifies existing certificates without rerunning the prod
 Validation: six retained-evidence tests passed; full pytest 2114 passed, 37 failed, 23 skipped. The 37 failure IDs exactly match
 the preserved pre-run baseline (zero new failures; not an all-pass suite); compileall passed. Scoped artifact attributes preserve raw
 console/traceback trailing whitespace without changing authenticated output bytes or source whitespace policy.
+
+## LOWDIM-03: approved bounded two-grid actual-primal trial (2026-10-10)
+
+The user approved the separately preregistered continuation from GRID-01's saved
+L1-sensitivity proposal: one canonical baseline and three signed pairs at
+0.625/1.25/2.5 mm on each of flow_24 and flow_32 (14 runs, two independent T4
+kernels). Implementation/input preflight is in progress; no LOWDIM-03 CFD result
+exists at this checkpoint. The proposal is fixed, no GRID-01 analysis or convex
+subproblem is rerun, and the same seven SDF geometries are used on both grids.
+The strict actual rule is Δdownforce>3e-5 N and Δdrag<=0 on both grids, with the
+existing five bounded LOWDIM geometry gates. Reverse pairs are diagnostics only.
+Select the common positive step with maximum worst-grid actual gain; exact ties
+use the smaller step. The nominal floor/L1 sensitivity model does not establish
+statistical uncertainty or physical drag nonincrease. This is a bounded capability
+trial, not a trust-region/filter optimizer or grid/gradient qualification.
+Terminal/integrity failure forbids analyzer --write, automatic repair or retry.
+Stop after recording; no secant rebuild, second iteration, basis expansion,
+reinitialization, #49 Stage B or #30 supersession. All qualification flags and
+shape_update_allowed=false remain unchanged; the GEOM-01 track stays separate.
+Registration: `docs/evidence/lowdim03_dual_grid_primal_2026_10_10/prerun_note.md`.
