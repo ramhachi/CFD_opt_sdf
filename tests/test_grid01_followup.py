@@ -213,3 +213,30 @@ def test_grid01_runtime_budget_is_distinct_from_unchanged_formal_force_contract(
     assert contract["kernel_execution_allowance_s"] == 10800
     assert contract["per_state_timeout_s"] == 900
     assert S.FORMAL["measurement"]["solver_wall_time_cap_s"] == 3300
+
+
+def test_the_cuda_probe_needs_no_julia_package_beyond_cuda_and_writes_the_json_the_runner_expects(tmp_path):
+    """The first T4 attempt died on `using JSON3` (not in the T4 project): the probe may use only CUDA + Julia Base; check it against a CUDA stub."""
+    import os
+    import shutil
+    import subprocess
+
+    template = (ROOT / "scripts/grid01_runner_template.py").read_text()
+    ns: dict = {}
+    exec(template[template.index("GPU_PROBE_CODE"):template.index("EXPECTED_NAMES")], ns)
+    code = ns["GPU_PROBE_CODE"]
+    assert "JSON3" not in code and code.count("using ") == 1 and "\\" not in code
+    project = (ROOT / "julia/CFDSDFWaterLilyT4/Project.toml").read_text()
+    assert "JSON3" not in project and "CUDA" in project
+    julia = shutil.which("julia")
+    if julia is None:
+        pytest.skip("julia is not installed here")
+    stub = ('module CUDA\nstruct Dev; i::Int; end\nfunctional() = true\ndevices() = [Dev(0)]\ndevice() = Dev(0)\n'
+            'uuid(d::Dev) = Base.UUID("2725eec8-7d49-5e29-3d12-e9d9a4b0a9d4")\nname(d::Dev) = "Tesla T4"\nend\nusing .CUDA\n')
+    out = tmp_path / "probe.json"
+    env = dict(os.environ, CUDA_DEVICE_ORDER="PCI_BUS_ID", CUDA_VISIBLE_DEVICES="0", GRID01_GPU_PROBE_OUT=str(out))
+    done = subprocess.run([julia, "--startup-file=no", "-e", code.replace("using CUDA\n", stub, 1)], env=env, capture_output=True, text=True, timeout=300)
+    assert done.returncode == 0, done.stderr[-500:]
+    uuid = "GPU-2725eec8-7d49-5e29-3d12-e9d9a4b0a9d4"
+    assert json.loads(out.read_text()) == {"logical_device_count": 1, "visible_gpu_names": ["Tesla T4"], "visible_gpu_uuids": [uuid], "default_device_uuid": uuid,
+                                           "cuda_device_order": "PCI_BUS_ID", "cuda_visible_devices": "0"}

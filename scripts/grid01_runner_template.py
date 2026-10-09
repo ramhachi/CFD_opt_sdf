@@ -68,19 +68,25 @@ GPU_PROBE_TIMEOUT_S = int("PIN_GPU_PROBE_TIMEOUT_S")
 KERNEL_TIMEOUT_S = int("PIN_KERNEL_TIMEOUT_S")  # must equal `kaggle kernels push --timeout`
 MARGIN_S = 300
 GPU_PROBE_CODE = '''
-using CUDA, JSON3
+using CUDA
 @assert CUDA.functional()
 devs = collect(CUDA.devices())
 id(d) = "GPU-" * string(CUDA.uuid(d))
-record = Dict(
-    "logical_device_count" => length(devs),
-    "visible_gpu_names" => [CUDA.name(d) for d in devs],
-    "visible_gpu_uuids" => [id(d) for d in devs],
-    "default_device_uuid" => id(CUDA.device()),
-    "cuda_device_order" => ENV["CUDA_DEVICE_ORDER"],
-    "cuda_visible_devices" => ENV["CUDA_VISIBLE_DEVICES"],
-)
-write(ENV["GRID01_GPU_PROBE_OUT"], JSON3.write(record))
+Q = string(Char(34))
+q(x) = (s = string(x); @assert !occursin(Q, s) && !occursin(string(Char(92)), s); Q * s * Q)
+arr(v) = "[" * join(q.(v), ",") * "]"
+kv(k, v) = q(k) * ":" * v
+json = "{" * join([
+    kv("logical_device_count", string(length(devs))),
+    kv("visible_gpu_names", arr([CUDA.name(d) for d in devs])),
+    kv("visible_gpu_uuids", arr([id(d) for d in devs])),
+    kv("default_device_uuid", q(id(CUDA.device()))),
+    kv("cuda_device_order", q(ENV["CUDA_DEVICE_ORDER"])),
+    kv("cuda_visible_devices", q(ENV["CUDA_VISIBLE_DEVICES"])),
+], ",") * "}"
+open(ENV["GRID01_GPU_PROBE_OUT"], "w") do io
+    println(io, json)
+end
 '''
 EXPECTED_NAMES = ["step01__baseline"] + [
     f"step01__{direction}__s2.5mm__{side}"

@@ -270,11 +270,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--parent", required=True)
+    parser.add_argument("--amendment", type=int, choices=(1,), help="write prerun_freeze_amend<N>.json (the original prerun_freeze.json is immutable history)")
     args = parser.parse_args()
     check_git(args.source_commit)
-    out = EVIDENCE / "prerun_freeze.json"
-    if out.exists():
-        raise SystemExit("refusing to overwrite the GRID-01 freeze")
+    out = EVIDENCE / ("prerun_freeze.json" if args.amendment is None else f"prerun_freeze_amend{args.amendment}.json")
+    if out.exists() or (args.amendment is not None and not (EVIDENCE / "prerun_freeze.json").exists()):
+        raise SystemExit("refusing to overwrite a GRID-01 freeze (an amendment needs the original freeze as history)")
     data = (json.dumps(build(args.source_commit, args.parent), sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
     out.write_bytes(data)
     out.with_name(out.name + ".sha256").write_text(hashlib.sha256(data).hexdigest() + "\n")
