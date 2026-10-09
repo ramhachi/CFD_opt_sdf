@@ -1,0 +1,26 @@
+{
+  "analysis_sha256": "ec00ed9afe4f44926dd40ff1e87f303dd9baf89195b19cb550103606beedb69c",
+  "evidence_class": "independent_read_only_arithmetic_and_certificate_verification_not_physics",
+  "files_edited_by_reviewer": false,
+  "manifest_file_count": 43,
+  "maximum_complementarity_residual": 2.07e-15,
+  "maximum_force_difference_n": 5.56e-16,
+  "maximum_primal_dual_gap_n_per_m": 2.61e-15,
+  "maximum_primal_violation": 9.16e-16,
+  "maximum_secant_difference_n_per_m": 8.89e-14,
+  "maximum_stationarity_residual_inf": 4.44e-16,
+  "method": "independent NumPy window endpoint interpolation and trapezoidal integration over [80,120] scaled by 0.025^2; independent reconstruction of constraint/objective normals and direct KKT checks of every saved branch",
+  "production_analyzer_executed": false,
+  "production_solver_executed": false,
+  "result": "PASS_no_recording_blocker",
+  "reviewer": "native_codex_subagent_grid01_review",
+  "scope_notes": [
+    "retention of worst-grid objective is distinct from achieved per-grid slope",
+    "main proposal is only raw-drag feasible; sensitivity nonincrease bound applies to sensitivity proposal",
+    "positive centered D1 downforce secant does not imply positive one-sided gain",
+    "flow32 noise is unmeasured"
+  ],
+  "secant_component_count": 8,
+  "state_count": 9,
+  "verified_branch_count": 68
+}

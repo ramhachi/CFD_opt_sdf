@@ -7196,3 +7196,37 @@ flow_32 (flow_24: -5e-5 N), i.e. the useful step size is grid dependent. The ver
 One direction, one step, one window: not GRID-01 (#26), not grid-converged or physical downforce, not a gradient qualification, not OPT-01 (#30). No flag, FD-08 verdict, delta or GRAD-03
 verdict changes. Next step is a user decision (Stage B with an explicit post hoc drag rule, a flow_32 drag-resolution measurement first, or another direction).
 Evidence: `docs/evidence/lowdim02a_flow32_cross_grid_2026_10_09/`.
+
+## #26 GRID-01: four-direction cross-grid secants, result FEASIBLE_CONE_FOUND (2026-10-09)
+
+The registered flow_32 baseline plus four exact STEP-01 directions at +-2.5 mm (nine T4 states) completed in kernel
+`ramhachi888/cfd-opt-sdf-grid01-a/2`, source `ea320dc5`. Amendment 1 replaced only the pre-solver CUDA probe's unavailable JSON3
+with Julia Base JSON output after v1 failed before any state. Original freeze and failed attempt remain historical; analysis used
+`prerun_freeze_amend1.json` (SHA `522b409b75e9ab8579603770850683bde336fc010977a3916147fab7cdadf431`). DONE exists, ERROR is absent,
+all 43 manifest files and nine state identities/host force recomputations passed, and the baseline is byte-identical to W4 flow_32.
+The analyzer passed --check before exactly one --write; retained analysis SHA `ec00ed9afe4f44926dd40ff1e87f303dd9baf89195b19cb550103606beedb69c`.
+
+Registered solver-free result: **FEASIBLE_CONE_FOUND**, main t*=0.500260963 N/m and L1-sensitivity t*=0.456190830 N/m. At a spatially
+normalized 1.25 mm step the main raw downforce predictions are +3.74755e-4 / +4.94438e-4 N (flow_24 / flow_32); sensitivity lower
+bounds are +3.44300e-4 / +4.59704e-4 N, above the registered 3e-5 N gain floor. Both proposal families meet their corresponding
+linear drag constraints; the main proposal alone does not promise nonpositive drag under the sensitivity model. All six proposal
+solutions have verified exhaustive branch/KKT certificates. No new proposal state, geometry qualification, or actual CFD step was run.
+
+All eight component comparisons are resolved under the frozen GRID-01 contrast rule: downforce D1 and drag D0 flip sign; the other
+six preserve sign. Raw coefficient-vector cosines are 0.983904 for downforce and 0.278773 for drag, norm ratios 1.205829 / 0.892767.
+The D1 positive flow_32 centered secant does not imply a one-sided gain (both +-2.5 mm states lose downforce). Single-grid constrained
+main t*/unconstrained downforce-norm retention is 99.79% / 64.18%; the cross-grid worst-objective/single-grid objective ratios are
+56.88% / 73.35%, distinct from achieved per-grid slopes and spatially normalized predictions. LOWDIM-01's raw first-order drag slope
+is +0.019493 N/m on flow_24 but +0.221831 N/m on flow_32. These are finite-step first-order hypotheses, not accepted primal responses.
+
+Fixed four-direction basis, Re80, +-2.5 mm, [80,120] only; nominal flow_24-derived floor, flow_32 noise unmeasured. Not grid convergence,
+physical downforce, gradient qualification or OPT-01. No flag, FD-08 verdict, delta or GRAD-03 verdict changes; reinitialization none,
+shape_update_allowed=false. #26 remains open: the first optimization grid is not decided. Stop after recording; the feasible branch
+permits only a user decision about separately preregistering a two-grid actual-primal line-search with reverse controls. No new issue,
+CFD, basis expansion, curvature model, #30 supersession or Stage B is authorized. The separate uncommitted #29 GEOM-01 track is untouched.
+Evidence: `docs/evidence/grid01_cross_grid_secant_2026_10_09/` (Japanese note, saved analysis/raw output, amended freeze, post-run command
+record, SHA256SUMS and validation logs/failure-ID comparison); `tests/test_grid01_evidence.py` independently reconstructs the saved
+numerical evidence and verifies existing certificates without rerunning the production analyzer.
+Validation: six retained-evidence tests passed; full pytest 2114 passed, 37 failed, 23 skipped. The 37 failure IDs exactly match
+the preserved pre-run baseline (zero new failures; not an all-pass suite); compileall passed. Scoped artifact attributes preserve raw
+console/traceback trailing whitespace without changing authenticated output bytes or source whitespace policy.

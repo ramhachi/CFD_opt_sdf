@@ -1,0 +1,99 @@
+{
+  "analysis_sha256": "ec00ed9afe4f44926dd40ff1e87f303dd9baf89195b19cb550103606beedb69c",
+  "analyzer_sha256": "808c6bea08ce69f3bc4296968e8c69271b8989067a30588861609a0bf1e705c1",
+  "captured_host_utc": "2026-10-09T15:03:38.026934+00:00",
+  "check_command": "PYTHONPATH=src:scripts OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python scripts/analyze_grid01.py --kernel-dir docs/evidence/grid01_cross_grid_secant_2026_10_09/kernel_output/grid01_a --freeze docs/evidence/grid01_cross_grid_secant_2026_10_09/prerun_freeze_amend1.json --check",
+  "check_exit_code": 0,
+  "check_result": {
+    "integrity": {
+      "failures": [],
+      "pass": true
+    },
+    "verdict": "GRID01_SECANT_RECORDED"
+  },
+  "cli_output_version_scope": "CLI status/output endpoints select the current session. GetKernel metadata confirms current_version_number=2; current remote source equals the frozen rendered runner; output runner/source/pins match amendment1 and preserved submission_v2.",
+  "client_calendar_date_jst": "2026-10-10",
+  "completed_state_count": 9,
+  "done_exists": true,
+  "download_command": [
+    "kaggle",
+    "kernels",
+    "output",
+    "ramhachi888/cfd-opt-sdf-grid01-a",
+    "-p",
+    "docs/evidence/grid01_cross_grid_secant_2026_10_09/kernel_output"
+  ],
+  "download_exit_code": 0,
+  "error_txt_exists": false,
+  "evidence_class": "execution_provenance_and_artifact_integrity_not_physical_qualification",
+  "freeze_file": "prerun_freeze_amend1.json",
+  "freeze_sha256": "522b409b75e9ab8579603770850683bde336fc010977a3916147fab7cdadf431",
+  "issue26_remains_open": true,
+  "issue29_files_edited": false,
+  "kaggle_cli_version": "Kaggle CLI 2.2.4",
+  "kernel_reference": "ramhachi888/cfd-opt-sdf-grid01-a/2",
+  "kind": "grid01_postrun_execution_and_integrity_record",
+  "manifest_exact_paths_and_hashes_pass": true,
+  "manifest_file_count": 43,
+  "manifest_sha256": "c145843c414998ff0b1d0613b73fafcec9dd6cd4a1a7e427906e24c9a4cbacac",
+  "new_cfd_runs_by_postrun_task": 0,
+  "next_experiment_registered": false,
+  "production_analyzer_executions": "one --check followed by one --write; no later analyzer execution; evidence tests independently reconstruct arithmetic and verify existing certificates",
+  "production_write_invocations": 1,
+  "proposal_verdict": "FEASIBLE_CONE_FOUND",
+  "remote_current_session": {
+    "current_version_number": 2,
+    "kernel_reference": "ramhachi888/cfd-opt-sdf-grid01-a",
+    "source_sha256": "f395b8efc0c18a50d8b06dcee110aac9caf8255aa9e155ae530149056cd84def"
+  },
+  "remote_current_session_capture": "validation/postrun_remote_identity.json",
+  "remote_identity_operation": {
+    "exit_code": 0,
+    "method": "get_kernel",
+    "provider": "kaggle API client",
+    "request": "ApiGetKernelRequest(user_name=ramhachi888, kernel_slug=cfd-opt-sdf-grid01-a)",
+    "saved_fields": [
+      "metadata.ref",
+      "metadata.current_version_number",
+      "SHA256(blob.source UTF-8)"
+    ]
+  },
+  "remote_metadata_capture": "validation/postrun_remote_metadata.json",
+  "source_commit": "ea320dc5a95e9b98dc501b62574ea6ee26eaa211",
+  "source_pull_command": [
+    "kaggle",
+    "kernels",
+    "pull",
+    "ramhachi888/cfd-opt-sdf-grid01-a",
+    "-p",
+    "work/grid01_postrun_remote_source",
+    "-m"
+  ],
+  "source_pull_exit_code": 0,
+  "start_head": "c547591a278807684817bfb678cc1cdce70d21a2",
+  "status_command": [
+    "kaggle",
+    "kernels",
+    "status",
+    "ramhachi888/cfd-opt-sdf-grid01-a"
+  ],
+  "status_exit_code": 0,
+  "status_stdout": "ramhachi888/cfd-opt-sdf-grid01-a has status \"KernelWorkerStatus.COMPLETE\"\n",
+  "thresholds_changed": false,
+  "version_qualified_source_pull": {
+    "command": [
+      "kaggle",
+      "kernels",
+      "pull",
+      "ramhachi888/cfd-opt-sdf-grid01-a/2",
+      "-p",
+      "work/grid01_postrun_remote_source_v2",
+      "-m"
+    ],
+    "exit_code": 1,
+    "stderr": "403 Client Error: Forbidden for url: https://api.kaggle.com/v1/kernels.KernelsApiService/GetKernel",
+    "used_as_evidence": false
+  },
+  "write_command": "PYTHONPATH=src:scripts OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python scripts/analyze_grid01.py --kernel-dir docs/evidence/grid01_cross_grid_secant_2026_10_09/kernel_output/grid01_a --freeze docs/evidence/grid01_cross_grid_secant_2026_10_09/prerun_freeze_amend1.json --write docs/evidence/grid01_cross_grid_secant_2026_10_09/grid01_analysis.json",
+  "write_exit_code": 0
+}
