@@ -7162,3 +7162,22 @@ Post-hoc description: the one-sided responses of the steps an optimizer would ta
 accept/reject of the actual one-sided primal response and on curvature, not on the centered slope; reinitialisation and the use of combined directions need their own decisions.
 Next step is a user decision (#48 is not started).
 Evidence: `docs/evidence/step01_finite_step_secant_2026_10_09/`.
+
+## #48 LOWDIM-01: fixed four-direction low-dimensional capability, result LOWDIM_ACCEPT (2026-10-09)
+
+First LOWDIM-01 trial on a fixed four-direction basis (D0, D1, D2, P1; the FD-08 directions). The coefficient gradient was the STEP-01 centered +-2.5 mm downforce difference
+(hash-bound, proposal only); the proposal direction c = g/||g|| (Euclidean) was renormalised to max|dphi| = s; line-search candidates s = 1.25, 2.5, 5.0, 7.5 mm and two reverse
+controls (1.25, 2.5 mm; never accepted) were evaluated by actual primal runs on one T4 kernel (unchanged FD-08 per-state job; baseline byte-identical to FD-08's baseline_v17).
+Acceptance used only the actual responses and hard gates: downforce gain > 3e-5 N, drag not above baseline + 3e-5 N, clearance >= 0.15 m, masks, solid-cell component count,
+smoothed volume within +-10%, narrow-band median | |grad phi| - 1 | <= 0.10 (no reinitialization: #28 is unqualified); predictions were reference only. Pre-registered (freeze, two
+independent reviews with all findings applied), source `4c99143c`.
+
+Registered result: **LOWDIM_ACCEPT**. The 1.25 mm candidate was accepted: downforce +4.05e-4 N (+0.12%), drag -1.7e-4 N, volume -2.1%, Eikonal median 0.019, all gates passed. 2.5, 5.0
+and 7.5 mm were rejected (downforce -5e-5, -3.4e-3, -1.0e-2 N; 7.5 mm also failed the volume and Eikonal gates). The reverse controls lowered downforce (-1.2e-3, -3.2e-3 N): the odd part
+of the response matched the FD-based linear prediction within 3% and 0.2%, the even part (curvature) is negative and scales with s^2 (-4.0e-4, -1.6e-3 N), so a single step along this
+direction can gain at most about 4e-4 N (post-hoc fit: zero at 2.5 mm, maximum at 1.25 mm).
+
+This is a capability statement for a fixed four-direction basis (one trial, one flow grid, deterministic Float32 T4 runs, T2 time-weighted force); not a full-field gradient, not OPT-01 (#30;
+replacing it needs a separate phase-plan supersession), not a general descent direction, not grid-independent downforce. No flag, FD-08 verdict, delta or GRAD-03 verdict changes.
+Next step is a user decision: iterate from the accepted state, widen the basis, handle curvature, or address reinitialization (#28).
+Evidence: `docs/evidence/lowdim01_four_direction_capability_2026_10_09/`.

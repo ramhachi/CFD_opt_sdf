@@ -1,0 +1,168 @@
+{
+  "declarations": {
+    "capability_statement_for_a_fixed_four_direction_basis_only": true,
+    "grad03_verdict": null,
+    "not_opt01": true,
+    "reverse": "untouched",
+    "selected_delta": null,
+    "supersession_of_opt01_requires_a_separate_phase_plan_entry": true
+  },
+  "design": {
+    "basis": [
+      "D0_interface_offset",
+      "D1_filtered_seed11",
+      "D2_filtered_seed2026",
+      "P1_upstream_lobe"
+    ],
+    "candidate_step_mm": [
+      1.25,
+      2.5,
+      5.0,
+      7.5
+    ],
+    "coefficient_gradient": "STEP-01 centered +-2.5 mm downforce (hash-bound, proposal only)",
+    "control_step_mm": [
+      1.25,
+      2.5
+    ],
+    "controls": "reverse proposal direction; never accepted or selected",
+    "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim01-a",
+    "kernel_timeout_s": 3600,
+    "metric": "Euclidean in coefficient space",
+    "objective": "maximise downforce",
+    "reinitialization": "none",
+    "selection": "accepted candidate with the largest actual downforce gain (ties: smaller step)",
+    "states": 7
+  },
+  "fd08_baseline": {
+    "forces_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+    "host_recomputed_n": {
+      "downforce_n": 0.3316344583180616,
+      "drag_n": 0.3239039699743226
+    }
+  },
+  "file_hashes": {
+    "analyzer": "5c39f4d03cdc18e32f87c6ebceba82f4379df33cf9c811b8c17d3cf411b2f47a",
+    "contract": "9f113b2de0adc32011445faf5e9be5e49e533cd184feac617297882fcaf9b346",
+    "exploration_script": "109b2f9c6eb38fa8ad38159b47f8e7c45c97b2896aaaa11ca878c8f5494a7c6a",
+    "force_io": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "formal_criteria": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+    "geometry_exploration": "a55503c6a2a1ec58af21c9ca4ca0a77afc7b04b0e733143c9dc340edd971048b",
+    "identity_free_check": "2bca1702c268945c004d67f4b93be94c5422e9dc3a61cc3f45bfb632af0ebbbf",
+    "inputs_builder": "dcafca336fd9826a35fc9cfe306d5c5186e13e376e656fd529b7dc64d3db5925",
+    "inventory": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "inventory_canonical_json": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "job": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+    "kernel_builder": "04e323b5c20714313677710eb632f4c9ca6c06d4224b4c4b29f58257e4ad7481",
+    "kernel_metadata": "eba579288733cc439114c1e93fb229c70cee9354909099dab49411791ce897d0",
+    "prerun_note": "c3d4604b034b436ad521c76737dc74b93236fd542b3720b76651e58a7be4228a",
+    "proposal_raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "runner": "44b4ba222d05ea749bdd04eba368412f4a944e3b631f9c52dd21d7518a34788a",
+    "runner_template": "f7bf65d05578560cf0c02928a1f42143185c4e807426b426cd278e281c3147b4",
+    "states_module": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "step01_analysis": "6cd3a7b2b678afdbbb794afa83a64295fc8bfcf92bbabbfb8cafc51ed2ab4f0c",
+    "step01_freeze": "e82bacf0edab8242add0486a0983f769f224730f1e58862fa4f8958f5b4ca85d",
+    "step01_states_module": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "t4_manifest": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "t4_project": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194"
+  },
+  "frozen_utc": "2026-10-09T06:21:16.602806+00:00",
+  "kind": "lowdim01_four_direction_capability_prerun_freeze",
+  "known_before_the_run": {
+    "candidate_hard_gates_pass": {
+      "lowdim01__prop__s1.25mm": true,
+      "lowdim01__prop__s2.5mm": true,
+      "lowdim01__prop__s5mm": true,
+      "lowdim01__prop__s7.5mm": false
+    },
+    "expectation": "an accepted trial at 1.25 / 2.5 mm is plausible (per-direction quadratic models from STEP-01 give about +5.0e-4 N and +4.2e-4 N; 5.0 / 7.5 mm negative), but D0+P1 was non-additive in STEP-01 and an ACCEPT would be largely predictable from STEP-01's curvature; LOWDIM_NO_GO is also a valid result",
+    "quadratic_model_prediction_n": {
+      "1.25": 0.0004986,
+      "2.5": 0.000424,
+      "5.0": -0.001445,
+      "7.5": -0.005608
+    }
+  },
+  "parent_integration_commit": "9e716cb24004295b3aee48c606b8921e7c4e6b9d",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010",
+    "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inventory.json": "684af1c312fa9d896ce328f7e541d942e404e2315bb2f749539fcab9bc10f325",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/lowdim01_states.py": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+  },
+  "prohibitions": {
+    "ad_or_tangent": true,
+    "fd08_verdict_change": true,
+    "flag_change": true,
+    "grad03_verdict": true,
+    "gradient_claim": true,
+    "opt01_claim": true,
+    "post_hoc_candidates_thresholds_or_basis": true,
+    "prediction_in_accept": true,
+    "reinitialization": true,
+    "selected_delta": true
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "rules": {
+    "authority": "actual primal responses and hard geometry gates; predictions are reference only",
+    "baseline_rel": 1e-12,
+    "drag_allowance_n": 3e-05,
+    "geometry_gate_thresholds": {
+      "cell_components": 1,
+      "clearance_m": 0.15,
+      "eikonal_median_abs_deviation_max": 0.1,
+      "recorded_only": [
+        "sharp volume change",
+        "eikonal p95 / max",
+        "node components",
+        "min feature width",
+        "gaps"
+      ],
+      "reinitialization": "none (SDF-02 / #28 is not qualified)",
+      "smoothed_volume_band": 0.1
+    },
+    "min_downforce_gain_n": 3e-05,
+    "min_t_end": 120.0,
+    "nominal_sigma0_n": 3e-06,
+    "resolved_factor": 10.0,
+    "summary_rel": 1e-09
+  },
+  "runtime": {
+    "accelerator": "NvidiaTeslaT4",
+    "compute_capability": "7.5.0",
+    "cuda_driver_api_version": "13.3.0",
+    "cuda_jl_version": "6.3.1",
+    "cuda_runtime_version": "12.8.0",
+    "cuda_visible_devices": "0",
+    "driver_minor_version_policy": "recorded_not_gated",
+    "gpu_count": 2,
+    "gpu_name": "Tesla T4",
+    "julia_archive_sha256": "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a",
+    "julia_threads": 1,
+    "julia_version": "1.12.6",
+    "machine_shape": "NvidiaTeslaT4",
+    "memory": "CuArray",
+    "precision": "Float32",
+    "waterlily_backend": "KernelAbstractions",
+    "waterlily_version": "1.8.0"
+  },
+  "source_commit": "4c99143cb0b56fcc8850e5826b8f07e5fd51430b",
+  "step01_analysis_sha256": "6cd3a7b2b678afdbbb794afa83a64295fc8bfcf92bbabbfb8cafc51ed2ab4f0c",
+  "verdicts": [
+    "LOWDIM_ACCEPT",
+    "LOWDIM_NO_GO",
+    "LOWDIM_INCOMPLETE"
+  ]
+}

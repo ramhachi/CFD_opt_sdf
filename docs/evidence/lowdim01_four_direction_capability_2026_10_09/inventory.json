@@ -1,0 +1,413 @@
+{
+  "baseline": {
+    "canonical_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "margin_m": 0.3499999939931499,
+    "path": "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw",
+    "phi_fortran_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb"
+  },
+  "basis": [
+    "D0_interface_offset",
+    "D1_filtered_seed11",
+    "D2_filtered_seed2026",
+    "P1_upstream_lobe"
+  ],
+  "candidate_step_mm": [
+    1.25,
+    2.5,
+    5.0,
+    7.5
+  ],
+  "canonical_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+  "coefficient_gradient": {
+    "source": "docs/evidence/step01_finite_step_secant_2026_10_09/step01_analysis.json (centered +-2.5 mm, downforce)",
+    "step01_analysis_sha256": "6cd3a7b2b678afdbbb794afa83a64295fc8bfcf92bbabbfb8cafc51ed2ab4f0c",
+    "step_mm": 2.5,
+    "units": "N/m per unit-max-norm basis direction (= 1e3 x N/mm)",
+    "values": {
+      "D0_interface_offset": {
+        "g_sec_n_per_m": 0.7807110183287058,
+        "ghat_fd08_n_per_m": 0.8014915523435178,
+        "r_minus_n": 0.32700173298972685,
+        "r_plus_n": 0.3309052880813704
+      },
+      "D1_filtered_seed11": {
+        "g_sec_n_per_m": -0.10838762721355755,
+        "ghat_fd08_n_per_m": -0.10643781759208808,
+        "r_minus_n": 0.33160607172443923,
+        "r_plus_n": 0.33106413358837145
+      },
+      "D2_filtered_seed2026": {
+        "g_sec_n_per_m": -0.09613599797221317,
+        "ghat_fd08_n_per_m": -0.09172298102069233,
+        "r_minus_n": 0.33160673167165133,
+        "r_plus_n": 0.33112605168179027
+      },
+      "P1_upstream_lobe": {
+        "g_sec_n_per_m": -0.38230958849742036,
+        "ghat_fd08_n_per_m": -0.38519518769124206,
+        "r_minus_n": 0.33182159582825144,
+        "r_plus_n": 0.32991004788576433
+      }
+    }
+  },
+  "control_step_mm": [
+    1.25,
+    2.5
+  ],
+  "directions": {
+    "D0_interface_offset": {
+      "file": "D0_interface_offset.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+    },
+    "D1_filtered_seed11": {
+      "file": "D1_filtered_seed11.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+    },
+    "D2_filtered_seed2026": {
+      "file": "D2_filtered_seed2026.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+    },
+    "P1_upstream_lobe": {
+      "file": "P1_upstream_lobe.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+    }
+  },
+  "fd08_baseline_reference": {
+    "forces_csv_sha256": "39370386fd27a7ecd1160a295298798326078a4c5342be07bfb257267a1fbcb3",
+    "host_recomputed_n": {
+      "downforce_n": 0.3316344583180616,
+      "drag_n": 0.3239039699743226
+    },
+    "source": "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_kernel_output.tar.gz (member ...baseline_v17__flow_24.forces.csv); a reference for the byte-identity gate only, not a reused record"
+  },
+  "formal_criteria_sha256": "31b29cccc9d3fd6912a910b09694a8230f9ee0aa84e6a418161881ffbcf907be",
+  "geometry_gate_thresholds": {
+    "cell_components": 1,
+    "clearance_m": 0.15,
+    "eikonal_median_abs_deviation_max": 0.1,
+    "recorded_only": [
+      "sharp volume change",
+      "eikonal p95 / max",
+      "node components",
+      "min feature width",
+      "gaps"
+    ],
+    "reinitialization": "none (SDF-02 / #28 is not qualified)",
+    "smoothed_volume_band": 0.1
+  },
+  "job_env_common": {
+    "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "W4_CANONICAL_STATE_LABEL": "v17",
+    "W4_CELL_SHAPE": "120,64,48",
+    "W4_MARGIN_GATE_M": "0.15",
+    "W4_MARGIN_TOLERANCE_M": "1e-6",
+    "W4_POINT_SHAPE": "121,65,49",
+    "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "kernels": {
+    "a": [
+      "lowdim01__baseline",
+      "lowdim01__prop__s1.25mm",
+      "lowdim01__prop__s2.5mm",
+      "lowdim01__prop__s5mm",
+      "lowdim01__prop__s7.5mm",
+      "lowdim01__ctrl_reverse__s1.25mm",
+      "lowdim01__ctrl_reverse__s2.5mm"
+    ]
+  },
+  "kind": "lowdim01_state_inventory",
+  "linear_prediction_reference_only": {
+    "lowdim01__ctrl_reverse__s1.25mm": {
+      "linear_predicted_downforce_change_n": -0.0007852938976949534
+    },
+    "lowdim01__ctrl_reverse__s2.5mm": {
+      "linear_predicted_downforce_change_n": -0.0015705877953899067
+    },
+    "lowdim01__prop__s1.25mm": {
+      "linear_predicted_downforce_change_n": 0.0007852938976949534
+    },
+    "lowdim01__prop__s2.5mm": {
+      "linear_predicted_downforce_change_n": 0.0015705877953899067
+    },
+    "lowdim01__prop__s5mm": {
+      "linear_predicted_downforce_change_n": 0.0031411755907798135
+    },
+    "lowdim01__prop__s7.5mm": {
+      "linear_predicted_downforce_change_n": 0.00471176338616972
+    }
+  },
+  "margin_gate_m": 0.15,
+  "perturbation": "float32(float64(phi) + (sign*eps_m)*float64(direction)), eps_m = step_mm/1000 (cfd_sdf.fd08_v2_campaign.construct_state)",
+  "proposal": {
+    "coefficient_unit_vector": {
+      "D0_interface_offset": 0.8858796982324662,
+      "D1_filtered_seed11": -0.12298839933581211,
+      "D2_filtered_seed2026": -0.10908636726456941,
+      "P1_upstream_lobe": -0.43381007176573133
+    },
+    "file": "docs/evidence/lowdim01_four_direction_capability_2026_10_09/inputs/proposal_downforce.dir_f4_fortran.raw",
+    "gradient_norm_n_per_m": 0.8812833389075333,
+    "m_max_abs_sum": 1.402792224500812,
+    "metric": "Euclidean in coefficient space (no curvature weighting)",
+    "objective": "maximise downforce",
+    "per_unit_step_basis_coefficients": {
+      "D0_interface_offset": 0.6315116969996817,
+      "D1_filtered_seed11": -0.08767399561227103,
+      "D2_filtered_seed2026": -0.07776373817825241,
+      "P1_upstream_lobe": -0.309247559395408
+    },
+    "sha256_fortran_raw": "fc239c1169c3336aa283d12734500d882027602e75b619ffffe146ba373c9010"
+  },
+  "states": [
+    {
+      "changed_node_count": 0,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999999859292554,
+        "eikonal_median_abs_deviation": 2.458691275020186e-07,
+        "eikonal_p95_abs_deviation": 0.2928934806881839,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08897032348835406
+      },
+      "geometry_gates": null,
+      "kernel": "a",
+      "kind": "baseline",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "name": "lowdim01__baseline",
+      "npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+      "phi_c_order_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+      "phi_fortran_order_sha256": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+      "sign": 0,
+      "state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+      "step_mm": 0.0,
+      "zero_level_margin_m": 0.3499999939931499
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.999999871943146,
+        "eikonal_median_abs_deviation": 0.01938233058899641,
+        "eikonal_p95_abs_deviation": 0.32387974553397425,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08708225609319897
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": -0.021221316514626665
+      },
+      "kernel": "a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.001250000018626407,
+      "name": "lowdim01__prop__s1.25mm",
+      "npz_sha256": "9b58ddf27ca63fb96c9556ab8743f20d5e7aa44bed30499d1404b165bc67ddb0",
+      "phi_c_order_sha256": "4969ccb99d9262ce09aeb56401f810ce9887963fd5ca8a0379a565591c1c25af",
+      "phi_fortran_order_sha256": "e762304c16019dade72ca7563f40c2f509646dd6506c7c1a093684e04a01530a",
+      "sign": 1,
+      "state_sha256": "c60318246e7e5b6dedfff4bc6ad38dc4e1e2695ca35f387bf2abbc4f43e2878d",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999997299164534,
+        "eikonal_median_abs_deviation": 0.0375742893666029,
+        "eikonal_p95_abs_deviation": 0.35486561860878535,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.08523613655620679
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": -0.04197115156759046
+      },
+      "kernel": "a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.00249999999068673,
+      "name": "lowdim01__prop__s2.5mm",
+      "npz_sha256": "864e40c072a6e9eb84eb72cbb225c53eceb81eede8dfce40f7c3c89189f0d6a7",
+      "phi_c_order_sha256": "b675c882593d74cbf20d1bf6510e9205d647bded5dfbad824f1e0b44f26a237d",
+      "phi_fortran_order_sha256": "ffeb3f6f3726b0c63797072586e7606f1f91a09cfda09223250c4d6996dd3654",
+      "sign": 1,
+      "state_sha256": "dbbc0fbf0d293243a7aba584867c50592d0debf14bb32fa288c572ef975df92f",
+      "step_mm": 2.5,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999994412064552,
+        "eikonal_median_abs_deviation": 0.07365772873163223,
+        "eikonal_p95_abs_deviation": 0.4161756835418258,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12881250000000002,
+        "smoothed_volume_m3": 0.08170143341898863
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": -0.0033849129593811478,
+        "relative_smoothed_volume_change": -0.08170016455337381
+      },
+      "kernel": "a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.005000000167638019,
+      "name": "lowdim01__prop__s5mm",
+      "npz_sha256": "b1901ead00d9b6c7a2a7e4a7bb6a7bb04d8f45e414a4bbc2df9f70fbd92b2b9c",
+      "phi_c_order_sha256": "23c82c31977fb3c48f9b8e1491df8773782c788a629eb77b113b43fa9ae21e30",
+      "phi_fortran_order_sha256": "7c336e1f3ad1ba9fcd830d0167104973c9139e0df400f7116c91206d532616c0",
+      "sign": 1,
+      "state_sha256": "233ff46f76d10649c10c4942adc3500886bb44db692b98e120f12b76954ed125",
+      "step_mm": 5.0,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999991524964571,
+        "eikonal_median_abs_deviation": 0.1084991972893532,
+        "eikonal_p95_abs_deviation": 0.4711478330672849,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12821875000000002,
+        "smoothed_volume_m3": 0.07841608180763075
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": false,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": false,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": false
+        },
+        "relative_sharp_volume_change": -0.007978723404255428,
+        "relative_smoothed_volume_change": -0.11862654047902632
+      },
+      "kernel": "a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0075000001117586645,
+      "name": "lowdim01__prop__s7.5mm",
+      "npz_sha256": "8f64aaca2486403e88d06f5075d013edfef09e8434ebd1e6370d65511d97beae",
+      "phi_c_order_sha256": "27cceed2d18828e55792b0c77ff42cdd9c3d70cfe82407b74ff10e1df683ef1b",
+      "phi_fortran_order_sha256": "435b393822e51699210aa6ad07c083c353e1dbe4685ca2dea920084f2aa98bf8",
+      "sign": 1,
+      "state_sha256": "cf88d171d4bc068e1c1194434038ec2b277217c44ee143fcaa39d24d947fdca3",
+      "step_mm": 7.5,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999998416751623,
+        "eikonal_median_abs_deviation": 0.020391576923429966,
+        "eikonal_p95_abs_deviation": 0.32372562881630346,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.09089193146473451
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": 0.02159830268159002
+      },
+      "kernel": "a",
+      "kind": "control",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000419095603,
+      "name": "lowdim01__ctrl_reverse__s1.25mm",
+      "npz_sha256": "6cedc07a20723b20a139ad44a86ccb2b975add3a34739b0393f56925866ffc62",
+      "phi_c_order_sha256": "a3733588349175e2fc37c720dfe201229f90a7a87688243308117558ae3ba99c",
+      "phi_fortran_order_sha256": "b1a3de132c791aff87344fccd473c53e97dec1636fbb7991860485d30b156da7",
+      "sign": -1,
+      "state_sha256": "0aef3fe3325d988c41d118f6108397c9314576104ef7d7a289c28e5647bd8a3b",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.34898096057586375
+    },
+    {
+      "changed_node_count": 4718,
+      "geometry": {
+        "cell_components": 1,
+        "eikonal_band_node_count": 11995,
+        "eikonal_max_abs_deviation": 0.9999996996484697,
+        "eikonal_median_abs_deviation": 0.040244270116090775,
+        "eikonal_p95_abs_deviation": 0.3545571472063954,
+        "node_components": 1,
+        "sharp_volume_m3": 0.12925000000000003,
+        "smoothed_volume_m3": 0.09283837741323576
+      },
+      "geometry_gates": {
+        "all_hard_gates_pass": true,
+        "gates": {
+          "cell_components_equal_baseline": true,
+          "clearance": true,
+          "eikonal_median_within_limit": true,
+          "masks_and_support_preserved": true,
+          "smoothed_volume_band": true
+        },
+        "relative_sharp_volume_change": 0.0,
+        "relative_smoothed_volume_change": 0.04347577678963965
+      },
+      "kernel": "a",
+      "kind": "control",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.002499999897554561,
+      "name": "lowdim01__ctrl_reverse__s2.5mm",
+      "npz_sha256": "7e1d07a24f5e511dd5c508fb16371fe6bf0286d4635006d0134f47b34d3057e0",
+      "phi_c_order_sha256": "30be425b27265c16c89eeedd7130de01141f98f5fd06f894e1085ac7acd6e93c",
+      "phi_fortran_order_sha256": "6363a92f78c78bf32c72d710b51fb7c08bff2407b7c6f6cf4b8fec157b1f1f01",
+      "sign": -1,
+      "state_sha256": "0a5ee5c2d1cb9470946e4845d48c2536580bd7875c20d9c18d48658fca417ac7",
+      "step_mm": 2.5,
+      "zero_level_margin_m": 0.3479619218502194
+    }
+  ]
+}
