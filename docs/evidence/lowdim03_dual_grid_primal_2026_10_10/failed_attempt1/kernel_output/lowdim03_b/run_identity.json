@@ -1,0 +1,61 @@
+{
+  "baseline_csv_sha256": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+  "case_id": "flow_32",
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {
+    "D0_interface_offset": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "D1_filtered_seed11": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "D2_filtered_seed2026": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "P1_upstream_lobe": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+  },
+  "failure_stage": null,
+  "kernel": "b",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim03-b",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/flow_32.forces.csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/inputs/robust_cross_grid.dir_f4_fortran.raw": "c0f69676929c3eb17b1b623c599bfd97ea286d09810c63848e0d7499437e0bf5",
+    "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/inventory.json": "e42cf5e8dd05e58ddc0598b8bdab93b4dba3a6740471c0d2ec701492625f8cd3",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/lowdim01_states.py": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "scripts/lowdim03_states.py": "fae904f80a697e0b4c33dcf91631bc83dc666e1c0d62415febc04437634f4d5f",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+  },
+  "platform": "Linux 8f0c5a5e85b0 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "51ad636d7031d929d31ef991001ff573161ca7f5af757adb6f2a767d32ea7499",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-d106d79b-420a-9aba-d397-7b2a9c90814e"
+  },
+  "source_commit": "e5386910d8b77decd748fdbd5efaee002803d86c",
+  "verified": {
+    "docs/evidence/fd08_candidate_c_cpu_rehearsal_2026_10_05_retry1/inputs/cal_baseline_01.phi_f4_fortran.raw": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de",
+    "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc",
+    "docs/evidence/kaggle_w4_v17_candidate_c_round2_retained/flow_32.forces.csv": "032ef1cfae320ada28d05a3ad5785fc1fd770b202d4f0d2e9ed8490c6ab61753",
+    "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/inputs/robust_cross_grid.dir_f4_fortran.raw": "c0f69676929c3eb17b1b623c599bfd97ea286d09810c63848e0d7499437e0bf5",
+    "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/inventory.json": "e42cf5e8dd05e58ddc0598b8bdab93b4dba3a6740471c0d2ec701492625f8cd3",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/lowdim01_states.py": "456c0110dafb64c2dc4b82e35ba7830aa4b436364802bb6b437f05aa35e82d32",
+    "scripts/lowdim03_states.py": "fae904f80a697e0b4c33dcf91631bc83dc666e1c0d62415febc04437634f4d5f",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_lowdim02_flow32_job.jl": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+  }
+}

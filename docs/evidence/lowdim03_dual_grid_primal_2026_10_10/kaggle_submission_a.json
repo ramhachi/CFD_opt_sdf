@@ -1,0 +1,23 @@
+{
+  "command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    "infra/kaggle/kernel_lowdim03_a",
+    "--accelerator",
+    "NvidiaTeslaT4",
+    "--timeout",
+    "10800"
+  ],
+  "evidence_class": "execution_provenance_not_measurement_result",
+  "exact_reference": "ramhachi888/cfd-opt-sdf-lowdim03-a/1",
+  "exit_code": 0,
+  "freeze_sha256": "6009d6b02bd674f78c398b525d6d0319693f12febbb34efae952cb506862b069",
+  "frozen_pushed_commit": "34b6819742cc6f3dce67445615fc0647e3b84ea7",
+  "issue": 50,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim03-a",
+  "kernel_version": 1,
+  "source_commit": "e5386910d8b77decd748fdbd5efaee002803d86c",
+  "submitted_utc": "2026-10-09T16:21:24+00:00"
+}
