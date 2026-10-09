@@ -1,0 +1,13 @@
+# LOWDIM-03 independent pre-run reviews (read-only, two reviewers)
+
+Evidence class: source/contract review, not CFD. All findings below were applied before the freeze; the source commit was re-cut (`e5386910`) and the workers re-rendered for it. No LOWDIM-03 CFD response had been observed.
+
+## Review 1: lineage / inputs / runner / freeze machinery
+One blocker, now fixed: the identity-free proof was untracked and therefore absent from the source commit that the analyzer's source-closure check and the freeze bind (the freeze crashed fail-closed). The proof is now committed in the source commit and the renders were redone for it.
+Hardening applied: the freeze now requires a clean tracked tree and a source commit reachable on a remote branch (the Kaggle runner fetches it from GitHub); the runner asserts that the baseline raw, the grid's baseline CSV and the proposal raw are pinned and equal to the inventory paths; a test checks that every freeze-bound file is committed at HEAD.
+Checked clean: no flow_24/flow_32 value leakage (per-grid job, force scale 1/900 vs 6.25e-4, baseline CSV SHAs `39370386…` / `032ef1cf…`), identical geometry bytes in both kernels, runner parity with the proven GRID-01 / LOWDIM-02A protocol, time budgets, sparse checkout, slugs/title equality, freeze closure.
+Known and accepted: the identity-free proof was captured at 2026-10-09T15:46:28Z and is not re-captured immediately before the push (slug collision risk low; 40 kernels / 20 datasets listed, both new slugs absent).
+
+## Review 2: analyzer / contract / decision rules / wording — no blocker
+Adversarial probes found no fail-open path (boundaries at dL = 3e-5 and dD = 0, one-grid failures, gate failure with good responses, NaN/inf/bool, swapped/duplicated kernel directories, baseline byte change, --write refusal rules) and confirmed that reverse states cannot affect the verdict or selection.
+Applied: verdict-specific interpretation (NO_ACCEPT = bounded No-Go for this direction and ladder, not proof of basis insufficiency; 'robust' = registered L1 secant sensitivity only; a drag change within +/-3e-5 N is recorded as a computed sign only); flow_32 drag sign declared not noise-resolved before the run; renamed `downforce_gain_resolved` -> `downforce_gain_exceeds_threshold` and `drag_constraint_ok` -> `drag_computed_nonincrease`; secant units made explicit (`..._per_m_of_max_norm_step`); non-finite rho guard; `select_trial` re-checks the gain threshold; the stale `selection_objective` removed on the failure path; the divergence-in-any-run -> INCOMPLETE conflation is stated in the note; the note rewording about the six preflight gates; new tests (reverse-inert, swapped kernels, report shape, forged accept flag, rho overflow).
