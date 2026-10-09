@@ -20,6 +20,9 @@ phi は `lowdim01` の inventory と同一（SHA を `inventory.json` に hash �
 - baseline の `flow_32.forces.csv` は W4 v17 round-2 retained の `flow_32.forces.csv`（SHA 032ef1cf…）と byte 同一でなければならない。不一致なら runner は以降の state を走らせず停止し、analyzer も INCOMPLETE。baseline repeat の byte 同一は記録のみ（gate にしない。差があれば noise floor として分解能に入る）。
 - 各 state の phi・state・NPZ の SHA、margin、有限性、t_end ≥ 120、threads=1、host 再計算と Julia summary の相対 1e-9 一致、manifest・pin・GPU（Tesla T4）。
 
+- いずれかの state（記述的な +2.5 mm を含む）が完了しなければ DONE は書かれず、analyzer は INCOMPLETE（厳格な事前登録。+2.5 mm の失敗だけで判定を救済しない）。runner は最初の登録 state が唯一の baseline であることを実行時に確認する。
+- `W4_CANONICAL_STATE_LABEL=v17` は LOWDIM-01 と同じで、log の `W4_V17_CASE_DONE` と summary の `canonical_state_label` に出るだけの表示（別 state ではない）。
+
 ## 判定（actual primal のみ。予測は使わない）
 分解能 res = max(3e-5 N, 10 × |baseline repeat − baseline|)（downforce と drag に別々に適用。3e-5 N は FD-08 の名目 σ0 の 10 倍で、flow_24 の値）。repeat が byte 同一なら flow_32 の noise の証拠は得られず、分解能は flow_24 の名目 floor のまま（`resolution_source` = `nominal_floor`、報告に明記）。flow_32 の半窓ドリフトは約 1e-5 N なので、3e-5 N との余裕は約 3 倍しかない。gain が 3 × res 以下の PASS は `marginal` と報告する。
 gain = D(+1.25) − D(baseline)、control = D(−1.25) − D(baseline)。
@@ -40,4 +43,4 @@ gain = D(+1.25) − D(baseline)、control = D(−1.25) − D(baseline)。
 gradient・FD-08 verdict・flag・δ の変更、GRID-01 完了の主張、OPT-01 の主張、reinitialization、事後の state・閾値の追加、AD/tangent の使用、Stage A の結果前の Stage B 登録。
 
 ## kernel
-`ramhachi888/cfd-opt-sdf-lowdim02a-a`（title=slug、private、T4、dataset なし、timeout 10800 s）。新 slug は identity-free check 済み（`identity_free_check.json`）。
+`ramhachi888/cfd-opt-sdf-lowdim02a-a`（title=slug、private、T4、dataset なし、runner の `KERNEL_TIMEOUT_S` = 10800 は `kaggle kernels push --timeout 10800` と同じ値で押す。想定所要は約 2500 s）。新 slug は identity-free check 済み（`identity_free_check.json`）。

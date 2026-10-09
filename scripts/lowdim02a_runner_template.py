@@ -182,6 +182,8 @@ def main():
             plan = [{"name": n} for n in inventory["kernels"][KERNEL]]
             if set(by_name) != {p["name"] for p in plan}:
                 raise RuntimeError("the state plan differs from the registered inventory")
+            if by_name[plan[0]["name"]]["kind"] != "baseline" or sum(r["kind"] == "baseline" for r in by_name.values()) != 1:
+                raise RuntimeError("the first registered state must be the single baseline")
             stage = "julia_installation"
             julia = install_julia(base)
             env = os.environ.copy()

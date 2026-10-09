@@ -264,3 +264,14 @@ def test_the_sparse_checkout_covers_every_pinned_path():
     assert 'SPARSE = ["julia", "scripts", BASELINE_DIR, EVIDENCE, f"{LOWDIM01_EVIDENCE}/inputs"]' in text
     for rel in B.pins():
         assert any(rel == s or rel.startswith(s + "/") for s in sparse), rel
+
+
+def test_the_first_registered_state_must_be_the_single_baseline(tmp_path, monkeypatch):
+    mod = load_runner(tmp_path)
+    patch_environment(mod, monkeypatch, tmp_path, good_job)
+    inv = json.loads(json.dumps(INV)); inv["kernels"]["a"] = inv["kernels"]["a"][1:] + inv["kernels"]["a"][:1]
+    real = mod.json.loads
+    monkeypatch.setattr(mod.json, "loads", lambda t: inv if '"lowdim02a_state_inventory"' in t else real(t))
+    with pytest.raises(SystemExit):
+        mod.main()
+    assert "single baseline" in (tmp_path / "out" / "ERROR.txt").read_text()
