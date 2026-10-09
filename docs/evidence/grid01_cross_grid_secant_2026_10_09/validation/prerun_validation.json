@@ -1,0 +1,30 @@
+{
+  "absent_baseline_failure_ids": [],
+  "actual_failure_count": 37,
+  "all_six_qualification_flags_false": true,
+  "baseline_failure_count": 37,
+  "commands": [
+    "PYTHONPATH=src:scripts OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m compileall -q src tests",
+    "PYTHONPATH=src:scripts OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest -q --junitxml=work/grid01_prerun_release_pytest.xml",
+    ".venv/bin/python -m pytest -q tests/test_grid01_contract.py tests/test_grid01_analyzer.py tests/test_grid01_prereg.py tests/test_grid01_followup.py",
+    "git diff --check; git diff --cached --check"
+  ],
+  "compileall_exit_code": 0,
+  "diff_check_exit_code": 0,
+  "evidence_class": "pre_measurement_source_and_contract_validation_not_physics",
+  "failure_ids_match_exactly": true,
+  "files_sha256": {
+    "docs/evidence/grid01_cross_grid_secant_2026_10_09/validation/prerun_full_pytest.log": "32c186115b31b7aead5785ddcd382d164761dbd9f4582ec093303dce761baa5a",
+    "docs/evidence/grid01_cross_grid_secant_2026_10_09/validation/prerun_full_pytest.xml": "55563e2c553c0ceb996d74f474d8bd0e2a2d80582522fe79b0e5e22cb9b7aaa5"
+  },
+  "focused_tests": "87 passed (normal import path, no PYTHONPATH override)",
+  "full_suite_pass": false,
+  "new_failure_ids": [],
+  "new_flow32_cfd_runs_at_validation": 0,
+  "prior_missing_ignored_fixture_logs_restored": {
+    "method": "exact committed output-manifest SHA matches only; no tracked historical evidence rewritten",
+    "path": "work/historical_ignored_log_restore.json"
+  },
+  "pytest_exit_code": 1,
+  "pytest_summary": "37 failed, 2107 passed, 23 skipped, 7227 warnings in 313.12s (0:05:13)"
+}
