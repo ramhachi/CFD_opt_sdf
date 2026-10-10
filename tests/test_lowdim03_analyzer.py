@@ -163,7 +163,7 @@ def output(out, kernel, root, inventory, freeze, reverse_shift=0.0):
                    "canonical_design_point_shape": [int(v) for v in job_env["W4_POINT_SHAPE"].split(",")],
                    "canonical_design_cell_shape": [int(v) for v in job_env["W4_CELL_SHAPE"].split(",")],
                    "source_surface_sha256": job_env["W4_SOURCE_SURFACE_SHA256"],
-                   "device_roundtrip_sha256": row["phi_c_order_sha256"],
+                   "device_roundtrip_sha256": row["phi_fortran_order_sha256"],
                    "force_integration_body": config["measurement"]["candidate_operator"], "force_projection_semantics": "drag=+Fx; downforce=-Fz",
                    "finite_u": True, "finite_p": True, "finite_forces": True, "julia_threads": 1,
                    "t_end_reached": 120.01, "burn_in_t_u_l": 80, "phi_margin_m": row["zero_level_margin_m"], "phi_margin_gate_m": .15,
@@ -198,6 +198,24 @@ def test_complete_two_grid_trial_selects_common_step_and_keeps_controls_diagnost
     assert set(report["paired_model_diagnostics"]) == {"0.625", "1.25", "2.5"}
     assert set(report["qualification_flags"].values()) == {False} and report["selected_delta"] is None
     assert report["rules"]["reverse_controls_eligible"] is False and report["rules"]["rho_is_acceptance_gate"] is False
+
+
+def test_device_roundtrip_sha_uses_fortran_order_and_rejects_c_order(valid):
+    a, b, freeze, inventory = valid
+    row = inventory["states"][1]
+    assert row["phi_fortran_order_sha256"] != row["phi_c_order_sha256"]
+    assert A.analyze(a, b, freeze, inventory)["integrity"]["pass"] is True
+
+    summary_path = b / "states" / row["name"] / "flow_32.summary.json"
+    summary = A.jload(summary_path)
+    summary["device_roundtrip_sha256"] = row["phi_c_order_sha256"]
+    dump(summary_path, summary)
+    manifest(b)
+
+    report = A.analyze(a, b, freeze, inventory)
+    assert report["verdict"] == "LOWDIM03_INCOMPLETE"
+    assert report["integrity"]["pass"] is False
+    assert any("summary device_roundtrip_sha256" in failure for failure in report["integrity"]["failures"])
 
 
 @pytest.mark.parametrize("mutation", ["missing_kernel", "missing_control", "extra_state", "extra_file", "ERROR", "empty_manifest",

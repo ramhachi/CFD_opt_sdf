@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,20 @@ JOBS = {"a": "scripts/waterlily_xfid_candidate_c_job.jl", "b": "scripts/waterlil
 RUNTIME_NUMBERS = {"per_state_timeout_s": 900, "solver_wall_time_cap_s": 6300,
                    "kernel_timeout_s": 10800, "gpu_probe_timeout_s": 300,
                    "instantiate_timeout_s": 2400, "julia_threads": 1}
+ANALYSIS_AMENDMENT_KIND = "lowdim03_postmeasurement_analysis_amendment_v1"
+ANALYSIS_AMENDMENT_FILES = {"scripts/analyze_lowdim03.py", "tests/test_lowdim03_analyzer.py"}
+MEASUREMENT_SOURCE_COMMIT = "e5386910d8b77decd748fdbd5efaee002803d86c"
+FAILED_ATTEMPT1_COMMIT = "3908c95c068c2c086d86e73673ada104c05b22cc"
+SAVED_OUTPUT_PATHS = {
+    "a": f"{EVIDENCE_REL}/failed_attempt1/kernel_output/lowdim03_a",
+    "b": f"{EVIDENCE_REL}/failed_attempt1/kernel_output/lowdim03_b",
+}
+AUTHORIZED_SEMANTIC_CHANGE = {
+    "field": "summary.device_roundtrip_sha256",
+    "old_expected_semantics": "phi_c_order_sha256",
+    "new_expected_semantics": "phi_fortran_order_sha256",
+    "reason": "DeviceGridSDF canonical_phi_sha256 uses Julia column-major vec byte order, and both registered measurement jobs verify device_roundtrip_sha against EXPECTED_PHI_FORTRAN_SHA256 before writing the summary.",
+}
 
 
 def jload(path: Path) -> Any:
@@ -95,7 +110,105 @@ def required_file_paths(inventory: dict) -> set[str]:
     return paths
 
 
-def validate_registration(freeze: Any, inventory: Any) -> None:
+def _git_text(*args: str) -> str:
+    result = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise ValueError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
+    return result.stdout.strip()
+
+
+def _git_blob_sha(commit: str, relative: str) -> str:
+    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{commit}:{relative}"], capture_output=True)
+    if result.returncode != 0:
+        raise ValueError(f"source commit is missing {relative}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
+def _verify_saved_attempt_manifest(path: Path, expected_entries: Any) -> None:
+    entries = path.read_text().splitlines()
+    if type(expected_entries) is not int or len(entries) != expected_entries:
+        raise ValueError("failed_attempt1 manifest entry count differs")
+    base = path.parent.resolve()
+    seen: set[str] = set()
+    for line in entries:
+        digest, separator, relative = line.partition("  ")
+        if not separator or not _sha(digest) or not relative:
+            raise ValueError("failed_attempt1 manifest is malformed")
+        relative = relative[2:] if relative.startswith("./") else relative
+        candidate = (path.parent / relative).resolve()
+        if relative in seen or not candidate.is_relative_to(base) or not candidate.is_file():
+            raise ValueError("failed_attempt1 manifest path is duplicate, missing or unsafe")
+        if sha256(candidate) != digest:
+            raise ValueError(f"failed_attempt1 file hash differs: {relative}")
+        seen.add(relative)
+
+
+def validate_analysis_freeze(freeze: Any, amendment: Any, freeze_sha: str,
+                             kernel_a: Path, kernel_b: Path) -> set[str]:
+    """Bind the analysis-only source amendment without replacing measurement lineage."""
+    if not isinstance(amendment, dict) or amendment.get("kind") != ANALYSIS_AMENDMENT_KIND:
+        raise ValueError("analysis amendment kind differs")
+    _equal(freeze.get("source_commit"), MEASUREMENT_SOURCE_COMMIT, "original measurement source commit")
+    _equal(amendment.get("measurement_source_commit"), MEASUREMENT_SOURCE_COMMIT, "amended measurement source commit")
+    _equal(amendment.get("failed_attempt1_commit"), FAILED_ATTEMPT1_COMMIT, "failed attempt commit")
+    _equal(amendment.get("original_prerun_freeze_sha256"), freeze_sha, "original prerun freeze SHA-256")
+    _equal(amendment.get("original_inventory_sha256"), freeze.get("inventory_sha256"), "original inventory SHA-256")
+    _equal(amendment.get("authorized_semantic_change"), AUTHORIZED_SEMANTIC_CHANGE, "authorized semantic change")
+    _equal(amendment.get("measurement_rerun_count"), 0, "measurement rerun count")
+    _equal(amendment.get("acceptance_rules_changed"), False, "acceptance rules changed")
+    _equal(amendment.get("saved_output_paths"), SAVED_OUTPUT_PATHS, "saved measurement output paths")
+    if Path(kernel_a).resolve() != _path(SAVED_OUTPUT_PATHS["a"]).resolve() or Path(kernel_b).resolve() != _path(SAVED_OUTPUT_PATHS["b"]).resolve():
+        raise ValueError("analysis inputs are not the immutable failed_attempt1 outputs")
+
+    original_freeze_path = _path(f"{EVIDENCE_REL}/prerun_freeze.json")
+    if sha256(original_freeze_path) != freeze_sha or jload(original_freeze_path) != freeze:
+        raise ValueError("original prerun freeze bytes differ")
+    inventory_path = _path(f"{EVIDENCE_REL}/inventory.json")
+    if sha256(inventory_path) != freeze.get("inventory_sha256"):
+        raise ValueError("original inventory bytes differ")
+
+    manifest_rel = f"{EVIDENCE_REL}/failed_attempt1/SHA256SUMS"
+    manifest_path = _path(manifest_rel)
+    manifest_sha = sha256(manifest_path)
+    _equal(amendment.get("failed_attempt1_sha256sum_manifest"), manifest_sha, "failed_attempt1 SHA256SUMS hash")
+    _equal(_git_blob_sha(FAILED_ATTEMPT1_COMMIT, manifest_rel), manifest_sha, "committed failed_attempt1 SHA256SUMS")
+    _verify_saved_attempt_manifest(manifest_path, amendment.get("failed_attempt1_manifest_entries"))
+
+    hashes = freeze.get("file_hashes")
+    original_files = {
+        "scripts/analyze_lowdim03.py": amendment.get("original_analyzer_sha256"),
+        "tests/test_lowdim03_analyzer.py": amendment.get("original_test_sha256"),
+    }
+    amended_files = {
+        "scripts/analyze_lowdim03.py": amendment.get("amended_analyzer_sha256"),
+        "tests/test_lowdim03_analyzer.py": amendment.get("amended_test_sha256"),
+    }
+    if not isinstance(hashes, dict):
+        raise ValueError("original source hash closure is missing")
+    for relative in sorted(ANALYSIS_AMENDMENT_FILES):
+        original_sha, amended_sha = original_files[relative], amended_files[relative]
+        if hashes.get(relative) != original_sha or _git_blob_sha(MEASUREMENT_SOURCE_COMMIT, relative) != original_sha:
+            raise ValueError(f"original measurement source file differs: {relative}")
+        current_path = _path(relative)
+        if not _sha(amended_sha) or sha256(current_path) != amended_sha:
+            raise ValueError(f"amended analysis file hash differs: {relative}")
+
+    analysis_commit = amendment.get("analysis_source_commit")
+    if not isinstance(analysis_commit, str) or re.fullmatch(r"[0-9a-f]{40}", analysis_commit) is None:
+        raise ValueError("analysis source commit must be a full Git SHA-1")
+    _equal(_git_text("rev-parse", f"{analysis_commit}^"), FAILED_ATTEMPT1_COMMIT, "analysis commit parent")
+    changed = set(_git_text("diff", "--name-only", FAILED_ATTEMPT1_COMMIT, analysis_commit).splitlines())
+    _equal(sorted(changed), sorted(ANALYSIS_AMENDMENT_FILES), "analysis source commit file scope")
+    if subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", analysis_commit, "HEAD"], capture_output=True).returncode != 0:
+        raise ValueError("analysis source commit is not an ancestor of HEAD")
+    for relative, digest in amended_files.items():
+        if not _sha(digest) or _git_blob_sha(analysis_commit, relative) != digest:
+            raise ValueError(f"analysis source commit hash differs: {relative}")
+    return ANALYSIS_AMENDMENT_FILES
+
+
+def validate_registration(freeze: Any, inventory: Any, *, source_exceptions: set[str] | None = None) -> None:
+    source_exceptions = source_exceptions or set()
     if not isinstance(freeze, dict) or not isinstance(inventory, dict):
         raise ValueError("freeze and inventory must be objects")
     if freeze.get("kind") != "lowdim03_dual_grid_primal_prerun_freeze" or freeze.get("parent_integration_commit") != PARENT_COMMIT:
@@ -123,11 +236,13 @@ def validate_registration(freeze: Any, inventory: Any) -> None:
     if not isinstance(hashes, dict) or not required_file_paths(inventory) <= set(hashes):
         raise ValueError("frozen file/source closure is incomplete")
     for relative, digest in hashes.items():
+        if relative in source_exceptions:
+            continue
         path = _path(relative)
         if not _sha(digest) or not path.is_file() or sha256(path) != digest:
             raise ValueError(f"frozen file hash mismatch: {relative}")
     failures = _source_commit_failures(freeze.get("source_commit", ""), hashes, root=ROOT,
-                                       file_paths={p: p for p in hashes}, exceptions=set(), parent_commit=PARENT_COMMIT)
+                                       file_paths={p: p for p in hashes}, exceptions=source_exceptions, parent_commit=PARENT_COMMIT)
     if failures:
         raise ValueError("source commit binding failed: " + "; ".join(failures))
     plan = C.state_plan()
@@ -334,7 +449,7 @@ def check_kernel(out: Path, kernel: str, freeze: dict, inventory: dict) -> dict:
             "canonical_design_point_shape": [int(v) for v in job_env["W4_POINT_SHAPE"].split(",")],
             "canonical_design_cell_shape": [int(v) for v in job_env["W4_CELL_SHAPE"].split(",")],
             "source_surface_sha256": job_env["W4_SOURCE_SURFACE_SHA256"],
-            "device_roundtrip_sha256": row["phi_c_order_sha256"],
+            "device_roundtrip_sha256": row["phi_fortran_order_sha256"],
         }
         for key, want in canonical_metadata.items():
             _equal(summary.get(key), want, f"summary {key}")
@@ -405,7 +520,9 @@ def selected_drag_note(report, candidates):
     return f" On the selected step the drag change is within +/-3e-5 N on: {', '.join(near)} (computed sign only)." if near else ""
 
 
-def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None = None) -> dict:
+def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None = None,
+            analysis_freeze: Any | None = None, freeze_sha256: str | None = None,
+            analysis_freeze_sha256: str | None = None) -> dict:
     report = {"kind": "lowdim03_dual_grid_actual_primal_analysis", "verdict": "LOWDIM03_INCOMPLETE",
               "integrity": {"pass": False, "failures": []}, "selected_delta": None, "grad03_verdict": None,
               "fd08_verdict_unchanged": True, "no_gradient_claim": True, "not_grid_converged": True,
@@ -414,7 +531,12 @@ def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None =
               "evidence_class": "bounded_two_grid_fixed_direction_actual_primal_trial"}
     try:
         inventory = inventory if inventory is not None else jload(_path(f"{EVIDENCE_REL}/inventory.json"))
-        validate_registration(freeze, inventory)
+        source_exceptions = set()
+        if analysis_freeze is not None:
+            if freeze_sha256 is None:
+                raise ValueError("original prerun freeze SHA-256 is required for an analysis amendment")
+            source_exceptions = validate_analysis_freeze(freeze, analysis_freeze, freeze_sha256, kernel_a, kernel_b)
+        validate_registration(freeze, inventory, source_exceptions=source_exceptions)
         states = {KERNELS[k]: check_kernel(Path(out), k, freeze, inventory)
                   for k, out in (("a", kernel_a), ("b", kernel_b))}
         base = {g: states[g][C.BASELINE_NAME] for g in C.GRIDS}
@@ -427,6 +549,15 @@ def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None =
             candidates[name] = C.evaluate_candidate(base, plus, C.geometry_pass(rows[name]["geometry_gates"]))
             diagnostics[f"{step:g}"] = C.model_diagnostics(base, plus, minus, inventory["proposal"], step)
         report.update(C.select_trial(candidates, {C.state_name(s, 1): s for s in C.STEPS_MM}))
+        provenance = {"source_commit": freeze["source_commit"],
+                      "measurement_source_commit": freeze["source_commit"],
+                      "inventory_sha256": freeze["inventory_sha256"],
+                      "analyzer_sha256": sha256(Path(__file__)),
+                      "kernel_manifest_sha256": {"a": sha256(Path(kernel_a) / "output_manifest.json"),
+                                                  "b": sha256(Path(kernel_b) / "output_manifest.json")}}
+        if analysis_freeze is not None:
+            provenance.update({"analysis_source_commit": analysis_freeze["analysis_source_commit"],
+                               "analysis_freeze_sha256": analysis_freeze_sha256})
         report.update({"integrity": {"pass": True, "failures": []}, "candidates": candidates,
                        "state_forces_n": states, "paired_model_diagnostics": diagnostics,
                        "geometry_gates_by_state": {n: r["geometry_gates"] for n, r in rows.items()},
@@ -436,10 +567,7 @@ def analyze(kernel_a: Path, kernel_b: Path, freeze: Any, inventory: Any | None =
                                  "rho_denominator_floor_n": C.PREDICTION_DENOMINATOR_FLOOR_N,
                                  "reverse_controls_eligible": False, "rho_is_acceptance_gate": False},
                        "interpretation": INTERPRETATION["common"] + " " + INTERPRETATION[report["verdict"]] + selected_drag_note(report, candidates),
-                       "provenance": {"source_commit": freeze["source_commit"], "inventory_sha256": freeze["inventory_sha256"],
-                                      "analyzer_sha256": sha256(Path(__file__)),
-                                      "kernel_manifest_sha256": {"a": sha256(Path(kernel_a) / "output_manifest.json"),
-                                                                 "b": sha256(Path(kernel_b) / "output_manifest.json")}}})
+                       "provenance": provenance})
     except Exception as exc:  # noqa: BLE001 -- every untrusted-input failure is fail-closed
         report["integrity"] = {"pass": False, "failures": [f"{type(exc).__name__}: {exc}"]}
         report["verdict"] = "LOWDIM03_INCOMPLETE"
@@ -454,6 +582,7 @@ def main() -> None:
     parser.add_argument("--kernel-a-dir", type=Path, required=True)
     parser.add_argument("--kernel-b-dir", type=Path, required=True)
     parser.add_argument("--freeze", type=Path, required=True)
+    parser.add_argument("--analysis-freeze", type=Path)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", type=Path)
@@ -468,7 +597,28 @@ def main() -> None:
     except Exception as exc:  # noqa: BLE001
         print(f"invalid freeze: {type(exc).__name__}: {exc}", file=sys.stderr)
         raise SystemExit(3) from exc
-    report = analyze(args.kernel_a_dir, args.kernel_b_dir, freeze)
+    analysis_freeze, analysis_freeze_sha = None, None
+    if args.analysis_freeze is not None:
+        try:
+            analysis_freeze_sha = sha256(args.analysis_freeze)
+            if args.analysis_freeze.with_name(args.analysis_freeze.name + ".sha256").read_text().strip() != analysis_freeze_sha:
+                raise ValueError("analysis freeze SHA-256 sidecar mismatch")
+            analysis_freeze = jload(args.analysis_freeze)
+            amendment_rel = f"{EVIDENCE_REL}/amendment1/analysis_freeze.json"
+            amendment_path = _path(amendment_rel)
+            if args.analysis_freeze.resolve() != amendment_path.resolve():
+                raise ValueError("analysis freeze path differs from the registered Amendment 1 artifact")
+            if _git_blob_sha("HEAD", amendment_rel) != analysis_freeze_sha:
+                raise ValueError("analysis freeze is not committed at HEAD")
+            sidecar_rel = amendment_rel + ".sha256"
+            if _git_blob_sha("HEAD", sidecar_rel) != sha256(amendment_path.with_name(amendment_path.name + ".sha256")):
+                raise ValueError("analysis freeze sidecar is not committed at HEAD")
+        except Exception as exc:  # noqa: BLE001
+            print(f"invalid analysis freeze: {type(exc).__name__}: {exc}", file=sys.stderr)
+            raise SystemExit(3) from exc
+    report = analyze(args.kernel_a_dir, args.kernel_b_dir, freeze,
+                     analysis_freeze=analysis_freeze, freeze_sha256=freeze_sha,
+                     analysis_freeze_sha256=analysis_freeze_sha)
     if args.check or report["integrity"]["pass"] is not True:
         print(json.dumps({"integrity": report["integrity"], "verdict": report["verdict"]}, indent=2, sort_keys=True, allow_nan=False))
         if report["integrity"]["pass"] is not True:
