@@ -1,0 +1,1007 @@
+{
+  "all_free": true,
+  "captured_utc": "2026-10-09T15:46:28.722269+00:00",
+  "kernel_ids": [
+    "ramhachi888/cfd-opt-sdf-lowdim03-a",
+    "ramhachi888/cfd-opt-sdf-lowdim03-b"
+  ],
+  "kind": "lowdim03_authenticated_identity_free_check",
+  "listings": {
+    "datasets": {
+      "complete": true,
+      "pages": [
+        {
+          "command": [
+            "kaggle",
+            "datasets",
+            "list",
+            "--mine",
+            "--page-size",
+            "100",
+            "--page",
+            "1",
+            "--csv"
+          ],
+          "exit_code": 0,
+          "rows": [
+            {
+              "downloadCount": "131",
+              "lastUpdated": "2026-10-06 17:54:08.910000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+              "size": "24673874",
+              "title": "CFD Opt SDF FD08 V2 Private Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "109",
+              "lastUpdated": "2026-10-07 05:35:51.457000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal",
+              "size": "12580980",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend2 Rehearsal Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-10-07 11:40:15.047000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3",
+              "size": "12581610",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend3 Private Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-10-07 11:25:42.483000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal",
+              "size": "12581610",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend3 Rehearsal Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "5",
+              "lastUpdated": "2026-10-05 05:40:44.837000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+              "size": "21834738",
+              "title": "CFD Opt SDF FD-08 Candidate C Calibration Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "54",
+              "lastUpdated": "2026-10-07 07:10:35.127000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+              "size": "12580980",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend2 Private Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "0",
+              "lastUpdated": "2026-10-04 06:12:57.423000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-candidate-c-inputs",
+              "size": "3511721",
+              "title": "CFD Opt SDF XFID Candidate C Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "0",
+              "lastUpdated": "2026-10-03 17:32:40.333000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-x3-inputs",
+              "size": "4893091",
+              "title": "CFD Opt SDF XFID X3 Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "2",
+              "lastUpdated": "2026-10-02 08:54:19.433000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c",
+              "size": "485965",
+              "title": "CFD Opt SDF W4 v17_candidate_c Sensitivity Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "0",
+              "lastUpdated": "2026-10-04 06:00:21.530000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-x3-formal-inputs",
+              "size": "69755572",
+              "title": "CFD Opt SDF XFID X3 Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "3",
+              "lastUpdated": "2026-10-02 04:47:41.610000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-candidate-c",
+              "size": "486805",
+              "title": "CFD Opt SDF v17_candidate_c Genesis State",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "0",
+              "lastUpdated": "2026-10-03 16:24:21.610000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-x2-inputs",
+              "size": "4912349",
+              "title": "CFD Opt SDF XFID X2 Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "2",
+              "lastUpdated": "2026-09-30 12:44:01.957000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle",
+              "size": "10035941",
+              "title": "CFD Opt SDF v17 Flow24 Directional FD Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-09-30 17:42:47.363000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-nfloor-directional-fd-oracle",
+              "size": "10036502",
+              "title": "CFD Opt SDF v17 NFloor Directional FD Oracle",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-09-29 18:16:20.703000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-w4-sensitivity",
+              "size": "484795",
+              "title": "CFD Opt SDF W4 v17 Sensitivity Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "5",
+              "lastUpdated": "2026-09-29 11:18:41.287000",
+              "ref": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+              "size": "962228",
+              "title": "CFD Opt SDF v16 Directional FD Oracle Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-09-29 16:04:23.177000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-genesis-state",
+              "size": "485755",
+              "title": "CFD Opt SDF v17 Genesis State",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "3",
+              "lastUpdated": "2026-09-28 13:03:56.990000",
+              "ref": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+              "size": "58592",
+              "title": "CFD Opt SDF v16 Genesis State",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "3",
+              "lastUpdated": "2026-09-28 16:08:36.427000",
+              "ref": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+              "size": "57300",
+              "title": "CFD Opt SDF W4 v16 Sensitivity Inputs",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            },
+            {
+              "downloadCount": "1",
+              "lastUpdated": "2026-09-28 11:59:27.843000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round3",
+              "size": "13305",
+              "title": "W3 Owner Full Horizon Diagnostic",
+              "usabilityRating": "0.25",
+              "voteCount": "0"
+            }
+          ],
+          "stderr": "",
+          "stdout": "ref,title,size,lastUpdated,downloadCount,voteCount,usabilityRating\nramhachi888/cfd-opt-sdf-fd08-v2-r6,CFD Opt SDF FD08 V2 Private Inputs,24673874,2026-10-06 17:54:08.910000,131,0,0.25\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal,CFD Opt SDF FD08 V2 Formal Amend2 Rehearsal Inputs,12580980,2026-10-07 05:35:51.457000,109,0,0.25\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3,CFD Opt SDF FD08 V2 Formal Amend3 Private Inputs,12581610,2026-10-07 11:40:15.047000,1,0,0.25\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal,CFD Opt SDF FD08 V2 Formal Amend3 Rehearsal Inputs,12581610,2026-10-07 11:25:42.483000,1,0,0.25\nramhachi888/cfd-opt-sdf-fd08-calibration,CFD Opt SDF FD-08 Candidate C Calibration Inputs,21834738,2026-10-05 05:40:44.837000,5,0,0.25\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2,CFD Opt SDF FD08 V2 Formal Amend2 Private Inputs,12580980,2026-10-07 07:10:35.127000,54,0,0.25\nramhachi888/cfd-opt-sdf-xfid-candidate-c-inputs,CFD Opt SDF XFID Candidate C Inputs,3511721,2026-10-04 06:12:57.423000,0,0,0.25\nramhachi888/cfd-opt-sdf-xfid-x3-inputs,CFD Opt SDF XFID X3 Inputs,4893091,2026-10-03 17:32:40.333000,0,0,0.25\nramhachi888/cfd-opt-sdf-v17-w4-candidate-c,CFD Opt SDF W4 v17_candidate_c Sensitivity Inputs,485965,2026-10-02 08:54:19.433000,2,0,0.25\nramhachi888/cfd-opt-sdf-xfid-x3-formal-inputs,CFD Opt SDF XFID X3 Inputs,69755572,2026-10-04 06:00:21.530000,0,0,0.25\nramhachi888/cfd-opt-sdf-v17-candidate-c,CFD Opt SDF v17_candidate_c Genesis State,486805,2026-10-02 04:47:41.610000,3,0,0.25\nramhachi888/cfd-opt-sdf-xfid-x2-inputs,CFD Opt SDF XFID X2 Inputs,4912349,2026-10-03 16:24:21.610000,0,0,0.25\nramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle,CFD Opt SDF v17 Flow24 Directional FD Inputs,10035941,2026-09-30 12:44:01.957000,2,0,0.25\nramhachi888/cfd-opt-sdf-v17-nfloor-directional-fd-oracle,CFD Opt SDF v17 NFloor Directional FD Oracle,10036502,2026-09-30 17:42:47.363000,1,0,0.25\nramhachi888/cfd-opt-sdf-v17-w4-sensitivity,CFD Opt SDF W4 v17 Sensitivity Inputs,484795,2026-09-29 18:16:20.703000,1,0,0.25\nramhachi888/cfd-opt-sdf-v16-directional-fd-oracle,CFD Opt SDF v16 Directional FD Oracle Inputs,962228,2026-09-29 11:18:41.287000,5,0,0.25\nramhachi888/cfd-opt-sdf-v17-genesis-state,CFD Opt SDF v17 Genesis State,485755,2026-09-29 16:04:23.177000,1,0,0.25\nramhachi888/cfd-opt-sdf-v16-genesis-state,CFD Opt SDF v16 Genesis State,58592,2026-09-28 13:03:56.990000,3,0,0.25\nramhachi888/cfd-opt-sdf-v16-w4-sensitivity,CFD Opt SDF W4 v16 Sensitivity Inputs,57300,2026-09-28 16:08:36.427000,3,0,0.25\nramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round3,W3 Owner Full Horizon Diagnostic,13305,2026-09-28 11:59:27.843000,1,0,0.25\n"
+        }
+      ],
+      "rows": [
+        {
+          "downloadCount": "131",
+          "lastUpdated": "2026-10-06 17:54:08.910000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+          "size": "24673874",
+          "title": "CFD Opt SDF FD08 V2 Private Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "109",
+          "lastUpdated": "2026-10-07 05:35:51.457000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-rehearsal",
+          "size": "12580980",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend2 Rehearsal Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-10-07 11:40:15.047000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3",
+          "size": "12581610",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend3 Private Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-10-07 11:25:42.483000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-rehearsal",
+          "size": "12581610",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend3 Rehearsal Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "5",
+          "lastUpdated": "2026-10-05 05:40:44.837000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-calibration",
+          "size": "21834738",
+          "title": "CFD Opt SDF FD-08 Candidate C Calibration Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "54",
+          "lastUpdated": "2026-10-07 07:10:35.127000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2",
+          "size": "12580980",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend2 Private Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "0",
+          "lastUpdated": "2026-10-04 06:12:57.423000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-candidate-c-inputs",
+          "size": "3511721",
+          "title": "CFD Opt SDF XFID Candidate C Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "0",
+          "lastUpdated": "2026-10-03 17:32:40.333000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-x3-inputs",
+          "size": "4893091",
+          "title": "CFD Opt SDF XFID X3 Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "2",
+          "lastUpdated": "2026-10-02 08:54:19.433000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-w4-candidate-c",
+          "size": "485965",
+          "title": "CFD Opt SDF W4 v17_candidate_c Sensitivity Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "0",
+          "lastUpdated": "2026-10-04 06:00:21.530000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-x3-formal-inputs",
+          "size": "69755572",
+          "title": "CFD Opt SDF XFID X3 Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "3",
+          "lastUpdated": "2026-10-02 04:47:41.610000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-candidate-c",
+          "size": "486805",
+          "title": "CFD Opt SDF v17_candidate_c Genesis State",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "0",
+          "lastUpdated": "2026-10-03 16:24:21.610000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-x2-inputs",
+          "size": "4912349",
+          "title": "CFD Opt SDF XFID X2 Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "2",
+          "lastUpdated": "2026-09-30 12:44:01.957000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-flow24-directional-fd-oracle",
+          "size": "10035941",
+          "title": "CFD Opt SDF v17 Flow24 Directional FD Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-09-30 17:42:47.363000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-nfloor-directional-fd-oracle",
+          "size": "10036502",
+          "title": "CFD Opt SDF v17 NFloor Directional FD Oracle",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-09-29 18:16:20.703000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-w4-sensitivity",
+          "size": "484795",
+          "title": "CFD Opt SDF W4 v17 Sensitivity Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "5",
+          "lastUpdated": "2026-09-29 11:18:41.287000",
+          "ref": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle",
+          "size": "962228",
+          "title": "CFD Opt SDF v16 Directional FD Oracle Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-09-29 16:04:23.177000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-genesis-state",
+          "size": "485755",
+          "title": "CFD Opt SDF v17 Genesis State",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "3",
+          "lastUpdated": "2026-09-28 13:03:56.990000",
+          "ref": "ramhachi888/cfd-opt-sdf-v16-genesis-state",
+          "size": "58592",
+          "title": "CFD Opt SDF v16 Genesis State",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "3",
+          "lastUpdated": "2026-09-28 16:08:36.427000",
+          "ref": "ramhachi888/cfd-opt-sdf-v16-w4-sensitivity",
+          "size": "57300",
+          "title": "CFD Opt SDF W4 v16 Sensitivity Inputs",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        },
+        {
+          "downloadCount": "1",
+          "lastUpdated": "2026-09-28 11:59:27.843000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-criteria-round3",
+          "size": "13305",
+          "title": "W3 Owner Full Horizon Diagnostic",
+          "usabilityRating": "0.25",
+          "voteCount": "0"
+        }
+      ]
+    },
+    "kernels": {
+      "complete": true,
+      "pages": [
+        {
+          "command": [
+            "kaggle",
+            "kernels",
+            "list",
+            "--mine",
+            "--page-size",
+            "100",
+            "--page",
+            "1",
+            "--csv"
+          ],
+          "exit_code": 0,
+          "rows": [
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 13:45:41.523000",
+              "ref": "ramhachi888/cfd-opt-sdf-grid01-a",
+              "title": "cfd-opt-sdf-grid01-a",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 08:05:39.070000",
+              "ref": "ramhachi888/cfd-opt-sdf-lowdim02a-a",
+              "title": "CFD Opt SDF Lowdim02a A",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 06:21:33.250000",
+              "ref": "ramhachi888/cfd-opt-sdf-lowdim01-a",
+              "title": "CFD Opt SDF Lowdim01 A",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 04:39:41.357000",
+              "ref": "ramhachi888/cfd-opt-sdf-step01-c",
+              "title": "CFD Opt SDF Step01 C",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 03:30:00.743000",
+              "ref": "ramhachi888/cfd-opt-sdf-step01-b",
+              "title": "CFD Opt SDF Step01 B",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-09 03:29:57.580000",
+              "ref": "ramhachi888/cfd-opt-sdf-step01-a",
+              "title": "CFD Opt SDF Step01 A",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 15:35:48.443000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-forced32-horizon-diag4",
+              "title": "CFD Opt SDF Grad G2 D0 Forced32 Horizon Diag4",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 14:23:03.250000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-poisson-diag3",
+              "title": "CFD Opt SDF Grad G2 D0 Tangent Poisson Diag3",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 13:04:39.343000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-diag2",
+              "title": "CFD Opt SDF Grad G2 D0 Tangent Diag2",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 11:19:07.557000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-nonfinite-diag1",
+              "title": "CFD Opt SDF Grad G2 D0 Nonfinite Diag1",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 04:05:49.067000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-dual-gpu-spike",
+              "title": "CFD Opt SDF Grad Dual GPU Spike",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-27 21:35:45.780000",
+              "ref": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike",
+              "title": "CFD Opt SDF Enzyme Reverse Spike",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-07-04 04:36:54.537000",
+              "ref": "ramhachi888/rogii-lb7295-public-rebuild",
+              "title": "rogii-lb7295-public-rebuild",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-01 19:53:20.983000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction",
+              "title": "CFD Opt SDF XFID v16 OpenFOAM Reproduction",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-27 11:03:34.807000",
+              "ref": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+              "title": "CFD Opt SDF W2b Flow Grid Ladder",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-08 09:18:48.210000",
+              "ref": "ramhachi888/cfd-opt-sdf-grad-g2-full-window-bridge",
+              "title": "CFD Opt SDF Grad G2 Full Window Bridge",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-07 11:41:22.077000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3",
+              "title": "CFD Opt SDF FD08 V2 Formal Run A3",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-07 11:32:37.430000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend3 Pre Solver",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-07 06:59:34.147000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver",
+              "title": "CFD Opt SDF FD08 V2 Formal Amend2 Pre Solver",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-06 17:58:00.993000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+              "title": "CFD Opt SDF FD08 V2 R6 and Formal",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-05 05:50:29.790000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+              "title": "CFD Opt SDF FD08 Calibration Kernel",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-04 18:05:00.793000",
+              "ref": "ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration",
+              "title": "CFD Opt SDF FD-08 Candidate C Calibration",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-04 06:13:26.660000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-candidate-c",
+              "title": "CFD Opt SDF XFID Candidate C",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-04 06:01:02.657000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x3-formal",
+              "title": "CFD Opt SDF XFID Gridphase X3 Formal",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-03 17:33:16.837000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x3",
+              "title": "CFD Opt SDF XFID Gridphase X3",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-03 16:24:51.960000",
+              "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x2",
+              "title": "CFD Opt SDF XFID Gridphase X2",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-02 08:55:06.620000",
+              "ref": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+              "title": "CFD Opt SDF W4 v17 Candidate C",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-10-02 04:48:14.567000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+              "title": "CFD Opt SDF W3 v17 Candidate C",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-30 17:43:43.247000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-nfloor-fd-oracle",
+              "title": "CFD Opt SDF v17 NFloor FD Oracle",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-30 12:47:31.480000",
+              "ref": "ramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle",
+              "title": "CFD Opt SDF v17 Flow24 FD Oracle",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-29 18:18:14.207000",
+              "ref": "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity",
+              "title": "CFD Opt SDF W4 v17 Sensitivity",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-29 16:25:15.893000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-v17-primal",
+              "title": "CFD Opt SDF W3 v17 Primal",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-29 11:30:25.760000",
+              "ref": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel",
+              "title": "CFD Opt SDF v16 Directional FD Oracle Kernel",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-28 16:11:10",
+              "ref": "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity",
+              "title": "CFD Opt SDF W4 v16 Sensitivity",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-28 12:00:35.960000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic",
+              "title": "CFD Opt SDF W3 Owner Full Horizon Diagnostic",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-28 10:09:54.303000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe",
+              "title": "CFD Opt SDF W3 Owner Type Probe",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-28 08:13:06.603000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+              "title": "CFD Opt SDF W3 v16 CUDA Diagnostic",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-09-28 13:06:52.107000",
+              "ref": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+              "title": "CFD Opt SDF W3 v16 Primal",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-07-31 11:52:59.787000",
+              "ref": "ramhachi888/ptcg-card-list-viewer-deck-build",
+              "title": "\u65e5\u672c\u8a9e | PTCG Card List Viewer & Deck Build",
+              "totalVotes": "0"
+            },
+            {
+              "author": "\u3089\u3080\u306f\u3061",
+              "lastRunTime": "2026-05-26 08:03:05.777000",
+              "ref": "ramhachi888/notebookdd3e270242",
+              "title": "notebookdd3e270242",
+              "totalVotes": "0"
+            }
+          ],
+          "stderr": "",
+          "stdout": "ref,title,author,lastRunTime,totalVotes\nramhachi888/cfd-opt-sdf-grid01-a,cfd-opt-sdf-grid01-a,\u3089\u3080\u306f\u3061,2026-10-09 13:45:41.523000,0\nramhachi888/cfd-opt-sdf-lowdim02a-a,CFD Opt SDF Lowdim02a A,\u3089\u3080\u306f\u3061,2026-10-09 08:05:39.070000,0\nramhachi888/cfd-opt-sdf-lowdim01-a,CFD Opt SDF Lowdim01 A,\u3089\u3080\u306f\u3061,2026-10-09 06:21:33.250000,0\nramhachi888/cfd-opt-sdf-step01-c,CFD Opt SDF Step01 C,\u3089\u3080\u306f\u3061,2026-10-09 04:39:41.357000,0\nramhachi888/cfd-opt-sdf-step01-b,CFD Opt SDF Step01 B,\u3089\u3080\u306f\u3061,2026-10-09 03:30:00.743000,0\nramhachi888/cfd-opt-sdf-step01-a,CFD Opt SDF Step01 A,\u3089\u3080\u306f\u3061,2026-10-09 03:29:57.580000,0\nramhachi888/cfd-opt-sdf-grad-g2-d0-forced32-horizon-diag4,CFD Opt SDF Grad G2 D0 Forced32 Horizon Diag4,\u3089\u3080\u306f\u3061,2026-10-08 15:35:48.443000,0\nramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-poisson-diag3,CFD Opt SDF Grad G2 D0 Tangent Poisson Diag3,\u3089\u3080\u306f\u3061,2026-10-08 14:23:03.250000,0\nramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-diag2,CFD Opt SDF Grad G2 D0 Tangent Diag2,\u3089\u3080\u306f\u3061,2026-10-08 13:04:39.343000,0\nramhachi888/cfd-opt-sdf-grad-g2-d0-nonfinite-diag1,CFD Opt SDF Grad G2 D0 Nonfinite Diag1,\u3089\u3080\u306f\u3061,2026-10-08 11:19:07.557000,0\nramhachi888/cfd-opt-sdf-grad-dual-gpu-spike,CFD Opt SDF Grad Dual GPU Spike,\u3089\u3080\u306f\u3061,2026-10-08 04:05:49.067000,0\nramhachi888/cfd-opt-sdf-enzyme-reverse-spike,CFD Opt SDF Enzyme Reverse Spike,\u3089\u3080\u306f\u3061,2026-09-27 21:35:45.780000,0\nramhachi888/rogii-lb7295-public-rebuild,rogii-lb7295-public-rebuild,\u3089\u3080\u306f\u3061,2026-07-04 04:36:54.537000,0\nramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction,CFD Opt SDF XFID v16 OpenFOAM Reproduction,\u3089\u3080\u306f\u3061,2026-10-01 19:53:20.983000,0\nramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder,CFD Opt SDF W2b Flow Grid Ladder,\u3089\u3080\u306f\u3061,2026-09-27 11:03:34.807000,0\nramhachi888/cfd-opt-sdf-grad-g2-full-window-bridge,CFD Opt SDF Grad G2 Full Window Bridge,\u3089\u3080\u306f\u3061,2026-10-08 09:18:48.210000,0\nramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3,CFD Opt SDF FD08 V2 Formal Run A3,\u3089\u3080\u306f\u3061,2026-10-07 11:41:22.077000,0\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver,CFD Opt SDF FD08 V2 Formal Amend3 Pre Solver,\u3089\u3080\u306f\u3061,2026-10-07 11:32:37.430000,0\nramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver,CFD Opt SDF FD08 V2 Formal Amend2 Pre Solver,\u3089\u3080\u306f\u3061,2026-10-07 06:59:34.147000,0\nramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal,CFD Opt SDF FD08 V2 R6 and Formal,\u3089\u3080\u306f\u3061,2026-10-06 17:58:00.993000,0\nramhachi888/cfd-opt-sdf-fd08-calibration-kernel,CFD Opt SDF FD08 Calibration Kernel,\u3089\u3080\u306f\u3061,2026-10-05 05:50:29.790000,0\nramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration,CFD Opt SDF FD-08 Candidate C Calibration,\u3089\u3080\u306f\u3061,2026-10-04 18:05:00.793000,0\nramhachi888/cfd-opt-sdf-xfid-candidate-c,CFD Opt SDF XFID Candidate C,\u3089\u3080\u306f\u3061,2026-10-04 06:13:26.660000,0\nramhachi888/cfd-opt-sdf-xfid-gridphase-x3-formal,CFD Opt SDF XFID Gridphase X3 Formal,\u3089\u3080\u306f\u3061,2026-10-04 06:01:02.657000,0\nramhachi888/cfd-opt-sdf-xfid-gridphase-x3,CFD Opt SDF XFID Gridphase X3,\u3089\u3080\u306f\u3061,2026-10-03 17:33:16.837000,0\nramhachi888/cfd-opt-sdf-xfid-gridphase-x2,CFD Opt SDF XFID Gridphase X2,\u3089\u3080\u306f\u3061,2026-10-03 16:24:51.960000,0\nramhachi888/cfd-opt-sdf-w4-v17-candidate-c,CFD Opt SDF W4 v17 Candidate C,\u3089\u3080\u306f\u3061,2026-10-02 08:55:06.620000,0\nramhachi888/cfd-opt-sdf-w3-v17-candidate-c,CFD Opt SDF W3 v17 Candidate C,\u3089\u3080\u306f\u3061,2026-10-02 04:48:14.567000,0\nramhachi888/cfd-opt-sdf-v17-nfloor-fd-oracle,CFD Opt SDF v17 NFloor FD Oracle,\u3089\u3080\u306f\u3061,2026-09-30 17:43:43.247000,0\nramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle,CFD Opt SDF v17 Flow24 FD Oracle,\u3089\u3080\u306f\u3061,2026-09-30 12:47:31.480000,0\nramhachi888/cfd-opt-sdf-w4-v17-sensitivity,CFD Opt SDF W4 v17 Sensitivity,\u3089\u3080\u306f\u3061,2026-09-29 18:18:14.207000,0\nramhachi888/cfd-opt-sdf-w3-v17-primal,CFD Opt SDF W3 v17 Primal,\u3089\u3080\u306f\u3061,2026-09-29 16:25:15.893000,0\nramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel,CFD Opt SDF v16 Directional FD Oracle Kernel,\u3089\u3080\u306f\u3061,2026-09-29 11:30:25.760000,0\nramhachi888/cfd-opt-sdf-w4-v16-sensitivity,CFD Opt SDF W4 v16 Sensitivity,\u3089\u3080\u306f\u3061,2026-09-28 16:11:10,0\nramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic,CFD Opt SDF W3 Owner Full Horizon Diagnostic,\u3089\u3080\u306f\u3061,2026-09-28 12:00:35.960000,0\nramhachi888/cfd-opt-sdf-w3-owner-type-probe,CFD Opt SDF W3 Owner Type Probe,\u3089\u3080\u306f\u3061,2026-09-28 10:09:54.303000,0\nramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic,CFD Opt SDF W3 v16 CUDA Diagnostic,\u3089\u3080\u306f\u3061,2026-09-28 08:13:06.603000,0\nramhachi888/cfd-opt-sdf-w3-v16-primal,CFD Opt SDF W3 v16 Primal,\u3089\u3080\u306f\u3061,2026-09-28 13:06:52.107000,0\nramhachi888/ptcg-card-list-viewer-deck-build,\u65e5\u672c\u8a9e | PTCG Card List Viewer & Deck Build,\u3089\u3080\u306f\u3061,2026-07-31 11:52:59.787000,0\nramhachi888/notebookdd3e270242,notebookdd3e270242,\u3089\u3080\u306f\u3061,2026-05-26 08:03:05.777000,0\n"
+        }
+      ],
+      "rows": [
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 13:45:41.523000",
+          "ref": "ramhachi888/cfd-opt-sdf-grid01-a",
+          "title": "cfd-opt-sdf-grid01-a",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 08:05:39.070000",
+          "ref": "ramhachi888/cfd-opt-sdf-lowdim02a-a",
+          "title": "CFD Opt SDF Lowdim02a A",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 06:21:33.250000",
+          "ref": "ramhachi888/cfd-opt-sdf-lowdim01-a",
+          "title": "CFD Opt SDF Lowdim01 A",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 04:39:41.357000",
+          "ref": "ramhachi888/cfd-opt-sdf-step01-c",
+          "title": "CFD Opt SDF Step01 C",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 03:30:00.743000",
+          "ref": "ramhachi888/cfd-opt-sdf-step01-b",
+          "title": "CFD Opt SDF Step01 B",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-09 03:29:57.580000",
+          "ref": "ramhachi888/cfd-opt-sdf-step01-a",
+          "title": "CFD Opt SDF Step01 A",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 15:35:48.443000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-forced32-horizon-diag4",
+          "title": "CFD Opt SDF Grad G2 D0 Forced32 Horizon Diag4",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 14:23:03.250000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-poisson-diag3",
+          "title": "CFD Opt SDF Grad G2 D0 Tangent Poisson Diag3",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 13:04:39.343000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-tangent-diag2",
+          "title": "CFD Opt SDF Grad G2 D0 Tangent Diag2",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 11:19:07.557000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-g2-d0-nonfinite-diag1",
+          "title": "CFD Opt SDF Grad G2 D0 Nonfinite Diag1",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 04:05:49.067000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-dual-gpu-spike",
+          "title": "CFD Opt SDF Grad Dual GPU Spike",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-27 21:35:45.780000",
+          "ref": "ramhachi888/cfd-opt-sdf-enzyme-reverse-spike",
+          "title": "CFD Opt SDF Enzyme Reverse Spike",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-07-04 04:36:54.537000",
+          "ref": "ramhachi888/rogii-lb7295-public-rebuild",
+          "title": "rogii-lb7295-public-rebuild",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-01 19:53:20.983000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-v16-openfoam-reproduction",
+          "title": "CFD Opt SDF XFID v16 OpenFOAM Reproduction",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-27 11:03:34.807000",
+          "ref": "ramhachi888/cfd-opt-sdf-w2b-flow-grid-ladder",
+          "title": "CFD Opt SDF W2b Flow Grid Ladder",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-08 09:18:48.210000",
+          "ref": "ramhachi888/cfd-opt-sdf-grad-g2-full-window-bridge",
+          "title": "CFD Opt SDF Grad G2 Full Window Bridge",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-07 11:41:22.077000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-run-a3",
+          "title": "CFD Opt SDF FD08 V2 Formal Run A3",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-07 11:32:37.430000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend3-pre-solver",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend3 Pre Solver",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-07 06:59:34.147000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-formal-amend2-pre-solver",
+          "title": "CFD Opt SDF FD08 V2 Formal Amend2 Pre Solver",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-06 17:58:00.993000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-v2-r6-and-formal",
+          "title": "CFD Opt SDF FD08 V2 R6 and Formal",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-05 05:50:29.790000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd08-calibration-kernel",
+          "title": "CFD Opt SDF FD08 Calibration Kernel",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-04 18:05:00.793000",
+          "ref": "ramhachi888/cfd-opt-sdf-fd-08-candidate-c-calibration",
+          "title": "CFD Opt SDF FD-08 Candidate C Calibration",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-04 06:13:26.660000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-candidate-c",
+          "title": "CFD Opt SDF XFID Candidate C",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-04 06:01:02.657000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x3-formal",
+          "title": "CFD Opt SDF XFID Gridphase X3 Formal",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-03 17:33:16.837000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x3",
+          "title": "CFD Opt SDF XFID Gridphase X3",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-03 16:24:51.960000",
+          "ref": "ramhachi888/cfd-opt-sdf-xfid-gridphase-x2",
+          "title": "CFD Opt SDF XFID Gridphase X2",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-02 08:55:06.620000",
+          "ref": "ramhachi888/cfd-opt-sdf-w4-v17-candidate-c",
+          "title": "CFD Opt SDF W4 v17 Candidate C",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-10-02 04:48:14.567000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-v17-candidate-c",
+          "title": "CFD Opt SDF W3 v17 Candidate C",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-30 17:43:43.247000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-nfloor-fd-oracle",
+          "title": "CFD Opt SDF v17 NFloor FD Oracle",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-30 12:47:31.480000",
+          "ref": "ramhachi888/cfd-opt-sdf-v17-flow24-fd-oracle",
+          "title": "CFD Opt SDF v17 Flow24 FD Oracle",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-29 18:18:14.207000",
+          "ref": "ramhachi888/cfd-opt-sdf-w4-v17-sensitivity",
+          "title": "CFD Opt SDF W4 v17 Sensitivity",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-29 16:25:15.893000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-v17-primal",
+          "title": "CFD Opt SDF W3 v17 Primal",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-29 11:30:25.760000",
+          "ref": "ramhachi888/cfd-opt-sdf-v16-directional-fd-oracle-kernel",
+          "title": "CFD Opt SDF v16 Directional FD Oracle Kernel",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-28 16:11:10",
+          "ref": "ramhachi888/cfd-opt-sdf-w4-v16-sensitivity",
+          "title": "CFD Opt SDF W4 v16 Sensitivity",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-28 12:00:35.960000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-owner-full-horizon-diagnostic",
+          "title": "CFD Opt SDF W3 Owner Full Horizon Diagnostic",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-28 10:09:54.303000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-owner-type-probe",
+          "title": "CFD Opt SDF W3 Owner Type Probe",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-28 08:13:06.603000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-v16-cuda-diagnostic",
+          "title": "CFD Opt SDF W3 v16 CUDA Diagnostic",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-09-28 13:06:52.107000",
+          "ref": "ramhachi888/cfd-opt-sdf-w3-v16-primal",
+          "title": "CFD Opt SDF W3 v16 Primal",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-07-31 11:52:59.787000",
+          "ref": "ramhachi888/ptcg-card-list-viewer-deck-build",
+          "title": "\u65e5\u672c\u8a9e | PTCG Card List Viewer & Deck Build",
+          "totalVotes": "0"
+        },
+        {
+          "author": "\u3089\u3080\u306f\u3061",
+          "lastRunTime": "2026-05-26 08:03:05.777000",
+          "ref": "ramhachi888/notebookdd3e270242",
+          "title": "notebookdd3e270242",
+          "totalVotes": "0"
+        }
+      ]
+    }
+  },
+  "owner": "ramhachi888",
+  "positive_controls": {
+    "datasets": {
+      "command": [
+        "kaggle",
+        "datasets",
+        "files",
+        "ramhachi888/cfd-opt-sdf-fd08-v2-r6",
+        "--csv"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "Next Page Token = CfDJ8JDwKpgsc5hJpcljKjpYpOGEI2gTZUwJNSXd6SskuTt43qLHRnnMX-H5vtTMg0GpS91Q7F1h8bZ1yIP6hEy-M7IjnR8mJ49bEuxUfJ3Bs_1JrmwAZ2kc8LGLMfBIxIuZIbYeYRdc-QGFGUueVVQwqUDpkaOFgqrGPteNOu0JLx9nIps\nname,size,creationDate\nD0_interface_offset__e0.5mm__minus.phi.f32f,1541540,2026-10-06 17:54:24.554000\nD0_interface_offset__e0.5mm__minus.sdf_design_state.npz,199149,2026-10-06 17:54:24.721000\nD0_interface_offset__e0.5mm__plus.phi.f32f,1541540,2026-10-06 17:54:24.564000\nD0_interface_offset__e0.5mm__plus.sdf_design_state.npz,199126,2026-10-06 17:54:24.787000\nD0_interface_offset__e0.7924465962305568mm__minus.phi.f32f,1541540,2026-10-06 17:54:24.505000\nD0_interface_offset__e0.7924465962305568mm__minus.sdf_design_state.npz,199073,2026-10-06 17:54:24.424000\nD0_interface_offset__e0.7924465962305568mm__plus.phi.f32f,1541540,2026-10-06 17:54:24.481000\nD0_interface_offset__e0.7924465962305568mm__plus.sdf_design_state.npz,198988,2026-10-06 17:54:24.432000\nD0_interface_offset__e1.2559432157547901mm__minus.phi.f32f,1541540,2026-10-06 17:54:24.638000\nD0_interface_offset__e1.2559432157547901mm__minus.sdf_design_state.npz,199020,2026-10-06 17:54:24.822000\nD0_interface_offset__e1.2559432157547901mm__plus.phi.f32f,1541540,2026-10-06 17:54:24.539000\nD0_interface_offset__e1.2559432157547901mm__plus.sdf_design_state.npz,199028,2026-10-06 17:54:24.518000\nD0_interface_offset__e1.9905358527674866mm__minus.phi.f32f,1541540,2026-10-06 17:54:24.584000\nD0_interface_offset__e1.9905358527674866mm__minus.sdf_design_state.npz,198815,2026-10-06 17:54:24.702000\nD0_interface_offset__e1.9905358527674866mm__plus.phi.f32f,1541540,2026-10-06 17:54:24.759000\nD0_interface_offset__e1.9905358527674866mm__plus.sdf_design_state.npz,198855,2026-10-06 17:54:24.527000\nD0_interface_offset__e3.1547867224009667mm__minus.phi.f32f,1541540,2026-10-06 17:54:24.698000\nD0_interface_offset__e3.1547867224009667mm__minus.sdf_design_state.npz,198938,2026-10-06 17:54:24.823000\nD0_interface_offset__e3.1547867224009667mm__plus.phi.f32f,1541540,2026-10-06 17:54:24.738000\nD0_interface_offset__e3.1547867224009667mm__plus.sdf_design_state.npz,198810,2026-10-06 17:54:24.690000\n"
+    },
+    "kernels": {
+      "command": [
+        "kaggle",
+        "kernels",
+        "status",
+        "ramhachi888/cfd-opt-sdf-grid01-a"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "ramhachi888/cfd-opt-sdf-grid01-a has status \"KernelWorkerStatus.COMPLETE\"\n"
+    }
+  }
+}
