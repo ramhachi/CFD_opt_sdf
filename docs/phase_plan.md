@@ -7284,3 +7284,36 @@ and the analysis freeze SHA-256 is
 `c8b17f6666b66274784a40e825ce17d58c2224e9cc165d6af5abd9e083c7e893`.
 Full pytest was `2177 passed, 37 failed, 23 skipped`; the 37 failure IDs match
 the pre-amendment baseline exactly (zero new failures). Compileall passed.
+
+## LOWDIM-04A (#51): pre-registration blocked by the existing P22 sharp-volume gate (2026-10-11)
+
+LOWDIM-03 Amendment 1's selected experimental parent was reconstructed from its
+registered baseline and direction. Its Float32 Fortran-order phi SHA-256
+`b02dc49c39c3e8895befd5a95ae007ccf04fb2582064e8d79bd0f4c57c55286e`, state
+SHA-256 `81d24fe4a66704ed469f560b7396b4c0cbf6810ef8082e710f002145ca6e3a65`, and
+serialized state NPZ SHA-256
+`0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b` match the
+retained LOWDIM-03 result inputs/output summaries.
+
+The existing P22 `sdf_native_smoothed_volume_v1` sharp reference is
+`V_phi_0=0.12612500000000004 m^3`. On the v17 design grid, the reconstructed
+parent has registered center-sampled sharp volume `0.12925000000000003 m^3`, a
+positive residual of `0.003125 m^3`. Its smooth residual is `g_V=-0.3029303`,
+but P22 explicitly says the one-sided smooth value can undercount sharp volume
+and cannot replace the independent sharp-feasibility gate. Thus this
+experimental parent is not feasible under the current sharp reference. This
+does not revise or retroactively reject `LOWDIM03_ACCEPT`, which was a bounded
+capability result and not a P22 shape-update acceptance.
+
+The eight proposed `D0/D1/D2/P1 × ±1.25 mm` states pass the existing five LOWDIM
+geometry preflight gates, but all retain the parent's same absolute sharp
+volume above the P22 limit. The solver-free pre-registration record is
+`docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json`
+(SHA-256
+`494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c`). No
+LOWDIM-04A preregistration/source freeze, subproblem verdict, Kaggle kernel, or
+CFD run was created. No contract, threshold, or qualification flag changed;
+this is a pre-registration blocker, not a LOWDIM-04A terminal experimental
+verdict. Issue #51 remains open pending a compatible registered volume
+reference/parent decision. #26 remains open because no first-step flow grid was
+selected.
