@@ -1961,3 +1961,19 @@ Amendment 1 record; full result blindness is not claimed. See the sole status
 authority in `docs/phase_plan.md` and the complete provenance, force deltas,
 reverse/model diagnostics, and validation at
 `docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/amendment1_note.md`.
+
+## LOWDIM-04A (#51) — pre-registration blocked (2026-10-11)
+
+The LOWDIM-03 selected experimental parent is byte-verified, but its registered
+sharp volume on the v17 design grid is `0.12925000000000003 m^3`, above the
+existing P22 v16 reference `V_phi_0=0.12612500000000004 m^3`. Its smooth
+residual `g_V=-0.3029303` cannot replace the independent sharp gate. The eight
+fixed-basis ±1.25 mm geometries pass the existing five LOWDIM geometry gates,
+but retain that same absolute sharp-volume violation. No LOWDIM-04A
+preregistration, source freeze, coefficient solve, Kaggle run, or CFD measurement
+was made. This is not an experimental terminal verdict and does not change
+LOWDIM-03's bounded `LOWDIM03_ACCEPT`. The pre-registration blocker and hashes
+are recorded in
+[`docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json`](evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json).
+Issue #51 remains open for a compatible volume-reference/parent decision;
+execution order and evidence scope remain governed by `phase_plan.md`.
