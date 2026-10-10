@@ -1943,3 +1943,21 @@ This tests strict computed drag nonincrease and resolved nominal lift gain on bo
 grids at a common step. It does not close #26, GEOM-01, GRAD-03 or OPT-01 (#30), and
 changes no qualification flag. See the sole execution authority in phase_plan.md
 and `evidence/lowdim03_dual_grid_primal_2026_10_10/prerun_note.md`.
+
+### Post-measurement Amendment 1 result (2026-10-10)
+
+The retained 14-run outputs were not rerun or changed. Attempt 1 remains
+`LOWDIM03_INCOMPLETE`; Amendment 1 separately corrected only the analyzer's
+`device_roundtrip_sha256` expectation from C-order to Fortran-order. After
+independent static review and a committed analysis freeze, the saved outputs
+passed `--check` (zero integrity failures) and were analyzed with one `--write`.
+The formal registered result is `LOWDIM03_ACCEPT`, selecting 1.25 mm. This is a
+bounded fixed-direction/two-grid/three-step result and adds no qualification
+flag or physical/grid-convergence claim. `selected_delta` remains unset and
+`shape_update_allowed=false`.
+
+The pre-freeze reviewer exposure of per-state force fields is disclosed in the
+Amendment 1 record; full result blindness is not claimed. See the sole status
+authority in `docs/phase_plan.md` and the complete provenance, force deltas,
+reverse/model diagnostics, and validation at
+`docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/amendment1_note.md`.
