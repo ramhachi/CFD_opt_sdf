@@ -1,0 +1,9 @@
+from cfd_sdf.design.volume_semantics import SMOOTHED_VOLUME_CONTRACT_SHA256, SMOOTHED_VOLUME_LIMIT_M3, sharp_volume_m3, smoothed_volume_and_gradient
+from cfd_sdf.fd08_v2_campaign import construct_state
+import build_lowdim01_inputs as G
+base=SDFDesignState.load(root/inv['canonical_npz']['path'])
+proposal=S.read_f4(B.PROPOSAL)
+parent,_=construct_state(base,proposal,1.25,1)
+vol=smoothed_volume_and_gradient(parent)
+sharp=sharp_volume_m3(parent)
+base_geo=G.geometry(parent)

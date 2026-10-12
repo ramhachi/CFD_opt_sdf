@@ -1,0 +1,135 @@
+{
+  "authority_contract_id": "sdf_native_smoothed_volume_v1",
+  "authority_contract_sha256": "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969",
+  "historical_blocker_generator": {
+    "call_id": "call_86ca52c0c21049dfbcef8824a96c7bc3",
+    "call_timestamp_utc": "2026-10-10T15:21:23.434Z",
+    "direct_hard_call": "sharp=sharp_volume_m3(parent)",
+    "direct_smooth_call": "vol=smoothed_volume_and_gradient(parent)",
+    "excerpt_sha256": "06bcc618eeacf3d8816de94481be43fad27a3ece69ffb75925abb5d906dd11f9",
+    "failed_attempts": "Earlier heredoc attempts had syntax/record-key errors. The retained successful call/result above generated the unchanged blocker hash.",
+    "full_python_heredoc_sha256": "3ceaac4b8b274f9970e2ba087018b1b56e42914e4ad23246f68118a35cd7d5b4",
+    "kind": "ad-hoc Python heredoc; no separate committed generator file",
+    "minimal_exact_excerpt": "blocker_generator_excerpt.txt",
+    "result_commit": "b8eeaec33441a43c743ef22a4fad781ba73cc4c3",
+    "result_jsonl_line": 1371,
+    "retained_session_id": "01a12390-799c-7762-bc0a-5245610db436",
+    "source_commit": "1ebeefa1be311be66a6d0d3fd1c0ee7798a8367f",
+    "source_files_unchanged_since_blocker": true,
+    "source_jsonl_line": 1368,
+    "successful_output": {
+      "parent_npz_sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b",
+      "parent_phi_fortran_sha256": "b02dc49c39c3e8895befd5a95ae007ccf04fb2582064e8d79bd0f4c57c55286e",
+      "parent_state_sha256": "81d24fe4a66704ed469f560b7396b4c0cbf6810ef8082e710f002145ca6e3a65",
+      "path": "docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json",
+      "preflight_all_five_pass": true,
+      "sha256": "494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c",
+      "sharp_limit_m3": 0.12612500000000004,
+      "sharp_residual_m3": 0.003124999999999989,
+      "sharp_volume_m3": 0.12925000000000003,
+      "smooth_gv": -0.3029302661594796,
+      "states": 8
+    }
+  },
+  "historical_number_collision": {
+    "conclusion": "equal numeric values, distinct derivations; #51 uses P22 directly, not a substituted handoff/revoxelized measure",
+    "handoff_mesh_revoxelized_m3": 0.12925000000000003,
+    "v17_p22_hard_m3": 0.12925000000000003
+  },
+  "input_origins": {
+    "lowdim03_parent": "deterministic reconstruction from pinned baseline and already saved direction, no optimization",
+    "reference_surface": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl",
+    "v16_reference": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/sdf_native_genesis_v16/sdf_design_state.npz",
+    "v17_baseline": "/Users/sota/projects/FomulaTMU/CFD2026_09/work/sdf_native_genesis_v17/sdf_design_state.npz"
+  },
+  "integration_parent_sha": "0973f9efc7c7f469978d67c77a95fcfd365d58d5",
+  "issue_sources": [
+    "https://github.com/ramhachi/CFD_opt_sdf/issues/27#issuecomment-5892086559",
+    "https://github.com/ramhachi/CFD_opt_sdf/issues/51#issuecomment-6099041151"
+  ],
+  "measures": [
+    {
+      "call_chain": [
+        "sharp_volume_m3",
+        "sampled_solid_centers_count",
+        "_corner_mean"
+      ],
+      "function": "cfd_sdf.design.volume_semantics.sharp_volume_m3",
+      "id": "M1",
+      "masks_filter_volume": false,
+      "name": "P22 hard sharp",
+      "sampling": "every canonical h-cube: existing ordered sum of eight Float32 nodes times np.float32(0.125)",
+      "volume_formula": "int(solid_center_count) * float(state.spacing_m) ** 3",
+      "zero_handling": "strict center_phi < 0; exact zero fluid"
+    },
+    {
+      "feasibility_certificate": false,
+      "function": "cfd_sdf.design.smoothed_volume_and_gradient",
+      "gradient_hash": "C-order little-endian float64 bytes",
+      "id": "M2",
+      "name": "P22 smooth",
+      "sampling": "same Float32 center means, converted to Float64 for cosine rule",
+      "smooth_rule": "s=-center_phi; H=0 if s<=0, (1-cos(pi*s/h))/2 if 0<s<h, 1 if s>=h",
+      "transition_width": "epsilon=state.spacing_m"
+    },
+    {
+      "function": "scripts/build_lowdim01_inputs.py:geometry",
+      "id": "M3",
+      "implementation_identity": "imports the exact M1 callable and invokes it directly; no alternate sampling",
+      "name": "LOWDIM geometry sharp",
+      "same_as_M1": true
+    },
+    {
+      "constraint_authority": false,
+      "formula": "count(phi_node < 0)*h**3",
+      "function": "cfd_sdf.design.volume_semantics.node_occupancy_volume_m3",
+      "id": "M4",
+      "name": "raw node occupancy diagnostic"
+    }
+  ],
+  "schema_version": 1,
+  "source_files": [
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "6fbb6cc41f76ed281e9a5028dd99fc2925e79d07",
+      "path": "src/cfd_sdf/design/volume_semantics.py",
+      "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "4c99143cb0b56fcc8850e5826b8f07e5fd51430b",
+      "path": "scripts/build_lowdim01_inputs.py",
+      "sha256": "dcafca336fd9826a35fc9cfe306d5c5186e13e376e656fd529b7dc64d3db5925"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "da7a193d87b90d3f5f0a78d83d01ec2456210ace",
+      "path": "scripts/build_lowdim03_inputs.py",
+      "sha256": "add2f0386d262576fffbc6b11792a7d4886636b9a105e5ff211bf5b88c3a4045"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "3521f4fe1fda9d2afb7d4fed3d11a9d7f63939e0",
+      "path": "src/cfd_sdf/fd08_v2_campaign.py",
+      "sha256": "a7239c1071fae82347f4488cb06d38aabdd58bf25d9ab06ed11daca6a7f0bb91"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "933a162e59f953fd94404a522342e4c23adec678",
+      "path": "scripts/sdf_native_genesis_v17_2026_09.py",
+      "sha256": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "5750da1534c5f6297eec93c7843b930bb7e555e9",
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
+    },
+    {
+      "identical_at_blocker_source_commit": true,
+      "last_change_commit": "3f7eabf51723fb2e386633fe5896dbb8e0a459da",
+      "path": "src/cfd_sdf/sdf.py",
+      "sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51"
+    }
+  ]
+}
