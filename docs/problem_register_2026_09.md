@@ -1981,3 +1981,17 @@ execution order and evidence scope remain governed by `phase_plan.md`.
 ## P22 / #51 volume semantics bridge investigation (2026-10-12)
 
 The same authoritative evaluator reproduces original v16 `0.12612500000000004 m³` and measures both retained v17 baseline and LOWDIM-03 parent at `0.12925000000000003 m³` (parent-minus-baseline zero). The baseline already exceeds the v16 limit. Source mapping cannot currently be reproduced strictly: a saved diagnostic differs at three nonzero near-surface values. Terminal classification is **INCONCLUSIVE** under the frozen numerical-drift stop. #51 remains open and blocked; #27 is not reopened. No threshold, contract, parent or qualification changes, and no CFD/Kaggle/preregistration. Evidence: [audit report](evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md); status/order authority remains [phase_plan.md](phase_plan.md).
+
+## SRCMAP-01 (#52) — current source mapping non-reproducibility diagnosed (2026-10-12)
+
+The frozen diagnosis is complete with **SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC**.
+Five identical-condition v17 processes produced registered bit differences
+`4,0,4,0,0`; the two observed v16 controls were exact (finite observations only). Current unsigned distances are stable,
+but the inner ray-containment retry uses entropy-derived directions. Fixed local
+direction controls flip all three historical near-edge node signs. No outer
+production fallback was observed; historical actual paths and historical cause remain unresolved.
+The bounded chunk/order and two-bundle comparison do not establish an individual
+dependency remedy. Evidence and limits: [diagnostic report](evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostic_report.md).
+The previous volume bridge remains INCONCLUSIVE. #51 stays OPEN/blocked with no
+P22-v1 change, P22-v2 registration, LOWDIM-04A restart, CFD/Kaggle, parent or
+qualification change. Execution order remains governed only by `phase_plan.md`.

@@ -1,0 +1,185 @@
+{
+  "integration_parent_sha": "b94eebacf7d1e4425e1b6303a5e34b4fe08b1863",
+  "historical_manifest_verified_count": 37,
+  "current_unchanged_manifest_entry_count": 35,
+  "current_unchanged_entries": [
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_plan.md",
+      "sha256": "ce3e9810aea88db2094327025ef6348fe50fa08e00e5484dc4913787f2be650a"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md",
+      "sha256": "f686b32f47a2eef208a4dee0faf199a7680667f16f2ed89bd8d6d39553a60bcc"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/blocker_generator_excerpt.txt",
+      "sha256": "06bcc618eeacf3d8816de94481be43fad27a3ece69ffb75925abb5d906dd11f9"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/classification.json",
+      "sha256": "c00716d5af658393bc4d1ceee7da99821d9d8e20f2ae81ed64d94d7967d87aed"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/classification_rule_provenance.md",
+      "sha256": "6ba19c4b22dab7343be0e35ca89631277790b8688fafb3e0929c2c68a566983a"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/hard_evaluator_history.json",
+      "sha256": "23164c59119e3161987fde87f18a3af1ccd173e0e5468afa088ab1f93621085e"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/independent_review.md",
+      "sha256": "df279afb5d527bcc18faf7a369f8c5910fa68dfbeff9e3e093e043ab5ec2e2a2"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/independent_review_initial.md",
+      "sha256": "9a423bf466389426e39c81457e57de75c953e388a9aabbcfe8ce60f71fcb6282"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/lowdim03_parent.npz",
+      "sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+      "sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v16_reference.npz",
+      "sha256": "3d2cd6c1b4c6d03cc166eed8a9a46472ff697d95315dd8c22f6828bca59e43fe"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_source_replay_2026_10_12.npz",
+      "sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/measure_inventory.json",
+      "sha256": "f0c443912357763269d59128fbf6f821c9b94e87d284e95510ca5be562e9d744"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/p22_v2_migration_proposal.md",
+      "sha256": "5c64e43e118aba12bb69996a94b2ed86d2ffe0895570bcf89b8b44bc35b19f85"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/pytest_failure_comparison.json",
+      "sha256": "cec403c8f15b4be529cca2e6a376edf735c17cca48de4a6951836272a3969edb"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/review_provenance.json",
+      "sha256": "a5a0de271241885248cd471efd012b69d2093f88371078a913b95870cded0d45"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_geometry_replay.json",
+      "sha256": "0cee53722625ec160658ce2bf7d47c47add3c81c461d3b97e74869f92cc105da"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_failure_2026_10_12.log",
+      "sha256": "0917407dac06fcd957b2e79494bd0844e95dd6619cb4964b0bf785be8e18d9c0"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_recheck_2026_10_12.json",
+      "sha256": "92541c685d84da87a3e8278461a63de8c16e30e781aaf6ed6582e8207b721eb9"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_saved_field_supplement.json",
+      "sha256": "227bdb2ef911c892bc4118316eeabab9b6bed9ac8476712d35ba096e1e1d4a23"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_surface_volume_diagnostic.json",
+      "sha256": "6d31f9a91bc0a340dfc731421c0fbba7e04435c90b1ae54a20bc28079e3c52e0"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/baseline.log.gz",
+      "sha256": "cec5dc0d8f9f62f1ef1022c976083b6278af3429eb4ce6e962a7445386b8c93e"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/baseline.xml.gz",
+      "sha256": "26e9158eb39a2a5ee6870e98e25d72ef16c27bf80968b43323181f7bde1f3bcb"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/final.log.gz",
+      "sha256": "cd02f76fdcdaeda3f11f34de7f2650d5808f2ca1d6747c702cf5bc6c7e8fe9d9"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/final.xml.gz",
+      "sha256": "62aa3607f6f66d117021f8f8872871bdcda537190439fc2bf39ec2a181817ab4"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/focused.log.gz",
+      "sha256": "80c73f2df66281b5773b6451fd2c97114c1a6abab49f9d004c3132191c693b1e"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation/focused_review_final.log.gz",
+      "sha256": "f92e9da20fbf6a8616f81873c639f57821e59a716d972dc3665e4523ed85fdac"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation.json",
+      "sha256": "79cec2a84417184c886234edb4235ef970c2dd74ef5467ed1a8b4bd06239c547"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/volume_semantics_comparison.json",
+      "sha256": "87efae21805251ec80f7244fcd8e3edca44264e4d36cd6ac6e155920bf1894b3"
+    },
+    {
+      "path": "scripts/audit_p22_v17_volume_semantics.py",
+      "sha256": "bcee9d9984bbe00f89a49dc7e44b945113c46b8e1624e6549f10985ce42266d9"
+    },
+    {
+      "path": "tests/test_p22_v17_volume_semantics_audit.py",
+      "sha256": "e509ea592fdfc1161931ba422f389fdb2d6bdb6ff57fd5e45911ac023818a252"
+    },
+    {
+      "path": "src/cfd_sdf/design/volume_semantics.py",
+      "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+    },
+    {
+      "path": "docs/sdf_native_smoothed_volume_contract_v1_2026_09.md",
+      "sha256": "2d1ac804756fc276d248e4cd3f3dc4f65d2b4b4b4789f41f5f974278ee14a54f"
+    },
+    {
+      "path": "docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json",
+      "sha256": "494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c"
+    }
+  ],
+  "living_document_append_only_exceptions": [
+    {
+      "path": "docs/phase_plan.md",
+      "historical_sha256": "4c4445a9edba612b72536353d0b839b08f2a0165bae26c9253d5cb19b615087c",
+      "current_sha256": "51ad4f621a467b4ece913854df4971b03403ae2963c9a079cdc4ab453d9ba014",
+      "historical_hash_verified_at_parent": true,
+      "current_preserves_parent_as_exact_prefix": true
+    },
+    {
+      "path": "docs/problem_register_2026_09.md",
+      "historical_sha256": "2f80d2945f6cb3c10deacbf0a4c64c43551e4f6c7cf83682a6a330557a9ca429",
+      "current_sha256": "990a4bf36c8a2fb3850b4b07f84b761313be5d7d54a75827a2f52a9d3de554b8",
+      "historical_hash_verified_at_parent": true,
+      "current_preserves_parent_as_exact_prefix": true
+    }
+  ],
+  "protected_paths": [
+    "src",
+    "pyproject.toml",
+    "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11",
+    "docs/evidence/lowdim04_dual_grid_local_model_2026_10_11",
+    "docs/evidence/sdf_native_volume_semantics_v1_2026_09.json"
+  ],
+  "protected_tracked_diff_empty": true,
+  "extra_authority_byte_checks": [
+    {
+      "path": "docs/evidence/sdf_native_volume_semantics_v1_2026_09.json",
+      "sha256": "0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce",
+      "parent_bytes_unchanged": true
+    },
+    {
+      "path": "docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json",
+      "sha256": "494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c",
+      "parent_bytes_unchanged": true
+    }
+  ],
+  "old_bridge_classification_retained": "INCONCLUSIVE",
+  "no_reference_replacement": true
+}

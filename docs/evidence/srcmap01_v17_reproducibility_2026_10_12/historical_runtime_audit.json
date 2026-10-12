@@ -1,0 +1,475 @@
+{
+  "conclusion": {
+    "historical_environment_difference_identified": false,
+    "historical_environment_equivalence_established": false,
+    "historical_inner_rtree_batch_or_list_identified": false,
+    "historical_outer_try_or_fallback_identified": false,
+    "historical_random_ray_retry_identified": false,
+    "root_cause": "UNKNOWN; no classification promotion follows from this audit"
+  },
+  "current_venv_inspection_not_historical_snapshot": {
+    "modules": {
+      "numpy": {
+        "direct_url": null,
+        "distribution_metadata_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy-2.5.2.dist-info",
+        "imported_module": {
+          "bytes": 25220,
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+          "sha256": "09295a80660f17925ae23765ce8cbd7ff7ceae968d5f2f89349f1cb74c0b9e11"
+        },
+        "installer": "uv",
+        "metadata_dir_ctime_utc": "2026-09-06T11:30:39.005312+00:00",
+        "metadata_dir_mtime_utc": "2026-09-06T11:30:39.005312+00:00",
+        "module_ctime_utc": "2026-09-06T11:30:38.980723+00:00",
+        "module_mtime_utc": "2026-09-06T11:30:15.873493+00:00",
+        "version": "2.5.2"
+      },
+      "rtree": {
+        "direct_url": null,
+        "distribution_metadata_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree-1.4.1.dist-info",
+        "imported_module": {
+          "bytes": 216,
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/__init__.py",
+          "sha256": "f6bd13e0ca9605dfebb3e513a0119f3369b964e2f6658c1ad33aeeef11d7acb3"
+        },
+        "installer": "uv",
+        "metadata_dir_ctime_utc": "2026-09-06T11:30:38.807307+00:00",
+        "metadata_dir_mtime_utc": "2026-09-06T11:30:38.807307+00:00",
+        "module_ctime_utc": "2026-09-06T11:30:38.803828+00:00",
+        "module_mtime_utc": "2026-09-06T11:30:15.325861+00:00",
+        "version": "1.4.1"
+      },
+      "scipy": {
+        "direct_url": null,
+        "distribution_metadata_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy-1.18.1.dist-info",
+        "imported_module": {
+          "bytes": 4193,
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/__init__.py",
+          "sha256": "39ccae300a4739cc53719bd3b39ce3f8f66e736c6eb672006e338a4c5cc3dc76"
+        },
+        "installer": "uv",
+        "metadata_dir_ctime_utc": "2026-09-06T11:30:38.805547+00:00",
+        "metadata_dir_mtime_utc": "2026-09-06T11:30:38.805547+00:00",
+        "module_ctime_utc": "2026-09-06T11:30:38.767720+00:00",
+        "module_mtime_utc": "2026-09-06T11:30:15.527306+00:00",
+        "version": "1.18.1"
+      },
+      "trimesh": {
+        "direct_url": null,
+        "distribution_metadata_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh-5.1.0.dist-info",
+        "imported_module": {
+          "bytes": 2429,
+          "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/__init__.py",
+          "sha256": "a50d8a9c4346fa0c5f6ca0c234effd12c548b1bee58197abb8106cb5e79d3360"
+        },
+        "installer": "uv",
+        "metadata_dir_ctime_utc": "2026-09-06T11:30:38.807258+00:00",
+        "metadata_dir_mtime_utc": "2026-09-06T11:30:38.807258+00:00",
+        "module_ctime_utc": "2026-09-06T11:30:38.798869+00:00",
+        "module_mtime_utc": "2026-09-06T11:30:15.325895+00:00",
+        "version": "5.1.0"
+      }
+    },
+    "observed_python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "pyvenv_cfg": {
+      "bytes": 159,
+      "path": ".venv/pyvenv.cfg",
+      "sha256": "9e0a9836ead55a1bf6a062d4e81c1291509723b2c051e9b0c9ecec9aafbff2d8",
+      "text": "home = /opt/homebrew/opt/python@3.12/bin\nimplementation = CPython\nuv = 0.11.19\nversion_info = 3.12.13\ninclude-system-site-packages = false\nprompt = CFD2026_09\n"
+    },
+    "resolved_executable": "/opt/homebrew/Cellar/python@3.12/3.12.13/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+    "sys_base_prefix": "/opt/homebrew/opt/python@3.12/Frameworks/Python.framework/Versions/3.12",
+    "sys_prefix": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv",
+    "sys_version": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "timestamp_interpretation": "Current module/distribution metadata timestamps precede Oct11. They provide circumstantial continuity only; no historical snapshot proves bytes or runtime unchanged, and filesystem timestamps can be preserved.",
+    "venv_symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+  },
+  "date": "2026-10-12",
+  "dependency_provenance": {
+    "constraints": {
+      "numpy": ">=1.26",
+      "rtree": ">=1.2",
+      "scipy": ">=1.11",
+      "trimesh": ">=4.4"
+    },
+    "exact_lock_for_historical_python_mapping": null,
+    "pip_or_uv_mutation_record_between_replays_found_in_target_sessions": false,
+    "project_declarations": [
+      {
+        "bytes": 776,
+        "path": "pyproject.toml",
+        "sha256": "57f1e869cd99f0f98f80b9189fe27ad37e0cc76b9dfb78411fc38612643a9680"
+      },
+      {
+        "bytes": 109,
+        "path": "requirements.txt",
+        "sha256": "02ca30361964ea531f2e67ec39cf8b9a5157c365ec2bbcef44a3045ff420473b"
+      }
+    ],
+    "scope": "Searched command-execution items in success and completion sessions, repository dependency declarations and prior audit evidence. Absence of recorded installs does not prove no install occurred elsewhere. Unrelated private shell history was not inspected."
+  },
+  "evidence_class": "historical_command_and_artifact_inspection_plus_current_installed_source_inspection",
+  "integration_parent_sha": "b94eebacf7d1e4425e1b6303a5e34b4fe08b1863",
+  "kind": "srcmap01_historical_runtime_and_implementation_provenance_audit",
+  "load_semantics_scope": "Current installed5.1.0 source inspection only; no exact Oct11 trimesh package bytes snapshot, so do not retroactively attribute all current load semantics or loaded vertex/face ordering to Oct11.",
+  "oct11_exact_replay": {
+    "actual_imported_module_paths_at_run": null,
+    "backend_path_at_run": null,
+    "command_completion": {
+      "aggregated_output": "",
+      "command": "PYTHONPATH=src:scripts .venv/bin/python - <<'PY' > work/p22_volume_audit/source_replay.log 2>&1\nimport json,hashlib\nimport numpy as np\nimport trimesh\nfrom pathlib import Path\nfrom sdf_native_genesis_v17_2026_09 import resample\nfrom audit_p22_v17_volume_semantics import E, load_checked, SURFACE_SHA, sha\np=E/'inputs/reference_surface.stl'\nassert sha(p)==SURFACE_SHA\nmesh=trimesh.load(p,force='mesh')\nreport={'source_stl_sha256':SURFACE_SHA,'resampler':'scripts/sdf_native_genesis_v17_2026_09.py:resample','source_replayed_now':True,'states':{}}\nfor name in ('v16_reference','v17_baseline'):\n s=load_checked(name,E/'inputs'/f'{name}.npz')\n phi=resample(mesh,s.origin_m,s.spacing_m,s.shape)\n same=bool(np.array_equal(phi.view('<u4'),s.phi.view('<u4')))\n report['states'][name]={'phi_bitwise_equal':same,'max_absolute_phi_difference_m':float(np.max(np.abs(phi.astype(float)-s.phi))),'phi_c_sha256':hashlib.sha256(phi.tobytes()).hexdigest()}\n print(name,same,flush=True)\n assert same\nreport['physical_source_surface_same']=True\nreport['trilinear_zero_set_identity_claimed']=False\n(E/'source_geometry_replay.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\\n')\nPY",
+      "cwd": "file:///Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "exit_code": 0,
+      "jsonl_line": 144,
+      "session_id": "01a1267c-a8bb-7fb2-9bee-6567d8498552",
+      "session_path": "/Users/sota/.codex/sessions/2026/10/11/rollout-2026-10-11T00-44-26-01a1267c-a8bb-7fb2-9bee-6567d8498552.jsonl",
+      "shell_command_utf8_sha256": "0405ac0caaacbfe4c4e23c937cb8464152f6a800e7505c2f004515a1aa6f4d78",
+      "timestamp_utc": "2026-10-10T15:49:51.558Z"
+    },
+    "command_dispatch": {
+      "jsonl_line": 120,
+      "session_path": "/Users/sota/.codex/sessions/2026/10/11/rollout-2026-10-11T00-44-26-01a1267c-a8bb-7fb2-9bee-6567d8498552.jsonl",
+      "timestamp_utc": "2026-10-10T15:48:13.196Z"
+    },
+    "description": "JST2026-10-11; timestamps in primary session are UTC2026-10-10. Strict uint32 equality required for both v16 and v17 before writing historical result.",
+    "loaded_vertex_face_hashes_at_run": null,
+    "output_log": {
+      "bytes": 37,
+      "path": "work/p22_volume_audit/source_replay.log",
+      "sha256": "0ada60dd9353f2f51e2bef4217022fda23dbd2f3a940ef40b572b7eba4cbd515",
+      "text": "v16_reference True\nv17_baseline True\n"
+    },
+    "resolved_python_executable_at_run": null,
+    "result_artifact": {
+      "bytes": 691,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_geometry_replay.json",
+      "sha256": "0cee53722625ec160658ce2bf7d47c47add3c81c461d3b97e74869f92cc105da"
+    },
+    "runtime_versions_at_run": null,
+    "source_stl_path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+    "source_stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "unknown_reason": "Exact replay command did not print or record versions, module paths, loaded arrays, dependency lock, outer exception/fallback, inner backend path, or RNG state. Shared venv pathname is not a frozen environment.",
+    "venv_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/.venv",
+    "venv_setup_dispatch": {
+      "command_excerpt": "ln -s /Users/sota/projects/FomulaTMU/CFD2026_09/.venv .venv",
+      "jsonl_line": 83,
+      "session_path": "/Users/sota/.codex/sessions/2026/10/11/rollout-2026-10-11T00-44-26-01a1267c-a8bb-7fb2-9bee-6567d8498552.jsonl",
+      "timestamp_utc": "2026-10-10T15:46:19.609Z"
+    },
+    "venv_symlink_target": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv"
+  },
+  "oct12_first_strict_failure": {
+    "backend_path_at_run": null,
+    "command_completion": {
+      "aggregated_output": "",
+      "command": ".venv/bin/python scripts/audit_p22_v17_volume_semantics.py --check --check-source > work/p22_volume_audit/source_replay_final.log 2>&1",
+      "cwd": "file:///Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "exit_code": 1,
+      "jsonl_line": 133,
+      "session_id": "01a12ba1-4883-7e91-8c6c-beb0e8fe305a",
+      "session_path": "/Users/sota/.codex/sessions/2026/10/12/rollout-2026-10-12T00-42-32-01a12ba1-4883-7e91-8c6c-beb0e8fe305a.jsonl",
+      "shell_command_utf8_sha256": "3b08e5622dc364dbe1778b1d576d0f066204cbff54629d8062e1fb31e2d351e8",
+      "timestamp_utc": "2026-10-11T15:45:33.204Z"
+    },
+    "description": "JST2026-10-12 first strict completion replay; no field saved by this command.",
+    "failure_log": {
+      "bytes": 835,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_failure_2026_10_12.log",
+      "sha256": "0917407dac06fcd957b2e79494bd0844e95dd6619cb4964b0bf785be8e18d9c0",
+      "text": "P22 replay assertions PASS 87efae21805251ec80f7244fcd8e3edca44264e4d36cd6ac6e155920bf1894b3\nTraceback (most recent call last):\n  File \"/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py\", line 174, in <module>\n    output = canonical(replay())\n    ^^^^^^\n  File \"/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py\", line 170, in main\n    parser = argparse.ArgumentParser(description=__doc__)\n        ^^^^^^^^^^^^^^\n  File \"/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/audit_p22_v17_volume_semantics.py\", line 142, in check_source\n    from sdf_native_genesis_v17_2026_09 import resample\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: INCONCLUSIVE: source replay differs for v17_baseline\n"
+    },
+    "failure_time_audit_script_sha256": null,
+    "failure_time_field_difference_count": null,
+    "preceding_runtime_snapshot": {
+      "aggregated_output": "runtime 3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)] macOS-26.3.1-arm64-arm-64bit 2.5.2 5.1.0\nv16_reference [61, 33, 25] 46080 1009 0.12612500000000004 0.04763768084408358 -0.6222978723957695 0318291991e069d6ada6604806ce6b1d5d302187d03c194e4882fb2d61ca774f 0\nv17_baseline [121, 65, 49] 368640 8272 0.12925000000000003 0.08897032348835406 -0.2945861368614151 bd4e05dbcc6350a0e34d92fc0b1c9af5b0517d615b1bc3ab11b97493088c250d 0\nlowdim03_parent [121, 65, 49] 368640 8272 0.12925000000000003 0.08791792018063567 -0.3029302661594796 ee030a0d1d9ae1d23fc9730217e5619df3837fbc097f5d5b22699408f86d767d 0\n{'parent_masks_equal_baseline': True, 'same_origin': True, 'same_physical_bounds': True, 'same_source_surface_sha256': '5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11', 'v16_v17_center_sets': 'origin+(i+0.5)*h; h16=0.05, h17=0.025; disjoint center sets, 8x as many samples', 'v16_v17_identical_trilinear_zero_sets_claimed': False, 'v17_common_nodes_bitwise_equal_v16': True, 'v17_spacing_is_v16_half': True}\n",
+      "command": ".venv/bin/python - <<'PY'\nimport json, platform, sys, numpy, trimesh\nfrom pathlib import Path\np=Path('docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/volume_semantics_comparison.json')\na=json.loads(p.read_text())\nprint('runtime',sys.version,platform.platform(),numpy.__version__,trimesh.__version__)\nfor s in a['states']:\n print(s['label'], s['point_shape'], s['total_sampled_centers'], s['solid_sampled_centers'],s['p22_hard_sharp_m3'],s['p22_smooth']['smoothed_volume_m3'],s['p22_smooth']['constraint_residual'],s['p22_smooth']['gradient_sha256'],s['exact_zero_centers_fluid'])\nprint(a['lattice_identity'])\nPY\n.venv/bin/python -m compileall src scripts tests > work/p22_volume_audit/compileall_final.log 2>&1",
+      "cwd": "file:///Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "exit_code": 0,
+      "jsonl_line": 86,
+      "session_id": "01a12ba1-4883-7e91-8c6c-beb0e8fe305a",
+      "session_path": "/Users/sota/.codex/sessions/2026/10/12/rollout-2026-10-12T00-42-32-01a12ba1-4883-7e91-8c6c-beb0e8fe305a.jsonl",
+      "shell_command_utf8_sha256": "0ccfc4271022e754f15fb006be01c0939c0c7bc9d40b523d2a58605c8f8ece2a",
+      "timestamp_utc": "2026-10-11T15:44:23.634Z"
+    },
+    "recorded_versions": {
+      "numpy": "2.5.2",
+      "platform": "macOS-26.3.1-arm64-arm-64bit",
+      "python": "3.12.13",
+      "trimesh": "5.1.0"
+    },
+    "source_stl_path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+    "traceback_limit": "Script was edited during checks. Stored traceback frame line/text does not match final script; retain terminal ValueError only as failure evidence, not current line-level provenance. No failure-time audit script hash found."
+  },
+  "oct12_separate_saved_diagnostic": {
+    "backend_path_at_run": null,
+    "command_completion": {
+      "aggregated_output": "",
+      "command": ".venv/bin/python -u - <<'PY' > work/p22_volume_audit/source_bit_diagnostic.log 2>&1\nimport sys\nsys.path[:0]=['scripts','src']\nimport audit_p22_v17_volume_semantics as A\nfrom sdf_native_genesis_v17_2026_09 import resample\nimport trimesh,numpy as np,json\ns=A.load_checked('v17_baseline',A.E/'inputs/v17_baseline.npz')\nm=trimesh.load(A.E/'inputs/reference_surface.stl',force='mesh')\np=resample(m,s.origin_m,s.spacing_m,s.shape)\nbad=p.view('<u4')!=s.phi.view('<u4')\nprint(json.dumps({'different_bits_count':int(bad.sum()),'different_values_count':int((p!=s.phi).sum()),'max_absolute_difference_m':float(np.max(np.abs(p.astype(np.float64)-s.phi))),'signed_zero_only':bool(np.all((p[bad]==0)&(s.phi[bad]==0))),'examples':[{'ijk':x.tolist(),'replay':float(p[tuple(x)]),'retained':float(s.phi[tuple(x)]),'replay_bits':int(p.view('<u4')[tuple(x)]),'retained_bits':int(s.phi.view('<u4')[tuple(x)])} for x in np.argwhere(bad)[:10]]},indent=2))\nnp.save('work/p22_volume_audit/v17_resampled_phi.npy',p)\nPY",
+      "cwd": "file:///Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "exit_code": 0,
+      "jsonl_line": 218,
+      "session_id": "01a12ba1-4883-7e91-8c6c-beb0e8fe305a",
+      "session_path": "/Users/sota/.codex/sessions/2026/10/12/rollout-2026-10-12T00-42-32-01a12ba1-4883-7e91-8c6c-beb0e8fe305a.jsonl",
+      "shell_command_utf8_sha256": "5a8d1fa58514355194aabb8433ffed3ea5a1b285f92c9f153cfec6d4599f9ec4",
+      "timestamp_utc": "2026-10-11T15:50:06.565Z"
+    },
+    "description": "Separate resample after strict failure. Its three differences cannot be attributed to first strict failure.",
+    "diagnostic_phi_c_sha256": "0a97a3ac5e0a7eadabf5c67b6cce0abc391d122c5db594f9363a000fc7b00e26",
+    "different_bits_count": 3,
+    "different_values_count": 3,
+    "field": {
+      "bytes": 195962,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_source_replay_2026_10_12.npz",
+      "sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4"
+    },
+    "field_packaging_event": {
+      "jsonl_line": 238,
+      "session_path": "/Users/sota/.codex/sessions/2026/10/12/rollout-2026-10-12T00-42-32-01a12ba1-4883-7e91-8c6c-beb0e8fe305a.jsonl",
+      "timestamp_utc": "2026-10-11T15:51:12.411Z"
+    },
+    "float64_precast_field_saved": false,
+    "loaded_vertex_face_hashes_at_run": null,
+    "max_absolute_difference_m": 2.665600717932648e-08,
+    "nonzero_sign_differences": 3,
+    "record": {
+      "bytes": 2460,
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/source_replay_recheck_2026_10_12.json",
+      "sha256": "92541c685d84da87a3e8278461a63de8c16e30e781aaf6ed6582e8207b721eb9"
+    },
+    "registered_phi_c_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f"
+  },
+  "registered_genesis_environment_anchor": {
+    "artifact": {
+      "bytes": 3967,
+      "path": "docs/evidence/sdf_native_genesis_v17_2026_09.json",
+      "sha256": "8335cb7569dae7f75780b133e3f588b802e3b13258f012c391339ffc6a1c10b5"
+    },
+    "recorded": {
+      "environment": {
+        "numpy": "2.5.2",
+        "platform": "macOS-26.3.1-arm64-arm-64bit",
+        "python": "3.12.13",
+        "trimesh": "5.1.0"
+      }
+    },
+    "scope": "Registered genesis evidence, not an Oct11 runtime snapshot. Its recorded Python/NumPy/trimesh/platform match the Oct12 completion snapshot."
+  },
+  "remaining_unknowns": [
+    "Oct11 exact imported package bytes and versions",
+    "Historical outer try/fallback per chunk",
+    "Historical inner rtree batch/list branch",
+    "Historical random ray retry invocation/RNG state",
+    "Historical loaded vertex and face hashes",
+    "Failure-time audit script bytes",
+    "First strict failure phi bytes and difference count",
+    "Cause of retained-positive versus saved-diagnostic-negative three nonzero values"
+  ],
+  "schema_version": 1,
+  "scope": {
+    "force_or_cfd_results_inspected": false,
+    "fresh_distance_measurements_executed": false,
+    "fresh_mapping_executed": false,
+    "historical_evidence_modified": false,
+    "production_modified": false,
+    "source_stl_loaded_for_this_audit": false
+  },
+  "stage_g_single_alternative_candidate": {
+    "availability_and_compatible_wheels_verified_here": false,
+    "basis": "No historical dependency change identified; representative minimum project requirements on same Python3.12 only. Candidate is not a reconstructed historical runtime.",
+    "execution_owner": "Parent/main diagnostic worker must verify metadata and lock complete actual environment before freeze. No package installation by this audit.",
+    "versions": {
+      "numpy": "1.26.4",
+      "python": "3.12.13",
+      "rtree": "1.2.0",
+      "scipy": "1.11.4",
+      "trimesh": "4.4.0"
+    }
+  },
+  "static_call_path_observations": [
+    {
+      "end_line": 75,
+      "exact_function_source_sha256": "afe48f66a5b59812e4ece04c5cdb242004c8604984efd86f2f7f013a96cb9300",
+      "file_sha256": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae",
+      "function": "resample",
+      "observations": [
+        "Canonical axes use origin+spacing*np.arange, meshgrid indexing ij, C flatten; calls project signed_distance then casts float32."
+      ],
+      "source_file": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/sdf_native_genesis_v17_2026_09.py",
+      "start_line": 72
+    },
+    {
+      "end_line": 132,
+      "exact_function_source_sha256": "16272f76026a47207deb33aa3baff802a732f58ff5054b863d8647040859d408",
+      "file_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+      "function": "signed_distance",
+      "observations": [
+        "Outer try calls negative trimesh.proximity.signed_distance; Exception triggers closest_point plus _contains_safe. No historical path/exception provenance."
+      ],
+      "source_file": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/src/cfd_sdf/sdf.py",
+      "start_line": 117
+    },
+    {
+      "end_line": 202,
+      "exact_function_source_sha256": "d90a419d5af9137ee112a2e35ebf754488daf82aac02270bb609c7549584de6b",
+      "file_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+      "function": "_contains_safe",
+      "observations": [
+        "mesh.contains exceptions silently return all-False; not observable in historical artifacts."
+      ],
+      "source_file": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/src/cfd_sdf/sdf.py",
+      "start_line": 198
+    },
+    {
+      "end_line": 155,
+      "exact_function_source_sha256": "6656b0d8b90ff2f9122eb1238bc5f617f702f60274350aa297ec5597bde3748e",
+      "file_sha256": "6b313c1f0ff9295e1cdf6a5567588f5df7d5c02eea12353fc9d15740d19a9e4e",
+      "function": "load",
+      "observations": [
+        "Current5.1.0 load calls load_scene; force mesh then Scene.to_mesh. force mesh controls coercion, not disabling preprocessing."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py",
+      "start_line": 74
+    },
+    {
+      "end_line": 261,
+      "exact_function_source_sha256": "42ecd008778344acc4a99718b43c4bde7f21b79468e71e2b3b7e902da019d206",
+      "file_sha256": "6b313c1f0ff9295e1cdf6a5567588f5df7d5c02eea12353fc9d15740d19a9e4e",
+      "function": "load_scene",
+      "observations": [
+        "STL loader kwargs feed _load_kwargs, constructor defaults apply."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py",
+      "start_line": 158
+    },
+    {
+      "end_line": 521,
+      "exact_function_source_sha256": "e2a3dfe144ec72c7016d65308fe401a8853b94e78a3845b446601e024b43af57",
+      "file_sha256": "6b313c1f0ff9295e1cdf6a5567588f5df7d5c02eea12353fc9d15740d19a9e4e",
+      "function": "_load_kwargs",
+      "observations": [
+        "handle_mesh constructs Trimesh(**kwargs)."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/load.py",
+      "start_line": 402
+    },
+    {
+      "end_line": 135,
+      "exact_function_source_sha256": "98bfa1be9af98d4f46a58987811454b15d461ea33de52878bdfdf3b6f3620662",
+      "file_sha256": "0ec9c34061172c9fdfd4b7e9fbfa5bdeab16a9dfd000348deade76e1838e7f28",
+      "function": "load_stl_binary",
+      "observations": [
+        "Raw STL vertices loaded in triangle order with sequential face indices; constructor preprocessing can merge duplicate vertices."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/exchange/stl.py",
+      "start_line": 55
+    },
+    {
+      "end_line": 253,
+      "exact_function_source_sha256": "b79541ac81405b3c8b5e7b0f088cc70e956b0d498626d622e7ab49f1236601c9",
+      "file_sha256": "13d002a80f14bfa33cf5e49fab19b60083356c2377d92fc98a701d0d2b3e8706",
+      "function": "__init__",
+      "observations": [
+        "Current Trimesh constructor defaults process=True,validate=False,use_embree=True; process runs unless overridden. Selects embree if available otherwise ray_triangle."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/base.py",
+      "start_line": 98
+    },
+    {
+      "end_line": 313,
+      "exact_function_source_sha256": "927ba5c429f8c51d1ebd6f9ad820583ea53cc231cea137863be073dbd39678dc",
+      "file_sha256": "13d002a80f14bfa33cf5e49fab19b60083356c2377d92fc98a701d0d2b3e8706",
+      "function": "process",
+      "observations": [
+        "Default removes nonfinite vertices and merges vertices. Validation-only degenerate/duplicate face removal and fix_normals disabled with validate=False."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/base.py",
+      "start_line": 255
+    },
+    {
+      "end_line": 967,
+      "exact_function_source_sha256": "947d142fef366fece7d2dadd95fc40c02770c30af63f68d833d22fd110fbdb4a",
+      "file_sha256": "6dd01efd09edae58f9d3643d73f9ca943904cb353a52f9d8f6633213b684e15b",
+      "function": "to_mesh",
+      "observations": [
+        "Concatenates dumped mesh instances with baked transforms."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/scene/scene.py",
+      "start_line": 953
+    },
+    {
+      "end_line": 1627,
+      "exact_function_source_sha256": "f52fa2887cde2c181f2cfcef1bc8e1c29653a59e47126fc2ab497bbeebc14a23",
+      "file_sha256": "251f2cb47c5e3547d34141aa5839b02638d4b4921f857108a5ed685af6213f76",
+      "function": "concatenate",
+      "observations": [
+        "Single geometry copy; multimesh construction process=False after concatenate. Initial STL constructor still has process=True."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/util.py",
+      "start_line": 1492
+    },
+    {
+      "end_line": 76,
+      "exact_function_source_sha256": "b06fef50fea2fc7f19bb7e2d02350ad749ee721488c19e1d73967cf34f2115fe",
+      "file_sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a",
+      "function": "nearby_faces",
+      "observations": [
+        "cKDTree nearest-vertex radius plus tol.merge; attempts rtree.intersection_v batch API then silently catches BaseException to per-point rtree.intersection. Historical branch unknown."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+      "start_line": 26
+    },
+    {
+      "end_line": 224,
+      "exact_function_source_sha256": "00385985a5cdea7b16ae6b428a0370e8b0ec3c513f3b8ed8ed3e856816b5600d",
+      "file_sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a",
+      "function": "closest_point",
+      "observations": [
+        "Per-query candidate squared distances qd.argsort()[:2]; near-equal closest-face correction gated by both squared distances>tol.merge. Tie/backend ordering sensitivity is a hypothesis only."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+      "start_line": 130
+    },
+    {
+      "end_line": 294,
+      "exact_function_source_sha256": "7cb14e9e6b6e1dbe2333e19e0a84c25857842b36b9330fef77f86808e2ec68e7",
+      "file_sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a",
+      "function": "signed_distance",
+      "observations": [
+        "Current tol.merge=1e-8. Nonzero>tol.merge points use barycentric projected-face normal sign or mesh.ray.contains_points. Smaller distances retain positive trimesh sign. No node measurements by this audit."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+      "start_line": 227
+    },
+    {
+      "end_line": 120,
+      "exact_function_source_sha256": "b43c05d616a61ac80a173b267b06791aae01c83414015a0746ae7304f30c3c8d",
+      "file_sha256": "bc02600d223bab6e582bb19eaab875509c00c0ffd1547e803786c408c7607bb4",
+      "function": "contains_points",
+      "observations": [
+        "Contradictory forward/backward parity with neither ray in free space marks broken; if check_direction=None retry uses util.random_generator().random(3)-0.5. RNG/path not recorded historically. Static capability does not establish invocation on the three nodes."
+      ],
+      "source_file": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+      "start_line": 8
+    }
+  ],
+  "tracked_mapping_source_identity": [
+    {
+      "bytes": 11328,
+      "current_equals_integration_baseline": true,
+      "historical_run_full_module_hash_available": false,
+      "integration_baseline_sha256": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae",
+      "last_change_commit": "933a162e59f953fd94404a522342e4c23adec678",
+      "path": "scripts/sdf_native_genesis_v17_2026_09.py",
+      "sha256": "8235159b566502883009e5d87697a91d716d077ec8ff2062d8e14eb3a607d1ae"
+    },
+    {
+      "bytes": 11503,
+      "current_equals_integration_baseline": true,
+      "historical_run_full_module_hash_available": false,
+      "integration_baseline_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+      "last_change_commit": "3f7eabf51723fb2e386633fe5896dbb8e0a459da",
+      "path": "src/cfd_sdf/sdf.py",
+      "sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51"
+    }
+  ]
+}
