@@ -1977,3 +1977,7 @@ are recorded in
 [`docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json`](evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json).
 Issue #51 remains open for a compatible volume-reference/parent decision;
 execution order and evidence scope remain governed by `phase_plan.md`.
+
+## P22 / #51 volume semantics bridge investigation (2026-10-12)
+
+The same authoritative evaluator reproduces original v16 `0.12612500000000004 m³` and measures both retained v17 baseline and LOWDIM-03 parent at `0.12925000000000003 m³` (parent-minus-baseline zero). The baseline already exceeds the v16 limit. Source mapping cannot currently be reproduced strictly: a saved diagnostic differs at three nonzero near-surface values. Terminal classification is **INCONCLUSIVE** under the frozen numerical-drift stop. #51 remains open and blocked; #27 is not reopened. No threshold, contract, parent or qualification changes, and no CFD/Kaggle/preregistration. Evidence: [audit report](evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md); status/order authority remains [phase_plan.md](phase_plan.md).

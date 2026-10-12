@@ -1,0 +1,60 @@
+{
+  "cause": "unresolved; no sign-zero-only or deterministic-runtime explanation established",
+  "classification_implication": "INCONCLUSIVE under the predeclared numerical implementation drift condition. No tolerance introduced and no state replaced.",
+  "date": "2026-10-12",
+  "different_bits_count": 3,
+  "different_values_count": 3,
+  "evidence_class": "solver_free_source_mapping_reproducibility_failure",
+  "examples": [
+    {
+      "ijk": [
+        28,
+        24,
+        19
+      ],
+      "replay": -1.2287812545253018e-08,
+      "replay_bits": 2991790687,
+      "retained": 1.2287812545253018e-08,
+      "retained_bits": 844307039
+    },
+    {
+      "ijk": [
+        48,
+        44,
+        23
+      ],
+      "replay": -1.2287812545253018e-08,
+      "replay_bits": 2991790687,
+      "retained": 1.2287812545253018e-08,
+      "retained_bits": 844307039
+    },
+    {
+      "ijk": [
+        56,
+        44,
+        27
+      ],
+      "replay": -1.332800358966324e-08,
+      "replay_bits": 2992961838,
+      "retained": 1.332800358966324e-08,
+      "retained_bits": 845478190
+    }
+  ],
+  "first_strict_failure_log": "source_replay_failure_2026_10_12.log",
+  "max_absolute_difference_m": 2.665600717932648e-08,
+  "numpy": "2.5.2",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "previous_exact_replay": "source_geometry_replay.json retains the Oct11 exact replay; that successful result is historical and is not overwritten.",
+  "python": "3.12.13",
+  "replayed_phi_c_sha256": "0a97a3ac5e0a7eadabf5c67b6cce0abc391d122c5db594f9363a000fc7b00e26",
+  "retained_phi_sha256": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+  "retained_state_sha256": "02f48f6488be4f5d772c3ec515d4860b00e0e4a84d38aa56b187c82c1a615dcb",
+  "saved_replay_field": "inputs/v17_source_replay_2026_10_12.npz",
+  "saved_replay_field_sha256": "e768fb8bb01c9a19931a8a129004080acdf7d7091ab1b3670f57377e860d43b4",
+  "scope": "This saved diagnostic is from a separate resampling after the first strict check failed; the first failed run did not save its field. Do not assign these3 differences to that first run.",
+  "signed_zero_only": false,
+  "source_mapper": "scripts/sdf_native_genesis_v17_2026_09.py:resample",
+  "source_surface_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+  "strict_replay_check_command": ".venv/bin/python scripts/audit_p22_v17_volume_semantics.py --check --check-source",
+  "strict_replay_check_exit_code": 1
+}
