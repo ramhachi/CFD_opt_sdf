@@ -1,0 +1,9 @@
+{
+  "code_hashes": {
+    "scripts/diagnose_srcmap01.py": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e",
+    "scripts/run_srcmap01.py": "9d72e88d70705df9d0d43f0c077b1b984eb9499f50749a29a0e3dfe2add927ff",
+    "tests/test_srcmap01_diagnostic.py": "9422b5e860b492f174de9b7feda1e0b8a1be9984341cfd5aecfcdf9022f878e4"
+  },
+  "command": ".venv/bin/python -m pytest -q --junitxml=/tmp/srcmap01-final.xml > /tmp/srcmap01-final.log 2>&1",
+  "freeze_sha256": "45ce00295d4d3ca663c34b78f2c331ec3ac6e39f2819e41e5f22d8cf1dd81482"
+}

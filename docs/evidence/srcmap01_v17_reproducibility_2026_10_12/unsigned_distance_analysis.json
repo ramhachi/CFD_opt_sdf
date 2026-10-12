@@ -1,0 +1,64 @@
+{
+  "scope": "post-run analysis of saved arrays only; no new mapping conditions or production changes",
+  "D_unsigned_comparisons": [
+    {
+      "id": "D_direct",
+      "unsigned_float32_vs_registered_magnitude": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      }
+    },
+    {
+      "id": "D_fallback",
+      "unsigned_float32_vs_registered_magnitude": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      }
+    },
+    {
+      "id": "D_unsigned",
+      "unsigned_float32_vs_registered_magnitude": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      }
+    }
+  ],
+  "minimum_vs_current_unsigned_float64_different_bits": 8,
+  "minimum_vs_current_unsigned_float64_max_absolute_difference_m": 2.220446049250313e-16
+}

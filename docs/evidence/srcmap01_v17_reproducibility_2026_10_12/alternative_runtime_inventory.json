@@ -1,0 +1,149 @@
+{
+  "mesh": {
+    "bounds": [
+      [
+        -0.6000000238418579,
+        -0.44999998807907104,
+        -0.25
+      ],
+      [
+        0.550000011920929,
+        0.44999998807907104,
+        0.25
+      ]
+    ],
+    "connected_components": 1,
+    "faces": {
+      "c_little_sha256": "7b4be8455c6752ff66e1e59ba151c8aacd789c040d1e24fdfd145dc4b9b73296",
+      "dtype": "<i8",
+      "shape": [
+        2684,
+        3
+      ]
+    },
+    "force_mesh_semantics": "trimesh load legacy wrapper converts Scene to one mesh using to_mesh; exact installed source hashed",
+    "load_call": "trimesh.load(path, force=\"mesh\")",
+    "process_argument": "omitted; trimesh.Trimesh default process=True",
+    "ray_backend_class": "trimesh.ray.ray_triangle.RayMeshIntersector",
+    "source_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+    "source_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "vertices": {
+      "c_little_sha256": "b2e014fce6ffe5e15e6c90e1605fe6c1578eacfc42266dd9eb962096e12ecaed",
+      "dtype": "<f8",
+      "shape": [
+        1344,
+        3
+      ]
+    },
+    "watertight": true,
+    "winding_consistent": true
+  },
+  "runtime": {
+    "architecture": "arm64",
+    "backend_sources": {
+      "rtree.index": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/index.py",
+        "sha256": "8446b0fdc288fe6981b9c9b3f6c76d5dc66434a97a115bfb1bb7d828a1fc1157"
+      },
+      "trimesh.proximity": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/proximity.py",
+        "sha256": "c38ab0679047a0a170525ae289a70d8076bcd575055cb7f553ad452a4c7ffc84"
+      },
+      "trimesh.ray.ray_triangle": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/ray/ray_triangle.py",
+        "sha256": "0f3e6a387ec55c62ac9942e8199dcba470d0f743fecbe335faeacd0b85232101"
+      },
+      "trimesh.ray.ray_util": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+        "sha256": "06fce8cda67a8a7f1ecf4bf816876cc3e6e406c67050f31e2e2df39dfcf49a66"
+      },
+      "trimesh.triangles": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/triangles.py",
+        "sha256": "28e190eeb7d03a76d49f908f634b0f370dc0e31b9586001377c269216dd58105"
+      },
+      "trimesh.util": {
+        "path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/util.py",
+        "sha256": "503fcec0153d937295e3320efb242c1b4d14cd3f34d18c7ea12c2f1f589a9ce9"
+      }
+    },
+    "byteorder": "little",
+    "compiler": "Clang 17.0.0 (clang-1700.6.3.2)",
+    "cpu": "Apple M4",
+    "diagnostic_source_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/diagnose_srcmap01.py",
+    "diagnostic_source_sha256": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e",
+    "installed_distribution_lock": [
+      "PyYAML==6.0.3",
+      "Rtree==1.2.0",
+      "numpy==1.26.4",
+      "pip==26.0",
+      "scipy==1.11.4",
+      "trimesh==4.4.0"
+    ],
+    "kernel": "25.3.0",
+    "libspatialindex_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/lib/libspatialindex_c.dylib",
+    "libspatialindex_sha256": "9337c574489ca0c474fb37f0eaa3ad7206e223369874306d2e60ceecad0d92e6",
+    "libspatialindex_version": "1.9.3",
+    "locale": "C/C.UTF-8/C/C/C/C",
+    "lock_method": "importlib.metadata (current uv-managed venv has no pip module)",
+    "modules": {
+      "embreex": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'embreex'"
+      },
+      "numpy": {
+        "distribution_record_sha256": "473c8a81818e459958be706ab1e691f7790829a5800ff6bde82cf043aa58044f",
+        "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/numpy/__init__.py",
+        "module_sha256": "22cd1535fa14d74ef6f457cca149ffdc80875f460be313b8f895273f78bc402e",
+        "version": "1.26.4"
+      },
+      "pyembree": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'pyembree'"
+      },
+      "rtree": {
+        "distribution_record_sha256": "2424fe15a22c1b670e5cadca3392f4a880676207bce457953d952a1d923baea0",
+        "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/rtree/__init__.py",
+        "module_sha256": "b3a6e3519c5996e943de7297dc1d2c7799f367fe2c2c333b70b201f38eef29fb",
+        "version": "1.2.0"
+      },
+      "scipy": {
+        "distribution_record_sha256": "451f973d2acb0776b194bbb9f7375a80f885249d281e2e194f6e200a4ecf2e31",
+        "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/scipy/__init__.py",
+        "module_sha256": "5df3106bce68233cec43e84208135d8f18fb6e07d2770fbc157fce32bab28c50",
+        "version": "1.11.4"
+      },
+      "shapely": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'shapely'"
+      },
+      "trimesh": {
+        "distribution_record_sha256": "139eb908c6f6b8b3bc132cc04cd3b45ba437494bdaf138b28f0006cbcbee0bdb",
+        "module_path": "/private/tmp/srcmap01-minimum-env/lib/python3.12/site-packages/trimesh/__init__.py",
+        "module_sha256": "b1528f24220556783ebe488c499276a1d616dcee2a2bc620122d1e8b910a2738",
+        "version": "4.4.0"
+      }
+    },
+    "numpy_build_blas_lapack_config": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/arm64-builds/include\n    lib directory: /opt/arm64-builds/lib\n    name: openblas64\n    openblas configuration: USE_64BITINT=1 DYNAMIC_ARCH=1 DYNAMIC_OLDER= NO_CBLAS=\n      NO_LAPACK= NO_LAPACKE= NO_AFFINITY=1 USE_OPENMP= SANDYBRIDGE MAX_THREADS=3\n    pc file directory: /usr/local/lib/pkgconfig\n    version: 0.3.23.dev\n  lapack:\n    detection method: internal\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: dep4335021056\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: 1.26.4\nCompilers:\n  c:\n    args: -fno-strict-aliasing, -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    commands: cc\n    linker: ld64\n    linker args: -fno-strict-aliasing, -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    name: clang\n    version: 14.0.0\n  c++:\n    args: -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    commands: c++\n    linker: ld64\n    linker args: -DBLAS_SYMBOL_SUFFIX=64_, -DHAVE_BLAS_ILP64\n    name: clang\n    version: 14.0.0\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.0.8\nMachine Information:\n  build:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\n  host:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\nPython Information:\n  path: /private/var/folders/76/zy5ktkns50v6gt5g8r0sf6sc0000gn/T/cibw-run-q69bfk1p/cp312-macosx_arm64/build/venv/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - NEON\n  - NEON_FP16\n  - NEON_VFPV4\n  - ASIMD\n  found:\n  - ASIMDHP\n  not found:\n  - ASIMDFHM\n\n",
+    "numpy_legacy_random_state_sha256": "66f9b0772a0eca58e4383dec9659ce05d264bf44f454b35737a4a7926cbe86b6",
+    "os": "Darwin",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "production_module_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/src/cfd_sdf/sdf.py",
+    "production_source_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "python_executable": "/private/tmp/srcmap01-minimum-env/bin/python",
+    "python_executable_sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+    "pythonhashseed": "0",
+    "pythonpath": null,
+    "thread_env": {
+      "MKL_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "VECLIB_MAXIMUM_THREADS": null
+    },
+    "trimesh_entropy_random_state": null
+  }
+}

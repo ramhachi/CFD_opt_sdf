@@ -1,0 +1,63 @@
+{
+  "integration_parent_sha": "b94eebacf7d1e4425e1b6303a5e34b4fe08b1863",
+  "issue": 52,
+  "evidence_class": "solver-free source-mapping reproducibility diagnosis; no target-physics qualification",
+  "freeze_sha256": "45ce00295d4d3ca663c34b78f2c331ec3ac6e39f2819e41e5f22d8cf1dd81482",
+  "diagnostic_source_binding": "parent plus exact frozen script hashes; containing final commit is published in completion comment",
+  "terminal_classification": "SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC",
+  "campaign_command": "PYTHONHASHSEED=0 /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python scripts/run_srcmap01.py --approved-freeze-sha256 45ce00295d4d3ca663c34b78f2c331ec3ac6e39f2819e41e5f22d8cf1dd81482",
+  "campaign_exit_code": 0,
+  "independent_full_field_jobs": 21,
+  "local_analysis_processes": 1,
+  "measurement_reruns": 0,
+  "focused_command": ".venv/bin/python -m pytest -q tests/test_srcmap01_diagnostic.py",
+  "focused_passed": 8,
+  "focused_passes_independently_confirmed_in_final_junit": true,
+  "full_pytest_baseline": "48 failed, 2176 passed, 23 skipped, 7227 warnings in 551.54s (0:09:11)",
+  "full_pytest_final": "48 failed, 2184 passed, 23 skipped, 7227 warnings in 554.45s (0:09:14)",
+  "baseline_failure_count": 48,
+  "final_failure_count": 48,
+  "new_failure_ids": [],
+  "resolved_failure_ids": [],
+  "all_tests_pass": false,
+  "compileall_command": ".venv/bin/python -m compileall src scripts tests",
+  "compileall_exit_code": 0,
+  "git_diff_check_exit_code": 0,
+  "git_diff_cached_check_exit_code": 0,
+  "exact_gzip_and_uncompressed_validation_hashes_verified": true,
+  "independent_numeric_check": "independent_numeric_check.json: 21jobs,315hashchecks,23pairs PASS",
+  "difference_maps": "difference_map_check.json:19maps,95exactbytechecks PASS",
+  "protected_authority_check": "protected_authority_check.json:35unchanged current hashes plus2living document historical hashes verified at parent; old evidence directory unchanged",
+  "all_21_frozen_hashes_verified_after_measurement": true,
+  "independent_reviews": {
+    "prerun": {
+      "verdict": "PASS",
+      "actual_model": [
+        "claude-sonnet-5-5"
+      ],
+      "raw_sha256": "3c4dc600074bfa9d778d912c4b962d313e29cd24ae962ddf654b18f2ebf506d5"
+    },
+    "postrun": {
+      "verdict": "PASS",
+      "actual_model": [
+        "claude-sonnet-5-5"
+      ],
+      "raw_sha256": "092bff37827b954aa30fd01b00162c720996b399cd9180a70c1392105f6222bc"
+    }
+  },
+  "postreview_document_clarifications_applied": true,
+  "historical_cause_resolved": false,
+  "production_source_or_dependency_changes": false,
+  "p22_v1_changed": false,
+  "p22_v2_registered": false,
+  "p22_v2_contract_hash_generated": false,
+  "lowdim04a_restarted": false,
+  "cfd_runs": 0,
+  "kaggle_submissions": 0,
+  "qualification_flags_changed": false,
+  "selected_delta": null,
+  "shape_update_allowed": false,
+  "accepted_parent_changed": false,
+  "reference_artifact_replaced": false,
+  "automatic_continuation": false
+}

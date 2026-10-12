@@ -1,0 +1,807 @@
+{
+  "chunk_size": 200000,
+  "comparison_float32_registered": {
+    "abs_difference_counts": {
+      "0": 1,
+      "1e-08": 1,
+      "1e-09": 1,
+      "1e-10": 1
+    },
+    "array_equal": false,
+    "bit_equal": false,
+    "different_bits_count": 1,
+    "different_sign_count": 1,
+    "different_values_count": 1,
+    "max_absolute_difference_m": 2.388837927469467e-08,
+    "nonzero_sign_difference_count": 1,
+    "signed_zero_only_count": 0
+  },
+  "comparison_float64_to_registered_promoted": {
+    "abs_difference_counts": {
+      "0": 377154,
+      "1e-08": 167043,
+      "1e-09": 339091,
+      "1e-10": 368767
+    },
+    "array_equal": false,
+    "bit_equal": false,
+    "different_bits_count": 377154,
+    "different_sign_count": 1,
+    "different_values_count": 377154,
+    "max_absolute_difference_m": 5.960464477539063e-08,
+    "nonzero_sign_difference_count": 1,
+    "signed_zero_only_count": 0
+  },
+  "elapsed_seconds": 40.7701358795166,
+  "events": [
+    {
+      "call": "try_signed_distance",
+      "event_id": 0,
+      "known_problem_nodes_in_query": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "parent_event_ids": [],
+      "point_count": 200000,
+      "query_sha256": "db910ebd73d7a8ac9c445031e44bc94caf76de66df36aacda897067c17424f30",
+      "success": true
+    },
+    {
+      "call": "closest_point",
+      "event_id": 1,
+      "known_problem_nodes_in_query": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "parent_event_ids": [
+        0
+      ],
+      "point_count": 200000,
+      "query_sha256": "db910ebd73d7a8ac9c445031e44bc94caf76de66df36aacda897067c17424f30",
+      "success": true
+    },
+    {
+      "bounds_count": 200000,
+      "bounds_max_sha256": "ac93b80569f2cdaf864c989f4719fc4402eaacab513dd730d372ae74bcbd7e78",
+      "bounds_min_sha256": "190fe442208e7024521a734825bfc9f7890a251b265a0ae031c2b54484dc96e8",
+      "call": "rtree_batch_intersection",
+      "event_id": 2,
+      "parent_event_ids": [
+        0,
+        1
+      ],
+      "success": true
+    },
+    {
+      "call": "ray_contains_points",
+      "event_id": 3,
+      "known_problem_nodes_in_query": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "parent_event_ids": [
+        0
+      ],
+      "point_count": 180766,
+      "query_sha256": "dec005ec61ac92f3ddbcb18b2bd70d77c75aac336067e3c22b0d658de210ca7b",
+      "success": true
+    },
+    {
+      "call": "random_generator",
+      "seed_args": [],
+      "seed_kwargs": {}
+    },
+    {
+      "active_event_ids": [
+        0,
+        3
+      ],
+      "args": [
+        3
+      ],
+      "call": "random_retry_draw",
+      "state_after": {
+        "bit_generator": "PCG64",
+        "has_uint32": 0,
+        "state": {
+          "inc": 135617459860794326249083299064005190593,
+          "state": 151620954138000993481747549769300502897
+        },
+        "uinteger": 0
+      },
+      "state_before": {
+        "bit_generator": "PCG64",
+        "has_uint32": 0,
+        "state": {
+          "inc": 135617459860794326249083299064005190593,
+          "state": 208872423172075357359892470514706373306
+        },
+        "uinteger": 0
+      },
+      "value": [
+        0.6562380717332263,
+        0.9703631368593566,
+        0.7096605258843776
+      ]
+    },
+    {
+      "call": "ray_util_contains_points",
+      "check_direction": [
+        0.2903224228797216,
+        0.8740313037111916,
+        0.3895923137154563
+      ],
+      "event_id": 6,
+      "known_problem_nodes_in_query": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "parent_event_ids": [
+        0,
+        3
+      ],
+      "point_count": 9,
+      "query_points": [
+        [
+          -0.29999999999999993,
+          -0.050000000000000044,
+          -0.07499999999999996
+        ],
+        [
+          0.30000000000000004,
+          -0.025000000000000022,
+          -0.02499999999999991
+        ],
+        [
+          0.30000000000000004,
+          0.40000000000000013,
+          0.2250000000000001
+        ],
+        [
+          -0.6,
+          0.050000000000000044,
+          -0.17499999999999993
+        ],
+        [
+          -0.29999999999999993,
+          0.025000000000000022,
+          -0.07499999999999996
+        ],
+        [
+          -0.6,
+          0.050000000000000044,
+          -0.19999999999999996
+        ],
+        [
+          0.025000000000000133,
+          0.30000000000000004,
+          0.025000000000000022
+        ],
+        [
+          0.30000000000000004,
+          0.050000000000000044,
+          -0.02499999999999991
+        ],
+        [
+          -0.6,
+          -0.050000000000000044,
+          -0.22499999999999998
+        ]
+      ],
+      "query_sha256": "ece6c1645a0436c532bbd654f7b90d0983d8bd8aa5257157bf3ebac90f437244",
+      "success": true
+    },
+    {
+      "call": "try_signed_distance",
+      "event_id": 7,
+      "known_problem_nodes_in_query": {
+        "0": [
+          16419
+        ],
+        "1": [
+          125177
+        ],
+        "2": [
+          95215
+        ]
+      },
+      "parent_event_ids": [],
+      "point_count": 185385,
+      "query_sha256": "6ee1a1152e95a0868746110332fbc70d18186ef11000f3168d4b02e680a8ce0e",
+      "success": true
+    },
+    {
+      "call": "closest_point",
+      "event_id": 8,
+      "known_problem_nodes_in_query": {
+        "0": [
+          16419
+        ],
+        "1": [
+          125177
+        ],
+        "2": [
+          95215
+        ]
+      },
+      "parent_event_ids": [
+        7
+      ],
+      "point_count": 185385,
+      "query_sha256": "6ee1a1152e95a0868746110332fbc70d18186ef11000f3168d4b02e680a8ce0e",
+      "success": true
+    },
+    {
+      "bounds_count": 185385,
+      "bounds_max_sha256": "d8b37bc0cff6cdb69557dc526c8d77651150b28391cf6dbf1d4c80a4b6986afc",
+      "bounds_min_sha256": "0b451926de7c25ae6707e4162f81f75c5dbb4f7866bb94d6d6b642bc21a31f7c",
+      "call": "rtree_batch_intersection",
+      "event_id": 9,
+      "parent_event_ids": [
+        7,
+        8
+      ],
+      "success": true
+    },
+    {
+      "call": "ray_contains_points",
+      "event_id": 10,
+      "known_problem_nodes_in_query": {
+        "0": [
+          14828
+        ],
+        "1": [
+          113171
+        ],
+        "2": [
+          86072
+        ]
+      },
+      "parent_event_ids": [
+        7
+      ],
+      "point_count": 167635,
+      "query_sha256": "d10792369794241f2c78d957c82f7c68ac9825881214979097dada4dcccb6480",
+      "success": true
+    },
+    {
+      "call": "random_generator",
+      "seed_args": [],
+      "seed_kwargs": {}
+    },
+    {
+      "active_event_ids": [
+        7,
+        10
+      ],
+      "args": [
+        3
+      ],
+      "call": "random_retry_draw",
+      "state_after": {
+        "bit_generator": "PCG64",
+        "has_uint32": 0,
+        "state": {
+          "inc": 135617459860794326249083299064005190593,
+          "state": 92957429749420639652519491928842628620
+        },
+        "uinteger": 0
+      },
+      "state_before": {
+        "bit_generator": "PCG64",
+        "has_uint32": 0,
+        "state": {
+          "inc": 135617459860794326249083299064005190593,
+          "state": 151620954138000993481747549769300502897
+        },
+        "uinteger": 0
+      },
+      "value": [
+        0.3634282160143021,
+        0.4129012729355176,
+        0.06929611772214894
+      ]
+    },
+    {
+      "call": "ray_util_contains_points",
+      "check_direction": [
+        -0.29679429902657173,
+        -0.1892807202981024,
+        -0.9359946329914277
+      ],
+      "event_id": 13,
+      "known_problem_nodes_in_query": {
+        "0": [
+          0
+        ],
+        "1": [
+          8
+        ],
+        "2": [
+          6
+        ]
+      },
+      "parent_event_ids": [
+        7,
+        10
+      ],
+      "point_count": 10,
+      "query_points": [
+        [
+          -0.29999999999999993,
+          -0.19999999999999996,
+          -0.12499999999999994
+        ],
+        [
+          -0.375,
+          0.30000000000000004,
+          -0.24999999999999994
+        ],
+        [
+          0.30000000000000004,
+          0.07499999999999996,
+          -0.02499999999999991
+        ],
+        [
+          0.30000000000000004,
+          0.050000000000000044,
+          0.1250000000000001
+        ],
+        [
+          0.20000000000000018,
+          0.30000000000000004,
+          0.07500000000000007
+        ],
+        [
+          0.30000000000000004,
+          -0.050000000000000044,
+          0.1250000000000001
+        ],
+        [
+          0.40000000000000013,
+          0.30000000000000004,
+          0.07500000000000007
+        ],
+        [
+          0.375,
+          -0.30000000000000004,
+          0.050000000000000044
+        ],
+        [
+          0.20000000000000018,
+          0.30000000000000004,
+          -0.02499999999999991
+        ],
+        [
+          0.0,
+          0.30000000000000004,
+          0.025000000000000022
+        ]
+      ],
+      "query_sha256": "1a86df3df4742849be43dd8e55c39fa867027edd0eaed42edb02977f1780cb4a",
+      "success": true
+    },
+    {
+      "call": "rtree_scalar_intersection",
+      "exceptions": [],
+      "invocations": 37278,
+      "successes": 37278
+    }
+  ],
+  "fallback_invoked": false,
+  "float64_reference_note": "registered has Float32 only; promoted registered is not historical pre-cast Float64",
+  "grid": "v17",
+  "mesh": {
+    "bounds": [
+      [
+        -0.6000000238418579,
+        -0.44999998807907104,
+        -0.25
+      ],
+      [
+        0.550000011920929,
+        0.44999998807907104,
+        0.25
+      ]
+    ],
+    "connected_components": 1,
+    "faces": {
+      "c_little_sha256": "7b4be8455c6752ff66e1e59ba151c8aacd789c040d1e24fdfd145dc4b9b73296",
+      "dtype": "<i8",
+      "shape": [
+        2684,
+        3
+      ]
+    },
+    "force_mesh_semantics": "trimesh load legacy wrapper converts Scene to one mesh using to_mesh; exact installed source hashed",
+    "load_call": "trimesh.load(path, force=\"mesh\")",
+    "process_argument": "omitted; trimesh.Trimesh default process=True",
+    "ray_backend_class": "trimesh.ray.ray_triangle.RayMeshIntersector",
+    "source_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
+    "source_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11",
+    "vertices": {
+      "c_little_sha256": "b2e014fce6ffe5e15e6c90e1605fe6c1578eacfc42266dd9eb962096e12ecaed",
+      "dtype": "<f8",
+      "shape": [
+        1344,
+        3
+      ]
+    },
+    "watertight": true,
+    "winding_consistent": true
+  },
+  "mode": "production",
+  "npz_sha256": "f19746f404ecbacf74014075ec12e1e207bfd414a6f8b6c0258fd893bdf78e56",
+  "ordering": "permuted",
+  "permutation_c_little_sha256": "9e6031e5b9bc8b243d6d430b3f15dc9245b1851e551cf028aaa71a7e33e0bc12",
+  "phi_float32": {
+    "bytes_sha256": {
+      "<_C": "ca20bdd2a57e6bafb17dd090bd9abc216a489ffb742e3beaede696091363303d",
+      "<_F": "702a28e3c4b836e6db06ad1bde18f6af57ce91272bfcc72c1730f92b784d6d7e",
+      ">_C": "9f4fb0fbe90377a1f630a12094457638411c505e967918cfda8999c2d6ee990b",
+      ">_F": "0992112ab39e19fdbeddddfd644b1c48ca9bc831b2c0d1a1505c0a40c8912ce3"
+    },
+    "dtype": "<f4",
+    "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+    "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+    "near_surface_count": 5370,
+    "near_surface_subset_sha256": "b9c2355c284526bb311924155cf13550a20c88f7f66fd61c66cfa849da5a648c",
+    "negative_mask_sha256": "a3911856f9314389ac0316b3c147e1aaf03df2fc077893c144896d9237dfca89",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "sign_mask_sha256": "b774b982ad8cb4539a39002dc11ef0630f6fcb46dd802ea91c4bafb71ab40246"
+  },
+  "phi_float64": {
+    "bytes_sha256": {
+      "<_C": "b987b5ebfec50eba5e5fb6a4bc983d7ec3adf5fbfdd4c6abf1bb7ac78dc8bb65",
+      "<_F": "ca01ac127f530250a5719284b8da19973542ff5dceddb989537dda179c0c5ffb",
+      ">_C": "36d72ce7748fabe4a9a764b75f88565d93338be35d1faf6671fd251bd4bf8304",
+      ">_F": "85f3d9a793e944a26eb46119d20ff43bcf6091c46305345ea98325b7f5efe3bd"
+    },
+    "dtype": "<f8",
+    "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+    "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+    "near_surface_count": 5370,
+    "near_surface_subset_sha256": "5fa5e97d7e30179227749b99fdec3dcd3801d37c20f69e52568770583662c430",
+    "negative_mask_sha256": "a3911856f9314389ac0316b3c147e1aaf03df2fc077893c144896d9237dfca89",
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "sign_mask_sha256": "b774b982ad8cb4539a39002dc11ef0630f6fcb46dd802ea91c4bafb71ab40246"
+  },
+  "point_coordinates_c_little_sha256": "c50b86a5ca1cffedf000893f6df0db5b1b46eba054ba85182c02546b9cc8fef8",
+  "runtime_after": {
+    "architecture": "arm64",
+    "backend_sources": {
+      "rtree.index": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/index.py",
+        "sha256": "07d430583ad162f993bd69254d5526de24026fc71e85a846bc01fdce6bda1f92"
+      },
+      "trimesh.proximity": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+        "sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a"
+      },
+      "trimesh.ray.ray_triangle": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_triangle.py",
+        "sha256": "0f3e6a387ec55c62ac9942e8199dcba470d0f743fecbe335faeacd0b85232101"
+      },
+      "trimesh.ray.ray_util": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+        "sha256": "bc02600d223bab6e582bb19eaab875509c00c0ffd1547e803786c408c7607bb4"
+      },
+      "trimesh.triangles": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py",
+        "sha256": "caf162eb23884061e313398a47d617569a43f85fe180d06d1b67601663a71067"
+      },
+      "trimesh.util": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/util.py",
+        "sha256": "251f2cb47c5e3547d34141aa5839b02638d4b4921f857108a5ed685af6213f76"
+      }
+    },
+    "byteorder": "little",
+    "compiler": "Clang 17.0.0 (clang-1700.6.3.2)",
+    "cpu": "Apple M4",
+    "diagnostic_source_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/diagnose_srcmap01.py",
+    "diagnostic_source_sha256": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e",
+    "installed_distribution_lock": [
+      "PyYAML==6.0.3",
+      "Pygments==2.21.0",
+      "annotated-doc==0.0.5",
+      "attrs==26.1.0",
+      "certifi==2026.7.22",
+      "cfd-sdf==0.1.0",
+      "cfd-sdf==0.1.0",
+      "charset-normalizer==3.5.1",
+      "contourpy==1.3.3",
+      "cycler==0.12.1",
+      "cyclopts==4.24.0",
+      "docstring_parser==0.18.0",
+      "fonttools==4.64.0",
+      "idna==3.19",
+      "iniconfig==2.3.0",
+      "kiwisolver==1.5.1",
+      "markdown-it-py==4.2.0",
+      "matplotlib==3.11.1",
+      "mdurl==0.1.2",
+      "mlx-metal==0.32.2",
+      "mlx==0.32.2",
+      "numpy==2.5.2",
+      "packaging==26.3",
+      "pillow==12.3.0",
+      "platformdirs==4.11.7",
+      "pluggy==1.6.0",
+      "pooch==1.9.0",
+      "pyparsing==3.3.2",
+      "pytest==9.1.1",
+      "python-dateutil==2.9.0.post0",
+      "pyvista==0.48.4",
+      "requests==2.34.2",
+      "rich-rst==2.1.0",
+      "rich==15.0.0",
+      "rtree==1.4.1",
+      "scipy==1.18.1",
+      "scooby==0.11.2",
+      "shellingham==1.5.4",
+      "six==1.17.0",
+      "trimesh==5.1.0",
+      "typer==0.27.2",
+      "typing_extensions==4.16.0",
+      "urllib3==2.7.0",
+      "vtk==9.6.2"
+    ],
+    "kernel": "25.3.0",
+    "libspatialindex_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/lib/libspatialindex_c.dylib",
+    "libspatialindex_sha256": "a4c2282d8ba7f63562b0631370f4e6fbd2b078e3841b5081d77b535b11af7676",
+    "libspatialindex_version": "2.1.0",
+    "locale": "C/C.UTF-8/C/C/C/C",
+    "lock_method": "importlib.metadata (current uv-managed venv has no pip module)",
+    "modules": {
+      "embreex": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'embreex'"
+      },
+      "numpy": {
+        "distribution_record_sha256": "55f0c4d15fd46da441f7ab84f12defc3e065ee5954beb69fcef1493b0b8fa56a",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+        "module_sha256": "09295a80660f17925ae23765ce8cbd7ff7ceae968d5f2f89349f1cb74c0b9e11",
+        "version": "2.5.2"
+      },
+      "pyembree": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'pyembree'"
+      },
+      "rtree": {
+        "distribution_record_sha256": "876de31d99b32f21f4da899c3b46cb05b0b25031f4c1cd8d80bcc561bc178aaf",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/__init__.py",
+        "module_sha256": "f6bd13e0ca9605dfebb3e513a0119f3369b964e2f6658c1ad33aeeef11d7acb3",
+        "version": "1.4.1"
+      },
+      "scipy": {
+        "distribution_record_sha256": "d95b7aa2c03940de0bec301021a5753ff3577b5b7ce28e6342d59f9d8556258a",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/__init__.py",
+        "module_sha256": "39ccae300a4739cc53719bd3b39ce3f8f66e736c6eb672006e338a4c5cc3dc76",
+        "version": "1.18.1"
+      },
+      "shapely": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'shapely'"
+      },
+      "trimesh": {
+        "distribution_record_sha256": "c06f9983210f50835fc0a9267e0a835cb68d922cf4b0724ad9ba430c8a87062c",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/__init__.py",
+        "module_sha256": "a50d8a9c4346fa0c5f6ca0c234effd12c548b1bee58197abb8106cb5e79d3360",
+        "version": "5.1.0"
+      }
+    },
+    "numpy_build_blas_lapack_config": "Build Dependencies:\n  blas:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\n  lapack:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\nCompilers:\n  c:\n    commands: cc\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  c++:\n    commands: c++\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.9\nMachine Information:\n  build:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\n  host:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\nPython Information:\n  path: /private/var/folders/g3/pffjr_y96bq06blnkf72x_hw0000gn/T/build-env-re3_temx/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - NEON\n  - NEON_FP16\n  - NEON_VFPV4\n  - ASIMD\n  found:\n  - ASIMDHP\n  - ASIMDDP\n  not found:\n  - ASIMDFHM\n\n",
+    "numpy_legacy_random_state_sha256": "858609944d8b6183e92e39d4da6d654169a06fdf4cccd30a607d59f8be12a38b",
+    "os": "Darwin",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "production_module_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/src/cfd_sdf/sdf.py",
+    "production_source_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "python_executable_sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+    "pythonhashseed": "0",
+    "pythonpath": null,
+    "thread_env": {
+      "MKL_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "VECLIB_MAXIMUM_THREADS": null
+    },
+    "trimesh_entropy_random_state": {
+      "bit_generator": "PCG64",
+      "has_uint32": 0,
+      "state": {
+        "inc": 135617459860794326249083299064005190593,
+        "state": 92957429749420639652519491928842628620
+      },
+      "uinteger": 0
+    }
+  },
+  "runtime_before": {
+    "architecture": "arm64",
+    "backend_sources": {
+      "rtree.index": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/index.py",
+        "sha256": "07d430583ad162f993bd69254d5526de24026fc71e85a846bc01fdce6bda1f92"
+      },
+      "trimesh.proximity": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/proximity.py",
+        "sha256": "e9c2dcc768d69d226f944ee9eb12d1b20351f46e0806e7efb8b47c2af7fb7b7a"
+      },
+      "trimesh.ray.ray_triangle": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_triangle.py",
+        "sha256": "0f3e6a387ec55c62ac9942e8199dcba470d0f743fecbe335faeacd0b85232101"
+      },
+      "trimesh.ray.ray_util": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/ray/ray_util.py",
+        "sha256": "bc02600d223bab6e582bb19eaab875509c00c0ffd1547e803786c408c7607bb4"
+      },
+      "trimesh.triangles": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/triangles.py",
+        "sha256": "caf162eb23884061e313398a47d617569a43f85fe180d06d1b67601663a71067"
+      },
+      "trimesh.util": {
+        "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/util.py",
+        "sha256": "251f2cb47c5e3547d34141aa5839b02638d4b4921f857108a5ed685af6213f76"
+      }
+    },
+    "byteorder": "little",
+    "compiler": "Clang 17.0.0 (clang-1700.6.3.2)",
+    "cpu": "Apple M4",
+    "diagnostic_source_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/diagnose_srcmap01.py",
+    "diagnostic_source_sha256": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e",
+    "installed_distribution_lock": [
+      "PyYAML==6.0.3",
+      "Pygments==2.21.0",
+      "annotated-doc==0.0.5",
+      "attrs==26.1.0",
+      "certifi==2026.7.22",
+      "cfd-sdf==0.1.0",
+      "cfd-sdf==0.1.0",
+      "charset-normalizer==3.5.1",
+      "contourpy==1.3.3",
+      "cycler==0.12.1",
+      "cyclopts==4.24.0",
+      "docstring_parser==0.18.0",
+      "fonttools==4.64.0",
+      "idna==3.19",
+      "iniconfig==2.3.0",
+      "kiwisolver==1.5.1",
+      "markdown-it-py==4.2.0",
+      "matplotlib==3.11.1",
+      "mdurl==0.1.2",
+      "mlx-metal==0.32.2",
+      "mlx==0.32.2",
+      "numpy==2.5.2",
+      "packaging==26.3",
+      "pillow==12.3.0",
+      "platformdirs==4.11.7",
+      "pluggy==1.6.0",
+      "pooch==1.9.0",
+      "pyparsing==3.3.2",
+      "pytest==9.1.1",
+      "python-dateutil==2.9.0.post0",
+      "pyvista==0.48.4",
+      "requests==2.34.2",
+      "rich-rst==2.1.0",
+      "rich==15.0.0",
+      "rtree==1.4.1",
+      "scipy==1.18.1",
+      "scooby==0.11.2",
+      "shellingham==1.5.4",
+      "six==1.17.0",
+      "trimesh==5.1.0",
+      "typer==0.27.2",
+      "typing_extensions==4.16.0",
+      "urllib3==2.7.0",
+      "vtk==9.6.2"
+    ],
+    "kernel": "25.3.0",
+    "libspatialindex_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/lib/libspatialindex_c.dylib",
+    "libspatialindex_sha256": "a4c2282d8ba7f63562b0631370f4e6fbd2b078e3841b5081d77b535b11af7676",
+    "libspatialindex_version": "2.1.0",
+    "locale": "C/C.UTF-8/C/C/C/C",
+    "lock_method": "importlib.metadata (current uv-managed venv has no pip module)",
+    "modules": {
+      "embreex": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'embreex'"
+      },
+      "numpy": {
+        "distribution_record_sha256": "55f0c4d15fd46da441f7ab84f12defc3e065ee5954beb69fcef1493b0b8fa56a",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+        "module_sha256": "09295a80660f17925ae23765ce8cbd7ff7ceae968d5f2f89349f1cb74c0b9e11",
+        "version": "2.5.2"
+      },
+      "pyembree": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'pyembree'"
+      },
+      "rtree": {
+        "distribution_record_sha256": "876de31d99b32f21f4da899c3b46cb05b0b25031f4c1cd8d80bcc561bc178aaf",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/rtree/__init__.py",
+        "module_sha256": "f6bd13e0ca9605dfebb3e513a0119f3369b964e2f6658c1ad33aeeef11d7acb3",
+        "version": "1.4.1"
+      },
+      "scipy": {
+        "distribution_record_sha256": "d95b7aa2c03940de0bec301021a5753ff3577b5b7ce28e6342d59f9d8556258a",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/scipy/__init__.py",
+        "module_sha256": "39ccae300a4739cc53719bd3b39ce3f8f66e736c6eb672006e338a4c5cc3dc76",
+        "version": "1.18.1"
+      },
+      "shapely": {
+        "available": false,
+        "exception_class": "ModuleNotFoundError",
+        "exception_message": "No module named 'shapely'"
+      },
+      "trimesh": {
+        "distribution_record_sha256": "c06f9983210f50835fc0a9267e0a835cb68d922cf4b0724ad9ba430c8a87062c",
+        "module_path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/lib/python3.12/site-packages/trimesh/__init__.py",
+        "module_sha256": "a50d8a9c4346fa0c5f6ca0c234effd12c548b1bee58197abb8106cb5e79d3360",
+        "version": "5.1.0"
+      }
+    },
+    "numpy_build_blas_lapack_config": "Build Dependencies:\n  blas:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\n  lapack:\n    detection method: system\n    found: true\n    include directory: unknown\n    lib directory: unknown\n    name: accelerate\n    openblas configuration: unknown\n    pc file directory: unknown\n    version: unknown\nCompilers:\n  c:\n    commands: cc\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  c++:\n    commands: c++\n    linker: ld64\n    name: clang\n    version: 15.0.0\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.9\nMachine Information:\n  build:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\n  host:\n    cpu: aarch64\n    endian: little\n    family: aarch64\n    system: darwin\nPython Information:\n  path: /private/var/folders/g3/pffjr_y96bq06blnkf72x_hw0000gn/T/build-env-re3_temx/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - NEON\n  - NEON_FP16\n  - NEON_VFPV4\n  - ASIMD\n  found:\n  - ASIMDHP\n  - ASIMDDP\n  not found:\n  - ASIMDFHM\n\n",
+    "numpy_legacy_random_state_sha256": "858609944d8b6183e92e39d4da6d654169a06fdf4cccd30a607d59f8be12a38b",
+    "os": "Darwin",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "production_module_path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/src/cfd_sdf/sdf.py",
+    "production_source_sha256": "9b685c2cc3e0a39cabe14e08089b0491a98bcdd9c19e30ca0eed49f7c19c9a51",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "python_executable": "/Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python",
+    "python_executable_sha256": "31b9c9a8d50289f3a13f014b3efd8ea3534fc3eea7ca7d9809e166139910b805",
+    "pythonhashseed": "0",
+    "pythonpath": null,
+    "thread_env": {
+      "MKL_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "VECLIB_MAXIMUM_THREADS": null
+    },
+    "trimesh_entropy_random_state": {
+      "bit_generator": "PCG64",
+      "has_uint32": 0,
+      "state": {
+        "inc": 135617459860794326249083299064005190593,
+        "state": 208872423172075357359892470514706373306
+      },
+      "uinteger": 0
+    }
+  },
+  "seed": 20261012,
+  "unsigned_float32_vs_registered_magnitude": {
+    "abs_difference_counts": {
+      "0": 0,
+      "1e-08": 0,
+      "1e-09": 0,
+      "1e-10": 0
+    },
+    "array_equal": true,
+    "bit_equal": true,
+    "different_bits_count": 0,
+    "different_sign_count": 0,
+    "different_values_count": 0,
+    "max_absolute_difference_m": 0.0,
+    "nonzero_sign_difference_count": 0,
+    "signed_zero_only_count": 0
+  }
+}

@@ -1,0 +1,909 @@
+{
+  "pairwise": [
+    {
+      "a": "D_direct",
+      "b": "D_fallback",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 3495,
+          "1e-08": 1204,
+          "1e-09": 2917,
+          "1e-10": 2929
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 3930,
+        "different_sign_count": 3930,
+        "different_values_count": 3495,
+        "max_absolute_difference_m": 4.7706993910878737e-08,
+        "nonzero_sign_difference_count": 3495,
+        "signed_zero_only_count": 435
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 3495,
+          "1e-08": 1204,
+          "1e-09": 2917,
+          "1e-10": 2929
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 3930,
+        "different_sign_count": 3930,
+        "different_values_count": 3495,
+        "max_absolute_difference_m": 4.770699324472292e-08,
+        "nonzero_sign_difference_count": 3495,
+        "signed_zero_only_count": 435
+      }
+    },
+    {
+      "a": "D_direct",
+      "b": "D_unsigned",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 9764,
+          "1e-08": 7134,
+          "1e-09": 9178,
+          "1e-10": 9190
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 10262,
+        "different_sign_count": 10262,
+        "different_values_count": 9764,
+        "max_absolute_difference_m": 0.15000000596046448,
+        "nonzero_sign_difference_count": 9764,
+        "signed_zero_only_count": 498
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 9764,
+          "1e-08": 7134,
+          "1e-09": 9178,
+          "1e-10": 9190
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 10262,
+        "different_sign_count": 10262,
+        "different_values_count": 9764,
+        "max_absolute_difference_m": 0.15000000000000024,
+        "nonzero_sign_difference_count": 9764,
+        "signed_zero_only_count": 498
+      }
+    },
+    {
+      "a": "D_fallback",
+      "b": "D_unsigned",
+      "float32": {
+        "abs_difference_counts": {
+          "0": 6269,
+          "1e-08": 5930,
+          "1e-09": 6261,
+          "1e-10": 6261
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 6332,
+        "different_sign_count": 6332,
+        "different_values_count": 6269,
+        "max_absolute_difference_m": 0.15000000596046448,
+        "nonzero_sign_difference_count": 6269,
+        "signed_zero_only_count": 63
+      },
+      "float64": {
+        "abs_difference_counts": {
+          "0": 6269,
+          "1e-08": 5930,
+          "1e-09": 6261,
+          "1e-10": 6261
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 6332,
+        "different_sign_count": 6332,
+        "different_values_count": 6269,
+        "max_absolute_difference_m": 0.15000000000000024,
+        "nonzero_sign_difference_count": 6269,
+        "signed_zero_only_count": 63
+      }
+    }
+  ],
+  "runs": [
+    {
+      "chunk_size": 200000,
+      "comparison_float32_registered": {
+        "abs_difference_counts": {
+          "0": 0,
+          "1e-08": 0,
+          "1e-09": 0,
+          "1e-10": 0
+        },
+        "array_equal": true,
+        "bit_equal": true,
+        "different_bits_count": 0,
+        "different_sign_count": 0,
+        "different_values_count": 0,
+        "max_absolute_difference_m": 0.0,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "comparison_float64_to_registered_promoted": {
+        "abs_difference_counts": {
+          "0": 377154,
+          "1e-08": 167042,
+          "1e-09": 339090,
+          "1e-10": 368766
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 377154,
+        "different_sign_count": 0,
+        "different_values_count": 377154,
+        "max_absolute_difference_m": 5.960464477539063e-08,
+        "nonzero_sign_difference_count": 0,
+        "signed_zero_only_count": 0
+      },
+      "events": [
+        {
+          "call": "try_signed_distance",
+          "event_id": 0,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "call": "closest_point",
+          "event_id": 1,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [
+            0
+          ],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "bounds_count": 200000,
+          "bounds_max_sha256": "750e63dd47c667d8df2cfaf43bbac01056f0c4e6e540f05c310be12aefa952b4",
+          "bounds_min_sha256": "f47f4ed8d50538c975369908f1079e70941e3ad75d86e4acfec020166392cb40",
+          "call": "rtree_batch_intersection",
+          "event_id": 2,
+          "parent_event_ids": [
+            0,
+            1
+          ],
+          "success": true
+        },
+        {
+          "call": "ray_contains_points",
+          "event_id": 3,
+          "known_problem_nodes_in_query": {
+            "0": [
+              79718
+            ],
+            "1": [
+              132505
+            ],
+            "2": [
+              152974
+            ]
+          },
+          "parent_event_ids": [
+            0
+          ],
+          "point_count": 168435,
+          "query_sha256": "aad914483c8dde1416c20db437315944997bf54407a92bf39eea5633a54001ba",
+          "success": true
+        },
+        {
+          "call": "random_generator",
+          "seed_args": [],
+          "seed_kwargs": {}
+        },
+        {
+          "active_event_ids": [
+            0,
+            3
+          ],
+          "args": [
+            3
+          ],
+          "call": "random_retry_draw",
+          "state_after": {
+            "bit_generator": "PCG64",
+            "has_uint32": 0,
+            "state": {
+              "inc": 256040557782918614337934917071140076287,
+              "state": 185638169013698855502751485618812894710
+            },
+            "uinteger": 0
+          },
+          "state_before": {
+            "bit_generator": "PCG64",
+            "has_uint32": 0,
+            "state": {
+              "inc": 256040557782918614337934917071140076287,
+              "state": 162357196618884852534985555488672449657
+            },
+            "uinteger": 0
+          },
+          "value": [
+            0.27720637841640716,
+            0.005682568591805159,
+            0.695762088977169
+          ]
+        },
+        {
+          "call": "ray_util_contains_points",
+          "check_direction": [
+            -0.3864838617835667,
+            -0.8575008049137149,
+            0.3395918051914561
+          ],
+          "event_id": 6,
+          "known_problem_nodes_in_query": {
+            "0": [
+              4
+            ],
+            "1": [
+              9
+            ],
+            "2": [
+              18
+            ]
+          },
+          "parent_event_ids": [
+            0,
+            3
+          ],
+          "point_count": 19,
+          "query_points": [
+            [
+              -0.6,
+              -0.050000000000000044,
+              -0.22499999999999998
+            ],
+            [
+              -0.6,
+              0.050000000000000044,
+              -0.19999999999999996
+            ],
+            [
+              -0.6,
+              0.050000000000000044,
+              -0.17499999999999993
+            ],
+            [
+              -0.375,
+              0.30000000000000004,
+              -0.24999999999999994
+            ],
+            [
+              -0.29999999999999993,
+              -0.19999999999999996,
+              -0.12499999999999994
+            ],
+            [
+              -0.29999999999999993,
+              -0.050000000000000044,
+              -0.07499999999999996
+            ],
+            [
+              -0.29999999999999993,
+              0.025000000000000022,
+              -0.07499999999999996
+            ],
+            [
+              0.0,
+              0.30000000000000004,
+              0.025000000000000022
+            ],
+            [
+              0.025000000000000133,
+              0.30000000000000004,
+              0.025000000000000022
+            ],
+            [
+              0.20000000000000018,
+              0.30000000000000004,
+              -0.02499999999999991
+            ],
+            [
+              0.20000000000000018,
+              0.30000000000000004,
+              0.07500000000000007
+            ],
+            [
+              0.30000000000000004,
+              -0.050000000000000044,
+              0.1250000000000001
+            ],
+            [
+              0.30000000000000004,
+              -0.025000000000000022,
+              -0.02499999999999991
+            ],
+            [
+              0.30000000000000004,
+              0.050000000000000044,
+              -0.02499999999999991
+            ],
+            [
+              0.30000000000000004,
+              0.050000000000000044,
+              0.1250000000000001
+            ],
+            [
+              0.30000000000000004,
+              0.07499999999999996,
+              -0.02499999999999991
+            ],
+            [
+              0.30000000000000004,
+              0.40000000000000013,
+              0.2250000000000001
+            ],
+            [
+              0.375,
+              -0.30000000000000004,
+              0.050000000000000044
+            ],
+            [
+              0.40000000000000013,
+              0.30000000000000004,
+              0.07500000000000007
+            ]
+          ],
+          "query_sha256": "acf7e88ef17bc1d8d2b4c669c081138c4cd643eb01d246bd5930d3a6bec23096",
+          "success": true
+        },
+        {
+          "call": "try_signed_distance",
+          "event_id": 7,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "call": "closest_point",
+          "event_id": 8,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [
+            7
+          ],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "bounds_count": 185385,
+          "bounds_max_sha256": "5dcfbc9d272fd922c711baa25fdbd50484d98acf00e5dcae100dd3c3135cc903",
+          "bounds_min_sha256": "52edc60469bb448d5a186aab10fb9fa677a8d91b7cae2ec94f33d82788438eed",
+          "call": "rtree_batch_intersection",
+          "event_id": 9,
+          "parent_event_ids": [
+            7,
+            8
+          ],
+          "success": true
+        },
+        {
+          "call": "ray_contains_points",
+          "event_id": 10,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [
+            7
+          ],
+          "point_count": 179966,
+          "query_sha256": "454dddfdd8bff4b8b34d5cc269b15c5811c4add348be2410ef2c4cd79edae65c",
+          "success": true
+        },
+        {
+          "call": "rtree_scalar_intersection",
+          "exceptions": [],
+          "invocations": 37278,
+          "successes": 37278
+        }
+      ],
+      "fallback_invoked": false,
+      "grid": "v17",
+      "id": "D_direct",
+      "mode": "direct",
+      "ordering": "canonical",
+      "phi_float32": {
+        "bytes_sha256": {
+          "<_C": "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f",
+          "<_F": "e3966d87c0ddb0d3ff9a6ee096c94221d0d4cccff77221ba84987ef5faa04431",
+          ">_C": "cc08ff5e7e94765b6ae7b92cc8bd434c8a66952d241cd4a1e35b5c344b3f0aef",
+          ">_F": "13759663470a6e3261bb70eb37f025aa6398767a65c7f908195785100d945efe"
+        },
+        "dtype": "<f4",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "5c8d33c9cd3def1fe53ae7b37e1ff723fc6f9c879b1994bed4e2ebd85ebcb544",
+        "negative_mask_sha256": "bb66d1ede9f864a2722fcfa40f6a2e02f4e886d91b8e121d87217c40f65dcb09",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "c722224572c0427bd7c5a4e50f997f2050aa3d65ff96f0b242f953f7786b8efb"
+      },
+      "phi_float64": {
+        "bytes_sha256": {
+          "<_C": "0a2b8e7a99e735e911c5e3ed2a3683c0754fb5ec45d2e7d78aee804b9540ae49",
+          "<_F": "b37b4d9deb4452cc2ebaaab817c2488d7ed3de8ed3eb09af5edc9e5a808bddf3",
+          ">_C": "0b684e7ebda3faa9530f6959d52b8b9f63b6d08ecd74bf313ccc801c0cddc482",
+          ">_F": "c79a67c60d85789324c208bb53b35ae39a70f6ca9aef915ebe4d3a4d4219f8c7"
+        },
+        "dtype": "<f8",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "73a61f82066adf899d1b1211c63108eafe46643ece5cfb06a7c4f2575613f51b",
+        "negative_mask_sha256": "bb66d1ede9f864a2722fcfa40f6a2e02f4e886d91b8e121d87217c40f65dcb09",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "c722224572c0427bd7c5a4e50f997f2050aa3d65ff96f0b242f953f7786b8efb"
+      }
+    },
+    {
+      "chunk_size": 200000,
+      "comparison_float32_registered": {
+        "abs_difference_counts": {
+          "0": 3495,
+          "1e-08": 1204,
+          "1e-09": 2917,
+          "1e-10": 2929
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 3930,
+        "different_sign_count": 3930,
+        "different_values_count": 3495,
+        "max_absolute_difference_m": 4.7706993910878737e-08,
+        "nonzero_sign_difference_count": 3495,
+        "signed_zero_only_count": 435
+      },
+      "comparison_float64_to_registered_promoted": {
+        "abs_difference_counts": {
+          "0": 379221,
+          "1e-08": 168246,
+          "1e-09": 342007,
+          "1e-10": 371695
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 379656,
+        "different_sign_count": 3930,
+        "different_values_count": 379221,
+        "max_absolute_difference_m": 5.960464477539063e-08,
+        "nonzero_sign_difference_count": 3495,
+        "signed_zero_only_count": 435
+      },
+      "events": [
+        {
+          "call": "closest_point",
+          "event_id": 0,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "bounds_count": 200000,
+          "bounds_max_sha256": "750e63dd47c667d8df2cfaf43bbac01056f0c4e6e540f05c310be12aefa952b4",
+          "bounds_min_sha256": "f47f4ed8d50538c975369908f1079e70941e3ad75d86e4acfec020166392cb40",
+          "call": "rtree_batch_intersection",
+          "event_id": 1,
+          "parent_event_ids": [
+            0
+          ],
+          "success": true
+        },
+        {
+          "call": "mesh_contains",
+          "event_id": 2,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "call": "ray_contains_points",
+          "event_id": 3,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [
+            2
+          ],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "call": "random_generator",
+          "seed_args": [],
+          "seed_kwargs": {}
+        },
+        {
+          "active_event_ids": [
+            2,
+            3
+          ],
+          "args": [
+            3
+          ],
+          "call": "random_retry_draw",
+          "state_after": {
+            "bit_generator": "PCG64",
+            "has_uint32": 0,
+            "state": {
+              "inc": 245927888106169693187854589089608201775,
+              "state": 112510120952775143353258205035772274387
+            },
+            "uinteger": 0
+          },
+          "state_before": {
+            "bit_generator": "PCG64",
+            "has_uint32": 0,
+            "state": {
+              "inc": 245927888106169693187854589089608201775,
+              "state": 21876378398172247896576921522167990666
+            },
+            "uinteger": 0
+          },
+          "value": [
+            0.6623508518963263,
+            0.8129046498444683,
+            0.613285744982783
+          ]
+        },
+        {
+          "call": "ray_util_contains_points",
+          "check_direction": [
+            0.4384646754893108,
+            0.8450687763607343,
+            0.30595341404897647
+          ],
+          "event_id": 6,
+          "known_problem_nodes_in_query": {
+            "0": [
+              911
+            ],
+            "1": [
+              2380
+            ],
+            "2": [
+              2951
+            ]
+          },
+          "parent_event_ids": [
+            2,
+            3
+          ],
+          "point_count": 3270,
+          "query_sha256": "71a8ea7765fb9e8462764de9e0acdc9720c5d1dd06f81172ebd559dc0cf1c468",
+          "success": true
+        },
+        {
+          "call": "closest_point",
+          "event_id": 7,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "bounds_count": 185385,
+          "bounds_max_sha256": "5dcfbc9d272fd922c711baa25fdbd50484d98acf00e5dcae100dd3c3135cc903",
+          "bounds_min_sha256": "52edc60469bb448d5a186aab10fb9fa677a8d91b7cae2ec94f33d82788438eed",
+          "call": "rtree_batch_intersection",
+          "event_id": 8,
+          "parent_event_ids": [
+            7
+          ],
+          "success": true
+        },
+        {
+          "call": "mesh_contains",
+          "event_id": 9,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "call": "ray_contains_points",
+          "event_id": 10,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [
+            9
+          ],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "call": "rtree_scalar_intersection",
+          "exceptions": [],
+          "invocations": 72340,
+          "successes": 72340
+        }
+      ],
+      "fallback_invoked": false,
+      "grid": "v17",
+      "id": "D_fallback",
+      "mode": "fallback",
+      "ordering": "canonical",
+      "phi_float32": {
+        "bytes_sha256": {
+          "<_C": "d9defd62cd5293602d894e0b8d601cc3cc55e645beb4a5bf3356a57e2c07c416",
+          "<_F": "4b94e795d84dc7803bd9bbfc10369dc9b489e540a11c92a5fd6c42e508dc65c5",
+          ">_C": "765628aa3d0fe8aa1540827a7753eb0eb2df302f557d6c7756c940df10f06b2b",
+          ">_F": "0ce31d616eb986c9bba6128b73d6e56546423eec7e3e47931e32a6e0a93dee95"
+        },
+        "dtype": "<f4",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "1234b08356bde6da30821bf459a142f4b667004ee020dadeb09e955f16c2ce2d",
+        "negative_mask_sha256": "e2070405e5d57e1b44c5681fdd018d2f6638fa9650c5868b8fa2dcafa01689cc",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "e0017a88cf591c3b66fce25e7a81910f1f0dddec84b2810e6bc689abf7913190"
+      },
+      "phi_float64": {
+        "bytes_sha256": {
+          "<_C": "4e69699de741302674e650aa8804e293d53f6108c3a4642cbdca8fc92f243c79",
+          "<_F": "9e75cf3f64665222f7e32a02210d0e3446172344a5d12bc9b0df89be761bc0b2",
+          ">_C": "f7e46a73d03198210f0d3bfee3dbfff6634d81abe493575c550b65b9e0ba5c6d",
+          ">_F": "1bbb7f6b5d56b0549a61b333971c8072c913bff20c677e3734166db2618b3348"
+        },
+        "dtype": "<f8",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "83b755cdd058badbb9e9386b3819da9b9d5e6c8034292f05d1d13c086d1e789d",
+        "negative_mask_sha256": "e2070405e5d57e1b44c5681fdd018d2f6638fa9650c5868b8fa2dcafa01689cc",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "e0017a88cf591c3b66fce25e7a81910f1f0dddec84b2810e6bc689abf7913190"
+      }
+    },
+    {
+      "chunk_size": 200000,
+      "comparison_float32_registered": {
+        "abs_difference_counts": {
+          "0": 9764,
+          "1e-08": 7134,
+          "1e-09": 9178,
+          "1e-10": 9190
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 10262,
+        "different_sign_count": 10262,
+        "different_values_count": 9764,
+        "max_absolute_difference_m": 0.15000000596046448,
+        "nonzero_sign_difference_count": 9764,
+        "signed_zero_only_count": 498
+      },
+      "comparison_float64_to_registered_promoted": {
+        "abs_difference_counts": {
+          "0": 379430,
+          "1e-08": 174176,
+          "1e-09": 347250,
+          "1e-10": 372957
+        },
+        "array_equal": false,
+        "bit_equal": false,
+        "different_bits_count": 379928,
+        "different_sign_count": 10262,
+        "different_values_count": 379430,
+        "max_absolute_difference_m": 0.15000000298023236,
+        "nonzero_sign_difference_count": 9764,
+        "signed_zero_only_count": 498
+      },
+      "events": [
+        {
+          "call": "closest_point",
+          "event_id": 0,
+          "known_problem_nodes_in_query": {
+            "0": [
+              90375
+            ],
+            "1": [
+              155059
+            ],
+            "2": [
+              180543
+            ]
+          },
+          "parent_event_ids": [],
+          "point_count": 200000,
+          "query_sha256": "5cba1f9e1d87ed640fb827aef6a1e1cf785290742785306571d6ae86ac30992b",
+          "success": true
+        },
+        {
+          "bounds_count": 200000,
+          "bounds_max_sha256": "750e63dd47c667d8df2cfaf43bbac01056f0c4e6e540f05c310be12aefa952b4",
+          "bounds_min_sha256": "f47f4ed8d50538c975369908f1079e70941e3ad75d86e4acfec020166392cb40",
+          "call": "rtree_batch_intersection",
+          "event_id": 1,
+          "parent_event_ids": [
+            0
+          ],
+          "success": true
+        },
+        {
+          "call": "closest_point",
+          "event_id": 2,
+          "known_problem_nodes_in_query": {
+            "0": [],
+            "1": [],
+            "2": []
+          },
+          "parent_event_ids": [],
+          "point_count": 185385,
+          "query_sha256": "dad610a0c0e73c3c8dfcf7e4c3fc73bb5b6c687e8ec0ddb026e14c6fb9a6b918",
+          "success": true
+        },
+        {
+          "bounds_count": 185385,
+          "bounds_max_sha256": "5dcfbc9d272fd922c711baa25fdbd50484d98acf00e5dcae100dd3c3135cc903",
+          "bounds_min_sha256": "52edc60469bb448d5a186aab10fb9fa677a8d91b7cae2ec94f33d82788438eed",
+          "call": "rtree_batch_intersection",
+          "event_id": 3,
+          "parent_event_ids": [
+            2
+          ],
+          "success": true
+        },
+        {
+          "call": "rtree_scalar_intersection",
+          "exceptions": [],
+          "invocations": 0,
+          "successes": 0
+        }
+      ],
+      "fallback_invoked": false,
+      "grid": "v17",
+      "id": "D_unsigned",
+      "mode": "unsigned",
+      "ordering": "canonical",
+      "phi_float32": {
+        "bytes_sha256": {
+          "<_C": "2130ab93023364f5a5a6fe84fdf944c094d0c63e0f8a02bf00f353663ae741f1",
+          "<_F": "b6f523f09b8b8a9fa4c850b49214a54ea35f329c3390a2e08cf766e2ce0a95e1",
+          ">_C": "fa9e9cf055118712362573ff83668c47340b364c4ca90c39da3b314e0284b4ad",
+          ">_F": "be591171f9ac761553579a2ae2f40a4f8ff3d8eb346ce2b4d96d6869190b3e79"
+        },
+        "dtype": "<f4",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "a0a8dc319290d3d66bea0c5049edd0303eff215c0b5e56add11627dee2d128d8",
+        "negative_mask_sha256": "b888690c8910d00032c1bb1b00ce5dcf7438b2b7b7f307186656f6b65345755f",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "b888690c8910d00032c1bb1b00ce5dcf7438b2b7b7f307186656f6b65345755f"
+      },
+      "phi_float64": {
+        "bytes_sha256": {
+          "<_C": "8cfd09e1e619f89f26ef6bb4cc4b04639f3d3ff0a2e0a5589713c1a7c8310f8d",
+          "<_F": "0783b0aa998f212d7f62ca9e519d16f2687d3ba03ac2e3c9fe24f9a6f5cb43fb",
+          ">_C": "aabc2b4caeae2fb680c3eb940fd297292ee7ad17f31ee9bc7c6e298e15d44e64",
+          ">_F": "ce05c472eb1896c6700af0b94af9f3c740fcf986de1c77430652c3601c4a577c"
+        },
+        "dtype": "<f8",
+        "exact_zero_mask_sha256": "c357b18f6c155de594b77a56d67e927c91b07aa832919022e83454d2ef28f96d",
+        "hash_semantics": "explicit endian, complete array bytes in stated C/F traversal; masks uint8 C order; near subset reference abs(phi)<=1e-7 in C traversal",
+        "near_surface_count": 5370,
+        "near_surface_subset_sha256": "a5921c15cc45ed06e50df2c4c9df01c3d1bc2f5b78a60b53a1ae440b1309ebd1",
+        "negative_mask_sha256": "b888690c8910d00032c1bb1b00ce5dcf7438b2b7b7f307186656f6b65345755f",
+        "shape": [
+          121,
+          65,
+          49
+        ],
+        "sign_mask_sha256": "b888690c8910d00032c1bb1b00ce5dcf7438b2b7b7f307186656f6b65345755f"
+      }
+    }
+  ]
+}

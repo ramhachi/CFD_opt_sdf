@@ -7321,3 +7321,23 @@ selected.
 ## P22–v17 volume semantic bridge audit: INCONCLUSIVE (2026-10-12)
 
 The solver-free audit reproduced the exact registered v16 reference with the current P22 hard evaluator. The retained canonical v17 baseline and LOWDIM-03 selected parent both measure `0.12925000000000003 m³`; their hard-volume difference is zero. #51 directly used the authoritative evaluator. This excludes a different-volume-measure explanation and does not assign the v16→v17 difference to the selected step. However, strict source-geometry resampling failed to reproduce the retained v17 field; a separately saved diagnostic has three nonzero near-surface sign differences. Under the predeclared numerical-drift rule the terminal classification is **INCONCLUSIVE**, and LOWDIM-04A remains blocked. No volume limit, contract, parent, qualification flag, or execution gate changed; CFD runs and Kaggle submissions are zero. Review the investigation record before separately authorizing any mapping diagnosis, contract migration, or restart. See [audit report](evidence/p22_v17_volume_semantics_bridge_2026_10_11/audit_report.md), [classification](evidence/p22_v17_volume_semantics_bridge_2026_10_11/classification.json), and [validation](evidence/p22_v17_volume_semantics_bridge_2026_10_11/validation.json). The existing pre-registration blocker and LOWDIM-03 result remain historical records.
+
+## SRCMAP-01 (#52): current source mapping algorithmically nondeterministic (2026-10-12)
+
+The separately frozen, solver-free diagnosis completed 21 full-field jobs and one
+local analysis without reruns. Terminal classification is
+**SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC**: identical current runtime/input/code
+produced v17 registered bit-difference counts `4,0,4,0,0`; the two observed v16 controls were
+exact (finite observations only). Unsigned distances were stable within the current environment. Observed
+production calls used the outer try path, while randomized inner ray-containment
+retry changed signs; the three fixed local retry vectors demonstrate sign
+sensitivity at all three historical near-edge nodes. Historical Oct11/Oct12
+runtime/path identity and historical cause remain unresolved. Chunk/order and a minimum dependency
+bundle were diagnosed without adopting a remedy or claiming an individual
+dependency cause. See [diagnostic report](evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostic_report.md)
+and [classification](evidence/srcmap01_v17_reproducibility_2026_10_12/classification.json).
+The original bridge remains INCONCLUSIVE, P22-v1 is unchanged, P22-v2 is not
+registered, and LOWDIM-04A/#51 remains blocked. No parent, threshold,
+qualification or execution gate changed; this diagnosis has
+`selected_delta=null`, `shape_update_allowed=false`, CFD runs 0 and Kaggle
+submissions 0. Stop at the diagnosis record; no automatic migration or restart.
