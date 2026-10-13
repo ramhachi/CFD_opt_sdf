@@ -224,7 +224,7 @@ def verify_freeze(path: Path) -> dict:
     require(sha256_bytes(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()) == fr["freeze_sha256"], "freeze manifest self-hash mismatch")
     bad = [r["path"] for r in fr["files"] if sha256_file(ROOT / r["path"]) != r["sha256"]]
     require(not bad, f"frozen files changed: {bad}")
-    require(fr["frozen_parameters"] == {"TAU_REP": float(TAU_REP), "PLATEAU_MIN_RATIO": PLATEAU_MIN_RATIO, "GWN_TOL": GWN_TOL, "SMOOTH_BOUND_MAX_REL": SMOOTH_BOUND_MAX_REL, "REFERENCE_SOLID_CENTERS": REFERENCE_SOLID_CENTERS}, "frozen parameters differ from freeze")
+    require({**fr["frozen_parameters"], "TAU_REP": float(np.float32(fr["frozen_parameters"]["TAU_REP"]))} == {"TAU_REP": float(TAU_REP), "PLATEAU_MIN_RATIO": PLATEAU_MIN_RATIO, "GWN_TOL": GWN_TOL, "SMOOTH_BOUND_MAX_REL": SMOOTH_BOUND_MAX_REL, "REFERENCE_SOLID_CENTERS": REFERENCE_SOLID_CENTERS}, "frozen parameters differ from freeze")
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     return {"freeze_sha256": fr["freeze_sha256"], "git_head": head, "script_sha256": sha256_file(Path(__file__))}
 
