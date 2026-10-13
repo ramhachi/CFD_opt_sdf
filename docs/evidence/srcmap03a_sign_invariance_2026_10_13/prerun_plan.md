@@ -122,3 +122,23 @@ comparison (48 known failures, zero new), `compileall`, SHA256SUMS over all evid
 is a separate stage with its own freeze and commit, authorized by the user only conditionally on
 CERTIFIED plus independent post-run PASS plus zero new test failures; otherwise this stage stops. Stop 2 ends
 with a stop: LOWDIM-04A (#51) is not resumed by either stage.
+
+## Amendment 1 (2026-10-13, before any target measurement)
+
+The first execution (freeze `2d733e6f…`, commit `d475262`) stopped `INCOMPLETE` in the preflight: the SRCMAP-01
+manifest check treated its 130 entries uniformly, but two of them (`docs/phase_plan.md`,
+`docs/problem_register_2026_09.md`) are living documents that legitimately changed after SRCMAP-01 (SRCMAP-02
+already recorded this) and the certificate reads neither. No state, mesh or field had been loaded; the failure
+precedes every measurement, so no result could influence this amendment. The record is retained as
+`attempt1_classification.json`, `logs/attempt1_run.log`, `prerun_freeze_attempt1.json`,
+`prerun_approval_attempt1.json`. The failure-handling rule above (re-execution only after an infrastructure
+fault with unchanged source) is deliberately **not** used: this is a defect in the frozen preflight, so the
+source is amended, refrozen and re-reviewed instead.
+
+Change: the manifest is checked exactly for the 128 entries other than the two named living documents, which must be
+exactly the excluded set and are listed in the output. (A preflight dry run on identity checks only, before
+re-freezing, showed that restricting to the evidence directory would have verified 125 entries, because three
+repository scripts/tests are also in the manifest; the explicit exclusion of the two living documents is the
+corrected form.) The script comment on the gap/plateau
+wording is aligned with the plan, and one test for the manifest check is added. No parameter, predicate, threshold
+or method changes.

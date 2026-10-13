@@ -37,10 +37,11 @@ PARENT_NPZ_SHA = "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac75
 MESH_VERTEX_BYTES_SHA = "b2e014fce6ffe5e15e6c90e1605fe6c1578eacfc42266dd9eb962096e12ecaed"
 MESH_FACE_BYTES_SHA = "7b4be8455c6752ff66e1e59ba151c8aacd789c040d1e24fdfd145dc4b9b73296"
 REFERENCE_SOLID_CENTERS = 8272
+LIVING_DOCUMENTS = ("docs/phase_plan.md", "docs/problem_register_2026_09.md")  # in the SRCMAP-01 manifest; edited since, not read by this certificate
 CONTROL_COUNT = 19                # 18 retained v17 SRCMAP-01 fields (no v16, no unsigned, no difference maps) + the Oct12 replay
 
 # frozen parameters (set before any target measurement; see prerun_plan.md)
-TAU_REP = np.float32(1e-6)       # representative of the plateau; certificate binds to the whole plateau, not to this number
+TAU_REP = np.float32(1e-6)       # representative of the gap; the certificate binds to B and to amplitude <= TAU_REP (see prerun_plan.md)
 PLATEAU_MIN_RATIO = 1e3          # smallest-outside / largest-inside magnitude required
 GWN_TOL = 1e-9                   # max distance of an outside-band winding number from {0,1}
 GWN_CHUNK = 1500
@@ -188,13 +189,16 @@ def gate_bounds(state: SDFDesignState, band: np.ndarray, parent: SDFDesignState,
     return out
 
 
-def verify_manifest(manifest: Path) -> dict:
-    bad, n = [], 0
+def verify_manifest(manifest: Path, living: tuple) -> dict:
+    """Exact check of every manifest entry except the named living documents (which legitimately changed and are not read here)."""
+    bad, n, seen = [], 0, []
     for line in manifest.read_text().splitlines():
         if not line.strip(): continue
-        digest, name = line.split(None, 1); n += 1
-        if sha256_file(ROOT / name.strip()) != digest: bad.append(name.strip())
-    return {"entries": n, "mismatches": bad}
+        digest, name = line.split(None, 1); name = name.strip()
+        if name in living: seen.append(name); continue
+        n += 1
+        if sha256_file(ROOT / name) != digest: bad.append(name)
+    return {"entries_verified": n, "excluded_living_documents": sorted(seen), "mismatches": bad}
 
 
 def controls(phi: np.ndarray, band: np.ndarray, reference_mask: np.ndarray) -> dict:
@@ -234,7 +238,8 @@ def run(out: Path) -> dict:
     provenance = verify_freeze(out / "prerun_freeze.json")
     ident = {"stl_sha256": sha256_file(INPUTS / "reference_surface.stl"), "baseline_npz_sha256": sha256_file(INPUTS / "v17_baseline.npz"), "parent_npz_sha256": sha256_file(INPUTS / "lowdim03_parent.npz")}
     require(ident == {"stl_sha256": STL_SHA, "baseline_npz_sha256": BASELINE_NPZ_SHA, "parent_npz_sha256": PARENT_NPZ_SHA}, f"input identity {ident}")
-    manifest = verify_manifest(SRCMAP01 / "SHA256SUMS"); require(not manifest["mismatches"], f"SRCMAP-01 manifest {manifest}")
+    manifest = verify_manifest(SRCMAP01 / "SHA256SUMS", LIVING_DOCUMENTS)
+    require(not manifest["mismatches"] and manifest["entries_verified"] == 128 and manifest["excluded_living_documents"] == sorted(LIVING_DOCUMENTS), f"SRCMAP-01 manifest {manifest}")
     state, parent = SDFDesignState.load(INPUTS / "v17_baseline.npz"), SDFDesignState.load(INPUTS / "lowdim03_parent.npz")
     require(state.state_sha256 == BASELINE_STATE_SHA, "baseline state hash")
     phi = state.phi

@@ -136,3 +136,15 @@ def test_freeze_verification_rejects_a_modified_manifest(tmp_path):
     f = tmp_path / "prerun_freeze.json"; f.write_text(json.dumps({"files": [], "frozen_parameters": {}, "freeze_sha256": "0" * 64}))
     with pytest.raises(C.IntegrityError):
         C.verify_freeze(f)
+
+
+def test_manifest_check_is_exact_except_named_living_documents(monkeypatch, tmp_path):
+    (tmp_path / "ev").mkdir(); (tmp_path / "ev/a.txt").write_text("a"); (tmp_path / "doc.md").write_text("living")
+    import hashlib
+    h = lambda s: hashlib.sha256(s.encode()).hexdigest()
+    m = tmp_path / "SHA256SUMS"; m.write_text(f"{h('a')}  ev/a.txt\n{h('OLD')}  doc.md\n")
+    monkeypatch.setattr(C, "ROOT", tmp_path)
+    assert C.verify_manifest(m, ("doc.md",)) == {"entries_verified": 1, "excluded_living_documents": ["doc.md"], "mismatches": []}
+    assert C.verify_manifest(m, ())["mismatches"] == ["doc.md"]  # an unnamed changed entry is a mismatch
+    (tmp_path / "ev/a.txt").write_text("changed")
+    assert C.verify_manifest(m, ("doc.md",))["mismatches"] == ["ev/a.txt"]
