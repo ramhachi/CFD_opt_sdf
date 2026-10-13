@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import platform
 import sys
 from pathlib import Path
 
@@ -40,6 +39,7 @@ PINNED = {  # sha256 of every artifact the registration binds, fixed before the 
     "sdf_native_genesis_v17_2026_09.json": "8335cb7569dae7f75780b133e3f588b802e3b13258f012c391339ffc6a1c10b5",
     "v1_registration.json": "0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce",
 }
+BLOCKER_SHA = "494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c"  # LOWDIM-04A pre-registration blocker, literal from #51
 SRCMAP03A_MERGE_COMMIT = "e1e858772c9938de9771af90c741a741c7e47581"
 STL_SHA = "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
 BASELINE_PHI_C_BYTES_SHA = "f6419547c7b58991462a19f8116b819e7bbe60074fa524c01a51ef41cc0e3b1f"
@@ -77,7 +77,8 @@ def main() -> None:
     cls = json.loads((S3A / "classification.json").read_text())
     require(cls["terminal_classification"] == "P22_V17_SIGN_INVARIANCE_CERTIFIED" and all(cls["predicates"].values()), "SRCMAP-03a is not CERTIFIED")
     blocker_path = EV / "lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json"
-    blocker_sha = sha(blocker_path); require(blocker_sha == (blocker_path.parent / "pre_registration_blocker.json.sha256").read_text().split()[0], "LOWDIM-04A blocker sidecar")
+    blocker_sha = sha(blocker_path)
+    require(blocker_sha == BLOCKER_SHA == (blocker_path.parent / "pre_registration_blocker.json.sha256").read_text().split()[0], "LOWDIM-04A blocker hash")
     require(sha(INPUTS / "v17_baseline.npz") == V2.REFERENCE_NPZ_SHA256 and sha(INPUTS / "lowdim03_parent.npz") == PARENT_NPZ_SHA, "retained state NPZ hashes")
     base, parent = SDFDesignState.load(INPUTS / "v17_baseline.npz"), SDFDesignState.load(INPUTS / "lowdim03_parent.npz")
     require(base.state_sha256 == V2.REFERENCE_STATE_SHA256 and parent.state_sha256 == PARENT_STATE_SHA, "retained state hashes")
@@ -85,18 +86,20 @@ def main() -> None:
     h3 = V2.SPACING_M ** 3
     blocker = json.loads(blocker_path.read_text())
     perturbations = []
+    require(len(blocker["existing_lowdim_geometry_preflight"]["states"]) == 8, "expected eight recorded LOWDIM-04A perturbation states")
     for s in blocker["existing_lowdim_geometry_preflight"]["states"]:
         n = s["sharp_volume_m3"] / h3; require(abs(n - round(n)) < 1e-6, f"{s['state_name']} volume is not an integer count")
         perturbations.append({"state_name": s["state_name"], "state_sha256": s["state_sha256"], "recorded_sharp_volume_m3": s["sharp_volume_m3"], "sampled_solid_centers": int(round(n)),
                               "hard_count_residual_v2": int(round(n)) - V2.MAX_SOLID_CENTERS, "hard_feasible_v2": int(round(n)) <= V2.MAX_SOLID_CENTERS})
     measured = {"baseline": measure(base), "lowdim03_parent": measure(parent), "lowdim04a_perturbations_recorded_not_rederived": perturbations}
-    require(measured["baseline"]["sampled_solid_centers"] == V2.MAX_SOLID_CENTERS and V2.VOLUME_LIMIT_M3 == measured["baseline"]["sharp_volume_m3"], "baseline count is not N_max")
+    ten = [measured["baseline"]["sampled_solid_centers"], measured["lowdim03_parent"]["sampled_solid_centers"]] + [p["sampled_solid_centers"] for p in perturbations]
+    require(ten == [V2.MAX_SOLID_CENTERS] * 10 and V2.VOLUME_LIMIT_M3 == measured["baseline"]["sharp_volume_m3"], f"the ten evaluated states are not all at N_max: {ten}")
     require(V1_CONTRACT_SHA256 == "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969", "v1 contract changed")
     reg = {
         "registration_id": V2.REGISTRATION_ID, "kind": "sdf_native_volume_semantics", "schema_version": V2.SCHEMA_VERSION, "evidence_class": "contract", "immutable": True,
         "contract": {
             "scope": "representation-specific discrete constraint on the registered v17 design lattice; not a physical or continuum volume constraint; N <= N_max is not equivalent to V <= 0.12925 m^3 physical",
-            "first_sdf_volume_constraint": "N_phi <= N_max (integer comparison)", "sampled_solid_centers_max": V2.MAX_SOLID_CENTERS,
+            "hard_constraint": "N_phi <= N_max (integer comparison)", "sampled_solid_centers_max": V2.MAX_SOLID_CENTERS,
             "volume_limit_m3_derived": V2.VOLUME_LIMIT_M3, "volume_limit_note": "derived as N_max * h**3, never the acceptance quantity",
             "lattice": {"origin_m": list(V2.ORIGIN_M), "spacing_m": V2.SPACING_M, "node_shape": list(V2.NODE_SHAPE), "cell_shape": [n - 1 for n in V2.NODE_SHAPE], "all_cells": int(np.prod([n - 1 for n in V2.NODE_SHAPE]))},
             "volume_definition": "N_phi = |{h-cubes whose ordered Float32 eight-corner mean * Float32(0.125) is < 0}|; exact zero is fluid; masks do not filter samples; every other lattice is refused",
@@ -127,16 +130,19 @@ def main() -> None:
         "flags": {"sdf_gradient_qualified": False, "shape_update_allowed": False, "topology_birth_qualified": False, "waterlily_reverse_cpu_qualified": False, "waterlily_reverse_cuda_qualified": False},
         "selected_delta": None, "solver_started": False, "cfd_runs": 0, "kaggle_submissions": 0,
         "claims_not_supported": ["mapping reproducibility or signer qualification", "physical or continuum volume, grid convergence", "feasibility or optimality of any candidate", "any state on another lattice",
-                                 "that LOWDIM-04A may restart (a separate decision and preregistration are required)", "differentiability of the hard count"],
-        "environment": {"python": platform.python_version(), "numpy": np.__version__, "platform": platform.platform()},
+                                 "that LOWDIM-04A may restart (a separate decision and preregistration are required)", "differentiability of the hard count",
+                                 "sub-voxel or physical-volume equivalence of states with equal N_phi (the recorded +-1.25 mm D0 states keep N_phi and change the smoothed volume by about +-2.8%)",
+                                 "the smooth volumes, the parent and the eight perturbation states as properties of any regenerated SDF: they are facts about the retained artifacts and are not covered by the SRCMAP-03a certificate"],
     }
     payload = (json.dumps(reg, indent=2, sort_keys=True) + "\n").encode()
+    digest, side = hashlib.sha256(payload).hexdigest(), OUT.with_suffix(".json.sha256")
     if OUT.exists():
         require(OUT.read_bytes() == payload, "refusing to overwrite the immutable registration")
+        require(side.exists() and side.read_text().split()[0] == digest, "sidecar differs from the immutable registration")
     else:
-        OUT.write_bytes(payload)
-    side = OUT.with_suffix(".json.sha256"); side.write_text(hashlib.sha256(payload).hexdigest() + "\n")
-    print(OUT.name, hashlib.sha256(payload).hexdigest())
+        require(not side.exists(), "sidecar exists without a registration")
+        OUT.write_bytes(payload); side.write_text(digest + "\n")
+    print(OUT.name, digest)
 
 
 if __name__ == "__main__":

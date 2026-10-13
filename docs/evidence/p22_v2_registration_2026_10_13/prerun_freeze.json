@@ -2,11 +2,11 @@
   "files": [
     {
       "path": "docs/evidence/p22_v2_registration_2026_10_13/decision_record.md",
-      "sha256": "2dc5ac05a943886466422f58d6e45769560120e979574c3f2298372e2f9fc355"
+      "sha256": "da02959efd606088e765e7270261e3ca3f93015773435d581468a288b9953d48"
     },
     {
       "path": "src/cfd_sdf/design/volume_semantics_v2.py",
-      "sha256": "3a2ce3cb90e536b615b6957be08758e54be97e3af3cf279abd7e4fd58b86bd19"
+      "sha256": "33b236062e5cf0132129b299254ce8e1af32988f76ebf410defddcc8436cd8c3"
     },
     {
       "path": "src/cfd_sdf/design/volume_semantics.py",
@@ -14,11 +14,11 @@
     },
     {
       "path": "scripts/sdf_native_volume_semantics_v2_2026_10.py",
-      "sha256": "e336e007836e333ee33003a3ff8892c4fe4fbd0b79b76cabe421b4804c50a8f9"
+      "sha256": "865ee062a4d8e91e16b2d7b96484abf745304463200cb8a6c0b44e21f3e7d7b8"
     },
     {
       "path": "tests/test_sdf_native_volume_semantics_v2.py",
-      "sha256": "a608659bb6e639db02f668d4146046a9f4d282b46b7f2678f504114070fc0b5b"
+      "sha256": "f80212bb63943fefad29a599040029b4d5053bcab1e23fa59ad4cbf8849e9b5b"
     },
     {
       "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
@@ -55,9 +55,13 @@
     {
       "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/certificate.json",
       "sha256": "d0c89b53a343c245c5a2d81f04ce1988a842d6422dca1ea09b2c4e5aef11bdaa"
+    },
+    {
+      "path": "src/cfd_sdf/design/sdf_state.py",
+      "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
     }
   ],
-  "freeze_sha256": "6b4934c0c32ad56915b3bd42ccefe305a51a428186bf7aedf1f77b2606668287",
+  "freeze_sha256": "62d260ce70c10a222ba5d09aeed52e7fa518b5cf5aa7bb330251a071a592548e",
   "integration_parent": "e1e858772c9938de9771af90c741a741c7e47581",
-  "rehearsal": "registrar run once with OUT redirected to a scratch path before freezing (no artifact written to docs/evidence); result: 10/10 states at N_max, v1 residuals equal the recorded -0.2945861368614151 and -0.3029302661594796"
+  "rehearsal": "the registrar is exercised by tests/test_sdf_native_volume_semantics_v2.py with OUT redirected to a pytest tmp path (idempotent rerun, tampered pinned hash, sidecar mismatch, overwrite refusal, sidecar without registration); nothing is written to docs/evidence before the formal run. Revision 2 of the freeze: pre-run review round 1 (PASS_WITH_REQUIRED_CHANGES) applied."
 }

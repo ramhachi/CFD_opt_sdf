@@ -21,6 +21,7 @@ from .volume_semantics import (
     SmoothedVolumeResult,
     VolumeSemanticsError,
     _canonical_json_bytes,
+    _validate_state,
     sampled_solid_centers_count,
     smoothed_volume_and_gradient,
 )
@@ -50,7 +51,14 @@ _CONTRACT_PAYLOAD: dict[str, Any] = {
     "sampled_solid_centers_max": MAX_SOLID_CENTERS,
     "volume_limit_m3_derived": VOLUME_LIMIT_M3,
     "reference": {"state_sha256": REFERENCE_STATE_SHA256, "npz_sha256": REFERENCE_NPZ_SHA256},
-    "constraint": "g_V = V_eps / volume_limit_m3_derived - 1",
+    "constraint": (
+        "g_V = V_eps / volume_limit_m3_derived - 1; at N_phi = N_max this is about -0.31 (V_eps/V_sharp is about 0.69), "
+        "so g_V <= 0 is inactive at the hard boundary and cannot signal the active hard constraint"
+    ),
+    "sub_voxel_sensitivity": (
+        "none for the hard count: states with equal N_phi may differ materially in smoothed or physical volume "
+        "(the recorded +-1.25 mm D0 states keep N_phi and change V_eps by about +-2.8%)"
+    ),
     "acceptance_rule": (
         "sampled_solid_centers_count(state) <= sampled_solid_centers_max, an integer comparison; "
         "the smooth value never substitutes for it"
@@ -60,6 +68,7 @@ CONTRACT_SHA256 = hashlib.sha256(_canonical_json_bytes(_CONTRACT_PAYLOAD)).hexdi
 
 
 def _require_registered_lattice(state: SDFDesignState) -> None:
+    _validate_state(state)
     if (
         tuple(int(v) for v in state.shape) != NODE_SHAPE
         or tuple(float(v) for v in state.origin_m) != ORIGIN_M
@@ -102,6 +111,29 @@ def smoothed_volume_and_gradient_v2(state: SDFDesignState) -> SmoothedVolumeResu
     )
 
 
+def report_v2(state: SDFDesignState) -> dict[str, Any]:
+    """Reporting dict that carries the contract scope; the v1 ``to_dict`` layout is not reused for v2."""
+
+    result = smoothed_volume_and_gradient_v2(state)
+    n = sampled_solid_centers_count(state)
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "kind": CONTRACT_ID,
+        "contract_sha256": CONTRACT_SHA256,
+        "scope": _CONTRACT_PAYLOAD["scope"],
+        "sampled_solid_centers": n,
+        "sampled_solid_centers_max": MAX_SOLID_CENTERS,
+        "hard_count_residual": n - MAX_SOLID_CENTERS,
+        "hard_feasible": n <= MAX_SOLID_CENTERS,
+        "volume_limit_m3_derived": VOLUME_LIMIT_M3,
+        "limit_kind": "derived from the integer count; lattice-specific; not a physical volume",
+        "smoothed_volume_m3": result.smoothed_volume_m3,
+        "constraint_residual": result.constraint_residual,
+        "constraint_residual_note": _CONTRACT_PAYLOAD["constraint"],
+        "gradient_sha256": result.to_dict()["gradient_sha256"],
+    }
+
+
 __all__ = [
     "REGISTRATION_ID",
     "CONTRACT_ID",
@@ -110,5 +142,6 @@ __all__ = [
     "VOLUME_LIMIT_M3",
     "hard_count_residual",
     "hard_feasible",
+    "report_v2",
     "smoothed_volume_and_gradient_v2",
 ]
