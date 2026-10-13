@@ -1,13 +1,14 @@
 {
   "approved_by": "independent Claude Sonnet subagent reviewer; orchestrated by the root Claude session under the user-authorized SRCMAP-03a scope (#54)",
-  "freeze_sha256": "2d733e6f82724e3156e2d2a5776656a0eb8ac72890c3dc88a4381ac4d4825a88",
+  "freeze_sha256": "8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e",
   "no_additional_target_measurements": true,
   "operating_rules": [
-    "run exactly once with: /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -I scripts/certify_p22_v17_sign_invariance.py --output-dir docs/evidence/srcmap03a_sign_invariance_2026_10_13 (the output directory must be this evidence directory because the freeze is read from it)",
-    "a first INCOMPLETE record must be copied aside before any infrastructure-fault re-execution; both attempts are retained",
+    "run exactly once with: /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -I scripts/certify_p22_v17_sign_invariance.py --output-dir docs/evidence/srcmap03a_sign_invariance_2026_10_13 (the output directory must be this evidence directory because the freeze is read from it); attempt 1 (INCOMPLETE in preflight, before any measurement) does not consume this run",
+    "a first INCOMPLETE record of this run must be copied aside before any infrastructure-fault re-execution; both attempts are retained",
     "no threshold, parameter or frozen file may change after the run"
   ],
-  "review_markdown_sha256": "2ba9e2729365261e5ff7b1d1f0f5c195541f2382302dfe029a47ae1e0acf8808",
+  "review_markdown_sha256": "5a8346d7fe99ab9d5b61eb00abb543ab9c9319fd67d4cd7d2aa8049ea2664b9c",
   "review_verdict": "PASS",
-  "reviewed_commit": "3aaa2f5"
+  "reviewed_commit": "c56eca8",
+  "supersedes_approval": "prerun_approval_attempt1.json (freeze 2d733e6f..., attempt 1 INCOMPLETE in preflight)"
 }

@@ -37,3 +37,16 @@ parameter and a tampered file hash; 11 tests pass. The reviewer found one self-i
    (gap + amplitude <= TAU_REP). Comment-only; left unchanged to keep the freeze.
 4. A clean working tree is not required at run time; hashed files plus the recorded HEAD are the provenance.
 5. Not checked by the reviewer: band size, actual plateau ratio, and P3-P5 outcomes on the real fields.
+
+## Round 3 — Amendment 1, frozen state at commit `c56eca8` (freeze `8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e`): PASS
+
+Trigger: attempt 1 (freeze `2d733e6f…`) stopped INCOMPLETE in the preflight (SRCMAP-01 manifest check versus two living
+documents) before any state, mesh or field was loaded; retained as `attempt1_*` files. The reviewer confirmed that the
+diff `d475262..c56eca8` changes only the manifest logic, one comment, one test and the Amendment 1 text (parameters,
+predicates, thresholds and method untouched; old freeze byte-identical to the attempt-1 freeze), that the manifest logic
+cannot silently skip a changed non-living entry (real manifest: 130 entries, 128 verified, the two living documents
+excluded, 0 mismatches), that the amendment honestly discloses the deviation from the plan's own re-execution rule and that
+it adds no selection effect, that all 16 frozen hashes match and `verify_freeze` passes, and that 12 tests pass.
+Remaining notes, none blocking: the plan's earlier "130-entry" wording at `prerun_plan.md:43` is superseded by
+Amendment 1 (the post-run report cites the amendment; editing would force another freeze); the 125-versus-128 dry run
+hashed identity files only and is not retained as a log; attempt 1 does not consume the one-run allowance.
