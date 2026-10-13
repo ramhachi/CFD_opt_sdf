@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/qualify_srcmap02.py", line 287, in <module>
+    else: worker(args.output,args.grid,args.candidate,args.chunk,args.order)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/qualify_srcmap02.py", line 155, in worker
+    arrays = query(mesh, coordinates[indices], candidate, chunk)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/qualify_srcmap02.py", line 117, in query
+    arrays['sign_int8'], arrays['phi_float64'] = combine(arrays['unsigned_float64'], arrays['raw_signer_float64'])
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09/scripts/qualify_srcmap02.py", line 74, in combine
+    raise ValueError('signer zero at strictly positive unsigned distance')
+ValueError: signer zero at strictly positive unsigned distance

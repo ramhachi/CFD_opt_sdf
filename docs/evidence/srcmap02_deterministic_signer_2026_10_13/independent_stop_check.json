@@ -1,0 +1,61 @@
+{
+  "analytic_array_hash_checks": 40,
+  "analytic_candidate_sign_labels": 84,
+  "analytic_points": 42,
+  "analytic_zero_labels": 16,
+  "attempted_count": 1,
+  "attempted_target_jobs": [
+    "B_A_repeat_1"
+  ],
+  "checker_sha256": "2f9dfd1efcf5da4481f47b547c4812638359b864a65c7def839ea6be86de7e92",
+  "completed_target_jobs": 0,
+  "expected_terminal_classification": "SRCMAP02_INCONCLUSIVE",
+  "first_job_log_sha256": "bbc3485095e12be0e8535e07bc6df68da9a2415f4693555eb2c95d37b03beebe",
+  "fixtures": [
+    {
+      "independent_labels_pass": true,
+      "name": "axis_aligned_box",
+      "points": 11
+    },
+    {
+      "independent_labels_pass": true,
+      "name": "rotated_box",
+      "points": 9
+    },
+    {
+      "independent_labels_pass": true,
+      "name": "tetrahedron",
+      "points": 11
+    },
+    {
+      "independent_labels_pass": true,
+      "name": "triangulated_sphere",
+      "points": 11
+    }
+  ],
+  "freeze_sha256": "58fe2853fe2b913b82555bd4a5cbcefd2b6fcf93740e88c3c644e9c893d0d707",
+  "frozen_files_verified": 161,
+  "full_numeric_checker_executed": false,
+  "limitations": [
+    "Target raw unsigned/signer arrays were not persisted before the frozen combine guard raised.",
+    "Failing node identities/counts, closest features, raw signer values and candidate target fields cannot be independently recovered.",
+    "No target repeat, chunk/order, cross-environment, A/B agreement, 19-node sign or deterministic volume result is available.",
+    "Preflight identity is verified; per-target post-query runtime/mesh output was not saved.",
+    "Worker exit status 1 is verified from the saved CalledProcessError classification; runner outer exit is not separately captured here."
+  ],
+  "no_saved_target_arrays_or_job_json": true,
+  "not_attempted_target_jobs": 31,
+  "pass": true,
+  "preflight_structural_runtime_checks": {
+    "current": {
+      "inventory_sha256": "3133b06c91a2de56634acc5ced924755fe96317a4ec644c282e8a86720a38869",
+      "pass": true
+    },
+    "minimum": {
+      "inventory_sha256": "afe5ad9907cfeff3e122a6e21941cde3d11e164521e222b7991060b0b66b59b8",
+      "pass": true
+    }
+  },
+  "recorded_child_worker_exit_code": 1,
+  "scope": "Independent saved-file stop audit; no campaign imports, target/fixture library queries or reruns"
+}

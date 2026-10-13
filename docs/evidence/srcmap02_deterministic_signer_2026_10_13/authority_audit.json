@@ -1,0 +1,69 @@
+{
+  "audit_code_sha256": "301612a7bae582f5adc873df2658e9c30ecd4d7e4d6acb9022adef220fdcc24c",
+  "command": "PYTHONPATH=/private/tmp/srcmap02-libigl /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python /private/tmp/srcmap02_static_authority_audit.py",
+  "coordinate_construction": "axes=origin_m[a]+spacing_m*np.arange(shape[a]); stack(meshgrid(*axes,indexing=ij),axis=-1).reshape(-1,3), C-order",
+  "coordinate_hashes": {
+    "v16": "127b71b1c4a2b10a79e2641423c37700798969b897f881a77dd4d19207a9e36e",
+    "v17": "c50b86a5ca1cffedf000893f6df0db5b1b46eba054ba85182c02546b9cc8fef8"
+  },
+  "diagnostic_tree": "adf7acaad2c6b2026b207b640bf15d16a06dee11",
+  "explicit_unsigned_query": {
+    "authority_saved_field": "docs/evidence/srcmap01_v17_reproducibility_2026_10_12/diagnostics/D_unsigned.npz",
+    "authority_source": "scripts/diagnose_srcmap01.py",
+    "authority_source_sha256": "dddb27521283b8fb1ef3a161c4e15919539d8b318c8a32411183992728a5610e",
+    "branch": "traced_production mode=unsigned",
+    "expression": "_, distance, _ = trimesh.proximity.closest_point(mesh, q)",
+    "saved_current_unsigned_exact_zero_count": 498,
+    "saved_minimum_vs_current_float64_difference_count": 8,
+    "saved_minimum_vs_current_float64_max_delta_m": 2.220446049250313e-16,
+    "saved_npz_sha256": "86ad56bbb688c2d0546482568337f1fe40eea222e09837eb9601bf247eda400d",
+    "saved_unsigned_float64_sha256": "8cfd09e1e619f89f26ef6bb4cc4b04639f3d3ff0a2e0a5589713c1a7c8310f8d",
+    "scope": "Current environment magnitudes were repeat/chunk/order bit stable in SRCMAP01; explicit D_unsigned exactly equals current saved production absolute magnitudes. Cross-environment Float64 magnitude bytes were not identical. Do not use abs(signed_distance) for new candidate query."
+  },
+  "integration_parent_sha": "e621b585531f7fe3f44d0a8683cec1923008de56",
+  "integration_tree": "adf7acaad2c6b2026b207b640bf15d16a06dee11",
+  "mesh_prerequisites_path": "mesh_prerequisites.json",
+  "problem_node_population": {
+    "all_production_union_count": 19,
+    "current_union_count": 12,
+    "excluded_stages": [
+      "D composed/sign-semantic controls"
+    ],
+    "historical_three": [
+      [
+        28,
+        24,
+        19
+      ],
+      [
+        48,
+        44,
+        23
+      ],
+      [
+        56,
+        44,
+        27
+      ]
+    ],
+    "new_evidence_copy": "authority_saved_nodes.json",
+    "new_evidence_copy_sha256": "f2f33e904234b667d819248de7f63b871c2e3721a88c0e68f8ecc56e5a9d1b8f",
+    "production_stages": [
+      "A",
+      "B",
+      "C",
+      "G"
+    ],
+    "saved_arrays_only_analysis_sha256": "f2f33e904234b667d819248de7f63b871c2e3721a88c0e68f8ecc56e5a9d1b8f"
+  },
+  "scope": "Prefreeze authority check; old committed evidence and saved arrays only, plus separate static mesh topology audit. No target distance/sign queries.",
+  "selfintersection_not_tested": true,
+  "srcmap01_classification": "SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC",
+  "srcmap01_complete": true,
+  "srcmap01_diagnostic_commit": "0cd941badb45770c518809a95a535c2d06c1f4c5",
+  "srcmap01_freeze_sha256": "45ce00295d4d3ca663c34b78f2c331ec3ac6e39f2819e41e5f22d8cf1dd81482",
+  "srcmap01_manifest_current_hashes_passed": 130,
+  "srcmap01_manifest_entry_count": 130,
+  "srcmap01_manifest_sha256": "49de3e26ca012eadc9b058296065ab1554ffad9deaee282b8c8938a2d662b8a4",
+  "state_hash_semantics": "Existing sdf_state_sha256: sorted compact metadata JSON, then explicit little-endian Float32 C phi and four uint8 masks. Preserve registered masks/grid/source/generation/narrowband/topology/reinitialization metadata when replacing candidate phi."
+}
