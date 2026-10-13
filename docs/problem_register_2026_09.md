@@ -2020,3 +2020,11 @@ parent. Outside-band signs are independently certified numerically. Source-mappi
 question (#53, open) are **not** resolved by this result; it shows only that P22's observable does not depend on them for this
 artifact. See [diagnostic report](evidence/srcmap03a_sign_invariance_2026_10_13/diagnostic_report.md). P22-v1, production
 mapping/dependencies and qualification flags unchanged; CFD runs 0; selected_delta=null; shape_update_allowed=false.
+
+## P22-v2 (#55) — v17-lattice discrete volume contract registered (2026-10-13)
+
+The v1 limit (v16 lattice, 1009 centers) cannot hold the unmodified v17 baseline (8272 centers). v2 registers `N_phi <= 8272` on the
+v17 lattice as a representation-specific discrete constraint bound to the hash-pinned baseline artifact; mapping reproducibility remains
+unresolved and is non-blocking for this hard count only. See the [registration](evidence/sdf_native_volume_semantics_v2_2026_10.json) and
+[decision record](evidence/p22_v2_registration_2026_10_13/decision_record.md). LOWDIM-04A (#51) remains blocked pending a separate
+decision; the parent sits exactly at the limit.

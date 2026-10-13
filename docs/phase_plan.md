@@ -7385,3 +7385,17 @@ nondeterminism, qualify a signer, establish the correctness of any sign inside t
 candidate states, CFD, or physical/continuum volume. P22-v1 and production mapping/dependencies are unchanged; #53 stays
 OPEN as the unresolved signer question; #51 remains blocked pending the separately recorded P22-v2 registration stage.
 CFD runs 0; Kaggle submissions 0; selected_delta=null; shape_update_allowed=false.
+
+## P22-v2 (#55): v17-lattice discrete volume contract registered (2026-10-13)
+
+[`sdf_native_volume_semantics_v2_2026_10`](evidence/sdf_native_volume_semantics_v2_2026_10.json) registers the integer
+constraint `N_phi <= 8272` on the registered v17 design lattice, referenced to the hash-pinned pre-LOWDIM v17 baseline artifact
+(not to the LOWDIM-03 parent), with a thin `sdf_native_smoothed_volume_v2` wrapper that reuses the v1 primitive and refuses every
+other lattice. It is a **representation-specific discrete constraint, not a physical or continuum volume constraint**. The decision
+record ([record](evidence/p22_v2_registration_2026_10_13/decision_record.md)) supersedes the migration proposal's precondition
+and reference definition (item-by-item table) and reclassifies source-mapping reproducibility, which stays UNRESOLVED (#52, #53),
+as non-blocking for the hard count of this artifact only, on the strength of the SRCMAP-03a certificate. Baseline, LOWDIM-03
+parent and the eight recorded LOWDIM-04A perturbation states are all exactly at 8272 (zero slack: the hard count is active and
+integer-quantized; equal count does not mean equal volume). P22-v1 and its limit are unchanged and remain the historical authority for
+the v16 lattice. **#51 stays blocked** pending a separate decision and preregistration; no CFD, Kaggle or shape update;
+selected_delta=null; shape_update_allowed=false.
