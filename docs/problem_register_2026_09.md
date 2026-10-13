@@ -1995,3 +1995,19 @@ dependency remedy. Evidence and limits: [diagnostic report](evidence/srcmap01_v1
 The previous volume bridge remains INCONCLUSIVE. #51 stays OPEN/blocked with no
 P22-v1 change, P22-v2 registration, LOWDIM-04A restart, CFD/Kaggle, parent or
 qualification change. Execution order remains governed only by `phase_plan.md`.
+
+
+## SRCMAP-02 (#53) — deterministic signer qualification INCONCLUSIVE (2026-10-13)
+
+Both libigl 2.6.3 sign methods passed 42-point analytic fixtures, but first
+canonical Candidate A field generation hit the preregistered zero-scalar /
+positive unsigned-distance blocker. The campaign is incomplete: one attempted,
+zero complete retained fields, 31 unattempted, no rerun. The failed process did
+not persist target arrays; conflicting-node count/coordinates, full A/B agreement,
+repeat/environment identity and deterministic v16/v17 volumes remain unavailable.
+See [diagnostic stop record](evidence/srcmap02_deterministic_signer_2026_10_13/diagnostic_report.md).
+No remedy or signer is qualified. #52 is closed for the completed SRCMAP-01
+diagnosis only, with all evidence preserved. #51 remains OPEN and LOWDIM-04A
+blocked; P22-v1/limits, production mapping/dependencies, references, parent and
+qualification flags unchanged. No P22-v2, CFD, Kaggle or optimizer continuation;
+selected_delta=null; shape_update_allowed=false.

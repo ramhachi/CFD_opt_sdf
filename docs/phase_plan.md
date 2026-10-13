@@ -7341,3 +7341,28 @@ registered, and LOWDIM-04A/#51 remains blocked. No parent, threshold,
 qualification or execution gate changed; this diagnosis has
 `selected_delta=null`, `shape_update_allowed=false`, CFD runs 0 and Kaggle
 submissions 0. Stop at the diagnosis record; no automatic migration or restart.
+
+
+## SRCMAP-02 (#53): deterministic signer qualification stopped INCONCLUSIVE (2026-10-13)
+
+The solver-free attempt froze 32 full-field jobs at SHA256
+`58fe2853fe2b913b82555bd4a5cbcefd2b6fcf93740e88c3c644e9c893d0d707`.
+Official libigl 2.6.3 pseudonormal (preselected A) and winding-number control B
+passed the formal 42-point analytic fixture set. The first current canonical
+v17 pseudonormal job then detected an exactly zero libigl returned scalar with
+strictly positive separate closest-point unsigned distance. The frozen zero
+rule stopped the attempt: **SRCMAP02_INCONCLUSIVE**, campaign incomplete,
+1 attempted / 0 complete retained fields / 31 unattempted / 0 reruns.
+The failed process raised before array persistence, so conflicting-node count,
+coordinates, A/B field agreement, repeat/chunk/order/environment identity and
+new deterministic v16/v17 volumes are unavailable. No tolerance/tie rule was
+added and no target query was repeated. See [stop report](evidence/srcmap02_deterministic_signer_2026_10_13/diagnostic_report.md),
+[raw classification](evidence/srcmap02_deterministic_signer_2026_10_13/classification.json)
+and [validation](evidence/srcmap02_deterministic_signer_2026_10_13/validation.json).
+SRCMAP-01 (#52) was closed as a completed nondeterminism diagnosis with no
+qualified remedy; its evidence and the prior INCONCLUSIVE bridge are preserved.
+No signer is qualified/adopted. P22-v1 and production mapping/dependencies are
+unchanged; P22-v2 remains unregistered; LOWDIM-04A/#51 remains blocked.
+CFD runs 0; Kaggle submissions 0; qualification flags unchanged;
+selected_delta=null; shape_update_allowed=false. Stop at this recorded result;
+additional measurement or contract work requires a separate user decision.

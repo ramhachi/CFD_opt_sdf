@@ -1,0 +1,23 @@
+{
+  "attempted_full_field_jobs": 1,
+  "candidate_hard_volume_difference_m3": null,
+  "candidate_v16_hard_volume_m3": null,
+  "candidate_v17_hard_volume_m3": null,
+  "complete": false,
+  "completed_full_field_jobs": 0,
+  "counts_and_coordinates_unavailable": true,
+  "measurement_reruns": 0,
+  "no_new_geometry_queries": true,
+  "not_attempted_full_field_jobs": 31,
+  "p22_v1_changed": false,
+  "planned_full_field_jobs": 32,
+  "reason": "First canonical pseudonormal job B_A_repeat_1 failed the preregistered zero rule before worker output persistence: raw signer scalar == 0 while explicit unsigned distance > 0. No retry or later mapping jobs were executed.",
+  "reference_migration": false,
+  "registered_reference_values_descriptive_only": {
+    "v16_hard_volume_m3": 0.12612500000000004,
+    "v17_hard_volume_m3": 0.12925000000000003
+  },
+  "status": "NOT_EXECUTED_AFTER_SEMANTIC_STOP",
+  "target_arrays_saved": false,
+  "terminal_classification": "SRCMAP02_INCONCLUSIVE"
+}
