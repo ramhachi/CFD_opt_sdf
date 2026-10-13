@@ -66,15 +66,17 @@ def complete_freeze(tmp_path):
         (d / "runner.py").write_text(K.render(head, k)); (d / "kernel-metadata.json").write_text(json.dumps(K.metadata(k), sort_keys=True, indent=2) + "\n")
         runtime[k] = {**A.RUNTIME_FIXED, "kernel_id": K.KERNEL_IDS[k], "case_id": grid, "runner_sha256": B.sha(d / "runner.py"), "metadata_sha256": B.sha(d / "kernel-metadata.json")}
     required = A.REQUIRED_FILES | {INV["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in INV["grids"].values()} | {d["path"] for d in INV["directions"].values()}
+    proof = {"all_free": True, "owner": "ramhachi888"}
+    (tmp_path / "identity_free_check.json").write_text(json.dumps(proof))
     freeze = {"kind": A.FREEZE_KIND, "frozen_parameters": A.FROZEN_PARAMETERS, "inventory_sha256": B.sha(EV / "inventory.json"), "file_hashes": {p: B.sha(ROOT / p) for p in sorted(required)},
               "source_commit": head, "source_tree_id": A.git_tree_sha(head), "qualification_flags": {k: False for k in A.FLAGS}, "selected_delta": None, "reinitialization": "none",
-              "identity_free_check": {"all_free": True, "owner": "ramhachi888"}, "parent_integration_commit": head, "runtime": runtime, "pins": {k: K.pins(k) for k in ("a", "b")}}
+              "identity_free_check": proof, "parent_integration_commit": A.PARENT_INTEGRATION_COMMIT, "runtime": runtime, "pins": {k: K.pins(k) for k in ("a", "b")}}
     return freeze, infra
 
 
 def test_registration_validation_accepts_a_complete_freeze(tmp_path):
     freeze, infra = complete_freeze(tmp_path)
-    A.validate_registration(freeze, INV, infra=infra)
+    A.validate_registration(freeze, INV, infra=infra, identity=tmp_path / "identity_free_check.json")
 
 
 def test_registration_validation_rejects_each_weakening(tmp_path):
@@ -91,18 +93,20 @@ def test_registration_validation_rejects_each_weakening(tmp_path):
         "wrong tree id": lambda f: f.update(source_tree_id="0" * 40),
         "pin tampered": lambda f: f["pins"]["a"].update({next(iter(f["pins"]["a"])): "0" * 64}),
         "identity check absent": lambda f: f.update(identity_free_check={}),
+        "identity check differs from the record": lambda f: f.update(identity_free_check={"all_free": True, "owner": "ramhachi888", "x": 1}),
+        "wrong parent commit": lambda f: f.update(parent_integration_commit="0" * 40),
         "kernel id": lambda f: f["runtime"]["a"].update(kernel_id="ramhachi888/other"),
     }
     for label, mutate in mutations.items():
         bad = copy.deepcopy(freeze); mutate(bad)
         with pytest.raises(ValueError):
-            A.validate_registration(bad, INV, infra=infra)
+            A.validate_registration(bad, INV, infra=infra, identity=tmp_path / "identity_free_check.json")
     (infra / "kernel_lowdim04a_a/runner.py").write_text((infra / "kernel_lowdim04a_a/runner.py").read_text() + "\n# edited\n")
     with pytest.raises(ValueError, match="rendered worker"):
-        A.validate_registration(freeze, INV, infra=infra)
+        A.validate_registration(freeze, INV, infra=infra, identity=tmp_path / "identity_free_check.json")
     bad_inv = copy.deepcopy(INV); bad_inv["states"][1]["hard_count"]["residual_vs_n_max"] = 1
     with pytest.raises(ValueError):
-        A.validate_registration(freeze, bad_inv, infra=infra)
+        A.validate_registration(freeze, bad_inv, infra=infra, identity=tmp_path / "identity_free_check.json")
 
 
 def test_the_eight_perturbation_hashes_equal_the_recorded_blocker_hashes():

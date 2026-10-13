@@ -31,6 +31,8 @@ KERNELS = {"a": "flow_24", "b": "flow_32"}
 SUMMARY_REL = 1e-9
 FREEZE_KIND = "lowdim04a_stage_a_prerun_freeze"
 INFRA = ROOT / "infra/kaggle"
+IDENTITY_PATH = ROOT / EVIDENCE_REL / "identity_free_check.json"
+PARENT_INTEGRATION_COMMIT = "0cd668892cbecc2b6c7c8f62cce05c0de6292fe8"
 FLAGS = ("fd_oracle", "field_gradient", "reverse", "optimizer", "topology", "shape_update_allowed")
 RUNTIME_FIXED = {"machine_shape": "NvidiaTeslaT4", "kernel_timeout_s": 10800, "timeout_s": 10800, "per_state_timeout_s": 900, "solver_wall_time_cap_s": 8100, "instantiate_timeout_s": 2400,
                  "gpu_probe_timeout_s": 300, "reserve_s": 300, "julia_threads": 1, "cuda_device_order": "PCI_BUS_ID", "cuda_visible_devices": "0", "selected_gpu_physical_index": 0,
@@ -65,7 +67,7 @@ def git_tree_sha(commit: str) -> str:
     return subprocess.run(["git", "-C", str(ROOT), "rev-parse", f"{commit}^{{tree}}"], capture_output=True, text=True, check=True).stdout.strip()
 
 
-def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = True, infra: Path = INFRA) -> None:
+def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = True, infra: Path = INFRA, identity: Path = IDENTITY_PATH) -> None:
     """The freeze binds every source file by hash, the rendered workers by re-rendering, the fixed budgets and the source commit by its tree id."""
     if not isinstance(freeze, dict) or freeze.get("kind") != FREEZE_KIND:
         raise ValueError("freeze kind differs")
@@ -77,8 +79,9 @@ def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = Tru
     if freeze.get("inventory_sha256") != sha256(inv_path) or inventory != jload(inv_path):
         raise ValueError("inventory differs from the frozen inventory")
     proof = freeze.get("identity_free_check", {})
-    if proof.get("all_free") is not True or proof.get("owner") != "ramhachi888" or not freeze.get("parent_integration_commit"):
-        raise ValueError("authenticated identity-free check or parent integration commit is missing")
+    if proof.get("all_free") is not True or proof.get("owner") != "ramhachi888" or proof != jload(identity):
+        raise ValueError("the authenticated identity-free check differs from the committed record")
+    _equal(freeze.get("parent_integration_commit"), PARENT_INTEGRATION_COMMIT, "parent integration commit")
     required = REQUIRED_FILES | {inventory["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in inventory["grids"].values()} | {d["path"] for d in inventory["directions"].values()}
     if not required <= set(freeze["file_hashes"]):
         raise ValueError(f"the freeze omits required files: {sorted(required - set(freeze['file_hashes']))}")

@@ -16,7 +16,8 @@ import build_lowdim04a_kernel as K
 from build_grid01_inputs import canonical_json
 E=K.EVIDENCE
 IDENTITY=E/'identity_free_check.json'
-PARENT='0cd668892cbecc2b6c7c8f62cce05c0de6292fe8'
+import analyze_lowdim04a as _A
+PARENT=_A.PARENT_INTEGRATION_COMMIT
 
 
 def command(args):

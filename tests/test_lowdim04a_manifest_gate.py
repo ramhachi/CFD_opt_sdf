@@ -28,3 +28,11 @@ def test_gate_reports_missing_mismatched_untracked_and_ignored_entries(tmp_path)
     assert not any("ok.txt" in x or "living.md" in x for x in problems)
     m.write_text(f"{h('a')}  ok.txt\n")
     assert G.check(m, tmp_path) == []
+    sub = tmp_path / "sub"; sub.mkdir(); (sub / "a.txt").write_text("a"); (sub / "b.log").write_text("d")
+    git(tmp_path, "add", "sub/a.txt"); git(tmp_path, "commit", "-qm", "y")
+    ms = sub / "SHA256SUMS"; ms.write_text(f"{h('a')}  ./a.txt\n{h('d')}  ./b.log\n{h('a')}  ./gone.txt\n")  # the older './name' form is relative to the manifest directory
+    assert G.check(ms, tmp_path) == ["not tracked by git (ignored or uncommitted): ./b.log", "missing: ./gone.txt", "not tracked by git (ignored or uncommitted): ./gone.txt"]
+    ms.write_text(f"{h('a')}  ../etc\n")
+    import pytest
+    with pytest.raises(ValueError):
+        G.check(ms, tmp_path)

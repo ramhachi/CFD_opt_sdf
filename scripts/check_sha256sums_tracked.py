@@ -7,28 +7,36 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 
 def check(manifest: Path, root: Path, excepted: tuple[str, ...] = ()) -> list[str]:
+    """Entries are repo-root relative, except names starting with './' which are relative to the manifest's own directory (the older manifests)."""
+    root = Path(root).resolve()
+    here = Path(manifest).resolve().parent.relative_to(root)
     entries = []
     for line in Path(manifest).read_text().splitlines():
         if line.strip():
             digest, name = line.split(None, 1)
-            entries.append((digest, name.strip()))
-    tracked = set(subprocess.run(["git", "-C", str(root), "ls-files", "--", *[n for _, n in entries]], capture_output=True, text=True, check=True).stdout.splitlines())
+            name = name.strip()
+            rel = os.path.normpath(os.path.join(here, name) if name.startswith("./") else name)
+            if os.path.isabs(rel) or rel.startswith(".."):
+                raise ValueError(f"unsafe manifest path: {name}")
+            entries.append((digest, name, rel))
+    tracked = set(subprocess.run(["git", "--literal-pathspecs", "-C", str(root), "ls-files", "--", *[r for _, _, r in entries]], capture_output=True, text=True, check=True).stdout.splitlines())
     problems = []
-    for digest, name in entries:
-        if name in excepted:
+    for digest, name, rel in entries:
+        if name in excepted or rel in excepted:
             continue
-        path = Path(root) / name
+        path = root / rel
         if not path.is_file():
             problems.append(f"missing: {name}")
         elif hashlib.sha256(path.read_bytes()).hexdigest() != digest:
             problems.append(f"hash mismatch: {name}")
-        if name not in tracked:
+        if rel not in tracked:
             problems.append(f"not tracked by git (ignored or uncommitted): {name}")
     return problems
 
