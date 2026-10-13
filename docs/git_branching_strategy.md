@@ -25,6 +25,15 @@ Create branches from the latest `main` and delete them after merge:
 Use a short issue or task identifier and a descriptive slug, for example
 `feat/g2-case-runtime` or `fix/mesh-patch-compatibility`.
 
+## Cleanup
+
+Merged branches must not accumulate. GitHub deletes the head branch on merge
+(`delete_branch_on_merge`), and `fetch.prune=true` drops stale remote refs.
+After a merge, remove the worktree (`git worktree remove <path>`), then run
+`git sweep` (a local alias for `git fetch && git branch -d` on every merged,
+non-checked-out branch; recreate with the command in `git config alias.sweep`
+of the main checkout if it is missing). It never force-deletes.
+
 ## Pull requests and releases
 
 - Every change to `main` goes through a pull request.
