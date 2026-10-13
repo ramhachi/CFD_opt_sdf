@@ -1,0 +1,12 @@
+{
+  "approved_by": "independent Claude Sonnet subagent reviewer; orchestrated by the root Claude session; not a human reviewer",
+  "freeze_sha256": "459c2864f0f31a219ae561e85d97dad924d8c7b5f317e7781cbefcdb10fd20af",
+  "operating_rules": [
+    "run exactly once: /Users/sota/projects/FomulaTMU/CFD2026_09/.venv/bin/python -I scripts/sdf_native_volume_semantics_v2_2026_10.py (writes docs/evidence/sdf_native_volume_semantics_v2_2026_10.json and its .sha256 sidecar)",
+    "an integrity failure writes nothing; a rerun is allowed only after an infrastructure fault and never to change a result; no frozen file, pinned hash or parameter may change after the run",
+    "post-run additions (disclosed): one read-only test of the generated artifact, living-doc sections, SHA256SUMS, post-run review"
+  ],
+  "review_markdown_sha256": "0fc178ecfc94aa332330d76e4107b772d6a8598c45f1e3ba3aaa4dcb4091c693",
+  "review_verdict": "PASS",
+  "reviewed_commit": "5210476"
+}
