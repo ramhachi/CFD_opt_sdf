@@ -1,0 +1,99 @@
+{
+  "comparison_to_srcmap02_record": {
+    "new": [],
+    "resolved": []
+  },
+  "compileall": "src scripts tests: exit 0 (logs/compileall.log)",
+  "final": {
+    "command": ".venv/bin/python -m pytest -q -p no:cacheprovider --junitxml=final_junit.xml (main-checkout venv, this worktree at git head f4b5dd3 plus this report)",
+    "failed": 48,
+    "failure_ids": [
+      "tests/test_canonical_objective.py::test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign",
+      "tests/test_grad_dual_gpu_g1_evidence.py::test_kernel_output_matches_its_manifest_except_the_trimmed_log",
+      "tests/test_grad_g2_diag1_evidence.py::test_kept_kernel_files_match_the_kernel_manifest",
+      "tests/test_grad_g2_diag2_evidence.py::test_kept_kernel_files_match_the_kernel_manifest",
+      "tests/test_grad_g2_diag3_evidence.py::test_kept_kernel_files_match_the_kernel_manifest",
+      "tests/test_grad_g2_diag4_evidence.py::test_kept_kernel_files_match_the_kernel_manifest",
+      "tests/test_lowdim01_evidence.py::test_terminal_state_complete_and_the_baseline_is_byte_identical_to_fd08",
+      "tests/test_lowdim01_evidence.py::test_the_analysis_is_the_registered_one_and_reproduced_from_the_kept_output",
+      "tests/test_lowdim02a_evidence.py::test_terminal_state_complete_and_the_baseline_is_byte_identical_to_the_w4_flow32_baseline",
+      "tests/test_lowdim02a_evidence.py::test_the_analysis_is_the_registered_one_and_reproduced_from_the_kept_output",
+      "tests/test_pq3_3b_campaign_v15.py::test_pinned_evidence_and_margin_mask_hashes_verify",
+      "tests/test_pq3_3b_campaign_v15.py::test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint",
+      "tests/test_pq3_3b_campaign_v16.py::test_start_state_is_the_recorded_v15_checkpoint_10_unchanged",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_preflight_reverifies",
+      "tests/test_stage_s_adjoint_case.py::test_registered_adjoint_run_reverifies",
+      "tests/test_stage_s_adjoint_qualification.py::test_registered_qualification_reverifies",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_file_hashes_reverify",
+      "tests/test_stage_s_baseline_v16.py::test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment",
+      "tests/test_stage_s_component_diagnosis.py::test_registered_component_manifest_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_case_audit_detects_clipping_and_accepts_exact_application",
+      "tests/test_stage_s_fd_diagnosis.py::test_control_point_parsers_and_count_validation",
+      "tests/test_stage_s_fd_diagnosis.py::test_pair_audit_odd_even_and_direction_comparison",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d1_audit_reverifies",
+      "tests/test_stage_s_fd_diagnosis.py::test_registered_d2_audit_reverifies",
+      "tests/test_stage_s_perturbation.py::test_baseline_patch_extraction_is_closed_and_oriented",
+      "tests/test_stage_s_perturbation.py::test_fixed_patches_do_not_move_in_a_registered_side",
+      "tests/test_stage_s_perturbation.py::test_registered_side_evidence_reverifies",
+      "tests/test_stage_s_perturbation.py::test_registered_surface_fd_result_reverifies",
+      "tests/test_stage_s_reduced_basis.py::test_registered_manifest_contract_and_reduced_spec",
+      "tests/test_stage_s_v16_contract_audit.py::test_build_manifest_refuses_a_pq2_hash_registration_mismatch",
+      "tests/test_stage_s_v16_contract_audit.py::test_every_recorded_artifact_hash_is_current",
+      "tests/test_stage_s_work_f.py::test_preflight_artifact_passed_and_matches_the_manifest",
+      "tests/test_stage_s_work_f.py::test_registration_binds_the_baseline_and_response_identities",
+      "tests/test_stage_s_work_f.py::test_solver_evidence_qualified_and_reconfirmed_clearance",
+      "tests/test_stage_s_work_f_surface_fd.py::test_evaluation_requires_both_responses_and_resolvable_aligned_directions",
+      "tests/test_stage_s_work_f_surface_fd.py::test_manifest_validation_rejects_missing_roles_and_seeds",
+      "tests/test_stage_s_work_f_surface_fd.py::test_response_manifests_share_the_catalog_and_identity_contract",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_extended_spec_changes_only_domain_and_problem_id",
+      "tests/test_stage_v16_domain_boundary_contract.py::test_registered_artifacts_are_current",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_case_bundle_uses_declared_grid_without_sdf_arrays",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_domain_reuses_baseline_location_in_mesh",
+      "tests/test_stage_v_domain_boundary_factor.py::test_extended_spec_diff_and_top_block_helper",
+      "tests/test_stage_v_domain_boundary_factor.py::test_registered_run_manifest_contract",
+      "tests/test_stage_v_domain_boundary_factor.py::test_treatment_cases_match_the_registered_definition",
+      "tests/test_stage_v_domain_continuation.py::test_staged_geometry_is_byte_identical_to_base",
+      "tests/test_stage_v_qualification.py::test_real_historical_run_without_residual_control_is_not_called_converged",
+      "tests/test_step01_evidence.py::test_terminal_state_every_kernel_complete_and_baselines_byte_identical_to_fd08",
+      "tests/test_step01_evidence.py::test_the_analysis_is_the_registered_one_and_reproduced_from_the_kept_output"
+    ],
+    "junit": {
+      "gzip_sha256": "f865dd0b2733e10061f88368ae237bc3082fac69f1b04e01bcbfec0c6aa05f57",
+      "uncompressed_sha256": "3461322a97a9841aac046076d744066edf8f469ad627ad131436a882a4cbb144"
+    },
+    "passed": 2197,
+    "pytest_log": {
+      "gzip_sha256": "a8ad1b9adb3718d6f5f05955a7fbf3ce6402ae52818af8a965d61d7752588588",
+      "uncompressed_sha256": "c56af486d42639676d3d3fd5876efd7cb00347ed26baa330d9e0bcfbd0c50b08"
+    },
+    "skipped": 30
+  },
+  "focused_tests": "tests/test_srcmap03a_certificate.py: 12 passed",
+  "git_diff_check": "passed",
+  "pristine_scratch_worktree_at_parent_f82a5e0": {
+    "extra_failures_vs_final": [
+      "tests/test_fd08_calibration.py::test_calibration_retry_registration_uses_append_only_round_paths",
+      "tests/test_kaggle_sdf_directional_fd_v16.py::test_v17_flow24_prerequisites_use_registered_w3_w4_backend_identity"
+    ],
+    "failed": 50,
+    "final_only_failures": [],
+    "junit": {
+      "gzip_sha256": "adb042668fef8a56b3c276e536241f6106f3804c30121cab5916459b0e7e748f",
+      "uncompressed_sha256": "ab5392fcecf9950835b5a5938382286cb44be2d96ace6ee76302dfbb22c2b7f5"
+    },
+    "note": "two extra failures appear only in a pristine scratch worktree; they pass in this worktree and are absent from the SRCMAP-02 record. Their cause was not investigated (likely dependence on untracked work/ files). They are not failures of the final state.",
+    "passed": 2176,
+    "pytest_log": {
+      "gzip_sha256": "af5fd956512515f779fa42bd23740debba48603c7f9768b4a76c8076ab76a186",
+      "uncompressed_sha256": "47fbdc7fea6028054895f8791cebc44c7d2687c5505b32e11030a0c96a463eea"
+    },
+    "skipped": 37
+  },
+  "srcmap02_recorded_final": {
+    "failed": 48,
+    "note": "libigl installed there; here 7 libigl-dependent SRCMAP-02 tests skip, so passed = 2192 + 12 new - 7 = 2197 and skipped = 23 + 7 = 30",
+    "passed": 2192,
+    "skipped": 23
+  },
+  "verdict": "zero new failures; same 48 failure IDs as the SRCMAP-02 record; not an all-pass suite"
+}

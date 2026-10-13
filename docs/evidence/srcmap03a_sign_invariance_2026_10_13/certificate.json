@@ -1,0 +1,243 @@
+{
+  "amplitude_sweep": {
+    "first_failing_uniform_amplitude_m": 0.003784295938131482,
+    "ratio_to_observed_band_max": 158647.42788870377
+  },
+  "claims_not_made": [
+    "mapping reproducibility",
+    "signer qualification",
+    "correctness of any sign inside the band",
+    "other STLs or lattices",
+    "CFD response",
+    "physical or continuum volume"
+  ],
+  "controls": {
+    "all_masks_equal_reference": true,
+    "count": 19,
+    "outside_band_differences_total": 0,
+    "pass": true,
+    "skipped_v16_controls": [
+      "A_v16_1.npz",
+      "A_v16_2.npz"
+    ],
+    "variants": {
+      "A_v17_1.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 4
+      },
+      "A_v17_2.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "A_v17_3.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 4
+      },
+      "A_v17_4.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "A_v17_5.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "B_chunk_100000.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 3
+      },
+      "B_chunk_131071.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 2
+      },
+      "B_chunk_200000.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "B_chunk_368640.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 4
+      },
+      "B_chunk_385385.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 10
+      },
+      "B_chunk_50000.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 4
+      },
+      "C_canonical.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "C_permuted.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 1
+      },
+      "C_reverse.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 1
+      },
+      "D_direct.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 0
+      },
+      "D_fallback.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 3930
+      },
+      "G_minimum_1.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 11
+      },
+      "G_minimum_2.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 11
+      },
+      "v17_source_replay_2026_10_12.npz": {
+        "mask_equals_reference": true,
+        "outside_band_differences": 0,
+        "sign_differences": 3
+      }
+    }
+  },
+  "gates": {
+    "cell_components": {
+      "endpoints": [
+        1,
+        1
+      ],
+      "pass": true,
+      "required": 1
+    },
+    "clearance": {
+      "baseline_margin_m": 0.3499999939931499,
+      "gate_m": 0.15,
+      "pass": true,
+      "worst_case_margin_m": 0.34999900000000256
+    },
+    "eikonal_median": {
+      "baseline": 2.458691275020186e-07,
+      "bound_actual_band_max": 3.3052374932008405e-06,
+      "bound_tau": 0.00013856406425566953,
+      "limit": 0.1,
+      "pass": true
+    },
+    "masks_and_support_preserved": "not applicable: design/fixed/forbidden/root masks are separate arrays; no phi sign enters them",
+    "pass": true,
+    "smoothed_volume": {
+      "abs_bound_m3": 1.0536603463255753e-05,
+      "band": 0.1,
+      "baseline_m3": 0.08897032348835406,
+      "parent_abs_bound_m3": 1.279073392826606e-06,
+      "parent_relative_change": -0.011828700475121301,
+      "parent_relative_change_worst_range": [
+        -0.011697281067104659,
+        -0.011960088759271681
+      ],
+      "pass": true,
+      "rel_bound": 0.00011842829215558558
+    }
+  },
+  "identity": {
+    "baseline_npz_sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31",
+    "parent_npz_sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b",
+    "stl_sha256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "mesh": {
+    "face_bytes_sha256": "7b4be8455c6752ff66e1e59ba151c8aacd789c040d1e24fdfd145dc4b9b73296",
+    "vertex_bytes_sha256": "b2e014fce6ffe5e15e6c90e1605fe6c1578eacfc42266dd9eb962096e12ecaed",
+    "watertight": true,
+    "winding_consistent": true
+  },
+  "occupancy_actual_magnitude": {
+    "ambiguous_cells": 0,
+    "cells_differing_from_reference": 0,
+    "endpoint_masks_equal_reference": true,
+    "endpoint_solid_counts": [
+      8272,
+      8272
+    ],
+    "endpoints_equal_enumeration_extrema": true,
+    "min_abs_centre_over_patterns": 0.0031249881722033024,
+    "pass": true,
+    "touching_cells": 10752
+  },
+  "occupancy_uniform_tau": {
+    "ambiguous_cells": 0,
+    "cells_differing_from_reference": 0,
+    "endpoint_masks_equal_reference": true,
+    "endpoint_solid_counts": [
+      8272,
+      8272
+    ],
+    "endpoints_equal_enumeration_extrema": true,
+    "min_abs_centre_over_patterns": 0.0031241232063621283,
+    "pass": true,
+    "touching_cells": 10752
+  },
+  "outside_sign": {
+    "max_distance_from_0_or_1": 4.440892098500626e-16,
+    "outside_nodes": 380015,
+    "pass": true,
+    "sign_mismatches_vs_registered": 0,
+    "tolerance": 1e-09,
+    "winding_float64_sha256": "fdc249bd0970e82ef7a8249a9a62102e80b05cc6e3a6dfe7179d75490f5ce0ac"
+  },
+  "plateau": {
+    "band_nodes": 5370,
+    "exact_zero": 498,
+    "identical_at_lo_rep_hi": true,
+    "max_inside_magnitude": 2.3853496955439368e-08,
+    "min_outside_magnitude": 0.02499997615814209,
+    "negative": 4075,
+    "positive": 797,
+    "ratio": 1048063.359634206
+  },
+  "predicates": {
+    "P1_plateau": true,
+    "P2_outside_sign_numerical_certification": true,
+    "P3_occupancy_interval_certificate": true,
+    "P4_gate_classification_robustness": true,
+    "P5_controls_consistent": true
+  },
+  "provenance": {
+    "freeze_sha256": "8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e",
+    "git_head": "f4b5dd3b6fcedad3481f5f6ca819fe30c5b71fb6",
+    "script_sha256": "9064bb8c54806ce044cac09ed46e9576b747a2a62e3a3e802ef78d9cd5bc3922"
+  },
+  "reference_solid_centers": 8272,
+  "runtime": {
+    "numpy": "2.5.2",
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "trimesh": "5.1.0"
+  },
+  "srcmap01_manifest": {
+    "entries_verified": 128,
+    "excluded_living_documents": [
+      "docs/phase_plan.md",
+      "docs/problem_register_2026_09.md"
+    ],
+    "mismatches": []
+  },
+  "tau_rep": 9.999999974752427e-07,
+  "terminal_classification": "P22_V17_SIGN_INVARIANCE_CERTIFIED"
+}
