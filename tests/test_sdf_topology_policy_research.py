@@ -176,4 +176,4 @@ def test_registered_artifact_matches_the_default_policy_and_its_sidecar():
     p = SDFTopologyPolicyResearchV2()
     assert reg["policy"] == p.to_dict() and reg["state_binding_id"] == p.state_binding_id and SDFTopologyPolicyResearchV2.from_dict(reg["policy"]) == p
     assert reg["policy"]["unresolved_inputs"] == ["minimum_solid_width_m", "minimum_void_width_m"] and not any(reg["flags"].values()) and reg["solver_started"] is False
-    assert json.loads((ROOT / "docs/evidence/sdf_topology_policy_v1_2026_09.json").read_text())  # the immutable v1 registration is still present and untouched by this change
+    assert hashlib.sha256((ROOT / "docs/evidence/sdf_topology_policy_v1_2026_09.json").read_bytes()).hexdigest() == reg["v1_registration_sha256"]  # the immutable v1 registration is untouched
