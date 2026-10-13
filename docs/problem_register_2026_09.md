@@ -2011,3 +2011,12 @@ diagnosis only, with all evidence preserved. #51 remains OPEN and LOWDIM-04A
 blocked; P22-v1/limits, production mapping/dependencies, references, parent and
 qualification flags unchanged. No P22-v2, CFD, Kaggle or optimizer continuation;
 selected_delta=null; shape_update_allowed=false.
+
+## SRCMAP-03a (#54) — P22-v17 boundary-sign invariance certified (2026-10-13)
+
+For the retained v17 baseline and source STL only, no sign assignment to the 5370 boundary-ambiguous nodes can change the
+P22 hard mask (count 8272), and the five registered LOWDIM gates keep their classification for the baseline and one retained
+parent. Outside-band signs are independently certified numerically. Source-mapping nondeterminism (#52) and the signer
+question (#53, open) are **not** resolved by this result; it shows only that P22's observable does not depend on them for this
+artifact. See [diagnostic report](evidence/srcmap03a_sign_invariance_2026_10_13/diagnostic_report.md). P22-v1, production
+mapping/dependencies and qualification flags unchanged; CFD runs 0; selected_delta=null; shape_update_allowed=false.

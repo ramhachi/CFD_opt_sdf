@@ -34,3 +34,13 @@ the surface, lattice aligned with the STL faces) is in the report; reviewers are
 smoothed-volume bound analytic value 1.0544e-5 m³ differs from the recorded float32-difference value 1.0537e-5 by 0.07%,
 immaterial against the criterion. Not checked by the reviewer: the unrecorded prototype, the Eikonal median value
 itself (only the bound algebra), and the Amendment 1 dry run.
+
+## Confirmation at commit `fbbe105`: PASS for recording this result
+
+The reviewer re-checked findings 1-7 against the committed text and recomputed the new wording (the exact onset
+`0.025/7 = 3.5714e-3` from the 163 cells with seven band corners, the 3988/3930 sign-bit and 3553/3495 `phi<0` figures,
+the scratch-baseline explanation, the branch-diff scope) and found no new over-claim or factual error. Items not checked
+by the reviewer, added to the list above: Float32 monotonicity of `_corner_mean` beyond the computed cases (it holds by
+construction for fixed-order rounded addition and is exercised by the enumeration test), and the former "qualification
+flags unchanged" statement, which was replaced by the branch-diff scope claim rather than verified. The `SHA256SUMS` named in
+finding 7 is generated after this paragraph in the recording commit.
