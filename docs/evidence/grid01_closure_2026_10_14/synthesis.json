@@ -1,0 +1,224 @@
+{
+  "actual_primal_acceptance_by_grid": {
+    "lowdim02a|+1.25mm": {
+      "flow_24": {
+        "downforce_change_n": 0.00040517653513449936,
+        "drag_change_n": -0.00016764795823859258,
+        "passes_rule": true
+      },
+      "flow_32": {
+        "downforce_change_n": 0.000731359929487807,
+        "drag_change_n": 5.402576346680288e-05,
+        "passes_rule": false
+      },
+      "grids_disagree": true
+    },
+    "lowdim02a|+2.5mm": {
+      "flow_24": {
+        "downforce_change_n": -5.009925233540047e-05,
+        "drag_change_n": -0.0007423741489236413,
+        "passes_rule": false
+      },
+      "flow_32": {
+        "downforce_change_n": 0.0012035621932095508,
+        "drag_change_n": -8.324802835973921e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": true
+    },
+    "lowdim03|s0.625mm": {
+      "flow_24": {
+        "downforce_change_n": 0.00014055449004901632,
+        "drag_change_n": -4.893992711135775e-05,
+        "passes_rule": true
+      },
+      "flow_32": {
+        "downforce_change_n": 0.0002010550353627183,
+        "drag_change_n": -3.6075246155897744e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": false
+    },
+    "lowdim03|s1.25mm": {
+      "flow_24": {
+        "downforce_change_n": 0.00020921622692704478,
+        "drag_change_n": -0.00013009360925425595,
+        "passes_rule": true
+      },
+      "flow_32": {
+        "downforce_change_n": 0.00038719876313042523,
+        "drag_change_n": -6.305368199505113e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": false
+    },
+    "lowdim03|s2.5mm": {
+      "flow_24": {
+        "downforce_change_n": 0.00011591942669220145,
+        "drag_change_n": -0.0003886426378180152,
+        "passes_rule": true
+      },
+      "flow_32": {
+        "downforce_change_n": 0.0006764761495526295,
+        "drag_change_n": -0.00020235652841277263,
+        "passes_rule": true
+      },
+      "grids_disagree": false
+    },
+    "lowdim04b|s0.3125mm": {
+      "flow_24": {
+        "downforce_change_n": 3.565988123876984e-05,
+        "drag_change_n": -5.7094286795233984e-05,
+        "passes_rule": true
+      },
+      "flow_32": {
+        "downforce_change_n": 0.0001147881043464527,
+        "drag_change_n": -1.1478672302667192e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": false
+    },
+    "lowdim04b|s0.625mm": {
+      "flow_24": {
+        "downforce_change_n": 2.9655365348491003e-05,
+        "drag_change_n": -0.0001289799589428986,
+        "passes_rule": false
+      },
+      "flow_32": {
+        "downforce_change_n": 0.00021801529351511695,
+        "drag_change_n": -3.5717708961657824e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": true
+    },
+    "lowdim04b|s0.9375mm": {
+      "flow_24": {
+        "downforce_change_n": 6.372203394389153e-07,
+        "drag_change_n": -0.00021278948644781748,
+        "passes_rule": false
+      },
+      "flow_32": {
+        "downforce_change_n": 0.00031435409218699695,
+        "drag_change_n": -6.333202552794015e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": true
+    },
+    "lowdim04b|s1.25mm": {
+      "flow_24": {
+        "downforce_change_n": -5.2471592094538444e-05,
+        "drag_change_n": -0.0003075553191199676,
+        "passes_rule": false
+      },
+      "flow_32": {
+        "downforce_change_n": 0.00041842674291597826,
+        "drag_change_n": -7.508361241426176e-05,
+        "passes_rule": true
+      },
+      "grids_disagree": true
+    }
+  },
+  "claims_not_made": [
+    "flow_32 (or any grid) is the converged or true response: W4 shows 6.8% and 8.4% drag/downforce change from flow_24 to flow_32 and no finer grid exists",
+    "formal continuum or GCI gradient convergence",
+    "flow_32 noise: the 3e-5 N floor is nominal",
+    "a physical downforce or drag gain",
+    "that the dual-grid rule is optimal, only that single-grid acceptance is contradicted by retained states"
+  ],
+  "component_sign_status": {
+    "grid01_baseline": {
+      "downforce|D0_interface_offset": "sign_preserved_resolved",
+      "downforce|D1_filtered_seed11": "sign_flipped_resolved",
+      "downforce|D2_filtered_seed2026": "sign_preserved_resolved",
+      "downforce|P1_upstream_lobe": "sign_preserved_resolved",
+      "drag|D0_interface_offset": "sign_flipped_resolved",
+      "drag|D1_filtered_seed11": "sign_preserved_resolved",
+      "drag|D2_filtered_seed2026": "sign_preserved_resolved",
+      "drag|P1_upstream_lobe": "sign_preserved_resolved"
+    },
+    "lowdim04a_parent": {
+      "downforce|D0_interface_offset": "sign_preserved_resolved",
+      "downforce|D1_filtered_seed11": "sign_flipped_resolved",
+      "downforce|D2_filtered_seed2026": "sign_preserved_resolved",
+      "downforce|P1_upstream_lobe": "sign_preserved_resolved",
+      "drag|D0_interface_offset": "sign_flipped_resolved",
+      "drag|D1_filtered_seed11": "sign_preserved_resolved",
+      "drag|D2_filtered_seed2026": "sign_preserved_resolved",
+      "drag|P1_upstream_lobe": "unresolved"
+    }
+  },
+  "constants": {
+    "proposal_cosine_min": 0.8,
+    "sufficient_downforce_cosine": 0.95,
+    "sufficient_drag_cosine": 0.8
+  },
+  "decision": {
+    "flow24_may_propose_directions": true,
+    "flow24_sufficient": false,
+    "flow32_declared_converged_or_true": false,
+    "min_downforce_cosine": 0.8638406999255877,
+    "min_downforce_cosine_margin_to_proposal_threshold": 0.06384069992558761,
+    "min_drag_cosine": 0.10222655226653993,
+    "verdict": "DUAL_GRID_REQUIRED_FOR_FIRST_UPDATE"
+  },
+  "evidence": {
+    "acceptance_disagreements": 5,
+    "downforce_cosines": {
+      "baseline_grid01": 0.9839039751230935,
+      "parent_lowdim04a": 0.8638406999255877
+    },
+    "drag_cosines": {
+      "baseline_grid01": 0.2787729380793491,
+      "parent_lowdim04a": 0.10222655226653993
+    },
+    "states_compared": 9
+  },
+  "floor_n": 3e-05,
+  "inputs": {
+    "grid01": {
+      "path": "docs/evidence/grid01_cross_grid_secant_2026_10_09/grid01_analysis.json",
+      "sha256": "ec00ed9afe4f44926dd40ff1e87f303dd9baf89195b19cb550103606beedb69c"
+    },
+    "lowdim02a": {
+      "path": "docs/evidence/lowdim02a_flow32_cross_grid_2026_10_09/lowdim02a_analysis.json",
+      "sha256": "55c3185ebfab089e43419e04eb91f48e0a5c94dcbfc0c711b194882b542f4960"
+    },
+    "lowdim03": {
+      "path": "docs/evidence/lowdim03_dual_grid_primal_2026_10_10/amendment1/lowdim03_analysis.json",
+      "sha256": "8615474dee771d37ad4c853c9efc276878423adbd02b154c7e3cb4604e24c54a"
+    },
+    "lowdim04a": {
+      "path": "docs/evidence/lowdim04a_stage_a_2026_10_13/lowdim04a_analysis.json",
+      "sha256": "414d08677fb263db09e33f9a253d004c505fd4910d1859261ec6ffc5c4fd119d"
+    },
+    "lowdim04b": {
+      "path": "docs/evidence/lowdim04b_stage_b_2026_10_13/lowdim04b_analysis.json",
+      "sha256": "ab248289df8c4c26df16ee09ed5807ec201de439e2ddd90ddb6e92978cda2ffc"
+    },
+    "w4_v17": {
+      "path": "docs/evidence/kaggle_w4_v17_sensitivity_result_2026_09.json",
+      "sha256": "25297c4646d048050974d6beccbb90ac672c910eeb558a99c1006226bdd59933"
+    }
+  },
+  "kind": "grid01_closure_synthesis",
+  "secant_vector_cosines": {
+    "downforce": {
+      "baseline_grid01": 0.9839039751230935,
+      "parent_lowdim04a": 0.8638406999255877
+    },
+    "drag": {
+      "baseline_grid01": 0.2787729380793491,
+      "parent_lowdim04a": 0.10222655226653993
+    }
+  },
+  "single_grid_selection_on_the_04b_ladder": {
+    "flow_24_alone_would_select": "s0.3125mm",
+    "flow_32_alone_would_select": "s1.25mm"
+  },
+  "w4_v17_resolution_sensitivity_percent": {
+    "flow16_to_flow24_downforce_percent": 23.426114114699462,
+    "flow16_to_flow24_drag_percent": 31.607248734035178,
+    "flow24_to_flow32_downforce_percent": 8.368378196579943,
+    "flow24_to_flow32_drag_percent": 6.766918491077603
+  }
+}
