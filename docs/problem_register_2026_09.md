@@ -2028,3 +2028,8 @@ v17 lattice as a representation-specific discrete constraint bound to the hash-p
 unresolved and is non-blocking for this hard count only. See the [registration](evidence/sdf_native_volume_semantics_v2_2026_10.json) and
 [decision record](evidence/p22_v2_registration_2026_10_13/decision_record.md). LOWDIM-04A (#51) remains blocked pending a separate
 decision; the parent sits exactly at the limit.
+
+## LOWDIM-04A (#51) Stage A — local dual-grid cone found, linear model only (2026-10-13)
+
+At the LOWDIM-03 parent the centered +-1.25 mm secants on flow_24 and flow_32 admit a cone under the linear model (robust t* 0.201 N/m); all sixteen even parts are negative (cause untested) and the flow_24 ones are of the size of the predicted gain (descriptive estimate: flow_24 gain near +2e-5 N, sign and size not established). The registration was non-blind and FOUND was disclosed as near-certain and uninformative about the gain.
+No gain, drag nonincrease or volume claim beyond the lattice count; Stage B needs its own preregistration; #51 remains open. See the [report](evidence/lowdim04a_stage_a_2026_10_13/diagnostic_report.md).
