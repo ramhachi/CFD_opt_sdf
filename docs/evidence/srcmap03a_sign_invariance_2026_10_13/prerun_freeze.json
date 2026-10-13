@@ -7,15 +7,15 @@
   "files": [
     {
       "path": "scripts/certify_p22_v17_sign_invariance.py",
-      "sha256": "0f3780364b3a317d21a0ed9f30e9cac8ece4021d696c15ec2a29b8b467d9f1e6"
+      "sha256": "19d01ac5c03e96a688a13b42e85d945530189d2da691f23cbe912c372580c38a"
     },
     {
       "path": "tests/test_srcmap03a_certificate.py",
-      "sha256": "c975c0f4458f0480f0736090696f580009b561a33374a360f5a870f8addbe459"
+      "sha256": "880087299cedb9678ca3147da61298d11642e7432fa5cef611467c61f49f18be"
     },
     {
       "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/prerun_plan.md",
-      "sha256": "591bcc849564896d5fc603c1784ddde4537259132cf7362f1eebcc0db5dd5e93"
+      "sha256": "71c1db35253fb11b68bc731da6cc3810d0bf1464cf575d71da88f373c32879ae"
     },
     {
       "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/reference_surface.stl",
@@ -70,7 +70,7 @@
       "sha256": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87"
     }
   ],
-  "freeze_sha256": "011725e6d2893f5a467a4d4b91dd409bc05f83dab3b8d95457bbec17ce527ad4",
+  "freeze_sha256": "bbbe8f313e3d12e9d19ad6829332d8e33b5ad6f2591fdb262d9ac1866e89fd19",
   "frozen_parameters": {
     "GWN_TOL": 1e-09,
     "PLATEAU_MIN_RATIO": 1000.0,

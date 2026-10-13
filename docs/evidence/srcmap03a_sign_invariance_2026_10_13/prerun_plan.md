@@ -24,10 +24,12 @@ Before this registration the author ran an exploratory, unrecorded prototype on 
 and the retained v17 baseline (counts of near-surface nodes, a two-endpoint interval check, an independent
 winding-number check, a 256-pattern enumeration, and gate bounds). The parameters below (band representative,
 plateau ratio, tolerances) were fixed after seeing that the plateau spans six orders of magnitude, so they are
-not blind. The protection is structural, not temporal: the plateau interval is part of the claim (the result is
-required to be identical across it), the predicates are checked by an independent reviewer on the frozen
-source, and the outcome is recorded whether or not it is favourable. No threshold may be changed after the
-run; a failed predicate is a terminal NOT_CERTIFIED.
+not blind. **The prototype passed every predicate it exercised**, so this stage is a confirmatory replication
+with frozen code, not a blind preregistration; its scratch code is not retained, and the frozen script is a
+rewrite that must reproduce its figures on its own. The protection is structural: the predicates and their
+numeric thresholds are checked by an independent reviewer on the frozen source, the script refuses to run if
+any frozen file or parameter differs from `prerun_freeze.json`, and the outcome is recorded whether or not it is
+favourable. No threshold may be changed after the run; a failed predicate is a terminal NOT_CERTIFIED.
 
 ## Frozen inputs
 
@@ -55,9 +57,13 @@ run; a failed predicate is a terminal NOT_CERTIFIED.
 
 ## Method
 
-1. **Band and plateau.** `B = {|phi| < TAU_REP}`. Membership must be identical at `tau = max inside magnitude`,
-   at `TAU_REP`, and just below `min outside magnitude`; the ratio must be at least `PLATEAU_MIN_RATIO`.
-   The certificate is bound to the plateau, not to the number 1e-6.
+1. **Band and gap.** `B = {|phi| < TAU_REP}`. The substantive requirement is the gap: smallest outside magnitude
+   over largest inside magnitude at least `PLATEAU_MIN_RATIO`, so every `tau` in the gap defines the same `B`.
+   (Identical membership at the gap ends is recorded as a sanity check; it is true by construction once the
+   gap exists.) The occupancy certificate below is evaluated for ambiguity amplitude up to `TAU_REP`
+   (uniform and actual magnitudes; the Float32 chain is monotone, so smaller magnitudes are covered) and
+   the descriptive amplitude sweep reports the margin beyond `TAU_REP`. The certificate is therefore bound to
+   `B` and to amplitude at most `TAU_REP`, not to the whole gap.
 2. **Outside-band signs, independent numerical certification.** Generalized winding number
    (Van Oosterom–Strackee, numpy float64, independent of trimesh signing and libigl) at every node outside `B`.
    Required: distance from {0,1} at most `GWN_TOL` and `(w>0.5) == (phi<0)` at every such node, on a mesh that
@@ -74,11 +80,16 @@ run; a failed predicate is a terminal NOT_CERTIFIED.
    - Eikonal median: baseline median plus `sqrt(3)*2*TAU_REP/h` must stay below `EIKONAL_MEDIAN_MAX`; narrow-band
      width must exceed `TAU_REP` so band membership is sign independent.
    - Smoothed volume: `pi/(2h) * sum(c_max-c_min) * h^3` relative to baseline V_eps must be below
-     `SMOOTH_BOUND_MAX_REL`, and the retained parent's relative change plus that bound must stay below `VOLUME_BAND`.
+     `SMOOTH_BOUND_MAX_REL` (= 1% of the registered `VOLUME_BAND`, a conservative factor of 100). The retained
+     parent's relative change is bounded two-sidedly, `(V_p +/- b_p)/(V_b -/+ b_b) - 1`, using the parent's own
+     ambiguity band, and both ends must stay inside `VOLUME_BAND`. Only the baseline and this one retained
+     parent are covered; no candidate or perturbed state is evaluated.
    - Cell components: label count of both endpoint masks must equal `CELL_COMPONENTS`.
    - Masks/support preservation: not applicable (separate arrays).
-5. **Controls (never proof inputs).** Each retained variant field must have the reference occupancy mask and
-   no sign difference outside `B`.
+5. **Controls (never proof inputs).** The population is exactly 19 retained v17 fields: the 18 SRCMAP-01 sign
+   variants (excluding the two v16 controls, the unsigned field and the difference maps) plus the Oct12 replay;
+   any other count or skip set is an integrity failure. Each must have the reference occupancy mask and no sign
+   difference outside `B`.
 
 ## Predicates and terminal classification
 
@@ -91,8 +102,18 @@ certificate is NOT_CERTIFIED. No threshold change, no tau retuning, no rerun to 
 ## Claims not made
 
 Mapping reproducibility; qualification of any signer; correctness of any sign inside `B` (no ground truth exists
-on the surface); other STLs, lattices or states; CFD response; physical or continuum volume; grid convergence;
+on the surface); other STLs, lattices or states; any candidate or perturbed state (gate statements cover the
+baseline and one retained parent only); invariance under a signer that errs outside `B` (outside-`B` signs are
+certified for the retained field and observed controls only, so the claim reads "any signer that agrees with the
+winding number outside `B`", not "nondeterminism cannot matter"); CFD response; physical or continuum volume; grid convergence;
 invariance of the gate observables themselves (only their pass/fail classification).
+
+## Failure handling
+
+Every identity check is an explicit error, not an assertion. Any exception before a verdict writes
+`classification.json` with `INCOMPLETE` and the exception. A crash is **not** a verdict and is not a pass.
+Re-execution is allowed only for a demonstrable infrastructure fault (I/O, interpreter or memory), with the
+frozen source and parameters unchanged and both attempts recorded; it is never a means of changing a result.
 
 ## Process requirements and the successor stage
 

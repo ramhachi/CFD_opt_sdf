@@ -49,3 +49,90 @@ def test_classification_precedence():
     assert C.classify({"predicates": preds}) == "P22_V17_SIGN_INVARIANCE_CERTIFIED"
     assert C.classify({"predicates": {"a": True, "b": False}}) == "P22_V17_SIGN_INVARIANCE_NOT_CERTIFIED"
     assert C.classify({"predicates": {"a": True, "b": None}}) == "INCOMPLETE"
+
+
+def brute_force_extrema(phi, band, amp, cell):
+    i, j, k = cell
+    idx = [(i + a, j + b, k + c) for a, b, c in C.OFFSETS]
+    amb = [t for t in idx if band[t]]
+    lo, hi = np.inf, -np.inf
+    for pattern in range(2 ** len(amb)):
+        v = phi.copy()
+        for n, t in enumerate(amb):
+            v[t] = amp[t] if (pattern >> n) & 1 else -amp[t]
+        c = float(C._corner_mean(v[i:i + 2, j:j + 2, k:k + 2])[0, 0, 0])
+        lo, hi = min(lo, c), max(hi, c)
+    return lo, hi
+
+
+def test_enumeration_matches_per_cell_brute_force_with_shared_corners_zero_amplitude_and_full_cells():
+    rng = np.random.default_rng(7)
+    for trial in range(8):
+        phi = rng.normal(0.0, 0.02, (5, 5, 5)).astype(np.float32)
+        band = rng.random(phi.shape) < (0.15 if trial < 6 else 0.9)  # trials 6-7 make cells with all eight corners ambiguous
+        amp = np.where(rng.random(phi.shape) < 0.3, 0.0, rng.uniform(0, 1e-2, phi.shape)).astype(np.float32)  # exact-zero amplitudes included
+        e = C.enumerate_cells(phi, band, amp)
+        touching = {tuple(c) for c in e["cells"]}
+        assert touching == {tuple(c) for c in np.argwhere(C._corner_mean(band.astype(np.float32)) > 0)}
+        for n, cell in enumerate(map(tuple, e["cells"])):
+            lo, hi = brute_force_extrema(phi, band, amp, cell)
+            assert np.float32(lo) == e["cmin"][n] and np.float32(hi) == e["cmax"][n]
+
+
+def test_plateau_ratio_is_reported_when_the_gap_is_small():
+    phi = np.array([[[1e-9, 3e-9, 2e-9], [5e-9, 1.0, 1.0]]], np.float32)
+    assert C.band_plateau(phi, 4e-9)["ratio"] < C.PLATEAU_MIN_RATIO
+
+
+def cube_lattice():
+    m = trimesh.creation.box(extents=(1.0, 1.0, 1.0))
+    ax = np.arange(5) * 0.5 - 1.0
+    x, y, z = np.meshgrid(ax, ax, ax, indexing="ij")
+    phi = (np.maximum.reduce([abs(x), abs(y), abs(z)]) - 0.5).astype(np.float32)  # sign of the cube SDF; nodes with |x|=0.5 lie on the surface
+    return m, phi, np.abs(phi) < 1e-6
+
+
+def test_outside_sign_certification_detects_a_flipped_node_and_a_flipped_mesh():
+    m, phi, band = cube_lattice()
+    V, F = m.vertices.astype(float), m.faces
+    assert C.outside_sign_certification(phi, band, (-1.0, -1.0, -1.0), 0.5, V, F)["pass"]
+    bad = phi.copy(); bad[0, 0, 0] = -1.0
+    r = C.outside_sign_certification(bad, band, (-1.0, -1.0, -1.0), 0.5, V, F)
+    assert r["sign_mismatches_vs_registered"] == 1 and not r["pass"]
+    assert not C.outside_sign_certification(phi, band, (-1.0, -1.0, -1.0), 0.5, V, F[:, ::-1])["pass"]
+
+
+def test_gate_bounds_dominate_random_sign_assignments(monkeypatch):
+    from cfd_sdf.design.geometry_gates import _gradient_diagnostics
+    from cfd_sdf.design.sdf_state import SDFDesignState
+    from cfd_sdf.design.volume_semantics import smoothed_volume_and_gradient
+    from cfd_sdf.gradients.directional_fd import zero_level_margin_m
+    rng = np.random.default_rng(1); h = 0.1; n = (21, 21, 21)
+    X, Y, Z = np.meshgrid(*[np.arange(m) * h - 1.0 for m in n], indexing="ij")
+    phi0 = np.minimum(np.maximum.reduce([abs(X) - 0.3, abs(Y) - 0.3, abs(Z) - 0.3]), np.sqrt((X - .45) ** 2 + Y ** 2 + Z ** 2) - 0.2).astype(np.float32)
+    near = np.abs(phi0) < 1e-6; phi0[near] += rng.uniform(-5e-4, 5e-4, near.sum()).astype(np.float32)
+    tau = np.float32(1e-3); monkeypatch.setattr(C, "TAU_REP", tau)
+    mk = lambda p: SDFDesignState.create(phi=p, origin_m=(-1., -1., -1.), spacing_m=h, narrow_band_width_m=0.3, design_mask=np.ones(n, bool))
+    s0 = mk(phi0); band = np.abs(phi0) < tau
+    g = C.gate_bounds(s0, band, s0, float(np.abs(phi0[band]).max()))
+    m0 = float(_gradient_diagnostics(s0)["median_abs_gradient_deviation"]); v0 = smoothed_volume_and_gradient(s0).smoothed_volume_m3
+    for t in range(12):
+        p = phi0.copy(); p[band] = (rng.choice([-1, 1], band.sum()) * tau if t % 2 else rng.uniform(-1, 1, band.sum()) * tau).astype(np.float32)
+        s = mk(p)
+        assert abs(float(_gradient_diagnostics(s)["median_abs_gradient_deviation"]) - m0) <= g["eikonal_median"]["bound_tau"]
+        assert abs(smoothed_volume_and_gradient(s).smoothed_volume_m3 - v0) <= g["smoothed_volume"]["abs_bound_m3"]
+        assert zero_level_margin_m(p, h) >= g["clearance"]["worst_case_margin_m"] - 1e-9
+
+
+def test_failure_before_a_verdict_is_recorded_as_incomplete(monkeypatch, tmp_path):
+    monkeypatch.setattr(C, "verify_freeze", lambda path: (_ for _ in ()).throw(C.IntegrityError("tampered")))
+    assert C.main(tmp_path) == 1
+    import json
+    assert json.loads((tmp_path / "classification.json").read_text())["terminal_classification"] == "INCOMPLETE"
+
+
+def test_freeze_verification_rejects_a_modified_manifest(tmp_path):
+    import json, pytest
+    f = tmp_path / "prerun_freeze.json"; f.write_text(json.dumps({"files": [], "frozen_parameters": {}, "freeze_sha256": "0" * 64}))
+    with pytest.raises(C.IntegrityError):
+        C.verify_freeze(f)
