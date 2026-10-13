@@ -1,0 +1,72 @@
+{
+  "claims_not_supported": [
+    "any topology event is qualified or executable",
+    "any physical minimum width or gap has been chosen",
+    "an admissibility PASS exists before the physical limits are supplied",
+    "a required support connection is satisfied or implied"
+  ],
+  "decision_record": "docs/issues/31_event_policy_decision_2026_10_14.md",
+  "evidence_class": "contract",
+  "flags": {
+    "sdf_gradient_qualified": false,
+    "shape_update_allowed": false,
+    "topology_birth_qualified": false,
+    "waterlily_reverse_cpu_qualified": false,
+    "waterlily_reverse_cuda_qualified": false
+  },
+  "immutable": true,
+  "kind": "sdf_topology_policy_registration",
+  "policy": {
+    "connectivity": {
+      "disconnected_components": "allowed",
+      "required_support_connection": "not inferable from an empty mask; needs a separately registered physical specification",
+      "root_connectivity": "optional",
+      "solid_neighborhood": 26
+    },
+    "empty_solid": "inadmissible",
+    "event_semantics": "policy permission is not execution permission; a topology-fixed step passes allowed_events=() and a birth still needs its own qualification",
+    "hard_masks": {
+      "forbid_material_in": "forbidden_mask",
+      "material_allowed_where": [
+        "design_mask",
+        "fixed_solid_mask",
+        "root_mask"
+      ],
+      "retain_all_solid_cells_in": [
+        "fixed_solid_mask",
+        "root_mask"
+      ]
+    },
+    "kind": "sdf_topology_policy",
+    "max_components": null,
+    "minimum_features": {
+      "measurements_must_bind_to_candidate_state_sha256": true,
+      "minimum_gap_m": null,
+      "minimum_solid_width_m": null,
+      "minimum_void_width_m": null,
+      "require_gap_measurement_if_declared": true,
+      "unresolved_values_are_never_inferred": true
+    },
+    "policy_id": "sdf_topology_policy_v2_research",
+    "policy_sha256": "e51dbae4fb8a515ca5cd705481552fe92f987380bea8834dda33557f3f787a3c",
+    "schema_version": 2,
+    "source_problem_spec_v2": null,
+    "supersedes_for_research": "sdf_topology_policy_v1 (immutable, unchanged; required root ownership)",
+    "topology_events": {
+      "birth": "permitted_by_policy",
+      "deletion": "permitted_by_policy",
+      "merge": "permitted_by_policy",
+      "split": "permitted_by_policy"
+    },
+    "unresolved_inputs": [
+      "minimum_solid_width_m",
+      "minimum_void_width_m",
+      "minimum_gap_m"
+    ]
+  },
+  "predecessor_decision_record": "docs/issues/31_research_policy_decisions_2026_10_02.md",
+  "registration_id": "sdf_topology_policy_v2_research_2026_10_14",
+  "solver_started": false,
+  "state_binding_id": "sdf_topology_policy_v2_research@sha256:e51dbae4fb8a515ca5cd705481552fe92f987380bea8834dda33557f3f787a3c",
+  "v1_registration_sha256": "1c5953c3733b77d99958e89aa153911cc36ffbea87dfd8b3bb7b27bde44c1f2f"
+}
