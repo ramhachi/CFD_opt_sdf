@@ -3,8 +3,10 @@
 v1 (``topology_policy.py``, immutable) requires every solid component to touch a required root group.  The user's research decision (2026-10-02) allows detached
 components and makes root connectivity optional; the event decision (2026-10-14, ``docs/issues/31_event_policy_decision_2026_10_14.md``) permits birth, split, merge
 and whole-component deletion **in the policy**.  Policy permission is not execution permission: a step that must keep the topology passes ``allowed_events=()``, and
-executing a birth still needs its own qualification.  Physical minimum widths and the source ProblemSpec binding stay unresolved (``None``) unless supplied; they are never
+executing a birth needs its own qualification (``birth_qualified=True``, False by default).  Physical minimum widths and the source ProblemSpec binding stay unresolved (``None``) unless supplied; they are never
 inferred from the grid or the observed shape, and an unresolved input makes every transition inadmissible (a partial decision cannot produce an admissibility PASS).
+A resolved limit must be positive; a policy instance with resolved limits is a new content-addressed policy and needs its own registration.  The check judges solid components only:
+changes of genus or of void topology (cavities, through-tunnels) are not detected here, and v1's void-connectivity and eroded-connectivity flags are not carried over (#29 owns them).
 Explicit design/fixed/forbidden/root masks remain hard constraints.  A required support connection would need a separately registered physical specification.
 """
 
@@ -14,6 +16,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+import numbers
 from typing import Any, Mapping
 
 import numpy as np
@@ -38,9 +41,12 @@ def _canonical_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
 
 
-def _optional_length(name: str, value: float | None) -> None:
-    if value is not None and (isinstance(value, bool) or not math.isfinite(float(value)) or float(value) < 0.0):
-        raise SDFTopologyPolicyError(f"{name} must be None or finite and non-negative")
+def _optional_length(name: str, value: float | None) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, numbers.Real) or not math.isfinite(float(value)) or float(value) <= 0.0:
+        raise SDFTopologyPolicyError(f"{name} must be None (unresolved) or a finite positive number")
+    return float(value)
 
 
 @dataclass(frozen=True)
@@ -61,9 +67,11 @@ class SDFTopologyPolicyResearchV2:
         if self.schema_version != RESEARCH_POLICY_SCHEMA_VERSION or self.policy_id != RESEARCH_POLICY_ID:
             raise SDFTopologyPolicyError("unsupported research policy identity or schema version")
         for name in ("minimum_solid_width_m", "minimum_void_width_m", "minimum_gap_m"):
-            _optional_length(name, getattr(self, name))
+            object.__setattr__(self, name, _optional_length(name, getattr(self, name)))
         if self.max_components is not None and (isinstance(self.max_components, bool) or not isinstance(self.max_components, int) or self.max_components < 1):
             raise SDFTopologyPolicyError("max_components must be None or a positive integer")
+        if isinstance(self.permitted_events, str) or not isinstance(self.permitted_events, (tuple, list)) or not all(isinstance(e, str) for e in self.permitted_events):
+            raise SDFTopologyPolicyError("permitted_events must be a tuple of event names")
         events = tuple(self.permitted_events)
         if len(set(events)) != len(events) or not set(events) <= set(_EVENTS):
             raise SDFTopologyPolicyError("permitted_events must be distinct members of birth, merge, split, deletion")
@@ -86,6 +94,8 @@ class SDFTopologyPolicyResearchV2:
             missing.append("minimum_solid_width_m")
         if self.minimum_void_width_m is None:
             missing.append("minimum_void_width_m")
+        if self.minimum_gap_m is None:  # detached components are allowed, so the inter-component gap (#29) must be specified too
+            missing.append("minimum_gap_m")
         return tuple(missing)
 
     @property
@@ -126,7 +136,7 @@ class SDFTopologyPolicyResearchV2:
             raise SDFTopologyPolicyError("serialized policy must be a mapping")
         source = value.get("source_problem_spec_v2")
         features, events = value.get("minimum_features"), value.get("topology_events")
-        if not isinstance(features, Mapping) or not isinstance(events, Mapping):
+        if (source is not None and not isinstance(source, Mapping)) or not isinstance(features, Mapping) or not isinstance(events, Mapping):
             raise SDFTopologyPolicyError("serialized policy is missing its feature or event sections")
         policy = cls(minimum_solid_width_m=features.get("minimum_solid_width_m"), minimum_void_width_m=features.get("minimum_void_width_m"), minimum_gap_m=features.get("minimum_gap_m"),
                      max_components=value.get("max_components"), source_problem_id=None if source is None else source.get("problem_id"),
@@ -143,18 +153,24 @@ def evaluate_research_transition(
     proposed_state: SDFDesignState,
     *,
     feature_metrics: SDFTopologyFeatureMetrics | None,
-    allowed_events: tuple[str, ...] | None = None,
+    allowed_events: tuple[str, ...],
+    birth_qualified: bool = False,
 ) -> SDFTopologyAdmissibility:
     """Check an existing proposal without mutating or generating either state; missing evidence is a rejection, never a pass.
 
-    ``allowed_events`` may only narrow the policy's permissions (``()`` for a topology-fixed step).
+    ``allowed_events`` is required (no default) and may only narrow the policy's permissions: pass ``()`` for a topology-fixed step.  A detected birth is rejected
+    unless ``birth_qualified`` is True (topology birth is a separately qualified mechanism).  Only solid-component events are judged; cavities and tunnels are not.
     """
 
     if not isinstance(policy, SDFTopologyPolicyResearchV2):
         raise SDFTopologyPolicyError("policy must be SDFTopologyPolicyResearchV2")
     if not isinstance(current_state, SDFDesignState) or not isinstance(proposed_state, SDFDesignState):
         raise SDFTopologyPolicyError("current_state and proposed_state must be SDFDesignState")
-    step_events = policy.permitted_events if allowed_events is None else tuple(allowed_events)
+    if isinstance(allowed_events, str) or not isinstance(allowed_events, (tuple, list)) or not all(isinstance(e, str) for e in allowed_events):
+        raise SDFTopologyPolicyError("allowed_events must be a tuple of event names")
+    if feature_metrics is not None and not isinstance(feature_metrics, SDFTopologyFeatureMetrics):
+        raise SDFTopologyPolicyError("feature_metrics must be SDFTopologyFeatureMetrics or None")
+    step_events = tuple(allowed_events)
     if not set(step_events) <= set(policy.permitted_events):
         raise SDFTopologyPolicyError("allowed_events may only narrow the policy's permitted events")
     violations: set[str] = set(policy.unresolved_inputs())
@@ -182,6 +198,8 @@ def evaluate_research_transition(
     for name in events:
         if name not in step_events:
             violations.add(f"topology_event_not_permitted:{name}")
+    if "birth" in events and birth_qualified is not True:
+        violations.add("topology_birth_not_qualified")
     if same_grid and current.shape == proposed.shape:
         allowed = proposed_state.design_mask | proposed_state.fixed_solid_mask | proposed_state.root_mask
         if np.any(proposed & proposed_state.forbidden_mask):
@@ -194,10 +212,8 @@ def evaluate_research_transition(
             violations.add("root_material_not_retained")
     if policy.max_components is not None and proposed_count > policy.max_components:
         violations.add("solid_component_count_exceeds_policy_limit")
-    owners = tuple(
-        (label, ("root_mask",) if np.any((proposed_labels == label) & proposed_state.root_mask) else ())  # informational only: root ownership is optional in this policy
-        for label in range(1, proposed_count + 1)
-    )
+    rooted = {int(x) for x in np.unique(proposed_labels[proposed_state.root_mask]) if x > 0} if proposed.shape == proposed_state.root_mask.shape else set()
+    owners = tuple((label, ("root_mask",) if label in rooted else ()) for label in range(1, proposed_count + 1))  # informational only: root ownership is optional in this policy
     if feature_metrics is None:
         violations.add("feature_measurements_missing")
     else:

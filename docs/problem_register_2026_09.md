@@ -2043,3 +2043,7 @@ control (the selected gain is likely biased upward). No physical gain, drag, gri
 
 flow_24 alone is insufficient (5 of 9 retained states, correlated trials, get opposite accept/reject verdicts; drag secant vectors nearly unrelated across grids); no grid is declared the truth and convergence is not established. Policy: flow_24 proposes the downforce direction, flow_32 confirms, acceptance needs both grids, step size from the dual-grid ladder. See the
 [decision record](evidence/grid01_closure_2026_10_14/decision_record.md). Next: #31, #29, #28, #25 in that order (phase_plan, 2026-10-14).
+
+## #31 topology policy (2026-10-14): research v2 registered, physical limits unresolved
+
+`sdf_topology_policy_v2_research` registered (detached components allowed, root connectivity optional, all four events permitted by policy only; a birth needs separate qualification). Solid/void width, inter-component gap and source binding are unresolved and never inferred, so admissibility cannot pass until they are supplied; #29 owns supplying them and moving `geometry_gates.py` off v1. See the [decision record](issues/31_event_policy_decision_2026_10_14.md).

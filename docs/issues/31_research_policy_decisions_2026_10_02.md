@@ -1,5 +1,7 @@
 # #31: research topology policy decisions, 2026-10-02
 
+> Superseded in part on 2026-10-14: the event permissions were decided and registered in [31_event_policy_decision_2026_10_14.md](31_event_policy_decision_2026_10_14.md); this record is kept unchanged otherwise.
+
 Evidence class: user decision record. This is a partial decision, not a
 canonical policy registration, executable transition permission, or topology
 qualification.

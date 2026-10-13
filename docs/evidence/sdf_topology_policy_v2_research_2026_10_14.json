@@ -48,7 +48,7 @@
       "unresolved_values_are_never_inferred": true
     },
     "policy_id": "sdf_topology_policy_v2_research",
-    "policy_sha256": "fef3db5fb6fa8265c0d96fe8071064375ce8f7a97d28c7bfad8c84f8cbc35b6b",
+    "policy_sha256": "e51dbae4fb8a515ca5cd705481552fe92f987380bea8834dda33557f3f787a3c",
     "schema_version": 2,
     "source_problem_spec_v2": null,
     "supersedes_for_research": "sdf_topology_policy_v1 (immutable, unchanged; required root ownership)",
@@ -60,12 +60,13 @@
     },
     "unresolved_inputs": [
       "minimum_solid_width_m",
-      "minimum_void_width_m"
+      "minimum_void_width_m",
+      "minimum_gap_m"
     ]
   },
   "predecessor_decision_record": "docs/issues/31_research_policy_decisions_2026_10_02.md",
   "registration_id": "sdf_topology_policy_v2_research_2026_10_14",
   "solver_started": false,
-  "state_binding_id": "sdf_topology_policy_v2_research@sha256:fef3db5fb6fa8265c0d96fe8071064375ce8f7a97d28c7bfad8c84f8cbc35b6b",
+  "state_binding_id": "sdf_topology_policy_v2_research@sha256:e51dbae4fb8a515ca5cd705481552fe92f987380bea8834dda33557f3f787a3c",
   "v1_registration_sha256": "1c5953c3733b77d99958e89aa153911cc36ffbea87dfd8b3bb7b27bde44c1f2f"
 }
