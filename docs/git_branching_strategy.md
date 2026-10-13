@@ -49,3 +49,12 @@ of the main checkout if it is missing). It never force-deletes.
 This follows the lightweight GitHub Flow guidance and the trunk-based
 development recommendation to use short-lived review branches rather than
 multiple permanent development branches.
+
+## Current practice (as of 2026-10-13)
+
+The rules above are the intended end state. In practice all integration since 2026-09-11 has happened on
+`codex/kaggle-batch-migration`, which is about 840 commits ahead of `main`, merged with `--no-ff` only (no rebase, squash or force-push), with no
+pull request and no CI on it (`.github/workflows/ci.yml` runs on `main` only). Branch experiments from it, record results on it, and read its
+`docs/phase_plan.md` as the current status. `main` is a stale snapshot, so a default-branch search or a new agent reading `main` will see a different
+project state. Whether and when to merge into `main`, or to change the default branch, branch protection or CI triggers, is a separate decision; none of
+those was changed.

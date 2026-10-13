@@ -29,7 +29,8 @@ Validate the smallest relevant slice, then on macOS/Linux run
 paths, hashes, and evidence class separately from conclusions.
 
 Inspect `git status`, `git diff`, and recent history before editing. Use the
-branching rules in `docs/git_branching_strategy.md`. After an authorized
+branching rules in `docs/git_branching_strategy.md`. The integration branch in practice is `codex/kaggle-batch-migration`, not `main` (see
+the "Current practice" section of that document). After an authorized
 implementation or documentation task is complete and validated, commit and push
 only the intended files to the current feature branch. Explicit review-only,
 no-edit, or no-push instructions are exceptions. Never force-push, reset,
