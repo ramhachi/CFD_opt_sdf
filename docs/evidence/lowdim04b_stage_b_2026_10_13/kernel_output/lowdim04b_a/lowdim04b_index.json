@@ -1,0 +1,87 @@
+{
+  "case_id": "flow_24",
+  "kernel": "a",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-lowdim04b-a",
+  "solver_process_wall_seconds_total": 1201.56347990036,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "113eb85bf4b7fbdf7c179b8adf83b46a49834bff9383c472bdbf38d15dd29654",
+      "kind": "parent",
+      "matches_retained_parent_reference": true,
+      "name": "lowdim04b__parent",
+      "seconds": 170.82508516311646,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e",
+      "kind": "candidate",
+      "name": "lowdim04b__prop__s0.3125mm",
+      "seconds": 172.8769302368164,
+      "sign": 1,
+      "step_mm": 0.3125
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "3f2cdddfb36a533564d780b9772ff1b5191d6a8641a0131ae4466e7bdb9488c1",
+      "kind": "candidate",
+      "name": "lowdim04b__prop__s0.625mm",
+      "seconds": 171.2763500213623,
+      "sign": 1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "07993ec532741ca2fce80560df73c4a27c20fb8d359dad5566d37a34ee46a01b",
+      "kind": "candidate",
+      "name": "lowdim04b__prop__s0.9375mm",
+      "seconds": 172.17629194259644,
+      "sign": 1,
+      "step_mm": 0.9375
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "e554db67a95146765721841f82eac97b9bf8d849f9c5267c6fd5f98feb4947c9",
+      "kind": "candidate",
+      "name": "lowdim04b__prop__s1.25mm",
+      "seconds": 171.10348415374756,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "58b3b3340eb427507eff26e97697a1c389814ce30e57ebfaf3af30fee34379a3",
+      "kind": "control",
+      "name": "lowdim04b__ctrl_reverse__s0.625mm",
+      "seconds": 172.05485010147095,
+      "sign": -1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_stage_a",
+      "exit_code": 0,
+      "forces_csv_sha256": "d10c0c9173e9f06e9e6598dc02db41b78d46cee09522a01b0ae2ff757438cb13",
+      "kind": "control",
+      "name": "lowdim04b__ctrl_reverse__s1.25mm",
+      "seconds": 171.25048828125,
+      "sign": -1,
+      "step_mm": 1.25
+    }
+  ],
+  "status": "COMPLETE"
+}
