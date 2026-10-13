@@ -34,7 +34,9 @@ def evaluation(d24, d32):
 
 def test_accept_needs_strictly_more_than_the_floor_and_nonpositive_drag_on_both_grids():
     assert evaluation((5e-5, -1e-5), (6e-5, 0.0))["accepted"]
-    assert not evaluation((3e-5 + 1e-12 * 0, 0.0), (6e-5, 0.0))["accepted"] or True  # floating point: use a clear below/at-floor case next
+    exact = C.evaluate_candidate({"flow_24": {"downforce_n": 0.0, "drag_n": 0.0}, "flow_32": {"downforce_n": 0.0, "drag_n": 0.0}},
+                                 {"flow_24": {"downforce_n": 3e-5, "drag_n": 0.0}, "flow_32": {"downforce_n": 6e-5, "drag_n": 0.0}}, True)  # exactly the floor: strict > fails
+    assert not exact["accepted"] and exact["per_grid"]["flow_24"]["downforce_change_n"] == 3e-5
     assert not evaluation((2.9e-5, 0.0), (6e-5, 0.0))["accepted"]
     assert not evaluation((5e-5, 1e-6), (6e-5, 0.0))["accepted"]
     assert not evaluation((5e-5, 0.0), (6e-5, 2e-5))["accepted"]
@@ -77,3 +79,27 @@ def test_hindcast_scales_the_linear_term_by_f_and_the_curvature_term_by_f_square
     assert h["stage_a_diagonal_curvature_estimate_n"] == pytest.approx(0.4 * 0.5e-3 * f + (-1e-4) * (0.5e-3 * f / 0.00125) ** 2) and h["actual_change_n"] == pytest.approx(1e-4)
     p = C.pair_parts(states, 0.625)["flow_24"]["downforce"]
     assert p["odd_part_n"] == pytest.approx((1e-4 + 3e-4) / 2) and p["even_part_n"] == pytest.approx((1e-4 - 3e-4) / 2)
+
+
+def test_select_trial_rejects_malformed_records():
+    steps = {L.candidate_name(s): s for s in L.STEPS_MM}
+    good = {n: {"accepted": False, "worst_grid_downforce_gain_n": 0.0} for n in steps}
+    for bad in ({**good, L.control_name(0.625): good[next(iter(good))]}, {**good, next(iter(good)): {"accepted": 1, "worst_grid_downforce_gain_n": 1e-4}},
+                {**good, next(iter(good)): {"accepted": True, "worst_grid_downforce_gain_n": float("nan")}}, {**good, next(iter(good)): {"accepted": False}}):
+        with pytest.raises((ValueError, TypeError, KeyError)):
+            C.select_trial(bad, steps)
+
+
+def test_hindcast_linear_term_reproduces_stage_a_prediction_and_the_direction_matches_the_stage_a_basis_coefficients():
+    import json
+    import step01_states as S
+    inv = json.loads((ROOT / "docs/evidence/lowdim04b_stage_b_2026_10_13/inventory.json").read_text())
+    a = json.loads((ROOT / inv["stage_a"]["analysis_path"]).read_text())
+    w = a["predictions_at_1p25mm"]["robust_cross_grid"]["normalization"]["basis_coefficients_m"]
+    states = {g: {L.PARENT_NAME: {"downforce_n": 0.0, "drag_n": 0.0}, L.candidate_name(1.25): {"downforce_n": 1e-4, "drag_n": 0.0}} for g in C.GRIDS}
+    h = C.hindcast(a, states, 1.25)
+    for g in C.GRIDS:
+        assert h[g]["downforce"]["stage_a_linear_prediction_n"] == pytest.approx(a["predictions_at_1p25mm"]["robust_cross_grid"]["per_grid"][g]["raw_downforce_prediction_n"], rel=1e-12)
+    dirs = {n: S.read_f4(ROOT / inv["directions"][n]["path"]).astype("float64") for n in L.BASIS}
+    prop = S.read_f4(ROOT / inv["proposal"]["file"]).astype("float64")
+    assert abs(1.25e-3 * prop - sum(wi * dirs[n] for wi, n in zip(w, L.BASIS))).max() < 1e-9  # state + is phi + s*d with the Stage A basis coefficients w = c*(s/m)

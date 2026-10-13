@@ -67,7 +67,7 @@ def complete_freeze(tmp_path):
         d = infra / f"kernel_lowdim04b_{k}"; d.mkdir(parents=True)
         (d / "runner.py").write_text(K.render(head, k)); (d / "kernel-metadata.json").write_text(json.dumps(K.metadata(k), sort_keys=True, indent=2) + "\n")
         runtime[k] = {**A.RUNTIME_FIXED, "kernel_id": K.KERNEL_IDS[k], "case_id": grid, "runner_sha256": B.sha(d / "runner.py"), "metadata_sha256": B.sha(d / "kernel-metadata.json")}
-    required = A.REQUIRED_FILES | {INV["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in INV["grids"].values()} | {INV["proposal"]["file"], INV["stage_a"]["analysis_path"]}
+    required = A.REQUIRED_FILES | {INV["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in INV["grids"].values()} | {INV["proposal"]["file"], INV["stage_a"]["analysis_path"], A.STAGE_A_INVENTORY} | {d["path"] for d in INV["directions"].values()}
     proof = {"all_free": True, "owner": "ramhachi888"}
     (tmp_path / "identity_free_check.json").write_text(json.dumps(proof))
     freeze = {"kind": A.FREEZE_KIND, "frozen_parameters": A.FROZEN_PARAMETERS, "inventory_sha256": B.sha(EV / "inventory.json"), "file_hashes": {p: B.sha(ROOT / p) for p in sorted(required)},

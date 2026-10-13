@@ -15,14 +15,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT / "scripts")]
 import build_lowdim04b_kernel as K  # noqa: E402
 import lowdim04b_contract as C  # noqa: E402
 import lowdim04b_states as L  # noqa: E402
-import step01_states as S  # noqa: E402
 from fd08_v2_campaign_io import recompute_force_n  # noqa: E402
 from grid01_gpu import select_worker_gpu  # noqa: E402
 
@@ -31,6 +28,7 @@ KERNELS = {"a": "flow_24", "b": "flow_32"}
 SUMMARY_REL = 1e-9
 FREEZE_KIND = "lowdim04b_stage_b_prerun_freeze"
 INFRA = ROOT / "infra/kaggle"
+STAGE_A_INVENTORY = "docs/evidence/lowdim04a_stage_a_2026_10_13/inventory.json"
 IDENTITY_PATH = ROOT / EVIDENCE_REL / "identity_free_check.json"
 PARENT_INTEGRATION_COMMIT = "69d8851fee851872b4ad67fde63a79232001440d"
 FLAGS = ("fd_oracle", "field_gradient", "reverse", "optimizer", "topology", "shape_update_allowed")
@@ -82,7 +80,7 @@ def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = Tru
     if proof.get("all_free") is not True or proof.get("owner") != "ramhachi888" or proof != jload(identity):
         raise ValueError("the authenticated identity-free check differs from the committed record")
     _equal(freeze.get("parent_integration_commit"), PARENT_INTEGRATION_COMMIT, "parent integration commit")
-    required = REQUIRED_FILES | {inventory["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in inventory["grids"].values()} | {inventory["proposal"]["file"], inventory["stage_a"]["analysis_path"]}
+    required = REQUIRED_FILES | {inventory["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in inventory["grids"].values()} | {inventory["proposal"]["file"], inventory["stage_a"]["analysis_path"], STAGE_A_INVENTORY} | {d["path"] for d in inventory["directions"].values()}
     if not required <= set(freeze["file_hashes"]):
         raise ValueError(f"the freeze omits required files: {sorted(required - set(freeze['file_hashes']))}")
     for rel, digest in freeze["file_hashes"].items():
@@ -103,6 +101,8 @@ def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = Tru
             raise ValueError(f"kernel {k} pin map differs from the current files")
     _equal([{k: r.get(k) for k in ("name", "kind", "direction", "step_mm", "sign")} for r in inventory["states"]], L.plan(), "state plan")
     names = [r["name"] for r in inventory["states"]]
+    if sha256(ROOT / STAGE_A_INVENTORY) != inventory["stage_a"]["inventory_sha256"]:
+        raise ValueError("the Stage A inventory differs from the pinned immutable result")
     if sha256(ROOT / inventory["stage_a"]["analysis_path"]) != inventory["stage_a"]["analysis_sha256"]:
         raise ValueError("the Stage A analysis differs from the pinned immutable result")
     if inventory.get("kernels") != {"a": names, "b": names} or inventory.get("basis_order") != list(L.BASIS):

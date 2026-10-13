@@ -92,7 +92,7 @@ def require_identity(record, *, as_of=None):
 
 
 def project_closure():
-    """Every project file loaded by importing the Stage A host scripts (hashed in the freeze), found by importing them, not by a glob."""
+    """Every project file loaded by importing the Stage B host scripts (hashed in the freeze), found by importing them, not by a glob."""
     code=("import sys;sys.path[:0]=['src','scripts'];import analyze_lowdim04b,build_lowdim04b_inputs,build_lowdim04b_kernel,freeze_lowdim04b;"
           "print('\\n'.join(sorted(getattr(m,'__file__','') or '' for m in sys.modules.values())))")
     out=subprocess.run([sys.executable,'-c',code],capture_output=True,text=True,cwd=ROOT,check=True).stdout.splitlines()
@@ -108,7 +108,7 @@ def freeze(source_commit):
     files=project_closure()|{str(p.relative_to(ROOT)) for p in (ROOT/'tests').glob('test_lowdim04b_*.py')}|{
         'scripts/lowdim04b_runner_template.py',str(IDENTITY.relative_to(ROOT)),str(IDENTITY.with_suffix('.json.sha256').relative_to(ROOT)),
         str((E/'prerun_note.md').relative_to(ROOT)),str((E/'inventory.json').relative_to(ROOT)),inv['parent']['raw_path']}
-    files|={g['baseline_reference']['forces_csv_path'] for g in inv['grids'].values()}|{inv['proposal']['file'],inv['stage_a']['analysis_path']}
+    files|={g['baseline_reference']['forces_csv_path'] for g in inv['grids'].values()}|{inv['proposal']['file'],inv['stage_a']['analysis_path'],'docs/evidence/lowdim04a_stage_a_2026_10_13/inventory.json'}|{r['path'] for r in inv['directions'].values()}
     if subprocess.run(['git','-C',str(ROOT),'status','--porcelain','--untracked-files=no'],capture_output=True,text=True).stdout.strip():
         raise ValueError('tracked files have uncommitted changes; freeze only committed reviewed bytes')
     if not subprocess.run(['git','-C',str(ROOT),'branch','-r','--contains',source_commit],capture_output=True,text=True).stdout.strip():
@@ -137,7 +137,7 @@ def freeze(source_commit):
                      'terminals':'LOWDIM04B_ACCEPT, LOWDIM04B_NO_ACCEPT, LOWDIM04B_INCOMPLETE'},
             'qualification_flags':{k:False for k in ('fd_oracle','field_gradient','reverse','optimizer','topology','shape_update_allowed')},
             'selected_delta':None,'reinitialization':'none',
-            'known_before_run':'The Stage A result and its descriptive diagonal-curvature estimate (flow_24 actual gains near +3e-5 to +5e-5 N at the middle fractions, around +2e-5 N at the full step: a marginal toss-up against the 3e-5 N floor), the LOWDIM-03 ladder and all earlier results were visible; this is not blind validation.',
+            'known_before_run':'The Stage A result and its descriptive diagonal-curvature estimate (an estimate with sign and size not established: flow_24 gains near +3e-5 to +5e-5 N at the middle fractions and about +2e-5 N at the full step, a marginal toss-up against the 3e-5 N floor; flow_32 drag estimates at or below the 3e-5 N jitter floor at small steps), the LOWDIM-03 ladder and all earlier results were visible; this is not blind validation.',
             'prohibitions':['no second iteration, curvature model, basis expansion, reinitialization or further step beyond this ladder','no automatic resubmission or repair after a terminal/integrity failure','an ACCEPT is a bounded capability result, not an optimizer qualification and not a go-ahead']}
     target.write_bytes(canonical_json(result));target.with_suffix('.json.sha256').write_text(K.sha(target)+'\n');print('freeze',K.sha(target))
 
