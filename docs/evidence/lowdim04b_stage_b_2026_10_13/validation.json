@@ -63,6 +63,7 @@
   },
   "focused_tests": "tests/test_lowdim04b_*.py: 24 passed (contract, inventory and strict registration validation, runner dry run, analyzer replay and ladder verdicts)",
   "git_diff_check": "passed",
+  "note_skips": "30 skipped here against 23 in the SRCMAP-02 record: the 7 extra are the libigl-2.6.3-dependent SRCMAP-02 tests (libigl is not installed here); no new failures",
   "previous_stage_final_lowdim04a": {
     "failed": 48,
     "note": "2237 + 24 new = 2261",

@@ -2036,5 +2036,5 @@ No gain, drag nonincrease or volume claim beyond the lattice count; Stage B need
 
 ## LOWDIM-04 Stage B (#51) — ladder accepted at the smallest step only, bounded (2026-10-14)
 
-Along the Stage A solution only the 0.3125 mm step met the registered rule (flow_24 +3.57e-5 N, flow_32 +1.15e-4 N, computed drag changes <= 0, flow_32 drag within jitter); the full step loses flow_24 downforce (-5.2e-5 N) against a linear prediction of +1.7e-4 N. The gain is below the Stage V resolution and the rule has no multiplicity
-control. No physical gain, drag, grid or optimizer claim. The track ends here; #51 is closed. See the [report](evidence/lowdim04b_stage_b_2026_10_13/diagnostic_report.md).
+Along the Stage A solution only the 0.3125 mm step met the registered rule (flow_24 +3.57e-5 N, flow_32 +1.15e-4 N, computed drag changes <= 0, flow_32 drag within jitter); the full step loses flow_24 downforce (-5.2e-5 N) against a linear prediction of +1.7e-4 N. The gain is below the Stage V resolution, the 0.3125 and 0.625 mm flow_24 gains are indistinguishable (a threshold artifact) and the rule has no multiplicity
+control (the selected gain is likely biased upward). No physical gain, drag, grid or optimizer claim. The track ends here; #51 is closed. See the [report](evidence/lowdim04b_stage_b_2026_10_13/diagnostic_report.md).
