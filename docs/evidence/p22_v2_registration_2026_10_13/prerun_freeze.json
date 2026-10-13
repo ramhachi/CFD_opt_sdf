@@ -1,0 +1,63 @@
+{
+  "files": [
+    {
+      "path": "docs/evidence/p22_v2_registration_2026_10_13/decision_record.md",
+      "sha256": "2dc5ac05a943886466422f58d6e45769560120e979574c3f2298372e2f9fc355"
+    },
+    {
+      "path": "src/cfd_sdf/design/volume_semantics_v2.py",
+      "sha256": "3a2ce3cb90e536b615b6957be08758e54be97e3af3cf279abd7e4fd58b86bd19"
+    },
+    {
+      "path": "src/cfd_sdf/design/volume_semantics.py",
+      "sha256": "021c2da0916f1417211764c6d6ffc1d7a45785b41b8ce2f206f31cd710625626"
+    },
+    {
+      "path": "scripts/sdf_native_volume_semantics_v2_2026_10.py",
+      "sha256": "e336e007836e333ee33003a3ff8892c4fe4fbd0b79b76cabe421b4804c50a8f9"
+    },
+    {
+      "path": "tests/test_sdf_native_volume_semantics_v2.py",
+      "sha256": "a608659bb6e639db02f668d4146046a9f4d282b46b7f2678f504114070fc0b5b"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+      "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/lowdim03_parent.npz",
+      "sha256": "0ce3256b0f3e5c919caeb2ac1b36f1a33838f34c767c091cb89bda0234ac750b"
+    },
+    {
+      "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/p22_v2_migration_proposal.md",
+      "sha256": "5c64e43e118aba12bb69996a94b2ed86d2ffe0895570bcf89b8b44bc35b19f85"
+    },
+    {
+      "path": "docs/evidence/sdf_native_volume_semantics_v1_2026_09.json",
+      "sha256": "0142ace4de9419dd73cc27e90135ed1fe1f847b074ca2faa37fdb0962505bbce"
+    },
+    {
+      "path": "docs/evidence/sdf_native_genesis_v17_2026_09.json",
+      "sha256": "8335cb7569dae7f75780b133e3f588b802e3b13258f012c391339ffc6a1c10b5"
+    },
+    {
+      "path": "docs/evidence/lowdim04_dual_grid_local_model_2026_10_11/pre_registration_blocker.json",
+      "sha256": "494c393f0d4662935256fa05083b3dac35e9a441157d20102323edd96371978c"
+    },
+    {
+      "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/SHA256SUMS",
+      "sha256": "72dddb9856ffb0a800414ebef42510af8469bc6bd4197f806689b6e4a116c18d"
+    },
+    {
+      "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/classification.json",
+      "sha256": "97a6ff83d7af82dd6490b3e042ec442e337ccccb0e019c4a6c3bca93cb32b63c"
+    },
+    {
+      "path": "docs/evidence/srcmap03a_sign_invariance_2026_10_13/certificate.json",
+      "sha256": "d0c89b53a343c245c5a2d81f04ce1988a842d6422dca1ea09b2c4e5aef11bdaa"
+    }
+  ],
+  "freeze_sha256": "6b4934c0c32ad56915b3bd42ccefe305a51a428186bf7aedf1f77b2606668287",
+  "integration_parent": "e1e858772c9938de9771af90c741a741c7e47581",
+  "rehearsal": "registrar run once with OUT redirected to a scratch path before freezing (no artifact written to docs/evidence); result: 10/10 states at N_max, v1 residuals equal the recorded -0.2945861368614151 and -0.3029302661594796"
+}
