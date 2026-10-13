@@ -2,11 +2,11 @@
 
 Terminal classification: **P22_V17_SIGN_INVARIANCE_CERTIFIED**. Issue: [#54](https://github.com/ramhachi/CFD_opt_sdf/issues/54).
 Evidence class: solver-free arithmetic certificate over retained evidence. CFD runs 0, Kaggle submissions 0,
-`selected_delta=null`, `shape_update_allowed=false`; every qualification flag unchanged.
+`selected_delta=null`, `shape_update_allowed=false`; no flag, contract, volume limit or production source was modified (the branch diff against the parent contains only SRCMAP-03a evidence, one script and one test).
 
 This result does **not** resolve source-mapping nondeterminism and does not qualify any signer. It shows that, for
 the retained v17 baseline lattice and source STL only, the P22 hard mask is independent of the signs assigned to
-boundary-ambiguous nodes, and that the registered LOWDIM gates keep their pass/fail classification.
+boundary-ambiguous nodes, and that the five registered LOWDIM geometry gates (`gates()` in `scripts/build_lowdim01_inputs.py`) keep their pass/fail classification for the baseline and one retained parent only.
 
 ## Authority, freeze and the two executions
 
@@ -19,11 +19,12 @@ boundary-ambiguous nodes, and that the registered LOWDIM gates keep their pass/f
 - **Attempt 1** (freeze `2d733e6f…`) stopped `INCOMPLETE` in the preflight: the SRCMAP-01 manifest check treated two
   living documents as frozen. No state, mesh or field had been loaded. This was handled as **Amendment 1** (plan,
   refreeze, independent re-review), not as a re-execution of unchanged source. All attempt-1 files are retained.
-- Independent reviews: round 1 PASS_WITH_REQUIRED_CHANGES (all applied), round 2 PASS, round 3 (Amendment 1) PASS;
+- Independent reviews (Claude Sonnet subagents orchestrated by the authoring session, not human reviewers): round 1 PASS_WITH_REQUIRED_CHANGES (all applied), round 2 PASS, round 3 (Amendment 1) PASS;
   see [pre-run review](independent_review_prerun.md), [approval](prerun_approval.json).
 - Disclosure carried from the plan: an exploratory prototype passed every predicate it exercised before
-  registration, so this is a confirmatory replication with frozen code, not a blind preregistration. The frozen
-  script reproduced the prototype's figures on its own.
+  registration, so this is a confirmatory replication with frozen code, not a blind preregistration. The author
+  states that the frozen script's figures agree with the prototype's; the prototype is not retained, so this is not
+  independently checkable.
 
 ## Results (all from [certificate.json](certificate.json))
 
@@ -35,9 +36,11 @@ boundary-ambiguous nodes, and that the registered LOWDIM gates keep their pass/f
 | P4 gates | clearance worst case `0.349999` m (gate 0.15; baseline `0.349999994`); Eikonal median `2.46e-7` plus bound `1.39e-4` < 0.10; smoothed-volume bound `1.05e-5` m³ (relative `1.18e-4`, criterion < 1e-3), retained parent relative change `-1.183%` with worst range `[-1.196%, -1.170%]` inside the 10% band; cell components 1 at both endpoints | each gate passes with the bound |
 | P5 controls | 19 retained v17 fields (18 SRCMAP-01 variants + Oct12 replay; the two v16 controls excluded): 3,988 sign differences in total, **0 outside `B`**, every field has the reference mask | population 19, 0 outside, all masks equal |
 
-Descriptive margin: the endpoint fields still give the reference mask up to a uniform ambiguity amplitude of
-`3.78e-3` m, about `1.6e5` times the largest observed band magnitude. The certificate itself is bound to amplitude at
-most `1e-6` m.
+Descriptive margin: on the 60-point sweep grid the first failing uniform amplitude is `3.78e-3` m; the independent
+post-run review located the exact onset at `0.025/7 = 3.571e-3` m (the cell with seven band corners and one outside
+corner at +h), about `1.5e5` times the largest observed band magnitude. The certificate itself is bound to
+amplitude at most `1e-6` m. Mechanism (reviewer, not a predicate): no cell has all eight corners in `B` (at most seven)
+and every outside node is at least about one h from the surface; the lattice is aligned with the STL faces.
 
 ## What is and is not established
 
@@ -46,11 +49,14 @@ number at every node (a numerical certification in Float64, not a formal proof);
 ambiguous nodes, exhaustively per cell through the production `_corner_mean`, no h-cube centre changes sign, so the
 P22 hard mask and count (8272) are identical; (iii) the clearance, Eikonal-median, smoothed-volume-band and
 cell-component gates keep their pass/fail classification, by explicit bounds (not invariance of the observables
-themselves: smoothed volume and Eikonal values do change at the 1e-8 to 1e-4 level); (iv) 19 retained variants,
-including the independent `contains` composition that differs at about 3,900 nodes, agree.
+themselves: smoothed volume and Eikonal values may change by up to the recorded bounds, about 1e-5 m³ and 1e-4); (iv) 19 retained variants,
+including the independent `contains` composition, agree. Sign differences are counted by sign bit, as in SRCMAP-01
+(this distinguishes -0.0 from +0.0): 3,988 in total, `D_fallback` 3,930 of them; counted by the P22 definition
+(`phi<0`) the figures are 3,553 and 3,495. Either way 0 lie outside `B`.
 
 Not established: mapping reproducibility or the cause of nondeterminism; any signer; correctness of any sign inside
-`B` (no ground truth exists on the surface); any candidate or perturbed state; other STLs or lattices; invariance for
+`B` (no ground truth exists on the surface); any candidate or perturbed state (the `masks_and_support_preserved` gate
+compares masks and support values of derived states and is not evaluated here: the baseline is a fixed artifact); other STLs or lattices; invariance for
 a signer that errs outside `B`; CFD response; physical or continuum volume; grid convergence. The plan's earlier
 "130-entry" manifest wording at `prerun_plan.md:43` is superseded by Amendment 1 (128 entries checked, two living
 documents excluded).
@@ -64,6 +70,8 @@ contract bound to the immutable baseline artifact. That registration is Stop 2 a
 ## Validation
 
 See [validation.json](validation.json): twelve new tests pass; full pytest has the same 48 failure IDs as the
-SRCMAP-02 record and as a clean baseline at the parent (new 0, resolved 0), not an all-pass suite; `compileall` of
+SRCMAP-02 record (new 0, resolved 0), not an all-pass suite. A pristine scratch worktree at the parent shows 50
+failures: the same 48 plus two that fail only there with `FileNotFoundError` on git-ignored `work/` state (see
+`logs/baseline_pytest.log.gz`). `compileall` of
 `src`, `scripts`, `tests` and `git diff --check` pass. The [post-run review](independent_review_postrun.md) limits
 approval to recording this result.

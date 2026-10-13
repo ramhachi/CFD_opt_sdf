@@ -81,7 +81,7 @@
       "gzip_sha256": "adb042668fef8a56b3c276e536241f6106f3804c30121cab5916459b0e7e748f",
       "uncompressed_sha256": "ab5392fcecf9950835b5a5938382286cb44be2d96ace6ee76302dfbb22c2b7f5"
     },
-    "note": "two extra failures appear only in a pristine scratch worktree; they pass in this worktree and are absent from the SRCMAP-02 record. Their cause was not investigated (likely dependence on untracked work/ files). They are not failures of the final state.",
+    "note": "two extra failures appear only in a pristine scratch worktree (50 vs 48); they fail with FileNotFoundError on git-ignored work/ state that is absent there (the post-run reviewer identified work/sdf_native_genesis_v17/sdf_design_state.npz; see logs/baseline_pytest.log.gz), pass in the worktree used for the final run, and are absent from the SRCMAP-02 record. They are not failures of the final state and no regression is hidden.",
     "passed": 2176,
     "pytest_log": {
       "gzip_sha256": "af5fd956512515f779fa42bd23740debba48603c7f9768b4a76c8076ab76a186",
