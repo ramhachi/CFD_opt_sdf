@@ -7400,11 +7400,11 @@ integer-quantized; equal count does not mean equal volume). P22-v1 and its limit
 the v16 lattice. **#51 stays blocked** pending a separate decision and preregistration; no CFD, Kaggle or shape update;
 selected_delta=null; shape_update_allowed=false.
 
-## LOWDIM-04A (#51) Stage A: LOCAL_FEASIBLE_CONE_FOUND (2026-10-13)
+## LOWDIM-04A (#51) Stage A: LOCAL_FEASIBLE_CONE_FOUND under the linear model (2026-10-13)
 
 The preregistered (non-blind, freeze `c0532d145f2b6a8813a3ca0372b8bc4148c01944ee0920622cedc8331aa53b43`) local dual-grid model at the accepted LOWDIM-03 parent ran once: nine states per grid (parent plus D0/D1/D2/P1 at +-1.25 mm), 18 CFD runs on two Kaggle T4 kernels. The fresh parent
 runs were byte-identical to the retained LOWDIM-03 s1.25 mm force CSVs on both grids; all identity, manifest and budget checks passed; every state is at the lattice count N = 8272 (P22-v2; this constrains no physical volume).
 Registered result: **LOCAL_FEASIBLE_CONE_FOUND** (main t* 0.258 N/m, L1-robust t* 0.201 N/m, predicted 1.25 mm downforce gains 2.0e-4 N flow_24 and 5.7e-4 N flow_32 under the linear model; one of sixteen components, flow_32 drag P1, unresolved).
-The even (curvature) parts are large: a descriptive, unregistered diagonal estimate puts the actual flow_24 gain of the solution near +2e-5 N (linear +1.7e-4 N), so the linear FOUND is not a gain forecast, as disclosed before the run. See the
+The registration was non-blind and disclosed that FOUND was near-certain and says little about the gain. All sixteen even parts are negative (cause untested) and the flow_24 ones are larger than the disclosed 42% expectation; a descriptive, unregistered diagonal estimate puts the flow_24 gain of the solution near +2e-5 N against +1.7e-4 N linear, with sign and size not established, so the linear FOUND is not a gain forecast. See the
 [report](evidence/lowdim04a_stage_a_2026_10_13/diagnostic_report.md), [analysis](evidence/lowdim04a_stage_a_2026_10_13/lowdim04a_analysis.json) and [validation](evidence/lowdim04a_stage_a_2026_10_13/validation.json) (full pytest: the same 48 known failures, new 0).
 Not established: any gain, drag nonincrease, volume feasibility beyond the count, grid convergence, #26, #30, optimizer or second-iteration progress. No flag changed; selected_delta=null; shape_update_allowed=false. Stage B (an actual-primal ladder) needs its own preregistration; #51 stays open until then.

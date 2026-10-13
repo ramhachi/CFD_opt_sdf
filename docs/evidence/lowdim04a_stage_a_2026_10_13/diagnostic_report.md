@@ -31,14 +31,16 @@ Centered secants at the parent, N per m (per unit-max-norm basis direction):
 
 ## Descriptive, post hoc and unregistered: the even parts
 
-The even (curvature) parts of the nine states are large and negative: flow_24 downforce D0 -6.9e-4 N (the even part is 1.7 times half the contrast), P1 -2.0e-4 N; flow_32 D0 -2.6e-4 N. A diagonal-curvature estimate from them (not a registered model,
-cross terms ignored) puts the actual gain of the robust solution at about +1.9e-5 N on flow_24 (below the 3e-5 N floor; linear +1.7e-4 N) and +4.5e-4 N on flow_32, with drag falling on both grids (-2.7e-4 and -5.7e-5 N). This is the reason a linear FOUND must not be read
-as an expected gain: the registered next step is an actual-primal ladder (Stage B), which needs its own preregistration.
+All sixteen even parts are negative (drag as well as downforce); their cause is untested (physical curvature, a baseline near an extremum, or loss of the signed-distance property). They are large: flow_24 downforce D0 -6.9e-4 N (the even part is 1.7 times half the contrast),
+P1 -2.0e-4 N; flow_32 D0 -2.6e-4 N. The previous step's even part was 42% of its odd part, which is what was disclosed before the run; here it is 172% (flow_24 D0) and 122% (flow_24 P1), larger than disclosed.
+A diagonal-curvature estimate (formula: linear term + sum over the four basis directions of (w_i / 1.25 mm)^2 * even_i, with w the robust \`basis_coefficients_m\` and the even parts from the analysis JSON; cross terms ignored; not a registered model) gives, for the robust solution, flow_24 downforce
++1.9e-5 N (linear +1.7e-4 N) and flow_32 downforce +4.5e-4 N. The flow_24 figure is the difference of two terms of about 1.6e-4 N each, so **its sign and size are not established**; it only shows that the linear gain is not a forecast. (The same estimate gives flow_24 drag -2.7e-4 N;
+the flow_32 drag estimate is jitter-level, dominated by the unresolved P1 even part, and is not evidence of drag nonincrease.) The registered next step is an actual-primal ladder (Stage B), which needs its own preregistration.
 
 ## What is and is not established
 
 Established, for this parent, fixed basis, two grids, Re 80 and +-1.25 mm: the responses and secants above; under the stated linear model and normalization a cone with the stated `t*` exists; the comparison with GRID-01. Not established:
-a gain (the linear model ignores a curvature of the same size as the gain on flow_24), drag nonincrease (flow_32 drag is at or below the nominal floor for the solution), volume feasibility beyond the lattice count, grid convergence, #26, #30, optimizer or second-iteration progress,
+a gain (the linear model ignores a curvature of the same size as the gain on flow_24), drag nonincrease (flow_32 drag is 0 by the active constraint and its P1 secant is unresolved), volume feasibility beyond the lattice count, grid convergence, #26, #30, optimizer or second-iteration progress,
 flow_32 noise (the 3e-5 N floor is nominal). No Stage B is authorized by this verdict.
 
 ## Validation
