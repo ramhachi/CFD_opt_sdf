@@ -52,7 +52,7 @@ _CONTRACT_PAYLOAD: dict[str, Any] = {
     "volume_limit_m3_derived": VOLUME_LIMIT_M3,
     "reference": {"state_sha256": REFERENCE_STATE_SHA256, "npz_sha256": REFERENCE_NPZ_SHA256},
     "constraint": (
-        "g_V = V_eps / volume_limit_m3_derived - 1; at N_phi = N_max this is about -0.31 (V_eps/V_sharp is about 0.69), "
+        "g_V = V_eps / volume_limit_m3_derived - 1; at N_phi = N_max this is about -0.31 to -0.32 on the retained states (V_eps/V_sharp is about 0.68 to 0.69), "
         "so g_V <= 0 is inactive at the hard boundary and cannot signal the active hard constraint"
     ),
     "sub_voxel_sensitivity": (

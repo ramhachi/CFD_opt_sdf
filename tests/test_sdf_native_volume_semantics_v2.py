@@ -37,7 +37,7 @@ def registrar():
 
 def test_constants_are_pinned_and_the_limit_is_derived_from_the_integer():
     assert V2.MAX_SOLID_CENTERS == 8272 and V2.VOLUME_LIMIT_M3 == 8272 * 0.025 ** 3 == 0.12925000000000003
-    assert V2.CONTRACT_SHA256 == "b14afe54648cb8629f783b0b8aff807b3aee426861c137d62c74be2d574b0de5"
+    assert V2.CONTRACT_SHA256 == "caaa38ef40e810fe8a9c8d8195e0eada6d2ce5e78af25ea2a9670618f0d1f0a4"
     assert SMOOTHED_VOLUME_CONTRACT_SHA256 == "56825cd50c0916c5659badd21c84bab517ddb370085a92056d40a9028e8a7969"  # v1 is untouched
 
 
@@ -113,3 +113,21 @@ def test_registrar_fails_closed(tmp_path, monkeypatch):
     R.OUT.unlink(); R.OUT.with_suffix(".json.sha256").write_text("x")
     with pytest.raises(SystemExit):
         R.main()  # sidecar without a registration
+
+
+def test_registrar_refuses_a_tampered_blocker_hash_and_a_count_other_than_n_max(tmp_path, monkeypatch):
+    R = registrar(); R.OUT = tmp_path / "reg.json"
+    monkeypatch.setattr(R, "BLOCKER_SHA", "0" * 64)
+    with pytest.raises(SystemExit):
+        R.main()
+    monkeypatch.undo()
+    R = registrar(); R.OUT = tmp_path / "reg.json"
+    monkeypatch.setattr(V2, "MAX_SOLID_CENTERS", 8271)
+    with pytest.raises(SystemExit):
+        R.main()
+    assert not R.OUT.exists()
+
+
+def test_report_v2_on_the_baseline(baseline):
+    r = V2.report_v2(baseline)
+    assert r["sampled_solid_centers"] == 8272 and r["hard_feasible"] and -0.32 < r["constraint_residual"] < -0.31

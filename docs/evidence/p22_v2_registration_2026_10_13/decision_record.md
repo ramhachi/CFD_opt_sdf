@@ -37,9 +37,9 @@ beyond this registration: LOWDIM-04A is not restarted and no preregistration for
    `V <= 0.12925` m³ physical. The evaluator refuses every other lattice.
 5. The smooth contract `sdf_native_smoothed_volume_v2` reuses the v1 primitive unchanged (one-sided cosine step,
    epsilon = h, gradient ownership); only the constraint denominator is bound to the derived v2 limit. It never
-   substitutes for the hard count. Implemented as a thin module (`volume_semantics_v2.py`) that wraps the unchanged v1
+   substitutes for the hard count. Implemented as a thin module (`volume_semantics_v2.py`, whose `report_v2` carries the scope with every v2 report) that wraps the unchanged v1
    function; v1 source and constants are untouched.
-6. **Supersession of one precondition.** The P22-v2 migration proposal required source-mapping reproducibility to be
+6. **Supersession of a precondition and of the reference definition.** The P22-v2 migration proposal required source-mapping reproducibility to be
    resolved before registration. Reproducibility remains **UNRESOLVED** (#52 nondeterministic, #53 open). For this
    contract only it is reclassified as **non-blocking**, because the reference is an immutable hash-pinned artifact and
    the SRCMAP-03a certificate shows, numerically (Float64 winding-number certification outside the band, exhaustive
@@ -65,7 +65,7 @@ beyond this registration: LOWDIM-04A is not restarted and no preregistration for
 
 ## What the registration records
 
-The registrar (a thin `report_v2` carries the scope with every v2 report) re-measures the retained baseline and LOWDIM-03 parent with the unchanged v1 evaluator
+The registrar re-measures the retained baseline and LOWDIM-03 parent with the unchanged v1 evaluator
 (`sampled_solid_centers_count`) and records the eight LOWDIM-04A perturbation volumes from the retained, hash-pinned
 blocker record. Those eight states are **not re-derived**: the generating call was ad hoc and no builder script exists, so
 their counts are arithmetic on the recorded volumes (each volume divided by h³ must be an integer, checked). The run
@@ -87,7 +87,7 @@ The registrar `scripts/sdf_native_volume_semantics_v2_2026_10.py` runs once. It 
 (SRCMAP-03a evidence and its `SHA256SUMS`, the proposal, v1 registration, genesis v17 evidence, retained states, the
 LOWDIM-04A blocker by its literal hash), a CERTIFIED SRCMAP-03a classification and the unchanged v1 contract hash; any mismatch is an integrity failure
 and no registration is written. It refuses to overwrite a different registration or to accept a sidecar that differs
-from the registration (a rerun with identical content is idempotent). The payload carries no environment fields. It writes
+from the registration (a rerun with identical content is idempotent; a crash between the registration and sidecar writes leaves a state that the next run refuses, so recovery is manual, fail-closed). The payload carries no environment fields. It writes
 `docs/evidence/sdf_native_volume_semantics_v2_2026_10.json` and a `.sha256` sidecar.
 Process: this record, the module, the registrar and their tests are frozen by hash before the run; an independent pre-run
 review precedes it and an independent post-run review follows; the full suite is compared with the known 48 failures. One

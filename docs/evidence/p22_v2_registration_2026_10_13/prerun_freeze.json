@@ -2,11 +2,11 @@
   "files": [
     {
       "path": "docs/evidence/p22_v2_registration_2026_10_13/decision_record.md",
-      "sha256": "da02959efd606088e765e7270261e3ca3f93015773435d581468a288b9953d48"
+      "sha256": "a7015c5320e75deb5a47cd6e5c1f60ebddaec6d181185b1995f59253d7581438"
     },
     {
       "path": "src/cfd_sdf/design/volume_semantics_v2.py",
-      "sha256": "33b236062e5cf0132129b299254ce8e1af32988f76ebf410defddcc8436cd8c3"
+      "sha256": "a5f3595babea3994bb3c45618105a327a2790072e88945a4e3b8e78ed82e8fe4"
     },
     {
       "path": "src/cfd_sdf/design/volume_semantics.py",
@@ -14,11 +14,11 @@
     },
     {
       "path": "scripts/sdf_native_volume_semantics_v2_2026_10.py",
-      "sha256": "865ee062a4d8e91e16b2d7b96484abf745304463200cb8a6c0b44e21f3e7d7b8"
+      "sha256": "25f090c3ea163709c7259cf25ccc17875eeeb726d6b02803621a89c72847be59"
     },
     {
       "path": "tests/test_sdf_native_volume_semantics_v2.py",
-      "sha256": "f80212bb63943fefad29a599040029b4d5053bcab1e23fa59ad4cbf8849e9b5b"
+      "sha256": "977abaa9e07c29eba9ea0ec5f03bd7109ee2e8a98ba7882825543512066632ac"
     },
     {
       "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
@@ -61,7 +61,7 @@
       "sha256": "74c675ed658c85fa2d8f306652d0de712698daf36e4e86f1f508b676c4f96faf"
     }
   ],
-  "freeze_sha256": "62d260ce70c10a222ba5d09aeed52e7fa518b5cf5aa7bb330251a071a592548e",
+  "freeze_sha256": "459c2864f0f31a219ae561e85d97dad924d8c7b5f317e7781cbefcdb10fd20af",
   "integration_parent": "e1e858772c9938de9771af90c741a741c7e47581",
-  "rehearsal": "the registrar is exercised by tests/test_sdf_native_volume_semantics_v2.py with OUT redirected to a pytest tmp path (idempotent rerun, tampered pinned hash, sidecar mismatch, overwrite refusal, sidecar without registration); nothing is written to docs/evidence before the formal run. Revision 2 of the freeze: pre-run review round 1 (PASS_WITH_REQUIRED_CHANGES) applied."
+  "rehearsal": "the registrar is exercised by tests/test_sdf_native_volume_semantics_v2.py with OUT redirected to a pytest tmp path (idempotent rerun, tampered pinned hash, sidecar mismatch, overwrite refusal, sidecar without registration); nothing is written to docs/evidence before the formal run. Revision 3 of the freeze: pre-run review rounds 1 and 2 (both PASS_WITH_REQUIRED_CHANGES, no blocker) applied."
 }

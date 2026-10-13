@@ -117,10 +117,10 @@ def main() -> None:
             "status": "UNRESOLVED", "issues": ["#52 SOURCE_MAPPING_ALGORITHM_NONDETERMINISTIC", "#53 SRCMAP02_INCONCLUSIVE (open)"],
             "classification_for_this_contract": "non_blocking",
             "basis": {"result": "P22_V17_SIGN_INVARIANCE_CERTIFIED", "issue": "#54", "integration_merge_commit": SRCMAP03A_MERGE_COMMIT, "artifact_sha256": {k: v for k, v in PINNED.items() if k.startswith("srcmap03a/")}},
-            "validity": "only for the immutable reference artifact above on this lattice; regenerating the SDF from the STL, other STLs, lattices or states are outside this contract",
+            "validity": "only for the hard count (not the smooth volumes, parent or perturbation states) of the immutable reference artifact above on this lattice; regenerating the SDF from the STL, other STLs, lattices or states are outside this contract",
         },
         "supersession": {
-            "supersedes": "the precondition 'source-mapping reproducibility must be resolved' in p22_v2_migration_proposal.md (sha256 " + PINNED["p22_v2_migration_proposal.md"] + ")",
+            "supersedes": "the precondition 'source-mapping reproducibility must be resolved' and the reference definition 'hard volume of the original geometry mapped to the v17 lattice' of p22_v2_migration_proposal.md (sha256 " + PINNED["p22_v2_migration_proposal.md"] + "); item-by-item disposition in decision_record.md",
             "v1": {"registration_sha256": PINNED["v1_registration.json"], "limit_m3": V1_LIMIT_M3, "sampled_solid_centers": 1009, "status": "unchanged, immutable, historical authority for the v16 lattice (61x33x25)"},
             "decision_record": "docs/evidence/p22_v2_registration_2026_10_13/decision_record.md",
         },
