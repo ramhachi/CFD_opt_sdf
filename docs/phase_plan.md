@@ -7366,3 +7366,22 @@ unchanged; P22-v2 remains unregistered; LOWDIM-04A/#51 remains blocked.
 CFD runs 0; Kaggle submissions 0; qualification flags unchanged;
 selected_delta=null; shape_update_allowed=false. Stop at this recorded result;
 additional measurement or contract work requires a separate user decision.
+
+## SRCMAP-03a (#54): P22-v17 boundary-sign invariance CERTIFIED (2026-10-13)
+
+The solver-free certificate (freeze
+`8eabccd3dbe4b67e26852e9581f5b4f8696f4bac2147cc481ff9bdaa463cab1e`; attempt 1 stopped INCOMPLETE in the preflight
+before any measurement and was handled as Amendment 1) classifies
+**P22_V17_SIGN_INVARIANCE_CERTIFIED** for the retained v17 baseline lattice and source STL only: 5370 boundary-ambiguous
+nodes (|phi| < 1e-6, gap ratio 1.05e6); outside-band signs independently certified numerically by a generalized winding
+number (380,015 nodes, 0 mismatches); for every sign assignment of the ambiguous nodes (exhaustive per-cell enumeration
+through the production `_corner_mean`) no h-cube centre changes sign, so the P22 hard mask and count (8272) are
+identical; the five registered LOWDIM geometry gates keep their pass/fail classification for the baseline and one retained
+parent by explicit bounds; 19 retained variants agree. See [report](evidence/srcmap03a_sign_invariance_2026_10_13/diagnostic_report.md),
+[classification](evidence/srcmap03a_sign_invariance_2026_10_13/classification.json) and
+[validation](evidence/srcmap03a_sign_invariance_2026_10_13/validation.json) (full pytest: same 48 known failures, new 0).
+Independent pre-run (three rounds) and post-run reviews are retained. This does **not** resolve source-mapping
+nondeterminism, qualify a signer, establish the correctness of any sign inside the band, or cover other STLs, lattices,
+candidate states, CFD, or physical/continuum volume. P22-v1 and production mapping/dependencies are unchanged; #53 stays
+OPEN as the unresolved signer question; #51 remains blocked pending the separately recorded P22-v2 registration stage.
+CFD runs 0; Kaggle submissions 0; selected_delta=null; shape_update_allowed=false.
