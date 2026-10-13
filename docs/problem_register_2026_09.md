@@ -2038,3 +2038,8 @@ No gain, drag nonincrease or volume claim beyond the lattice count; Stage B need
 
 Along the Stage A solution only the 0.3125 mm step met the registered rule (flow_24 +3.57e-5 N, flow_32 +1.15e-4 N, computed drag changes <= 0, flow_32 drag within jitter); the full step loses flow_24 downforce (-5.2e-5 N) against a linear prediction of +1.7e-4 N. The gain is below the Stage V resolution, the 0.3125 and 0.625 mm flow_24 gains are indistinguishable (a threshold artifact) and the rule has no multiplicity
 control (the selected gain is likely biased upward). No physical gain, drag, grid or optimizer claim. The track ends here; #51 is closed. See the [report](evidence/lowdim04b_stage_b_2026_10_13/diagnostic_report.md).
+
+## GRID-01 (#26) — closed by synthesis: both grids must accept a first update (2026-10-14)
+
+flow_24 alone is insufficient (5 of 9 retained states, correlated trials, get opposite accept/reject verdicts; drag secant vectors nearly unrelated across grids); no grid is declared the truth and convergence is not established. Policy: flow_24 proposes the downforce direction, flow_32 confirms, acceptance needs both grids, step size from the dual-grid ladder. See the
+[decision record](evidence/grid01_closure_2026_10_14/decision_record.md). Next: #31, #29, #28, #25 in that order (phase_plan, 2026-10-14).

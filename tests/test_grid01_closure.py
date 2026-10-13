@@ -49,3 +49,27 @@ def test_a_tampered_input_is_refused(monkeypatch):
     monkeypatch.setitem(G.PINS, "grid01", (G.PINS["grid01"][0], "0" * 64))
     with pytest.raises(ValueError):
         G.build()
+
+
+def test_floor_sensitivity_and_the_secant_norm_ratios_and_wall_time_ratios_are_pinned():
+    s = json.loads(G.OUT.read_text())
+    assert s["disagreements_by_floor"] == {"5e-06": 4, "1e-05": 4, "2e-05": 4, "3e-05": 5}  # only the 0.625 mm flow_24 case (3.4e-7 N under the floor) flips
+    nr = s["secant_norm_ratios_flow32_over_flow24"]
+    assert nr["downforce"]["parent_lowdim04a"] > 2.0 and nr["drag"]["parent_lowdim04a"] < 0.5
+    assert all(2.2 < v["flow32_over_flow24_process_wall"] < 2.5 and 3.0 < v["flow32_over_flow24_julia_wall"] < 3.4 for v in s["wall_time_ratios_flow32_over_flow24"].values())
+
+
+def test_decision_thresholds_are_inclusive_at_the_boundary():
+    assert G.decide(evidence((0.8, 0.8), (0.1, 0.1), 1))["flow24_may_propose_directions"] is True
+    assert G.decide(evidence((0.7999, 0.9), (0.1, 0.1), 1))["flow24_may_propose_directions"] is False
+    assert G.decide(evidence((0.95, 0.95), (0.8, 0.8), 0))["verdict"] == "FLOW24_SUFFICIENT_FOR_FIRST_UPDATE"
+    assert G.decide(evidence((0.9499, 0.99), (0.9, 0.9), 0))["verdict"] != "FLOW24_SUFFICIENT_FOR_FIRST_UPDATE"
+
+
+def test_the_record_quotes_the_synthesis_numbers():
+    s, rec = json.loads(G.OUT.read_text()), (G.OUT.parent / "decision_record.md").read_text()
+    c = s["secant_vector_cosines"]
+    for v in (c["downforce"]["baseline_grid01"], c["downforce"]["parent_lowdim04a"], c["drag"]["baseline_grid01"], c["drag"]["parent_lowdim04a"]):
+        assert f"{v:.3f}" in rec
+    w4 = s["w4_v17_resolution_sensitivity_percent"]
+    assert f"{w4['flow24_to_flow32_drag_percent']:.2f}%" in rec and f"{w4['flow24_to_flow32_downforce_percent']:.2f}%" in rec and "5 of 9" in rec and "4 / 4 / 4 / 5" in rec

@@ -38,9 +38,22 @@ def load(name):
     return json.loads(data)
 
 
-def passes(down, drag):
+def passes(down, drag, floor=FLOOR_N):
     """The LOWDIM acceptance rule per grid (downforce gain strictly above the floor and a computed drag change <= 0), geometry gates aside."""
-    return bool(down > FLOOR_N and drag <= 0.0)
+    return bool(down > floor and drag <= 0.0)
+
+
+FLOOR_SENSITIVITY = (5e-6, 1e-5, 2e-5, FLOOR_N)
+
+
+def disagreements_at(states: dict, floor: float) -> int:
+    return sum(passes(*v["flow_24"], floor) != passes(*v["flow_32"], floor) for v in states.values())
+
+
+def wall_ratio(source: dict, key: str) -> float:
+    """Total flow_32 over total flow_24 per-state wall time of one retained campaign (same state names on both grids)."""
+    f = source["state_forces_n"]
+    return sum(v[key] for v in f["flow_32"].values()) / sum(v[key] for v in f["flow_24"].values())
 
 
 def decide(evidence: dict) -> dict:
@@ -84,16 +97,22 @@ def build() -> dict:
     for k in table:
         table[k]["grids_disagree"] = table[k]["flow_24"]["passes_rule"] != table[k]["flow_32"]["passes_rule"]
     disagree = sum(v["grids_disagree"] for v in table.values())
+    sensitivity = {f"{fl:g}": disagreements_at(states, fl) for fl in FLOOR_SENSITIVITY}
+    norm_ratio = {"downforce": {"baseline_grid01": g01["coefficient_space_comparison_raw_finite_step_vectors"]["downforce"]["flow32_over_flow24_l2_norm"], "parent_lowdim04a": a04["response_vector_comparisons"]["downforce"]["flow_24_vs_flow_32_at_parent"]["norm_ratio_right_over_left"]},
+                  "drag": {"baseline_grid01": g01["coefficient_space_comparison_raw_finite_step_vectors"]["drag"]["flow32_over_flow24_l2_norm"], "parent_lowdim04a": a04["response_vector_comparisons"]["drag"]["flow_24_vs_flow_32_at_parent"]["norm_ratio_right_over_left"]}}
+    cost = {name: {"flow32_over_flow24_process_wall": wall_ratio(src, "solver_process_wall_seconds"), "flow32_over_flow24_julia_wall": wall_ratio(src, "julia_summary_wall_seconds")}
+            for name, src in (("lowdim03", l03), ("lowdim04a", a04), ("lowdim04b", b04))}
     ladder = {k.split("|")[1]: v for k, v in table.items() if k.startswith("lowdim04b|")}
     single = {"flow_24_alone_would_select": max((k for k, v in ladder.items() if v["flow_24"]["passes_rule"]), key=lambda k: ladder[k]["flow_24"]["downforce_change_n"], default=None),
               "flow_32_alone_would_select": max((k for k, v in ladder.items() if v["flow_32"]["passes_rule"]), key=lambda k: ladder[k]["flow_32"]["downforce_change_n"], default=None)}
     evidence = {"downforce_cosines": cos["downforce"], "drag_cosines": cos["drag"], "acceptance_disagreements": disagree, "states_compared": len(table)}
     return {"kind": "grid01_closure_synthesis", "inputs": {k: {"path": p, "sha256": h} for k, (p, h) in PINS.items()}, "w4_v17_resolution_sensitivity_percent": w4_sens, "secant_vector_cosines": cos,
             "component_sign_status": {"grid01_baseline": g01_status, "lowdim04a_parent": a04_status}, "actual_primal_acceptance_by_grid": table, "single_grid_selection_on_the_04b_ladder": single,
-            "evidence": evidence, "decision": decide(evidence), "floor_n": FLOOR_N,
+            "evidence": evidence, "decision": decide(evidence), "floor_n": FLOOR_N, "disagreements_by_floor": sensitivity, "secant_norm_ratios_flow32_over_flow24": norm_ratio,
+            "wall_time_ratios_flow32_over_flow24": cost,
             "constants": {"proposal_cosine_min": PROPOSAL_COSINE_MIN, "sufficient_downforce_cosine": SUFFICIENT_DOWNFORCE_COSINE, "sufficient_drag_cosine": SUFFICIENT_DRAG_COSINE},
             "claims_not_made": ["flow_32 (or any grid) is the converged or true response: W4 shows 6.8% and 8.4% drag/downforce change from flow_24 to flow_32 and no finer grid exists", "formal continuum or GCI gradient convergence",
-                                "flow_32 noise: the 3e-5 N floor is nominal", "a physical downforce or drag gain", "that the dual-grid rule is optimal, only that single-grid acceptance is contradicted by retained states"]}
+                                "flow_32 noise (unmeasured; the 3e-5 N floor is a nominal value, not a noise measurement)", "a physical downforce or drag gain", "that the dual-grid rule is optimal, only that single-grid acceptance is contradicted by retained states"]}
 
 
 def main():

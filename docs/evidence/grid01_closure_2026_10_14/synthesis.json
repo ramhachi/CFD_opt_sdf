@@ -121,7 +121,7 @@
   "claims_not_made": [
     "flow_32 (or any grid) is the converged or true response: W4 shows 6.8% and 8.4% drag/downforce change from flow_24 to flow_32 and no finer grid exists",
     "formal continuum or GCI gradient convergence",
-    "flow_32 noise: the 3e-5 N floor is nominal",
+    "flow_32 noise (unmeasured; the 3e-5 N floor is a nominal value, not a noise measurement)",
     "a physical downforce or drag gain",
     "that the dual-grid rule is optimal, only that single-grid acceptance is contradicted by retained states"
   ],
@@ -160,6 +160,12 @@
     "min_downforce_cosine_margin_to_proposal_threshold": 0.06384069992558761,
     "min_drag_cosine": 0.10222655226653993,
     "verdict": "DUAL_GRID_REQUIRED_FOR_FIRST_UPDATE"
+  },
+  "disagreements_by_floor": {
+    "1e-05": 4,
+    "2e-05": 4,
+    "3e-05": 5,
+    "5e-06": 4
   },
   "evidence": {
     "acceptance_disagreements": 5,
@@ -201,6 +207,16 @@
     }
   },
   "kind": "grid01_closure_synthesis",
+  "secant_norm_ratios_flow32_over_flow24": {
+    "downforce": {
+      "baseline_grid01": 1.205829048460528,
+      "parent_lowdim04a": 2.127909894176742
+    },
+    "drag": {
+      "baseline_grid01": 0.8927667710923167,
+      "parent_lowdim04a": 0.4783415554541775
+    }
+  },
   "secant_vector_cosines": {
     "downforce": {
       "baseline_grid01": 0.9839039751230935,
@@ -220,5 +236,19 @@
     "flow16_to_flow24_drag_percent": 31.607248734035178,
     "flow24_to_flow32_downforce_percent": 8.368378196579943,
     "flow24_to_flow32_drag_percent": 6.766918491077603
+  },
+  "wall_time_ratios_flow32_over_flow24": {
+    "lowdim03": {
+      "flow32_over_flow24_julia_wall": 3.1118949188724168,
+      "flow32_over_flow24_process_wall": 2.323196440759332
+    },
+    "lowdim04a": {
+      "flow32_over_flow24_julia_wall": 3.318376741711651,
+      "flow32_over_flow24_process_wall": 2.426574068075663
+    },
+    "lowdim04b": {
+      "flow32_over_flow24_julia_wall": 3.178057292640078,
+      "flow32_over_flow24_process_wall": 2.3676358429107243
+    }
   }
 }
