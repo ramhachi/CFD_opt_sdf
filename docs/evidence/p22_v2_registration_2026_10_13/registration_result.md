@@ -6,7 +6,7 @@ failure. Evidence class: contract registration plus solver-free arithmetic; CFD 
 
 Artifact: [`sdf_native_volume_semantics_v2_2026_10.json`](../sdf_native_volume_semantics_v2_2026_10.json), sha256
 `735a0cc45ffd8920ac0f4716ddd9154d21b1f86fb05317cc713f44dad95843f3` (sidecar `.json.sha256`), written by the frozen registrar at
-freeze `459c2864f0f31a219ae561e85d97dad924d8c7b5f317e7781cbefcdb10fd20af` after the independent pre-run PASS; the hash equals
+freeze `459c2864f0f31a219ae561e85d97dad924d8c7b5f317e7781cbefcdb10fd20af` after the independent pre-run PASS (a Claude subagent reviewer, not a human); the hash equals
 that of a scratch rehearsal made on the same frozen sources. The smooth contract `sdf_native_smoothed_volume_v2` has sha256
 `caaa38ef40e810fe8a9c8d8195e0eada6d2ce5e78af25ea2a9670618f0d1f0a4` and binds the unchanged v1 contract
 `56825cd5…7a969`.
@@ -18,7 +18,7 @@ that of a scratch rehearsal made on the same frozen sources. The smooth contract
 (state `02f48f64…`); not the LOWDIM-03 parent. It is a representation-specific discrete constraint and not a physical or
 continuum volume constraint.
 
-## Measured at registration (all ten evaluated states are exactly at the limit)
+## Measured at registration (ten states, all exactly at the limit: two re-measured, eight from recorded volumes)
 
 | State | Solid centers | v2 hard residual | v1 verdict (historical) |
 | --- | ---: | ---: | --- |
@@ -39,6 +39,8 @@ unresolved; non-blocking only for the hard count of this artifact); anything for
 continuum volume; feasibility or optimality of any candidate; that LOWDIM-04A may restart. **#51 stays blocked**: its restart needs a
 separate decision and preregistration that handles the active, integer-quantized hard constraint (smooth gradient may propose, the
 integer count decides, and a rule is needed for proposals that the hard count rejects).
+
+On coverage: the SRCMAP-03a certificate bounds the baseline smoothed volume (relative 1.2e-4) and the parent's relative change only through its gate-classification bound, not as a contract property; the registration states the conservative form ("not covered").
 
 The "about −0.31 to −0.32" figure applies to the baseline and the parent only; the recorded D0 perturbations span roughly −0.30 to
 −0.34.

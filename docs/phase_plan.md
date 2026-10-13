@@ -7395,7 +7395,7 @@ other lattice. It is a **representation-specific discrete constraint, not a phys
 record ([record](evidence/p22_v2_registration_2026_10_13/decision_record.md)) supersedes the migration proposal's precondition
 and reference definition (item-by-item table) and reclassifies source-mapping reproducibility, which stays UNRESOLVED (#52, #53),
 as non-blocking for the hard count of this artifact only, on the strength of the SRCMAP-03a certificate. Baseline, LOWDIM-03
-parent and the eight recorded LOWDIM-04A perturbation states are all exactly at 8272 (zero slack: the hard count is active and
+parent (re-measured) and the eight recorded LOWDIM-04A perturbation states (from recorded volumes, not re-derived) are all exactly at 8272 (zero slack: the hard count is active and
 integer-quantized; equal count does not mean equal volume). P22-v1 and its limit are unchanged and remain the historical authority for
 the v16 lattice. **#51 stays blocked** pending a separate decision and preregistration; no CFD, Kaggle or shape update;
 selected_delta=null; shape_update_allowed=false.
