@@ -19,6 +19,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT / "scripts")]
+import build_lowdim04a_kernel as K  # noqa: E402
 import lowdim04a_contract as C  # noqa: E402
 import lowdim04a_states as L  # noqa: E402
 import step01_states as S  # noqa: E402
@@ -29,6 +30,13 @@ EVIDENCE_REL = "docs/evidence/lowdim04a_stage_a_2026_10_13"
 KERNELS = {"a": "flow_24", "b": "flow_32"}
 SUMMARY_REL = 1e-9
 FREEZE_KIND = "lowdim04a_stage_a_prerun_freeze"
+INFRA = ROOT / "infra/kaggle"
+FLAGS = ("fd_oracle", "field_gradient", "reverse", "optimizer", "topology", "shape_update_allowed")
+RUNTIME_FIXED = {"machine_shape": "NvidiaTeslaT4", "kernel_timeout_s": 10800, "timeout_s": 10800, "per_state_timeout_s": 900, "solver_wall_time_cap_s": 8100, "instantiate_timeout_s": 2400,
+                 "gpu_probe_timeout_s": 300, "reserve_s": 300, "julia_threads": 1, "cuda_device_order": "PCI_BUS_ID", "cuda_visible_devices": "0", "selected_gpu_physical_index": 0,
+                 "used_gpu_count": 1, "dataset_sources": []}
+REQUIRED_FILES = {f"scripts/{n}.py" for n in ("analyze_lowdim04a", "lowdim04a_contract", "lowdim04a_states", "lowdim04a_runner_template", "build_lowdim04a_kernel", "build_lowdim04a_inputs",
+                                              "freeze_lowdim04a", "step01_states", "grid01_gpu")} | {"src/cfd_sdf/grid01_contract.py", f"{EVIDENCE_REL}/inventory.json", f"{EVIDENCE_REL}/prerun_note.md"}
 FROZEN_PARAMETERS = {"step_m": C.STEP_M, "min_resolved_n": C.MIN_RESOLVED_N, "epsilon_n_per_m": C.EPSILON_N_PER_M, "min_predicted_downforce_n": C.MIN_PREDICTED_DOWNFORCE_N}
 
 
@@ -57,24 +65,39 @@ def git_tree_sha(commit: str) -> str:
     return subprocess.run(["git", "-C", str(ROOT), "rev-parse", f"{commit}^{{tree}}"], capture_output=True, text=True, check=True).stdout.strip()
 
 
-def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = True) -> None:
-    """The freeze binds every source file by hash and the whole source commit by its tree id; the inventory must be the frozen one and the exact plan."""
+def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = True, infra: Path = INFRA) -> None:
+    """The freeze binds every source file by hash, the rendered workers by re-rendering, the fixed budgets and the source commit by its tree id."""
     if not isinstance(freeze, dict) or freeze.get("kind") != FREEZE_KIND:
         raise ValueError("freeze kind differs")
-    for key in ("selected_delta",):
-        if freeze.get(key) is not None:
-            raise ValueError("selected_delta must stay unset")
-    if any(v is not False for v in freeze.get("qualification_flags", {}).values()) or not freeze.get("qualification_flags"):
-        raise ValueError("qualification flags must all be false")
+    if freeze.get("selected_delta") is not None or freeze.get("reinitialization") != "none":
+        raise ValueError("selected_delta must stay unset and reinitialization none")
+    _equal(freeze.get("qualification_flags"), {k: False for k in FLAGS}, "qualification flags")
     _equal(freeze.get("frozen_parameters"), FROZEN_PARAMETERS, "frozen parameters")
     inv_path = ROOT / EVIDENCE_REL / "inventory.json"
     if freeze.get("inventory_sha256") != sha256(inv_path) or inventory != jload(inv_path):
         raise ValueError("inventory differs from the frozen inventory")
+    proof = freeze.get("identity_free_check", {})
+    if proof.get("all_free") is not True or proof.get("owner") != "ramhachi888" or not freeze.get("parent_integration_commit"):
+        raise ValueError("authenticated identity-free check or parent integration commit is missing")
+    required = REQUIRED_FILES | {inventory["parent"]["raw_path"]} | {g["baseline_reference"]["forces_csv_path"] for g in inventory["grids"].values()} | {d["path"] for d in inventory["directions"].values()}
+    if not required <= set(freeze["file_hashes"]):
+        raise ValueError(f"the freeze omits required files: {sorted(required - set(freeze['file_hashes']))}")
     for rel, digest in freeze["file_hashes"].items():
         if not _is_sha(digest) or sha256(ROOT / rel) != digest:
             raise ValueError(f"frozen file differs: {rel}")
     if check_tree and git_tree_sha(freeze["source_commit"]) != freeze.get("source_tree_id"):
         raise ValueError("source commit tree differs from the frozen tree id")
+    for k, grid in KERNELS.items():
+        runtime = freeze["runtime"][k]
+        _equal({key: runtime.get(key) for key in RUNTIME_FIXED}, RUNTIME_FIXED, f"kernel {k} fixed runtime budgets")
+        _equal((runtime.get("kernel_id"), runtime.get("case_id")), (K.KERNEL_IDS[k], grid), f"kernel {k} identity")
+        runner = infra / f"kernel_lowdim04a_{k}/runner.py"
+        if sha256(runner) != runtime["runner_sha256"] or runner.read_text() != K.render(freeze["source_commit"], k):
+            raise ValueError(f"rendered worker {k} differs from the reviewed source")
+        if jload(runner.with_name("kernel-metadata.json")) != K.metadata(k) or sha256(runner.with_name("kernel-metadata.json")) != runtime["metadata_sha256"]:
+            raise ValueError(f"kernel {k} metadata differs")
+        if freeze["pins"][k] != K.pins(k):
+            raise ValueError(f"kernel {k} pin map differs from the current files")
     _equal([{k: r.get(k) for k in ("name", "kind", "direction", "step_mm", "sign")} for r in inventory["states"]], L.plan(), "state plan")
     names = [r["name"] for r in inventory["states"]]
     if inventory.get("kernels") != {"a": names, "b": names} or inventory.get("basis_order") != list(L.BASIS) or list(C.BASIS) != list(L.BASIS):
@@ -242,11 +265,19 @@ def analysis_report(states: dict, inventory: dict, freeze: dict) -> dict:
     cosines = {q: {"flow_24_vs_flow_32_at_parent": C.cosine_and_norm_ratio(mat[q][0], mat[q][1]), "flow_24_parent_vs_grid01_baseline": C.cosine_and_norm_ratio(g01[q]["flow_24"], mat[q][0]),
                    "flow_32_parent_vs_grid01_baseline": C.cosine_and_norm_ratio(g01[q]["flow_32"], mat[q][1])} for q in C.RESPONSES}
     prior = np.asarray(inventory["prior_robust_proposal"]["coefficient_vector"])
-    prior_cos = {f: C.cosine_and_norm_ratio(prior, solutions[f]["coefficient_vector"])["cosine"] for f in ("main_cross_grid", "robust_cross_grid")}
+    gram = np.array([[float(np.sum(directions[a].astype(np.float64) * directions[b].astype(np.float64))) for b in L.BASIS] for a in L.BASIS])
+
+    def spatial_cosine(u, v):
+        u, v = np.asarray(u, dtype=np.float64), np.asarray(v, dtype=np.float64)
+        den = float(np.sqrt((u @ gram @ u) * (v @ gram @ v)))
+        return float(u @ gram @ v / den) if den > 0 else None
+
+    prior_cos = {f: {"coefficient_space_cosine": C.cosine_and_norm_ratio(prior, solutions[f]["coefficient_vector"])["cosine"],
+                     "spatial_cosine_via_gram_matrix": spatial_cosine(prior, solutions[f]["coefficient_vector"])} for f in ("main_cross_grid", "robust_cross_grid")}
     even = {f"{g}|{q}|{d}": {"even_part_n": secants[g][q][d]["even_part_n"], "eta_even": secants[g][q][d]["eta_even"]} for g in C.GRIDS for q in C.RESPONSES for d in L.BASIS}
     return {"kind": "lowdim04a_stage_a_analysis", "verdict": verdict["verdict"], "integrity": {"pass": True, "failures": []}, "verdict_detail": verdict,
             "secants": secants, "unresolved_components": unresolved, "unresolved_count": len(unresolved), "component_comparisons": components,
-            "response_vector_comparisons": cosines, "proposal_cosine_to_prior_robust_direction": prior_cos, "even_parts_descriptive_not_used_in_solve": even,
+            "response_vector_comparisons": cosines, "cosine_to_prior_robust_direction": prior_cos, "even_parts_descriptive_not_used_in_solve": even,
             "solutions": solutions, "predictions_at_1p25mm": preds, "volume_projection": _volume_projection(inventory, solutions, preds),
             "state_forces_n": states, "hard_count": {r["name"]: r["hard_count"] for r in inventory["states"]},
             "frozen_parameters": FROZEN_PARAMETERS, "selected_delta": None, "reinitialization": "none", "shape_update_allowed": False,

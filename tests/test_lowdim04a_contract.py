@@ -63,8 +63,11 @@ def test_an_infeasible_model_is_not_found_not_incomplete():
 
 
 def test_main_passing_but_robust_failing_is_not_found():
-    lift = [[0.008, 0.0, 0.0, 0.0], [0.008, 0.0, 0.0, 0.0]]  # tiny slopes: the L1-robust lower bound (epsilon 0.012) cannot clear the floor
-    drag = [[0.0, 0.0, 0.0, -0.1], [0.0, 0.0, 0.0, -0.1]]
+    # slope 0.03 N/m on D0 only (max-norm 1 direction): raw prediction 0.03*1.25e-3 = 3.75e-5 N clears the 3e-5 floor, the L1-robust lower bound (0.03-0.012)*1.25e-3 = 2.25e-5 N does not
+    lift = [[0.03, 0.0, 0.0, 0.0], [0.03, 0.0, 0.0, 0.0]]
+    drag = [[-0.1, 0.0, 0.0, 0.0], [-0.1, 0.0, 0.0, 0.0]]
+    d = {n: np.zeros((2, 2, 2), np.float32) for n in C.BASIS}; d["D0_interface_offset"][0, 0, 0] = 1.0
     sol = C.solve(lift, drag)
-    v = C.verdict(sol, C.predictions(sol, lift, drag, _dirs()))
+    v = C.verdict(sol, C.predictions(sol, lift, drag, d))
     assert v["verdict"] == "LOCAL_FEASIBLE_CONE_NOT_FOUND"
+    assert v["reasons"] and all(r.startswith("robust_cross_grid") for r in v["reasons"]) and not any(r.startswith("main_cross_grid") for r in v["reasons"])

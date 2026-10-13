@@ -125,8 +125,9 @@ def test_unresolved_components_are_reported_and_never_make_the_analysis_incomple
     assert r["integrity"]["pass"] and "flow_32|downforce|P1_upstream_lobe" in r["unresolved_components"] and r["verdict"] in C.TERMINALS
 
 
-def test_end_to_end_replay_has_integrity_and_a_not_found_verdict_and_a_broken_input_is_incomplete(tmp_path):
+def test_end_to_end_replay_has_integrity_and_a_not_found_verdict_and_a_broken_input_is_incomplete(tmp_path, monkeypatch):
     f = freeze_for_replay()
+    monkeypatch.setattr(A, "validate_registration", lambda *a, **k: None)  # registration validation is covered by test_lowdim04a_inputs; this replay carries LOWDIM-03's runtime and pins
     r = A.analyze(replay(tmp_path / "x", "a"), replay(tmp_path / "x", "b"), f, INV)
     assert r["integrity"]["pass"] is True and r["verdict"] == "LOCAL_FEASIBLE_CONE_NOT_FOUND"  # identical states: every secant is zero, so there is no cone
     bad = A.analyze(tmp_path / "missing_a", tmp_path / "missing_b", f, INV)
