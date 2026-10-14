@@ -2051,3 +2051,7 @@ flow_24 alone is insufficient (5 of 9 retained states, correlated trials, get op
 ## #29 GEOM-01/02 (2026-10-15): closed, 12 of 13 gates pass on v17
 
 Complete v2 gate artifact on the v17 baseline and LOWDIM-03 parent; `near_zero_gradient_band` fails (thin-edge kinks plus genesis tie plateaus). Open follow-up for #28/#30: the gradient-floor rule decision. See the [record](issues/29_geom02_result_2026_10_14.md).
+
+## #28 SDF-02 (2026-10-15): REINIT04_NOT_BOUNDED_ON_PARENT, stays open off the critical path
+
+The registered operator inflates distance near the interface and changed the parent's surface topology; first OPT-01 contract excludes reinitialization. See the [record](issues/28_reinit04_result_2026_10_15.md).

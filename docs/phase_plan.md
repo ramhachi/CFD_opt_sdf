@@ -7441,3 +7441,9 @@ Physical solid width, void width, inter-component gap and the source ProblemSpec
 Every GEOM-01 gate is measured on the v17 baseline and the LOWDIM-03 parent against a registered research profile (lattice representability width/gap limits, not physical): 12 pass, `near_zero_gradient_band` fails on both as predicted
 ([record](issues/29_geom02_result_2026_10_14.md)). The failing nodes are mostly kinks of an accurate distance field at one-node-thick edges (63/106 baseline, 149/154 parent), which a reinitialization cannot remove. Next remains #28, re-scoped by this: reinitialization can bound Eikonal drift, zero-level and volume after updates,
 but the gradient-floor rule needs its own decision before #30 (keep it and change the representation, or a profile separating kinks from degeneracies). All flags false; `shape_update_allowed=false`.
+
+## #28 REINIT-04 (2026-10-15): registered Godunov2 operator NOT bounded on v17; first OPT-01 contract excludes reinitialization
+
+The unchanged operator failed on the LOWDIM-03 parent (displacement 0.65 edges, smoothed drift 6.65%, idempotence 0.45h, GEOM-02 distance property 0.012 → 0.122, surface integrity) and on the tie-bearing baseline
+([record](issues/28_reinit04_result_2026_10_15.md)). Decision (interpretation of the 2026-10-13 delegation): #30's first contract does not include reinitialization (its dependency is conditional); #28 stays open as off-critical-path research.
+Next: the gradient backend cluster (#23 → #24 → #25), which is #30's actual blocker. All flags false.
