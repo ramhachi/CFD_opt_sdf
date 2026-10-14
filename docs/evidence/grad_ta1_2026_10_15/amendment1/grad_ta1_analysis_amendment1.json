@@ -1,0 +1,476 @@
+{
+  "amendment": "amendment1: tau compared in Float32; the official registered result is the frozen analyzer's (GRAD_TA1_INCOMPLETE)",
+  "block_limit": 1e+30,
+  "blocked": {
+    "D0_interface_offset": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 7.493454544188364e+32,
+      "tan_max_u": 1.1125309104618371e+33
+    },
+    "D1_filtered_seed11": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 1.5482744887446194e+32,
+      "tan_max_u": 2.2986772793566973e+32
+    },
+    "D2_filtered_seed2026": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 5.587627574750129e+31,
+      "tan_max_u": 8.295777603902792e+31
+    },
+    "P1_upstream_lobe": {
+      "limit": 1e+30,
+      "onset_step": 700,
+      "reason": "tangent_non_finite_or_above_limit",
+      "t_u_l": 9.539809226989746,
+      "tan_argmax_p": "105;54;9",
+      "tan_argmax_u": "105;54;9;2",
+      "tan_max_p": 3.515050468876415e+31,
+      "tan_max_u": 5.218691461682759e+31
+    }
+  },
+  "claims": "a tie-averaged surrogate derivative of the implemented primal (values bit-identical in the preflight, within 1e-3 in the window mean), not the derivative of the implemented map at ties; flow_24, canonical v17, four registered directions, Re 80 only; not reverse/full-field qualification, not flow_32, not a production selection, not a step-usefulness result, no flag changes",
+  "grad03_verdict": null,
+  "kind": "grad_ta1_analysis",
+  "preflight": {
+    "arms": {
+      "quick": {
+        "lambda_type": "typeof(quick)",
+        "max_abs_tangent_p": 33.664616,
+        "max_abs_tangent_u": 25.051928,
+        "primal_finite": true,
+        "tangent_p_finite": true,
+        "tangent_u_finite": true
+      },
+      "quick_tie": {
+        "lambda_type": "WaterLily.QuickTie{Float32}",
+        "max_abs_tangent_p": 33.665268,
+        "max_abs_tangent_u": 25.052303,
+        "primal_finite": true,
+        "tangent_p_finite": true,
+        "tangent_u_finite": true
+      }
+    },
+    "pass": true,
+    "primal_p_bit_equal": true,
+    "primal_u_bit_equal": true,
+    "steps": 20,
+    "tangent_arms_identical": false,
+    "tangent_difference_note": "report only, never gated; exactly 0 would mean no tie within tau occurred in these 20 steps (then the preflight shows only routing, bit-equal primal and finiteness, not QuickTie's effect)",
+    "tangent_p_max_abs_difference_report_only": 0.34078574,
+    "tangent_u_max_abs_difference_report_only": 0.31797022,
+    "tangent_u_relative_difference_report_only": 0.012692445,
+    "tau": 9.999999747378752e-06
+  },
+  "qualification_flags": {
+    "fd_oracle": false,
+    "field_gradient": false,
+    "optimizer": false,
+    "reverse": false,
+    "shape_update_allowed": false,
+    "topology": false
+  },
+  "reverse": "untouched",
+  "rule": {
+    "absolute_noise_floor": "3.0 * SE per row",
+    "comparator": "dual_time (frozen_time reported)",
+    "primal_gates": {
+      "dual_window_mean_vs_plain_rel": 0.001,
+      "plain_vs_registered_baseline_v17_rel": 1e-06
+    },
+    "relative_error_tolerance": 0.25,
+    "source": "src/cfd_sdf/gradients/directional_comparison.py:218-234",
+    "tau": 1e-05
+  },
+  "runs": {
+    "D0_interface_offset": {
+      "blocked": {
+        "limit": 1e+30,
+        "onset_step": 700,
+        "reason": "tangent_non_finite_or_above_limit",
+        "t_u_l": 9.539809226989746,
+        "tan_argmax_p": "105;54;9",
+        "tan_argmax_u": "105;54;9;2",
+        "tan_max_p": 7.493454544188364e+32,
+        "tan_max_u": 1.1125309104618371e+33
+      },
+      "loop_seconds": 32.738527059555054,
+      "peak_vram_bytes": 308896984,
+      "status": "BLOCKED",
+      "steps": 700,
+      "tangent_history_every_100_steps": [
+        {
+          "elapsed_s": 21.429239988327026,
+          "step": 100.0,
+          "t_u_l": 1.2973636388778687,
+          "tan_argmax_p": "87;45;35",
+          "tan_argmax_u": "87;45;36;3",
+          "tan_max_p": 194.4630126953125,
+          "tan_max_u": 265.083251953125,
+          "vram_bytes": 248176864.0
+        },
+        {
+          "elapsed_s": 23.44888186454773,
+          "step": 200.0,
+          "t_u_l": 2.6696386337280273,
+          "tan_argmax_p": "59;37;21",
+          "tan_argmax_u": "59;48;21;1",
+          "tan_max_p": 27.92900276184082,
+          "tan_max_u": 21.094280242919922,
+          "vram_bytes": 255711944.0
+        },
+        {
+          "elapsed_s": 25.24903702735901,
+          "step": 300.0,
+          "t_u_l": 4.04412317276001,
+          "tan_argmax_p": "59;37;21",
+          "tan_argmax_u": "59;48;21;1",
+          "tan_max_p": 27.693023681640625,
+          "tan_max_u": 21.01715087890625,
+          "vram_bytes": 278532704.0
+        },
+        {
+          "elapsed_s": 27.585935831069946,
+          "step": 400.0,
+          "t_u_l": 5.418029308319092,
+          "tan_argmax_p": "92;32;4",
+          "tan_argmax_u": "92;32;5;3",
+          "tan_max_p": 6340146.5,
+          "tan_max_u": 9708228.0,
+          "vram_bytes": 308896984.0
+        },
+        {
+          "elapsed_s": 29.39038896560669,
+          "step": 500.0,
+          "t_u_l": 6.791955947875977,
+          "tan_argmax_p": "105;51;10",
+          "tan_argmax_u": "105;52;10;2",
+          "tan_max_p": 1029245566976.0,
+          "tan_max_u": 1514544562176.0,
+          "vram_bytes": 308896984.0
+        },
+        {
+          "elapsed_s": 31.206135034561157,
+          "step": 600.0,
+          "t_u_l": 8.16588306427002,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 1.4809055768818232e+21,
+          "tan_max_u": 2.391524836549348e+21,
+          "vram_bytes": 308896984.0
+        },
+        {
+          "elapsed_s": 33.0132269859314,
+          "step": 700.0,
+          "t_u_l": 9.539809226989746,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 7.493454544188364e+32,
+          "tan_max_u": 1.1125309104618371e+33,
+          "vram_bytes": 308896984.0
+        }
+      ],
+      "tangent_max_over_run": 1.1125309104618371e+33,
+      "total_seconds": 33.019781827926636
+    },
+    "D1_filtered_seed11": {
+      "blocked": {
+        "limit": 1e+30,
+        "onset_step": 700,
+        "reason": "tangent_non_finite_or_above_limit",
+        "t_u_l": 9.539809226989746,
+        "tan_argmax_p": "105;54;9",
+        "tan_argmax_u": "105;54;9;2",
+        "tan_max_p": 1.5482744887446194e+32,
+        "tan_max_u": 2.2986772793566973e+32
+      },
+      "loop_seconds": 14.64625883102417,
+      "peak_vram_bytes": 256712504,
+      "status": "BLOCKED",
+      "steps": 700,
+      "tangent_history_every_100_steps": [
+        {
+          "elapsed_s": 3.7443230152130127,
+          "step": 100.0,
+          "t_u_l": 1.2973636388778687,
+          "tan_argmax_p": "87;45;35",
+          "tan_argmax_u": "87;45;36;3",
+          "tan_max_p": 32.556419372558594,
+          "tan_max_u": 47.69459533691406,
+          "vram_bytes": 165801904.0
+        },
+        {
+          "elapsed_s": 5.582169055938721,
+          "step": 200.0,
+          "t_u_l": 2.6696386337280273,
+          "tan_argmax_p": "59;34;21",
+          "tan_argmax_u": "59;34;21;1",
+          "tan_max_p": 26.41492462158203,
+          "tan_max_u": 20.1053466796875,
+          "vram_bytes": 195845952.0
+        },
+        {
+          "elapsed_s": 7.414653062820435,
+          "step": 300.0,
+          "t_u_l": 4.04412317276001,
+          "tan_argmax_p": "59;34;21",
+          "tan_argmax_u": "69;17;18;3",
+          "tan_max_p": 26.31255340576172,
+          "tan_max_u": 28.30614471435547,
+          "vram_bytes": 226338248.0
+        },
+        {
+          "elapsed_s": 9.323523044586182,
+          "step": 400.0,
+          "t_u_l": 5.418029308319092,
+          "tan_argmax_p": "92;32;4",
+          "tan_argmax_u": "92;32;5;3",
+          "tan_max_p": 1302785.375,
+          "tan_max_u": 1994864.375,
+          "vram_bytes": 256702528.0
+        },
+        {
+          "elapsed_s": 11.146674871444702,
+          "step": 500.0,
+          "t_u_l": 6.791955947875977,
+          "tan_argmax_p": "105;51;10",
+          "tan_argmax_u": "105;52;10;2",
+          "tan_max_p": 212660994048.0,
+          "tan_max_u": 312933122048.0,
+          "vram_bytes": 256702528.0
+        },
+        {
+          "elapsed_s": 12.974799871444702,
+          "step": 600.0,
+          "t_u_l": 8.16588306427002,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 3.0598039928931824e+20,
+          "tan_max_u": 4.941302364092309e+20,
+          "vram_bytes": 256702528.0
+        },
+        {
+          "elapsed_s": 14.878390073776245,
+          "step": 700.0,
+          "t_u_l": 9.539809226989746,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 1.5482744887446194e+32,
+          "tan_max_u": 2.2986772793566973e+32,
+          "vram_bytes": 256712504.0
+        }
+      ],
+      "tangent_max_over_run": 2.2986772793566973e+32,
+      "total_seconds": 14.878548860549927
+    },
+    "D2_filtered_seed2026": {
+      "blocked": {
+        "limit": 1e+30,
+        "onset_step": 700,
+        "reason": "tangent_non_finite_or_above_limit",
+        "t_u_l": 9.539809226989746,
+        "tan_argmax_p": "105;54;9",
+        "tan_argmax_u": "105;54;9;2",
+        "tan_max_p": 5.587627574750129e+31,
+        "tan_max_u": 8.295777603902792e+31
+      },
+      "loop_seconds": 14.648816108703613,
+      "peak_vram_bytes": 256701792,
+      "status": "BLOCKED",
+      "steps": 700,
+      "tangent_history_every_100_steps": [
+        {
+          "elapsed_s": 3.754995107650757,
+          "step": 100.0,
+          "t_u_l": 1.2973636388778687,
+          "tan_argmax_p": "59;44;21",
+          "tan_argmax_u": "59;45;24;1",
+          "tan_max_p": 13.122260093688965,
+          "tan_max_u": 12.115846633911133,
+          "vram_bytes": 165801904.0
+        },
+        {
+          "elapsed_s": 5.595398187637329,
+          "step": 200.0,
+          "t_u_l": 2.6696386337280273,
+          "tan_argmax_p": "59;44;21",
+          "tan_argmax_u": "59;45;24;1",
+          "tan_max_p": 13.045732498168945,
+          "tan_max_u": 12.112312316894531,
+          "vram_bytes": 195845216.0
+        },
+        {
+          "elapsed_s": 7.430657148361206,
+          "step": 300.0,
+          "t_u_l": 4.04412317276001,
+          "tan_argmax_p": "59;44;21",
+          "tan_argmax_u": "59;45;24;1",
+          "tan_max_p": 12.91685962677002,
+          "tan_max_u": 12.128186225891113,
+          "vram_bytes": 226337512.0
+        },
+        {
+          "elapsed_s": 9.339998006820679,
+          "step": 400.0,
+          "t_u_l": 5.418029308319092,
+          "tan_argmax_p": "92;32;4",
+          "tan_argmax_u": "92;32;5;3",
+          "tan_max_p": 473626.8125,
+          "tan_max_u": 725232.25,
+          "vram_bytes": 256701792.0
+        },
+        {
+          "elapsed_s": 11.167062044143677,
+          "step": 500.0,
+          "t_u_l": 6.791955947875977,
+          "tan_argmax_p": "105;51;10",
+          "tan_argmax_u": "105;52;10;2",
+          "tan_max_p": 76747390976.0,
+          "tan_max_u": 112934412288.0,
+          "vram_bytes": 256701792.0
+        },
+        {
+          "elapsed_s": 13.00150203704834,
+          "step": 600.0,
+          "t_u_l": 8.16588306427002,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 1.1042640688749688e+20,
+          "tan_max_u": 1.7832840112629193e+20,
+          "vram_bytes": 256701792.0
+        },
+        {
+          "elapsed_s": 14.879722118377686,
+          "step": 700.0,
+          "t_u_l": 9.539809226989746,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 5.587627574750129e+31,
+          "tan_max_u": 8.295777603902792e+31,
+          "vram_bytes": 256701792.0
+        }
+      ],
+      "tangent_max_over_run": 8.295777603902792e+31,
+      "total_seconds": 14.879914999008179
+    },
+    "P1_upstream_lobe": {
+      "blocked": {
+        "limit": 1e+30,
+        "onset_step": 700,
+        "reason": "tangent_non_finite_or_above_limit",
+        "t_u_l": 9.539809226989746,
+        "tan_argmax_p": "105;54;9",
+        "tan_argmax_u": "105;54;9;2",
+        "tan_max_p": 3.515050468876415e+31,
+        "tan_max_u": 5.218691461682759e+31
+      },
+      "loop_seconds": 14.560356855392456,
+      "peak_vram_bytes": 256712504,
+      "status": "BLOCKED",
+      "steps": 700,
+      "tangent_history_every_100_steps": [
+        {
+          "elapsed_s": 3.7082278728485107,
+          "step": 100.0,
+          "t_u_l": 1.2973636388778687,
+          "tan_argmax_p": "87;45;35",
+          "tan_argmax_u": "87;45;36;3",
+          "tan_max_p": 54.95801544189453,
+          "tan_max_u": 74.8427505493164,
+          "vram_bytes": 165929920.0
+        },
+        {
+          "elapsed_s": 5.581591844558716,
+          "step": 200.0,
+          "t_u_l": 2.6696386337280273,
+          "tan_argmax_p": "94;36;45",
+          "tan_argmax_u": "68;40;27;1",
+          "tan_max_p": 5.298232555389404,
+          "tan_max_u": 6.034206867218018,
+          "vram_bytes": 165929920.0
+        },
+        {
+          "elapsed_s": 7.397494792938232,
+          "step": 300.0,
+          "t_u_l": 4.04412317276001,
+          "tan_argmax_p": "69;17;18",
+          "tan_argmax_u": "69;17;18;3",
+          "tan_max_p": 13.913456916809082,
+          "tan_max_u": 19.102649688720703,
+          "vram_bytes": 196099608.0
+        },
+        {
+          "elapsed_s": 9.289667844772339,
+          "step": 400.0,
+          "t_u_l": 5.418029308319092,
+          "tan_argmax_p": "92;32;4",
+          "tan_argmax_u": "92;32;5;3",
+          "tan_max_p": 296286.71875,
+          "tan_max_u": 453683.25,
+          "vram_bytes": 226463888.0
+        },
+        {
+          "elapsed_s": 11.098686933517456,
+          "step": 500.0,
+          "t_u_l": 6.791955947875977,
+          "tan_argmax_p": "105;51;10",
+          "tan_argmax_u": "105;52;10;2",
+          "tan_max_p": 48280358912.0,
+          "tan_max_u": 71045095424.0,
+          "vram_bytes": 226463888.0
+        },
+        {
+          "elapsed_s": 12.924162864685059,
+          "step": 600.0,
+          "t_u_l": 8.16588306427002,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 6.946674442065517e+19,
+          "tan_max_u": 1.1218243251017141e+20,
+          "vram_bytes": 226463888.0
+        },
+        {
+          "elapsed_s": 14.795841932296753,
+          "step": 700.0,
+          "t_u_l": 9.539809226989746,
+          "tan_argmax_p": "105;54;9",
+          "tan_argmax_u": "105;54;9;2",
+          "tan_max_p": 3.515050468876415e+31,
+          "tan_max_u": 5.218691461682759e+31,
+          "vram_bytes": 256712504.0
+        }
+      ],
+      "tangent_max_over_run": 5.218691461682759e+31,
+      "total_seconds": 14.79600977897644
+    },
+    "plain": {
+      "blocked": null,
+      "loop_seconds": 106.64248299598694,
+      "peak_vram_bytes": 82919208,
+      "status": "COMPLETE",
+      "steps": 8740,
+      "total_seconds": 138.85797095298767
+    }
+  },
+  "selected_delta": {
+    "absolute_noise_floor": "3 SE per row",
+    "relative_error_tolerance": 0.25,
+    "scope": "GRAD-TA1 contract only"
+  },
+  "source_commit": "28d2c012b4a61cb02384b0a75ba6c5a92ec68b94",
+  "verdict": "GRAD_TA1_BLOCKED"
+}

@@ -2055,3 +2055,7 @@ Complete v2 gate artifact on the v17 baseline and LOWDIM-03 parent; `near_zero_g
 ## #28 SDF-02 (2026-10-15): REINIT04_NOT_BOUNDED_ON_PARENT, stays open off the critical path
 
 The registered operator inflates distance near the interface and changed the parent's surface topology; first OPT-01 contract excludes reinitialization. See the [record](issues/28_reinit04_result_2026_10_15.md).
+
+## #23 GRAD-03 (2026-10-15): GRAD-TA1 tie-averaged forward-AD BLOCKED at step 700
+
+A second forward-AD convention fails with a different, direction-independent growing tangent mode. See the [record](issues/23_grad_ta1_result_2026_10_15.md).
