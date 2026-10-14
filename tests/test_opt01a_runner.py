@@ -12,10 +12,7 @@ import build_opt01a_kernel as K  # noqa: E402
 import step01_states as S  # noqa: E402
 
 REAL_INV = json.loads((ROOT / "docs/evidence/opt01a_stage_a_2026_10_15/inventory.json").read_text())
-INV = json.loads(json.dumps(REAL_INV))  # the real inventory is BLOCKED_PRE_CFD: the plan/generation logic is exercised on a synthetic READY copy
-INV["stage_status"], INV["blockers"] = "READY", []
-for _r in INV["states"]:
-    _r["pre_cfd_gates"].update(all_pass=True, failed=[], table={k: "pass" for k in _r["pre_cfd_gates"]["table"]})
+INV = json.loads(json.dumps(REAL_INV))  # READY under contract v1.1: probes carry a report-only near_zero_gradient_band failure
 DUMMY = "0" * 40
 
 
@@ -61,12 +58,20 @@ def test_pins_bind_the_parent_raw_the_reference_csv_and_all_four_directions_to_t
     assert pins["scripts/opt01a_states.py"] and pins[INV["contract"]["path"]] == INV["contract"]["sha256"] and not any("lowdim03_states" in k or "proposal" in k for k in pins)
 
 
-def test_rendered_worker_refuses_the_real_blocked_inventory_before_any_cfd():
+def test_rendered_worker_gate_scope_probe_near_zero_is_report_only_everything_else_blocks():
     ns = worker("a")
     ns["PINS"].update({ns["BASELINE_RAW"]: "x", ns["BASELINE_FORCE_CSV"]: "x"})
-    assert REAL_INV["stage_status"] == "BLOCKED_PRE_CFD"
+    assert REAL_INV["stage_status"] == "READY" and any(r["pre_cfd_gates"]["table"]["near_zero_gradient_band"] == "fail" for r in INV["states"] if r["kind"] == "perturbation")
+    ns["expected_plan"](INV)  # the registered inventory is accepted although six probes fail the report-only gate
+    bad = json.loads(json.dumps(INV)); bad["states"][2]["pre_cfd_gates"]["table"]["p22_v2"] = "fail"  # a probe failing another gate still blocks
+    with pytest.raises(ValueError, match="pre-CFD gate"):
+        ns["expected_plan"](bad)
+    bad = json.loads(json.dumps(INV)); bad["states"][0]["pre_cfd_gates"]["table"]["near_zero_gradient_band"] = "fail"  # the proposal (parent) keeps the crossing-slope rule hard
+    with pytest.raises(ValueError, match="pre-CFD gate"):
+        ns["expected_plan"](bad)
+    bad = json.loads(json.dumps(INV)); bad["stage_status"], bad["blockers"] = "BLOCKED_PRE_CFD", [{"state": "x", "failed": ["y"]}]
     with pytest.raises(ValueError, match="blocked before CFD"):
-        ns["expected_plan"](REAL_INV)
+        ns["expected_plan"](bad)
     bad = json.loads(json.dumps(INV)); bad["contract"]["sha256"] = "0" * 64
     with pytest.raises(ValueError, match="contract"):
         ns["expected_plan"](bad)

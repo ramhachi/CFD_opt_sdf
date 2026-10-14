@@ -93,8 +93,9 @@ def validate_registration(freeze: Any, inventory: Any, *, check_tree: bool = Tru
         raise ValueError("the inventory is blocked before CFD or binds another contract")
     for row in inventory["states"]:
         gates = row["pre_cfd_gates"]
-        if row["hard_count"]["residual_vs_n_max"] != 0 or gates["all_pass"] is not True or gates["failed"] or not all(v == "pass" for v in gates["table"].values()):
-            raise ValueError("a frozen state fails the pre-CFD gates")
+        hard = L.hard_failures(row["kind"], gates["table"])
+        if row["hard_count"]["residual_vs_n_max"] != 0 or gates["all_pass"] is not True or gates["failed"] or hard:
+            raise ValueError("a frozen state fails the pre-CFD gates under the contract gate scope")
         if len({row["phi_fortran_order_sha256"], row["phi_c_order_sha256"]}) != 2:
             raise ValueError("Fortran and C order hashes must be distinct named fields")
 

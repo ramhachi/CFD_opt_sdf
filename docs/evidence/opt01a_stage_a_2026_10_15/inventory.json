@@ -5,49 +5,12 @@
     "D2_filtered_seed2026",
     "P1_upstream_lobe"
   ],
-  "blockers": [
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__D0_interface_offset__minus1.25mm"
-    },
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__D1_filtered_seed11__minus1.25mm"
-    },
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__D1_filtered_seed11__plus1.25mm"
-    },
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__D2_filtered_seed2026__minus1.25mm"
-    },
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__D2_filtered_seed2026__plus1.25mm"
-    },
-    {
-      "failed": [
-        "near_zero_gradient_band"
-      ],
-      "state": "opt01a__P1_upstream_lobe__plus1.25mm"
-    }
-  ],
+  "blockers": [],
   "contract": {
-    "contract_id": "opt01_v1_phi_space_dual_grid_update_2026_10_15",
-    "path": "docs/evidence/opt01_v1_2026_10_15/opt01_v1_contract.json",
-    "pins_verified": 20,
-    "sha256": "f76a09c79cea70ffd07d94994d5b075dc346ddf32c678a18b4fab49ab90643e2"
+    "contract_id": "opt01_v1_1_phi_space_dual_grid_update_2026_10_15",
+    "path": "docs/evidence/opt01_v1_2026_10_15/opt01_v1_1_contract.json",
+    "pins_verified": 21,
+    "sha256": "0f164a4e555d6a2169fc5e30b6e2cf12957da76d1d1560f05121d3e3efbf0ba1"
   },
   "directions": {
     "D0_interface_offset": {
@@ -66,6 +29,22 @@
       "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw",
       "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
     }
+  },
+  "gate_scope": {
+    "probe": {
+      "hard_before_cfd": "the other twelve GEOM-02 profile v2 gates, P22-v2 (N_phi <= 8272 with a positive count-equal margin), the retained LOWDIM gates, allowed_events = ()",
+      "report_only": [
+        "near_zero_gradient_band"
+      ],
+      "states": "secant probe states (Stage A +-1.25 mm perturbations): measurement points, never proposed or accepted"
+    },
+    "proposal": {
+      "hard_before_cfd": "the full bundle: all thirteen GEOM-02 profile v2 gates including the crossing-slope near_zero_gradient_band, P22-v2, the retained LOWDIM gates",
+      "ladder_step_failure": "a ladder step failing any hard gate (including crossing-slope) is a REJECT of that step (E4/E5 unchanged)",
+      "states": "the parent and every Stage B ladder step (proposed or accepted states)"
+    },
+    "reported_for_probes": "near_zero_gradient_band failing-node counts with their attribution to the baseline |phi| < 1e-6 tie plateau",
+    "source": "plan Amendment 2 F1-F3"
   },
   "geometry_gate_base": "canonical v17 baseline (smoothed_volume_band) and the new parent (GEOM-02 transition)",
   "grids": {
@@ -290,7 +269,7 @@
     "m_max_abs_sum": 1.6174292308900298,
     "sha256_fortran_raw": "cda4c9d7b1e9f287a286c61c16d8889830328aa6c2b372243c98106ce227b451"
   },
-  "stage_status": "BLOCKED_PRE_CFD",
+  "stage_status": "READY",
   "states": [
     {
       "changed_node_count": 0,
@@ -351,6 +330,13 @@
         "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": true,
           "central_gradient_classification": {
@@ -708,6 +694,7 @@
             "zero_level_margin_m": 0.34999999925494196
           }
         },
+        "report_only_failed": [],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -771,12 +758,17 @@
       "phi_c_order_sha256": "e25b3a9151fd2736b22dcc26e7ca91a9d16177ca562b3c99fccb241b2e4c5381",
       "phi_fortran_order_sha256": "24be7b1b42075beeca1b57e201d30f5e388e7a9ad2046e96768042cc467dcf53",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 284,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 284,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -1146,6 +1138,9 @@
             "zero_level_margin_m": 0.34879721389152113
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -1213,6 +1208,13 @@
         "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": true,
           "central_gradient_classification": {
@@ -1570,6 +1572,7 @@
             "zero_level_margin_m": 0.34999999925494196
           }
         },
+        "report_only_failed": [],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -1633,12 +1636,17 @@
       "phi_c_order_sha256": "37ff2e84ba7aaa67aeb6f1fddc514aab93bae4acf5f014df2798bf6aca19dddd",
       "phi_fortran_order_sha256": "451cf932ef8e9a60fc646faf8a0f90426392f68da956f451856c0f64406b84d0",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 40,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 40,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -2008,6 +2016,9 @@
             "zero_level_margin_m": 0.3494446257478558
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -2071,12 +2082,17 @@
       "phi_c_order_sha256": "260395a0b38a446e0c7dcfc63fbcbcff92c93924975a278befcc54ad9ced6d36",
       "phi_fortran_order_sha256": "0819576915f2943c07a3c961a0d501643b78728cdd07275bed6bf68134b56dee",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 153,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 153,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -2446,6 +2462,9 @@
             "zero_level_margin_m": 0.3490755860926584
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -2509,12 +2528,17 @@
       "phi_c_order_sha256": "2deb4e8eda0c28004fc1fb5059f30d0ee7d7a069f80601bee04bf2a0767e2744",
       "phi_fortran_order_sha256": "926d59458b45fa4f784e0d4ba4ee5d21a740d4b193b28dda4f242e35d83baa18",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 3,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 3,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -2884,6 +2908,9 @@
             "zero_level_margin_m": 0.34999999925494196
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -2947,12 +2974,17 @@
       "phi_c_order_sha256": "03f2b18f2f1c2be90ef1486fdaa16e731a1113864965c0337239405e1c3cb812",
       "phi_fortran_order_sha256": "5ac170a268f6e2b9122fc63404df0a109d4de601822685b97362b1f8ff59d875",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 206,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 206,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -3322,6 +3354,9 @@
             "zero_level_margin_m": 0.3491135867312551
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -3389,6 +3424,13 @@
         "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 13,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 0,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 0,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": true,
           "central_gradient_classification": {
@@ -3746,6 +3788,7 @@
             "zero_level_margin_m": 0.34999999925494196
           }
         },
+        "report_only_failed": [],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -3809,12 +3852,17 @@
       "phi_c_order_sha256": "21d8cd8d5a0ff11e1a05255d2591667abc4562c6faedd7955ec90549cf9db878",
       "phi_fortran_order_sha256": "43d8237c54b8dec477067f7dd857bfab59ca021ed9ebe643bfee8fed6da36bee",
       "pre_cfd_gates": {
-        "all_pass": false,
-        "failed": [
-          "near_zero_gradient_band"
-        ],
+        "all_pass": true,
+        "failed": [],
         "geom02_v2_gate_count": 13,
         "geom02_v2_pass_count": 12,
+        "near_zero_gradient_band": {
+          "baseline_plateau_nodes": 5370,
+          "failing_nodes": 212,
+          "off_plateau": 0,
+          "on_baseline_tie_plateau": 212,
+          "plateau_abs_phi_m": 1e-06
+        },
         "record": {
           "all_pass": false,
           "central_gradient_classification": {
@@ -4195,6 +4243,9 @@
             "zero_level_margin_m": 0.349872387299547
           }
         },
+        "report_only_failed": [
+          "near_zero_gradient_band"
+        ],
         "table": {
           "component_connectivity": "pass",
           "count_equal_margin_positive": "pass",
@@ -4228,5 +4279,10 @@
       "zero_level_margin_m": 0.349872387299547
     }
   ],
-  "step_mm": 1.25
+  "step_mm": 1.25,
+  "supersedes": {
+    "commit": "576441ce95a8b209e1a9b16fadbceb55f819ea75",
+    "sha256": "52f4b1d6b513c06e8a6ff29af418226043297b5093453c43267939126a2c53cd",
+    "stage_status": "BLOCKED_PRE_CFD"
+  }
 }

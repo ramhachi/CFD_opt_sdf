@@ -1,0 +1,319 @@
+{
+ "D1_backend": {
+  "no_gradient_claim": "secants are finite-step responses, not derivatives; sdf_gradient_qualified stays false; #23, #24, #25 stay open",
+  "open_questions": [
+   "secants vs derivatives",
+   "behaviour outside span(4)",
+   "the negative even parts of unknown cause"
+  ],
+  "supersedes": {
+   "document": "docs/phase_plan.md",
+   "scope": "OPT-01 v1 only; #25 stays open for any high-dimensional backend, FD stays verification-only beyond 8 directions",
+   "sentences": [
+    "#30 (OPT-01) still depends on #25 and #26 to #29: there is no separate \"first accepted update\" gate before them, and the LOWDIM-03/04 parent remains an experimental state under false flags.",
+    "No further LOWDIM cycle is planned (exit rule recorded in the LOWDIM-04 Stage B entry)."
+   ]
+  },
+  "text": "The first OPT-01 step's update direction is the LOWDIM-04 L1-robust cone solution on dual-grid centered phi-space secants (+-1.25 mm) of the frozen 4-direction basis (D0, D1, D2, P1; hand-picked, not rule-selected): a subspace step, cost 2k+1 runs per grid. The 8-direction cap is a budget, not a justification."
+ },
+ "D3_update": {
+  "accept": "strictly more than 3e-5 N downforce gain and drag change <= 0 on both grids, plus every gate above",
+  "constraints": {
+   "drag": "computed drag change <= 0 on both grids; flow_32 changes under 3e-5 N flagged 'small'",
+   "geom02_gate_profile_v2": "proposal states: all 13 gates hard; probe states: twelve hard, near_zero_gradient_band report-only (gate_scope); allowed_events = (), no reinitialization",
+   "p22_v2": "N_phi <= 8272, held by sign-pattern invariance; the count-equal margin is recomputed at each parent and every step must stay inside it",
+   "retained_lowdim_gates": {
+    "clearance": "zero_level_margin_m >= 0.15",
+    "smoothed_volume_band": "|V_eps/V_eps(v17 baseline) - 1| <= 0.10"
+   }
+  },
+  "direction": "L1-robust cone solver (code hashes pinned) on dual-grid centered secants at +-1.25 mm over the pinned basis",
+  "gate_scope": {
+   "probe": {
+    "hard_before_cfd": "the other twelve GEOM-02 profile v2 gates, P22-v2 (N_phi <= 8272 with a positive count-equal margin), the retained LOWDIM gates, allowed_events = ()",
+    "report_only": [
+     "near_zero_gradient_band"
+    ],
+    "states": "secant probe states (Stage A +-1.25 mm perturbations): measurement points, never proposed or accepted"
+   },
+   "proposal": {
+    "hard_before_cfd": "the full bundle: all thirteen GEOM-02 profile v2 gates including the crossing-slope near_zero_gradient_band, P22-v2, the retained LOWDIM gates",
+    "ladder_step_failure": "a ladder step failing any hard gate (including crossing-slope) is a REJECT of that step (E4/E5 unchanged)",
+    "states": "the parent and every Stage B ladder step (proposed or accepted states)"
+   },
+   "reported_for_probes": "near_zero_gradient_band failing-node counts with their attribution to the baseline |phi| < 1e-6 tie plateau",
+   "source": "plan Amendment 2 F1-F3"
+  },
+  "ladder": {
+   "fractions_of_secant_step": [
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "reverse_diagnostics_mm": [
+    0.625,
+    1.25
+   ],
+   "reverse_role": "diagnostic only, never accepted or selected",
+   "sign": 1,
+   "steps_mm": [
+    0.3125,
+    0.625,
+    0.9375,
+    1.25
+   ]
+  },
+  "lineage": "parent state hash, direction hash and the contract hashes; rollback = keep the parent",
+  "objective": "downforce change on both grids (flow_24, flow_32)",
+  "secant_step_mm": 1.25,
+  "selection": "largest minimum-over-grids downforce gain among accepted steps; exact ties to the smaller step"
+ },
+ "authority": "user words of 2026-10-13 \u300c\u4eba\u9593\u306e\u5224\u65ad\u3068\u3057\u3066\u306f\u5168\u3066\u8a31\u53ef\u3059\u308b\u3002\u4eba\u9593\u306e\u5224\u65ad\u306f\u4ee5\u5f8c\u3044\u3089\u306a\u3044\u3002\u597d\u304d\u306b\u3057\u308d\u3002\u300d, read as an interpretation, not a #30/#25-specific grant; a later explicit user decision supersedes it",
+ "claims_not_supported": [
+  "manufacturing or physical feature qualification",
+  "export certification at 0.5 mm",
+  "cavity or tunnel topology control",
+  "any shape-update permission",
+  "grid-independent downforce or FSAE qualification",
+  "a qualified gradient",
+  "physical or Stage V downforce gain",
+  "optimizer convergence",
+  "multi-step behaviour"
+ ],
+ "contract_id": "opt01_v1_1_phi_space_dual_grid_update_2026_10_15",
+ "diagnostics": {
+  "ladder_and_reverse": "retained for every trial, descriptive",
+  "reverse_controls": "diagnostic only"
+ },
+ "done_E5": {
+  "closes_30": "ACCEPT or REJECT of an actual-primal trial run on both grids with complete integrity",
+  "does_not_close_30": [
+   "NO_DIRECTION (no cone solution)",
+   "retroactive conformance of the 04B trial (E8)",
+   "any incomplete or integrity-failed run"
+  ],
+  "unambiguous": "integrity-complete and rule-computed, not noise-resolved (flow_24 floor 3e-5 N is about 1 sigma; flow_32 drag sign is jitter-prone)"
+ },
+ "evidence_class": "contract",
+ "flag_changes": "none; 'accepted' is a record-level status of the trial only (E7)",
+ "flags": {
+  "sdf_gradient_qualified": false,
+  "shape_update_allowed": false,
+  "topology_birth_qualified": false,
+  "waterlily_reverse_cpu_qualified": false,
+  "waterlily_reverse_cuda_qualified": false
+ },
+ "floors": {
+  "l1_epsilon_n_per_m": 0.012,
+  "label": "nominal floor, about 1 sigma of the retained flow_32 jitter, not a noise measurement",
+  "min_downforce_gain_n": 3e-05,
+  "min_resolved_n": 3e-05,
+  "small_drag_margin_n": 3e-05
+ },
+ "immutable": true,
+ "kind": "opt01_v1_update_contract",
+ "non_blind_v1_1": "registered after the Stage A pre-CFD result was seen (commit 576441c: six of the eight probe states fail near_zero_gradient_band, every failing node a baseline |phi| < 1e-6 tie-plateau node per the planner's check); the scope change F1 is therefore non-blind, disclosed in plan Amendment 2; the profile and every threshold are unchanged",
+ "pins": {
+  "basis_order": [
+   "D0_interface_offset",
+   "D1_filtered_seed11",
+   "D2_filtered_seed2026",
+   "P1_upstream_lobe"
+  ],
+  "basis_raw_files": {
+   "D0_interface_offset": {
+    "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D0_interface_offset.dir_f4_fortran.raw",
+    "sha256_fortran_raw": "d0af58bdc2bff55226ff911204ef42d05a6da4a4b52ec4c4521a09141fbf2549"
+   },
+   "D1_filtered_seed11": {
+    "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D1_filtered_seed11.dir_f4_fortran.raw",
+    "sha256_fortran_raw": "96fe6e62c5fcb7ad0108dd64d6fac68cc488ee49deb188be742530f828037a87"
+   },
+   "D2_filtered_seed2026": {
+    "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/D2_filtered_seed2026.dir_f4_fortran.raw",
+    "sha256_fortran_raw": "2a22eb09407a14755f495fa07d4df8dee2d4632db41a0b75d1bf744fd3d1d5de"
+   },
+   "P1_upstream_lobe": {
+    "path": "docs/evidence/grad03_gpu_dual_spike_2026_10_08/inputs/P1_upstream_lobe.dir_f4_fortran.raw",
+    "sha256_fortran_raw": "24cc06aeb18e2a5729e560636f13ce78f8f19746268699783e8498921aec5dcc"
+   }
+  },
+  "cone_solver_code": {
+   "scripts/lowdim04a_contract.py": {
+    "path": "scripts/lowdim04a_contract.py",
+    "sha256": "10634ce33289199c43834971efb4ccf197ce4e8e3e4fb4ac86f21f82c2e454be"
+   },
+   "scripts/lowdim04b_contract.py": {
+    "path": "scripts/lowdim04b_contract.py",
+    "sha256": "e0368c585db208f7466059b4a66a7c3c4648a687b104db520e1f6cfbc9363b6b"
+   },
+   "src/cfd_sdf/grid01_contract.py": {
+    "path": "src/cfd_sdf/grid01_contract.py",
+    "sha256": "6d710be48014d66d31881bbfd8e18f8a7cb5af94bda325d99cd86f9bd739d9f0"
+   },
+   "src/cfd_sdf/lowdim03_contract.py": {
+    "path": "src/cfd_sdf/lowdim03_contract.py",
+    "sha256": "acf3a7db61bf90f4e3d4eebe07b2a19119f009d0d5fddabdff571de8c38f4d20"
+   }
+  },
+  "dual_grid_kernels": {
+   "flow_24": {
+    "job": {
+     "path": "scripts/waterlily_xfid_candidate_c_job.jl",
+     "sha256": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447"
+    },
+    "kernel": "a",
+    "measurement": {
+     "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+     "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+     "case": {
+      "case_id": "flow_24",
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "flow_dims": [
+       150,
+       72,
+       54
+      ],
+      "flow_spacing_m": 0.03333333333333333,
+      "freestream_mps": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+      "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 24.0,
+      "solver_time_unit_s": 0.03333333333333333,
+      "solver_viscosity": 0.3
+     },
+     "case_id": "flow_24",
+     "force_unit": "N",
+     "kernel_execution_allowance_s": 10800,
+     "per_state_timeout_s": 900,
+     "qualification_claim": "bounded LOWDIM-04 Stage B two-grid actual-primal ladder; no qualification",
+     "solver_wall_time_cap_s": 6300,
+     "time_window_t_u_l": [
+      80.0,
+      120.0
+     ]
+    }
+   },
+   "flow_32": {
+    "job": {
+     "path": "scripts/waterlily_lowdim02_flow32_job.jl",
+     "sha256": "418796ce258e8f9e9945332d18869104a53f74000a96b609d4f4b42c82a21683"
+    },
+    "kernel": "b",
+    "measurement": {
+     "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+     "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+     "case": {
+      "case_id": "flow_32",
+      "density_kg_m3": 1.0,
+      "dynamic_viscosity_pa_s": 0.01,
+      "flow_dims": [
+       200,
+       96,
+       72
+      ],
+      "flow_spacing_m": 0.025,
+      "freestream_mps": [
+       1.0,
+       0.0,
+       0.0
+      ],
+      "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+      "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+      "reference_area_m2": 0.64,
+      "reference_length_m": 0.8,
+      "reynolds": 80.0,
+      "solver_length": 32.0,
+      "solver_time_unit_s": 0.025,
+      "solver_viscosity": 0.4
+     },
+     "case_id": "flow_32",
+     "force_unit": "N",
+     "kernel_execution_allowance_s": 10800,
+     "per_state_timeout_s": 900,
+     "qualification_claim": "bounded LOWDIM-04 Stage B two-grid actual-primal ladder; no qualification",
+     "solver_wall_time_cap_s": 6300,
+     "time_window_t_u_l": [
+      80.0,
+      120.0
+     ]
+    }
+   }
+  },
+  "gate_code": {
+   "path": "src/cfd_sdf/design/geometry_gates_v2.py",
+   "sha256": "352d145e54cf5330236a9ff13279341e3bb2f59c22a3f81d62a020e713089de4"
+  },
+  "gate_profile_v1": {
+   "path": "docs/evidence/geom02_v17_gates_2026_10_14/geom02_gate_profile.json",
+   "sha256": "af3d74c883e4071904483a8d365d1a9bb9206717c49c0bf429da5867cd0f9f9d"
+  },
+  "gate_profile_v2": {
+   "path": "docs/evidence/opt01_v1_2026_10_15/geom02_gate_profile_v2.json",
+   "sha256": "9055e15b4f1b596d97f023a81fafbadda6de9ba439e1935f34461de5699e0bbc"
+  },
+  "job_env_common": {
+   "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+   "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+   "W4_CANONICAL_STATE_LABEL": "v17",
+   "W4_CELL_SHAPE": "120,64,48",
+   "W4_MARGIN_GATE_M": "0.15",
+   "W4_MARGIN_TOLERANCE_M": "1e-6",
+   "W4_POINT_SHAPE": "121,65,49",
+   "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "lowdim04a_inventory": {
+   "path": "docs/evidence/lowdim04a_stage_a_2026_10_13/inventory.json",
+   "sha256": "b666262b68c91e78f450c5c4a8d8326bfb53c56f9bebc39755daebbf7197bfc6"
+  },
+  "lowdim04b_inventory": {
+   "path": "docs/evidence/lowdim04b_stage_b_2026_10_13/inventory.json",
+   "sha256": "e85dd9c37377e57f7a80bc3d97f204a8fd9409f0ccd87545f0d9502c72d95cfe"
+  },
+  "p22_v2": {
+   "code": {
+    "path": "src/cfd_sdf/design/volume_semantics_v2.py",
+    "sha256": "a5f3595babea3994bb3c45618105a327a2790072e88945a4e3b8e78ed82e8fe4"
+   },
+   "n_max": 8272,
+   "path": "docs/evidence/sdf_native_volume_semantics_v2_2026_10.json",
+   "registration_record": {
+    "path": "docs/evidence/p22_v2_registration_2026_10_13/decision_record.md",
+    "sha256": "a7015c5320e75deb5a47cd6e5c1f60ebddaec6d181185b1995f59253d7581438"
+   },
+   "sha256": "735a0cc45ffd8920ac0f4716ddd9154d21b1f86fb05317cc713f44dad95843f3"
+  },
+  "resolved_research_policy": {
+   "path": "docs/evidence/geom02_v17_gates_2026_10_14/geom02_resolved_research_policy.json",
+   "sha256": "b5bcc8c742cb9c09988a80b7e42374c7d7f9bdfccce5c5acb8713cc9204375c8"
+  }
+ },
+ "plan": {
+  "amendment": "Amendment 1 (E1-E8) overrides D1-D3 and Steps; Amendment 2 (F1-F3) sets the gate scope (this contract v1.1)",
+  "path": "docs/opt01_v1_plan_2026_10_15.md",
+  "sha256": "c9dbdb54d0695e5e664d3f118e472f45b487f210112b1e06615037381fe1b3fb"
+ },
+ "preconditions_E4": {
+  "gate_order": "gates on every Stage A/B state run before CFD under gate_scope (probe: crossing-slope report-only; proposal: all hard); a proposal failing a gate is excluded with the reason recorded, a gate failure on a ladder step is a REJECT of that step, not a dropped step",
+  "lowdim_scripts": "frozen: reuse by copy-adapt into new modules, never edits; every existing freeze --verify must keep holding",
+  "new_parent": "the LOWDIM-04B selected state, reconstructed with construct_state from the pinned parent, direction, step 0.3125 mm, sign +1 and hash-checked against the 04B inventory; generation = parent + 1",
+  "stop_rule": "step 3 starts only if this parent passes GEOM-02 profile v2 (all gates, transition from its own parent), P22-v2 and the retained LOWDIM gates"
+ },
+ "predecessor_contract": {
+  "difference": "contract_id, version, plan pin, predecessor_contract, non_blind_v1_1, D3_update.gate_scope, D3_update.constraints.geom02_gate_profile_v2, preconditions_E4.gate_order; all else identical. v1 stays as history.",
+  "path": "docs/evidence/opt01_v1_2026_10_15/opt01_v1_contract.json",
+  "sha256": "f76a09c79cea70ffd07d94994d5b075dc346ddf32c678a18b4fab49ab90643e2"
+ },
+ "schema_version": 1,
+ "solver_started": false,
+ "version": "1.1"
+}

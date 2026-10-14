@@ -108,3 +108,27 @@ def test_evaluation_record_is_labelled_retroactive_and_does_not_close_30():
     r = a["retroactive_d3_conformance"]
     assert set(a["states"]) == {"baseline", "lowdim03_parent", "lowdim04b_trial"} and "RETROACTIVE" in r["statement"] and "cannot close #30" in r["statement"]
     assert a["trial_reconstruction"]["identity_matches_04b_inventory"] is True and a["solver_started"] is False and not any(a["flags"].values())
+
+
+def test_contract_v1_1_differs_from_v1_only_in_the_gate_scope_and_rederives():
+    import register_geom02_profile as reg
+    import register_opt01_v1 as r1
+    import register_opt01_v1_1 as r11
+
+    c1, c11 = json.loads(r1.CONTRACT.read_text()), json.loads(r11.CONTRACT.read_text())
+    assert reg.sha_file(r1.CONTRACT) == r11.V1_CONTRACT_SHA256 and r11.CONTRACT.read_text() == reg.dump(r11.build())
+    assert r11.CONTRACT.with_name(r11.CONTRACT.name + ".sha256").read_text().split()[0] == reg.sha_file(r11.CONTRACT)
+    assert {k for k in {*c1, *c11} if c1.get(k) != c11.get(k)} == {"contract_id", "version", "plan", "predecessor_contract", "non_blind_v1_1", "D3_update", "preconditions_E4"}
+    assert c11["predecessor_contract"]["sha256"] == reg.sha_file(r1.CONTRACT) and "non-blind" in c11["non_blind_v1_1"]
+    d1, d11 = c1["D3_update"], c11["D3_update"]
+    assert {k for k in {*d1, *d11} if d1.get(k) != d11.get(k)} == {"gate_scope", "constraints"} and c11["pins"] == c1["pins"]  # the profile and every pin are unchanged
+    scope = d11["gate_scope"]
+    assert scope["probe"]["report_only"] == ["near_zero_gradient_band"] and "crossing-slope" in scope["proposal"]["hard_before_cfd"] and "REJECT" in scope["proposal"]["ladder_step_failure"]
+    assert d11["constraints"]["p22_v2"] == d1["constraints"]["p22_v2"] and d11["accept"] == d1["accept"] and d11["ladder"] == d1["ladder"]
+    assert reg.sha_file(ROOT / c11["plan"]["path"]) == c11["plan"]["sha256"] != c1["plan"]["sha256"]
+
+
+def test_v1_registrar_pins_the_amendment_1_plan_as_history():
+    import register_opt01_v1 as r1
+
+    assert json.loads(r1.CONTRACT.read_text())["plan"]["sha256"] == r1.PLAN_V1_SHA256  # the working plan file has grown since (Amendment 2); v1 keeps re-deriving

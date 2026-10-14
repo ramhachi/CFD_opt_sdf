@@ -21,7 +21,7 @@ PARENT=_A.PARENT_INTEGRATION_COMMIT
 PINNED_RECORDS={'docs/evidence/opt01_v1_2026_10_15/opt01_v1_phase1_evaluation.json','docs/evidence/opt01_v1_2026_10_15/geom02_gate_profile_v2.json',
                 'docs/evidence/geom02_v17_gates_2026_10_14/geom02_resolved_research_policy.json','docs/evidence/lowdim04b_stage_b_2026_10_13/inventory.json',
                 'docs/evidence/lowdim04b_stage_b_2026_10_13/lowdim04b_analysis.json','docs/evidence/lowdim04a_stage_a_2026_10_13/lowdim04a_analysis.json',
-                'docs/evidence/opt01_v1_2026_10_15/opt01_v1_contract.json','docs/evidence/opt01a_stage_a_2026_10_15/inventory.json.sha256','docs/evidence/opt01a_stage_a_2026_10_15/inputs/opt01_v1_parent.npz'}
+                'docs/evidence/opt01_v1_2026_10_15/opt01_v1_contract.json','docs/evidence/opt01_v1_2026_10_15/opt01_v1_1_contract.json','docs/evidence/opt01a_stage_a_2026_10_15/inventory.json.sha256','docs/evidence/opt01a_stage_a_2026_10_15/inputs/opt01_v1_parent.npz'}
 
 
 def command(args):
@@ -139,7 +139,7 @@ def freeze(source_commit):
             'rules':{'secants':'centered [R(+s)-R(-s)]/(2s), s=1.25 mm, per grid and force','epsilon_n_per_m':A.C.EPSILON_N_PER_M,'resolved_if_abs_contrast_n_greater_than':A.C.MIN_RESOLVED_N,
                      'verdict':'FOUND only if both the main and the L1-robust cross-grid problems pass: t* above 1e-8 and predicted 1.25 mm downforce >= 3e-5 N on both grids; unresolved components are reported, never INCOMPLETE',
                      'parent_gate':'fresh parent CSVs must be byte-identical to the retained LOWDIM-04B prop s0.3125 mm runs (flow_24, flow_32) before any perturbation runs','incomplete':'any integrity failure, one grid incomplete, a non-finite run: no analysis is written',
-                     'pre_cfd_gates':'every state passed GEOM-02 profile v2 (13 gates, transition from the new parent), P22-v2 N_phi <= 8272 with a positive count-equal margin and the retained LOWDIM gates before this freeze'},
+                     'pre_cfd_gates':'every state passed, before this freeze and under contract v1.1 gate_scope (F1): GEOM-02 profile v2 (the parent all 13 gates; probes twelve, near_zero_gradient_band report-only), P22-v2 N_phi <= 8272 with a positive count-equal margin and the retained LOWDIM gates'},
             'qualification_flags':{k:False for k in A.FLAGS},
             'selected_delta':None,'reinitialization':'none',
             'exit_rule_amendment':'plan Amendment 1 E3 (docs/opt01_v1_plan_2026_10_15.md): one further LOWDIM-machinery cycle to test the complete OPT-01 v1 contract prospectively, not for gain',

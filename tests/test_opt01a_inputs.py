@@ -45,33 +45,56 @@ def test_new_parent_is_the_04b_selected_state_with_generation_plus_one_and_only_
     assert lin["inventory_row"] == B.TRIAL_ROW and lin["state_sha256"].startswith("64e4efb1")
 
 
-BLOCKED_STATES = {"opt01a__D0_interface_offset__minus1.25mm": 284, "opt01a__D1_filtered_seed11__minus1.25mm": 40, "opt01a__D1_filtered_seed11__plus1.25mm": 153,
-                  "opt01a__D2_filtered_seed2026__minus1.25mm": 3, "opt01a__D2_filtered_seed2026__plus1.25mm": 206, "opt01a__P1_upstream_lobe__plus1.25mm": 212}
+PROBE_NEAR_ZERO = {"opt01a__D0_interface_offset__minus1.25mm": 284, "opt01a__D1_filtered_seed11__minus1.25mm": 40, "opt01a__D1_filtered_seed11__plus1.25mm": 153,
+                   "opt01a__D2_filtered_seed2026__minus1.25mm": 3, "opt01a__D2_filtered_seed2026__plus1.25mm": 206, "opt01a__P1_upstream_lobe__plus1.25mm": 212}  # the BLOCKED inventory of 576441c
 
 
 def ready_copy(inv=None):
-    """A synthetic READY inventory (the real one is BLOCKED_PRE_CFD): lets the runner/registration machinery be tested for a future re-registered stage."""
-    inv = copy.deepcopy(INV if inv is None else inv)
-    inv["stage_status"], inv["blockers"] = "READY", []
-    for r in inv["states"]:
-        r["pre_cfd_gates"].update(all_pass=True, failed=[], table={k: "pass" for k in r["pre_cfd_gates"]["table"]})
-    return inv
+    return copy.deepcopy(INV if inv is None else inv)
 
 
-def test_nine_states_parent_first_same_plan_on_both_grids_and_the_recorded_pre_cfd_result_is_a_blocker():
+def test_nine_states_parent_first_same_plan_on_both_grids_and_the_v1_1_scope_makes_the_stage_ready():
     assert [r["name"] for r in INV["states"]] == [r["name"] for r in L.plan()]
     assert INV["kernels"]["a"] == INV["kernels"]["b"] == [r["name"] for r in INV["states"]] and INV["states"][0]["kind"] == "parent" and len(INV["states"]) == 9
-    assert INV["stage_status"] == "BLOCKED_PRE_CFD" and {b["state"]: b["failed"] for b in INV["blockers"]} == {n: ["near_zero_gradient_band"] for n in BLOCKED_STATES}
+    assert INV["stage_status"] == "READY" and INV["blockers"] == [] and INV["gate_scope"] == L.CONTRACT["D3_update"]["gate_scope"]
+    assert INV["supersedes"] == B.BLOCKED_INVENTORY
     for r in INV["states"]:
         g = r["pre_cfd_gates"]
+        zone = g["near_zero_gradient_band"]
         nz = g["record"]["geom02_v2"]["gates"]["near_zero_gradient_band"]["measured"]["nodes_below_threshold"]
-        assert nz == BLOCKED_STATES.get(r["name"], 0) and g["geom02_v2_gate_count"] == 13
-        assert g["failed"] == (["near_zero_gradient_band"] if nz else []) and g["geom02_v2_pass_count"] == (12 if nz else 13)
+        assert nz == PROBE_NEAR_ZERO.get(r["name"], 0) == zone["failing_nodes"] == zone["on_baseline_tie_plateau"] + zone["off_plateau"] and g["geom02_v2_gate_count"] == 13
+        assert g["failed"] == [] and g["all_pass"] is True and g["report_only_failed"] == (["near_zero_gradient_band"] if nz else []) and g["geom02_v2_pass_count"] == (12 if nz else 13)
+        assert L.hard_failures(r["kind"], g["table"]) == [] and g["table"]["near_zero_gradient_band"] == ("fail" if nz else "pass")
         assert g["table"]["p22_v2"] == g["table"]["retained_smoothed_volume_band"] == g["table"]["retained_clearance"] == g["table"]["count_equal_margin_positive"] == "pass"
         assert r["hard_count"]["residual_vs_n_max"] == 0 and r["hard_count"]["sampled_solid_centers"] <= 8272 and r["hard_count"]["count_equal_margin_m"] > 0
     parent = INV["states"][0]  # the E4 stop rule holds: the new parent passes everything, also from its own parent (the LOWDIM-03 parent)
-    assert parent["pre_cfd_gates"]["all_pass"] is True and parent["pre_cfd_gates"]["e4_vs_lowdim03_parent"]["all_pass"] is True
+    assert parent["pre_cfd_gates"]["all_pass"] is True and parent["pre_cfd_gates"]["table"]["near_zero_gradient_band"] == "pass"
+    assert parent["pre_cfd_gates"]["e4_vs_lowdim03_parent"]["all_pass"] is True
     assert parent["hard_count"]["count_equal_margin_m"] == pytest.approx(2.199e-3, abs=2e-6)  # as recorded at the trial in the phase 1 evaluation
+
+
+def test_the_gate_scope_probe_is_report_only_proposal_is_hard_and_any_other_failing_gate_blocks():
+    table = {"near_zero_gradient_band": "fail", "p22_v2": "pass", "retained_clearance": "pass"}
+    assert L.hard_failures("perturbation", table) == [] and L.hard_failures("parent", table) == ["near_zero_gradient_band"]  # a proposal failing crossing-slope blocks (Stage B: REJECT)
+    for gate in ("p22_v2", "retained_clearance", "export_surface_integrity", "count_equal_margin_positive"):
+        assert L.hard_failures("perturbation", {**table, gate: "fail"}) == [gate]  # a probe failing another gate still blocks
+    assert L.hard_failures("perturbation", {**table, "x": "unmeasured"}) == ["x"] and L.hard_failures("perturbation", {"near_zero_gradient_band": "pass"}) == []
+
+
+def test_plateau_attribution_counts_failing_nodes_on_the_baseline_tie_plateau():
+    import numpy as np
+    phi = np.ones((5, 5, 5), dtype=np.float32)
+    plus = [(1, 2, 2), (3, 2, 2), (2, 1, 2), (2, 3, 2), (2, 2, 1), (2, 2, 3)]
+    for ix in plus:
+        phi[ix] = 1e-9
+    phi[2, 2, 2] = -1e-9  # a sign-change cluster of near-ties: seven failing nodes (slopes 2e-9/h)
+    base = np.ones_like(phi)
+    base[2, 2, 2] = 0.0  # only the centre was on the baseline plateau
+    out = B.plateau_attribution(phi, base, 1.0, 0.5)
+    assert (out["failing_nodes"], out["on_baseline_tie_plateau"], out["off_plateau"], out["baseline_plateau_nodes"]) == (7, 1, 6, 1)
+    base[phi != 1.0] = 0.0
+    assert B.plateau_attribution(phi, base, 1.0, 0.5)["on_baseline_tie_plateau"] == 7
+    assert B.plateau_attribution(np.ones_like(phi), base, 1.0, 0.5)["failing_nodes"] == 0
 
 
 def test_gates_use_the_registered_profile_v2_crossing_slope_rule_for_every_state():
@@ -131,10 +154,18 @@ def test_registration_validation_accepts_a_complete_freeze_of_a_ready_inventory(
     A.validate_registration(freeze, ready, infra=infra, identity=tmp_path / "identity_free_check.json")
 
 
-def test_registration_validation_refuses_the_real_blocked_inventory(tmp_path):
+@pytest.mark.parametrize("mutate, msg", [
+    (lambda i: i.update(stage_status="BLOCKED_PRE_CFD"), "blocked before CFD"),
+    (lambda i: i["states"][1]["pre_cfd_gates"]["table"].update(p22_v2="fail"), "pre-CFD gates"),  # a probe failing another gate still blocks
+    (lambda i: i["states"][0]["pre_cfd_gates"]["table"].update(near_zero_gradient_band="fail"), "pre-CFD gates"),  # the proposal keeps the crossing-slope rule hard
+])
+def test_registration_validation_refuses_a_blocked_or_scope_violating_inventory(tmp_path, monkeypatch, mutate, msg):
     freeze, infra = complete_freeze(tmp_path)
-    with pytest.raises(ValueError, match="blocked before CFD"):
-        A.validate_registration(freeze, INV, infra=infra, identity=tmp_path / "identity_free_check.json")
+    bad, real = ready_copy(), A.jload
+    mutate(bad)
+    monkeypatch.setattr(A, "jload", lambda p: bad if Path(p) == EV / "inventory.json" else real(p))  # so that only the status/scope check can fail
+    with pytest.raises(ValueError, match=msg):
+        A.validate_registration(freeze, bad, infra=infra, identity=tmp_path / "identity_free_check.json")
 
 
 def test_registration_validation_rejects_each_weakening(tmp_path, ready):

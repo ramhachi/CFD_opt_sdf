@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""OPT-01 v1 Stage A host registrar: the nine states per grid at the new OPT-01 v1 parent.  Solver-free.
+"""OPT-01 v1.1 Stage A host registrar: the nine states per grid at the new OPT-01 v1 parent.  Solver-free.
 
 New parent = the LOWDIM-04B selected state (LOWDIM-03 parent + 0.3125 mm x the robust Stage A direction, rebuilt with construct_state and hash-checked against
 the 04B inventory), re-created with generation = parent generation + 1 (phi hashes unchanged, state_sha256 changes; the mapping is recorded).  Every parameter
 comes from the pinned OPT-01 v1 contract.  The pre-CFD gates of E4 run here, once, on the exact bytes: GEOM-02 profile v2 (13 gates, transition from the new
 parent, allowed_events=()), P22-v2 N_phi <= 8272 with a positive count-equal margin, and the retained LOWDIM gates (smoothed volume band, clearance).  A failing
-state is recorded and the stage is BLOCKED_PRE_CFD.  Refuses to overwrite; --check re-derives (runtime fields excluded).
+state is recorded and the stage is BLOCKED_PRE_CFD.  Contract v1.1 gate scope (plan Amendment 2 F1): for probe states near_zero_gradient_band is report-only (counts and
+attribution to the baseline tie plateau are recorded), for the parent every gate is hard.  Refuses to overwrite; --supersede-blocked replaces only the registered
+BLOCKED inventory of commit 576441c (hash-checked, recorded in `supersedes`); --check re-derives (runtime fields excluded).
 """
 from __future__ import annotations
 
@@ -20,6 +22,8 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT / "scripts")]
 import build_lowdim01_inputs as lowdim  # noqa: E402
@@ -31,6 +35,7 @@ import register_geom02_profile as reg  # noqa: E402
 import step01_states as S  # noqa: E402
 from build_grid01_inputs import canonical_json  # noqa: E402
 from cfd_sdf.design import volume_semantics_v2 as V2  # noqa: E402
+from cfd_sdf.design.geometry_gates_v2 import _zero_level_gradient  # noqa: E402
 from cfd_sdf.design.sdf_state import SDFDesignState  # noqa: E402
 from cfd_sdf.design.topology_policy_research import SDFTopologyPolicyResearchV2  # noqa: E402
 from cfd_sdf.fd08_v2_campaign import construct_state, state_identity  # noqa: E402
@@ -45,6 +50,8 @@ TRIAL_STEP_MM = 0.3125
 SOLVER_WALL_TIME_CAP_S = 9 * 900  # as LOWDIM-04A: nine states x the 900 s per-state timeout
 IDENTITY_KEYS = ("state_sha256", "phi_fortran_order_sha256", "phi_c_order_sha256")
 sha = b4a.sha
+BLOCKED_INVENTORY = {"commit": "576441ce95a8b209e1a9b16fadbceb55f819ea75", "sha256": "52f4b1d6b513c06e8a6ff29af418226043297b5093453c43267939126a2c53cd", "stage_status": "BLOCKED_PRE_CFD"}
+PLATEAU_ABS_PHI_M = 1e-6  # the v17 genesis tie plateau: baseline |phi| below this (STL faces on lattice planes; SRCMAP-03a)
 
 
 def verify_pins(contract: dict) -> int:
@@ -105,12 +112,31 @@ def context() -> SimpleNamespace:
                            directions=directions, states=states, base_geometry=lowdim.geometry(baseline))
 
 
+def plateau_attribution(child_phi, base_phi, spacing_m: float, threshold: float) -> dict:
+    """Which crossing-slope-failing nodes of a state are baseline tie-plateau nodes (|phi_baseline| < 1e-6).  Descriptive; re-derives the gate's failing set (cross-checked by the caller)."""
+    z = _zero_level_gradient(SimpleNamespace(phi=child_phi, shape=child_phi.shape, spacing_m=spacing_m))
+    base = np.abs(base_phi.astype(np.float64)) < PLATEAU_ABS_PHI_M
+    out = {"failing_nodes": 0, "on_baseline_tie_plateau": 0, "off_plateau": 0, "baseline_plateau_nodes": int(base.sum()), "plateau_abs_phi_m": PLATEAU_ABS_PHI_M}
+    if z is None or "norm" not in z:
+        return out
+    nodes, phi = z["nodes"], z["phi"]
+    solid, slope = phi < 0.0, np.zeros(phi.shape)
+    for axis in range(3):
+        for shift in (1, -1):
+            slope = np.maximum(slope, np.where(np.roll(solid, shift, axis=axis) != solid, np.abs(phi - np.roll(phi, shift, axis=axis)) / spacing_m, 0.0))
+    bad = nodes & (slope < threshold)
+    return {**out, "failing_nodes": int(bad.sum()), "on_baseline_tie_plateau": int((bad & base).sum()), "off_plateau": int((bad & ~base).sum())}
+
+
 def gate_job(name: str) -> dict:
     """The heavy part (r=8 export, self-intersection): one state, run once here and never in the kernel."""
     ctx = context()
     child, _ = ctx.states[name]
     export = canon.export_from_state(child, ctx.profile)
     out = {"record": canon.strip_runtime(E1.state_record(child, ctx.parent, ctx.profile, ctx.policy, export, ctx.base_geometry))}
+    out["plateau"] = plateau_attribution(child.phi, ctx.baseline.phi, float(child.spacing_m), float(ctx.profile["near_zero_gradient_band"]["threshold"]))
+    if out["plateau"]["failing_nodes"] != out["record"]["geom02_v2"]["gates"]["near_zero_gradient_band"]["measured"].get("nodes_below_threshold", 0):
+        raise ValueError(f"{name}: the plateau attribution does not re-derive the gate's failing node count")
     if name == L.PARENT_NAME:  # the E4 stop rule: the parent's transition from its own parent (the LOWDIM-03 parent)
         out["e4_vs_lowdim03_parent"] = canon.strip_runtime(E1.state_record(child, ctx.lowdim03, ctx.profile, ctx.policy, export, ctx.base_geometry))
     return out
@@ -148,11 +174,12 @@ def build(jobs: int = 3, gate_results: dict | None = None):
         margin = inv["count_equal_margin_m"]
         rec = gate_results[item["name"]]["record"]
         table = gate_table(rec, margin)
-        failed = sorted(g for g, v in table.items() if v != "pass")
+        failed = L.hard_failures(item["kind"], table)
+        reported = sorted(g for g, v in table.items() if v != "pass" and g not in failed)
         if failed:
             blockers.append({"state": item["name"], "failed": failed})
         geo, v_cont = lowdim.geometry(child), b4a.continuum_zero_set_volume_m3(child.phi, child.spacing_m)
-        pre_cfd = {"all_pass": not failed, "failed": failed, "table": table, "geom02_v2_pass_count": sum(v == "pass" for v in (s["status"] for s in rec["geom02_v2"]["gates"].values())),
+        pre_cfd = {"all_pass": not failed, "failed": failed, "report_only_failed": reported, "near_zero_gradient_band": gate_results[item["name"]]["plateau"], "table": table, "geom02_v2_pass_count": sum(v == "pass" for v in (s["status"] for s in rec["geom02_v2"]["gates"].values())),
                    "geom02_v2_gate_count": len(rec["geom02_v2"]["gates"]), "record": rec}
         if "e4_vs_lowdim03_parent" in gate_results[item["name"]]:
             e4 = gate_results[item["name"]]["e4_vs_lowdim03_parent"]
@@ -183,7 +210,8 @@ def build(jobs: int = 3, gate_results: dict | None = None):
     a04 = json.loads((A04 / "lowdim04a_analysis.json").read_text())
     inv04b = ctx.inv04b
     inventory = {"kind": "opt01a_stage_a_inventory", "contract": {"path": L.CONTRACT_REL, "sha256": L.CONTRACT_SHA256, "contract_id": ctx.contract["contract_id"], "pins_verified": verify_pins(ctx.contract)},
-                 "stage_status": "BLOCKED_PRE_CFD" if blockers else "READY", "blockers": blockers, "basis_order": list(L.BASIS), "step_mm": L.STEP_MM,
+                 "stage_status": "BLOCKED_PRE_CFD" if blockers else "READY", "blockers": blockers,
+                 "gate_scope": ctx.contract["D3_update"]["gate_scope"], "supersedes": BLOCKED_INVENTORY, "basis_order": list(L.BASIS), "step_mm": L.STEP_MM,
                  "parent": {"state_sha256": parent_ident["state_sha256"], "phi_fortran_order_sha256": parent_ident["phi_fortran_order_sha256"], "phi_c_order_sha256": parent_ident["phi_c_order_sha256"],
                             "generation": ctx.parent.generation, "npz_path": str(PARENT_NPZ.relative_to(ROOT)), "raw_path": str(PARENT_RAW.relative_to(ROOT)),
                             "lineage": {"lowdim04b_selected_state": {**{k: trial_ident[k] for k in IDENTITY_KEYS}, "generation": ctx.trial.generation, "inventory_row": TRIAL_ROW,
@@ -208,6 +236,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--check", action="store_true")
     p.add_argument("--jobs", type=int, default=3)
+    p.add_argument("--supersede-blocked", action="store_true", help="replace the registered BLOCKED inventory of commit 576441c (hash-checked) by the v1.1 one")
     args = p.parse_args()
     inv, raw, parent = build(args.jobs)
     data, target = canonical_json(inv), EVIDENCE / "inventory.json"
@@ -218,8 +247,10 @@ def main():
         if target.read_bytes() != data or PARENT_RAW.read_bytes() != raw or PARENT_NPZ.read_bytes() != npz:
             raise SystemExit("frozen inventory/parent inputs differ from their derivation")
     else:
-        if target.exists() or PARENT_RAW.exists() or PARENT_NPZ.exists():
-            raise SystemExit("refusing to overwrite OPT-01 v1 Stage A inputs")
+        if target.exists() and (not args.supersede_blocked or sha(target) != BLOCKED_INVENTORY["sha256"]):
+            raise SystemExit("refusing to overwrite OPT-01 v1 Stage A inputs (only the registered BLOCKED inventory may be superseded, with --supersede-blocked)")
+        if (PARENT_RAW.exists() and PARENT_RAW.read_bytes() != raw) or (PARENT_NPZ.exists() and PARENT_NPZ.read_bytes() != npz):
+            raise SystemExit("refusing to overwrite OPT-01 v1 Stage A parent inputs (they must equal the re-derivation)")
         PARENT_RAW.parent.mkdir(parents=True, exist_ok=True)
         PARENT_RAW.write_bytes(raw)
         PARENT_NPZ.write_bytes(npz)
@@ -229,7 +260,8 @@ def main():
     for b in inv["blockers"]:
         print("BLOCKER", json.dumps(b))
     for r in inv["states"]:
-        print(r["name"], r["pre_cfd_gates"]["geom02_v2_pass_count"], "/", r["pre_cfd_gates"]["geom02_v2_gate_count"], "margin", r["hard_count"]["count_equal_margin_m"])
+        g = r["pre_cfd_gates"]
+        print(r["name"], g["geom02_v2_pass_count"], "/", g["geom02_v2_gate_count"], "hard_failed", g["failed"], "report_only", g["report_only_failed"], "plateau", g["near_zero_gradient_band"], "margin", r["hard_count"]["count_equal_margin_m"])
     if inv["blockers"]:
         raise SystemExit(3)  # registered blocker before CFD: no freeze, no kernel
 

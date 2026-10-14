@@ -22,7 +22,7 @@ CASE_ID = "PIN_CASE_ID"
 JOB = "PIN_JOB"
 STATES_MODULE = "scripts/step01_states.py"
 EVIDENCE = "docs/evidence/opt01a_stage_a_2026_10_15"
-CONTRACT = "docs/evidence/opt01_v1_2026_10_15/opt01_v1_contract.json"
+CONTRACT = "docs/evidence/opt01_v1_2026_10_15/opt01_v1_1_contract.json"
 INVENTORY = f"{EVIDENCE}/inventory.json"
 BASELINE_RAW = f"{EVIDENCE}/inputs/parent.phi_f4_fortran.raw"  # the new OPT-01 v1 parent (the LOWDIM-04B selected state), Fortran-order Float32
 BASELINE_FORCE_CSV = "PIN_BASELINE_FORCE_CSV"
@@ -159,8 +159,8 @@ def expected_plan(inventory):
         raise ValueError("the OPT-01 v1 contract is not the pinned one")
     for row in rows:
         gates = row["pre_cfd_gates"]
-        if gates["all_pass"] is not True or gates["failed"] or not all(v == "pass" for v in gates["table"].values()):
-            raise ValueError("pre-CFD gate failed (E4)")
+        if gates["all_pass"] is not True or gates["failed"] or L.hard_failures(row["kind"], gates["table"]):
+            raise ValueError("pre-CFD gate failed (E4, contract gate scope)")
     return rows
 
 

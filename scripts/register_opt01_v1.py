@@ -22,6 +22,7 @@ PROFILE, CONTRACT = OUT / "geom02_gate_profile_v2.json", OUT / "opt01_v1_contrac
 V1_PROFILE_SHA256 = "af3d74c883e4071904483a8d365d1a9bb9206717c49c0bf429da5867cd0f9f9d"
 POLICY_SHA256 = "b5bcc8c742cb9c09988a80b7e42374c7d7f9bdfccce5c5acb8713cc9204375c8"
 PLAN = "docs/opt01_v1_plan_2026_10_15.md"
+PLAN_V1_SHA256 = "92e3beadbf67a609b308734e7af78badc902fa38aa001926057b469419b3757f"  # the plan as of Amendment 1 (git 9dad5f2); the working file has since grown Amendment 2 (see register_opt01_v1_1)
 A04, B04 = reg.EV / "lowdim04a_stage_a_2026_10_13", reg.EV / "lowdim04b_stage_b_2026_10_13"
 V2_REGISTRATION = reg.EV / "sdf_native_volume_semantics_v2_2026_10.json"
 CONE_CODE = {  # path -> the LOWDIM freeze whose file_hashes must still agree (the code that produced the 04A/04B results)
@@ -72,7 +73,7 @@ def build_contract(profile_sha: str) -> dict:
     return {
         "kind": "opt01_v1_update_contract", "schema_version": 1, "contract_id": "opt01_v1_phi_space_dual_grid_update_2026_10_15",
         "evidence_class": "contract", "immutable": True,
-        "plan": {**pin(PLAN), "amendment": "Amendment 1 (E1-E8) overrides D1-D3 and Steps"},
+        "plan": {"path": PLAN, "sha256": PLAN_V1_SHA256, "amendment": "Amendment 1 (E1-E8) overrides D1-D3 and Steps"},
         "authority": AUTHORITY,
         "D1_backend": {
             "text": "The first OPT-01 step's update direction is the LOWDIM-04 L1-robust cone solution on dual-grid centered phi-space secants (+-1.25 mm) of the frozen 4-direction basis "
