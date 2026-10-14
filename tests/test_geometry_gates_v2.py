@@ -100,7 +100,7 @@ def _only(report, *gate_ids):
 
 
 def test_clean_fixture_passes_all_thirteen_gates_and_labels_vacuous_masks(clean):
-    state, report = clean
+    _, report = clean
     assert tuple(report["gates"]) == GATE_IDS and report["verdict"]["pass"] is True
     assert report["gates"]["mask_preservation"]["measured"]["vacuous_empty_masks"] is True
     assert report["gates"]["inter_component_gap"]["measured"]["label"] == "not_applicable_single_component"
@@ -334,3 +334,40 @@ def test_needle_triangles_touching_at_one_vertex_are_not_a_contact_at_the_regist
     mesh = trimesh.Trimesh(vertices, np.array([[0, 1, 2], [3, 4, 1], [5, 6, 7]]), process=False)
     assert _triangles_self_intersect(mesh) == mesh_self_intersection(mesh.vertices, mesh.faces)[0] == "fail"
     assert mesh_self_intersection(mesh.vertices, mesh.faces, tolerance_rel=1e-12)[0] == "none"
+
+
+def test_touching_blocks_are_one_cell_component_and_the_gap_gate_is_not_applicable():
+    """Cell occupancy touching at an edge or a corner is one 26-connected component; zero-gap contact is not judged by the gap gate.
+
+    The blocks' faces meet on grid nodes (exact zero = fluid), so the node-occupancy count of ``component_connectivity`` is 2 while the cell count is 1.
+    """
+    for name, a, b in (("edge", ((8, 8, 8), (15, 15, 18)), ((15, 15, 8), (24, 18, 18))), ("corner", ((8, 8, 8), (15, 15, 15)), ((15, 15, 15), (24, 18, 18)))):
+        report = _evaluate(_state(np.minimum(_faces(*a), _faces(*b))), export=None)
+        gap = report["gates"]["inter_component_gap"]
+        assert gap["status"] == "pass" and gap["measured"]["cell_occupancy_components"] == 1 and gap["measured"]["label"] == "not_applicable_single_component", name
+        assert report["gates"]["component_connectivity"]["measured"]["node_occupancy_components"] == 2 and report["verdict"]["failed"] == [], name
+
+
+def test_rebinding_filter_keeps_every_other_violation_under_an_unresolved_policy():
+    fixed = _patch((14, 12, 12), (16, 14, 14))
+    parent = _state(_clean_phi(), fixed_solid_mask=fixed, forbidden_mask=_patch((30, 3, 3), (31, 4, 4)))
+    bad = _state(np.maximum(_clean_phi(), -_box((13, 11, 11), (17, 15, 15))), fixed_solid_mask=fixed, forbidden_mask=_patch((20, 12, 12), (21, 13, 13)))
+    unresolved = SDFTopologyPolicyResearchV2()
+    raw = set(evaluate_research_transition(unresolved, parent, bad, feature_metrics=None, allowed_events=(), birth_qualified=False).violations)
+    names = set(unresolved.unresolved_inputs())
+    assert names and names <= raw  # the policy's own unresolved-limit names are present and are the only extra filtered reasons
+    seen = {r for g in _evaluate(bad, parent, policy=unresolved, export=None)["gates"].items() for r in g[1]["fail_reasons"] + g[1]["unmeasured_reasons"]}
+    assert not seen & (REBOUND_ONLY_REASONS | names)
+    assert {"fixed_solid_not_retained", "material_in_forbidden_mask", "state_mask_mismatch"} <= seen
+
+
+def test_gradient_floor_classifier_separates_ridge_kinks_from_zero_plateaus():
+    pytest.importorskip("skimage")
+    import geom02_gradient_floor_diagnostic as diag
+
+    plate = diag.classify(_state(_faces((6.8, 6.8, 9.6), (28.2, 20.2, 10.4))), 0.5)  # one node thick in z: a ridge of phi
+    assert plate["class_counts"]["kink"] > 0 and plate["class_counts"]["tie_plateau"] == 0 and plate["kink_nodes_by_axis"]["z"] == plate["class_counts"]["kink"]
+    phi = _clean_phi()
+    phi[_patch((6, 10, 10), (7, 16, 16))] = 0.0
+    plateau = diag.classify(_state(phi), 0.5)
+    assert plateau["class_counts"]["tie_plateau"] == plateau["failing_nodes"] > 0

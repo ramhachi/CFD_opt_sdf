@@ -69,7 +69,7 @@ def _candidate_pairs(keys: np.ndarray, deltas: list[int]):
         while lo < len(a):
             hi = int(np.searchsorted(ends, (ends[lo - 1] if lo else 0) + _PAIR_CHUNK, side="right"))
             hi = max(hi, lo + 1)
-            sa, ca, sb, cb, sz = starts[a[lo:hi]], counts[a[lo:hi]], starts[b[lo:hi]], counts[b[lo:hi]], sizes[lo:hi]
+            sa, sb, cb, sz = starts[a[lo:hi]], starts[b[lo:hi]], counts[b[lo:hi]], sizes[lo:hi]
             p = np.arange(sz.sum()) - np.repeat(np.cumsum(sz) - sz, sz)
             i = order[np.repeat(sa, sz) + p // np.repeat(cb, sz)]
             j = order[np.repeat(sb, sz) + p % np.repeat(cb, sz)]
@@ -119,9 +119,11 @@ def mesh_self_intersection(vertices: np.ndarray, faces: np.ndarray, *, tolerance
     normals = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
     length = np.linalg.norm(normals, axis=1)
     if n == 0:
+        stats.update(complete=False, runtime_s=time.perf_counter() - clock)
         return "not_evaluated_empty_mesh", stats
     longest = np.linalg.norm(np.roll(tri, -1, axis=1) - tri, axis=2).max(axis=1)
     if np.any(length <= 64.0 * np.finfo(np.float64).eps * longest**2):  # collinear to rounding; see the docstring
+        stats.update(complete=False, runtime_s=time.perf_counter() - clock)
         return "not_evaluated_degenerate_triangle", stats
     unit = normals / length[:, None]
     lo, hi = tri.min(axis=1), tri.max(axis=1)
