@@ -1,14 +1,21 @@
 # GRAD-TA1 (#23): the G2 full-window forward-AD bridge (scripts/waterlily_grad_g2_full_window_bridge_2026_10_08.jl, frozen by the G2 freeze and not edited)
 # with the convective scheme lambda = QuickTie(1f-5) (scripts/quick_tie.jl: values bit for bit `quick`, partials tie-averaged within tau; a surrogate, NOT the
 # derivative of the implemented map at ties).  Measurement semantics, window, directions, Dual width 1, Float32 and the sampling are the G2 bridge's:
-# flow_24, sim_step!(sim; λ) with default remeasure, one warm-up step that counts as step 1, a force sample every 8 steps (and at the end), candidate-only
+# flow_24, sim_step!(sim) with default remeasure, one warm-up step that counts as step 1, a force sample every 8 steps (and at the end), candidate-only
 # force -(pressure+viscous), drag = Fx, downforce = -Fz, [80,120] tU/L window, phi(alpha) = phi0 + alpha*d with alpha in metres.
 #
 # Additions to the G2 bridge (docs/grad_ta1_plan_2026_10_15.md, Amendment 1):
-#   C6  kernel-first 20-step Dual preflight, `quick` vs `QuickTie`: primal u and p must be bit-equal and the tangents finite, else status INCOMPLETE (exit 2)
+#   λ ROUTING (Amendment 2): in WaterLily 1.8.0 `sim_step!(sim; λ)` IGNORES λ (kwargs only reach udf!; mom_predict!/mom_correct! use the Flow field `flow.λ` fixed at
+#       construction).  So λ is passed to `WaterLily.Simulation(...; λ=λ)` in build(), for the plain run (`quick`), the Dual runs (`QuickTie(1f-5)`) and each preflight arm, and
+#       `typeof(sim.flow.λ) === typeof(λ)` is a hard error in build() (called by run_one and preflight); the type string is recorded in every summary, the preflight and the index.
+#   C6  kernel-first 20-step Dual preflight, `quick` vs `QuickTie`: primal u and p must be bit-equal and the tangents finite, else status INCOMPLETE (exit 2).  The tangent
+#       difference u/p between the arms is reported; it is 0 iff no tie within tau occurred in the 20 steps (CPU dry run: NOT 0, u 1.43 / p 1.89, ties occur), which then says nothing about
+#       QuickTie's effect; the preflight gates on routing, bit-equal primal and finiteness only, never on the size of the difference.
 #   C5  watchdog (Dual runs): every 100 steps max |tangent| over u and p and its argmax cell, written and flushed to <label>.watchdog.csv together with the last
-#       force sample; the force history <label>.history.csv is flushed per sample.  BLOCKED = a non-finite or > 1e30 tangent (onset step and cell recorded, the
-#       run stops, the next direction still runs); a Dual run longer than 3x the plain run's total time aborts with an error (-> INCOMPLETE).
+#       force sample; the force history <label>.history.csv is flushed per sample.  BLOCKED = a non-finite or > 1e30 tangent (onset step and cell recorded, also when it is
+#       detected from a force sample; that run stops, the next direction still runs).  A Dual run longer than 8x the plain run's total time raises an error, and ANY error
+#       (wall abort included) propagates out of main(): the whole kernel stops, status ERROR => INCOMPLETE; there is no per-direction continue after an error.
+#       The BLOCKED path is judged by the analyzer WITHOUT the full verifier (no plain-baseline gate, no history checks).
 #   status / exit code: COMPLETE 0, BLOCKED 3, anything else 2.  The index keeps the G2 name `g2_run_index.json` so scripts/verify_grad_g2_terminal.py applies unchanged.
 #
 # usage: julia --project=julia/CFDSDFWaterLilyT4 scripts/waterlily_grad_ta1_2026_10_15.jl \
@@ -59,7 +66,7 @@ const BLOCK_LIMIT = if haskey(ENV, "TA1_BLOCK_LIMIT")   # Float32 headroom 1e30 
 else
     1.0e30
 end
-const WALL_FACTOR = 3.0                # a Dual run longer than WALL_FACTOR x the plain run's total seconds aborts (plan C5)
+const WALL_FACTOR = 8.0                # a Dual run longer than WALL_FACTOR x the plain run's total seconds aborts the whole kernel (plan C5, Amendment 2)
 const WATCH_HEADER = ["step", "t_u_l", "tan_max_u", "tan_argmax_u", "tan_max_p", "tan_argmax_p", "last_sample_step", "fx", "fx_tan", "fz", "fz_tan", "elapsed_s", "vram_bytes"]
 
 # the production window is fixed; only the CPU code-path dry run may shorten it
@@ -87,7 +94,7 @@ function load_raw(path, sha)
     return reshape(copy(reinterpret(Float32, raw)), SHAPE)
 end
 
-function build(phi_dev::AbstractArray{S,3}, ::Type{T}, case) where {S,T}
+function build(phi_dev::AbstractArray{S,3}, ::Type{T}, case, λ) where {S,T}
     FS = real_type(T)
     grid = GridSDF(phi_dev, FS.(ORIGIN), FS.((SPACING, SPACING, SPACING)), SHAPE, FS(3), FS(0.15))
     if BACKEND == "cuda"
@@ -103,7 +110,8 @@ function build(phi_dev::AbstractArray{S,3}, ::Type{T}, case) where {S,T}
     BACKEND == "cuda" && !isbitstype(typeof(combined)) && error("Candidate C body is not isbits")
     mem = BACKEND == "cuda" ? getfield(Main, :CuArray) : Array
     sim = WaterLily.Simulation(case.flow_dims, v16_native_far_field_uBC, FS(case.solver_length);
-        U=FS(case.solver_velocity), ν=FS(case.solver_viscosity), exitBC=true, body=combined, T=T, mem=mem)
+        U=FS(case.solver_velocity), ν=FS(case.solver_viscosity), exitBC=true, body=combined, T=T, mem=mem, λ=λ)   # λ ONLY works here (sim_step!(sim; λ) ignores it)
+    typeof(sim.flow.λ) === typeof(λ) || error("convective scheme not routed: sim.flow.λ is $(typeof(sim.flow.λ)), requested $(typeof(λ))")
     return sim, (candidate=candidate, ground=ground, combined=combined), owner
 end
 
@@ -199,7 +207,8 @@ function run_one(label, phi_host::AbstractArray, ::Type{T}, case, λ, outdir; wa
     started = time()
     dual = T <: FD.Dual
     phi_dev = to_device(phi_host)
-    sim, bodies, owner = build(phi_dev, T, case)
+    sim, bodies, owner = build(phi_dev, T, case, λ)
+    lambda_type = string(typeof(sim.flow.λ))
     rows = Vector{Vector{Float64}}()
     hist = open(joinpath(outdir, "$label.history.csv"), "w"); csv_line(hist, history_header())
     watch = dual ? open(joinpath(outdir, "$label.watchdog.csv"), "w") : nothing
@@ -209,22 +218,23 @@ function run_one(label, phi_host::AbstractArray, ::Type{T}, case, λ, outdir; wa
     try
         GC.@preserve phi_dev owner sim bodies begin
             warm = time()
-            WaterLily.sim_step!(sim; λ)   # registered job: compile step counted as step 1, default remeasure
+            WaterLily.sim_step!(sim)   # registered job: compile step counted as step 1, default remeasure
             sync()
             first_step_seconds = time() - warm
             step = 1
             peak = used_memory()
             loop_started = time()
             while WaterLily.sim_time(sim) < WINDOW[2]
-                WaterLily.sim_step!(sim; λ)
+                WaterLily.sim_step!(sim)
                 step += 1
                 if step % SAMPLE_EVERY == 0 || WaterLily.sim_time(sim) >= WINDOW[2]
                     cells = sample_row(sim, bodies, step)
                     push!(rows, cells); csv_line(hist, cells); last_sample = cells
                     all(isfinite, value_cells(cells)) || error("$label: non-finite primal force/time at step $step")
                     if !all(isfinite, tangent_cells(cells))
-                        blocked = Dict{String,Any}("reason" => "non_finite_tangent_in_force_sample", "onset_step" => step, "t_u_l" => cells[2], "tan_max_u" => nothing,
-                                                    "tan_argmax_u" => "", "tan_max_p" => nothing, "tan_argmax_p" => "")
+                        mu, au = tangent_max(sim.flow.u); mp, ap = tangent_max(sim.flow.p)   # the field state at the detection point (the cell may be elsewhere than the force's source)
+                        blocked = Dict{String,Any}("reason" => "non_finite_tangent_in_force_sample", "onset_step" => step, "t_u_l" => cells[2],
+                                                    "tan_max_u" => mu, "tan_argmax_u" => au, "tan_max_p" => mp, "tan_argmax_p" => ap)
                         break
                     end
                 end
@@ -245,7 +255,7 @@ function run_one(label, phi_host::AbstractArray, ::Type{T}, case, λ, outdir; wa
             step_seconds = time() - loop_started
             peak = max(peak, used_memory())
             summary = Dict{String,Any}("label" => label, "real_type" => string(T), "steps" => step, "first_step_seconds_incl_jit" => first_step_seconds,
-                                       "loop_seconds" => step_seconds, "peak_vram_bytes" => peak, "lambda" => string(λ), "status" => blocked === nothing ? "COMPLETE" : "BLOCKED")
+                                       "loop_seconds" => step_seconds, "peak_vram_bytes" => peak, "lambda_type" => lambda_type, "status" => blocked === nothing ? "COMPLETE" : "BLOCKED")
             if blocked === nothing
                 u = Array(sim.flow.u)
                 summary["fields_finite_incl_partials"] = all(x -> isfinite(vp(x)[1]) && isfinite(vp(x)[2]), u)
@@ -268,18 +278,19 @@ function preflight(phi32, d32, case, DT)
     state = Dict{String,Any}()
     for (name, λ) in (("quick", WaterLily.quick), ("quick_tie", LAMBDA))
         phi_dev = to_device(DT.(phi32, FD.Partials.(tuple.(d32))))
-        sim, bodies, owner = build(phi_dev, DT, case)
+        sim, bodies, owner = build(phi_dev, DT, case, λ)
+        lambda_type = string(typeof(sim.flow.λ))
         local u, p
         GC.@preserve phi_dev owner sim bodies begin
             for _ in 1:PREFLIGHT_STEPS
-                WaterLily.sim_step!(sim; λ)
+                WaterLily.sim_step!(sim)
             end
             sync()
             u = Array(sim.flow.u); p = Array(sim.flow.p)
         end
         tu, tp = FD.partials.(u, 1), FD.partials.(p, 1)
         state[name] = (FD.value.(u), FD.value.(p), tu, tp)
-        out["arms"][name] = Dict("primal_finite" => all(isfinite, state[name][1]) && all(isfinite, state[name][2]),
+        out["arms"][name] = Dict("lambda_type" => lambda_type, "primal_finite" => all(isfinite, state[name][1]) && all(isfinite, state[name][2]),
                                  "tangent_u_finite" => all(isfinite, tu), "tangent_p_finite" => all(isfinite, tp),
                                  "max_abs_tangent_u" => maximum(abs, tu), "max_abs_tangent_p" => maximum(abs, tp))
         sim = bodies = owner = phi_dev = nothing; reclaim()
@@ -290,6 +301,9 @@ function preflight(phi32, d32, case, DT)
     du = maximum(abs, state["quick"][3] .- state["quick_tie"][3]); nu = maximum(abs, state["quick"][3])
     out["tangent_u_max_abs_difference_report_only"] = du
     out["tangent_u_relative_difference_report_only"] = du / max(nu, floatmin(Float32))
+    out["tangent_p_max_abs_difference_report_only"] = maximum(abs, state["quick"][4] .- state["quick_tie"][4])
+    out["tangent_arms_identical"] = du == 0 && out["tangent_p_max_abs_difference_report_only"] == 0
+    out["tangent_difference_note"] = "report only, never gated; exactly 0 would mean no tie within tau occurred in these 20 steps (then the preflight shows only routing, bit-equal primal and finiteness, not QuickTie's effect)"
     out["pass"] = out["primal_u_bit_equal"] && out["primal_p_bit_equal"] &&
                   all(a -> a["primal_finite"] && a["tangent_u_finite"] && a["tangent_p_finite"], values(out["arms"]))
     return out
@@ -312,7 +326,7 @@ function main()
     isfile(joinpath(outdir, "g2_run_index.json")) && error("refusing to overwrite $outdir")
     index = Dict{String,Any}("tier" => "GRAD-TA1", "backend" => BACKEND, "julia" => string(VERSION), "waterlily" => string(pkgversion(WaterLily)),
         "forwarddiff" => string(pkgversion(FD)), "window_t_u_l" => collect(WINDOW), "sample_every" => SAMPLE_EVERY,
-        "lambda" => "QuickTie", "tau" => Float64(TAU), "dual_width" => 1,
+        "lambda_types" => Dict{String,Any}(), "tau" => Float64(TAU), "dual_width" => 1,
         "run_order" => collect(("plain",) ∪ DIRECTIONS), "runs" => Dict{String,Any}(), "run_status" => Dict{String,Any}(), "status" => "RUNNING",
         "evidence_class" => "gpu_full_window_tie_averaged_forward_ad_surrogate_measurement",
         "claim_limit" => "tie-averaged surrogate derivative of the implemented primal vs FD-08 slopes on flow_24 v17, four directions, Re 80; not the derivative of the implemented map, not a gradient qualification",
@@ -351,6 +365,7 @@ function main()
             index["status"] = "PREFLIGHT_ONLY"; exit_code = 0
         else
             rows, summary, _ = run_one("plain", phi32, Float32, case, WaterLily.quick, outdir)
+            index["lambda_types"]["plain"] = summary["lambda_type"]
             write_json(joinpath(outdir, "plain.summary.json"), summary)
             index["runs"]["plain"] = summary["total_seconds"]; index["run_status"]["plain"] = summary["status"]
             wall_limit = WALL_FACTOR * summary["total_seconds"]
@@ -361,7 +376,7 @@ function main()
                 phi_dual = DT.(phi32, FD.Partials.(tuple.(dirs[name])))   # alpha = 0 primal, seed 1, alpha in metres
                 rows, summary, blocked = run_one(name, phi_dual, DT, case, LAMBDA, outdir; wall_limit)
                 write_json(joinpath(outdir, "$name.summary.json"), summary)
-                index["runs"][name] = summary["total_seconds"]; index["run_status"][name] = summary["status"]
+                index["runs"][name] = summary["total_seconds"]; index["run_status"][name] = summary["status"]; index["lambda_types"][name] = summary["lambda_type"]
                 blocked === nothing || (push!(blocked_runs, name); write_json(joinpath(outdir, "$name.blocked.json"), blocked))
                 write_json(joinpath(outdir, "g2_run_index.json"), index)
                 reclaim()

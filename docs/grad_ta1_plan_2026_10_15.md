@@ -101,3 +101,17 @@ Review: SOUND_WITH_REQUIRED_CHANGES (sonnet subagent; local CPU checks on synthe
   actually dispatched.
 - **C7 Wording.** "Decays over 40 steps" is replaced by "decays over the 20 recorded steps at S900 (S1000's 40-step condition failed)". AGREE is
   never described as the derivative of the implemented map.
+
+## Amendment 2 after the FAILED pre-run review (2026-10-15, before any run)
+
+The pre-run review of the frozen bytes (source cb066dc) failed with one verified blocker; these items override the text above (including Amendment 1):
+
+- **λ routing (blocker).** In WaterLily 1.8.0, `sim_step!(sim; λ)` ignores λ: kwargs reach only `udf!`, while `mom_predict!`/`mom_correct!` use the Flow field `flow.λ` fixed at construction
+  (`Flow.jl:190-206`). The cb066dc bridge therefore never used `QuickTie`, and its 20-step preflight compared `quick` with `quick` (vacuous). λ is now passed to
+  `WaterLily.Simulation(...; λ=λ)` for the plain run (`quick`), every Dual run (`QuickTie(1f-5)`) and each preflight arm; `typeof(sim.flow.λ) === typeof(λ)` is a hard error;
+  the type string is recorded in every summary, the preflight and the index, and the analyzer returns INCOMPLETE unless the plain run recorded `quick` and every Dual run (and the preflight's second arm) `QuickTie{Float32}`.
+- **Wall abort factor 8× (was 3×)**, a margin against a false abort should QuickTie-Dual cost more than 3× the plain run. **Abort semantics:** a wall abort, like any other error, propagates out of
+  the kernel's `main()`: status ERROR, verdict INCOMPLETE, no per-direction continue. Only BLOCKED (a non-finite or > 1e30 tangent) stops that run and lets the next direction run.
+- **Preflight** additionally reports the max tangent difference between the two arms for u and p. It is exactly 0 iff no tie within τ occurred in the 20 steps (the CPU dry run shows a non-zero difference, u 1.43 / p 1.89, so ties do occur there; the GPU value is unknown until the run); it is never gated, and
+  if it is 0 the preflight shows only routing, bit-equal primal and finiteness. The bit-equal-primal and finite-tangent gate is unchanged.
+- **BLOCKED from a force sample** now also records max |tangent| and argmax cell of u and p at the detection step. The BLOCKED verdict path skips the full verifier (no plain-baseline gate, no history checks); disclosed.

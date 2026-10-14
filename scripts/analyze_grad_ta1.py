@@ -16,7 +16,10 @@ Verdict (priority INCOMPLETE > BLOCKED > DISAGREE > AGREE):
   GRAD_TA1_DISAGREE    complete, finite, primal gates passed, at least one of the 8 rows fails the GRAD-01 rule
   GRAD_TA1_AGREE       complete, finite, primal gates passed, all 8 rows pass
 The verdict row uses `dual_time` (the tangent of the time step propagated); `frozen_time` is reported.  The additive form 0.25|g_hat| + 3 SE, the per-response
-4-direction cosine and relative L2 are reported only.  No flag changes; selected_delta is recorded for this contract only.
+4-direction cosine and relative L2 are reported only.
+Disclosures: (1) the BLOCKED path returns after the common integrity checks WITHOUT the full verifier (no plain-baseline gate, no history/window-mean checks);
+(2) a wall-time abort (8x the plain run) or any other kernel error stops the whole kernel (status ERROR => INCOMPLETE), there is no per-direction continue after an error;
+(3) sim.flow.λ types recorded by the kernel must be `quick` (plain) and QuickTie{Float32} (every Dual run and the preflight's second arm), else INCOMPLETE.  No flag changes; selected_delta is recorded for this contract only.
 """
 from __future__ import annotations
 
@@ -25,6 +28,7 @@ import csv
 import hashlib
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -37,6 +41,7 @@ RELATIVE_ERROR_TOLERANCE = 0.25   # delta_rel: the middle illustrative value of 
 NOISE_FLOOR_SE_MULTIPLE = 3.0     # absolute_noise_floor = 3 * SE per row (option C; never fires while every |g_hat| > 3 SE, which makes it option B)
 BLOCK_LIMIT = 1.0e30              # the kernel's watchdog threshold
 TAU = 1e-5
+PLAIN_LAMBDA_TYPE = "typeof(quick)"   # string(typeof(sim.flow.λ)) for the plain run
 DEFAULT_FREEZE = ROOT / "docs/evidence/grad_ta1_2026_10_15/prerun_freeze.json"
 ANALYZER_FREEZE_KEY = "scripts/analyze_grad_ta1.py"
 VERDICTS = ("GRAD_TA1_AGREE", "GRAD_TA1_DISAGREE", "GRAD_TA1_BLOCKED", "GRAD_TA1_INCOMPLETE")
@@ -125,6 +130,32 @@ def run_reports(out_dir: Path, index: dict) -> dict:
     return reports
 
 
+def lambda_ok(label: str, lambda_type) -> bool:
+    """The convective scheme actually stored in sim.flow.λ (type string recorded by the kernel): `quick` for the plain run, QuickTie{Float32} for every Dual run."""
+    if label == "plain":
+        return lambda_type == PLAIN_LAMBDA_TYPE
+    return isinstance(lambda_type, str) and re.fullmatch(r"(WaterLily\.)?QuickTie\{Float32\}", lambda_type) is not None
+
+
+def lambda_problems(out_dir: Path, index: dict) -> list[str]:
+    """INCOMPLETE unless every run that ran, and both preflight arms, recorded the right sim.flow.λ type (sim_step!(sim; λ) ignores λ, so the type is the only proof)."""
+    problems = []
+    types = index.get("lambda_types") or {}
+    for label in index.get("run_status", {}):
+        if not lambda_ok(label, types.get(label)):
+            problems.append(f"index lambda_types[{label}] = {types.get(label)!r}: expected {'quick' if label == 'plain' else 'QuickTie{Float32}'} in sim.flow.λ")
+        try:
+            recorded = json.loads((out_dir / f"{label}.summary.json").read_text()).get("lambda_type")
+        except (OSError, ValueError):
+            continue  # a missing or unreadable summary is reported by the manifest / verifier checks
+        if not lambda_ok(label, recorded):
+            problems.append(f"{label}.summary.json lambda_type = {recorded!r}: expected {'quick' if label == 'plain' else 'QuickTie{Float32}'} in sim.flow.λ")
+    arms = (index.get("preflight") or {}).get("arms") or {}
+    if not (lambda_ok("plain", (arms.get("quick") or {}).get("lambda_type")) and lambda_ok("dual", (arms.get("quick_tie") or {}).get("lambda_type"))):
+        problems.append("preflight arms did not record quick / QuickTie in sim.flow.λ (the arms may not have differed)")
+    return problems
+
+
 def artifact_problems(out_dir: Path, freeze: dict) -> list[str]:
     """Integrity common to every outcome (the full-window checks of the verifier run only for a COMPLETE index)."""
     problems = []
@@ -153,8 +184,9 @@ def artifact_problems(out_dir: Path, freeze: dict) -> list[str]:
     for key, expected in freeze["runtime_pins"].items():
         if str(index.get(key)) != expected:
             problems.append(f"runtime pin differs: {key}={index.get(key)} expected {expected}")
-    if index.get("lambda") != "QuickTie" or index.get("tau") != float(TAU) or index.get("dual_width") != 1:
+    if index.get("tau") != float(TAU) or index.get("dual_width") != 1:
         problems.append("run is not QuickTie(1f-5) with Dual width 1")
+    problems += lambda_problems(out_dir, index)
     pre = index.get("preflight") or {}
     if pre.get("pass") is not True or pre.get("primal_u_bit_equal") is not True or pre.get("primal_p_bit_equal") is not True:
         problems.append("preflight failed or missing: QuickTie-Dual vs quick-Dual primal not bit-equal, or a non-finite value/tangent (C6)")

@@ -41,6 +41,9 @@ def test_twenty_step_cpu_preflight_quicktie_dual_equals_quick_dual_bitwise(tmp_p
     assert pre["steps"] == 20 and pre["pass"] is True and pre["primal_u_bit_equal"] is True and pre["primal_p_bit_equal"] is True
     assert all(a["tangent_u_finite"] and a["tangent_p_finite"] and a["primal_finite"] for a in pre["arms"].values())
     assert json.loads((tmp_path / "out/g2_run_index.json").read_text())["status"] == "PREFLIGHT_ONLY"
+    # the TA1 build path stores the requested scheme in sim.flow.λ (sim_step!(sim; λ) would not): the second arm is QuickTie, the first plain quick
+    assert pre["arms"]["quick"]["lambda_type"] == "typeof(quick)" and pre["arms"]["quick_tie"]["lambda_type"] == "WaterLily.QuickTie{Float32}"
+    assert "tangent_p_max_abs_difference_report_only" in pre and "tangent_u_max_abs_difference_report_only" in pre and "never gated" in pre["tangent_difference_note"]
 
 
 def test_quick_tie_source_has_no_silent_fallback_and_asserts_width_one():
@@ -51,5 +54,18 @@ def test_quick_tie_source_has_no_silent_fallback_and_asserts_width_one():
 def test_the_bridge_restricts_dry_run_switches_to_cpu_and_uses_quicktie():
     text = (ROOT / "scripts/waterlily_grad_ta1_2026_10_15.jl").read_text()
     for needle in ("TA1_PREFLIGHT_ONLY is only allowed with G2_BACKEND=cpu", "TA1_BLOCK_LIMIT is only allowed with G2_BACKEND=cpu", "G2_DRYRUN_T_END is only allowed with G2_BACKEND=cpu",
-                   "const LAMBDA = WaterLily.QuickTie(TAU)", "const TAU = 1f-5", "const WATCH_EVERY = 100", "const WALL_FACTOR = 3.0", "1.0e30"):
+                   "const LAMBDA = WaterLily.QuickTie(TAU)", "const TAU = 1f-5", "const WATCH_EVERY = 100", "const WALL_FACTOR = 8.0", "1.0e30"):
         assert needle in text
+
+
+@need_julia
+def test_lambda_reaches_the_solver_through_the_constructor_not_sim_step_kwargs():
+    result = julia(ROOT / "scripts/test_ta1_lambda_routing.jl")
+    assert result.returncode == 0, result.stdout[-3000:] + result.stderr[-3000:]
+    assert "Fail" not in result.stdout and "Error" not in result.stdout
+
+
+def test_the_bridge_routes_lambda_through_the_constructor_and_never_through_sim_step():
+    text = (ROOT / "scripts/waterlily_grad_ta1_2026_10_15.jl").read_text()
+    assert "mem=mem, λ=λ)" in text and "typeof(sim.flow.λ) === typeof(λ) ||" in text
+    assert "WaterLily.sim_step!(sim; λ)" not in text and text.count("WaterLily.sim_step!(sim)") == 3

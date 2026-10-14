@@ -3,6 +3,7 @@
 
     python scripts/freeze_grad_ta1.py --check-identities          # read-only Kaggle listings; writes identity_free_check.json (+ .sha256)
     python scripts/freeze_grad_ta1.py --source-commit <sha>       # after the source commit is pushed and the worker is rendered from it
+    python scripts/freeze_grad_ta1.py --verify                    # re-derive the freeze from the committed bytes and compare (read-only; the identity proof's 24 h age is not re-checked)
 
 Pattern of scripts/freeze_lowdim04a.py (committed-bytes check, source tree id, import-discovered project closure, identity-free proof, rendered-runner re-render check).
 """
@@ -34,7 +35,7 @@ RUNTIME_PINS = {"julia": "1.12.6", "waterlily": "1.8.0", "forwarddiff": "1.4.5",
 KERNEL_TIMEOUT_S = 10800
 EXTRA_FILES = (
     "docs/grad_ta1_plan_2026_10_15.md", "docs/evidence/grad_ta1_2026_10_15/prerun_note.md", "docs/evidence/grad_ta1_2026_10_15/tau_sensitivity.json",
-    "docs/evidence/grad_ta1_2026_10_15/tau_sensitivity.json.sha256", "scripts/grad_ta1_runner_template.py", "scripts/quick_tie.jl", "scripts/test_quick_tie.jl",
+    "docs/evidence/grad_ta1_2026_10_15/tau_sensitivity.json.sha256", "scripts/grad_ta1_runner_template.py", "scripts/quick_tie.jl", "scripts/test_quick_tie.jl", "scripts/test_ta1_lambda_routing.jl",
     "scripts/waterlily_grad_ta1_tau_sensitivity.jl", "scripts/assemble_grad_ta1_tau_sensitivity.py", "scripts/waterlily_grad_g2_full_window_bridge_2026_10_08.jl",
     "scripts/waterlily_grad_g2_diag5_stages.jl", "scripts/waterlily_grad_g2_diag5_one_step_gain_2026_10_09.jl",
     "docs/evidence/fd08_v2_oracle_scope_record_2026_10_08/record.json", "docs/evidence/fd08_v2_formal_2026_10_07_amend3/formal_terminal_verification.json",
@@ -131,10 +132,7 @@ def package_pins() -> dict:
     return {name: {"version": manifest[name][0]["version"], "git_tree_sha1": manifest[name][0].get("git-tree-sha1")} for name in ("WaterLily", "ForwardDiff", "CUDA")}
 
 
-def freeze(source_commit: str) -> None:
-    if FREEZE.exists():
-        raise ValueError("refusing to overwrite an immutable freeze")
-    proof = json.loads(IDENTITY.read_text()); require_identity(proof)
+def build_record(source_commit: str, proof: dict, frozen_utc: str, head: str) -> dict:
     files = (project_closure() | set(K.PIN_PATHS) | set(EXTRA_FILES) | {str(p.relative_to(ROOT)) for p in (ROOT / "tests").glob("test_grad_ta1_*.py")}
              | {"scripts/freeze_grad_ta1.py", "scripts/build_grad_ta1_kernel.py", "scripts/analyze_grad_ta1.py", "scripts/waterlily_grad_ta1_2026_10_15.jl"})
     if subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True).stdout.strip():
@@ -150,16 +148,17 @@ def freeze(source_commit: str) -> None:
         raise ValueError("kernel metadata mismatch")
     record = json.loads(A.B.SCOPE_RECORD.read_text())
     result = {
-        "kind": "grad_ta1_prerun_freeze", "frozen_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "kind": "grad_ta1_prerun_freeze", "frozen_utc": frozen_utc,
         "source_commit": source_commit, "source_tree_id": K.tree_id(source_commit),
-        "head_at_freeze": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
+        "head_at_freeze": head,
         "file_hashes": {p: K.sha(ROOT / p) for p in sorted(files)}, "pins": K.pins(), "runtime_pins": RUNTIME_PINS, "package_pins": package_pins(),
         "runtime": {"kernel_id": K.KERNEL_ID, "runner_sha256": K.sha(runner), "metadata_sha256": K.sha(meta), "machine_shape": "NvidiaTeslaT4",
                     "kernel_timeout_s": KERNEL_TIMEOUT_S, "julia_threads": 1, "cuda_device_order": "PCI_BUS_ID", "cuda_visible_devices": "0", "dataset_sources": []},
         "identity_free_check": proof,
         "contract": {"lambda": "QuickTie", "tau": A.TAU, "tau_literal": "Float32 1f-5", "dual_width": 1, "real_type": "Float32", "order": ["plain", *K.DIRECTIONS],
                      "window_t_u_l": [80.0, 120.0], "sample_every_steps": 8, "preflight_steps": 20, "watchdog_every_steps": 100, "block_limit": A.BLOCK_LIMIT,
-                     "wall_abort": "3 x the plain run's total seconds (error -> INCOMPLETE)", "exit_codes": {"COMPLETE": 0, "BLOCKED": 3, "other": 2},
+                     "wall_abort": "8 x the plain run's total seconds; any error incl. a wall abort stops the whole kernel (status ERROR -> INCOMPLETE)",
+                     "lambda_routing": "WaterLily.Simulation(...; λ=λ) (sim_step!(sim; λ) ignores λ); typeof(sim.flow.λ) === typeof(λ) hard error; plain=quick, Dual=QuickTie{Float32}, recorded per run, preflight arm and index", "exit_codes": {"COMPLETE": 0, "BLOCKED": 3, "other": 2},
                      "registered_plain_baseline_v17": {"drag_n": 0.3239039699743226, "downforce_n": 0.3316344583180616}},
         "rules": {"gates": {"dual_window_mean_primal_rel_vs_plain": A.V.PRIMAL_GATE, "plain_vs_registered_baseline_v17_rel": A.V.BASELINE_GATE, "preflight": "QuickTie-Dual vs quick-Dual primal u,p bit-equal, tangents finite"},
                   "grad01_rule": {"relative_error_tolerance": A.RELATIVE_ERROR_TOLERANCE, "absolute_noise_floor": "3 * SE per row", "source": "src/cfd_sdf/gradients/directional_comparison.py:218-234",
@@ -177,7 +176,32 @@ def freeze(source_commit: str) -> None:
         "qualification_flags": {k: False for k in A.B.FLAGS},
         "selected_delta": {"scope": "GRAD-TA1 contract only", "relative_error_tolerance": A.RELATIVE_ERROR_TOLERANCE}, "grad03_verdict": None, "reverse": "untouched",
     }
+    return result
+
+
+def head() -> str:
+    return subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
+
+
+def freeze(source_commit: str) -> None:
+    if FREEZE.exists():
+        raise ValueError("refusing to overwrite an immutable freeze")
+    proof = json.loads(IDENTITY.read_text()); require_identity(proof)
+    result = build_record(source_commit, proof, datetime.datetime.now(datetime.timezone.utc).isoformat(), head())
     FREEZE.write_bytes(canonical_json(result)); FREEZE.with_suffix(".json.sha256").write_text(K.sha(FREEZE) + "\n"); print("freeze", K.sha(FREEZE))
+
+
+def verify() -> None:
+    """Re-derive the freeze from the committed bytes at its own source commit and compare byte for byte (frozen_utc, head_at_freeze and the identity proof are taken from the freeze itself)."""
+    if FREEZE.with_suffix(".json.sha256").read_text().strip() != K.sha(FREEZE):
+        raise ValueError("freeze does not match its SHA sidecar")
+    old = json.loads(FREEZE.read_text())
+    if old["identity_free_check"] != json.loads(IDENTITY.read_text()):
+        raise ValueError("embedded identity proof differs from identity_free_check.json")
+    new = build_record(old["source_commit"], old["identity_free_check"], old["frozen_utc"], old["head_at_freeze"])
+    if canonical_json(new) != FREEZE.read_bytes():
+        raise ValueError("re-derived freeze differs from prerun_freeze.json: " + ", ".join(k for k in sorted(set(new) | set(old)) if new.get(k) != old.get(k)))
+    print("freeze verified against the committed bytes", K.sha(FREEZE))
 
 
 def main() -> None:
@@ -185,8 +209,9 @@ def main() -> None:
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--check-identities", action="store_true")
     g.add_argument("--source-commit")
+    g.add_argument("--verify", action="store_true")
     args = p.parse_args()
-    capture_identity() if args.check_identities else freeze(args.source_commit)
+    capture_identity() if args.check_identities else verify() if args.verify else freeze(args.source_commit)
 
 
 if __name__ == "__main__":

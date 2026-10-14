@@ -71,6 +71,9 @@ def test_vector_metrics_cosine_and_relative_l2():
 
 
 # ---------------------------------------------------------------------------------------------------------------- synthetic kernel outputs
+QUICK_T, TIE_T = "typeof(quick)", "WaterLily.QuickTie{Float32}"
+
+
 def freeze_stub():
     return {**syn.freeze_stub(), "file_hashes": {A.ANALYZER_FREEZE_KEY: A.sha256(A.__file__)}}
 
@@ -91,11 +94,16 @@ def build_ta1(tmp_path):
     freeze = freeze_stub()
     out = tmp_path / "out"
     plain = syn.build_output(out, freeze)
-    pre = {"pass": True, "primal_u_bit_equal": True, "primal_p_bit_equal": True, "steps": 20}
+    pre = {"pass": True, "primal_u_bit_equal": True, "primal_p_bit_equal": True, "steps": 20,
+           "arms": {"quick": {"lambda_type": QUICK_T}, "quick_tie": {"lambda_type": TIE_T}}}
     status = {n: "COMPLETE" for n in ["plain", *syn.DIRECTIONS]}
+    types = {n: (QUICK_T if n == "plain" else TIE_T) for n in status}
     index = json.loads((out / "g2_run_index.json").read_text())
-    index.update({"lambda": "QuickTie", "tau": 1e-5, "dual_width": 1, "preflight": pre, "run_status": status})
+    index.update({"lambda_types": types, "tau": 1e-5, "dual_width": 1, "preflight": pre, "run_status": status})
     (out / "g2_run_index.json").write_text(json.dumps(index))
+    for label, t in types.items():
+        path = out / f"{label}.summary.json"
+        path.write_text(json.dumps({**json.loads(path.read_text()), "lambda_type": t}))
     for label in syn.DIRECTIONS:                                                    # a calm watchdog history
         (out / f"{label}.watchdog.csv").write_text("step,t_u_l,tan_max_u,tan_argmax_u,tan_max_p,tan_argmax_p,last_sample_step,fx,fx_tan,fz,fz_tan,elapsed_s,vram_bytes\n"
                                                    "100,1.4,0.5,1;2;3;1,0.7,4;5;6,96,1.0,1.0,1.0,1.0,3.0,1\n200,2.7,0.4,1;2;3;1,0.6,4;5;6,192,1.0,1.0,1.0,1.0,6.0,1\n")
@@ -216,12 +224,13 @@ def test_blocked_status_without_a_blocked_run_is_incomplete(good):
 
 
 # ---------------------------------------------------------------------------------------------------------------- INCOMPLETE
-@pytest.mark.parametrize("damage", ["preflight_failed", "preflight_not_bit_equal", "preflight_missing", "kernel_error", "wall_abort", "not_quicktie", "tau", "width",
+@pytest.mark.parametrize("damage", ["preflight_failed", "preflight_not_bit_equal", "preflight_missing", "kernel_error", "wall_abort", "not_quicktie", "dual_ran_quick", "plain_ran_quicktie", "summary_type_missing", "preflight_arm_type", "tau", "width",
                                     "bad_pin", "bad_commit", "no_done", "plain_not_complete", "not_t4", "primal_gate", "baseline_gate", "bad_sha"])
 def test_every_integrity_failure_is_incomplete(good, damage):
     out, freeze, formal = good
     record = record_for(out, freeze, formal, {"default": 0.0})
-    pre = {"pass": True, "primal_u_bit_equal": True, "primal_p_bit_equal": True}
+    pre = {"pass": True, "primal_u_bit_equal": True, "primal_p_bit_equal": True, "arms": {"quick": {"lambda_type": QUICK_T}, "quick_tie": {"lambda_type": TIE_T}}}
+    types = json.loads((out / "g2_run_index.json").read_text())["lambda_types"]
     if damage == "preflight_failed":
         patch_index(out, preflight={**pre, "pass": False})
     elif damage == "preflight_not_bit_equal":
@@ -232,9 +241,20 @@ def test_every_integrity_failure_is_incomplete(good, damage):
     elif damage == "kernel_error":
         patch_index(out, status="ERROR", error="boom")
     elif damage == "wall_abort":
-        patch_index(out, status="ERROR", error="D1: wall-time abort (500 s > 400 s = 3.0 x the plain run)")
+        patch_index(out, status="ERROR", error="D1: wall-time abort (500 s > 400 s = 8.0 x the plain run)")
     elif damage == "not_quicktie":
-        patch_index(out, **{"lambda": "quick"})
+        patch_index(out, lambda_types={**types, "D1_filtered_seed11": QUICK_T})
+    elif damage == "dual_ran_quick":                                                 # the recorded summary says quick although the index claims QuickTie
+        path = out / "D0_interface_offset.summary.json"
+        path.write_text(json.dumps({**json.loads(path.read_text()), "lambda_type": QUICK_T})); refresh_manifest(out)
+    elif damage == "plain_ran_quicktie":
+        patch_index(out, lambda_types={**types, "plain": TIE_T})
+    elif damage == "summary_type_missing":
+        path = out / "P1_upstream_lobe.summary.json"
+        summary = json.loads(path.read_text()); del summary["lambda_type"]
+        path.write_text(json.dumps(summary)); refresh_manifest(out)
+    elif damage == "preflight_arm_type":                                             # both preflight arms ran quick: the QuickTie arm was never routed
+        patch_index(out, preflight={**pre, "arms": {"quick": {"lambda_type": QUICK_T}, "quick_tie": {"lambda_type": QUICK_T}}})
     elif damage == "tau":
         patch_index(out, tau=1e-4)
     elif damage == "width":
@@ -269,6 +289,7 @@ def test_primal_gate_is_the_g2_gate_not_bit_identity(good):
         r["fx"] *= 1.0 + 2e-4                                                        # a Dual primal 2e-4 off the plain run is inside C1's 1e-3 window-mean gate
     syn.write_history(out / "D0_interface_offset.history.csv", rows)
     summary = syn.summary_for(rows, "D0_interface_offset", "Dual")
+    summary["lambda_type"] = TIE_T
     (out / "D0_interface_offset.summary.json").write_text(json.dumps(summary)); refresh_manifest(out)
     assert verifier.PRIMAL_GATE == 1e-3 and verifier.BASELINE_GATE == 1e-6
     result = analyze(out, freeze, formal, record_for(out, freeze, formal, {"default": 0.0}))
