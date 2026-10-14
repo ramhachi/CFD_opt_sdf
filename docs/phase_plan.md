@@ -7447,3 +7447,8 @@ but the gradient-floor rule needs its own decision before #30 (keep it and chang
 The unchanged operator failed on the LOWDIM-03 parent (displacement 0.65 edges, smoothed drift 6.65%, idempotence 0.45h, GEOM-02 distance property 0.012 → 0.122, surface integrity) and on the tie-bearing baseline
 ([record](issues/28_reinit04_result_2026_10_15.md)). Decision (interpretation of the 2026-10-13 delegation): #30's first contract does not include reinitialization (its dependency is conditional); #28 stays open as off-critical-path research.
 Next: the gradient backend cluster (#23 → #24 → #25), which is #30's actual blocker. All flags false.
+
+## #23 GRAD-TA1 (2026-10-15): tie-averaged forward-AD also BLOCKED
+
+Official `GRAD_TA1_INCOMPLETE` (frozen analyzer τ-type check), Amendment 1 `GRAD_TA1_BLOCKED`: all four directions' tangents exceed 1e30 at step 700 of 8,740 at one near-ground wake cell, onset in steps 300–400,
+earlier than exact AD and at a different place ([record](issues/23_grad_ta1_result_2026_10_15.md)). No derivative was compared with FD-08; no backend qualified; #23 open. The derivative route of the solver map is blocked in both conventions tried; the next step is a #25/#30 roadmap decision.
