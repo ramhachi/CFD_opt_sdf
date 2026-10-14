@@ -7452,3 +7452,8 @@ Next: the gradient backend cluster (#23 → #24 → #25), which is #30's actual 
 
 Official `GRAD_TA1_INCOMPLETE` (frozen analyzer τ-type check), Amendment 1 `GRAD_TA1_BLOCKED`: all four directions' tangents exceed 1e30 at step 700 of 8,740 at one near-ground wake cell, onset in steps 300–400,
 earlier than exact AD and at a different place ([record](issues/23_grad_ta1_result_2026_10_15.md)). No derivative was compared with FD-08; no backend qualified; #23 open. The derivative route of the solver map is blocked in both conventions tried; the next step is a #25/#30 roadmap decision.
+
+## #30 OPT-01 v1 closed (2026-10-15): prospective trial REJECTED by the both-grid rule
+
+Decisions D1–D3 (with Amendments 1–2) registered: OPT-01 v1 uses a dual-grid φ-space subspace step (supersedes #25 for this step only; the 2026-10-14 sentence "#30 still depends on #25 … no separate first accepted update gate" is superseded), GEOM-02 profile v2 (crossing-slope rule, report-only for secant probes), no reinitialization, and amends the LOWDIM exit rule for one contract-testing cycle.
+Stage A FOUND, Stage B `OPT01_V1_REJECT`: all four proposal steps passed every gate; flow_24 downforce +3.5e-6 N at 0.3125 mm then negative while flow_32 gained +1.3e-4 to +4.7e-4 N ([record](issues/30_opt01_v1_result_2026_10_15.md)). The outcome was recorded as more likely before submission. #30 is closed (Done: unambiguous verdict). The binding constraint is grid disagreement in the downforce response; next directions (grid study, re-genesis, basis) are open and undecided. All flags false.
