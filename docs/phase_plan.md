@@ -7435,3 +7435,9 @@ then **#28** (reinitialization: the Godunov2 candidate failed the thin-box and c
 
 `sdf_topology_policy_v2_research` is registered ([decision record](issues/31_event_policy_decision_2026_10_14.md), `docs/evidence/sdf_topology_policy_v2_research_2026_10_14.json`): detached components allowed, root connectivity optional, birth/split/merge/whole-component deletion permitted at policy level only (read from the user's 2026-10-13 blanket words as an interpretation, not a #31-specific grant). A detected birth is rejected unless separately qualified, and a topology-fixed step passes `allowed_events=()`; only solid components are judged (cavities and tunnels are not).
 Physical solid width, void width, inter-component gap and the source ProblemSpec binding stay unresolved (`None`, never inferred), so no admissibility PASS exists yet; a resolved policy would be a new registration. v1 and every v16/v17 state binding are unchanged, and `geometry_gates.py` is still typed to v1 (moving it is #29 work). All flags false; `shape_update_allowed=false`.
+
+## #29 GEOM-02 closed (2026-10-15): all geometry gates measured on v17
+
+Every GEOM-01 gate is measured on the v17 baseline and the LOWDIM-03 parent against a registered research profile (lattice representability width/gap limits, not physical): 12 pass, `near_zero_gradient_band` fails on both as predicted
+([record](issues/29_geom02_result_2026_10_14.md)). The failing nodes are mostly kinks of an accurate distance field at one-node-thick edges (63/106 baseline, 149/154 parent), which a reinitialization cannot remove. Next remains #28, re-scoped by this: reinitialization can bound Eikonal drift, zero-level and volume after updates,
+but the gradient-floor rule needs its own decision before #30 (keep it and change the representation, or a profile separating kinks from degeneracies). All flags false; `shape_update_allowed=false`.

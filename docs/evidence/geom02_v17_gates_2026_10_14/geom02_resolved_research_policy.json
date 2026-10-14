@@ -1,0 +1,81 @@
+{
+ "authority": "user blanket delegation of 2026-10-13, read as an interpretation (as #31 did); an explicit later user decision supersedes it",
+ "claims_not_supported": [
+  "manufacturing or physical feature qualification",
+  "export certification at 0.5 mm",
+  "cavity or tunnel topology control",
+  "any shape-update permission",
+  "grid-independent downforce or FSAE qualification"
+ ],
+ "evidence_class": "contract",
+ "flags": {
+  "sdf_gradient_qualified": false,
+  "shape_update_allowed": false,
+  "topology_birth_qualified": false,
+  "waterlily_reverse_cpu_qualified": false,
+  "waterlily_reverse_cuda_qualified": false
+ },
+ "immutable": true,
+ "kind": "sdf_topology_policy_registration",
+ "limits": {
+  "h_m": 0.025,
+  "label": "lattice representability limit (research), not a physical or manufacturing minimum",
+  "minimum_gap_m": "2.5h",
+  "minimum_solid_width_m": "1.5h",
+  "minimum_void_width_m": "1.5h",
+  "reading": "a resolved instance is a new content-addressed policy (#31 record); physical limits remain unregistered and would be a further new policy"
+ },
+ "non_blind": "v16/v17 measured widths are known; 2h was the observed minimum and was not used (circular)",
+ "policy": {
+  "connectivity": {
+   "disconnected_components": "allowed",
+   "required_support_connection": "not inferable from an empty mask; needs a separately registered physical specification",
+   "root_connectivity": "optional",
+   "solid_neighborhood": 26
+  },
+  "empty_solid": "inadmissible",
+  "event_semantics": "policy permission is not execution permission; a topology-fixed step passes allowed_events=() and a birth still needs its own qualification",
+  "hard_masks": {
+   "forbid_material_in": "forbidden_mask",
+   "material_allowed_where": [
+    "design_mask",
+    "fixed_solid_mask",
+    "root_mask"
+   ],
+   "retain_all_solid_cells_in": [
+    "fixed_solid_mask",
+    "root_mask"
+   ]
+  },
+  "kind": "sdf_topology_policy",
+  "max_components": null,
+  "minimum_features": {
+   "measurements_must_bind_to_candidate_state_sha256": true,
+   "minimum_gap_m": 0.0625,
+   "minimum_solid_width_m": 0.037500000000000006,
+   "minimum_void_width_m": 0.037500000000000006,
+   "require_gap_measurement_if_declared": true,
+   "unresolved_values_are_never_inferred": true
+  },
+  "policy_id": "sdf_topology_policy_v2_research",
+  "policy_sha256": "d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+  "schema_version": 2,
+  "source_problem_spec_v2": null,
+  "supersedes_for_research": "sdf_topology_policy_v1 (immutable, unchanged; required root ownership)",
+  "topology_events": {
+   "birth": "permitted_by_policy",
+   "deletion": "permitted_by_policy",
+   "merge": "permitted_by_policy",
+   "split": "permitted_by_policy"
+  },
+  "unresolved_inputs": []
+ },
+ "predecessor_unresolved_registration": {
+  "path": "docs/evidence/sdf_topology_policy_v2_research_2026_10_14.json",
+  "sha256": "5f3edaa16af60120e2cefe19b1fe116d3c362e92a4d5071fd5677a3fa4ce9090"
+ },
+ "registration_id": "sdf_topology_policy_v2_research_resolved_geom02_2026_10_14",
+ "solver_started": false,
+ "source_problem_spec": "absent: the v17 genesis (sdf_native_genesis_v17_2026_09.json) binds no ProblemSpec; not inferred",
+ "state_binding_id": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+}

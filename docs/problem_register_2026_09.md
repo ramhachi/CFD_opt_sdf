@@ -2047,3 +2047,7 @@ flow_24 alone is insufficient (5 of 9 retained states, correlated trials, get op
 ## #31 topology policy (2026-10-14): research v2 registered, physical limits unresolved
 
 `sdf_topology_policy_v2_research` registered (detached components allowed, root connectivity optional, all four events permitted by policy only; a birth needs separate qualification). Solid/void width, inter-component gap and source binding are unresolved and never inferred, so admissibility cannot pass until they are supplied; #29 owns supplying them and moving `geometry_gates.py` off v1. See the [decision record](issues/31_event_policy_decision_2026_10_14.md).
+
+## #29 GEOM-01/02 (2026-10-15): closed, 12 of 13 gates pass on v17
+
+Complete v2 gate artifact on the v17 baseline and LOWDIM-03 parent; `near_zero_gradient_band` fails (thin-edge kinks plus genesis tie plateaus). Open follow-up for #28/#30: the gradient-floor rule decision. See the [record](issues/29_geom02_result_2026_10_14.md).
