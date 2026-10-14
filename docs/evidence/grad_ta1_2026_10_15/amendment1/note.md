@@ -20,7 +20,7 @@ New file `scripts/analyze_grad_ta1_amendment1.py` imports the frozen analyzer an
 the frozen `artifact_problems` runs unchanged; if it reports the tau problem, the problem is dropped only when
 `np.float32(index["tau"]) == np.float32(1e-5) and index["dual_width"] == 1`. Everything else (pins, T4, lambda types, preflight, plain run,
 BLOCKED handling, verdict rules, gates) is the frozen code. Two non-behavioural additions: `load_freeze` pins the frozen analyzer's bytes instead of its own (this file is
-not in the freeze), and the report carries an `amendment` label key. Test `tests/test_grad_ta1_amendment1.py`: a Float32-tau input is INCOMPLETE under the frozen analyzer and, under the
+not in the freeze), and the report carries an `amendment` label key. Test `tests/test_amendment1_grad_ta1.py`: a Float32-tau input is INCOMPLETE under the frozen analyzer and, under the
 amendment, equals exactly the report the frozen analyzer gives when tau matches (plain and BLOCKED variants); tau 1e-4, 2e-5, missing, and width 2 are still INCOMPLETE.
 
 ## Disclosure
