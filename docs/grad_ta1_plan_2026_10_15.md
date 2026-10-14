@@ -65,3 +65,39 @@ DISAGREE/BLOCKED: #23 records the bounded No-Go of this surrogate; the next cand
 identity-free Kaggle check), `scripts/analyze_grad_ta1.py` (`--check`, one `--write`, verdict exactly as above), tests for the analyzer on synthetic
 rows (sign, floor, δ edge, BLOCKED and INCOMPLETE paths) and for the CPU value-identity smoke. Then freeze, independent review of the frozen bytes, submit,
 analyze, independent post-run review, record, merge.
+
+## Amendment 1 after the adversarial plan review (2026-10-15, before any code or run)
+
+Review: SOUND_WITH_REQUIRED_CHANGES (sonnet subagent; local CPU checks on synthetic inputs only). Verified by the planner:
+`scripts/verify_grad_g2_terminal.py:23-24` (G2 primal gate 1e-3 on the window mean; plain-vs-registered baseline gate 1e-6) and the GRAD-01 rule
+`src/cfd_sdf/gradients/directional_comparison.py:218-234` (near-zero switch, else sign plus relative error). These items override the text above:
+
+- **C1 Primal gate (was a blocker).** Bit identity of the Dual primal with the plain primal was never observed (G1: 2.2e-6). Gates, as in G2:
+  plain window mean vs registered `baseline_v17` ≤ 1e-6 relative (harness), each Dual window-mean primal vs plain ≤ 1e-3 relative. Bit identity is
+  required only between QuickTie-Dual and quick-Dual on the same GPU over the 20-step preflight (C6).
+- **C2 Verdict rule = GRAD-01 exactly (was a blocker).** `relative_error_tolerance = 0.25`, `absolute_noise_floor = 3·SE` per row; since every
+  |ĝ| > 3·SE the floor never fires and the rule is option B (sign match and |g − ĝ|/|ĝ| ≤ 0.25). The additive `0.25|ĝ| + 3·SE` form is reported as
+  secondary only, with its effective tolerance per row (about 33–36%). SE is nominal (FD-08's T2 noise model is assumed, not measured); the oracle's
+  model spread reaches 12.6%. The "cosine ≥ 0.97" sentence is replaced by: 1/√(1+0.25²) ≈ 0.970 is the worst case of a 25% error in one component of
+  a two-component direction, an illustration, not a derived bound. **Report-only:** per response, the cosine and relative L2 of the 4-direction
+  vector (g_TA vs ĝ); the optimizer consumes that vector.
+- **C3 Comparator pinned.** Verdict on `dual_time` (tangent of the time step propagated); `frozen_time` reported. Window and interpolation as FD-08
+  (`fd08_v2_campaign_io.py:62-75`, mirrored by the bridge's `window_mean`); ĝ is the odd part (`:150-156`), so an ε → 0 derivative is the right
+  comparand. Reuse `analyze_grad_g2_bridge.py` / `verify_grad_g2_terminal.py` (extend, do not rewrite). AGREE says nothing about step usefulness
+  (STEP-01: one-sided steps are curvature-dominated).
+- **C4 τ.** τ is absolute in velocity units (U = 1); 1e-5 is about 80–170 Float32 ulp and was chosen post hoc from {1e-5, 1e-4} on D0 corner-box
+  states only. Before the freeze, a disclosed, non-gating CPU one-step sensitivity at τ ∈ {3e-6, 1e-5, 3e-5} on the DIAG5 states is recorded. The
+  verdict uses `QuickTie(1f-5)` (Float32 literal). The mean over tied candidates is not guaranteed unbiased against the FD slope (at a 3-way tie it
+  differs from the centered FD); this is part of what the run measures. The one-step 12–16% corner-box mismatch is not cited as support (far-field,
+  not force-level; near-body/wake and D1/D2/P1 never compared).
+- **C5 Watchdog and partial evidence.** New code: every 100 steps a GPU reduction of max |tangent| over u and p with the argmax cell, written and
+  flushed to a per-run CSV together with the force samples, so a failed run keeps its history. BLOCKED = non-finite tangent or max |tangent| > 1e30
+  (Float32 headroom), with onset step and location; a per-run wall-time abort at 3× the plain-run time. Order D0 (the known blower, pilot), D1,
+  D2, P1. Expected about 5 min per run (DIAG1: about 32 ms/step); kernel timeout 3 h.
+- **C6 Integrity and GPU risk.** Extract `QuickTie` (`waterlily_grad_g2_diag5_stages.jl:37-67` plus `_p1`) into a minimal `scripts/quick_tie.jl`
+  shared by the CPU tests and the kernel and frozen by hash. Remove the silent fallback for mixed Float32/Dual arguments (error instead) and assert
+  Dual width 1. Kernel's first action: a 20-step GPU Dual preflight with `quick` and with `QuickTie`; primal values must be bit-equal and tangents finite,
+  else INCOMPLETE. CPU tests: value identity on ties/±0/NaN/random inputs; at a 2-way tie the partial equals the centered FD; the Dual method is
+  actually dispatched.
+- **C7 Wording.** "Decays over 40 steps" is replaced by "decays over the 20 recorded steps at S900 (S1000's 40-step condition failed)". AGREE is
+  never described as the derivative of the implemented map.
