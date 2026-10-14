@@ -1,0 +1,87 @@
+{
+  "case_id": "flow_32",
+  "kernel": "b",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-opt01b-b",
+  "solver_process_wall_seconds_total": 2942.8107616901398,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+      "kind": "parent",
+      "matches_retained_parent_reference": true,
+      "name": "opt01b__parent",
+      "seconds": 414.46352672576904,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "436698d8b68ad6ca5cf7b7fdb2eb418c57398f2af9daf203d96dad9bfb43daf8",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.3125mm",
+      "seconds": 419.3605628013611,
+      "sign": 1,
+      "step_mm": 0.3125
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "7c714a20ea196e98edf5feff2f882d8f4722cfd127f162c8db577401093d27f5",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.625mm",
+      "seconds": 421.71748757362366,
+      "sign": 1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "3e20f8efdda62e39a36fbd8dc53c6c9d3c1e457a44e3862e2904ce94213a6365",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.9375mm",
+      "seconds": 421.6097638607025,
+      "sign": 1,
+      "step_mm": 0.9375
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "a62547c1e2b533ebc539f5403bb1caead278b7fa78853311eed09c5e0773182e",
+      "kind": "candidate",
+      "name": "opt01b__prop__s1.25mm",
+      "seconds": 421.6288073062897,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "c029f24fe5dd336f4cab3c07bb16fe29b5b2f3fe4e0fa0c491d56a4ed0af1346",
+      "kind": "control",
+      "name": "opt01b__ctrl_reverse__s0.625mm",
+      "seconds": 420.62986516952515,
+      "sign": -1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "598ed7bd6c187b4f37b6cae567667309d17d6e351e2aa105806304b5d5e61e2f",
+      "kind": "control",
+      "name": "opt01b__ctrl_reverse__s1.25mm",
+      "seconds": 423.40074825286865,
+      "sign": -1,
+      "step_mm": 1.25
+    }
+  ],
+  "status": "COMPLETE"
+}

@@ -226,6 +226,49 @@ def _gradient_floor_gate(state: SDFDesignState, floor: float | None) -> dict[str
     return _gate(fail=["near_zero_gradient_at_zero_level"] if z["nodes_below_floor"] else (), unmeasured=unmeasured, measured=z, thresholds=thresholds)
 
 
+CROSSING_SLOPE_RULE = "crossing_slope_v1"
+
+
+def _crossing_slope_gate(state: SDFDesignState, band: dict[str, Any], central_floor: float | None) -> dict[str, Any]:
+    """``near_zero_gradient_band`` rule ``crossing_slope_v1`` (OPT-01 v1 profile v2): at every interior sign-change node the largest
+    crossing slope ``|phi(n) - phi(m)|/h`` over the 6-neighbours ``m`` of the opposite class (exact zero = fluid) must be >= threshold.
+    A kink (central gradient 0, crossing slopes about 1) passes; exact-zero ties and near-tie crossings fail.  The central-difference
+    counts of the v1 rule are reported, not gated.  Array-boundary sign-change nodes are unmeasured, as in v1."""
+
+    threshold = _limit(band.get("threshold"))
+    thresholds = {"rule": CROSSING_SLOPE_RULE, "threshold": band.get("threshold"), "zero_level_gradient_floor_central_reported_only": central_floor,
+                  "nodes": "interior nodes with a 6-neighbour of the opposite class; exact zero is fluid; crossing slope over opposite-class neighbours only"}
+    z = _zero_level_gradient(state)
+    if z is None or "norm" not in z:
+        return _gate(unmeasured=["no_interior_sign_change_nodes"], measured={} if z is None else z, thresholds=thresholds)
+    norm, nodes, phi = z.pop("norm"), z.pop("nodes"), z.pop("phi")
+    solid, h = phi < 0.0, float(state.spacing_m)
+    slope = np.zeros(phi.shape)  # np.roll wraps only at the array boundary, which interior nodes never read
+    for axis in range(3):
+        for shift in (1, -1):
+            opposite = np.roll(solid, shift, axis=axis) != solid
+            slope = np.maximum(slope, np.where(opposite, np.abs(phi - np.roll(phi, shift, axis=axis)) / h, 0.0))
+    values = slope[nodes]
+    z.update(crossing_slope_min=float(values.min()), crossing_slope_median=float(np.median(values)),
+             central_nodes_below_floor=None if central_floor is None else int((nodes & (norm < central_floor)).sum()))
+    unmeasured = ["sign_change_nodes_on_array_boundary"] if z["sign_change_nodes_on_array_boundary"] else []
+    bad = np.zeros_like(nodes)
+    if threshold is None:
+        unmeasured.append("crossing_slope_threshold_unregistered_or_invalid")
+    else:
+        bad = nodes & (slope < threshold)
+    z["nodes_below_threshold"] = int(bad.sum())
+    if bad.any():
+        zero = phi == 0.0
+        near_zero = ndimage.binary_dilation(zero) & ~zero
+        z["failing_nodes"] = {
+            "abs_phi_min_max_m": [float(np.abs(phi[bad]).min()), float(np.abs(phi[bad]).max())],
+            "exact_zero_phi": int((bad & zero).sum()), "adjacent_to_exact_zero_phi": int((bad & near_zero).sum()),
+            "other_near_tie": int((bad & ~zero & ~near_zero).sum()),
+        }
+    return _gate(fail=["crossing_slope_below_threshold_at_zero_level"] if z["nodes_below_threshold"] else (), unmeasured=unmeasured, measured=z, thresholds=thresholds)
+
+
 def _feature_gates(occupancy: np.ndarray, h: float, policy: SDFTopologyPolicyResearchV2) -> tuple[dict, dict]:
     idx = np.argwhere(occupancy)
     if not idx.size:
@@ -401,7 +444,13 @@ def evaluate_geometry_gates_v2(
     else:
         failed = eikonal["median_abs_gradient_deviation"] > tolerance
         gates["sdf_distance_property"] = _gate(["phi_not_a_distance_field"] if failed else (), measured=eikonal, thresholds=thresholds)
-    gates["near_zero_gradient_band"] = _gradient_floor_gate(state, _limit(profile.get("zero_level_gradient_floor")))
+    band, floor = profile.get("near_zero_gradient_band"), _limit(profile.get("zero_level_gradient_floor"))
+    if band is None:  # profile v1: central rule
+        gates["near_zero_gradient_band"] = _gradient_floor_gate(state, floor)
+    elif isinstance(band, dict) and band.get("rule") == CROSSING_SLOPE_RULE:
+        gates["near_zero_gradient_band"] = _crossing_slope_gate(state, band, floor)
+    else:
+        gates["near_zero_gradient_band"] = _gate(unmeasured=["near_zero_gradient_band_rule_unregistered"])
 
     margin = _limit(profile.get("boundary_margin_cells"))
     own = _clearances_m(occupancy, state, None)
@@ -462,4 +511,4 @@ def _bundle(state, parent, profile, policy, gates) -> dict[str, Any]:
     }
 
 
-__all__ = ["GEOMETRY_GATES_V2_CONTRACT_ID", "REBOUND_ONLY_REASONS", "evaluate_geometry_gates_v2", "mesh_self_intersection"]
+__all__ = ["CROSSING_SLOPE_RULE", "GEOMETRY_GATES_V2_CONTRACT_ID", "REBOUND_ONLY_REASONS", "evaluate_geometry_gates_v2", "mesh_self_intersection"]

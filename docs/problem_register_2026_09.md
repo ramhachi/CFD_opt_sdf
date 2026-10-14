@@ -2059,3 +2059,7 @@ The registered operator inflates distance near the interface and changed the par
 ## #23 GRAD-03 (2026-10-15): GRAD-TA1 tie-averaged forward-AD BLOCKED at step 700
 
 A second forward-AD convention fails with a different, direction-independent growing tangent mode. See the [record](issues/23_grad_ta1_result_2026_10_15.md).
+
+## #30 OPT-01 (2026-10-15): closed with a prospective REJECT under the OPT-01 v1 contract
+
+All gates passed; the both-grid downforce rule rejected every step (flow_24 vs flow_32 disagree). #25 superseded for this step only and stays open. See the [record](issues/30_opt01_v1_result_2026_10_15.md).

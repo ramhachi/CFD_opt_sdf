@@ -1,0 +1,113 @@
+{
+ "allowed_events": [],
+ "birth_qualified": false,
+ "boundary_margin_cells": 1,
+ "claims_not_supported": [
+  "manufacturing or physical feature qualification",
+  "export certification at 0.5 mm",
+  "cavity or tunnel topology control",
+  "any shape-update permission",
+  "grid-independent downforce or FSAE qualification"
+ ],
+ "clearance_source": {
+  "flow_box_m": [
+   [
+    -2.5,
+    -1.2,
+    -0.9
+   ],
+   [
+    2.5,
+    1.2,
+    0.9
+   ]
+  ],
+  "key": "clearance.minimum_m",
+  "path": "docs/evidence/xfid45_surface_round3_2026_10_03/preregistration.json",
+  "sha256": "bef16d8b15344654a8bdd36f5181e8c085383f8970f2edc4006bdd7a2f175f26"
+ },
+ "contract_id": "sdf_native_geometry_gates_v2",
+ "domain_bounds_m": [
+  [
+   -2.5,
+   -1.2,
+   -0.9
+  ],
+  [
+   2.5,
+   1.2,
+   0.9
+  ]
+ ],
+ "domain_source": {
+  "constants": [
+   "FLOW_ORIGIN_M",
+   "BASE_MAX_M"
+  ],
+  "path": "julia/CFDSDFWaterLily/src/V16W4Sensitivity.jl",
+  "sha256": "f5e6a4743e4d115bb88c0832f1dfe688f2789d8c78f1a3f919b67a7fbc8353a0"
+ },
+ "eikonal_median_tolerance": 0.1,
+ "evidence_class": "contract_and_capability",
+ "export": {
+  "decisions": "XFID user decisions D2 (small components) and D3 (r=8), 2026-10-04",
+  "extractor": "scikit-image 0.25.2 Lewiner via scripts/xfid45_round3_export.py extract",
+  "refinement": 8,
+  "self_intersection_tolerance_note": "contact tolerance as a fraction of the mesh extent; P20 uses 1e-10, whose absolute value reports a phantom contact on needle triangles (tests/test_geometry_gates_v2.py); 1e-12 and 1e-14 gave the same verdict on the saved v17 baseline r=8 surface",
+  "self_intersection_tolerance_rel": 1e-12,
+  "small_component_min_bbox_diagonal_m": 0.025
+ },
+ "flags": {
+  "sdf_gradient_qualified": false,
+  "shape_update_allowed": false,
+  "topology_birth_qualified": false,
+  "waterlily_reverse_cpu_qualified": false,
+  "waterlily_reverse_cuda_qualified": false
+ },
+ "kind": "sdf_native_geometry_gate_profile",
+ "labels": {
+  "widths_and_gap": "lattice representability limit (research), not a physical or manufacturing minimum"
+ },
+ "lattice": {
+  "node_shape": [
+   121,
+   65,
+   49
+  ],
+  "origin_m": [
+   -1.0,
+   -0.8,
+   -0.6
+  ],
+  "spacing_m": 0.025
+ },
+ "max_solid_centers": 8272,
+ "min_clearance_m": 0.25,
+ "near_zero_gradient_band": {
+  "bound": "zero-set shift per unit dphi along the crossing edge is at most 2 dphi (0.625 mm for a 0.3125 mm step)",
+  "rule": "crossing_slope_v1",
+  "text": "at every interior sign-change node (exact zero = fluid) the largest crossing slope |phi(n)-phi(m)|/h over 6-neighbours m of the opposite sign is >= threshold; array-boundary sign-change nodes are unmeasured; central-difference counts (zero_level_gradient_floor) are reported, not gated",
+  "threshold": 0.5
+ },
+ "non_blind": "v16 values and v17 values in SRCMAP-03a/LOWDIM records and read-only plan-review measurements are known; thresholds are not tuned after the canonical run",
+ "non_blind_v2": "crossing-slope failing/interior sign-change nodes measured before registration (plan Amendment 1, E1): baseline 567/9,390, LOWDIM-03 parent 7/8,062, LOWDIM-04B 0.3125 mm trial 0/8,038; the rule was chosen after the #29 diagnostic (non-blind). A future normal-velocity backend must re-register the central rule as hard",
+ "plan": "docs/geom02_plan_2026_10_14.md (with Amendment 1)",
+ "policy": {
+  "policy_sha256": "d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+  "registration_id": "sdf_topology_policy_v2_research_resolved_geom02_2026_10_14",
+  "state_binding_id": "sdf_topology_policy_v2_research@sha256:d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41"
+ },
+ "predecessor_profile": {
+  "difference": "profile_id, near_zero_gradient_band, predecessor_profile, non_blind_v2; all other fields identical",
+  "path": "docs/evidence/geom02_v17_gates_2026_10_14/geom02_gate_profile.json",
+  "sha256": "af3d74c883e4071904483a8d365d1a9bb9206717c49c0bf429da5867cd0f9f9d"
+ },
+ "profile_id": "geom02_v17_research_gates_v2_crossing_slope_2026_10_15",
+ "schema_version": 1,
+ "solver_started": false,
+ "volume_source": {
+  "contract_sha256": "caaa38ef40e810fe8a9c8d8195e0eada6d2ce5e78af25ea2a9670618f0d1f0a4",
+  "registration_id": "sdf_native_volume_semantics_v2_2026_10"
+ },
+ "zero_level_gradient_floor": 0.5
+}
