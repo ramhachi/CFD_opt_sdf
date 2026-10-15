@@ -1,0 +1,24 @@
+{
+  "command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    "infra/kaggle/kernel_grid02_f16",
+    "--accelerator",
+    "NvidiaTeslaT4",
+    "--timeout",
+    "10800"
+  ],
+  "evidence_class": "execution_provenance_not_measurement_result",
+  "exact_reference": "ramhachi888/cfd-opt-sdf-grid02-f16/1",
+  "exit_code": 0,
+  "freeze_sha256": "67eab367d2171b6211c32809a421129a6465fb21c4eaf9df0d9ae75fdafbc0d8",
+  "frozen_pushed_commit": "3951b6ba4f8adb1d5571bc1b9056932389b03529",
+  "issue": 56,
+  "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-f16",
+  "kernel_timeout_s": 10800,
+  "kernel_version": 1,
+  "source_commit": "807157d02826130717aeb16268f58ed6c2e3440c",
+  "submitted_utc": "2026-10-15T18:42:40+00:00"
+}
