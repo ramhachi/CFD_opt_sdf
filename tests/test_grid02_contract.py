@@ -38,8 +38,9 @@ def test_kernel_plan_is_the_registered_table():
     assert K["s24"]["states"] == K["s32"]["states"] == C.SEVEN and len(C.SEVEN) == 7 and K["f16"]["states"] == C.SEVEN + (C.REPEAT,)
     assert K["f48a"]["states"] == (C.PARENT, "opt01b__prop__s0.3125mm", "opt01b__prop__s0.625mm", "opt01b__prop__s0.9375mm")
     assert K["f48b"]["states"] == (C.REPEAT, "opt01b__prop__s1.25mm", "opt01b__ctrl_reverse__s1.25mm")
-    assert {k: C.aggregate_cap_s(k) for k in K} == {"s24": 6300, "s32": 6300, "f48a": 18000, "f48b": 13500, "f16": 7200}
-    assert all(v["kernel_timeout_s"] - 300 > C.aggregate_cap_s(k) for k, v in K.items()) and K["f48a"]["kernel_timeout_s"] == K["f48b"]["kernel_timeout_s"] == 21600
+    assert {k: C.aggregate_cap_s(k) for k in K} == {"s24": 6300, "s32": 6300, "f48a": 24000, "f48b": 18000, "f16": 7200}
+    assert all(v["kernel_timeout_s"] - 300 - 2400 - 300 > C.aggregate_cap_s(k) for k, v in K.items())  # reserve, instantiate and GPU-probe budgets of build_grid02_inputs
+    assert all(v["kernel_timeout_s"] - 300 > C.aggregate_cap_s(k) for k, v in K.items()) and K["f48a"]["kernel_timeout_s"] == K["f48b"]["kernel_timeout_s"] == 28800 and K["f48a"]["per_state_timeout_s"] == K["f48b"]["per_state_timeout_s"] == 6000
     assert [K[k]["placement"] for k in K] == ["shifted", "shifted", "native", "native", "native"] and [K[k]["grid02_case"] for k in K] == [None, None, "flow_48", "flow_48", "flow_16"]
     assert set(OPT01B["kernels"]["a"]) == set(C.SEVEN) and OPT01B["kernels"]["a"] == list(C.SEVEN)
 
@@ -48,9 +49,12 @@ def test_fits_reproduce_the_retained_stage_b_refit():
     f = C.fit_quadratic(STEPS, DL24)
     assert 0.9e-4 < f["b_n_per_mm"] < 1.05e-4 and -2.4e-4 < f["a_n_per_mm2"] < -2.2e-4 and f["max_residual_n"] < 6e-6
     assert f["zero_crossing_mm"] == pytest.approx(f["b_n_per_mm"] / abs(f["a_n_per_mm2"])) and 0.35 < f["zero_crossing_mm"] < 0.45
-    assert f["attainable_gain_n"] == pytest.approx(f["b_n_per_mm"] ** 2 / (2 * abs(f["a_n_per_mm2"]))) and f["attainable_gain_n"] < C.RESOLUTION_FLOOR_N
+    assert f["attainable_gain_n"] == pytest.approx(f["b_n_per_mm"] ** 2 / (4 * abs(f["a_n_per_mm2"]))) and f["attainable_gain_n"] < C.RESOLUTION_FLOOR_N
+    assert f["peak_step_mm"] == pytest.approx(f["b_n_per_mm"] / (2 * abs(f["a_n_per_mm2"]))) and 0.2 < f["peak_step_mm"] < 0.22 and f["peak_within_tested_range"] is True
+    assert f["in_range_max_n"] == pytest.approx(f["attainable_gain_n"])
     g = C.fit_quadratic(STEPS, DL32)
     assert 4.7e-4 < g["b_n_per_mm"] < 5.0e-4 and -1.5e-4 < g["a_n_per_mm2"] < -0.8e-4 and g["max_residual_n"] < 2e-5 and 3 < g["zero_crossing_mm"] < 6 and g["attainable_gain_n"] > 5e-4
+    assert 2.5 < g["peak_step_mm"] < 3 and g["peak_within_tested_range"] is False and g["in_range_max_n"] == pytest.approx(g["b_n_per_mm"] * 1.25 + g["a_n_per_mm2"] * 1.25 ** 2) and g["in_range_max_n"] < g["attainable_gain_n"]
     h = C.fit_with_intercept([0.0] + STEPS, [0.0] + DL32)
     assert abs(h["c_n"]) < 2e-5 and h["b_n_per_mm"] == pytest.approx(g["b_n_per_mm"], rel=0.1) and h["max_residual_n"] < 2e-5
 
@@ -58,11 +62,18 @@ def test_fits_reproduce_the_retained_stage_b_refit():
 def test_fit_is_exact_on_exact_data_and_reports_the_non_attainable_cases():
     f = C.fit_quadratic([1, 2, 3, 4], [2 * s - 0.5 * s * s for s in (1, 2, 3, 4)])
     assert f["b_n_per_mm"] == pytest.approx(2) and f["a_n_per_mm2"] == pytest.approx(-0.5) and f["max_residual_n"] < 1e-12
-    assert f["zero_crossing_mm"] == pytest.approx(4) and f["attainable_gain_n"] == pytest.approx(4)
+    assert f["zero_crossing_mm"] == pytest.approx(4) and f["peak_step_mm"] == pytest.approx(2) and f["attainable_gain_n"] == pytest.approx(2)  # b^2/(4|a|) at s* = b/(2|a|), not b^2/(2|a|)
+    assert f["peak_within_tested_range"] is False and f["in_range_max_n"] == pytest.approx(2 * 1.25 - 0.5 * 1.25 ** 2)
+    w = C.fit_quadratic([0.25, 0.5, 0.75, 1.0], [2 * s - 1.5 * s * s for s in (0.25, 0.5, 0.75, 1.0)])  # s* = 2/3 <= 1.25: the peak itself is in range
+    assert w["peak_within_tested_range"] is True and w["in_range_max_n"] == pytest.approx(w["attainable_gain_n"]) == pytest.approx(4 / 6)
     u = C.fit_quadratic([1, 2, 3], [s + 0.1 * s * s for s in (1, 2, 3)])
-    assert u["zero_crossing_mm"] is None and u["attainable_gain_n"] is None and u["attainable_reason"] == "unbounded in range"
+    assert u["zero_crossing_mm"] is None and u["attainable_gain_n"] is None and u["attainable_reason"] == "unbounded in range" and u["peak_within_tested_range"] is False
     n = C.fit_quadratic([1, 2, 3], [-s - 0.1 * s * s for s in (1, 2, 3)])
     assert n["attainable_gain_n"] is None and "b <= 0" in n["attainable_reason"]
+    v = C.fit_quadratic([1, 2, 3], [-2 * s + 0.5 * s * s for s in (1, 2, 3)])  # b < 0 is checked first, and a > 0 adds the crossing below which there is no gain
+    assert v["attainable_gain_n"] is None and "b <= 0" in v["attainable_reason"] and "below s = 4" in v["attainable_reason"]
+    z = C.fit_quadratic([1, 2, 3], [-0.1 * s * s for s in (1, 2, 3)])  # b = 0, a < 0: no forward gain, not 'a < 0'
+    assert z["attainable_gain_n"] is None and z["attainable_reason"] == "no forward gain (b <= 0)"
     i = C.fit_with_intercept([0, 1, 2, 3], [1 + 2 * s + 0.5 * s * s for s in (0, 1, 2, 3)])
     assert (i["c_n"], i["b_n_per_mm"], i["a_n_per_mm2"]) == pytest.approx((1, 2, 0.5))
 
@@ -139,8 +150,9 @@ def test_fine_classification_exact_thresholds_and_stability_band():
 
 def test_decision_map_branches_and_validation():
     a = C.ALIGNMENT
-    assert "placement artifact" in C.decision_text(a[0], C.FINE[0], True) and "placement artifact" in C.decision_text(a[0], C.FINE[1], False)
-    assert "stable working map" in C.decision_text(a[1], C.FINE[0], True) and "no affordable grid" in C.decision_text(a[1], C.FINE[2], False)
+    assert "sensitive to the (h/2, h/2, 0) shift" in C.decision_text(a[0], C.FINE[0], True) and "sensitive to the (h/2, h/2, 0) shift" in C.decision_text(a[0], C.FINE[1], False)
+    assert "placement artifact" not in " ".join(C.DECISIONS.values()) and "stable working map" not in " ".join(C.DECISIONS.values()) and "STABLE flag" in C.DECISION_MAP_NOTE
+    assert "within 30% of flow_48" in C.decision_text(a[1], C.FINE[0], True) and "no affordable grid" in C.decision_text(a[1], C.FINE[2], False)
     assert "second placement phase study" in C.decision_text(a[2], C.FINE[1], True) and C.decision_text(a[1], C.FINE[0], True).startswith(a[1])
     for bad in (("x", C.FINE[0], True), (a[0], "x", True), (a[0], C.FINE[0], 1)):
         with pytest.raises(ValueError):

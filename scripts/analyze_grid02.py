@@ -43,10 +43,15 @@ RULES = {"resolution": "max(3e-5 N, largest observed parent-pair |difference| of
          "alignment": {"G": "b_32n - b_24n", "m24": "(b_24s - b_24n)/G", "m32": "(b_32n - b_32s)/G", "dominant": "m24 >= 0.5 and m32 >= 0.5", "negligible": "|m24| <= 0.2 and |m32| <= 0.2", "else": "partial_or_mixed"},
          "fine": {"r": "(b_48n - b_24n)/G", "continues_to_flow32": "r >= 0.5", "reverses_toward_flow24": "r <= 0.2", "else": "intermediate", "stable_32_to_48": "|b_48n - b_32n| <= 0.3 |b_32n|"},
          "both_grid_rule": "descriptive only: downforce gain > 3e-5 N and drag change <= 0 on every listed grid", "hindcast_band_flow_48_parent_downforce_n": HINDCAST_BAND_N, "verdicts": ["GRID02_RECORDED", "GRID02_INCOMPLETE"],
-         "decision_map": C.DECISIONS}
+         "decision_map": C.DECISIONS, "decision_map_note": C.DECISION_MAP_NOTE,
+         "descriptive_robustness": "never changes the verdict: per cell b_c = (dL(+1.25 mm) - dL(-1.25 mm))/2.5, b with intercept, leave-one-out b, b_48n with all forward points against the f48a parent, and whether the alignment/fine/stable results would change if b_c / b_with_intercept / that b_48n replaced b",
+         "shift_integrity": "the shifted flow_24 and flow_32 parents must differ from the native parents in downforce or drag, else GRID02_INCOMPLETE (shift ineffective)",
+         "peak": "for a < 0 and b > 0: peak step b/(2|a|), attainable gain b^2/(4|a|), zero crossing b/|a|, peak within tested range iff b/(2|a|) <= 1.25 mm, in-range maximum at min(peak step, 1.25 mm); beyond the range it is an extrapolation"}
 KNOWN_BEFORE_RUN = ("OPT-01 v1 Stage B, GRID-01, the W4 history and the retained quadratic refit are visible. Hindcast, not a precise prediction: with baseline downforce 0.2545 / 0.3316 / 0.3613 N at n = 16 / 24 / 32 "
                     "and 1/n or 1/n^2 scaling of the changes, the flow_48 parent downforce is expected near 0.38-0.40 N. No prediction is registered for b_48 or a_48. FD-07 (a lattice-phase shift changed the flow_24 short-window "
-                    "baseline by +11.9% drag, +7.2% downforce, a re-sampling not a pure translation) is weak prior support that placement matters. The 3e-5 N floor is unmeasured on flow_16/32/48.")
+                    "baseline by +11.9% drag, +7.2% downforce, a re-sampling not a pure translation) is weak prior support that placement matters. The 3e-5 N floor is unmeasured on flow_16/32/48. "
+                    "G = b_32n - b_24n = 3.95e-4 N/mm is already known from the retained OPT-01 Stage B data (b_24n = 9.4e-5, b_32n = 4.9e-4, intercept-free fits); only b_24s, b_32s and b_48n are new. "
+                    "The absolute thresholds are |db| >= 1.98e-4 N/mm (0.5 G) and |db| <= 7.9e-5 N/mm (0.2 G); with these retained b values STABLE_32_TO_48 implies r in [0.63, 1.38], i.e. FINE_CONTINUES_TO_FLOW32.")
 PROHIBITIONS = ["no grid-convergence/GCI claim", "no true-grid or physical downforce/drag claim", "no gradient, optimizer or second-iteration claim", "no amendment of any threshold or rule after the run, no rule change of OPT-01",
                 "no automatic repair or resubmission after an integrity failure", "no claim that the shift control is a full alignment control (z unshifted)"]
 INTERPRETATION = {
@@ -55,13 +60,14 @@ INTERPRETATION = {
                "OPT-01 is not re-opened and its dual-grid rule is unchanged; all qualification flags are false, shape_update_allowed is false, delta is unset. The shift control is PARTIAL: the body moves (h/2, h/2, 0) against the flow grid and z is unshifted, "
                "so z-plane alignment is only partly inverted. The 3e-5 N floor is a nominal flow_24 value, unmeasured on the other grids, and a byte-identical parent pair measures reproducibility, not noise; the flow_24/flow_32 native pair difference is taken as 0 "
                "(the OPT-01 Stage B parents were byte-identical to the retained references), and the shifted flow_24/flow_32 kernels have no pair, so their resolution is the floor."),
-    "GRID02_ALIGNMENT_DOMINANT": "Alignment dominant: the placement shift moves both flow_24 and flow_32 slopes at least half-way toward each other, so the dual-grid disagreement is read as largely a placement effect of this partial control.",
+    "GRID02_ALIGNMENT_DOMINANT": ("Alignment dominant: under the shift the flow_24 slope moves by at least G/2 toward the native flow_32 slope and the flow_32 slope by at least G/2 toward the native flow_24 slope, so the slopes are sensitive to the (h/2, h/2, 0) shift of this partial control. "
+                                  "No lattice-phase mapping is assumed (shifted flow_24 sits at phases 1/2, 5/6, 1/6 in x and y, shifted flow_32 becomes node-aligned in x and y); this is not an identification of the placement as the cause."),
     "GRID02_ALIGNMENT_NEGLIGIBLE": "Alignment negligible: the placement shift moves both slopes by at most a fifth of the gap, so the disagreement is not explained by the (h/2, h/2, 0) shift of this partial control.",
     "GRID02_ALIGNMENT_PARTIAL_OR_MIXED": "Alignment partial or mixed: the shift moves the slopes by an intermediate amount or in different directions; the control neither isolates nor excludes placement.",
     "FINE_CONTINUES_TO_FLOW32": "flow_48 continues the 24 -> 32 change in slope (r >= 0.5).",
     "FINE_REVERSES_TOWARD_FLOW24": "flow_48 reverses toward the flow_24 slope (r <= 0.2).",
     "FINE_INTERMEDIATE": "flow_48 lies between the continuation and the reversal (0.2 < r < 0.5).",
-    "stable": "STABLE_32_TO_48 is true: the slope changes by at most 30% from flow_32 to flow_48.", "unstable": "STABLE_32_TO_48 is false: the slope changes by more than 30% from flow_32 to flow_48.",
+    "stable": "STABLE_32_TO_48 is true: the slope changes by at most 30% from flow_32 to flow_48.", "unstable": "STABLE_32_TO_48 is false: the slope changes by more than 30% from flow_32 to flow_48 (still growing or turning back; the map does not distinguish).",
 }
 
 
@@ -99,7 +105,7 @@ def _rel(actual: float, expected: float) -> float:
 def required_file_paths(inventory: dict) -> set[str]:
     """Regular source/input closure bound by the freeze (generated runners and metadata are bound separately, by re-rendering)."""
     paths = {f"scripts/{n}.py" for n in ("analyze_grid02", "freeze_grid02", "build_grid02_inputs", "build_grid02_kernel", "grid02_runner_template", "step01_states", "grid01_gpu", "fd08_v2_campaign_io",
-                                         "build_grid01_inputs", "analyze_grid01")}
+                                         "build_grid01_inputs", "analyze_grid01", "analyze_lowdim02a", "build_grid01_kernel", "build_lowdim01_inputs", "lowdim01_states")}
     paths |= {"scripts/waterlily_grid02_job.jl", "scripts/grid02_case.jl", FORMAL_REL, PLAN_REL, "julia/CFDSDFWaterLilyT4/Project.toml", "julia/CFDSDFWaterLilyT4/Manifest.toml",
               *(f"tests/test_grid02_{n}.py" for n in ("analyzer", "prereg", "contract", "inputs_and_runner", "job")),
               *(f"{EVIDENCE_REL}/{n}" for n in ("inventory.json", "inventory.json.sha256", "prerun_note.md", "identity_free_check.json", "identity_free_check.json.sha256"))}
@@ -184,6 +190,8 @@ def validate_registration(freeze: Any, inventory: Any) -> None:
         raise ValueError("OPT-01 Stage B inventory/analysis bytes differ from the pinned immutable result")
     if sha256(_path(inventory["parent"]["raw_path"])) != inventory["parent"]["phi_fortran_order_sha256"] or sha256(_path(inventory["proposal"]["file"])) != inventory["proposal"]["sha256_fortran_raw"]:
         raise ValueError("the parent or the direction raw bytes differ from the inventory")
+    if inventory["states"][:7] != jload(_path(src["opt01b_inventory_path"]))["states"]:
+        raise ValueError("inventory states differ from the OPT-01 Stage B inventory rows")
     formal = jload(_path(FORMAL_REL))["measurement"]
     if set(freeze.get("runtime", {})) != set(C.KERNELS) or set(freeze.get("pins", {})) != set(C.KERNELS) or set(inventory["kernel_config"]) != set(C.KERNELS):
         raise ValueError("all five kernels' configuration, runtime and pins are required")
@@ -202,11 +210,11 @@ def validate_registration(freeze: Any, inventory: Any) -> None:
 
 
 def _manifest(out: Path, names: list[str], case: str) -> None:
+    if out.is_symlink() or any(p.is_symlink() for p in out.rglob("*")):
+        raise ValueError("symlinks are not permitted in retained kernel output")
     files = jload(out / "output_manifest.json")["files"]
     if not isinstance(files, dict) or not files:
         raise ValueError("manifest files map is missing or empty")
-    if any(p.is_symlink() for p in out.rglob("*")):
-        raise ValueError("symlinks are not permitted in retained kernel output")
     if set(files) != {str(p.relative_to(out)) for p in out.rglob("*") if p.is_file() and p != out / "output_manifest.json"}:
         raise ValueError("manifest path set differs from actual output")
     required = {"grid02_index.json", "run_identity.json", "nvidia_smi.csv", "gpu_device_probe.json", "gpu_device_probe.log", "DONE"}
@@ -351,12 +359,34 @@ def cell_report(case: str, placement: str, points: dict, parent: dict, pair: dic
         if n in st:
             pred = fit["b_n_per_mm"] * st[n]["step_mm"] + fit["a_n_per_mm2"] * st[n]["step_mm"] ** 2
             rev[n] = {"step_mm": st[n]["step_mm"], "measured_dL_n": st[n]["dL_n"], "predicted_dL_n": pred, "residual_n": st[n]["dL_n"] - pred}
+    hi, lo = st.get(C.FORWARD[3]), st.get(C.REVERSE[1])
+    check = C.fit_with_intercept([0.0] + s, [0.0] + y)
     return {"case": case, "placement": placement, "parent_downforce_n": parent["downforce_n"], "parent_drag_n": parent["drag_n"], "pair_difference_n": pair, "resolution_n": res, "states": st,
-            "fit": {**fit, "forward_steps_mm": s}, "fit_with_intercept": C.fit_with_intercept([0.0] + s, [0.0] + y), "reverse_check": rev}
+            "fit": {**fit, "forward_steps_mm": s}, "fit_with_intercept": check, "reverse_check": rev,
+            # descriptive robustness (never enters a classification): model-free central slope, intercept-fit slope, leave-one-out slopes
+            "b_central_n_per_mm": None if hi is None or lo is None else (hi["dL_n"] - lo["dL_n"]) / (2 * C.MAX_STEP_MM), "b_with_intercept_n_per_mm": check["b_n_per_mm"],
+            "b_leave_one_out": [{"dropped_step_mm": s[i], "b_n_per_mm": C.fit_quadratic(s[:i] + s[i + 1:], y[:i] + y[i + 1:])["b_n_per_mm"]} for i in range(len(s))]}
 
 
 def _pair(a: dict, b: dict) -> dict:
     return {"downforce_n": b["downforce_n"] - a["downforce_n"], "drag_n": b["drag_n"] - a["drag_n"], "forces_csv_byte_identical": a["forces_csv_sha256"] == b["forces_csv_sha256"]}
+
+
+def class_changes(b: dict, align: dict, fine: dict) -> dict:
+    """Would the alignment / fine class / STABLE flag change if the slopes `b` (cell label -> value) replaced the registered ones?  'unchanged', the other value, or 'not computable'."""
+    out = {}
+    try:
+        got = C.alignment_classification(b["24n"], b["24s"], b["32n"], b["32s"])["classification"]
+        out["alignment"] = "unchanged" if got == align["classification"] else got
+    except ValueError:
+        out["alignment"] = "not computable"
+    try:
+        got = C.fine_classification(b["24n"], b["32n"], b["48n"])
+        out["fine"] = "unchanged" if got["classification"] == fine["classification"] else got["classification"]
+        out["stable_32_to_48"] = "unchanged" if got["stable_32_to_48"] == fine["stable_32_to_48"] else got["stable_32_to_48"]
+    except ValueError:
+        out["fine"] = out["stable_32_to_48"] = "not computable"
+    return out
 
 
 def analysis(states: dict, native: dict) -> dict:
@@ -381,10 +411,18 @@ def analysis(states: dict, native: dict) -> dict:
         pairs[f"native_{case}"] = {"downforce_n": 0.0, "drag_n": 0.0, "basis": "taken as 0: the OPT-01 Stage B parents were byte-identical to the retained references (integrity-checked by that analysis)"}
     for kernel, label in (("s24", "24s"), ("s32", "32s")):
         pts, par = single(kernel)
+        ref = native[C.KERNELS[kernel]["case"]][C.PARENT]
+        if par["downforce_n"] == ref["downforce_n"] and par["drag_n"] == ref["drag_n"]:
+            raise ValueError(f"shift ineffective: the {kernel} job ignored the origin (shifted parent identical to the native parent)")
         cells[label] = cell_report(C.KERNELS[kernel]["case"], "shifted", pts, par, None)
         pairs[kernel] = {"basis": "no parent pair was run on this kernel: resolution is the nominal floor only"}
     b_of = {k: cells[k]["fit"]["b_n_per_mm"] for k in CELL_LABELS}
     align, fine = C.alignment_classification(b_of["24n"], b_of["24s"], b_of["32n"], b_of["32s"]), C.fine_classification(b_of["24n"], b_of["32n"], b_of["48n"])
+    align = {**align, "gap_after_shift_ratio": 1 - align["m24"] - align["m32"], "abs_b_24s_minus_b_32s": abs(b_of["24s"] - b_of["32s"])}  # (b_32s - b_24s)/G and its magnitude
+    ref48 = a[C.PARENT]["downforce_n"]
+    alt48 = C.fit_quadratic(list(C.FORWARD_MM), [(a[n] if n in a else b[n])["downforce_n"] - ref48 for n in C.FORWARD])
+    variants = {"b_central": {k: cells[k]["b_central_n_per_mm"] for k in CELL_LABELS}, "b_with_intercept": {k: cells[k]["b_with_intercept_n_per_mm"] for k in CELL_LABELS}, "b_48n_all_vs_f48a_parent": {**b_of, "48n": alt48["b_n_per_mm"]}}
+    robustness = {"descriptive_only": True, "b_48n_all_vs_f48a_parent": {k: alt48[k] for k in ("b_n_per_mm", "a_n_per_mm2", "max_residual_n")}, "would_change_if_slopes_were": {k: class_changes(v, align, fine) for k, v in variants.items()}}
     table = {str(n): {"cell": lab, "b_n_per_mm": cells[lab]["fit"]["b_n_per_mm"], "a_n_per_mm2": cells[lab]["fit"]["a_n_per_mm2"], "parent_downforce_n": cells[lab]["parent_downforce_n"], "parent_drag_n": cells[lab]["parent_drag_n"],
                        "dD_at_1.25mm_n": cells[lab]["states"][C.FORWARD[3]]["dD_n"], "dL_at_1.25mm_n": cells[lab]["states"][C.FORWARD[3]]["dL_n"]} for n, lab in ((16, "16n"), (24, "24n"), (32, "32n"), (48, "48n"))}
     placement = {str(n): {"parent_downforce_shifted_minus_native_n": cells[f"{n}s"]["parent_downforce_n"] - cells[f"{n}n"]["parent_downforce_n"], "parent_drag_shifted_minus_native_n": cells[f"{n}s"]["parent_drag_n"] - cells[f"{n}n"]["parent_drag_n"],
@@ -396,7 +434,7 @@ def analysis(states: dict, native: dict) -> dict:
     p48 = cells["48n"]["parent_downforce_n"]
     stable = fine["stable_32_to_48"]
     return {"cells": cells, "pair_differences": pairs, "four_point_table": table, "placement_effect": placement, "both_grid_rule_descriptive": both,
-            "alignment": align, "fine": fine, "stable_32_to_48": stable, "decision_text": C.decision_text(align["classification"], fine["classification"], stable),
+            "alignment": align, "fine": fine, "stable_32_to_48": stable, "slope_robustness": robustness, "decision_text": C.decision_text(align["classification"], fine["classification"], stable),
             "hindcast_flow_48_parent_downforce": {"downforce_n": p48, "band_n": HINDCAST_BAND_N, "within_band": HINDCAST_BAND_N[0] <= p48 <= HINDCAST_BAND_N[1], "descriptive_only": True},
             "interpretation": " ".join([INTERPRETATION["common"], INTERPRETATION[align["classification"]], INTERPRETATION[fine["classification"]], INTERPRETATION["stable" if stable else "unstable"]])}
 
@@ -424,6 +462,14 @@ def analyze(dirs: dict, freeze: Any, inventory: Any | None = None) -> dict:
     return report
 
 
+def check_committed_freeze(freeze_path: Path) -> None:
+    """If the freeze is committed at the repository HEAD, the file given must be byte-identical to that blob."""
+    rel = f"{EVIDENCE_REL}/prerun_freeze.json"
+    blob = subprocess.run(["git", "-C", str(ROOT), "show", f"HEAD:{rel}"], capture_output=True)
+    if blob.returncode == 0 and Path(freeze_path).read_bytes() != blob.stdout:
+        raise ValueError(f"--freeze differs from the committed {rel} at HEAD")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--kernel-root", type=Path, required=True, help="directory containing grid02_f16, grid02_f48a, grid02_f48b, grid02_s24, grid02_s32")
@@ -432,9 +478,11 @@ def main() -> None:
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", type=Path)
     args = p.parse_args()
-    if args.write is not None and args.write.exists():
+    sidecar = None if args.write is None else args.write.with_name(args.write.name + ".sha256")
+    if args.write is not None and (args.write.exists() or sidecar.exists()):
         raise SystemExit("refusing to overwrite an existing GRID-02 analysis")
     try:
+        check_committed_freeze(args.freeze)
         freeze_sha = sha256(args.freeze)
         if args.freeze.with_name(args.freeze.name + ".sha256").read_text().strip() != freeze_sha:
             raise ValueError("freeze SHA-256 sidecar mismatch")
@@ -450,9 +498,12 @@ def main() -> None:
         return
     report["provenance"]["freeze_sha256"] = freeze_sha
     data = json.dumps(report, sort_keys=True, indent=2, allow_nan=False) + "\n"
+    digest = hashlib.sha256(data.encode()).hexdigest()
     with args.write.open("x") as handle:
         handle.write(data)
-    print(report["verdict"], hashlib.sha256(data.encode()).hexdigest())
+    with sidecar.open("x") as handle:
+        handle.write(digest + "\n")
+    print(report["verdict"], digest)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ DESIGN_SPACING_M = 0.025
 PLACEMENTS = {"native": (-1.0, -0.8, -0.6), "shifted": (-0.9875, -0.7875, -0.6)}
 PARENT, REPEAT = "opt01b__parent", "opt01b__parent_repeat"
 FORWARD_MM, REVERSE_MM = (0.3125, 0.625, 0.9375, 1.25), (0.625, 1.25)
+MAX_STEP_MM = FORWARD_MM[-1]
 FORWARD = tuple(f"opt01b__prop__s{s:g}mm" for s in FORWARD_MM)
 REVERSE = tuple(f"opt01b__ctrl_reverse__s{s:g}mm" for s in REVERSE_MM)
 SEVEN = (PARENT,) + FORWARD + REVERSE
@@ -25,18 +26,19 @@ JOB_C, JOB_F32, JOB_G02 = "scripts/waterlily_xfid_candidate_c_job.jl", "scripts/
 KERNELS = {
     "s24": {"case": "flow_24", "placement": "shifted", "states": SEVEN, "job": JOB_C, "grid02_case": None, "per_state_timeout_s": 900, "kernel_timeout_s": 10800},
     "s32": {"case": "flow_32", "placement": "shifted", "states": SEVEN, "job": JOB_F32, "grid02_case": None, "per_state_timeout_s": 900, "kernel_timeout_s": 10800},
-    "f48a": {"case": "flow_48", "placement": "native", "states": (PARENT,) + FORWARD[:3], "job": JOB_G02, "grid02_case": "flow_48", "per_state_timeout_s": 4500, "kernel_timeout_s": 21600},
-    "f48b": {"case": "flow_48", "placement": "native", "states": (REPEAT, FORWARD[3], REVERSE[1]), "job": JOB_G02, "grid02_case": "flow_48", "per_state_timeout_s": 4500, "kernel_timeout_s": 21600},
+    "f48a": {"case": "flow_48", "placement": "native", "states": (PARENT,) + FORWARD[:3], "job": JOB_G02, "grid02_case": "flow_48", "per_state_timeout_s": 6000, "kernel_timeout_s": 28800},
+    "f48b": {"case": "flow_48", "placement": "native", "states": (REPEAT, FORWARD[3], REVERSE[1]), "job": JOB_G02, "grid02_case": "flow_48", "per_state_timeout_s": 6000, "kernel_timeout_s": 28800},
     "f16": {"case": "flow_16", "placement": "native", "states": SEVEN + (REPEAT,), "job": JOB_G02, "grid02_case": "flow_16", "per_state_timeout_s": 900, "kernel_timeout_s": 10800},
 }
 ALIGNMENT = ("GRID02_ALIGNMENT_DOMINANT", "GRID02_ALIGNMENT_NEGLIGIBLE", "GRID02_ALIGNMENT_PARTIAL_OR_MIXED")
 FINE = ("FINE_CONTINUES_TO_FLOW32", "FINE_REVERSES_TOWARD_FLOW24", "FINE_INTERMEDIATE")
 DECISIONS = {
-    "dominant": "the dual-grid disagreement is a placement artifact; next = register a placement-robust evaluation (native + shifted average) before any new accept rule; no basis expansion.",
-    "negligible_stable": "flow_32 is a stable working map for this response (slope changes < 30% from 32 to 48); next = proposals on flow_32 with a flow_48 finalist confirmation, and a separately registered amendment of the dual-grid rule.",
+    "dominant": "the slopes are sensitive to the (h/2, h/2, 0) shift; next = register a placement-robust evaluation (native + shifted average) before any new accept rule; no basis expansion.",
+    "negligible_stable": "flow_32 slope is within 30% of flow_48 for this response; next = proposals on flow_32 with a flow_48 finalist confirmation, and a separately registered amendment of the dual-grid rule.",
     "negligible_unstable": "no affordable grid gives a stable sub-5 mm slope; next = larger-step / coarser-design-lattice study (solver-free preparation first).",
     "partial": "a second placement phase study (other x/y phases, and z at a registered ride-height tolerance) before any rule change.",
 }
+DECISION_MAP_NOTE = "The map branches only on the alignment class and the STABLE flag; the not-stable branch merges 'still growing' and 'turning back'."
 
 
 def finite(x, label="value"):
@@ -97,15 +99,18 @@ def _lsq(steps, y, powers):
 
 
 def fit_quadratic(steps_mm, dl_n):
-    """dL = b s + a s^2 (s in mm, no intercept).  Zero crossing b/|a| and attainable gain b^2/(2|a|) only when a < 0 and b > 0 (a forward gain exists); else None with the reason."""
+    """dL = b s + a s^2 (s in mm, no intercept).  For a < 0 and b > 0 (a forward gain exists) the peak is at s* = b/(2|a|) with value b^2/(4|a|) and the zero crossing is b/|a|; also the
+    value at min(s*, MAX_STEP_MM) (the in-range maximum).  b <= 0 is checked first (no forward gain); a >= 0 with b > 0 is unbounded in range.  Descriptive: s* beyond the tested range is an extrapolation."""
     (b, a), res = _lsq(steps_mm, dl_n, (1, 2))
-    out = {"b_n_per_mm": b, "a_n_per_mm2": a, "max_residual_n": res, "zero_crossing_mm": None, "attainable_gain_n": None}
-    if a >= 0:
-        out["attainable_reason"] = "unbounded in range"
-    elif b <= 0:
-        out["attainable_reason"] = "no forward gain (b <= 0)"
+    out = {"b_n_per_mm": b, "a_n_per_mm2": a, "max_residual_n": res, "zero_crossing_mm": None, "peak_step_mm": None, "attainable_gain_n": None, "peak_within_tested_range": None, "in_range_max_n": None}
+    if b <= 0:
+        out["attainable_reason"] = "no forward gain (b <= 0)" + (f" below s = {-b / a:.6g} mm" if a > 0 and b < 0 else "")
+    elif a >= 0:
+        out["attainable_reason"], out["peak_within_tested_range"], out["in_range_max_n"] = "unbounded in range", False, b * MAX_STEP_MM + a * MAX_STEP_MM ** 2
     else:
-        out["zero_crossing_mm"], out["attainable_gain_n"], out["attainable_reason"] = b / abs(a), b * b / (2 * abs(a)), "a < 0"
+        peak = b / (2 * abs(a))
+        s_in = min(peak, MAX_STEP_MM)
+        out.update(zero_crossing_mm=b / abs(a), peak_step_mm=peak, attainable_gain_n=b * b / (4 * abs(a)), peak_within_tested_range=peak <= MAX_STEP_MM, in_range_max_n=b * s_in + a * s_in ** 2, attainable_reason="a < 0")
     return out
 
 
@@ -137,7 +142,7 @@ def fine_classification(b_24n, b_32n, b_48n):
 
 
 def decision_text(alignment, fine, stable):
-    """The registered decision-map sentence; the map branches on the alignment class and STABLE_32_TO_48 only (fine is validated, reported, and not used)."""
+    """The registered decision-map sentence; the map branches on the alignment class and STABLE_32_TO_48 only (fine is validated, reported, and not used; see DECISION_MAP_NOTE)."""
     if alignment not in ALIGNMENT or fine not in FINE or type(stable) is not bool:
         raise ValueError("unknown alignment/fine class or non-boolean stable flag")
     key = {ALIGNMENT[0]: "dominant", ALIGNMENT[2]: "partial"}.get(alignment) or ("negligible_stable" if stable else "negligible_unstable")

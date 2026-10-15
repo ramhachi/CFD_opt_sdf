@@ -2,7 +2,7 @@
 """Capture authenticated provider absence of the five GRID-02 slugs, then freeze reviewed GRID-02 bytes (copy-adapted from freeze_lowdim03).
 
 `--check-identities` writes identity_free_check.json (+ sidecar), refusing to overwrite.  `--source-commit X` writes prerun_freeze.json (+ sidecar), refusing to overwrite; it needs a clean tracked tree,
-the source commit on a remote branch and descending from the approved integration commit, rendered workers equal to the builder output, and every bound file committed at the source commit.
+the source commit on a current remote branch head (git fetch + ls-remote, fail closed offline) and descending from the approved integration commit, rendered workers equal to the builder output, and every bound file committed at the source commit.
 """
 from __future__ import annotations
 import argparse
@@ -93,6 +93,17 @@ def require_identity(record, *, as_of=None):
             raise ValueError('provider access control mismatch')
 
 
+def require_on_remote(source_commit):
+    """Fresh (not cache-based) check: after `git fetch origin`, the source commit equals or is an ancestor of a current remote branch head (`git ls-remote`); offline or any failure -> fail closed."""
+    git=['git','-C',str(ROOT)]
+    if subprocess.run(git+['fetch','-q','origin'],capture_output=True).returncode:
+        raise ValueError('cannot fetch origin (offline?); the remote reachability of the source commit cannot be verified')
+    listing=subprocess.run(git+['ls-remote','--heads','origin'],capture_output=True,text=True)
+    heads=[line.split()[0] for line in listing.stdout.splitlines() if line.strip()] if listing.returncode==0 else []
+    if not any(h==source_commit or subprocess.run(git+['merge-base','--is-ancestor',source_commit,h],capture_output=True).returncode==0 for h in heads):
+        raise ValueError('the source commit is not on a remote branch; push it before freezing (the Kaggle runner fetches it from GitHub)')
+
+
 def freeze(source_commit):
     import analyze_grid02 as A
     target=E/'prerun_freeze.json'
@@ -102,8 +113,7 @@ def freeze(source_commit):
     files=set(A.required_file_paths(inv))
     if subprocess.run(['git','-C',str(ROOT),'status','--porcelain','--untracked-files=no'],capture_output=True,text=True).stdout.strip():
         raise ValueError('tracked files have uncommitted changes; freeze only committed reviewed bytes')
-    if not subprocess.run(['git','-C',str(ROOT),'branch','-r','--contains',source_commit],capture_output=True,text=True).stdout.strip():
-        raise ValueError('the source commit is not on a remote branch; push it before freezing (the Kaggle runner fetches it from GitHub)')
+    require_on_remote(source_commit)
     K.verify_source(source_commit,files)
     if subprocess.run(['git','-C',str(ROOT),'merge-base','--is-ancestor',A.PARENT_COMMIT,source_commit]).returncode:
         raise ValueError('source does not descend from the approved integration checkpoint')

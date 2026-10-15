@@ -76,6 +76,9 @@ def test_kernel_config_plan_budgets_and_environment_values(kernel):
     assert (cfg["job"] == "scripts/waterlily_grid02_job.jl") == (cfg["GRID02_CASE"] is not None)
     assert (cfg["per_state_timeout_s"], cfg["solver_wall_time_cap_s"], cfg["kernel_timeout_s"]) == (spec["per_state_timeout_s"], len(spec["states"]) * spec["per_state_timeout_s"], spec["kernel_timeout_s"])
     assert (cfg["instantiate_timeout_s"], cfg["gpu_probe_timeout_s"], cfg["reserve_s"]) == (2400, 300, 300) and cfg["kernel_timeout_s"] - cfg["reserve_s"] > cfg["solver_wall_time_cap_s"]
+    assert cfg["solver_wall_time_cap_s"] < cfg["kernel_timeout_s"] - cfg["reserve_s"] - cfg["instantiate_timeout_s"] - cfg["gpu_probe_timeout_s"]  # the cap is not vacuous once setup is paid
+    if kernel.startswith("f48"):
+        assert (cfg["per_state_timeout_s"], cfg["kernel_timeout_s"], cfg["solver_wall_time_cap_s"]) == (6000, 28800, 24000 if kernel == "f48a" else 18000)
     m = cfg["measurement"]
     assert m["case"]["case_id"] == spec["case"] and {k: m["case"][k] for k in C.case_dict(spec["case"])} == C.case_dict(spec["case"]) and m["time_window_t_u_l"] == [80.0, 120.0]
     assert m["candidate_operator"] == OPT_INV["grids"]["a"]["measurement"]["candidate_operator"] and m["solver_wall_time_cap_s"] == cfg["solver_wall_time_cap_s"] and m["per_state_timeout_s"] == cfg["per_state_timeout_s"]

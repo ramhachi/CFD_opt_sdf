@@ -101,7 +101,7 @@
       "instantiate_timeout_s": 2400,
       "job": "scripts/waterlily_grid02_job.jl",
       "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-f48a",
-      "kernel_timeout_s": 21600,
+      "kernel_timeout_s": 28800,
       "measurement": {
         "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
         "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
@@ -131,19 +131,19 @@
         },
         "case_id": "flow_48",
         "force_unit": "N",
-        "kernel_execution_allowance_s": 21600,
-        "per_state_timeout_s": 4500,
+        "kernel_execution_allowance_s": 28800,
+        "per_state_timeout_s": 6000,
         "qualification_claim": "GRID-02 response slope/curvature study on four flow grids with a lattice-alignment control; no qualification",
-        "solver_wall_time_cap_s": 18000,
+        "solver_wall_time_cap_s": 24000,
         "time_window_t_u_l": [
           80.0,
           120.0
         ]
       },
-      "per_state_timeout_s": 4500,
+      "per_state_timeout_s": 6000,
       "placement": "native",
       "reserve_s": 300,
-      "solver_wall_time_cap_s": 18000
+      "solver_wall_time_cap_s": 24000
     },
     "f48b": {
       "GRID02_CASE": "flow_48",
@@ -159,7 +159,7 @@
       "instantiate_timeout_s": 2400,
       "job": "scripts/waterlily_grid02_job.jl",
       "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-f48b",
-      "kernel_timeout_s": 21600,
+      "kernel_timeout_s": 28800,
       "measurement": {
         "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
         "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
@@ -189,19 +189,19 @@
         },
         "case_id": "flow_48",
         "force_unit": "N",
-        "kernel_execution_allowance_s": 21600,
-        "per_state_timeout_s": 4500,
+        "kernel_execution_allowance_s": 28800,
+        "per_state_timeout_s": 6000,
         "qualification_claim": "GRID-02 response slope/curvature study on four flow grids with a lattice-alignment control; no qualification",
-        "solver_wall_time_cap_s": 13500,
+        "solver_wall_time_cap_s": 18000,
         "time_window_t_u_l": [
           80.0,
           120.0
         ]
       },
-      "per_state_timeout_s": 4500,
+      "per_state_timeout_s": 6000,
       "placement": "native",
       "reserve_s": 300,
-      "solver_wall_time_cap_s": 13500
+      "solver_wall_time_cap_s": 18000
     },
     "s24": {
       "GRID02_CASE": null,

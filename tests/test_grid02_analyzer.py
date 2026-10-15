@@ -82,6 +82,9 @@ def registered(tmp_path_factory, request):
     git(root, "init", "-q"); git(root, "config", "user.name", "GRID-02 synthetic test"); git(root, "config", "user.email", "grid02-test@example.invalid")
     git(root, "add", "."); git(root, "commit", "-qm", "synthetic registration source")
     commit = git(root, "rev-parse", "HEAD")
+    remote = tmp_path_factory.mktemp("grid02-remote")  # a real (local bare) remote: the freeze script checks `git ls-remote`, not the local remote-tracking cache
+    git(remote, "init", "-q", "--bare")
+    git(root, "remote", "add", "origin", str(remote)); git(root, "push", "-q", "origin", "HEAD:refs/heads/main")
     patch = pytest.MonkeyPatch()
     request.addfinalizer(patch.undo)
     for mod, name, value in ((A, "ROOT", root), (A, "PARENT_COMMIT", commit), (K, "ROOT", root), (K, "EVIDENCE", root / A.EVIDENCE_REL), (K, "TEMPLATE", root / "scripts/grid02_runner_template.py"),
@@ -263,7 +266,7 @@ def test_fine_classification_and_stable_flag_are_independent(registered, tmp_pat
     r = A.analyze({k: d / f"grid02_{k}" for k in C.KERNELS}, freeze, inv)
     assert r["fine"]["classification"] == expected and r["stable_32_to_48"] is stable and r["fine"]["r"] == pytest.approx(rr, abs=1e-6)
     assert r["decision_text"] == C.decision_text("GRID02_ALIGNMENT_NEGLIGIBLE", expected, stable)
-    assert ("stable working map" in r["decision_text"]) is stable and ("larger-step" in r["decision_text"]) is (not stable)
+    assert ("within 30% of flow_48" in r["decision_text"]) is stable and ("larger-step" in r["decision_text"]) is (not stable)
 
 
 def test_tables_placement_effect_both_grid_rule_hindcast_and_interpretation(valid):
@@ -322,6 +325,120 @@ def test_nonfinite_computed_value_is_incomplete(valid, monkeypatch):
     native["flow_24"][C.FORWARD[0]]["downforce_n"] = float("nan")
     monkeypatch.setattr(A, "check_native", lambda inv: native)
     assert run(valid)["verdict"] == "GRID02_INCOMPLETE"
+
+
+# ---------------------------------------------------------------- descriptive robustness, peak fields, shift gate, minors
+def test_descriptive_robustness_fields_on_exact_data(valid):
+    r = run(valid)
+    for cell in ("16n", "24s", "32s", "48n"):  # synthetic exact quadratics (the native 24/32 cells hold the real retained data)
+        c = r["cells"][cell]
+        b = c["fit"]["b_n_per_mm"]
+        assert c["b_central_n_per_mm"] == pytest.approx(b, rel=1e-6) and c["b_with_intercept_n_per_mm"] == pytest.approx(b, rel=1e-5)
+        assert [x["dropped_step_mm"] for x in c["b_leave_one_out"]] == list(C.FORWARD_MM) and all(x["b_n_per_mm"] == pytest.approx(b, rel=1e-4) for x in c["b_leave_one_out"])
+        assert c["fit"]["peak_step_mm"] is None or c["fit"]["peak_step_mm"] == pytest.approx(b / (2 * abs(c["fit"]["a_n_per_mm2"])))
+    rb = r["slope_robustness"]
+    assert rb["descriptive_only"] is True and set(rb["would_change_if_slopes_were"]) == {"b_central", "b_with_intercept", "b_48n_all_vs_f48a_parent"}
+    assert all(v == {"alignment": "unchanged", "fine": "unchanged", "stable_32_to_48": "unchanged"} for k, v in rb["would_change_if_slopes_were"].items() if k != "b_central")  # real native b_c differ by ~5%: reported, not asserted
+    assert set(rb["would_change_if_slopes_were"]["b_central"]) == {"alignment", "fine", "stable_32_to_48"}
+    assert set(r["cells"]["24n"]) >= {"b_central_n_per_mm", "b_with_intercept_n_per_mm", "b_leave_one_out"}
+    assert rb["b_48n_all_vs_f48a_parent"]["b_n_per_mm"] == pytest.approx(r["cells"]["48n"]["fit"]["b_n_per_mm"], rel=1e-5)
+    al = r["alignment"]
+    assert al["gap_after_shift_ratio"] == pytest.approx(1 - al["m24"] - al["m32"]) and al["abs_b_24s_minus_b_32s"] == pytest.approx(abs(targets()["24s"][0] - targets()["32s"][0]))
+    assert al["gap_after_shift_ratio"] == pytest.approx((targets()["32s"][0] - targets()["24s"][0]) / G)
+
+
+def test_b_central_is_model_free_and_the_variants_never_change_the_verdict(registered, tmp_path, monkeypatch):
+    root, inv, freeze = registered
+    monkeypatch.setattr(A, "validate_registration", lambda *a, **k: None)
+    base = A.analyze(build_all(tmp_path / "a", freeze, inv), freeze, inv)
+    wild = A.analyze(build_all(tmp_path / "b", freeze, inv, reverse_shift=0.25), freeze, inv)
+    for cell in ("16n", "24s", "32s", "48n"):  # (synthetic cells) the reverse point moves b_c by -0.25/2.5 on every cell; b, the classes and the verdict do not move
+        assert wild["cells"][cell]["b_central_n_per_mm"] == pytest.approx(base["cells"][cell]["b_central_n_per_mm"] - 0.1, abs=1e-9)
+    assert (wild["verdict"], wild["alignment"]["classification"], wild["fine"]["classification"]) == (base["verdict"], base["alignment"]["classification"], base["fine"]["classification"])
+
+
+def test_class_changes_reports_other_class_unchanged_and_not_computable():
+    align, fine = C.alignment_classification(0.0, 3.0, 4.0, 1.0), C.fine_classification(0.0, 4.0, 3.0)
+    assert align["classification"] == "GRID02_ALIGNMENT_DOMINANT" and fine["classification"] == "FINE_CONTINUES_TO_FLOW32" and fine["stable_32_to_48"] is True
+    same = {"24n": 0.0, "24s": 3.0, "32n": 4.0, "32s": 1.0, "48n": 3.0}
+    assert A.class_changes(same, align, fine) == {"alignment": "unchanged", "fine": "unchanged", "stable_32_to_48": "unchanged"}
+    other = A.class_changes({**same, "24s": 0.0, "32s": 4.0, "48n": 0.4}, align, fine)
+    assert other == {"alignment": "GRID02_ALIGNMENT_NEGLIGIBLE", "fine": "FINE_REVERSES_TOWARD_FLOW24", "stable_32_to_48": False}
+    assert A.class_changes({**same, "32n": 0.0}, align, fine) == {"alignment": "not computable", "fine": "not computable", "stable_32_to_48": "not computable"}  # G = 0
+    assert A.class_changes({**same, "24s": None}, align, fine)["alignment"] == "not computable"
+
+
+def with_native_parent(valid, monkeypatch, drag_equal):
+    r = run(valid)
+    native = deepcopy(NATIVE)
+    forces = r["state_forces_n"]["s24"][C.PARENT]
+    native["flow_24"][C.PARENT] = {"downforce_n": forces["downforce_n"], "drag_n": forces["drag_n"] if drag_equal else forces["drag_n"] + 1e-3}
+    monkeypatch.setattr(A, "check_native", lambda inv: native)
+
+
+def test_a_shifted_parent_bit_identical_to_the_native_parent_is_incomplete(valid, monkeypatch):
+    with_native_parent(valid, monkeypatch, drag_equal=True)
+    r = run(valid)
+    assert r["verdict"] == "GRID02_INCOMPLETE" and "shift ineffective" in r["integrity"]["failures"][0] and "cells" not in r
+
+
+def test_a_shifted_parent_differing_in_drag_or_downforce_alone_passes_the_gate(valid, monkeypatch):
+    with_native_parent(valid, monkeypatch, drag_equal=False)
+    assert run(valid)["verdict"] == "GRID02_RECORDED"
+
+
+def test_manifest_symlink_is_refused_before_the_manifest_is_read(valid):
+    d, freeze, inv = valid
+    out = d / "grid02_s24"
+    (out / "output_manifest.json").unlink()
+    (out / "link").symlink_to(d)
+    with pytest.raises(ValueError, match="symlinks"):
+        A._manifest(out, inv["kernels"]["s24"], "flow_24")
+
+
+def test_inventory_states_must_equal_the_opt01b_inventory_rows(registered, monkeypatch):
+    root, inv, freeze = registered
+    path = root / A.EVIDENCE_REL / "inventory.json"
+    side = path.with_name("inventory.json.sha256")
+    original, original_side = path.read_text(), side.read_text()
+    bad = deepcopy(inv)
+    bad["states"][2]["maximum_pointwise_change_m"] += 1e-9
+    try:
+        dump(path, bad)
+        digest = A.sha256(path)
+        side.write_text(digest + "\n")
+        f = deepcopy(freeze)
+        f["inventory_sha256"] = digest
+        f["file_hashes"][f"{A.EVIDENCE_REL}/inventory.json"] = digest
+        f["file_hashes"][f"{A.EVIDENCE_REL}/inventory.json.sha256"] = A.sha256(side)
+        monkeypatch.setattr(A, "_source_commit_failures", lambda *a, **k: [])
+        with pytest.raises(ValueError, match="differ from the OPT-01 Stage B inventory rows"):
+            A.validate_registration(f, bad)
+    finally:
+        path.write_text(original)
+        side.write_text(original_side)
+
+
+def test_committed_freeze_must_match_the_blob_at_head(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    (repo / A.EVIDENCE_REL).mkdir(parents=True)
+    blob = repo / A.EVIDENCE_REL / "prerun_freeze.json"
+    git(repo, "init", "-q"); git(repo, "config", "user.name", "t"); git(repo, "config", "user.email", "t@example.invalid")
+    monkeypatch.setattr(A, "ROOT", repo)
+    other = tmp_path / "freeze.json"
+    other.write_text("{}\n")
+    A.check_committed_freeze(other)  # nothing committed at HEAD yet: no constraint
+    blob.write_text('{"a": 1}\n')
+    git(repo, "add", "."); git(repo, "commit", "-qm", "freeze")
+    with pytest.raises(ValueError, match="differs from the committed"):
+        A.check_committed_freeze(other)
+    other.write_text('{"a": 1}\n')
+    A.check_committed_freeze(other)
+    fp = freeze_file(tmp_path, {"a": 2})
+    monkeypatch.setattr(sys, "argv", ["analyze_grid02.py", "--kernel-root", str(tmp_path), "--freeze", str(fp), "--check"])
+    with pytest.raises(SystemExit) as err:
+        A.main()
+    assert err.value.code == 3
 
 
 # ---------------------------------------------------------------- integrity failures (registration skipped for speed; tested below with the full check)
@@ -393,7 +510,7 @@ def mutate(valid, mutation):
     elif mutation == "nonzero_exit": edit_json(ix(s24), lambda o: o["states"][1].update(exit_code=1)); manifest(s24)
     elif mutation == "bad_runtime_sum": edit_json(ix(s24), lambda o: o.update(solver_process_wall_seconds_total=1.0)); manifest(s24)
     elif mutation == "over_budget_state": edit_json(ix(s24), lambda o: (o["states"][1].update(seconds=901.0), o.update(solver_process_wall_seconds_total=o["solver_process_wall_seconds_total"] + 801.0))); manifest(s24)
-    elif mutation == "over_budget_f48": edit_json(ix(f48a), lambda o: (o["states"][1].update(seconds=4501.0), o.update(solver_process_wall_seconds_total=o["solver_process_wall_seconds_total"] + 2501.0))); manifest(f48a)
+    elif mutation == "over_budget_f48": edit_json(ix(f48a), lambda o: (o["states"][1].update(seconds=6001.0), o.update(solver_process_wall_seconds_total=o["solver_process_wall_seconds_total"] + 4001.0))); manifest(f48a)
     elif mutation == "wrong_first_state": edit_json(ix(f48b), lambda o: o["states"].reverse()); manifest(f48b)
     elif mutation == "parent_not_first": edit_json(ix(f48a), lambda o: o.update(states=o["states"][1:] + o["states"][:1])); manifest(f48a)
     elif mutation == "repeat_missing_in_f16": edit_json(ix(f16), lambda o: o.update(states=o["states"][:-1])); manifest(f16)
@@ -530,10 +647,16 @@ def test_cli_write_once_then_refuse_overwrite_and_never_writes_on_integrity_fail
     cli(["--kernel-root", str(base_tree), "--freeze", str(fp), "--write", str(target)], monkeypatch)
     rep = A.jload(target)
     assert rep["verdict"] == "GRID02_RECORDED" and rep["provenance"]["freeze_sha256"] == A.sha256(fp) and rep["integrity"]["pass"] is True
+    assert target.with_name("analysis.json.sha256").read_text() == A.sha256(target) + "\n"
     original = target.read_bytes()
     with pytest.raises(SystemExit) as err:
         cli(["--kernel-root", str(base_tree), "--freeze", str(fp), "--write", str(target)], monkeypatch)
     assert "refusing to overwrite" in str(err.value) and target.read_bytes() == original
+    only_sidecar = tmp_path / "other.json"
+    only_sidecar.with_name("other.json.sha256").write_text("x\n")  # a leftover sidecar also blocks the write
+    with pytest.raises(SystemExit, match="refusing to overwrite"):
+        cli(["--kernel-root", str(base_tree), "--freeze", str(fp), "--write", str(only_sidecar)], monkeypatch)
+    assert not only_sidecar.exists()
     bad = tmp_path / "bad"
     shutil.copytree(base_tree, bad)
     (bad / "grid02_f48a" / "ERROR.txt").write_text("failed")
@@ -619,7 +742,6 @@ def test_identity_gate_rejects_a_taken_slug_stale_proof_and_overwrite(registered
 
 def test_freeze_script_output_validates_with_the_analyzer_and_is_write_once(registered):
     root, inv, freeze = registered
-    git(root, "update-ref", "refs/remotes/origin/main", "HEAD")  # the source commit is on a (synthetic) remote branch
     F.freeze(freeze["source_commit"])
     target = root / A.EVIDENCE_REL / "prerun_freeze.json"
     got = A.jload(target)
@@ -643,10 +765,16 @@ def test_freeze_script_refuses_a_dirty_tree_an_unpushed_commit_and_a_wrong_ances
             F.freeze(freeze["source_commit"])
     finally:
         note.write_text(text)
-    git(root, "update-ref", "-d", "refs/remotes/origin/main")
+    url = git(root, "remote", "get-url", "origin")
+    git(root, "update-ref", "refs/remotes/origin/main", "HEAD")  # a stale local remote-tracking ref must not satisfy the check
+    git(Path(url), "update-ref", "-d", "refs/heads/main")
     with pytest.raises(ValueError, match="remote branch"):
         F.freeze(freeze["source_commit"])
-    git(root, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(root, "remote", "set-url", "origin", str(root / "nonexistent-remote"))
+    with pytest.raises(ValueError, match="cannot fetch origin"):
+        F.freeze(freeze["source_commit"])  # offline / unreachable remote: fail closed
+    git(root, "remote", "set-url", "origin", url)
+    git(root, "push", "-q", "origin", "HEAD:refs/heads/main")
     monkeypatch.setattr(A, "PARENT_COMMIT", "a" * 40)
     with pytest.raises(ValueError):
         F.freeze(freeze["source_commit"])

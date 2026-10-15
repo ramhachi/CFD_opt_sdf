@@ -79,3 +79,13 @@ def test_the_real_freeze_validates_with_the_analyzer_and_is_sidecar_bound():
 def test_freeze_is_write_once():
     with pytest.raises(ValueError, match="refusing to overwrite"):
         F.freeze("0" * 40)
+
+
+def test_the_import_closure_of_the_analyzer_and_freeze_script_is_bound_by_the_freeze():
+    code = ("import json, sys; sys.path[:0] = ['src', 'scripts']; import analyze_grid02 as A, freeze_grid02; from pathlib import Path; R = Path('.').resolve(); "
+            "mods = {str(Path(m.__file__).resolve().relative_to(R)) for m in sys.modules.values() if getattr(m, '__file__', None) and Path(m.__file__).resolve().is_relative_to(R) "
+            "and (R / 'scripts' in Path(m.__file__).resolve().parents or R / 'src/cfd_sdf' in Path(m.__file__).resolve().parents)}; "
+            "print(json.dumps(sorted(mods - A.required_file_paths(json.load(open(A.EVIDENCE_REL + '/inventory.json'))))))")
+    out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    assert json.loads(out.stdout) == [], "imported repo modules missing from required_file_paths"
