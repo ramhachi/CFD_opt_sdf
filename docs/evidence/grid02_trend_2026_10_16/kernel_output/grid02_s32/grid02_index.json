@@ -1,0 +1,87 @@
+{
+  "case_id": "flow_32",
+  "kernel": "s32",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-s32",
+  "parent_forces_csv_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+  "solver_process_wall_seconds_total": 2799.5815200805664,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+      "kind": "parent",
+      "name": "opt01b__parent",
+      "seconds": 398.35825276374817,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "19c7ae362e1f4684bc9e1b3636510543c5f65c38065daf3c4d5258ea554b74ae",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.3125mm",
+      "seconds": 399.3707547187805,
+      "sign": 1,
+      "step_mm": 0.3125
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "e6b4d3b6a38daefbd51a37420f551ecb37e9456bf05b02cd9ac165c12847a39a",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.625mm",
+      "seconds": 400.53142285346985,
+      "sign": 1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "d12d9f48314a5d439392c80f00b51dd271d86897437831194887e7b7b18a0666",
+      "kind": "candidate",
+      "name": "opt01b__prop__s0.9375mm",
+      "seconds": 404.4844036102295,
+      "sign": 1,
+      "step_mm": 0.9375
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "a6e64e3629ebdffbcbf7320ee7fcf3c974350ce8e685baf268d06bca875f2ac6",
+      "kind": "candidate",
+      "name": "opt01b__prop__s1.25mm",
+      "seconds": 397.6532003879547,
+      "sign": 1,
+      "step_mm": 1.25
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "5e163f57d52515faf378a5b4c260abbeb6dd64ad498c5987cb8fa6dae189bb40",
+      "kind": "control",
+      "name": "opt01b__ctrl_reverse__s0.625mm",
+      "seconds": 398.7609763145447,
+      "sign": -1,
+      "step_mm": 0.625
+    },
+    {
+      "complete": true,
+      "direction": "robust_opt01a",
+      "exit_code": 0,
+      "forces_csv_sha256": "36b37c56758f8a7190461441159d4b3d50e31b630f21975691d3fe762f017eda",
+      "kind": "control",
+      "name": "opt01b__ctrl_reverse__s1.25mm",
+      "seconds": 400.422509431839,
+      "sign": -1,
+      "step_mm": 1.25
+    }
+  ],
+  "status": "COMPLETE"
+}

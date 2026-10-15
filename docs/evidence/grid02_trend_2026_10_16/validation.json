@@ -1,0 +1,13 @@
+{
+  "baseline_ced45f1": "50 failed, 2470 passed, 33 skipped",
+  "commands": [
+    "PYTHONPATH=src .venv/bin/python -m pytest -q --no-header -p no:cacheprovider (this branch)",
+    "same command on a pristine detached worktree of integration ced45f1 (baseline)"
+  ],
+  "evidence_class": "validation_log_not_measurement",
+  "failure_id_count": 50,
+  "failure_id_sets_identical": true,
+  "new_passing_tests": 213,
+  "note": "the 50 failing tests are pre-existing (stage_s/stage_v/pq3/step01/lowdim01/lowdim02a evidence tests that depend on data absent from a fresh worktree); no failure of any grid02 test; the GRID-02 tests pass (tests/test_grid02_*.py).",
+  "this_branch": "50 failed, 2683 passed, 33 skipped"
+}

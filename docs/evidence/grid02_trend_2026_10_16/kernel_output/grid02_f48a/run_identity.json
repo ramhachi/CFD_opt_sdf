@@ -1,0 +1,66 @@
+{
+  "case_id": "flow_48",
+  "config": {
+    "GRID02_CASE": "flow_48",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "canonical_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 28800,
+    "per_state_timeout_s": 6000,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 24000
+  },
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {
+    "robust_opt01a": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478"
+  },
+  "expected_names": [
+    "opt01b__parent",
+    "opt01b__prop__s0.3125mm",
+    "opt01b__prop__s0.625mm",
+    "opt01b__prop__s0.9375mm"
+  ],
+  "failure_stage": null,
+  "kernel": "f48a",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-grid02-f48a",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/grid02_trend_2026_10_16/inventory.json": "8fa96f84408cc162dafd7c73f26a181ec907363504a75f103efd3ef3453abaea",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad"
+  },
+  "platform": "Linux 0e67c1d4dbbd 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "394434803308161ea76b7f570b3d906aeae008f9819202f5bfcdae1642544d07",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-b8b4be87-282d-a37f-c034-bc1cffda626c"
+  },
+  "source_commit": "807157d02826130717aeb16268f58ed6c2e3440c",
+  "verified": {
+    "docs/evidence/grid02_trend_2026_10_16/inventory.json": "8fa96f84408cc162dafd7c73f26a181ec907363504a75f103efd3ef3453abaea",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad"
+  }
+}
