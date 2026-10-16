@@ -63,6 +63,12 @@ def report(cases: list[dict], ref: dict) -> str:
         rss = max((s.get("peak_rss_mb_sampled") or 0 for s in c.get("stages", [])), default=0)
         lines.append(f"| {c['id']} | {m.get('cells', '-')} | {m.get('max_non_orthogonality', '-')} | {m.get('max_skewness', '-')} | {m.get('max_aspect_ratio', '-')} | "
                      f"{m.get('failed_check_counts', '-')} | {fmt(None if sw is None else sw / 60, '.1f')} | {fmt(c.get('total_wall_s', 0) / 60, '.1f')} | {fmt(rss, '.0f')} |")
+    lm = [c for c in cases if c["status"] == "LM_DIVERGED"]
+    if lm:
+        lines += ["", "## kOmegaSSTLM failures (LM_DIVERGED is a recorded result, not a kernel failure)", "", "| case | failed stage | last time | sigfpe | nan | last initial residuals |", "|---|---|---|---|---|---|"]
+        for c in lm:
+            s = (c.get("lm_diagnostics") or {}).get("solver") or {}
+            lines.append(f"| {c['id']} | {c.get('lm_failed_stage')} | {s.get('last_time', '-')} | {s.get('sigfpe', '-')} | {s.get('nan_in_log', '-')} | {s.get('last_initial_residuals', '-')} |")
     return "\n".join(lines) + "\n"
 
 
@@ -72,7 +78,10 @@ def main(argv=None):
     ap.add_argument("--reference", type=Path, default=REF)
     ap.add_argument("--out", type=Path)
     a = ap.parse_args(argv)
-    text = report(load(a.kernel_output), json.loads(a.reference.read_text()))
+    if (a.kernel_output / "meshcheck.md").is_file():   # MESH_ONLY kernel: the table is the whole result
+        text = "# T2-0a mesh-only check (checkMesh next to the local proxy)\n\n" + (a.kernel_output / "meshcheck.md").read_text()
+    else:
+        text = report(load(a.kernel_output), json.loads(a.reference.read_text()))
     (a.out.write_text(text) if a.out else print(text))
 
 

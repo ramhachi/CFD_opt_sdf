@@ -12,6 +12,7 @@ HEAD = "FoamFile\n{\n    version 2.0;\n    format ascii;\n    class %s;\n    obj
 DIM = {"U": "[0 1 -1 0 0 0 0]", "p": "[0 2 -2 0 0 0 0]", "nut": "[0 2 -1 0 0 0 0]", "nuTilda": "[0 2 -1 0 0 0 0]",
        "k": "[0 2 -2 0 0 0 0]", "omega": "[0 0 -1 0 0 0 0]", "ReThetat": "[0 0 0 0 0 0 0]", "gammaInt": "[0 0 0 0 0 0 0]"}
 WALLS = ("airfoil", "ground")
+LM_RELAX = {"U": 0.5, "p": 0.2, "turb": 0.3}   # kOmegaSSTLM continuation stage (SIMPLE, not SIMPLEC): lead's values for the transition equations and the segregated coupling
 
 
 def retheta_t(tu_pct: float) -> float:
@@ -77,17 +78,25 @@ def fields(model: dict, u: float, nu: float, tu: float, length: float) -> dict[s
 
 
 def system_and_constant(model: dict, mesh: dict, p: dict) -> dict[str, str]:
-    """system/* and constant/* text. p: u, nu, chord, z (extrusion thickness), iters."""
+    """system/* and constant/* text. p: u, nu, chord, z (extrusion thickness), iters (endTime); optional start (`startTime` default, `latestTime` for a continuation).
+    model["stage2"] = True writes the transition continuation: SIMPLE (consistent no) with the low relaxation factors of LM_RELAX, to be run from the latest time of
+    the kOmegaSST stage (the runner copies the 0/ gammaInt and ReThetat there and swaps these files in)."""
     scal = ["nuTilda"] if model["foam"] == "SpalartAllmaras" else ["k", "omega"] + (["ReThetat", "gammaInt"] if model["foam"] == "kOmegaSSTLM" else [])
     relax = '"(' + "|".join(["U"] + scal) + ')"'
     rtol = "".join(f"        {s} 1e-6;\n" for s in scal)
+    stage2 = model.get("stage2", False)
+    if stage2:
+        relax_block = ("    fields {{ p {p}; }}\n    equations\n    {{\n        U {U};\n        \"({t})\" {T};\n    }}\n"
+                       .format(p=LM_RELAX["p"], U=LM_RELAX["U"], t="|".join(scal), T=LM_RELAX["turb"]))
+    else:
+        relax_block = f"    equations {{ {relax} {model['relax']}; }}\n"
     turb = ("simulationType RAS;\n\nRAS\n{\n    model " + model["foam"] + ";\n    turbulence on;\n    printCoeffs on;\n}\n")
     div_t = "".join(f"    div(phi,{s}) bounded Gauss upwind;\n" for s in ("nuTilda", "k", "omega", "ReThetat", "gammaInt"))
     force_common = (f"        libs (forces);\n        patches (airfoil);\n        rho rhoInf;\n        rhoInf 1;\n        CofR ({0.25 * p['chord']:.6g} 0 0);\n"
                     f"        writeControl timeStep;\n        writeInterval 1;\n")
     return {
         "system/controlDict": (HEAD % ("dictionary", "controlDict")) + f"""application simpleFoam;
-startFrom startTime;
+startFrom {p.get('start', 'startTime')};
 startTime 0;
 stopAt endTime;
 endTime {p['iters']};
@@ -138,7 +147,7 @@ wallDist {{ method meshWave; }}
 SIMPLE
 {{
     nNonOrthogonalCorrectors 1;
-    consistent yes;
+    consistent {'no' if stage2 else 'yes'};
     residualControl
     {{
         p 1e-6;
@@ -147,13 +156,18 @@ SIMPLE
 }}
 relaxationFactors
 {{
-    equations {{ {relax} {model['relax']}; }}
-}}
+{relax_block}}}
 """,
         "constant/transportProperties": (HEAD % ("dictionary", "transportProperties")) + f"transportModel Newtonian;\nnu [0 2 -1 0 0 0 0] {p['nu']};\n",
         "constant/momentumTransport": (HEAD % ("dictionary", "momentumTransport")) + turb,
         "constant/turbulenceProperties": (HEAD % ("dictionary", "turbulenceProperties")) + turb,
     }
+
+
+def fv_options(u_max: float) -> str:
+    """OPTIONAL velocity limiter for the LM stage. UNCERTAIN: ESI v2512's `velocityDampingConstraint` (UMax, C) written from memory of the fvOptions constraints;
+    never executed. The runner removes system/fvOptions and reruns the stage once if the stage dies before its first iteration (see runner.run_lm_stage)."""
+    return (HEAD % ("dictionary", "fvOptions")) + f"limitU\n{{\n    type velocityDampingConstraint;\n    active yes;\n    selectionMode all;\n    UMax {u_max};\n    C 1;\n}}\n"
 
 
 def fix_boundary(text: str) -> str:
