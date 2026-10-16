@@ -20,8 +20,7 @@ def git(repo, *args):
 
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
-    lock = re.search(r'^LOCK = "([^"]+)"', TEMPLATE.read_text(), re.M).group(1)
-    for rel in (*B.FILES, lock, "infra/kaggle/kernel_t20a_cpu/runner.py", "infra/kaggle/kernel_t20a_cpu/kernel-metadata.json"):
+    for rel in (*B.FILES, *B.lock_paths(TEMPLATE.read_text()).values(), "infra/kaggle/kernel_t20a_cpu/runner.py", "infra/kaggle/kernel_t20a_cpu/kernel-metadata.json"):
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(REAL / rel, tmp_path / rel)
     git(tmp_path, "init", "-q")
@@ -39,7 +38,7 @@ def test_render_pins_the_commit_and_every_file(repo):
     consts = {t.targets[0].id: ast.literal_eval(t.value) for t in tree.body if isinstance(t, ast.Assign) and isinstance(t.targets[0], ast.Name)
               and t.targets[0].id in ("SOURCE_COMMIT", "PINS", "GMSH_PIN")}
     assert consts["SOURCE_COMMIT"] == commit and consts["GMSH_PIN"] == "gmsh==4.15.2"
-    assert set(consts["PINS"]) == {*B.FILES, "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json"}
+    assert set(consts["PINS"]) == {*B.FILES, "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json", "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json"}
     assert all(re.fullmatch(r"[0-9a-f]{64}", v) for v in consts["PINS"].values())
     out = repo / "out"
     B.main(["--source-commit", commit, "--out", str(out)])

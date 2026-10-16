@@ -14,7 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = ROOT / "infra/kaggle/kernel_t20a_cpu"
 FILES = ("scripts/t20_case.py", "scripts/t20_foam.py", "data/t20/tyrrell026s_genua2009.dat")   # read on the kernel; the OpenFOAM lock is added below
-LOCK_SHA256 = "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746"            # lock that passed the XFID Round 5 environment reproduction
+LOCK_SHA256 = {"jammy": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746",   # XFID Round 5 environment reproduction
+               "noble": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340"}   # XFID X2/X3 (Noble image)
 
 
 def sha(path) -> str:
@@ -22,10 +23,14 @@ def sha(path) -> str:
 
 
 def pins(template: str) -> dict:
-    lock = re.search(r'^LOCK = "([^"]+)"', template, re.M).group(1)
-    if sha(ROOT / lock) != LOCK_SHA256:
-        raise ValueError("the OpenFOAM package lock differs from the registered one")
-    return {p: sha(ROOT / p) for p in sorted((*FILES, lock))}
+    locks = lock_paths(template)
+    if set(locks) != set(LOCK_SHA256) or any(sha(ROOT / rel) != LOCK_SHA256[name] for name, rel in locks.items()):
+        raise ValueError("the OpenFOAM package locks differ from the registered ones")
+    return {p: sha(ROOT / p) for p in sorted((*FILES, *locks.values()))}
+
+
+def lock_paths(template: str) -> dict:
+    return dict(re.findall(r'"(\w+)": "(infra/kaggle/[^"]+openfoam_package_lock\.json)"', re.search(r'^LOCKS = \{.*\}', template, re.M).group(0)))
 
 
 def verify_source(commit: str, paths) -> None:

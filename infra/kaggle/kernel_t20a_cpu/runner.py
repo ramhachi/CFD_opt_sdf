@@ -35,7 +35,7 @@ except ImportError:
 SOURCE_COMMIT = "PIN_SOURCE_COMMIT"
 PINS = PIN_PINS  # {repo path: sha256}, rendered
 REPO_URL = "https://github.com/ramhachi/CFD_opt_sdf.git"
-LOCK = "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json"  # the lock that passed the Round 5 environment reproduction
+LOCKS = {"jammy": "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json", "noble": "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json"}  # the two hash-pinned OpenCFD v2512 locks registered by XFID X2/X3; chosen by the observed Ubuntu codename
 GMSH_PIN = "gmsh==4.15.2"
 FOAM_VERSION = "OpenFOAM-v2512"
 OUTPUT = Path(os.environ.get("T20A_OUTPUT", "/kaggle/working/t20a"))
@@ -147,13 +147,15 @@ def force_summary(dat: Path) -> dict:
 
 # ---- environment and installs ------------------------------------------------------
 
-def install_openfoam(work: Path, lock: dict) -> dict:
+def install_openfoam(work: Path, locks: dict) -> dict:
     """Copied from infra/kaggle/kernel_openfoam_xfid_gridphase_x3_formal/runner.py (hash-locked packages, explicit alias sourcing for the PS1 pitfall)."""
     release = dict(l.split("=", 1) for l in Path("/etc/os-release").read_text().splitlines() if "=" in l)
     codename = release.get("VERSION_CODENAME", "").strip('"')
     arch = subprocess.run(["dpkg", "--print-architecture"], check=True, text=True, capture_output=True).stdout.strip()
     require(release.get("ID", "").strip('"') == "ubuntu", f"unsupported OS ID: {release.get('ID')}")
-    require(codename == lock["suite"], f"no registered OpenCFD v2512 lock for Ubuntu {codename!r}; registered: {lock['suite']}")
+    require(codename in locks, f"no registered OpenCFD v2512 lock for Ubuntu {codename!r}; registered: {sorted(locks)}")
+    lock = locks[codename]
+    require(codename == lock["suite"], "lock suite differs from the observed Ubuntu codename")
     require(arch == lock["architecture"], f"unsupported architecture: {arch}")
     installer = work / "add-debian-repo.sh"
     with installer.open("wb") as stream:
@@ -303,8 +305,8 @@ def main() -> None:
     stats = t20_case.write_case(probe, 0.09, "sa-wf", "coa30", iters=1)["mesh_stats"]   # fail fast on meshing before the OpenFOAM install
     require(stats["gap_cells_at_lowest_point"] >= 15, f"mesh probe gap cells {stats['gap_cells_at_lowest_point']}")
     shutil.rmtree(probe)
-    lock = json.loads((SOURCE / LOCK).read_text())
-    install = install_openfoam(OUTPUT / "work", lock)
+    locks = {name: json.loads((SOURCE / rel).read_text()) for name, rel in LOCKS.items()}
+    install = install_openfoam(OUTPUT / "work", locks)
     write_json(OUTPUT / "install.json", {**install, "gmsh_version": gmsh_version, "mesh_probe_cells": stats["cells_3d"]})
     deadline = started + BUDGET_S - RESERVE_S
 
