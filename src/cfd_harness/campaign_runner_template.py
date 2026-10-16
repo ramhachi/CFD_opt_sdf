@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""harness v1 pinned worker for one kernel of a WaterLily T4 campaign (rendered by scripts/harness.py into infra/kaggle/kernel_<campaign>_<k>/runner.py).
+"""harness v1.1 pinned worker for one kernel of a WaterLily T4 campaign (rendered by scripts/harness.py into infra/kaggle/kernel_<campaign>_<k>/runner.py).
 
 Everything campaign-specific is read from the pinned campaign.json of the pinned source commit (its SHA-256 is in PINS); only the PIN block below differs between a formal and a smoke render.
 Behaviour equals the proven GRID-02 runner: GPU inventory, sparse checkout and pin verification, Julia install, Pkg.instantiate, the JSON3-free CUDA probe (Tesla T4 only, physical index 0,
@@ -17,7 +17,7 @@ import traceback
 import urllib.request
 from pathlib import Path
 
-HARNESS_VERSION = "harness v1"
+HARNESS_VERSION = "harness v1.1"
 JULIA_URL = "https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.6-linux-x86_64.tar.gz"
 JULIA_SHA256 = "bbabf3bef19421a9dbd24a767d807606ab85e444323b5a1c73ffe293fa3d079a"
 PROJECT = "julia/CFDSDFWaterLilyT4"
@@ -169,7 +169,8 @@ def main():
     stage = "gpu_inventory"
     identity = {"runner_sha256": sha256(__file__), "python_version": sys.version, "numpy_version": None, "platform": " ".join(os.uname()), "kernel": KERNEL, "kernel_id": KERNEL_ID,
                 "source_commit": SOURCE_COMMIT, "pins": PINS, "direction_files": {}, "config": None, "expected_names": None, "case_id": None, "failure_stage": None,
-                "harness_version": HARNESS_VERSION, "campaign_sha256": PINS[CAMPAIGN], "smoke": SMOKE}
+                "harness_version": HARNESS_VERSION, "campaign_sha256": PINS[CAMPAIGN], "smoke": SMOKE,
+                "campaign_work_root": os.environ.get("CAMPAIGN_WORK_ROOT", "/kaggle/working")}
     index = {"kernel": KERNEL, "kernel_id": KERNEL_ID, "case_id": None, "states": [], "status": "RUNNING"}
     write_json(OUT / "run_identity.json", identity)
     write_json(OUT / INDEX_NAME, index)

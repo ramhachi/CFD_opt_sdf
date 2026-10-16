@@ -1,10 +1,11 @@
-"""harness v1: the single schema shared by the Kaggle runner, the build/freeze/smoke tools and the verifier (one place for every name).
+"""harness v1.1: the single schema shared by the Kaggle runner, the build/freeze/smoke tools and the verifier (one place for every name).
 
 Stdlib only (plus scripts/fd08_v2_campaign_io.py): the rendered runner loads this file by path from the pinned source checkout, so it must not import `cfd_sdf`.
 Nothing here is a measurement or a qualification: it only fixes the names, the shapes and the integrity checks of the WaterLily T4 campaign outputs.
 """
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
 import math
@@ -19,7 +20,7 @@ except ImportError:  # imported from src/ without scripts/ on the path (repo or 
     sys.path.append(str(Path(__file__).resolve().parents[2] / "scripts"))
     from fd08_v2_campaign_io import FORCE_COLUMNS, recompute_force_n
 
-HARNESS_VERSION = "harness v1"
+HARNESS_VERSION = "harness v1.1"
 INDEX_NAME_DEFAULT = "harness_index.json"
 IDENTITY_NAME, MANIFEST_NAME, DONE_NAME, ERROR_NAME, JOB_DONE_NAME = "run_identity.json", "output_manifest.json", "DONE", "ERROR.txt", "W4_JOB_DONE"
 SMI_NAME, PROBE_NAME, PROBE_LOG_NAME, SELF_TEST_NAME = "nvidia_smi.csv", "gpu_device_probe.json", "gpu_device_probe.log", "self_test.json"
@@ -32,15 +33,26 @@ SLUG = re.compile("[a-z0-9]+(-[a-z0-9]+)*")
 NAME = re.compile("[A-Za-z0-9_.-]+")
 
 # ---- campaign.json -------------------------------------------------------------------------------------------------------------------------------
-CAMPAIGN_KEYS = ("harness_version", "campaign_id", "owner", "repo_url", "index_name", "out_prefix", "job_env_common", "scrub_env", "measurement", "domain", "baseline", "directions",
-                 "states", "kernels", "sparse", "pins")
+CAMPAIGN_KEYS = ("harness_version", "campaign_id", "owner", "repo_url", "index_name", "out_prefix", "job_env_common", "job_env_keys", "scrub_env", "measurement", "domain", "baseline",
+                 "directions", "states", "kernels", "sparse", "pins", "legacy_replay")
+# legacy_replay true = verification-only description of pre-harness outputs (GRID-02): the only campaign whose outputs may lack the harness identity fields and self_test.json.
+# job_env_keys = the job variables (besides W4_CANONICAL_ORIGIN_M) a run's env may set, e.g. GRID02_CASE.
 # state identity: phi_fortran = SHA of the Fortran-order float32 bytes (what the Julia DeviceGridSDF roundtrip hashes), phi_c = SHA of the C-order bytes: two DIFFERENT fields
 STATE_IDENTITY_KEYS = ("state_sha256", "npz_sha256", "phi_fortran_order_sha256", "phi_c_order_sha256", "zero_level_margin_m", "margin_tolerance_m", "changed_node_count", "maximum_pointwise_change_m")
 STATE_KEYS = ("kind", "direction", "step_mm", "sign") + STATE_IDENTITY_KEYS
 STATE_KINDS = ("parent", "parent_repeat", "candidate", "control")
+BASELINE_KINDS = ("parent", "parent_repeat")  # direction null, step 0, sign 0: the baseline phi itself
 STATE_ENV = {"W4_STATE_SHA256": "state_sha256", "W4_STATE_NPZ_SHA256": "npz_sha256", "W4_PHI_C_ORDER_SHA256": "phi_c_order_sha256", "W4_PHI_FORTRAN_SHA256": "phi_fortran_order_sha256",
              "W4_EXPECTED_MARGIN_M": "zero_level_margin_m"}
 DEVICE_ENV = ("CUDA_DEVICE_ORDER", "CUDA_VISIBLE_DEVICES", "JULIA_NUM_THREADS")
+FORBIDDEN_ENV_PREFIX = ("CUDA_", "W4_STATE_", "W4_PHI_", "JULIA_NUM_THREADS")
+FORBIDDEN_ENV = frozenset(DEVICE_ENV) | frozenset(STATE_ENV) | {"W4_SELECTED_GPU_UUID"}  # device, per-state identity and GPU-identity variables are set by the runner only
+
+
+def forbidden_env(key):
+    return key in FORBIDDEN_ENV or key.startswith(FORBIDDEN_ENV_PREFIX)
+
+
 COMMON_ENV_KEYS = ("W4_CANONICAL_DESIGN_SPACING_M", "W4_CANONICAL_STATE_LABEL", "W4_POINT_SHAPE", "W4_CELL_SHAPE", "W4_SOURCE_SURFACE_SHA256", "W4_MARGIN_GATE_M")
 ORIGIN_ENV = "W4_CANONICAL_ORIGIN_M"  # in job_env_common or (per state, per kernel) in a run's env
 BUDGET_KEYS = ("per_state_timeout_s", "solver_wall_time_cap_s", "kernel_timeout_s", "instantiate_timeout_s", "gpu_probe_timeout_s", "reserve_s")
@@ -56,7 +68,7 @@ INDEX_STATUS = ("RUNNING", "COMPLETE", "ERROR")
 INDEX_ENTRY_KEYS = ("name", "kind", "direction", "step_mm", "sign", "exit_code", "seconds", "forces_csv_sha256", "complete")
 IDENTITY_KEYS = ("runner_sha256", "python_version", "numpy_version", "platform", "kernel", "kernel_id", "source_commit", "pins", "direction_files", "config", "expected_names", "case_id",
                  "failure_stage", "verified", "selected_gpu", "cuda_device_order", "cuda_visible_devices")
-IDENTITY_HARNESS_KEYS = ("harness_version", "campaign_sha256", "smoke")  # absent in the pre-harness GRID-02 outputs (replay), required of a harness runner
+IDENTITY_HARNESS_KEYS = ("harness_version", "campaign_sha256", "smoke", "campaign_work_root")  # absent in the pre-harness GRID-02 outputs (replay), required of a harness runner
 GPU_EXPECTED = {"logical_device_count": 1, "visible_gpu_names": ["Tesla T4"], "cuda_device_order": "PCI_BUS_ID", "cuda_visible_devices": "0"}
 FREEZE_KIND, TABLE_KIND = "harness_prerun_freeze", "harness_state_force_table"
 # job summary: the keys the verifier reads (Julia jobs write more; these are the ones that bind identity, grid, budget and force means)
@@ -88,7 +100,13 @@ def sha256_path(path) -> str:
 def jload(path):
     def reject(value):
         raise ValueError(f"nonfinite JSON constant {value}")
-    return json.loads(Path(path).read_text(), parse_constant=reject)
+
+    def pairs(items):
+        keys = [k for k, _ in items]
+        if len(set(keys)) != len(keys):
+            raise ValueError(f"duplicate JSON key in {path}: {sorted(k for k in set(keys) if keys.count(k) > 1)}")
+        return dict(items)
+    return json.loads(Path(path).read_text(), parse_constant=reject, object_pairs_hook=pairs)
 
 
 def req(ok, message):
@@ -160,10 +178,22 @@ def validate_state(name, row, directions):
     for k in ("zero_level_margin_m", "margin_tolerance_m", "maximum_pointwise_change_m", "step_mm"):
         finite(row[k], f"state {name} {k}")
     req(type(row["changed_node_count"]) is int and type(row["sign"]) is int, f"state {name}: integer fields")
+    req((row["kind"] in BASELINE_KINDS) == (row["direction"] is None), f"state {name}: baseline kinds have direction null and candidates/controls have a direction")
     if row["direction"] is None:  # the baseline phi itself
         req(row["step_mm"] == 0 and row["sign"] == 0 and row["changed_node_count"] == 0, f"state {name}: a baseline state has no step, sign or change")
     else:
         req(row["direction"] in directions and row["step_mm"] > 0 and row["sign"] in (1, -1) and row["changed_node_count"] > 0, f"state {name}: unregistered perturbation")
+
+
+def validate_states(states):
+    """Cross-state identity: exactly one parent; a parent_repeat repeats the parent's identity; every other state has its own phi (both byte orders)."""
+    parents = [n for n, r in states.items() if r["kind"] == "parent"]
+    req(len(parents) == 1, "a campaign needs exactly one parent state")
+    for n, r in states.items():
+        req(r["kind"] != "parent_repeat" or all(r[k] == states[parents[0]][k] for k in STATE_IDENTITY_KEYS), f"state {n}: a parent_repeat must equal the parent identity")
+    own = [r for r in states.values() if r["kind"] != "parent_repeat"]
+    for key in ("phi_fortran_order_sha256", "phi_c_order_sha256"):
+        req(len({r[key] for r in own}) == len(own), f"distinct states share {key}")
 
 
 def validate_kernel(c, k, kernel):
@@ -188,6 +218,7 @@ def validate_kernel(c, k, kernel):
     for r in runs:
         req(set(r) == {"state", "env"} and r["state"] in c["states"] and isinstance(r["env"], dict) and all(isinstance(a, str) and isinstance(b, str) for a, b in r["env"].items()), f"kernel {k}: run {r}")
         req(all(cfg[a] == b for a, b in r["env"].items() if a in cfg), f"kernel {k}: a run env contradicts the kernel config")
+        req(set(r["env"]) <= {ORIGIN_ENV, *c["job_env_keys"]}, f"kernel {k}: run env keys must be {ORIGIN_ENV} or declared in job_env_keys")
         env = effective_env(c, r)
         req(ORIGIN_ENV in env and len(floats(env[ORIGIN_ENV])) == 3, f"kernel {k}: {ORIGIN_ENV} missing for {r['state']}")
     req(c["states"][runs[0]["state"]]["direction"] is None, f"kernel {k}: the first state must be a baseline state")
@@ -201,6 +232,9 @@ def validate_campaign(c):
     req(isinstance(c["campaign_id"], str) and re.fullmatch("[a-z0-9_]+", c["campaign_id"]) and re.fullmatch("[a-z0-9-]+", c["owner"]), "campaign_id / owner")
     req(isinstance(c["repo_url"], str) and NAME.fullmatch(c["index_name"]) and NAME.fullmatch(c["out_prefix"]), "repo_url / index_name / out_prefix")
     req(isinstance(c["job_env_common"], dict) and set(COMMON_ENV_KEYS) <= set(c["job_env_common"]) and all(isinstance(v, str) for v in c["job_env_common"].values()), f"job_env_common needs {COMMON_ENV_KEYS}")
+    req(type(c["legacy_replay"]) is bool, "legacy_replay must be a boolean")
+    req(isinstance(c["job_env_keys"], list) and all(isinstance(v, str) and NAME.fullmatch(v) and not forbidden_env(v) for v in c["job_env_keys"]), "job_env_keys: names of non-device, non-identity job variables")
+    req(not any(forbidden_env(v) for v in c["job_env_common"]), "job_env_common sets a device, state-identity or GPU-identity variable")
     req(isinstance(c["scrub_env"], list) and all(isinstance(v, str) for v in c["scrub_env"]), "scrub_env")
     m = c["measurement"]
     req(set(m) == {"candidate_operator", "time_window_t_u_l"} and isinstance(m["candidate_operator"], str) and len(m["time_window_t_u_l"]) == 2 and 0 <= finite(m["time_window_t_u_l"][0]) < finite(m["time_window_t_u_l"][1]),
@@ -212,6 +246,7 @@ def validate_campaign(c):
     req(isinstance(c["states"], dict) and c["states"] and isinstance(c["kernels"], dict) and c["kernels"], "states / kernels must be nonempty objects")
     for name, row in c["states"].items():
         validate_state(name, row, c["directions"])
+    validate_states(c["states"])
     ids = []
     for k, kernel in c["kernels"].items():
         validate_kernel(c, k, kernel)
@@ -239,7 +274,8 @@ def validate_index(index, terminal=False):
 
 def validate_identity(identity, harness=True):
     req(isinstance(identity, dict) and set(IDENTITY_KEYS + (IDENTITY_HARNESS_KEYS if harness else ())) <= set(identity), "run identity keys")
-    req(not harness or (identity["harness_version"] == HARNESS_VERSION and is_sha(identity["campaign_sha256"]) and type(identity["smoke"]) is bool), "harness identity fields")
+    req(not harness or (identity["harness_version"] == HARNESS_VERSION and is_sha(identity["campaign_sha256"]) and type(identity["smoke"]) is bool and isinstance(identity["campaign_work_root"], str)),
+        "harness identity fields")
 
 
 def build_manifest(out):
@@ -266,17 +302,20 @@ def check_manifest(out, required):
 
 
 def job_env(c, run, row, base_env, gpu_uuid):
-    """The environment of one state's Julia job: common env, per-state identity, the selected GPU, then the run's own overrides (origin, GRID02_CASE, ...)."""
+    """The environment of one state's Julia job: common env, the run's own overrides (origin, job variables), then the runner-owned device, GPU and per-state identity variables last."""
+    for source, env in (("job_env_common", c["job_env_common"]), ("run env", run["env"])):
+        for key in env:
+            if forbidden_env(key):
+                raise RuntimeError(f"{source} sets a device, state-identity or GPU-identity variable: {key}")
     env = dict(base_env)
     for key in c["scrub_env"]:
         env.pop(key, None)
     env.update(c["job_env_common"])
-    for key in DEVICE_ENV:
-        if env.get(key) != base_env.get(key):
-            raise RuntimeError(f"state environment changes probed device/thread configuration: {key}")
+    env.update(run["env"])
+    for key in DEVICE_ENV:  # the probed device/thread configuration is re-asserted after the last update
+        env.pop(key, None) if base_env.get(key) is None else env.__setitem__(key, base_env[key])
     env["W4_SELECTED_GPU_UUID"] = gpu_uuid
     env.update({var: str(row[key]) for var, key in STATE_ENV.items()})
-    env.update(run["env"])
     return env
 
 
@@ -327,3 +366,80 @@ def selftest_force_check():
         path.write_text("\n".join(rows) + "\n")
         got = recompute_force_n(path, {"measurement": {"case": case, "time_window_t_u_l": [11.0, 15.0]}})
     req(got["drag_n"] == 2.0 * 0.25 and got["downforce_n"] == 3.0 * 0.25, "self-test: planted force means were not recovered")
+
+
+# ---- provider identity-free check (written by campaign_build.freeze, re-validated by campaign_verify.validate_freeze) -----------------------------------
+FREE_KIND = "harness_authenticated_identity_free_check"
+FREE_MAX_PAGES, FREE_MAX_AGE_S, FREE_PAGE_SIZE = 100, 24 * 3600, 100
+FORBIDDEN_TEXT = re.compile("403|forbidden|unauthorized", re.I)
+TOOL_FILES = ("src/cfd_harness/campaign_schema.py", "src/cfd_harness/campaign_build.py", "src/cfd_harness/campaign_verify.py", "src/cfd_harness/campaign_runner_template.py", "scripts/harness.py")
+
+
+def tool_hashes():
+    """SHA-256 of the harness tool files that are running (recorded in the freeze and in the state table)."""
+    root = Path(__file__).resolve().parents[2]
+    return {rel: sha256_path(root / rel) for rel in TOOL_FILES}
+
+
+def page_command(kind, number):
+    return ["kaggle", kind, "list", "--mine", "--page-size", str(FREE_PAGE_SIZE), "--page", str(number), "--csv"]
+
+
+def control_command(kind, ref):
+    return ["kaggle", kind, "status", ref] if kind == "kernels" else ["kaggle", kind, "files", ref, "--csv"]
+
+
+def kaggle_bad(result):
+    """Forbidden/unauthorized text in stderr, and in stdout unless that is a CSV listing (a slug may legitimately contain '403')."""
+    return FORBIDDEN_TEXT.search(result["stderr"] + ("" if result["stdout"].lstrip().startswith("ref") else result["stdout"])) is not None
+
+
+def parse_listing(stdout):
+    import csv
+    import io
+    return [] if stdout.strip() in ("Not found", "No datasets found", "No kernels found", "") else list(csv.DictReader(io.StringIO(stdout)))
+
+
+def taken_names(rows):
+    return {r["ref"].split("/")[1] for r in rows} | {re.sub(r"[^a-z0-9]+", "-", r.get("title", "").lower()).strip("-") for r in rows}
+
+
+def parse_utc(text):
+    req(isinstance(text, str), "timestamp must be a string")
+    when = datetime.datetime.fromisoformat(text)
+    req(when.tzinfo is not None, "timestamp must carry a UTC offset")
+    return when
+
+
+def validate_identity_free(record, c, frozen_utc):
+    """Re-validate a recorded identity-free check as freeze would have produced it: owner, kernels, page commands and results, no slug/title collision, positive controls, age <= 24 h before the freeze."""
+    req(isinstance(record, dict) and record.get("kind") == FREE_KIND and record.get("all_free") is True and record.get("owner") == c["owner"], "identity-free check: kind, owner or verdict")
+    req(sorted(record.get("kernel_ids", [])) == sorted(k["kernel_id"] for k in c["kernels"].values()), "identity-free check covers different kernels than the campaign")
+    captured, frozen, now = parse_utc(record.get("captured_utc")), parse_utc(frozen_utc), datetime.datetime.now(datetime.timezone.utc)
+    req(frozen <= now, "frozen_utc is in the future")
+    req(datetime.timedelta(0) <= frozen - captured <= datetime.timedelta(seconds=FREE_MAX_AGE_S), "identity-free check is older than 24 h at the freeze (or captured after it)")
+    targets = {k["kernel_id"].split("/")[1] for k in c["kernels"].values()}
+    req(set(record.get("listings", {})) == set(record.get("positive_controls", {})) == {"kernels", "datasets"}, "identity-free check: listings/controls")
+    for kind, listing in record["listings"].items():
+        pages = listing.get("pages")
+        req(listing.get("complete") is True and isinstance(pages, list) and 1 <= len(pages) <= FREE_MAX_PAGES, f"{kind} listing incomplete")
+        seen, rows = set(), []
+        for number, page in enumerate(pages, 1):
+            req(page.get("command") == page_command(kind, number) and page.get("exit_code") == 0 and not kaggle_bad(page), f"{kind} listing page {number} failed")
+            parsed = parse_listing(page["stdout"])
+            req(page.get("rows") == parsed and all(r.get("ref", "").startswith(c["owner"] + "/") for r in parsed), f"{kind} listing page {number}: rows differ from stdout or owner")
+            new = [r for r in parsed if r["ref"] not in seen]
+            req(bool(new) == (number < len(pages)), f"{kind} listing must continue exactly until a page adds no new ref")
+            seen |= {r["ref"] for r in new}
+            rows += new
+        req(rows and listing.get("rows") == rows, f"{kind} listing rows differ from its pages")
+        req(not targets & taken_names(rows), f"{kind} provider identity collision")
+        control = record["positive_controls"][kind]
+        req(control.get("command") == control_command(kind, rows[0]["ref"]) and control.get("exit_code") == 0 and control.get("stdout", "").strip() and not kaggle_bad(control), f"{kind} positive control failed")
+
+
+def require_formal_table(table):
+    """Downstream analyzers read a state-force table only through this: smoke and failed tables are rejected."""
+    req(isinstance(table, dict) and table.get("kind") == TABLE_KIND and table.get("harness_version") == HARNESS_VERSION, "not a harness state-force table")
+    req(table.get("smoke") is False and table.get("integrity") == {"pass": True, "failures": []}, "a smoke or unverified state-force table is not evidence for an analysis")
+    return table

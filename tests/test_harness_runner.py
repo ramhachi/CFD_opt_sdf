@@ -1,4 +1,4 @@
-"""harness v1 acceptance (b), (e): the rendered runner against a fake job and fake source tree (no GPU, no network, no Julia); it equals the grid02 runner and fails closed; smoke differs only in the PIN block."""
+"""harness v1.1 acceptance (b), (e): the rendered runner against a fake job and fake source tree (no GPU, no network, no Julia); it equals the grid02 runner and fails closed; smoke differs only in the PIN block."""
 import copy
 import hashlib
 import json
@@ -10,44 +10,57 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 import harness_testlib as T  # noqa: E402
-import test_grid02_inputs_and_runner as G  # noqa: E402  (the proven grid02 runner's fake-job harness)
 from cfd_harness import campaign_build as B  # noqa: E402
 
 SC = T.SC
-DUMMY, UUID, SMI = "0" * 40, G.UUID, G.SMI
+DUMMY, UUID, SMI = T.DUMMY, T.UUID, T.SMI
 KERNELS = ["f16", "f48a", "f48b", "s24", "s32"]
 CAMPAIGN = json.loads(T.REPLAY.read_text())
 REL = str(T.REPLAY.relative_to(T.ROOT))
 
 
-def load(kernel, smoke=False):
-    ns = {"__name__": "rendered_harness_worker", "__file__": str(T.ROOT / B.TEMPLATE_REL)}
-    exec(compile(B.render(T.REPLAY, DUMMY, kernel, smoke, T.ROOT), f"runner_{kernel}.py", "exec"), ns)
+H01 = T.ROOT / "docs/harness/harness01_replay_campaign.json"  # a real non-legacy campaign (kernel a: the cheapest case, one state, byte-gated first state)
+
+
+def load(kernel, smoke=False, campaign_file=T.REPLAY, where=None):
+    """Exec the rendered runner; with `where` it is written there first so that runner_sha256 is the hash of the rendered text, as on Kaggle."""
+    text = B.render(campaign_file, DUMMY, kernel, smoke, T.ROOT)
+    path = T.ROOT / B.TEMPLATE_REL
+    if where is not None:
+        path = Path(where) / "runner.py"
+        path.write_text(text)
+    ns = {"__name__": "rendered_harness_worker", "__file__": str(path)}
+    exec(compile(text, f"runner_{kernel}.py", "exec"), ns)
     return ns
 
 
 class Fake:
     """The grid02 test harness, pointed at the harness runner: a fake source tree (symlinks to the real julia/scripts/src/evidence plus a possibly tampered copy of the campaign)."""
 
-    def __init__(self, tmp, kernel, *, smi=SMI, campaign=None, fail=None, case_file=None, probe_uuid=UUID, smoke=False, pin_override=None):
+    def __init__(self, tmp, kernel, *, smi=SMI, campaign=None, fail=None, case_file=None, probe_uuid=UUID, smoke=False, pin_override=None, campaign_file=T.REPLAY, signed=False):
         self.kernel, self.calls, self.fail, self.case_file, self.probe_uuid = kernel, [], fail, case_file, probe_uuid
-        self.ns = load(kernel, smoke)
+        self.ns = load(kernel, smoke, campaign_file, tmp if signed else None)
         src = tmp / "src"
         (src / "docs/harness").mkdir(parents=True)
         (src / "docs/evidence").mkdir()
         (src / "src").mkdir(parents=True)
         for rel in ("julia", "scripts", "src/cfd_harness", "docs/evidence/opt01b_stage_b_2026_10_15", "docs/evidence/grid02_trend_2026_10_16"):
             (src / rel).symlink_to(T.ROOT / rel)
-        target = src / REL
-        target.write_text(json.dumps(campaign if campaign is not None else CAMPAIGN, sort_keys=True))
+        rel = str(campaign_file.relative_to(T.ROOT))
+        target = src / rel
+        if campaign is None:
+            target.write_bytes(campaign_file.read_bytes())  # the genuine bytes: its hash is the pinned one
+        else:
+            target.write_text(json.dumps(campaign, sort_keys=True))
         self.src = src
         self.ns["PINS"][self.ns["CAMPAIGN"]] = SC.sha256_path(target)
         self.ns.update(pin_override or {})
         (tmp / "out").mkdir()
         self.out = tmp / "out" / self.ns["OUT_DIR_NAME"]
         self.ns.update(OUT=self.out, nvidia_smi=lambda: smi, fetch_source=lambda base: self.src, install_julia=lambda base: Path("/fake/julia"), run=self.run)
-        self.rows = CAMPAIGN["states"]
-        self.case = CAMPAIGN["kernels"][kernel]["case"]["case_id"]
+        base = json.loads(campaign_file.read_text())
+        self.rows = base["states"]
+        self.case = base["kernels"][kernel]["case"]["case_id"]
 
     def run(self, args, log_path, env=None, timeout=3600):
         a = [str(x) for x in args]
@@ -177,12 +190,12 @@ def test_complete_run_goes_baseline_first_sets_the_per_run_environment_and_write
     assert min(j["timeout"] for j in jobs) <= cfg["per_state_timeout_s"]
 
 
-@pytest.mark.parametrize("kernel", ["s24", "f48a"])
+@pytest.mark.parametrize("kernel", ["s24", "f48a", "f48b", "s32"])  # f48b starts with the parent_repeat, s32 has the shifted origin
 def test_harness_runner_equals_the_grid02_runner_on_the_same_inputs(tmp_path, kernel):
     old_dir, new_dir = tmp_path / "old", tmp_path / "new"
     old_dir.mkdir()
     new_dir.mkdir()
-    old, new = G.Harness(old_dir, kernel), Fake(new_dir, kernel)
+    old, new = T.Grid02Harness(old_dir, kernel), Fake(new_dir, kernel)
     assert old.go() == 0 and new.go() == 0
     assert [j["env"] for j in old.jobs()] == [j["env"] for j in new.jobs()]  # identical job environments, state by state
     assert [(Path(j["args"][-2]).name, Path(j["args"][3]).name) for j in old.jobs()] == [(Path(j["args"][-2]).name, Path(j["args"][3]).name) for j in new.jobs()]
@@ -279,10 +292,70 @@ def test_a_baseline_raw_whose_pin_differs_from_the_campaign_hash_fails_the_bindi
     assert h.go() == 1 and h.calls == [] and h.identity()["failure_stage"] == "self_test" and "not pinned to the campaign hash" in (h.out / "ERROR.txt").read_text()
 
 
+# ---------------------------------------------------------------- environment allowlist (S2) and identity fields
+def test_a_run_env_or_common_env_that_sets_device_or_state_identity_is_rejected_by_the_schema_and_before_any_julia_call(tmp_path):
+    for key in ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER", "JULIA_NUM_THREADS", "W4_STATE_SHA256", "W4_PHI_FORTRAN_SHA256", "W4_EXPECTED_MARGIN_M", "W4_SELECTED_GPU_UUID", "CUDA_FOO"):
+        assert SC.forbidden_env(key)
+        for where in ("run", "common", "keys"):
+            def mutate(c, key=key, where=where):
+                if where == "run":
+                    c["kernels"]["s24"]["runs"][0]["env"][key] = "1"
+                elif where == "common":
+                    c["job_env_common"][key] = "dead"
+                else:
+                    c["job_env_keys"].append(key)
+            with pytest.raises(ValueError):
+                SC.validate_campaign(tampered(mutate))
+    assert not SC.forbidden_env("W4_CANONICAL_STATE_LABEL") and not SC.forbidden_env("GRID02_CASE")
+    with pytest.raises(ValueError, match="job_env_keys"):  # an undeclared run variable is not allowed either
+        SC.validate_campaign(tampered(lambda c: c["kernels"]["s24"]["runs"][0]["env"].update(SOME_OTHER="1")))
+    with pytest.raises(ValueError, match="job_env_keys"):
+        SC.validate_campaign(tampered(lambda c: c["job_env_keys"].remove("GRID02_CASE")))
+    h = Fake(tmp_path, "s24", campaign=tampered(lambda c: c["kernels"]["s24"]["runs"][1]["env"].update(CUDA_VISIBLE_DEVICES="1")))
+    assert h.go() == 1 and h.calls == [] and h.identity()["failure_stage"] == "self_test" and not (h.out / "DONE").exists()
+
+
+def test_job_env_reasserts_the_runner_owned_variables_after_the_last_update():
+    kernel = CAMPAIGN["kernels"]["s24"]
+    base = {"CUDA_VISIBLE_DEVICES": "0", "CUDA_DEVICE_ORDER": "PCI_BUS_ID", "JULIA_NUM_THREADS": "1", "GRID02_CASE": "inherited", "PATH": "/bin"}
+    env = SC.job_env(CAMPAIGN, kernel["runs"][0], CAMPAIGN["states"][kernel["runs"][0]["state"]], base, "GPU-x")
+    assert (env["CUDA_VISIBLE_DEVICES"], env["CUDA_DEVICE_ORDER"], env["JULIA_NUM_THREADS"], env["W4_SELECTED_GPU_UUID"], "GRID02_CASE" in env) == ("0", "PCI_BUS_ID", "1", "GPU-x", False)
+    for key in ("CUDA_VISIBLE_DEVICES", "W4_STATE_SHA256", "W4_SELECTED_GPU_UUID"):  # a validation bypass still cannot reach the job
+        run = {"state": kernel["runs"][0]["state"], "env": {**kernel["runs"][0]["env"], key: "bad"}}
+        with pytest.raises(RuntimeError, match="sets a device"):
+            SC.job_env(CAMPAIGN, run, CAMPAIGN["states"][run["state"]], base, "GPU-x")
+    with pytest.raises(RuntimeError, match="sets a device"):
+        SC.job_env(dict(CAMPAIGN, job_env_common={**CAMPAIGN["job_env_common"], "W4_STATE_SHA256": "dead"}), kernel["runs"][0], CAMPAIGN["states"][kernel["runs"][0]["state"]], base, "GPU-x")
+
+
+def test_the_work_root_is_recorded_in_the_run_identity(tmp_path, monkeypatch):
+    monkeypatch.delenv("CAMPAIGN_WORK_ROOT", raising=False)
+    h = Fake(sub(tmp_path, "a"), "f16")
+    assert h.go() == 0 and h.identity()["campaign_work_root"] == "/kaggle/working"
+    monkeypatch.setenv("CAMPAIGN_WORK_ROOT", "/data/work")
+    h = Fake(sub(tmp_path, "b"), "f16")
+    assert h.go() == 0 and h.identity()["campaign_work_root"] == "/data/work"
+    bad = json.loads((h.out / "run_identity.json").read_text())
+    bad["campaign_work_root"] = None
+    with pytest.raises(ValueError, match="harness identity fields"):
+        SC.validate_identity(bad)
+
+
 # ---------------------------------------------------------------- end to end: harness runner output -> verifier
-@pytest.mark.parametrize("smoke", [False, True])
-def test_runner_output_with_real_job_files_passes_the_verifier(tmp_path, smoke):
-    from cfd_harness import campaign_verify as V
+NONLEGACY = dict(CAMPAIGN, legacy_replay=False)
+
+
+def strip_harness(out):
+    """Make a harness output look like a pre-harness one: no harness identity fields, no self_test.json."""
+    ident = json.loads((out / "run_identity.json").read_text())
+    for key in SC.IDENTITY_HARNESS_KEYS:
+        ident.pop(key)
+    (out / "run_identity.json").write_text(json.dumps(ident, indent=2, sort_keys=True) + "\n")
+    (out / "self_test.json").unlink()
+    (out / "output_manifest.json").write_text(json.dumps(SC.build_manifest(out), indent=2, sort_keys=True) + "\n")
+
+
+def real_run(tmp_path, smoke):
     real = T.EV / "kernel_output/grid02_s24"
     probe = json.loads((real / "gpu_device_probe.json").read_text())["default_device_uuid"]
     h = Fake(tmp_path, "s24", smi=(real / "nvidia_smi.csv").read_text(), probe_uuid=probe, smoke=smoke)
@@ -290,10 +363,74 @@ def test_runner_output_with_real_job_files_passes_the_verifier(tmp_path, smoke):
     assert h.go() == 0
     ident, sha = h.identity(), SC.sha256_path(h.src / REL)
     freeze = None if smoke else {"source_commit": DUMMY, "pins": {"s24": ident["pins"]}, "runtime": {"s24": {"kernel_id": ident["kernel_id"], "runner_sha256": ident["runner_sha256"]}}}
-    k, states = V.check_kernel(h.out, CAMPAIGN, sha, REL, freeze, smoke)
+    ref = {"s24": {"source_commit": DUMMY, "pins": ident["pins"], "runner_sha256": ident["runner_sha256"]}} if smoke else None
+    return h, sha, freeze, ref
+
+
+@pytest.mark.parametrize("smoke", [False, True])
+def test_runner_output_with_real_job_files_passes_the_verifier(tmp_path, smoke):
+    from cfd_harness import campaign_verify as V
+    h, sha, freeze, ref = real_run(tmp_path, smoke)
+    k, states = V.check_kernel(h.out, NONLEGACY, sha, REL, freeze, smoke, ref)
     want = json.loads((T.EV / "grid02_analysis.json").read_text())["state_forces_n"]["s24"]
     names = SC.run_names(CAMPAIGN["kernels"]["s24"])[: 1 if smoke else None]
     cols = ("drag_n", "downforce_n", "forces_csv_sha256", "summary_sha256")
     assert k == "s24" and list(states) == names and all({c: states[n][c] for c in cols} == {c: want[n][c] for c in cols} for n in names)
     with pytest.raises(ValueError):  # a smoke output is not a formal output and vice versa
-        V.check_kernel(h.out, CAMPAIGN, sha, REL, freeze, not smoke)
+        V.check_kernel(h.out, NONLEGACY, sha, REL, freeze, not smoke, ref)
+
+
+@pytest.mark.parametrize("smoke", [False, True])
+def test_stripping_the_harness_fields_from_a_harness_output_fails_instead_of_downgrading_it_to_legacy(tmp_path, smoke):
+    """S1: 'harness format' comes from the campaign, not from the output under test."""
+    from cfd_harness import campaign_verify as V
+    h, sha, freeze, ref = real_run(tmp_path, smoke)
+    strip_harness(h.out)
+    with pytest.raises(ValueError, match="manifest omits required|harness identity|run identity keys"):
+        V.check_kernel(h.out, NONLEGACY, sha, REL, freeze, smoke, ref)
+    if not smoke:  # the same bytes are a valid pre-harness output only under a campaign that is explicitly marked as a legacy replay
+        assert V.check_kernel(h.out, CAMPAIGN, sha, REL, freeze, False)[0] == "s24"
+
+
+def test_a_legacy_campaign_cannot_be_smoke_verified_and_a_freeze_must_agree_on_the_flag(tmp_path):
+    from cfd_harness import campaign_verify as V
+    h, sha, freeze, ref = real_run(tmp_path, True)
+    with pytest.raises(ValueError, match="smoke output must come from a harness runner"):
+        V.check_kernel(h.out, CAMPAIGN, sha, REL, None, True, ref)
+    assert CAMPAIGN["legacy_replay"] is True and json.loads(H01.read_text())["legacy_replay"] is False
+    SC.validate_campaign(json.loads(H01.read_text()))
+
+
+def test_verify_smoke_checks_the_runner_source_commit_and_pins_against_the_rendering_at_the_given_commit(tmp_path):
+    """Full path: runner output of the committed non-legacy campaign (kernel a) -> V.verify --smoke -> a table the freeze accepts."""
+    from cfd_harness import campaign_verify as V
+    real = T.EV / "kernel_output/grid02_f16"
+    probe = json.loads((real / "gpu_device_probe.json").read_text())["default_device_uuid"]
+    h = Fake(tmp_path, "a", smi=(real / "nvidia_smi.csv").read_text(), probe_uuid=probe, smoke=True, campaign_file=H01, signed=True)
+    h.real = real
+    assert h.go() == 0
+    table = V.verify(H01, [h.out], smoke=True, source_commit=DUMMY, repo=T.ROOT)
+    assert table["smoke"] is True and table["source_commit"] == DUMMY and set(table["harness_tool_sha256"]) == set(SC.TOOL_FILES) and table["legacy_replay"] is False
+    path = tmp_path / "smoke_table.json"
+    path.write_text(json.dumps(table))
+    c, _, sha = B.load(H01, T.ROOT)
+    assert B.check_smoke_record(path, c, sha, DUMMY) == SC.sha256_path(path)
+    with pytest.raises(ValueError, match="another campaign or source commit"):
+        B.check_smoke_record(path, c, sha, "1" * 40)
+    with pytest.raises(ValueError, match="differs from the expected smoke rendering"):  # same output, verified against another commit's rendering
+        V.verify(H01, [h.out], smoke=True, source_commit="1" * 40, repo=T.ROOT)
+    with pytest.raises(ValueError, match="--source-commit"):
+        V.verify(H01, [h.out], smoke=True, repo=T.ROOT)
+    ident = h.identity()
+    for label, edit, message in (("pins", lambda i: i["pins"].update({"scripts/step01_states.py": "0" * 64}), "pins differ"), ("commit", lambda i: i.update(source_commit="2" * 40), "source commit or runner"),
+                                 ("runner", lambda i: i.update(runner_sha256="3" * 64), "source commit or runner")):
+        bad = dict(ident, pins=dict(ident["pins"]))
+        edit(bad)
+        (h.out / "run_identity.json").write_text(json.dumps(bad, indent=2, sort_keys=True) + "\n")
+        (h.out / "output_manifest.json").write_text(json.dumps(SC.build_manifest(h.out), indent=2, sort_keys=True) + "\n")
+        with pytest.raises(ValueError, match=message):
+            V.verify(H01, [h.out], smoke=True, source_commit=DUMMY, repo=T.ROOT)
+    assert label
+    with pytest.raises(ValueError, match="smoke or unverified"):  # downstream readers reject smoke tables
+        SC.require_formal_table(table)
+    assert SC.require_formal_table(dict(table, smoke=False)) is not None

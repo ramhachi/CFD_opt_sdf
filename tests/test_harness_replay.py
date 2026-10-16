@@ -1,4 +1,4 @@
-"""harness v1 acceptance (a), (c), (d): replay equivalence on the saved GRID-02 outputs, planted truth, C- versus Fortran-order SHA fields, and verifier fail-closed mutations."""
+"""harness v1.1 acceptance (a), (c), (d): replay equivalence on the saved GRID-02 outputs, planted truth, C- versus Fortran-order SHA fields, and verifier fail-closed mutations."""
 import copy
 import json
 import shutil
@@ -19,11 +19,13 @@ ANALYSIS = json.loads((T.EV / "grid02_analysis.json").read_text())
 REAL_FREEZE = json.loads((T.EV / "prerun_freeze.json").read_text())
 CAMPAIGN = json.loads(T.REPLAY.read_text())
 SHA = SC.sha256_path(T.REPLAY)
+REL = str(T.REPLAY.relative_to(T.ROOT))
 
 
 def synthetic_freeze(tmp):
     """A harness-format freeze built from the real GRID-02 freeze (same source commit, pins and runner hashes), written with its sidecar."""
-    f = {"kind": SC.FREEZE_KIND, "harness_version": SC.HARNESS_VERSION, "source_commit": REAL_FREEZE["source_commit"], "campaign_sha256": SHA, "pins": REAL_FREEZE["pins"],
+    f = {"kind": SC.FREEZE_KIND, "harness_version": SC.HARNESS_VERSION, "legacy_replay": True, "campaign_path": REL, "frozen_utc": REAL_FREEZE["frozen_utc"], "source_commit": REAL_FREEZE["source_commit"],
+         "campaign_sha256": SHA, "pins": REAL_FREEZE["pins"],
          "runtime": {k: {"kernel_id": v["kernel_id"], "runner_sha256": v["runner_sha256"]} for k, v in REAL_FREEZE["runtime"].items()}, "identity_free_check": REAL_FREEZE["identity_free_check"]}
     path = Path(tmp) / "freeze.json"
     path.write_text(json.dumps(f))
@@ -219,3 +221,79 @@ def test_campaign_schema_rejects_malformed_campaigns():
         mutate(bad)
         with pytest.raises(ValueError):
             SC.validate_campaign(bad)
+
+
+# ---------------------------------------------------------------- campaign cross-state rules, JSON strictness, CLI fail-closed on malformed input
+def test_campaign_schema_rejects_inconsistent_state_sets():
+    parent, repeat = "opt01b__parent", "opt01b__parent_repeat"
+    def second_parent(c):
+        c["states"][repeat]["kind"] = "parent"
+    mutations = {
+        "baseline kind with a direction": (lambda c: c["states"][parent].update(direction="robust_opt01a", step_mm=1.0, sign=1, changed_node_count=5), "baseline kinds"),
+        "candidate without a direction": (lambda c: c["states"]["opt01b__prop__s0.625mm"].update(direction=None, step_mm=0, sign=0, changed_node_count=0), "baseline kinds"),
+        "second parent": (second_parent, "exactly one parent"),
+        "no parent": (lambda c: c["states"][parent].update(kind="parent_repeat"), "exactly one parent"),
+        "repeat with another identity": (lambda c: c["states"][repeat].update(phi_fortran_order_sha256="1" * 64), "parent_repeat must equal"),
+        "candidate shares the parent phi": (lambda c: c["states"]["opt01b__prop__s0.625mm"].update(phi_fortran_order_sha256=c["states"][parent]["phi_fortran_order_sha256"]), "share phi_fortran_order_sha256"),
+        "two candidates share the C-order phi": (lambda c: c["states"]["opt01b__prop__s0.625mm"].update(phi_c_order_sha256=c["states"]["opt01b__prop__s1.25mm"]["phi_c_order_sha256"]), "share phi_c_order_sha256"),
+        "aggregate cap below the per-state timeout": (lambda c: c["kernels"]["s24"]["config"].update(solver_wall_time_cap_s=800), "aggregate solver cap"),
+        "legacy flag not a boolean": (lambda c: c.update(legacy_replay="yes"), "legacy_replay"),
+    }
+    for label, (mutate, message) in mutations.items():
+        bad = copy.deepcopy(CAMPAIGN)
+        mutate(bad)
+        with pytest.raises(ValueError, match=message):
+            SC.validate_campaign(bad)
+        assert label
+
+
+def test_jload_rejects_duplicate_keys_and_nonfinite_numbers(tmp_path):
+    path = tmp_path / "d.json"
+    path.write_text('{"a": 1, "a": 2}')
+    with pytest.raises(ValueError, match="duplicate JSON key"):
+        SC.jload(path)
+    path.write_text('{"a": {"b": 1, "b": 1}}')
+    with pytest.raises(ValueError, match="duplicate JSON key"):
+        SC.jload(path)
+    path.write_text('{"a": NaN}')
+    with pytest.raises(ValueError, match="nonfinite"):
+        SC.jload(path)
+    path.write_text('{"a": [1, 2]}')
+    assert SC.jload(path) == {"a": [1, 2]}
+
+
+def test_cli_turns_malformed_inputs_into_exit_3_not_a_traceback(s24, freeze_file, tmp_path, capsys):
+    summary = summary_of(s24)
+    summary.write_text("[]\n")  # AttributeError inside the summary check without the CLI guard
+    remanifest(s24)
+    with pytest.raises(AttributeError):
+        check(s24)
+    for argv in (["verify", str(s24), "--campaign", str(T.REPLAY), "--freeze", str(freeze_file)],
+                 ["verify", str(s24), "--campaign", str(tmp_path / "missing.json"), "--freeze", str(freeze_file)],
+                 ["verify", str(s24), "--campaign", str(T.REPLAY), "--freeze", str(tmp_path / "missing.json")]):
+        with pytest.raises(SystemExit) as e:
+            H.main(argv)
+        assert e.value.code == 3
+    bad = tmp_path / "bad_freeze.json"
+    bad.write_text("[1]")
+    with pytest.raises(SystemExit) as e:  # TypeError/AttributeError on a malformed freeze
+        H.main(["verify", str(s24), "--campaign", str(T.REPLAY), "--freeze", str(bad)])
+    assert e.value.code == 3 and "FAILED (fail closed)" in capsys.readouterr().err
+    with pytest.raises(SystemExit) as e:  # a smoke verification without --source-commit
+        H.main(["verify", str(s24), "--campaign", str(T.REPLAY), "--smoke"])
+    assert e.value.code == 3
+
+
+def test_a_legacy_freeze_must_name_the_campaign_flag_and_path(freeze_file):
+    f = json.loads(freeze_file.read_text())
+    c = copy.deepcopy(CAMPAIGN)
+    V.validate_freeze(f, freeze_file, c, SHA, REL)
+    for mutate in (lambda x: x.update(legacy_replay=False), lambda x: x.pop("legacy_replay"), lambda x: x.update(campaign_path="docs/harness/other.json"), lambda x: x["pins"]["s24"].pop(c["kernels"]["s24"]["job"])):
+        bad = copy.deepcopy(f)
+        mutate(bad)
+        freeze_file.write_text(json.dumps(bad))
+        freeze_file.with_name("freeze.json.sha256").write_text(SC.sha256_path(freeze_file) + "\n")
+        with pytest.raises(ValueError):
+            V.validate_freeze(bad, freeze_file, c, SHA, REL)
+    freeze_file.write_text(json.dumps(f))
+    freeze_file.with_name("freeze.json.sha256").write_text(SC.sha256_path(freeze_file) + "\n")

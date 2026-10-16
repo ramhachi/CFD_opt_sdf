@@ -1,0 +1,72 @@
+{
+  "campaign_sha256": "f68e0b7b42bf3ef92664f2ead114409908dc6afe568dbc8cbb7fd5d278f78619",
+  "case_id": "flow_16",
+  "config": {
+    "GRID02_CASE": "flow_16",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "canonical_origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 10800,
+    "per_state_timeout_s": 900,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 900
+  },
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {
+    "robust_opt01a": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478"
+  },
+  "expected_names": [
+    "opt01b__parent"
+  ],
+  "failure_stage": null,
+  "harness_version": "harness v1",
+  "kernel": "a",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-harness01-replay-a-smoke",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/grid02_trend_2026_10_16/inventory.json": "8fa96f84408cc162dafd7c73f26a181ec907363504a75f103efd3ef3453abaea",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "docs/harness/harness01_replay_campaign.json": "f68e0b7b42bf3ef92664f2ead114409908dc6afe568dbc8cbb7fd5d278f78619",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad",
+    "src/cfd_harness/campaign_schema.py": "f702a388772bc071e98153ae3024db181cfd2883d0a8fb8d1fadb840786f71b1"
+  },
+  "platform": "Linux 20e29e2d24a6 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "c09ce81f425fd54d79ee65a3e53dcfffebddd65c2b88a2735d746230f5574f21",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-6a788e71-7ad2-fc90-0be4-4c7da76df7cb"
+  },
+  "smoke": true,
+  "source_commit": "ace6ad4fd7ca52936e7e44d5ec37525283768424",
+  "verified": {
+    "docs/evidence/grid02_trend_2026_10_16/inventory.json": "8fa96f84408cc162dafd7c73f26a181ec907363504a75f103efd3ef3453abaea",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478",
+    "docs/harness/harness01_replay_campaign.json": "f68e0b7b42bf3ef92664f2ead114409908dc6afe568dbc8cbb7fd5d278f78619",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/grid02_case.jl": "2210d56b51c3facba17b735102f5955c4b0068e19a728dba2f84ace68b0bafe1",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_grid02_job.jl": "4d5a30b04820b5ab2adbe96a129cd0d3d77c3085035a7c3d337154ac6cfcf6ad",
+    "src/cfd_harness/campaign_schema.py": "f702a388772bc071e98153ae3024db181cfd2883d0a8fb8d1fadb840786f71b1"
+  }
+}

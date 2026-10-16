@@ -22,7 +22,7 @@
       0.9
     ]
   },
-  "harness_version": "harness v1",
+  "harness_version": "harness v1.1",
   "index_name": "grid02_index.json",
   "job_env_common": {
     "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
@@ -34,6 +34,9 @@
     "W4_POINT_SHAPE": "121,65,49",
     "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
   },
+  "job_env_keys": [
+    "GRID02_CASE"
+  ],
   "kernels": {
     "f16": {
       "case": {
@@ -449,6 +452,7 @@
       ]
     }
   },
+  "legacy_replay": true,
   "measurement": {
     "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
     "time_window_t_u_l": [

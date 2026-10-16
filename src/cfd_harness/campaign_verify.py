@@ -1,15 +1,18 @@
-"""harness v1 verifier: the integrity half of every campaign analyzer.  Kaggle kernel outputs + campaign.json + freeze -> a validated state-force table (or a ValueError; fail closed).
+"""harness v1.1 verifier: the integrity half of every campaign analyzer.  Kaggle kernel outputs + campaign.json + freeze -> a validated state-force table (or a ValueError; fail closed).
 
 Checks per kernel: safe manifest paths and hashes, DONE xor ERROR, exact state order, index/identity schema, run identity and pins against the freeze, GPU (T4, index 0, singleton UUID),
 per-state job-summary identity (both phi byte orders), host recomputation of drag/downforce with the case's force scale against the Julia summary at 1e-9, per-state/aggregate/kernel budgets,
-and the optional first-state byte gate.  Statistics on the table are the campaign analyzer's job, not this module's.
+and the optional first-state byte gate.  Whether the harness checks apply is decided by the campaign (`legacy_replay`), never by the output under test.
+Statistics on the table are the campaign analyzer's job, not this module's; an analyzer reads the table through `campaign_schema.require_formal_table` (a smoke table is rejected).
 """
 from __future__ import annotations
 
 import math
 from pathlib import Path
 
+from cfd_harness import campaign_build as B
 from cfd_harness import campaign_schema as SC
+from cfd_harness.campaign_build import BASE_PINS
 from grid01_gpu import select_worker_gpu  # scripts/ is on the path once campaign_schema is imported
 
 REPO = Path(__file__).resolve().parents[2]
@@ -22,19 +25,30 @@ def load_campaign(path, repo=REPO):
     return campaign, SC.sha256_path(path), str(path.relative_to(Path(repo).resolve()))
 
 
-def validate_freeze(freeze, freeze_path, campaign, campaign_sha):
+def validate_freeze(freeze, freeze_path, campaign, campaign_sha, campaign_rel):
     SC.req(isinstance(freeze, dict) and freeze.get("kind") == SC.FREEZE_KIND and freeze.get("harness_version") == SC.HARNESS_VERSION, "freeze kind or harness version differs")
+    legacy = campaign["legacy_replay"]
     SC.req(SC.COMMIT.fullmatch(str(freeze.get("source_commit"))) and freeze.get("campaign_sha256") == campaign_sha, "freeze source commit or campaign hash differs")
+    SC.req(freeze.get("legacy_replay") is legacy and freeze.get("campaign_path") == campaign_rel, "freeze legacy_replay flag or campaign path differs from the campaign")
     sidecar = Path(freeze_path).with_name(Path(freeze_path).name + ".sha256")
     SC.req(sidecar.is_file() and sidecar.read_text().strip() == SC.sha256_path(freeze_path), "freeze SHA-256 sidecar missing or mismatched")
     SC.req(set(freeze.get("runtime", {})) == set(campaign["kernels"]) == set(freeze.get("pins", {})), "freeze must cover exactly the campaign's kernels")
-    SC.req((freeze.get("identity_free_check") or {}).get("all_free") is True, "freeze lacks a passed identity-free check")
+    if legacy:  # pre-harness freeze (GRID-02): its identity-free record has the old shape and the harness-only fields do not exist
+        SC.req((freeze.get("identity_free_check") or {}).get("all_free") is True, "freeze lacks a passed identity-free check")
+    else:
+        SC.req(SC.is_sha(freeze.get("smoke_verified_sha256")), "freeze lacks the verified smoke record hash")
+        SC.validate_identity_free(freeze.get("identity_free_check"), campaign, freeze.get("frozen_utc"))
+    raws = [campaign["baseline"]] + list(campaign["directions"].values())
     for k, kernel in campaign["kernels"].items():
         SC.req(freeze["runtime"][k].get("kernel_id") == kernel["kernel_id"] and SC.is_sha(freeze["runtime"][k].get("runner_sha256")), f"freeze runtime of {k}")
+        pinned = freeze["pins"][k]
+        needed = {kernel["job"], *campaign["pins"], *kernel.get("pins", []), *(d["path"] for d in raws)} | (set() if legacy else {campaign_rel, *BASE_PINS})
+        SC.req(isinstance(pinned, dict) and needed <= set(pinned) and all(SC.is_sha(h) for h in pinned.values()), f"freeze pins of {k} do not cover the campaign's bound files")
+        SC.req(all(pinned[d["path"]] == d["sha256_fortran_raw"] for d in raws) and (legacy or pinned[campaign_rel] == campaign_sha), f"freeze pins of {k} differ from the campaign's declared hashes")
 
 
-def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False):
-    """Integrity of one kernel output directory; returns (kernel name, host-recomputed forces by state)."""
+def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False, smoke_ref=None):
+    """Integrity of one kernel output directory; returns (kernel name, host-recomputed forces by state).  smoke_ref: {kernel: {source_commit, pins, runner_sha256}} of the expected smoke rendering."""
     out = Path(out)
     SC.req(out.is_dir() and (out / SC.DONE_NAME).is_file() and not any(out.rglob(SC.ERROR_NAME)), "DONE must exist and ERROR.txt must not")
     index_path = out / SC.index_name(c)
@@ -43,7 +57,7 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False):
     SC.req(k in c["kernels"], f"unknown kernel in output: {k!r}")
     kernel = c["kernels"][k]
     case_id, cfg = kernel["case"]["case_id"], kernel["config"]
-    harness = "harness_version" in identity
+    harness = not c["legacy_replay"]  # decided by the campaign, never by the output: stripping the harness fields must fail, not downgrade
     SC.req(harness or not smoke, "a smoke output must come from a harness runner")
     names = SC.run_names(kernel)[:1] if smoke else SC.run_names(kernel)
     SC.check_manifest(out, SC.required_files(c, kernel, names, harness))
@@ -57,11 +71,12 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False):
     SC.req(not harness or (identity["smoke"] is smoke and identity["campaign_sha256"] == campaign_sha and identity["pins"].get(campaign_rel) == campaign_sha), "campaign pin or smoke flag differs")
     SC.req(harness or campaign_rel not in identity["pins"] or identity["pins"][campaign_rel] == campaign_sha, "campaign pin differs")
     if freeze is not None:
-        runtime = freeze["runtime"][k]
-        SC.req(identity["source_commit"] == freeze["source_commit"] and identity["runner_sha256"] == runtime["runner_sha256"], "source commit or runner differs from the freeze")
-        SC.req(identity["pins"] == freeze["pins"][k], "run identity pins differ from the freeze")
+        ref, what = {"source_commit": freeze["source_commit"], "pins": freeze["pins"][k], "runner_sha256": freeze["runtime"][k]["runner_sha256"]}, "freeze"
     else:
-        SC.req(SC.COMMIT.fullmatch(identity["source_commit"]), "smoke source commit")
+        SC.req(smoke and smoke_ref is not None and k in smoke_ref, "a smoke verification needs the expected smoke rendering (--source-commit)")
+        ref, what = smoke_ref[k], "expected smoke rendering"
+    SC.req(identity["source_commit"] == ref["source_commit"] and identity["runner_sha256"] == ref["runner_sha256"], f"source commit or runner differs from the {what}")
+    SC.req(identity["pins"] == ref["pins"], f"run identity pins differ from the {what}")
     SC.req(identity["verified"] == identity["pins"], "verified pin map differs from the pins")
     SC.equal(identity["config"], cfg, "run identity kernel configuration")
     SC.equal(identity["expected_names"], names, "run identity state plan")
@@ -105,20 +120,23 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False):
     return k, states
 
 
-def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=REPO):
-    """The validated state-force table of a campaign (or of one smoke kernel with smoke=True and no freeze)."""
+def verify(campaign_path, kernel_dirs, freeze_path=None, smoke=False, repo=REPO, source_commit=None):
+    """The validated state-force table of a campaign (or of one smoke kernel with smoke=True, no freeze and the source commit the smoke runner was rendered at)."""
     SC.req(smoke == (freeze_path is None), "a formal verification needs --freeze; a smoke verification takes none")
     c, campaign_sha, rel = load_campaign(campaign_path, repo)
-    freeze = None
-    if not smoke:
+    freeze = smoke_ref = None
+    if smoke:
+        SC.req(SC.COMMIT.fullmatch(source_commit or "") is not None and not c["legacy_replay"], "a smoke verification needs --source-commit (full SHA) and a non-legacy campaign")
+        smoke_ref = {k: {"source_commit": source_commit, "pins": B.pins(c, rel, k, repo), "runner_sha256": SC.sha256_bytes(B.render(campaign_path, source_commit, k, True, repo).encode())} for k in c["kernels"]}
+    else:
         freeze = SC.jload(freeze_path)
-        validate_freeze(freeze, freeze_path, c, campaign_sha)
+        validate_freeze(freeze, freeze_path, c, campaign_sha, rel)
     kernels, manifests = {}, {}
     for d in kernel_dirs:
-        k, states = check_kernel(d, c, campaign_sha, rel, freeze, smoke)
+        k, states = check_kernel(d, c, campaign_sha, rel, freeze, smoke, smoke_ref)
         SC.req(k not in kernels, f"kernel {k} given twice")
         kernels[k], manifests[k] = states, SC.sha256_path(Path(d) / SC.MANIFEST_NAME)
     SC.req(len(kernels) == 1 if smoke else set(kernels) == set(c["kernels"]), "a formal verification needs exactly the campaign's kernel directories; a smoke one exactly one")
-    return {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_id": c["campaign_id"], "campaign_sha256": campaign_sha, "smoke": smoke,
-            "source_commit": None if freeze is None else freeze["source_commit"], "freeze_sha256": None if freeze_path is None else SC.sha256_path(freeze_path),
+    return {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "campaign_id": c["campaign_id"], "campaign_sha256": campaign_sha, "smoke": smoke, "legacy_replay": c["legacy_replay"],
+            "source_commit": source_commit if smoke else freeze["source_commit"], "freeze_sha256": None if freeze_path is None else SC.sha256_path(freeze_path), "harness_tool_sha256": SC.tool_hashes(),
             "integrity": {"pass": True, "failures": []}, "kernel_manifest_sha256": manifests, "state_forces_n": kernels}
