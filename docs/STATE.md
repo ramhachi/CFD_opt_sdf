@@ -34,6 +34,9 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 | M5 topology, multi-step loop, CLI | #32, #33, #40 | after M4 |
 NO-GO branch (pre-committed): smooth-advection-scheme WaterLily test first, then move to the T2-0 evaluator.
 
+## Compute backend (user, 2026-10-16)
+Kaggle T4 (GPU) and Kaggle CPU (OpenFOAM) stay the backends for now. The user knows GPU rental APIs could cut cost and wants to decide a switch only when it becomes necessary, not a full switch now. Triggers to raise the decision: weekly GPU need above the Kaggle quota (~30 h), queue/round-trip latency dominating a milestone, or a run class Kaggle cannot hold (e.g. 3D high-Re WaterLily, > 12 h sessions). The harness keeps the runner portable (working root via CAMPAIGN_WORK_ROOT); submission stays the only Kaggle-specific step.
+
 ## Standing facts to remember
 - OpenFOAM is kept (2026-10-16 reversal of the 10-02 removal direction); working Kaggle CPU recipes: `infra/kaggle/kernel_openfoam_xfid_gridphase_x3_formal/`.
 - Kaggle: 2 concurrent GPU sessions, ~30 GPU h/week; per-state T4 solver time flow_24 ~175 s, flow_32 ~400 s, flow_48 ~2,200 s.
