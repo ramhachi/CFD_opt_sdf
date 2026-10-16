@@ -1,0 +1,210 @@
+{
+  "check_mesh": {
+    "cells": 64753,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "62.075876",
+    "max_non_orthogonality": "53.427773",
+    "max_skewness": "0.73473391",
+    "mesh_ok": true,
+    "min_determinant": "0.0028647086",
+    "min_face_weight": "0.079692926",
+    "min_volume_ratio": "0.064945403",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "forces": {
+    "Cd": {
+      "last": 0.0278735509,
+      "tail_max": 0.0299056783,
+      "tail_mean": 0.028853032322,
+      "tail_min": 0.0278735509,
+      "tail_rel_drift": 0.07061648021529039,
+      "tail_rel_std": 0.02080745704291655,
+      "tail_std": 0.0006003582305978978
+    },
+    "Cl": {
+      "last": 0.914755844,
+      "tail_max": 0.914755844,
+      "tail_mean": 0.91040160992,
+      "tail_min": 0.9048342,
+      "tail_rel_drift": 0.010890961114003249,
+      "tail_rel_std": 0.003222229886113137,
+      "tail_std": 0.002933523275849738
+    },
+    "columns": [
+      "Time",
+      "Cd",
+      "Cd(f)",
+      "Cd(r)",
+      "Cl",
+      "Cl(f)",
+      "Cl(r)",
+      "CmPitch",
+      "CmRoll",
+      "CmYaw",
+      "Cs",
+      "Cs(f)",
+      "Cs(r)"
+    ],
+    "force_plateau": false,
+    "last_iteration": 200.0,
+    "rows": 100,
+    "tail_rows": 50
+  },
+  "forces_stage1_kOmegaSST": {
+    "Cd": {
+      "last": 0.032728636,
+      "tail_max": 0.0457825409,
+      "tail_mean": 0.038912825864,
+      "tail_min": 0.032728636,
+      "tail_rel_drift": 0.3459187378471592,
+      "tail_rel_std": 0.10198618883517349,
+      "tail_std": 0.003968570806676127
+    },
+    "Cl": {
+      "last": 0.891410036,
+      "tail_max": 0.891410036,
+      "tail_mean": 0.87155841238,
+      "tail_min": 0.832383413,
+      "tail_rel_drift": 0.0608426520124287,
+      "tail_rel_std": 0.018693487971712188,
+      "tail_std": 0.0162924666984701
+    },
+    "columns": [
+      "Time",
+      "Cd",
+      "Cd(f)",
+      "Cd(r)",
+      "Cl",
+      "Cl(f)",
+      "Cl(r)",
+      "CmPitch",
+      "CmRoll",
+      "CmYaw",
+      "Cs",
+      "Cs(f)",
+      "Cs(r)"
+    ],
+    "force_plateau": false,
+    "last_iteration": 100.0,
+    "rows": 100,
+    "tail_rows": 50
+  },
+  "h_over_c": 0.448,
+  "id": "sst-lm_h0.448_wrc_smoke",
+  "iterations_requested": 200,
+  "mesh": "wrc",
+  "mesh_cells_3d": 64753,
+  "mesh_proxy": {
+    "aspect_ratio_max": 62.075879118490306,
+    "cells": 64753,
+    "det_lt1e-3_cells": 0,
+    "det_min": 0.002864695490365306,
+    "nonorth_gt70_faces": 0,
+    "nonorth_max": 53.427778443243696,
+    "skew_boundary_max": 0.23329476203947586,
+    "skew_gt4_faces": 0,
+    "skew_max": 0.7982231396855671,
+    "unused_nodes": 0,
+    "vol_ratio_lt0.01_faces": 0,
+    "vol_ratio_min": 0.06494499599438368,
+    "weight_lt0.05_faces": 0,
+    "weight_min": 0.07969386322924338,
+    "worst_xy_m": {
+      "aspect_ratio": [
+        0.09943,
+        0.128963
+      ],
+      "det": [
+        0.080465,
+        0.128857
+      ],
+      "nonorth": [
+        0.224114,
+        0.129153
+      ],
+      "vol_ratio": [
+        0.223398,
+        0.130794
+      ],
+      "weight": [
+        0.223398,
+        0.130794
+      ]
+    }
+  },
+  "mesh_proxy_failures": [],
+  "model": "sst-lm",
+  "residual_converged": false,
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.0029427977,
+      "Uy": 0.0024860962,
+      "gammaInt": null,
+      "k": 0.00095964527,
+      "nuTilda": null,
+      "omega": 3.189448e-06,
+      "p": 0.00074696011
+    },
+    "last_time": 100.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "solver_lm": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": 0.0013878935,
+      "Ux": 0.00073040525,
+      "Uy": 0.00049826217,
+      "gammaInt": 0.00033231151,
+      "k": 0.00040432514,
+      "nuTilda": null,
+      "omega": 1.1312189e-06,
+      "p": 0.0012673711
+    },
+    "last_time": 200.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 82.526208,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 1.620885774000044
+    },
+    {
+      "peak_rss_mb_sampled": 174.989312,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 2.3726620600000388
+    },
+    {
+      "peak_rss_mb_sampled": 154.943488,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 22.344502045000013
+    },
+    {
+      "limiter": "velocityDampingConstraint",
+      "peak_rss_mb_sampled": 161.792,
+      "returncode": 0,
+      "stage": "simpleFoam_lm",
+      "timed_out": false,
+      "wall_s": 28.010304926000003
+    }
+  ],
+  "status": "COMPLETED",
+  "total_wall_s": 68.13400966999995
+}
