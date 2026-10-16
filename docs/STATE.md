@@ -11,6 +11,7 @@ SDF-native shape/topology optimizer whose improvements are confirmed by independ
 - No optimized shape has had its improvement confirmed by independent CFD. Accepted gains so far: 0.01-0.2 % downforce.
 - Diagnosis: the response DIFFERENCE (slope) varies 50-100 % with flow grid and grid placement; flow_24 is the outlier, flow_32 and flow_48 agree; wide-support smooth modes (uniform offset D0) agree WaterLily vs OpenFOAM within 2 %.
 - Gradient backends (forward/reverse AD) BLOCKED, cause unidentified; research only (#23).
+- M2 (UNC-01) is blocked on the parent/mode-basis decision from MODE-01.
 - All qualification flags false; `shape_update_allowed=false`.
 
 ## Principles (R1-R6)
@@ -24,9 +25,9 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 | ID | Issue | Status |
 | --- | --- | --- |
 | M0 re-baseline | #41, #18 closed; #24, #25, #39 closed | done 2026-10-16 |
-| T2-0 FSAE RANS feasibility (parallel) | #57 | in progress |
-| M1 common harness + per-state placement job | #58, #59 | in progress |
-| M1' wide-support volume-neutral modes (solver-free) | #60 | after M1 starts |
+| T2-0 FSAE RANS feasibility (parallel) | #57 | T2-0a done (exploratory): 2D ground-effect wing, SA Cl within ~5 % of experiment, peak h/c matches; T2-0b next |
+| M1 common harness + per-state placement job | #58 closed, #59 | harness v1.1 merged; #59 byte-identity check folded into the UNC-01 smoke |
+| M1' wide-support volume-neutral modes (solver-free) | #60 | prescreen done (exploratory): the OPT-01 v1 parent admits no wide-support mode (lattice-plane ties, pinned end layers, 2-3 cell slab); parent choice awaits the user (v18 analytic plate recommended) |
 | M2 paired-difference uncertainty sigma_d | #61 | after M1, M1' |
 | M3a fidelity go/no-go (no optimizer) | #62 | after M2 |
 | M3b screening + response surface + independent verification | SCREEN-01, XV-01 | only if M3a GO |
