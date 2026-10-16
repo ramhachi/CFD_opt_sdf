@@ -1,0 +1,126 @@
+{
+  "baseline": {
+    "path": "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw",
+    "sha256_fortran_raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7"
+  },
+  "campaign_id": "harness01_replay",
+  "directions": {
+    "robust_opt01a": {
+      "path": "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw",
+      "sha256_fortran_raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478"
+    }
+  },
+  "domain": {
+    "flow_origin_m": [
+      -2.5,
+      -1.2,
+      -0.9
+    ],
+    "physical_box_max_m": [
+      2.5,
+      1.2,
+      0.9
+    ]
+  },
+  "harness_version": "harness v1",
+  "index_name": "harness_index.json",
+  "job_env_common": {
+    "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "W4_CANONICAL_STATE_LABEL": "v17",
+    "W4_CELL_SHAPE": "120,64,48",
+    "W4_MARGIN_GATE_M": "0.15",
+    "W4_MARGIN_TOLERANCE_M": "1e-6",
+    "W4_POINT_SHAPE": "121,65,49",
+    "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "kernels": {
+    "a": {
+      "case": {
+        "case_id": "flow_16",
+        "density_kg_m3": 1.0,
+        "dynamic_viscosity_pa_s": 0.01,
+        "flow_dims": [
+          100,
+          48,
+          36
+        ],
+        "flow_spacing_m": 0.05,
+        "freestream_mps": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "reference_area_m2": 0.64,
+        "reference_length_m": 0.8,
+        "reynolds": 80.0,
+        "solver_length": 16.0,
+        "solver_time_unit_s": 0.05,
+        "solver_viscosity": 0.2
+      },
+      "config": {
+        "GRID02_CASE": "flow_16",
+        "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+        "canonical_origin_m": [
+          -1.0,
+          -0.8,
+          -0.6
+        ],
+        "gpu_probe_timeout_s": 300,
+        "instantiate_timeout_s": 2400,
+        "kernel_timeout_s": 10800,
+        "per_state_timeout_s": 900,
+        "reserve_s": 300,
+        "solver_wall_time_cap_s": 900
+      },
+      "first_state_csv_sha256": "97e7b43c346a57a1e24be28e385d9cb9ac03d17b427677b9052683cc3e9c6477",
+      "job": "scripts/waterlily_grid02_job.jl",
+      "kernel_id": "ramhachi888/cfd-opt-sdf-harness01-replay-a",
+      "pins": [
+        "scripts/grid02_case.jl"
+      ],
+      "runs": [
+        {
+          "env": {
+            "GRID02_CASE": "flow_16",
+            "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6"
+          },
+          "state": "opt01b__parent"
+        }
+      ]
+    }
+  },
+  "measurement": {
+    "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+    "time_window_t_u_l": [
+      80.0,
+      120.0
+    ]
+  },
+  "out_prefix": "harness01_replay_",
+  "owner": "ramhachi888",
+  "pins": [
+    "docs/evidence/grid02_trend_2026_10_16/inventory.json"
+  ],
+  "repo_url": "https://github.com/ramhachi/CFD_opt_sdf.git",
+  "scrub_env": [
+    "GRID02_CASE"
+  ],
+  "sparse": [],
+  "states": {
+    "opt01b__parent": {
+      "changed_node_count": 0,
+      "direction": null,
+      "kind": "parent",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "npz_sha256": "c0b949b3ba24ab9cdd110a23a80ba30c663acfabf8f30b132aee2b016eebe22b",
+      "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+      "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+      "sign": 0,
+      "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+      "step_mm": 0.0,
+      "zero_level_margin_m": 0.34999999925494196
+    }
+  }
+}
