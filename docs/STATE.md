@@ -23,12 +23,12 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 ## Milestones (order)
 | ID | Issue | Status |
 | --- | --- | --- |
-| M0 re-baseline | GOAL-01 / #41 / #18 | done 2026-10-16 |
-| T2-0 FSAE RANS feasibility (parallel) | T2-0 | next |
-| M1 common harness + per-state placement job | HARNESS-01, JOB-02 | next |
-| M1' wide-support volume-neutral modes (solver-free) | MODE-01 | after M1 starts |
-| M2 paired-difference uncertainty sigma_d | UNC-01 | after M1, M1' |
-| M3a fidelity go/no-go (no optimizer) | FID-01 | after M2 |
+| M0 re-baseline | #41, #18 closed; #24, #25, #39 closed | done 2026-10-16 |
+| T2-0 FSAE RANS feasibility (parallel) | #57 | in progress |
+| M1 common harness + per-state placement job | #58, #59 | in progress |
+| M1' wide-support volume-neutral modes (solver-free) | #60 | after M1 starts |
+| M2 paired-difference uncertainty sigma_d | #61 | after M1, M1' |
+| M3a fidelity go/no-go (no optimizer) | #62 | after M2 |
 | M3b screening + response surface + independent verification | SCREEN-01, XV-01 | only if M3a GO |
 | M4 evaluator / product-scope decision | — | after M3, T2-0 |
 | M5 topology, multi-step loop, CLI | #32, #33, #40 | after M4 |
