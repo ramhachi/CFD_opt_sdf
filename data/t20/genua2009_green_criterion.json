@@ -1,0 +1,18 @@
+{
+ "_provenance": "Genua 2009 (TU Delft MSc thesis, https://repository.tudelft.nl/file/File_ec8400ef-f0a8-48d5-9c67-f266aa15a07b; PDF SHA-256 f41cd300c32dc9db41484cb86c834a7b3b60596aff3478aef0f25e98b32e0d41), paper 1 'Ride height sensitivity study, second stage', PDF page 10 (printed page 8 of 13). Paraphrased; the PDF is not in the repository.",
+ "green_grids": [
+  "Med30",
+  "NFine35",
+  "Med40"
+ ],
+ "red_grids": [
+  "Fine30",
+  "Med60",
+  "Coa60",
+  "NMed45"
+ ],
+ "used_by": "docs/t20b_registration_2026_10_19.md gates G2 (mean |e| < 5 %, peak at 0.134 with a 0.5 % tolerance, no oscillation = Cl plateau) and G2d (increment error threshold 0.30 between the Green and Red grids)",
+ "note": "Genua gives no numeric maximum-error limit; 'average error' is read as mean |e| (at least as strict as |mean e|).",
+ "requirements_paraphrase": "Grids are judged on four parameters: the absolute average error, the maximum error, a correctly predicted downforce maximum at h = 0.134c, and no oscillation in the solution.",
+ "green_paraphrase": "Green = all requirements met and an 'average error below 5%' (short quote)."
+}

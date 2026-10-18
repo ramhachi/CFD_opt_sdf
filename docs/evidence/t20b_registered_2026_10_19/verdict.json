@@ -1,0 +1,337 @@
+{
+ "analyzer_sha256": "0ae4cd46919228e18ba8104a7bc120ac3382610f47c19522faf5f53b93433e88",
+ "case_classes": {
+  "SOLVER_FAIL": 3,
+  "VALID": 61
+ },
+ "cases_from_resubmission": [],
+ "gates": {
+  "G2": {
+   "detail": {
+    "e_h": {
+     "0.09": -0.04217090490069941,
+     "0.134": 0.007678621340690528,
+     "0.179": 0.03725344198988112,
+     "0.224": 0.04610367174752317,
+     "0.313": 0.05734522151726895,
+     "0.448": 0.055534506129111705,
+     "0.671": 0.05042072927045904
+    },
+    "mean_abs_e_nominal": 0.04235815669937627,
+    "mean_abs_e_plus_0p15deg": 0.05454742070308505,
+    "peak_ok": false,
+    "rise_breaks_after_h": [
+     0.179
+    ]
+   },
+   "value": false
+  },
+  "G2d": {
+   "detail": {
+    "E_inc_vs_exp": 0.28832311751441925,
+    "increments_cfd": [
+     0.11683487800000025,
+     0.14557843308999985,
+     0.13424220850000013,
+     0.06728518841000053,
+     -0.016137498330000444,
+     -0.08371852167000027
+    ],
+    "increments_exp": [
+     0.10631452417980891,
+     0.13595501634292173,
+     0.14062993447980654,
+     0.07583785747083738,
+     0.023943049174592668,
+     -0.01530308826620419
+    ]
+   },
+   "value": true
+  },
+  "G3a": {
+   "detail": {
+    "fine30_over_med30_minus_1": {
+     "0.09": -0.005201514831726928,
+     "0.134": 0.0030397595254880727,
+     "0.179": -0.04455932624556125,
+     "0.224": -0.027210066051257975,
+     "0.313": -0.01332581862597193,
+     "0.448": -0.01669594584498002,
+     "0.671": -0.012263147466826774
+    },
+    "max_abs": 0.04455932624556125
+   },
+   "value": true
+  },
+  "G3b": {
+   "detail": {
+    "expected_sign_ok_at_0.224": true,
+    "per_height": {
+     "0.09": {
+      "d_fine30": 0.08162681407500005,
+      "d_med30": 0.055484701575000184,
+      "delta": 0.010226948034421661,
+      "pass": false
+     },
+     "0.134": {
+      "d_fine30": 0.07793983025499984,
+      "d_med30": 0.06837944776499971,
+      "delta": 0.010226948034421661,
+      "pass": true
+     },
+     "0.224": {
+      "d_fine30": 0.12378218459500001,
+      "d_med30": 0.12990440079499987,
+      "delta": 0.01,
+      "pass": true
+     }
+    }
+   },
+   "value": false
+  },
+  "G3c": {
+   "detail": {
+    "E_inc_fine30_vs_med30": 0.2356054970045861
+   },
+   "value": true
+  },
+  "G4": {
+   "detail": {
+    "per_height": {
+     "0.134": {
+      "d_sa": 0.06837944776499971,
+      "d_sst": 0.06790175000999987,
+      "delta": 0.010226948034421661,
+      "pass": true
+     },
+     "0.224": {
+      "d_sa": 0.12990440079499987,
+      "d_sst": 0.13244676249999987,
+      "delta": 0.01,
+      "pass": true
+     }
+    }
+   },
+   "value": true
+  },
+  "G5": {
+   "detail": {
+    "capped_wall_median_min": 5.470284937066663,
+    "max_min": 0.2620191396431301,
+    "median_min": 0.24205554297749915,
+    "n_cases": 21
+   },
+   "value": true
+  },
+  "G6": {
+   "detail": {
+    "per_height": {
+     "0.134": {
+      "dCl_pm0.25": 0.032722511270000254,
+      "d_0.25": 0.06544502254000051,
+      "d_1": 0.06837944776499971,
+      "delta": 0.040907792137686645,
+      "pass": false,
+      "resolved": false,
+      "sigma_mesh": 0.004821029537321327,
+      "smallest_resolved_incidence_deg": 0.19941563084020433
+     },
+     "0.224": {
+      "dCl_pm0.25": 0.06574323000000004,
+      "d_0.25": 0.13148646000000008,
+      "d_1": 0.12990440079499987,
+      "delta": 0.019364909380276553,
+      "pass": true,
+      "resolved": true,
+      "sigma_mesh": 0.0022821764566427556,
+      "smallest_resolved_incidence_deg": 0.049690154867131915
+     }
+    }
+   },
+   "value": false
+  }
+ },
+ "input_sha256": {
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636/data/t20/reference_genua2009.json": "a5aec6b8db8706a4c56decd6225f18d45a4eb5c105001de8018dedc24d8b96f5",
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636/data/t20/zerihan_zhang_cl_genua2009_fig6.json": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b",
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636/docs/t20b_registration_2026_10_19.md": "fa06aa4ec7a1142463feb8fd6957d041a5210cfba3dd01d3ec52a25480039595",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b/cases/sa-wf_h0.224_coa30_da0_smoke/case_result.json": "8e9171ad89c4b2906437b73454b93ba94df0b27cda8839bbb7d5159563662a1f",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b/cases/sa-wf_h0.224_med30_da0/case_result.json": "af6b4cd52e2299ea8769366de34660c67669ae5eecce2858810f1b429f249188",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b/cases/sst-lm_h0.09_wr2_da0/case_result.json": "a4e0490dbddb0549950ff7f89f80296db3ad6e3689ee31b5ba754a4aa93ef6d4",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b/cases/sst-lm_h0.134_wr2_da0/case_result.json": "b30e9bee0529eb64777e97abf7eb948021364bd8ab23a579fa390f46a60b48d6",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b/cases/sst-lm_h0.224_wr2_da0/case_result.json": "ad33bc0045042e830a8d8356ab7cb5f8dba867897d8378aaf69f3c9a3d911da3",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_coa30_da+1/case_result.json": "710e1c250000c6603f7d4235b293098a86a2486bde4d432437811e4aeb6aa456",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_coa30_da-1/case_result.json": "24c85033e92dacb82ceaf2cd7491269ac615662dfaf2e0b303a78b7f2d712c43",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_coa30_da0/case_result.json": "f529518c7e5b2fe361afe7f7cc81d0d363d27425ddb0d9aaf2b86b988bc22537",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_fine30_da+1/case_result.json": "dd464016c268c17ff7a4051cdce7797a59e79266cb6c846324edf5439f80d894",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_fine30_da-1/case_result.json": "879184dd40d702781345257f14400885c6eaac3bd6ff30c239c615075b681e33",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_fine30_da0/case_result.json": "2c3ff4b6f75018b6f1cabc43e91491037bb748bb73123d8cb452072aec0e110c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_med30_da+1/case_result.json": "b81e1a80ef429a8e5e915c1a9f653bf9c00f55b686a57011c4bed7564023260c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_med30_da-1/case_result.json": "d12323a6c4b5be65a74d7b2674552290832d9affc7014a363b9dd331f08e5ee4",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.09_med30_da0/case_result.json": "ffba6f19c225b0e02f5a7d5bd1bebf7757b9eb490cfdb42541d1578b06ad6e7c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_coa30_da+1/case_result.json": "b182c8ba49e5a49b8ad5d12e8b30dd45b06d2e3970f2e24fa060efa53e8deb39",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_coa30_da-1/case_result.json": "8ae89422e8984ae7e2b46613e7226a1e87914a7a510a7b677cb567fb4fae455b",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_coa30_da0/case_result.json": "e234bff7ae8c69b54bdbc01dca761ae4d461f5c43c487d6a91a9764ce3c4cff8",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_fine30_da+1/case_result.json": "ae03484567cb68e46373ddbc841b17167ee017cd02c0653917ea9c6fad2bf63f",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_fine30_da-1/case_result.json": "2d76c07dd44945713894399210aa35377e5ec5396721ab49b01980aa762cdb3a",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_fine30_da0/case_result.json": "348f4445c42506a5e2fb0ab1fb5adf286a81918f6401c5bbc2d791794e569608",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da+0.25/case_result.json": "868ab530ef0af51376da0066e2569c7574259ca9a4c22428458edad47adf7533",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da+0.5/case_result.json": "19f98f2bdd154da38837b3cf2274dbea87318372be1870e3f2e96b019f750c5e",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da+1/case_result.json": "fc0acbba223a41312238ab645dfd121a3ea23f3119f89650bfc52e9bd0396590",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da-0.25/case_result.json": "16939829eb9940da7e29dd83fe835a1c02be7259ddc2795e631dc6eaf142278c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da-0.5/case_result.json": "334c09bee220dab89952a1d443fa84e0e7073615af285ea49aa59e99244f4b26",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da-1/case_result.json": "e65f866342f87d684b50e18ee690faf5a03a83fb128cfa3f4f02b287dce71f0e",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.134_med30_da0/case_result.json": "a4b09fe7e02fe62736ff43ba5dc358ad059b1ed167d9e5cc00a0c590e7536e3c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.179_coa30_da0/case_result.json": "f3c2011103e94f0062a57564ff77cec0c2ccdccbc539fb3a121392ceeaea6ea8",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.179_fine30_da0/case_result.json": "4263f6adcb1f6768fce2c1ff08b2f7309b17a5b4255cb3739978e69cb390d8a3",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.179_med30_da0/case_result.json": "d5f55c1e8109da2840ba042108d62081db848196f452a564b0c5d1b07ed437c3",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_coa30_da+1/case_result.json": "d80cae4079cc7fb8d613855954e68690aac579e70783e644d7feb8a4364edebb",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_coa30_da-1/case_result.json": "465de5572fc8f60f3612fd536ea6812f6c05560db1709ae2e42b5f5bd238bf6e",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_coa30_da0/case_result.json": "8fb09b30592dff82ccb0829ba4f3f4a0aa9d0bff42ccdd44c602dee47dc0c543",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_coa30_da0_smoke/case_result.json": "5e208629f6232b408b205587261486bfcac3538138e063b21265123940ba478f",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_fine30_da+1/case_result.json": "f01acf005e3449880cc9a28756284055556240429e0bc29b9483aa1e14b43ee2",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_fine30_da-1/case_result.json": "3e240fb1e52dbf1d8b636e2ded4a56359399f3bd0d4768e5102b12efb8368030",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_fine30_da0/case_result.json": "c83e3535c3c83293b8f5d32f21311f7026ab16381acf73aa3f0af9a29bbbb0a1",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da+0.25/case_result.json": "b8ce597297deec8b9ef8a9b4d61af9b52b59c53f03798d3c5adf4cf30d6d59ef",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da+0.5/case_result.json": "3fe23a3738c219c8884fa368be664a30a16df1c8ca77e6322f68f4acf9e78250",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da+1/case_result.json": "73f6f6aa1d3a32c255e9f033379c6980a6ead955a13f01d294fbae8a98a7695f",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da-0.25/case_result.json": "1f4b419590d6d630c8b123f28cdfe6c22e7e5386f294b7a7740ccec76eb4aab4",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da-0.5/case_result.json": "4c2cd6016be4541bd7079ab1c55cf4923dfc176c4c021af08b24a8e79cbb6080",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da-1/case_result.json": "2d8e002e02441d0755ccaf2df4e78fcf278b84d40a1f29bda3c3f377a8dca984",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.224_med30_da0/case_result.json": "56aa6263201631a0a8ac255109826d5eaf4b116f166cf29637ad43f69e28ca6d",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.313_coa30_da0/case_result.json": "74e4fa2ea911a7e4ed11cd0e4f1ab3779a8edc5fbe1883dd1fe449b5f1487446",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.313_fine30_da0/case_result.json": "e8a64808db6f54f9c3a3dc90b9ac119885e53ba4abcc159a07a871321557b282",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.313_med30_da0/case_result.json": "55d6d7a01700b75ae404bac297e00f08807431ac345306c2264a68488cdcfef8",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.448_coa30_da0/case_result.json": "1da6382e712307c9fd1d27e5f4150013ddffcfec7df3890e71c76422d97f788a",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.448_fine30_da0/case_result.json": "a94a82b52040a7c50b1b0545f628d03e27f9d0d83f25d1e9b0ac8367bc12cc41",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.448_med30_da0/case_result.json": "29be397029d30afe17e1b1072b6032cacd02feff2c6af1b27dd1ad0e50833429",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.671_coa30_da0/case_result.json": "12f81e96b5337358ee8237b0a0938fbd382c1c9840f39c3ec923bcad191ef519",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.671_fine30_da0/case_result.json": "36603a3db738006e7349d251e9ea708a7117a191ee4b031c5906481056e4d786",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sa-wf_h0.671_med30_da0/case_result.json": "7035c77e720b2699d893406092806060c8f9ed74829cf454d68413c8320385de",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.09_med30_da+1/case_result.json": "a0728a922378fe4e219aa2cf6d07d22d2a5e4b38ad45d20d89588467cdb88820",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.09_med30_da-1/case_result.json": "2245c2b3f0fe289999d0248544603c306fb694dd34a2becf917e99fa0e0aa137",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.09_med30_da0/case_result.json": "769b0e7db188210dafb6debb1815b2cb92cb89f95431def8ca604e83d15b004c",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.134_med30_da+1/case_result.json": "88def8d9cbf211c0f715c3a25466d0edf3a4b63cb2a51b0550f4ed2892a43c26",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.134_med30_da-1/case_result.json": "91a2630ce6f7e8481b197ef67ab4d40589a0285241524267555df4c63b4da3a1",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.134_med30_da0/case_result.json": "e092f0c3ae7d416b4d7d92a1df45299d44cc8d58af5d4a07337763d9a47e5a4d",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.179_med30_da0/case_result.json": "8d22e1fac33670ff9fc3ae4036aa5784ed3a387447bf15f8a3622536a8b545f5",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.224_coa30_da0_smoke/case_result.json": "372ea523edcf38cd526df1f3b2836b25ad03e41d634f320b6593d380a1235ed2",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.224_med30_da+1/case_result.json": "0cba45e72776fac64670549cecd0ae3783020d3c8a8d7cb575d8fbbddee20185",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.224_med30_da-1/case_result.json": "2ca4c57465df2c18751166620b125a6f4e490fac607a01e1ef76bdf6ad62b20b",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.224_med30_da0/case_result.json": "9e8980f526c7544100bca4c25ddb6a22816d2e936ddf97972e06328d289d928a",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.313_med30_da0/case_result.json": "58c80dfcda6f66bc0d16f92634c95c8c99e2096a33236fb7a73d7fdfc6918b94",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.448_med30_da0/case_result.json": "3100b768749956d7fb3527d7d41ebd37f05c2480ddee00e5159b704820820783",
+  "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b/cases/sst-wf_h0.671_med30_da0/case_result.json": "1c32d1b0a4af14685af8050acb2e08b97e25007013631783f1cc37c968a0f537"
+ },
+ "labels": {
+  "ADJ": {
+   "ADJ_PRIMAL_UNCONVERGED": false,
+   "converged_in": {},
+   "label": "ADJ_FAILED",
+   "record_status": "ADJ_FAILED",
+   "wall_s": 62.83363329199983
+  },
+  "G2_disjoint": {
+   "label": "G2_DISJOINT_OK",
+   "mean_abs_e": 0.047299331753575036
+  },
+  "G2_robustness": "MARGINAL",
+  "LM": {
+   "cases": {
+    "0.09": {
+     "cycle_mean_Cl": 1.39212614855,
+     "half_window_rel_diff": 0.00421884261191704,
+     "osc_std_Cl": 0.13107924732975174,
+     "stationary": true,
+     "status": "COMPLETED"
+    },
+    "0.134": {
+     "cycle_mean_Cl": 1.5187194656874998,
+     "half_window_rel_diff": 0.003131019234141854,
+     "osc_std_Cl": 0.12810387877315227,
+     "stationary": true,
+     "status": "COMPLETED"
+    },
+    "0.224": {
+     "cycle_mean_Cl": 1.3249728095833335,
+     "half_window_rel_diff": 0.002044171583806532,
+     "osc_std_Cl": 0.008581967184323181,
+     "stationary": true,
+     "status": "COMPLETED"
+    }
+   },
+   "label": "LM_DATA_AGREES",
+   "mean_abs_e": 0.047652141845229,
+   "peak_ok": true
+  },
+  "agreement_mesh_specific": false,
+  "coa30_vs_exp": {
+   "mean_abs_e": 0.04392842571974028,
+   "peak_h": 0.179
+  },
+  "fine30_vs_exp": {
+   "mean_abs_e": 0.029029376922902052,
+   "peak_h": 0.134
+  },
+  "negative_control": {
+   "abs_dCl_kernelL_minus_kernelW": 0.0,
+   "case": "sa-wf_h0.224_med30_da0",
+   "rel": 0.0
+  },
+  "replication_vs_T20A": {
+   "heights": [
+    0.671,
+    0.448,
+    0.224,
+    0.134,
+    0.09
+   ],
+   "label": "REPLICATED",
+   "max_rel_diff": 0.0
+  }
+ },
+ "predicted": {
+  "ADJ": "not ADJ_CONSISTENT",
+  "G2": "pass",
+  "G2d": "uncertain",
+  "G3a": "fail",
+  "G3b": "uncertain",
+  "G3c": "near threshold",
+  "G4": "uncertain",
+  "G5": "pass (non-discriminating)",
+  "G6": "uncertain",
+  "LM": "LM_NOT_QUALIFIED"
+ },
+ "qualification_flags": "unchanged (all false; shape_update_allowed=false)",
+ "registration": "docs/t20b_registration_2026_10_19.md",
+ "runs_used": {
+  "lm": [
+   "docs/evidence/t20b_registered_2026_10_19/kernel_lm_run1/t20b"
+  ],
+  "wf": [
+   "docs/evidence/t20b_registered_2026_10_19/kernel_wf_run1/t20b"
+  ]
+ },
+ "scope": "2D single-element section (Tyrrell 026, Zerihan & Zhang), Re_c 4.6e5, moving ground, OpenFOAM v2512 SA wall functions, med30/fine30",
+ "t20a_replication_input": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636/docs/evidence/t20a_exploratory_2026_10_16/attempt3_r3/kernel_output",
+ "thresholds": {
+  "ADJ_null": 0.1,
+  "ADJ_residual": 1e-05,
+  "ADJ_tol": 0.3,
+  "G2_mean": 0.05,
+  "G2d": 0.3,
+  "G3a": 0.05,
+  "G3b": 0.25,
+  "G3c": 0.25,
+  "G4": 0.33,
+  "G5_max_min": 30.0,
+  "G5_median_min": 15.0,
+  "G6": 0.25,
+  "G6_resolve": 5.0,
+  "LM_stationary": 0.01,
+  "delta_floor": 0.01,
+  "replicated": 0.01
+ },
+ "thresholds_set_after_exploratory_visible": true,
+ "verdict": "T20B_NO_GO"
+}
