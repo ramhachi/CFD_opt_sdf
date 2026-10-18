@@ -1,0 +1,5938 @@
+{
+ "basis": {
+  "collinear_cos_threshold": 0.9,
+  "controls": [
+   "surge"
+  ],
+  "gram_abs_cos": {
+   "camber": {
+    "camber": 1.0,
+    "heave": 0.13925089321670078,
+    "pitch": 1.5612511283791264e-17,
+    "reflex": 3.469446951953614e-18,
+    "sweep": 0.0025596234583540357,
+    "twist": 1.3010426069826053e-18
+   },
+   "heave": {
+    "camber": 0.13925089321670078,
+    "heave": 0.9999999999999998,
+    "pitch": 9.540979117872439e-18,
+    "reflex": 2.6020852139652106e-18,
+    "sweep": 0.04714401500862396,
+    "twist": 4.336808689942018e-19
+   },
+   "pitch": {
+    "camber": 1.5612511283791264e-17,
+    "heave": 9.540979117872439e-18,
+    "pitch": 1.0000000000000002,
+    "reflex": 0.22696669075049325,
+    "sweep": 4.336808689942018e-19,
+    "twist": 0.05912749421174498
+   },
+   "reflex": {
+    "camber": 3.469446951953614e-18,
+    "heave": 2.6020852139652106e-18,
+    "pitch": 0.22696669075049325,
+    "reflex": 1.0,
+    "sweep": 1.1926223897340549e-18,
+    "twist": 0.00944407324111202
+   },
+   "sweep": {
+    "camber": 0.0025596234583540357,
+    "heave": 0.04714401500862396,
+    "pitch": 4.336808689942018e-19,
+    "reflex": 1.1926223897340549e-18,
+    "sweep": 1.0,
+    "twist": 0.0
+   },
+   "twist": {
+    "camber": 1.3010426069826053e-18,
+    "heave": 4.336808689942018e-19,
+    "pitch": 0.05912749421174498,
+    "reflex": 0.00944407324111202,
+    "sweep": 0.0,
+    "twist": 1.0
+   }
+  },
+  "gram_singular_values": [
+   1.1122046965910355,
+   1.0713581517537305,
+   0.999222386172605,
+   0.9976962586373305,
+   0.9239839466366974,
+   0.8761294929300936
+  ],
+  "per_mode": {
+   "camber": {
+    "a_star": 19.7,
+    "class": "wide",
+    "failed_amplitudes": [
+     29.3,
+     41.1
+    ],
+    "gate_clean_signs": {
+     "11.3": [
+      1,
+      -1
+     ],
+     "19.7": [
+      1,
+      -1
+     ],
+     "29.3": [],
+     "41.1": []
+    },
+    "qualifying_amplitudes": [
+     11.3,
+     19.7
+    ]
+   },
+   "corrugation": {
+    "a_star": 2,
+    "class": "rough",
+    "failed_amplitudes": [
+     5
+    ],
+    "gate_clean_signs": {
+     "2": [
+      1
+     ],
+     "5": []
+    },
+    "qualifying_amplitudes": [
+     2
+    ]
+   },
+   "dihedral": {
+    "a_star": null,
+    "class": "wide",
+    "failed_amplitudes": [
+     11.3,
+     19.7,
+     29.3,
+     43.1
+    ],
+    "gate_clean_signs": {
+     "11.3": [],
+     "19.7": [],
+     "29.3": [],
+     "43.1": []
+    },
+    "qualifying_amplitudes": []
+   },
+   "heave": {
+    "a_star": 31.1,
+    "class": "wide",
+    "failed_amplitudes": [
+     7.3,
+     21.3
+    ],
+    "gate_clean_signs": {
+     "13.7": [
+      1,
+      -1
+     ],
+     "21.3": [],
+     "31.1": [
+      1,
+      -1
+     ],
+     "7.3": []
+    },
+    "qualifying_amplitudes": [
+     13.7,
+     31.1
+    ]
+   },
+   "offset_s050": {
+    "a_star": 5,
+    "class": "support-small",
+    "failed_amplitudes": [],
+    "gate_clean_signs": {
+     "2": [
+      1,
+      -1
+     ],
+     "5": [
+      1,
+      -1
+     ]
+    },
+    "qualifying_amplitudes": [
+     2,
+     5
+    ]
+   },
+   "offset_s125": {
+    "a_star": 5,
+    "class": "support-medium",
+    "failed_amplitudes": [],
+    "gate_clean_signs": {
+     "2": [
+      -1
+     ],
+     "5": [
+      -1
+     ]
+    },
+    "qualifying_amplitudes": [
+     2,
+     5
+    ]
+   },
+   "offset_s400": {
+    "a_star": 5,
+    "class": "support-large",
+    "failed_amplitudes": [],
+    "gate_clean_signs": {
+     "2": [
+      1,
+      -1
+     ],
+     "5": [
+      1
+     ]
+    },
+    "qualifying_amplitudes": [
+     2,
+     5
+    ]
+   },
+   "pitch": {
+    "a_star": 3.1,
+    "class": "wide",
+    "failed_amplitudes": [
+     2.1
+    ],
+    "gate_clean_signs": {
+     "0.7": [
+      1,
+      -1
+     ],
+     "1.3": [
+      1,
+      -1
+     ],
+     "2.1": [],
+     "3.1": [
+      1,
+      -1
+     ]
+    },
+    "qualifying_amplitudes": [
+     0.7,
+     1.3,
+     3.1
+    ]
+   },
+   "reflex": {
+    "a_star": 29.3,
+    "class": "wide",
+    "failed_amplitudes": [
+     11.3,
+     41.1
+    ],
+    "gate_clean_signs": {
+     "11.3": [
+      1,
+      -1
+     ],
+     "19.7": [
+      1,
+      -1
+     ],
+     "29.3": [
+      1,
+      -1
+     ],
+     "41.1": [
+      1
+     ]
+    },
+    "qualifying_amplitudes": [
+     19.7,
+     29.3
+    ]
+   },
+   "surge": {
+    "a_star": 31.1,
+    "class": "control",
+    "failed_amplitudes": [
+     7.3
+    ],
+    "gate_clean_signs": {
+     "13.7": [
+      1,
+      -1
+     ],
+     "21.3": [
+      1,
+      -1
+     ],
+     "31.1": [
+      1,
+      -1
+     ],
+     "7.3": []
+    },
+    "qualifying_amplitudes": [
+     13.7,
+     21.3,
+     31.1
+    ]
+   },
+   "sweep": {
+    "a_star": 11.3,
+    "class": "wide",
+    "failed_amplitudes": [
+     19.7,
+     29.3,
+     43.1
+    ],
+    "gate_clean_signs": {
+     "11.3": [
+      1,
+      -1
+     ],
+     "19.7": [],
+     "29.3": [],
+     "43.1": []
+    },
+    "qualifying_amplitudes": [
+     11.3
+    ]
+   },
+   "thick_chord": {
+    "a_star": null,
+    "class": "wide",
+    "failed_amplitudes": [
+     0.025,
+     0.05,
+     0.1
+    ],
+    "gate_clean_signs": {
+     "0.025": [
+      1,
+      -1
+     ],
+     "0.05": [
+      -1
+     ],
+     "0.1": [
+      1,
+      -1
+     ]
+    },
+    "qualifying_amplitudes": []
+   },
+   "thickness_D0": {
+    "a_star": 3,
+    "class": "reference",
+    "failed_amplitudes": [],
+    "gate_clean_signs": {
+     "1": [
+      1
+     ],
+     "2": [
+      1
+     ],
+     "3": [
+      1
+     ]
+    },
+    "qualifying_amplitudes": [
+     1,
+     2,
+     3
+    ]
+   },
+   "twist": {
+    "a_star": 1.1,
+    "class": "wide",
+    "failed_amplitudes": [
+     2.3,
+     3.1,
+     4.7
+    ],
+    "gate_clean_signs": {
+     "1.1": [
+      1,
+      -1
+     ],
+     "2.3": [
+      1
+     ],
+     "3.1": [],
+     "4.7": []
+    },
+    "qualifying_amplitudes": [
+     1.1
+    ]
+   },
+   "twist_anti": {
+    "a_star": null,
+    "class": "control",
+    "failed_amplitudes": [
+     1.1,
+     2.3,
+     3.1
+    ],
+    "gate_clean_signs": {
+     "1.1": [],
+     "2.3": [],
+     "3.1": []
+    },
+    "qualifying_amplitudes": []
+   }
+  },
+  "proposed_basis": [
+   "heave",
+   "pitch",
+   "camber",
+   "reflex",
+   "twist",
+   "sweep",
+   "surge"
+  ],
+  "rule": "docs/v18_mode01_plan_2026_10_19.md \u00a75",
+  "support_probes": {
+   "support-large": [
+    "offset_s400"
+   ],
+   "support-medium": [
+    "offset_s125"
+   ],
+   "support-small": [
+    "offset_s050"
+   ]
+  },
+  "verdict": "V18_BASIS_READY",
+  "wide_distinct": [
+   "heave",
+   "pitch",
+   "camber",
+   "reflex",
+   "twist",
+   "sweep"
+  ],
+  "wide_qualifying": [
+   "heave",
+   "pitch",
+   "camber",
+   "reflex",
+   "twist",
+   "sweep"
+  ]
+ },
+ "meta": {
+  "amplitudes": {
+   "camber": [
+    11.3,
+    19.7,
+    29.3,
+    41.1
+   ],
+   "corrugation": [
+    2,
+    5
+   ],
+   "dihedral": [
+    11.3,
+    19.7,
+    29.3,
+    43.1
+   ],
+   "heave": [
+    7.3,
+    13.7,
+    21.3,
+    31.1
+   ],
+   "offset_s050": [
+    2,
+    5
+   ],
+   "offset_s125": [
+    2,
+    5
+   ],
+   "offset_s400": [
+    2,
+    5
+   ],
+   "pitch": [
+    0.7,
+    1.3,
+    2.1,
+    3.1
+   ],
+   "reflex": [
+    11.3,
+    19.7,
+    29.3,
+    41.1
+   ],
+   "surge": [
+    7.3,
+    13.7,
+    21.3,
+    31.1
+   ],
+   "sweep": [
+    11.3,
+    19.7,
+    29.3,
+    43.1
+   ],
+   "thick_chord": [
+    0.025,
+    0.05,
+    0.1
+   ],
+   "thickness_D0": [
+    1,
+    2,
+    3
+   ],
+   "twist": [
+    1.1,
+    2.3,
+    3.1,
+    4.7
+   ],
+   "twist_anti": [
+    1.1,
+    2.3,
+    3.1
+   ]
+  },
+  "basis_thresholds": {
+   "max_basis": 10,
+   "min_max_displacement_m": 0.005,
+   "min_support": 0.5,
+   "min_wide_members": 6
+  },
+  "classes": {
+   "camber": "wide",
+   "corrugation": "rough",
+   "dihedral": "wide",
+   "heave": "wide",
+   "offset_s050": "support-small",
+   "offset_s125": "support-medium",
+   "offset_s400": "support-large",
+   "pitch": "wide",
+   "reflex": "wide",
+   "surge": "control",
+   "sweep": "wide",
+   "thick_chord": "wide",
+   "thickness_D0": "reference",
+   "twist": "wide",
+   "twist_anti": "control"
+  },
+  "evidence_tier": "EXPLORATORY_COMMITTED",
+  "kind": "mode01_v18_prescreen",
+  "n_max": 8272,
+  "parameters": {
+   "L": 1.1039013452297266,
+   "alpha": 0.35596100390420754,
+   "camber": 0.0,
+   "reflex": 0.0,
+   "t": 0.1153,
+   "xc": -0.024999999999999967,
+   "y_tip": 0.4375,
+   "zc": 0.0
+  },
+  "parent": {
+   "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+   "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+   "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "source_sha256": "63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e",
+   "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "plan": "docs/v18_mode01_plan_2026_10_19.md",
+  "solver_started": false,
+  "support_definition": "fraction of active interface-band nodes (|parent phi| <= 2h) with |dphi| > 10 % of the band maximum (MODE-01)",
+  "units": {
+   "camber": "mm; w -> w + a (s^2 - 1/3): + = mid-chord up, edges down (a = mid-minus-edge deflection)",
+   "corrugation": "mm; phi - a cos(2 pi u / 0.1) cos(2 pi y / 0.1) taper (wavelength 4h over the whole band: wide extent, low smoothness; mean ~0)",
+   "dihedral": "mm; zc(y) = zc + a (eta^2 - 1/3), + = tips up",
+   "heave": "mm; zc + a, + = up",
+   "offset_s050": "mm; as offset_s400 with sigma 0.05 m",
+   "offset_s125": "mm; as offset_s400 with sigma 0.125 m",
+   "offset_s400": "mm; phi - a g taper, g = exp(-((x-xc)^2 + y^2) / (2 sigma^2)), sigma 0.4 m, both surfaces, + = outward (support axis; not neutral)",
+   "pitch": "deg; alpha + a about (xc, zc), + = nose down (higher incidence)",
+   "reflex": "mm; w -> w + a (s^3 - 3s/5): + = trailing edge down, leading edge up",
+   "surge": "mm; xc + a, + = downstream (control)",
+   "sweep": "mm; xc(y) = xc + a (eta^2 - 1/3), + = tips downstream",
+   "thick_chord": "e; t (1 + e) with L re-solved for equal section area L t + pi t^2 / 4 (exact volume, flat tips), centre, alpha, y_tip kept; + = thicker and shorter",
+   "thickness_D0": "mm; phi - a (mode01_modes thickness; NOT volume neutral, reference)",
+   "twist": "deg; alpha(y) = alpha + a (eta^2 - 1/3), + = tips nose down relative to mid-span",
+   "twist_anti": "deg; alpha(y) = alpha + a eta (control: mirror-odd)"
+  },
+  "volume_band_base": "v17 baseline smoothed volume (unchanged)"
+ },
+ "states": [
+  {
+   "all_pass": true,
+   "amplitude": 0.0,
+   "cell_components": 1,
+   "class": "parent",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8062,
+   "eikonal_max": 0.29769114508071903,
+   "eikonal_median": 2.1280614825869293e-08,
+   "eikonal_p95": 0.1693265288034885,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": null,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.24948687106748169,
+   "mode": "parent",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7544,
+    "pass": true,
+    "slack": 728
+   },
+   "phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -9.317671934139238e-05,
+    "zero_level_margin_m": 0.35088423639535904
+   },
+   "sharp_volume_vs_parent": 0.0,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.0,
+    "max_band_change_m": 0.0
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0
+  },
+  {
+   "all_pass": false,
+   "amplitude": 7.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8033,
+   "eikonal_max": 0.3500190065017067,
+   "eikonal_median": 2.1280614825869293e-08,
+   "eikonal_p95": 0.14352919625190802,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 7.2938501834869385,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2421642480632758,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7506,
+    "pass": true,
+    "slack": 766
+   },
+   "phi_fortran_sha256": "d63bca51e12d619cf0c98bfe6d525319a31e270947704567c89ac602e13818e6",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0018376705687510597,
+    "zero_level_margin_m": 0.34327784124761823
+   },
+   "sharp_volume_vs_parent": -0.005037115588547136,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9638217628160357,
+    "max_band_change_m": 0.007271435111761093
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.001931027214873371
+  },
+  {
+   "all_pass": false,
+   "amplitude": -7.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8033,
+   "eikonal_max": 0.3500190065017067,
+   "eikonal_median": 2.1280614825869293e-08,
+   "eikonal_p95": 0.14352919625190802,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 7.2938501834869385,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.256773774607672,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7506,
+    "pass": true,
+    "slack": 766
+   },
+   "phi_fortran_sha256": "76109d46c9e07adc84a5cbdbc0dc17d5bd8e5c689c99a9e7c4b54b648013558a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0018376610714065933,
+    "zero_level_margin_m": 0.34327784124761823
+   },
+   "sharp_volume_vs_parent": -0.005037115588547136,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9638217628160357,
+    "max_band_change_m": 0.007271435111761093
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0019310177166436127
+  },
+  {
+   "all_pass": true,
+   "amplitude": 13.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.4431831262817991,
+   "eikonal_median": 1.9042372678690356e-08,
+   "eikonal_p95": 0.14954730852008868,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.688847422599792,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.23576687562346554,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7406,
+    "pass": true,
+    "slack": 866
+   },
+   "phi_fortran_sha256": "85587fe9885196666128bb5edd9015ef6c943eedd4a6a222c11dd699e1d3991a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.003237675910705562,
+    "zero_level_margin_m": 0.3369608171284199
+   },
+   "sharp_volume_vs_parent": -0.018292682926829285,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9618661824277134,
+    "max_band_change_m": 0.013649936765432358
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0033311630168884054
+  },
+  {
+   "all_pass": true,
+   "amplitude": -13.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.4431831262817991,
+   "eikonal_median": 1.9042372678690356e-08,
+   "eikonal_p95": 0.14954730852008868,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.688847422599792,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.26316436642411245,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7406,
+    "pass": true,
+    "slack": 866
+   },
+   "phi_fortran_sha256": "cab942a44cd034b6ce033bc34eeab616138d3f0006f02bacc0be462291d3f1b5",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0032376658789683432,
+    "zero_level_margin_m": 0.3369608171284199
+   },
+   "sharp_volume_vs_parent": -0.018292682926829285,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9618661824277134,
+    "max_band_change_m": 0.013649936765432358
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.003331152984216379
+  },
+  {
+   "all_pass": false,
+   "amplitude": 21.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7996,
+   "eikonal_max": 0.5504889371331265,
+   "eikonal_median": 1.9120799166216784e-08,
+   "eikonal_p95": 0.16471916275570425,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 21.28329873085022,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2281819487772495,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7512,
+    "pass": true,
+    "slack": 760
+   },
+   "phi_fortran_sha256": "7582799662b6ef07e50a7a5cc5ceedc9f94cbd021ca5dc31b137393f9d323ee0",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0005801585980866886,
+    "zero_level_margin_m": 0.3294962648302317
+   },
+   "sharp_volume_vs_parent": -0.0042417815482502785,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.955720072635843,
+    "max_band_change_m": 0.021227829158306122
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.0006733980624502589
+  },
+  {
+   "all_pass": false,
+   "amplitude": -21.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7996,
+   "eikonal_max": 0.5504889371331265,
+   "eikonal_median": 1.9120799166216784e-08,
+   "eikonal_p95": 0.16471916275570425,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 21.28329873085022,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2707705520669482,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7512,
+    "pass": true,
+    "slack": 760
+   },
+   "phi_fortran_sha256": "906fad41d1bdbe7d2852ae9888f4baba6cb325646f89d4def46e00d24619650f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0005801572492356577,
+    "zero_level_margin_m": 0.3294962648302317
+   },
+   "sharp_volume_vs_parent": -0.0042417815482502785,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.955720072635843,
+    "max_band_change_m": 0.021227829158306122
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.0006733967134735508
+  },
+  {
+   "all_pass": true,
+   "amplitude": 31.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7998,
+   "eikonal_max": 0.6768514659238077,
+   "eikonal_median": 2.6786969309355868e-08,
+   "eikonal_p95": 0.18927566318823247,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 31.07672929763794,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2183655345039653,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "e71fc989179f638666e875d77a082d453f2dfaeb28e6466b3c04f6ca2d152041",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001391891248209598,
+    "zero_level_margin_m": 0.3194645375944674
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9551613353820366,
+    "max_band_change_m": 0.031003668904304504
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0014852063542065697
+  },
+  {
+   "all_pass": true,
+   "amplitude": -31.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7998,
+   "eikonal_max": 0.6768514659238077,
+   "eikonal_median": 2.6786969309355868e-08,
+   "eikonal_p95": 0.18927566318823247,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 31.07672929763794,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.28057633421624745,
+   "mode": "heave",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "cc7ce7b115dfe3974a179be4aa7fe35d5603b7408957eb67c7f14212ecebf616",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0013918891437953995,
+    "zero_level_margin_m": 0.3194645375944674
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9551613353820366,
+    "max_band_change_m": 0.031003668904304504
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0014852042495963058
+  },
+  {
+   "all_pass": true,
+   "amplitude": 0.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.3371064170393576,
+   "eikonal_median": 2.2768237961656723e-08,
+   "eikonal_p95": 0.15937485087440048,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.743103265762329,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2554020269805677,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7472,
+    "pass": true,
+    "slack": 800
+   },
+   "phi_fortran_sha256": "9131d84abfa469d16c35d337080a3505eb91680c8be5e1e4cd1bde0ae561c9c0",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001953739071014704,
+    "zero_level_margin_m": 0.34466603482142094
+   },
+   "sharp_volume_vs_parent": -0.00954400848356296,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8769381198491409,
+    "max_band_change_m": 0.0067362673580646515
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0020471065330269766
+  },
+  {
+   "all_pass": true,
+   "amplitude": -0.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.3335879604437689,
+   "eikonal_median": 2.3355010925207864e-08,
+   "eikonal_p95": 0.15480401022338136,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.743073463439941,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24340551763173846,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7480,
+    "pass": true,
+    "slack": 792
+   },
+   "phi_fortran_sha256": "7e88b675eca91b682a190fc7620eabc648b02d1f51d369b7d0644faea3ce1e68",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001196664375266776,
+    "zero_level_margin_m": 0.35669866763055325
+   },
+   "sharp_volume_vs_parent": -0.008483563096500446,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.872049168878335,
+    "max_band_change_m": 0.006733277579769492
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.001289961288968966
+  },
+  {
+   "all_pass": true,
+   "amplitude": 1.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7930,
+   "eikonal_max": 0.4118777056651063,
+   "eikonal_median": 2.643347984943034e-08,
+   "eikonal_p95": 0.15109362826637296,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 12.521862983703613,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2603354226123753,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7336,
+    "pass": true,
+    "slack": 936
+   },
+   "phi_fortran_sha256": "ba0038869e6a3ce7b44ae1301e3808e647a70dff6b445fc4a86f2b8eeab51a17",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.003398154857203295,
+    "zero_level_margin_m": 0.33989026434719566
+   },
+   "sharp_volume_vs_parent": -0.02757158006362659,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8728872747590446,
+    "max_band_change_m": 0.012514416128396988
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.003491656917681274
+  },
+  {
+   "all_pass": true,
+   "amplitude": -1.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8066,
+   "eikonal_max": 0.4284204015996109,
+   "eikonal_median": 2.1982389020180904e-08,
+   "eikonal_p95": 0.1543254814351306,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 12.522250413894653,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.23810659902721032,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7276,
+    "pass": true,
+    "slack": 996
+   },
+   "phi_fortran_sha256": "b0626aa358700c9274c78f54e8ff42d0e4d695e6723b983e18cc4ff6d80b024a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.004627844021093397,
+    "zero_level_margin_m": 0.36191815696656704
+   },
+   "sharp_volume_vs_parent": -0.035524920466595944,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8777762257298506,
+    "max_band_change_m": 0.012510189786553383
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00472146067065049
+  },
+  {
+   "all_pass": false,
+   "amplitude": 2.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8066,
+   "eikonal_max": 0.5251936215921225,
+   "eikonal_median": 2.3597340081948914e-08,
+   "eikonal_p95": 0.14443670280027351,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 20.22528648376465,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26791969626031487,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7472,
+    "pass": true,
+    "slack": 800
+   },
+   "phi_fortran_sha256": "ed0ca2a2e941065abdd267ef61f125382e1f54add3d6b7336e38d5718b76e069",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0020358305795322718,
+    "zero_level_margin_m": 0.33242740333080295
+   },
+   "sharp_volume_vs_parent": -0.00954400848356296,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8791730688643665,
+    "max_band_change_m": 0.020220693200826645
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002129205691274727
+  },
+  {
+   "all_pass": false,
+   "amplitude": -2.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8012,
+   "eikonal_max": 0.5399782108667369,
+   "eikonal_median": 2.4497586292859808e-08,
+   "eikonal_p95": 0.17052725806974167,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 20.22552490234375,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.23090515967249792,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7688,
+    "pass": true,
+    "slack": 584
+   },
+   "phi_fortran_sha256": "eea1121e7819714a99740a4d99e379c926795634d4454201565cc70992c722be",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0027831803998115134,
+    "zero_level_margin_m": 0.3624999985098839
+   },
+   "sharp_volume_vs_parent": 0.019088016967126142,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8765190669087861,
+    "max_band_change_m": 0.020216112956404686
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.002876625153647394
+  },
+  {
+   "all_pass": true,
+   "amplitude": 3.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.670150579993981,
+   "eikonal_median": 2.036655277759536e-08,
+   "eikonal_p95": 0.15960595206701406,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 29.848579317331314,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.27735879835721655,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7472,
+    "pass": true,
+    "slack": 800
+   },
+   "phi_fortran_sha256": "b4c14e4eaa55d557058d84d6ae38b2b24dbbf33ca7ba56532a9ecc8ba6d863b2",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.003186453905070774,
+    "zero_level_margin_m": 0.32265141983516515
+   },
+   "sharp_volume_vs_parent": -0.00954400848356296,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.862969688503981,
+    "max_band_change_m": 0.029848579317331314
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0032799362381104036
+  },
+  {
+   "all_pass": true,
+   "amplitude": -3.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.6421308876435785,
+   "eikonal_median": 2.9273264146034705e-08,
+   "eikonal_p95": 0.16572422774928042,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 29.84878420829773,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.22170519817018114,
+   "mode": "pitch",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "3344401555328c5e729ea1ad98421e677b9121fd00937cee33bbcecdff7205cb",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0026729825711335753,
+    "zero_level_margin_m": 0.3624999985098839
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8765190669087861,
+    "max_band_change_m": 0.029846108285710216
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0027664170561405577
+  },
+  {
+   "all_pass": true,
+   "amplitude": 11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.34688491328543336,
+   "eikonal_median": 0.00030591782338973417,
+   "eikonal_p95": 0.15549663122440838,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 7.53331184387207,
+   "max_abs_vs_analytic_m": 1.7462298274040222e-10,
+   "min_zero_level_z_m": -0.25611066619847933,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7478,
+    "pass": true,
+    "slack": 794
+   },
+   "phi_fortran_sha256": "f8fdcae487ac5d9bc0b3052f05ea1c4f3baf1b6e74f92f85a7e76dc426e4ee06",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0020906667072551066,
+    "zero_level_margin_m": 0.34397189682349566
+   },
+   "sharp_volume_vs_parent": -0.008748674443266102,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.862271266936723,
+    "max_band_change_m": 0.007523849606513977
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002184046928924044
+  },
+  {
+   "all_pass": true,
+   "amplitude": -11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.34688491328543336,
+   "eikonal_median": 0.00030591782338973417,
+   "eikonal_p95": 0.15549663122440838,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 7.53331184387207,
+   "max_abs_vs_analytic_m": 1.7462298274040222e-10,
+   "min_zero_level_z_m": -0.2427085936260246,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7478,
+    "pass": true,
+    "slack": 794
+   },
+   "phi_fortran_sha256": "26a5b7902f0258609370026ce156bbbf86e204d4917bfac4e2c82380d66e6473",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0020906657779014015,
+    "zero_level_margin_m": 0.34397189682349566
+   },
+   "sharp_volume_vs_parent": -0.008748674443266102,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.862271266936723,
+    "max_band_change_m": 0.007523849606513977
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0021840459994839634
+  },
+  {
+   "all_pass": true,
+   "amplitude": 19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8037,
+   "eikonal_max": 0.43786968628745937,
+   "eikonal_median": 0.0009127580541821168,
+   "eikonal_p95": 0.15382654545718874,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.13328742980957,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.26093750363275625,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0040162768474105714,
+    "zero_level_margin_m": 0.33930964991450313
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8631093728174326,
+    "max_band_change_m": 0.013119682669639587
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0041098365078346966
+  },
+  {
+   "all_pass": true,
+   "amplitude": -19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8037,
+   "eikonal_max": 0.43786968628745937,
+   "eikonal_median": 0.0009127580541821168,
+   "eikonal_p95": 0.15382654545718874,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.13328742980957,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.23760393853124728,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "c339770e712e8cac83b926445b77181c5fb9910d8ff52551a3aa5f85bf228dc2",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.004016281732776905,
+    "zero_level_margin_m": 0.33930964991450313
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8631093728174326,
+    "max_band_change_m": 0.013119682669639587
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.004109841393656444
+  },
+  {
+   "all_pass": false,
+   "amplitude": 29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.5307050230324305,
+   "eikonal_median": 0.0019168537900438043,
+   "eikonal_p95": 0.14858850618216998,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 19.533276557922363,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26728724097128786,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "54d2de22e15d4ee1fa3715fb0cc55f3c542b6283231fdc1c7f5bbd704b8c68e7",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.003102890703867045,
+    "zero_level_margin_m": 0.3330793328583241
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.866112585556642,
+    "max_band_change_m": 0.01951640658080578
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0031963652500361928
+  },
+  {
+   "all_pass": false,
+   "amplitude": -29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.5307050230324305,
+   "eikonal_median": 0.0019168537900438043,
+   "eikonal_p95": 0.14858850618216998,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 19.533276557922363,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.23168481654940704,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "b15cd9bd4b8d9acaf4d7d69bb14a0972f615cececdff7d34fef5747376862cf3",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.003102889322189384,
+    "zero_level_margin_m": 0.3330793328583241
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.866112585556642,
+    "max_band_change_m": 0.01951640658080578
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0031963638682297457
+  },
+  {
+   "all_pass": false,
+   "amplitude": 41.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8136,
+   "eikonal_max": 0.6297327234740226,
+   "eikonal_median": 0.0036915072956993367,
+   "eikonal_p95": 0.15720317813798723,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 27.399912476539612,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2751516374960065,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7440,
+    "pass": true,
+    "slack": 832
+   },
+   "phi_fortran_sha256": "c541e388c0a87e8c2d93ddab2ca84f57afe190dec27cdff0a7185e8994ae2ae6",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002205228260636849,
+    "zero_level_margin_m": 0.3248493407329079
+   },
+   "sharp_volume_vs_parent": -0.013785790031813239,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8645062159519485,
+    "max_band_change_m": 0.02738028485327959
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0022986191577702986
+  },
+  {
+   "all_pass": false,
+   "amplitude": -41.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8136,
+   "eikonal_max": 0.6297327234740226,
+   "eikonal_median": 0.0036915072956993367,
+   "eikonal_p95": 0.15720317813798723,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 27.399912476539612,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.224286097693571,
+   "mode": "camber",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7440,
+    "pass": true,
+    "slack": 832
+   },
+   "phi_fortran_sha256": "43f193a4d9b545506a02f9a91fe3963e1e48e7a01fe0b32e88a3f27e4054e058",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002205227715000646,
+    "zero_level_margin_m": 0.3248493407329079
+   },
+   "sharp_volume_vs_parent": -0.013785790031813239,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8645062159519485,
+    "max_band_change_m": 0.02738028485327959
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0022986186120832475
+  },
+  {
+   "all_pass": true,
+   "amplitude": 11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8066,
+   "eikonal_max": 0.2977696174169976,
+   "eikonal_median": 6.462614128155408e-05,
+   "eikonal_p95": 0.16710302892036458,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.519984126091003,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.2454294487028752,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7608,
+    "pass": true,
+    "slack": 664
+   },
+   "phi_fortran_sha256": "34973f32ac2f7b39b07d6fd795c3c18ef14763452cff1cb9535d807e6037b6d7",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00020370078423326277,
+    "zero_level_margin_m": 0.35473353043198586
+   },
+   "sharp_volume_vs_parent": 0.008483563096500557,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8424360944265958,
+    "max_band_change_m": 0.004511491162702441
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0002969051682242263
+  },
+  {
+   "all_pass": true,
+   "amplitude": -11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7864,
+   "eikonal_max": 0.29845548157828394,
+   "eikonal_median": 8.532947644313005e-05,
+   "eikonal_p95": 0.16963467247133157,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.519984126091003,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2534806569313092,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "4dcce6240b118d3bb512b43d7a1c857155557d64af4935c934caf022aa040182",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0012747048144099438,
+    "zero_level_margin_m": 0.3465541500132531
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8470456767704987,
+    "max_band_change_m": 0.004513580352067947
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.001368009000342063
+  },
+  {
+   "all_pass": true,
+   "amplitude": 19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8136,
+   "eikonal_max": 0.35270631632720206,
+   "eikonal_median": 0.00020987761714819086,
+   "eikonal_p95": 0.1629831138308212,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 7.879972457885742,
+   "max_abs_vs_analytic_m": 1.1641532182693481e-10,
+   "min_zero_level_z_m": -0.24239449884971281,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7544,
+    "pass": true,
+    "slack": 728
+   },
+   "phi_fortran_sha256": "1bbb115f3a3fc8f9c38217e5af2d4a2d4f811731e448c131c7316c3ffb884d04",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001916046182524278,
+    "zero_level_margin_m": 0.3576852325350046
+   },
+   "sharp_volume_vs_parent": 0.0,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8421567257996927,
+    "max_band_change_m": 0.00786589807830751
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002009410132109535
+  },
+  {
+   "all_pass": true,
+   "amplitude": -19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7930,
+   "eikonal_max": 0.33704371965775093,
+   "eikonal_median": 0.00024102866733932693,
+   "eikonal_p95": 0.16077258988259224,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 7.879972457885742,
+   "max_abs_vs_analytic_m": 1.1641532182693481e-10,
+   "min_zero_level_z_m": -0.2564117339746178,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "ef0231faaf4980689e84badd2a82ca745cfbeaf138665248571c7f56bae5e4c2",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002266228157134842,
+    "zero_level_margin_m": 0.34367783777415756
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8383852493364995,
+    "max_band_change_m": 0.007870206609368324
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.002359624738568211
+  },
+  {
+   "all_pass": true,
+   "amplitude": 29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7868,
+   "eikonal_max": 0.41558718319012444,
+   "eikonal_median": 0.00047684828713046024,
+   "eikonal_p95": 0.16042835807597267,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 11.719956994056702,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.23889866112960279,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7340,
+    "pass": true,
+    "slack": 932
+   },
+   "phi_fortran_sha256": "44ce69780650b11cca7acb62dbae02358bf25b736a9d2ca91d2211dbd1a20bbb",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.004334977386962979,
+    "zero_level_margin_m": 0.361130740493536
+   },
+   "sharp_volume_vs_parent": -0.027041357370095387,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8435535689342087,
+    "max_band_change_m": 0.011700144736096263
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.004428566745624973
+  },
+  {
+   "all_pass": true,
+   "amplitude": -29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8144,
+   "eikonal_max": 0.3809670262237519,
+   "eikonal_median": 0.0005306804143470067,
+   "eikonal_p95": 0.1517612428601169,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 11.719956994056702,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2597264656424833,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "2a47821872ec2aefed7029c005780f6faa8c20c384e337a15a8bfc280773737f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002871166242683687,
+    "zero_level_margin_m": 0.34046744685620073
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8424360944265958,
+    "max_band_change_m": 0.011707257479429245
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0029646191955157164
+  },
+  {
+   "all_pass": true,
+   "amplitude": 41.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8214,
+   "eikonal_max": 0.48771144971853075,
+   "eikonal_median": 0.0009323095911195622,
+   "eikonal_p95": 0.1447411242848281,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 16.43994450569153,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2345572379147186,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7544,
+    "pass": true,
+    "slack": 728
+   },
+   "phi_fortran_sha256": "088f8c0131988d52aa69ffea0f05fcfa682919657e73af98a9f796fef2c58d29",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.004865188857124725,
+    "zero_level_margin_m": 0.3624999985098839
+   },
+   "sharp_volume_vs_parent": 0.0,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8487218885319179,
+    "max_band_change_m": 0.016413862584158778
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00495882762375599
+  },
+  {
+   "all_pass": false,
+   "amplitude": -41.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8070,
+   "eikonal_max": 0.4411789948751266,
+   "eikonal_median": 0.0010296873414774588,
+   "eikonal_p95": 0.14820507433780367,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 16.439929604530334,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.264164461517979,
+   "mode": "reflex",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7480,
+    "pass": true,
+    "slack": 792
+   },
+   "phi_fortran_sha256": "8847058ae153f9a8e3a06c393e95e54021700aa72a63e44535a5cea7b04bf18a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002242954338775194,
+    "zero_level_margin_m": 0.33615993652492765
+   },
+   "sharp_volume_vs_parent": -0.008483563096500446,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8435535689342087,
+    "max_band_change_m": 0.01642450876533985
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0023363487514285186
+  },
+  {
+   "all_pass": true,
+   "amplitude": 0.025,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7934,
+   "eikonal_max": 0.4393697415425212,
+   "eikonal_median": 2.2287950596222572e-08,
+   "eikonal_p95": 0.1585513356032563,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 14.257282018661499,
+   "max_abs_vs_analytic_m": 1.7462298274040222e-10,
+   "min_zero_level_z_m": -0.24590956429627442,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "6e7f115c412bda10b34339663256f08055e234baeaef46b5519e530d25c854f4",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.009873147246989511,
+    "zero_level_margin_m": 0.35412054695189
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9423103785444894,
+    "max_band_change_m": 0.014254523441195488
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.009967252682236749
+  },
+  {
+   "all_pass": true,
+   "amplitude": -0.025,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8206,
+   "eikonal_max": 0.2977084162207765,
+   "eikonal_median": 1.5875221137662265e-08,
+   "eikonal_p95": 0.16739121531511625,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 15.004247426986694,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2537403767447571,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "38c0d36873b847ccd262aec8a29cb244398c9144328607cd00a91600a2a3eea0",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.00320966416947166,
+    "zero_level_margin_m": 0.34628752493299547
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.10588070959631234,
+    "max_band_change_m": 0.015000123530626297
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.0031167778612664065
+  },
+  {
+   "all_pass": false,
+   "amplitude": 0.05,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7658,
+   "eikonal_max": 0.6268170667387054,
+   "eikonal_median": 1.9042372678690356e-08,
+   "eikonal_p95": 0.15719711655929747,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 27.820885181427002,
+   "max_abs_vs_analytic_m": 6.984919309616089e-10,
+   "min_zero_level_z_m": -0.24104302956499318,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "55c0dcfdcab9f0d564b9206dca5e348f46c006f090108fd8d06f49244eadf063",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.014262110137349904,
+    "zero_level_margin_m": 0.35929856449365616
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9357452158122643,
+    "max_band_change_m": 0.027816196903586388
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.014356624559868525
+  },
+  {
+   "all_pass": true,
+   "amplitude": -0.05,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8412,
+   "eikonal_max": 0.29767825763208544,
+   "eikonal_median": 2.2287950596222572e-08,
+   "eikonal_p95": 0.17066347006648996,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 30.81446886062622,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2588497957514452,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7412,
+    "pass": true,
+    "slack": 860
+   },
+   "phi_fortran_sha256": "ee828871b1fcd4f338cb545d551c902b6977161c4e10c1a7e3d1a0c503fb8b1f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.01034306147370212,
+    "zero_level_margin_m": 0.34115174636244777
+   },
+   "sharp_volume_vs_parent": -0.017497348886532316,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.09638217628160357,
+    "max_band_change_m": 0.03080336793209426
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.010250839893992558
+  },
+  {
+   "all_pass": true,
+   "amplitude": 0.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7596,
+   "eikonal_max": 0.9170190889849321,
+   "eikonal_median": 2.4604619897061752e-08,
+   "eikonal_p95": 0.13355280959359586,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 53.05635929107666,
+   "max_abs_vs_analytic_m": 1.862645149230957e-09,
+   "min_zero_level_z_m": -0.23403835390254973,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "3d918ac408f0600bd84fe767b2e3ccbcb73a28b099e8cca3201a3b465c555110",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.027769926656555644,
+    "zero_level_margin_m": 0.3624999985098839
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9159100433021372,
+    "max_band_change_m": 0.05304909311234951
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.027865699810387445
+  },
+  {
+   "all_pass": true,
+   "amplitude": -0.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8680,
+   "eikonal_max": 0.6419694946387533,
+   "eikonal_median": 1.9042372678690356e-08,
+   "eikonal_p95": 0.19973679160605706,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 65.12153148651123,
+   "max_abs_vs_analytic_m": 1.862645149230957e-09,
+   "min_zero_level_z_m": -0.2681406433470988,
+   "mode": "thick_chord",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "ff5bb2dade6edf8b1cafedb6b31aed97432a5303741e626153bbe3a85fcb46a6",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.026610936852326295,
+    "zero_level_margin_m": 0.3322147879749537
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.07277552730828328,
+    "max_band_change_m": 0.06504981033504009
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.026520231201124456
+  },
+  {
+   "all_pass": true,
+   "amplitude": 1.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8048,
+   "eikonal_max": 0.3332760744576534,
+   "eikonal_median": 8.038830676060371e-05,
+   "eikonal_p95": 0.16243909341494756,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.467342376708984,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2551635486098045,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7524,
+    "pass": true,
+    "slack": 748
+   },
+   "phi_fortran_sha256": "5b5165c2ac95eb95060528f9aae41658e6e1d73c430b423893bf66b6e64f4c1f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00024649340696525357,
+    "zero_level_margin_m": 0.34489973345771435
+   },
+   "sharp_volume_vs_parent": -0.002651113467656341,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6186618242771337,
+    "max_band_change_m": 0.00645006587728858
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00033970177860398465
+  },
+  {
+   "all_pass": true,
+   "amplitude": -1.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8066,
+   "eikonal_max": 0.3297432760554849,
+   "eikonal_median": 8.145816937599193e-05,
+   "eikonal_p95": 0.1602393818262572,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.467342376708984,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2526078050636281,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7508,
+    "pass": true,
+    "slack": 764
+   },
+   "phi_fortran_sha256": "479ec6ee2b7000132a0046d2a6af9897abae76b73cc149e09f06a1e9d1bac104",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00032336229531870764,
+    "zero_level_margin_m": 0.3474157640244812
+   },
+   "sharp_volume_vs_parent": -0.00477200424178148,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6171252968291661,
+    "max_band_change_m": 0.006457806332036853
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00041657783001558535
+  },
+  {
+   "all_pass": true,
+   "amplitude": 2.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8056,
+   "eikonal_max": 0.4235786296742834,
+   "eikonal_median": 0.0003329362888850884,
+   "eikonal_p95": 0.14758011215280353,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.52161169052124,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2611842905366665,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7492,
+    "pass": true,
+    "slack": 780
+   },
+   "phi_fortran_sha256": "ad1a4f63538337da843dff8e4a2c4ea4a37032405d8b2a341cd8ad645fe4c791",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001064126367258833,
+    "zero_level_margin_m": 0.33908155318349603
+   },
+   "sharp_volume_vs_parent": -0.006892895015906619,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6179634027098757,
+    "max_band_change_m": 0.013483181595802307
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0011574109303535973
+  },
+  {
+   "all_pass": false,
+   "amplitude": -2.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8048,
+   "eikonal_max": 0.44403567574482583,
+   "eikonal_median": 0.00032095249271879567,
+   "eikonal_p95": 0.15149036429655993,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 13.521730899810791,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2559563274145436,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7504,
+    "pass": true,
+    "slack": 768
+   },
+   "phi_fortran_sha256": "3d6d3f28306d149fb0e8ece832324f3d00dd8391d4031a71f853074dd6b5455b",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0012724687205740715,
+    "zero_level_margin_m": 0.34412366701290015
+   },
+   "sharp_volume_vs_parent": -0.005302226935312682,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6171252968291661,
+    "max_band_change_m": 0.01350993849337101
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0013657726981348706
+  },
+  {
+   "all_pass": false,
+   "amplitude": 3.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8048,
+   "eikonal_max": 0.49458893366056966,
+   "eikonal_median": 0.0005800019302723003,
+   "eikonal_p95": 0.1410474714572989,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 18.22352409362793,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26460795151828176,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7488,
+    "pass": true,
+    "slack": 784
+   },
+   "phi_fortran_sha256": "a61ce052872c0f0d07ebf9a914c322ddbd10695a94b28f52e3de4c15f1cdfe9e",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0016224283482033641,
+    "zero_level_margin_m": 0.3374999998137355
+   },
+   "sharp_volume_vs_parent": -0.007423117709437821,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6196396144712949,
+    "max_band_change_m": 0.018180368468165398
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0017157649368926275
+  },
+  {
+   "all_pass": false,
+   "amplitude": -3.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.5132043523869609,
+   "eikonal_median": 0.0005816283550355017,
+   "eikonal_p95": 0.16241184908448045,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 18.22352409362793,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2581581790468875,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "7208a085ad8cb0fbdfa99227f2e971b661663eb5256ecae5a141ff9d662f1520",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0018366987636331267,
+    "zero_level_margin_m": 0.3419822430238128
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6190808772174885,
+    "max_band_change_m": 0.018213264644145966
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0019300553191974323
+  },
+  {
+   "all_pass": false,
+   "amplitude": 4.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8068,
+   "eikonal_max": 0.6355409523259792,
+   "eikonal_median": 0.0012408696507173467,
+   "eikonal_p95": 0.15401360015211507,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 27.622684836387634,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.27521372363844165,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7464,
+    "pass": true,
+    "slack": 808
+   },
+   "phi_fortran_sha256": "607e3434d7d59280a79de23552210bcc11110e41e6dceaa58f969ab89e27d584",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002636874023654645,
+    "zero_level_margin_m": 0.3247874114342267
+   },
+   "sharp_volume_vs_parent": -0.010604453870625585,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.619918983098198,
+    "max_band_change_m": 0.027581339702010155
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0027303051438720694
+  },
+  {
+   "all_pass": false,
+   "amplitude": -4.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7980,
+   "eikonal_max": 0.6182005771199119,
+   "eikonal_median": 0.0013189130627540013,
+   "eikonal_p95": 0.16409776035547552,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 27.622610330581665,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26276890891462845,
+   "mode": "twist",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7460,
+    "pass": true,
+    "slack": 812
+   },
+   "phi_fortran_sha256": "4a64d7175fa02a8f49f04cb8d6bca56ed9a6cff45c601a75ba50966d18a36d5c",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0023618496780102305,
+    "zero_level_margin_m": 0.337522509880364
+   },
+   "sharp_volume_vs_parent": -0.011134676564156898,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6207570889789077,
+    "max_band_change_m": 0.027617241023108363
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0024552551699734693
+  },
+  {
+   "all_pass": false,
+   "amplitude": 11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8028,
+   "eikonal_max": 0.3440468176327891,
+   "eikonal_median": 0.00038269946994873294,
+   "eikonal_p95": 0.14533757248952978,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 6.891027092933655,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.25324845136443574,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7520,
+    "pass": true,
+    "slack": 752
+   },
+   "phi_fortran_sha256": "1333f415c06b0a93fb9d51080e3ff96f4240122974f903b0392d2d45b485302e",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0003278469992262778,
+    "zero_level_margin_m": 0.34367645895108584
+   },
+   "sharp_volume_vs_parent": -0.0031813361611876534,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8355217209107417,
+    "max_band_change_m": 0.006869737058877945
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0004210629518319742
+  },
+  {
+   "all_pass": false,
+   "amplitude": -11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8028,
+   "eikonal_max": 0.3440468176327891,
+   "eikonal_median": 0.00038269946994873294,
+   "eikonal_p95": 0.14533757248952978,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 6.891027092933655,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2563714571689489,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7520,
+    "pass": true,
+    "slack": 752
+   },
+   "phi_fortran_sha256": "24ccda7fab41281849a63d6c49ae46e889305603cde8e896d8fb033989ead5f9",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0003278497539718206,
+    "zero_level_margin_m": 0.34367645895108584
+   },
+   "sharp_volume_vs_parent": -0.0031813361611876534,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8355217209107417,
+    "max_band_change_m": 0.006869737058877945
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00042106570683442257
+  },
+  {
+   "all_pass": false,
+   "amplitude": 19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8011,
+   "eikonal_max": 0.4191367011170687,
+   "eikonal_median": 0.0011626473425632167,
+   "eikonal_p95": 0.14975869145611964,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 12.013822793960571,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.25604198388376675,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7506,
+    "pass": true,
+    "slack": 766
+   },
+   "phi_fortran_sha256": "db5507d85ac2ec0880496a65e0534020c448610e8d0ce5ed106c6a190c74f809",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0009888184416491086,
+    "zero_level_margin_m": 0.33861317895352844
+   },
+   "sharp_volume_vs_parent": -0.005037115588547136,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8370582483587093,
+    "max_band_change_m": 0.011978991329669952
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0010820959871444824
+  },
+  {
+   "all_pass": false,
+   "amplitude": -19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8011,
+   "eikonal_max": 0.4191367011170687,
+   "eikonal_median": 0.0011626473425632167,
+   "eikonal_p95": 0.14975869145611964,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 12.013822793960571,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2614896659120851,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7506,
+    "pass": true,
+    "slack": 766
+   },
+   "phi_fortran_sha256": "9a0a45e2b6778a6b20008bc0f5715c90cdfc6502164f307067751548829f0e8f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0009888167993659103,
+    "zero_level_margin_m": 0.33861317895352844
+   },
+   "sharp_volume_vs_parent": -0.005037115588547136,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8370582483587093,
+    "max_band_change_m": 0.011978991329669952
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0010820943447082954
+  },
+  {
+   "all_pass": false,
+   "amplitude": 29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8025,
+   "eikonal_max": 0.5021002252281448,
+   "eikonal_median": 0.002570063937975098,
+   "eikonal_p95": 0.15706999805373403,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 17.86869764328003,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.25923584505819314,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7478,
+    "pass": true,
+    "slack": 794
+   },
+   "phi_fortran_sha256": "9364f8aa9a1bad7dd87d791023411f539de79cb3a068d33aa53a570703fcf439",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0015848712333952353,
+    "zero_level_margin_m": 0.33595062457025054
+   },
+   "sharp_volume_vs_parent": -0.008748674443266102,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8395725660008381,
+    "max_band_change_m": 0.0178203247487545
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.0016782043223095844
+  },
+  {
+   "all_pass": false,
+   "amplitude": -29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8025,
+   "eikonal_max": 0.5021002252281448,
+   "eikonal_median": 0.002570063937975098,
+   "eikonal_p95": 0.15706999805373403,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 17.86869764328003,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2655726282910641,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7478,
+    "pass": true,
+    "slack": 794
+   },
+   "phi_fortran_sha256": "23deebfa11a39b56d6ab9803f31f3efde65024edc2105a5c3c27cfe4e01a9f8f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001584871122019882,
+    "zero_level_margin_m": 0.33595062457025054
+   },
+   "sharp_volume_vs_parent": -0.008748674443266102,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8395725660008381,
+    "max_band_change_m": 0.0178203247487545
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.001678204210924017
+  },
+  {
+   "all_pass": false,
+   "amplitude": 43.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8030,
+   "eikonal_max": 0.6155251158760691,
+   "eikonal_median": 0.0055528375792650575,
+   "eikonal_p95": 0.17531900878339118,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 26.28551423549652,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2638306192462788,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7464,
+    "pass": true,
+    "slack": 808
+   },
+   "phi_fortran_sha256": "3f53cccc45124ccef0cadde561e33aa76a24c18db407054cafd41f06181c7126",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0018512419136726965,
+    "zero_level_margin_m": 0.3242112973704934
+   },
+   "sharp_volume_vs_parent": -0.010604453870625585,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8397122503142898,
+    "max_band_change_m": 0.02622060850262642
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0019445998244460583
+  },
+  {
+   "all_pass": false,
+   "amplitude": -43.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8030,
+   "eikonal_max": 0.6155251158760691,
+   "eikonal_median": 0.0055528375792650575,
+   "eikonal_p95": 0.17531900878339118,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 26.28551423549652,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2757937198672723,
+   "mode": "dihedral",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7464,
+    "pass": true,
+    "slack": 808
+   },
+   "phi_fortran_sha256": "dda70dca9d3be7b97c1d6dad39e61fd228c0269664c08ac4bbe870f72761615f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001851241007753357,
+    "zero_level_margin_m": 0.3242112973704934
+   },
+   "sharp_volume_vs_parent": -0.010604453870625585,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.8397122503142898,
+    "max_band_change_m": 0.02622060850262642
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0019445989184423418
+  },
+  {
+   "all_pass": true,
+   "amplitude": 11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8037,
+   "eikonal_max": 0.3258863379884185,
+   "eikonal_median": 6.398920753003523e-05,
+   "eikonal_p95": 0.16365265922609476,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.896734237670898,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24986883439912166,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7508,
+    "pass": true,
+    "slack": 764
+   },
+   "phi_fortran_sha256": "8ee0a9e79fcaf7a60e0ffe4ada73a5e6a0a29fe586ad406de60943a865142b21",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00030257561329638527,
+    "zero_level_margin_m": 0.35005942545831203
+   },
+   "sharp_volume_vs_parent": -0.00477200424178148,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6364715742422126,
+    "max_band_change_m": 0.006869737058877945
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0003957892109780481
+  },
+  {
+   "all_pass": true,
+   "amplitude": -11.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8037,
+   "eikonal_max": 0.3258863379884185,
+   "eikonal_median": 6.398920753003523e-05,
+   "eikonal_p95": 0.16365265922609476,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 6.896734237670898,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24999016486532155,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7508,
+    "pass": true,
+    "slack": 764
+   },
+   "phi_fortran_sha256": "1d9db59236fbbe0aec94ea64ed47da8bad519b17871b4ac00c4a84ebf396c699",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00030257603036298875,
+    "zero_level_margin_m": 0.35005942545831203
+   },
+   "sharp_volume_vs_parent": -0.00477200424178148,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6364715742422126,
+    "max_band_change_m": 0.006869737058877945
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.00039578962808350937
+  },
+  {
+   "all_pass": false,
+   "amplitude": 19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8025,
+   "eikonal_max": 0.40711010339081033,
+   "eikonal_median": 0.00016082028606234644,
+   "eikonal_p95": 0.15576436599952992,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 12.023568153381348,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.24998981897950345,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7496,
+    "pass": true,
+    "slack": 776
+   },
+   "phi_fortran_sha256": "1a8ca92ff4fc35bff3c756d2c524d8d381ecb629b5da2873a0b9c7bd1229609e",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0008988401610032781,
+    "zero_level_margin_m": 0.35000100918114185
+   },
+   "sharp_volume_vs_parent": -0.006362672322375307,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.637030311496019,
+    "max_band_change_m": 0.011978991329669952
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0009921093218365762
+  },
+  {
+   "all_pass": false,
+   "amplitude": -19.7,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8025,
+   "eikonal_max": 0.40711010339081033,
+   "eikonal_median": 0.00016082028606234644,
+   "eikonal_p95": 0.15576436599952992,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 12.023568153381348,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.24999942803560898,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7496,
+    "pass": true,
+    "slack": 776
+   },
+   "phi_fortran_sha256": "c1dcf38607dc8733b5f6b1845c94c6e794838fdc88ba3b71f68b65f7da92398a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0008988392582658378,
+    "zero_level_margin_m": 0.35000100918114185
+   },
+   "sharp_volume_vs_parent": -0.006362672322375307,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.637030311496019,
+    "max_band_change_m": 0.011978991329669952
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0009921084190147589
+  },
+  {
+   "all_pass": false,
+   "amplitude": 29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8023,
+   "eikonal_max": 0.5002423687681883,
+   "eikonal_median": 0.00035567643292622186,
+   "eikonal_p95": 0.14265301539306804,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 17.882704734802246,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24999934326697204,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7482,
+    "pass": true,
+    "slack": 790
+   },
+   "phi_fortran_sha256": "8f92af769866c466b51459008e79beea2a788d9c3bedfc5b2dcbdbac5fb15c10",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0014754916731174461,
+    "zero_level_margin_m": 0.35000116005539894
+   },
+   "sharp_volume_vs_parent": -0.00821845174973479,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6380081016901802,
+    "max_band_change_m": 0.0178203247487545
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0015688145694536804
+  },
+  {
+   "all_pass": false,
+   "amplitude": -29.3,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8023,
+   "eikonal_max": 0.5002423687681883,
+   "eikonal_median": 0.00035567643292622186,
+   "eikonal_p95": 0.14265301539306804,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 17.882704734802246,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24998649096236425,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7482,
+    "pass": true,
+    "slack": 790
+   },
+   "phi_fortran_sha256": "904f28190e9fdef6bc6d0e1cf66112d3a495c6fc39065e1b3cfdb093a4c40a95",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0014754943359653883,
+    "zero_level_margin_m": 0.35000116005539894
+   },
+   "sharp_volume_vs_parent": -0.00821845174973479,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6380081016901802,
+    "max_band_change_m": 0.0178203247487545
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0015688172325498684
+  },
+  {
+   "all_pass": false,
+   "amplitude": 43.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8043,
+   "eikonal_max": 0.6141672233218736,
+   "eikonal_median": 0.0007694463409910757,
+   "eikonal_p95": 0.1509039566305569,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 26.305198669433594,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24999997710690786,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "27f2aa6496ad04ba630c52c03f810df2cf720979d54c9692991370d7d06c2d2f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001713605924712036,
+    "zero_level_margin_m": 0.35000004060566425
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6366112585556643,
+    "max_band_change_m": 0.02622060850262642
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0018069510098204233
+  },
+  {
+   "all_pass": false,
+   "amplitude": -43.1,
+   "cell_components": 1,
+   "class": "wide",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8043,
+   "eikonal_max": 0.6141672233218736,
+   "eikonal_median": 0.0007694463409910757,
+   "eikonal_p95": 0.1509039566305569,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 26.305198669433594,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2499733968931589,
+   "mode": "sweep",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "41859f375b49f47cd8fdfd5d6e3f6f21cf33bce55d37ae8c47939286d74a8948",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0017136041860623674,
+    "zero_level_margin_m": 0.35000004060566425
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6366112585556643,
+    "max_band_change_m": 0.02622060850262642
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.001806949271008662
+  },
+  {
+   "all_pass": false,
+   "amplitude": 7.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7998,
+   "eikonal_max": 0.3324352733072823,
+   "eikonal_median": 2.0665161581945313e-08,
+   "eikonal_p95": 0.16356094214450978,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 7.299900054931641,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24910763182032875,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "ef8398732a9b0df0e6da88febddd5d82359cd70256a81d595a1144ed754bce82",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0016923807200861507,
+    "zero_level_margin_m": 0.35000187531113625
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9615868138008101,
+    "max_band_change_m": 0.007271435111761093
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0017857238273153442
+  },
+  {
+   "all_pass": false,
+   "amplitude": -7.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7998,
+   "eikonal_max": 0.3324352733072823,
+   "eikonal_median": 2.0665161581945313e-08,
+   "eikonal_p95": 0.16356094214450978,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 7.299900054931641,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24999893753080504,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7476,
+    "pass": true,
+    "slack": 796
+   },
+   "phi_fortran_sha256": "17cfc0c7d18dc3c0e8f834cf0f42ad2ec1a80e9c1d3805475c71f27f94cd675c",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.001692373179468909,
+    "zero_level_margin_m": 0.35000187531113625
+   },
+   "sharp_volume_vs_parent": -0.009013785790031759,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9615868138008101,
+    "max_band_change_m": 0.007271435111761093
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0017857162859953313
+  },
+  {
+   "all_pass": true,
+   "amplitude": 13.7,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8101,
+   "eikonal_max": 0.433697080724313,
+   "eikonal_median": 1.9098265302552875e-08,
+   "eikonal_p95": 0.15115996831913536,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.699769973754883,
+   "max_abs_vs_analytic_m": 3.4924596548080444e-10,
+   "min_zero_level_z_m": -0.24988416160298665,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7442,
+    "pass": true,
+    "slack": 830
+   },
+   "phi_fortran_sha256": "26faf2630cffeb0c9450288bab9ee0a0915bdf8f5f898c71a899f7ad3e1690fe",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0028210500193897037,
+    "zero_level_margin_m": 0.3502033855766058
+   },
+   "sharp_volume_vs_parent": -0.013520678685047693,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9601201285095684,
+    "max_band_change_m": 0.013649936765432358
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0029144983021212045
+  },
+  {
+   "all_pass": true,
+   "amplitude": -13.7,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8101,
+   "eikonal_max": 0.433697080724313,
+   "eikonal_median": 1.9098265302552875e-08,
+   "eikonal_p95": 0.15115996831913536,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 13.699769973754883,
+   "max_abs_vs_analytic_m": 3.4924596548080444e-10,
+   "min_zero_level_z_m": -0.24968035627442747,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7442,
+    "pass": true,
+    "slack": 830
+   },
+   "phi_fortran_sha256": "0a7ec6a035584ceca7919737b2c9e547e16ce651aab973d50beb1880fd59ccd7",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002821049359807537,
+    "zero_level_margin_m": 0.3502033855766058
+   },
+   "sharp_volume_vs_parent": -0.013520678685047693,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9601201285095684,
+    "max_band_change_m": 0.013649936765432358
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0029144976424777536
+  },
+  {
+   "all_pass": true,
+   "amplitude": 21.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8031,
+   "eikonal_max": 0.5504889371331265,
+   "eikonal_median": 2.2422270040678427e-08,
+   "eikonal_p95": 0.14933970575351113,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 21.29960060119629,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24986427896194335,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "25fb0d6c5da5051ac967bfcddd42237bd90c6065e9dec4e23b443324b0d3bfab",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0005023757371966919,
+    "zero_level_margin_m": 0.3502380680292845
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9559295991060204,
+    "max_band_change_m": 0.021227829158306122
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0005956079533331327
+  },
+  {
+   "all_pass": true,
+   "amplitude": -21.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8031,
+   "eikonal_max": 0.5504889371331265,
+   "eikonal_median": 2.2422270040678427e-08,
+   "eikonal_p95": 0.14933970575351113,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 21.29960060119629,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.2488562906909731,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "081d1fed4ce8d33a97b54a11c2804cf3d6511d72dea14f60147a0a74f9e3a94f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0005023648125173086,
+    "zero_level_margin_m": 0.3502380680292845
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9559295991060204,
+    "max_band_change_m": 0.021227829158306122
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0005955970276356748
+  },
+  {
+   "all_pass": true,
+   "amplitude": 31.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8031,
+   "eikonal_max": 0.658624231163665,
+   "eikonal_median": 2.2287950596222572e-08,
+   "eikonal_p95": 0.15454054159767183,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 31.099438667297363,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24887679537861024,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "0e8911477af2dcc3faa7037f344bdfd974234d737e406fb071d8f9fcda319fbf",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0012588183783501794,
+    "zero_level_margin_m": 0.35003677010536194
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9570470736136332,
+    "max_band_change_m": 0.031003668904304504
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0013521210838982611
+  },
+  {
+   "all_pass": true,
+   "amplitude": -31.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8031,
+   "eikonal_max": 0.658624231163665,
+   "eikonal_median": 2.2287950596222572e-08,
+   "eikonal_p95": 0.15454054159767183,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 31.099438667297363,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.24997915306860752,
+   "mode": "surge",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "2c04e71ca8f8dd5688b0c9f7d755abbec5ec21e75d7ca7f540532503d7db9429",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0012588254866887638,
+    "zero_level_margin_m": 0.35003677010536194
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.9570470736136332,
+    "max_band_change_m": 0.031003668904304504
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0013521281928992046
+  },
+  {
+   "all_pass": false,
+   "amplitude": 1.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8054,
+   "eikonal_max": 0.39268023515525186,
+   "eikonal_median": 0.00011309495660460911,
+   "eikonal_p95": 0.15356979119547076,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 10.293275117874146,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2584472949276325,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "f4f83150aeb7c445ab1de547b2549c012593d351a1250c9f5b44221e81b4480b",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0011248650889745804,
+    "zero_level_margin_m": 0.3417028294876218
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6594496438050007,
+    "max_band_change_m": 0.010280820308253169
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0012181553120316213
+  },
+  {
+   "all_pass": false,
+   "amplitude": -1.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8054,
+   "eikonal_max": 0.39268023515525186,
+   "eikonal_median": 0.00011309495660460911,
+   "eikonal_p95": 0.15356979119547076,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 10.293275117874146,
+   "max_abs_vs_analytic_m": 4.656612873077393e-10,
+   "min_zero_level_z_m": -0.2584472949276325,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7510,
+    "pass": true,
+    "slack": 762
+   },
+   "phi_fortran_sha256": "9a280c8fc2e9af8fd222d35d5439b07f9a51ce9b0d9552786ce13696229a62e6",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0011248651915889418,
+    "zero_level_margin_m": 0.3417028294876218
+   },
+   "sharp_volume_vs_parent": -0.004506892895015935,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6594496438050007,
+    "max_band_change_m": 0.010280820308253169
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0012181554146553086
+  },
+  {
+   "all_pass": false,
+   "amplitude": 2.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8038,
+   "eikonal_max": 0.5562045631151739,
+   "eikonal_median": 0.000487666112741314,
+   "eikonal_p95": 0.1519671829080791,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 21.518230438232422,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26794711768151724,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7490,
+    "pass": true,
+    "slack": 782
+   },
+   "phi_fortran_sha256": "f3c65baac439c20d77c78cf8d9d36fe463928179a34fd0971fce80a53c9ddb60",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0022788246822529334,
+    "zero_level_margin_m": 0.33240015469491485
+   },
+   "sharp_volume_vs_parent": -0.007158006362672276,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6632211202681939,
+    "max_band_change_m": 0.021509408950805664
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0023722224374984613
+  },
+  {
+   "all_pass": false,
+   "amplitude": -2.3,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8038,
+   "eikonal_max": 0.5562045631151739,
+   "eikonal_median": 0.000487666112741314,
+   "eikonal_p95": 0.1519671829080791,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 21.518230438232422,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.26794711768151724,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7490,
+    "pass": true,
+    "slack": 782
+   },
+   "phi_fortran_sha256": "8e8565d173e65fc03425474b21421ffd479d0a6e2481d30689f569780a9fbcda",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.002278824777091071,
+    "zero_level_margin_m": 0.33240015469491485
+   },
+   "sharp_volume_vs_parent": -0.007158006362672276,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6632211202681939,
+    "max_band_change_m": 0.021509408950805664
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0023722225323454804
+  },
+  {
+   "all_pass": false,
+   "amplitude": 3.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8046,
+   "eikonal_max": 0.6571543835120562,
+   "eikonal_median": 0.0008821034746995249,
+   "eikonal_p95": 0.1640441032068497,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 28.996720910072327,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.27653940929538834,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7498,
+    "pass": true,
+    "slack": 774
+   },
+   "phi_fortran_sha256": "774f680782333b0f142c435fc51f96dec82851fa00bae95bb9030ddfe9aeab0e",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0023071391047027046,
+    "zero_level_margin_m": 0.32346783152315767
+   },
+   "sharp_volume_vs_parent": -0.0060975609756096505,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6619639614471294,
+    "max_band_change_m": 0.028993121115490794
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0024005394984392137
+  },
+  {
+   "all_pass": false,
+   "amplitude": -3.1,
+   "cell_components": 1,
+   "class": "control",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8046,
+   "eikonal_max": 0.6571543835120562,
+   "eikonal_median": 0.0008821034746995249,
+   "eikonal_p95": 0.1640441032068497,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 28.996720910072327,
+   "max_abs_vs_analytic_m": 9.313225746154785e-10,
+   "min_zero_level_z_m": -0.27653940929538834,
+   "mode": "twist_anti",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7498,
+    "pass": true,
+    "slack": 774
+   },
+   "phi_fortran_sha256": "78e3fc0b46913299820877e74d94a3e89dbcb1cbd1f797e798269082980afee9",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0023071394774625276,
+    "zero_level_margin_m": 0.32346783152315767
+   },
+   "sharp_volume_vs_parent": -0.0060975609756096505,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.6619639614471294,
+    "max_band_change_m": 0.028993121115490794
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0024005398712336756
+  },
+  {
+   "all_pass": true,
+   "amplitude": 1,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 7942,
+   "eikonal_max": 0.28209422835008213,
+   "eikonal_median": 3.901377954029783e-08,
+   "eikonal_p95": 0.15608718426782264,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.000046730041504,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.2504976749654334,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7864,
+    "pass": true,
+    "slack": 408
+   },
+   "phi_fortran_sha256": "ad0a1cc05925ce1962150f1c537cbc64dfbf82821b7e42a92e101b2c8beba174",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.025126111159510023,
+    "zero_level_margin_m": 0.3495053522870876
+   },
+   "sharp_volume_vs_parent": 0.042417815482502785,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0010000001639127731
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.025221637948331876
+  },
+  {
+   "all_pass": false,
+   "amplitude": -1,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 8,
+   "eikonal_band_nodes": 7988,
+   "eikonal_max": 0.3131774607543466,
+   "eikonal_median": 4.8554572584791345e-08,
+   "eikonal_p95": 0.18156722017932803,
+   "failed_geom02": [
+    "near_zero_gradient_band"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "fail",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 1.000046730041504,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.2484714824276576,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7408,
+    "pass": true,
+    "slack": 864
+   },
+   "phi_fortran_sha256": "3a622c2ba011e91e5363edfbbbea7c36c13b8bc3d2e3d0eb992cd859fb9d4497",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.025185685224374144,
+    "zero_level_margin_m": 0.3518842365592718
+   },
+   "sharp_volume_vs_parent": -0.018027571580063517,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0010000001639127731
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.025094846760526424
+  },
+  {
+   "all_pass": true,
+   "amplitude": 2,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8156,
+   "eikonal_max": 0.2664540875270024,
+   "eikonal_median": 2.3407071836345494e-08,
+   "eikonal_p95": 0.14098581076754332,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 2.0000040531158447,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.2515037949824461,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 8088,
+    "pass": true,
+    "slack": 184
+   },
+   "phi_fortran_sha256": "392be789eaf6088590edb51bc16a8eb101c4360dfba528e69003b70351c4c9e8",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.05050205626090554,
+    "zero_level_margin_m": 0.34850535229779783
+   },
+   "sharp_volume_vs_parent": 0.07211028632025474,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0020000003278255463
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.05059994771737397
+  },
+  {
+   "all_pass": false,
+   "amplitude": -2,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 12,
+   "eikonal_band_nodes": 7980,
+   "eikonal_max": 0.32884329895060105,
+   "eikonal_median": 2.7715878037071207e-08,
+   "eikonal_p95": 0.19241214132771578,
+   "failed_geom02": [
+    "near_zero_gradient_band"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "fail",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 2.0000040531158447,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.24745609388440992,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7268,
+    "pass": true,
+    "slack": 1004
+   },
+   "phi_fortran_sha256": "af0d3ea55e3f138adb26890ada4e2639401cefe799185bafaa8f31a278c6a27f",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.05018170823922896,
+    "zero_level_margin_m": 0.3528842367231846
+   },
+   "sharp_volume_vs_parent": -0.03658536585365846,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0020000003278255463
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.050093199039835445
+  },
+  {
+   "all_pass": true,
+   "amplitude": 3,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8164,
+   "eikonal_max": 0.25076007935865674,
+   "eikonal_median": 3.0088440405862116e-08,
+   "eikonal_p95": 0.1287814177850961,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 3.000020980834961,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.2525099149609159,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 8180,
+    "pass": true,
+    "slack": 92
+   },
+   "phi_fortran_sha256": "5cac89ae3eccd264c156eb248998c770bd61447e48a8f8c334f5fcc5120a69ea",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.07604206105505473,
+    "zero_level_margin_m": 0.3475053523667157
+   },
+   "sharp_volume_vs_parent": 0.08430540827147404,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0030000004917383194
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.07614233246713842
+  },
+  {
+   "all_pass": false,
+   "amplitude": -3,
+   "cell_components": 1,
+   "class": "reference",
+   "crossing_slope_fail_nodes": 20,
+   "eikonal_band_nodes": 7972,
+   "eikonal_max": 0.3442733347274485,
+   "eikonal_median": 2.7850197703571666e-08,
+   "eikonal_p95": 0.20728198404587939,
+   "failed_geom02": [
+    "near_zero_gradient_band"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "fail",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 3.000020980834961,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.2464407053219581,
+   "mode": "thickness_D0",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7068,
+    "pass": true,
+    "slack": 1204
+   },
+   "phi_fortran_sha256": "e257ca49ffa1e28d0ac24f4518b0488f3d867cee0378f32afeb41040d5446a0d",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.07512149240657706,
+    "zero_level_margin_m": 0.35388423688709736
+   },
+   "sharp_volume_vs_parent": -0.06309650053022264,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 1.0,
+    "max_band_change_m": 0.0030000004917383194
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.07503530723099827
+  },
+  {
+   "all_pass": true,
+   "amplitude": 2,
+   "cell_components": 1,
+   "class": "support-large",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8100,
+   "eikonal_max": 0.2881994965054271,
+   "eikonal_median": 0.018676192594934304,
+   "eikonal_p95": 0.16237228298053175,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.9876505248248577,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.25033587778837785,
+   "mode": "offset_s400",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7848,
+    "pass": true,
+    "slack": 424
+   },
+   "phi_fortran_sha256": "39d79ef94f5ecead12e49877335f805d325834fad35e5979542743fc24bd8677",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.022971337623647337,
+    "zero_level_margin_m": 0.3496603644394782
+   },
+   "sharp_volume_vs_parent": 0.040296924708377535,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.7341807515016063,
+    "max_band_change_m": 0.0019876505248248577
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.02306666361903087
+  },
+  {
+   "all_pass": true,
+   "amplitude": -2,
+   "cell_components": 1,
+   "class": "support-large",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8032,
+   "eikonal_max": 0.310116640890173,
+   "eikonal_median": 0.01967450107614155,
+   "eikonal_p95": 0.17636179160152043,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.9876506776199676,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.24897653113798118,
+   "mode": "offset_s400",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7388,
+    "pass": true,
+    "slack": 884
+   },
+   "phi_fortran_sha256": "bff4c64db701f6b2c61f13abe05362d9ea4c1925fe07f9b05722da46f595a418",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.022264373255887482,
+    "zero_level_margin_m": 0.35115478932857513
+   },
+   "sharp_volume_vs_parent": -0.02067868504771997,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.7341807515016063,
+    "max_band_change_m": 0.0019876506776199676
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.022173262568409347
+  },
+  {
+   "all_pass": true,
+   "amplitude": 5,
+   "cell_components": 1,
+   "class": "support-large",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8004,
+   "eikonal_max": 0.27611653545044734,
+   "eikonal_median": 0.04403091790703967,
+   "eikonal_p95": 0.15266817283510858,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.969126544892788,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2515496352449104,
+   "mode": "offset_s400",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 8148,
+    "pass": true,
+    "slack": 124
+   },
+   "phi_fortran_sha256": "9ece5e74034ab8bec1e4ae451f1aff19f473cc5ace4ab7ab467f26986a1eeb10",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.059135274000102545,
+    "zero_level_margin_m": 0.3483928826404736
+   },
+   "sharp_volume_vs_parent": 0.08006362672322376,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.7341807515016063,
+    "max_band_change_m": 0.004969126544892788
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.05923396994643704
+  },
+  {
+   "all_pass": false,
+   "amplitude": -5,
+   "cell_components": 1,
+   "class": "support-large",
+   "crossing_slope_fail_nodes": 16,
+   "eikonal_band_nodes": 8004,
+   "eikonal_max": 0.32897131963338166,
+   "eikonal_median": 0.04603922491998791,
+   "eikonal_p95": 0.18822853104532922,
+   "failed_geom02": [
+    "near_zero_gradient_band"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "fail",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 4.969126777723432,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.24822937718748783,
+   "mode": "offset_s400",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7176,
+    "pass": true,
+    "slack": 1096
+   },
+   "phi_fortran_sha256": "8bf336536ebd1053ee329ce2e5f93f44e7d32e7de695e076540c7d6e081af6e0",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.05379767682492265,
+    "zero_level_margin_m": 0.3515606205910444
+   },
+   "sharp_volume_vs_parent": -0.04878048780487798,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.7341807515016063,
+    "max_band_change_m": 0.004969126777723432
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.05370950458101553
+  },
+  {
+   "all_pass": false,
+   "amplitude": 2,
+   "cell_components": 1,
+   "class": "support-medium",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8028,
+   "eikonal_max": 0.2976856167928049,
+   "eikonal_median": 0.0009594226606295941,
+   "eikonal_p95": 0.16932765976689346,
+   "failed_geom02": [
+    "min_feature_width",
+    "export_surface_integrity"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "fail",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "unmeasured",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 1.9521014764904976,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.2494871681231996,
+   "mode": "offset_s125",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7756,
+    "pass": true,
+    "slack": 516
+   },
+   "phi_fortran_sha256": "b15664aacd110ce12e1be2dc1787cd0f60d128052c2c38a6ac093fbed349bf9a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0034334235604269736,
+    "zero_level_margin_m": 0.3508840799331665
+   },
+   "sharp_volume_vs_parent": 0.028101802757158012,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.12334124877776226,
+    "max_band_change_m": 0.0019521014764904976
+   },
+   "unmeasured_geom02": [
+    "surface_self_intersection"
+   ],
+   "volume_vs_parent": 0.0035269289074331134
+  },
+  {
+   "all_pass": true,
+   "amplitude": -2,
+   "cell_components": 1,
+   "class": "support-medium",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8058,
+   "eikonal_max": 0.2976966733334854,
+   "eikonal_median": 0.0009999295396615482,
+   "eikonal_p95": 0.16934838316006484,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.9521015346981585,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.24948686929195368,
+   "mode": "offset_s125",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7480,
+    "pass": true,
+    "slack": 792
+   },
+   "phi_fortran_sha256": "437780b6c96162f85d2826ad722b771107f4a38da4daaa120a0561a450623442",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.0035117194957924314,
+    "zero_level_margin_m": 0.3508842382580042
+   },
+   "sharp_volume_vs_parent": -0.008483563096500446,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.12334124877776226,
+    "max_band_change_m": 0.0019521015346981585
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.0034188613347342356
+  },
+  {
+   "all_pass": false,
+   "amplitude": 5,
+   "cell_components": 1,
+   "class": "support-medium",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8020,
+   "eikonal_max": 0.29767732114138545,
+   "eikonal_median": 0.0022688077282058683,
+   "eikonal_p95": 0.169327559292617,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 4.880253691226244,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2494876137032454,
+   "mode": "offset_s125",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7784,
+    "pass": true,
+    "slack": 488
+   },
+   "phi_fortran_sha256": "c9d83699e2ed01f429958cdeee21ac9b982f4e23b0991a6144c0a81f6a58f6e1",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.008881458901159878,
+    "zero_level_margin_m": 0.35088384710252285
+   },
+   "sharp_volume_vs_parent": 0.03181336161187698,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.12334124877776226,
+    "max_band_change_m": 0.004880253691226244
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.008975471925529943
+  },
+  {
+   "all_pass": true,
+   "amplitude": -5,
+   "cell_components": 1,
+   "class": "support-medium",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8032,
+   "eikonal_max": 0.2977049687995975,
+   "eikonal_median": 0.002250859573345698,
+   "eikonal_p95": 0.16941476546169798,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.880253924056888,
+   "max_abs_vs_analytic_m": 1.1641532182693481e-10,
+   "min_zero_level_z_m": -0.24948686662900088,
+   "mode": "offset_s125",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7448,
+    "pass": true,
+    "slack": 824
+   },
+   "phi_fortran_sha256": "e302ef725c43fd8fd4ea37f7650fd1da0081e8263b477db20e6ee5a0c467165a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.008457406001545431,
+    "zero_level_margin_m": 0.3508842382580042
+   },
+   "sharp_volume_vs_parent": -0.012725344644750725,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.12334124877776226,
+    "max_band_change_m": 0.004880253924056888
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.008365008706272548
+  },
+  {
+   "all_pass": true,
+   "amplitude": 2,
+   "cell_components": 1,
+   "class": "support-small",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8062,
+   "eikonal_max": 0.29769114508071903,
+   "eikonal_median": 3.576820173378792e-08,
+   "eikonal_p95": 0.1693265288034885,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.7790775746107101,
+   "max_abs_vs_analytic_m": 0.0,
+   "min_zero_level_z_m": -0.24948687106748169,
+   "mode": "offset_s050",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7544,
+    "pass": true,
+    "slack": 728
+   },
+   "phi_fortran_sha256": "e78af2676cf4c4a64f502bc2b161b47f15789401fb1b78ca1069f89fbac7fc2a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0004760378599035775,
+    "zero_level_margin_m": 0.35088423639535904
+   },
+   "sharp_volume_vs_parent": 0.0,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.01997485682357871,
+    "max_band_change_m": 0.0017790775746107101
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0005692676217343706
+  },
+  {
+   "all_pass": true,
+   "amplitude": -2,
+   "cell_components": 1,
+   "class": "support-small",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8072,
+   "eikonal_max": 0.29769114508071903,
+   "eikonal_median": 3.576820173378792e-08,
+   "eikonal_p95": 0.169314731995339,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.7790775746107101,
+   "max_abs_vs_analytic_m": 2.9103830456733704e-11,
+   "min_zero_level_z_m": -0.24948687106748169,
+   "mode": "offset_s050",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7540,
+    "pass": true,
+    "slack": 732
+   },
+   "phi_fortran_sha256": "11db9f07fa1ab158c82bff04477b68b5afc633389e21a951191667aa1e06863a",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.0006418055253831767,
+    "zero_level_margin_m": 0.35088423639535904
+   },
+   "sharp_volume_vs_parent": -0.0005302226935312015,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.01997485682357871,
+    "max_band_change_m": 0.0017790775746107101
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.0005486799302377721
+  },
+  {
+   "all_pass": true,
+   "amplitude": 5,
+   "cell_components": 1,
+   "class": "support-small",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8062,
+   "eikonal_max": 0.29769114508071903,
+   "eikonal_median": 3.6579596018881944e-08,
+   "eikonal_p95": 0.1693265288034885,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.447693005204201,
+   "max_abs_vs_analytic_m": 1.1641532182693481e-10,
+   "min_zero_level_z_m": -0.24948687106748169,
+   "mode": "offset_s050",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7544,
+    "pass": true,
+    "slack": 728
+   },
+   "phi_fortran_sha256": "30f8f81e2d1bfc5b5c5fb7db2dba5cd00a263a238d7dde1e699a12de4749d0fb",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0013549170362368024,
+    "zero_level_margin_m": 0.35088423639535904
+   },
+   "sharp_volume_vs_parent": 0.0,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.01997485682357871,
+    "max_band_change_m": 0.004447693005204201
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0014482286967769653
+  },
+  {
+   "all_pass": true,
+   "amplitude": -5,
+   "cell_components": 1,
+   "class": "support-small",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8074,
+   "eikonal_max": 0.29769114508071903,
+   "eikonal_median": 3.6579596018881944e-08,
+   "eikonal_p95": 0.1693123726337091,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 4.447693005204201,
+   "max_abs_vs_analytic_m": 1.1641532182693481e-10,
+   "min_zero_level_z_m": -0.24948687106748169,
+   "mode": "offset_s050",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7528,
+    "pass": true,
+    "slack": 744
+   },
+   "phi_fortran_sha256": "044096583d990936440165cc9d71ec2a7bfca4da60c63640a6cc52c1f4a1034b",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -0.00141982360524473,
+    "zero_level_margin_m": 0.35088423639535904
+   },
+   "sharp_volume_vs_parent": -0.0021208907741251393,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.01997485682357871,
+    "max_band_change_m": 0.004447693005204201
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": -0.0013267705100268312
+  },
+  {
+   "all_pass": true,
+   "amplitude": 2,
+   "cell_components": 1,
+   "class": "rough",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8074,
+   "eikonal_max": 0.3166998285976196,
+   "eikonal_median": 0.004666587440771752,
+   "eikonal_p95": 0.16897167218312922,
+   "failed_geom02": [],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "pass",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": true,
+   "harness_step_mm": 1.9924646039726213,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.25001785176894065,
+   "mode": "corrugation",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7508,
+    "pass": true,
+    "slack": 764
+   },
+   "phi_fortran_sha256": "9de2b75fcc9c49b83aa09d0bdd9df7e45ec0a2394c9c72dc073050fdb71eb296",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 3.2275600432951634e-05,
+    "zero_level_margin_m": 0.34998239007800297
+   },
+   "sharp_volume_vs_parent": -0.00477200424178148,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.33049308562648416,
+    "max_band_change_m": 0.0019924646039726213
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0001254640100991633
+  },
+  {
+   "all_pass": false,
+   "amplitude": -2,
+   "cell_components": 1,
+   "class": "rough",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8084,
+   "eikonal_max": 0.3196438926707035,
+   "eikonal_median": 0.00484395919012004,
+   "eikonal_p95": 0.16879266458358144,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 1.9924646039726213,
+   "max_abs_vs_analytic_m": 5.820766091346741e-11,
+   "min_zero_level_z_m": -0.25001785176894065,
+   "mode": "corrugation",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7512,
+    "pass": true,
+    "slack": 760
+   },
+   "phi_fortran_sha256": "31844c9957bbe142043c978c3ad61083a6865aaf11581866f8ee5c67a9dd5c40",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": -4.825785986062314e-05,
+    "zero_level_margin_m": 0.34998239007800297
+   },
+   "sharp_volume_vs_parent": -0.0042417815482502785,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.33049308562648416,
+    "max_band_change_m": 0.0019924646039726213
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 4.4923045262823535e-05
+  },
+  {
+   "all_pass": false,
+   "amplitude": 5,
+   "cell_components": 1,
+   "class": "rough",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8022,
+   "eikonal_max": 0.3524916970387866,
+   "eikonal_median": 0.015168875894264744,
+   "eikonal_p95": 0.16663527655328414,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 4.981161400792189,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2518976634377695,
+   "mode": "corrugation",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7536,
+    "pass": true,
+    "slack": 736
+   },
+   "phi_fortran_sha256": "81ff0ee70cbcb1fed041ea8b88d64c72140ddf2e4820cd442d906edbbb43c792",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.0005195490980374196,
+    "zero_level_margin_m": 0.3479102141223848
+   },
+   "sharp_volume_vs_parent": -0.0010604453870625141,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.33049308562648416,
+    "max_band_change_m": 0.004981161400792189
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0006127829144804142
+  },
+  {
+   "all_pass": false,
+   "amplitude": -5,
+   "cell_components": 1,
+   "class": "rough",
+   "crossing_slope_fail_nodes": 0,
+   "eikonal_band_nodes": 8034,
+   "eikonal_max": 0.3535746670998131,
+   "eikonal_median": 0.015327220814380427,
+   "eikonal_p95": 0.16930411486800445,
+   "failed_geom02": [
+    "min_feature_width"
+   ],
+   "gate_status": {
+    "component_connectivity": "pass",
+    "domain_clearance": "pass",
+    "export_surface_integrity": "pass",
+    "inter_component_gap": "pass",
+    "mask_preservation": "pass",
+    "min_feature_width": "fail",
+    "near_zero_gradient_band": "pass",
+    "sdf_boundary_margin": "pass",
+    "sdf_distance_property": "pass",
+    "sdf_finite_structure": "pass",
+    "surface_self_intersection": "pass",
+    "topology_change_classification": "pass",
+    "volume_semantics": "pass"
+   },
+   "geom02_pass": false,
+   "harness_step_mm": 4.981161400792189,
+   "max_abs_vs_analytic_m": 2.3283064365386963e-10,
+   "min_zero_level_z_m": -0.2518976634377695,
+   "mode": "corrugation",
+   "p22": {
+    "n_max": 8272,
+    "n_phi": 7548,
+    "pass": true,
+    "slack": 724
+   },
+   "phi_fortran_sha256": "b40c52c1f49a6923fff1bdec095943477f01b3479bf4f067e47cd2ff612897ec",
+   "retained": {
+    "clearance_pass": true,
+    "volume_band_pass": true,
+    "volume_vs_gate_base": 0.00032468497434678945,
+    "zero_level_margin_m": 0.3479102141223848
+   },
+   "sharp_volume_vs_parent": 0.0005302226935313126,
+   "support": {
+    "band_nodes": 14318,
+    "fraction": 0.33049308562648416,
+    "max_band_change_m": 0.004981161400792189
+   },
+   "unmeasured_geom02": [],
+   "volume_vs_parent": 0.0004179006322979628
+  }
+ ]
+}

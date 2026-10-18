@@ -1,0 +1,174 @@
+{
+ "alpha_deg": 20.39506319495091,
+ "changes_vs_v17": "docs/v18_mode01_plan_2026_10_19.md §3.4",
+ "chord_m": 1.2192013452297266,
+ "claims_not_supported": [
+  "no solver ran; no force, slope or sigma_d",
+  "v17 results (GRID-02, XFID, FD-08, OPT-01) do not transfer to v18",
+  "not a registered parent: M2 (#61) pins it"
+ ],
+ "decision": "B1 = v18 analytic plate (user, 2026-10-19, #60 comment)",
+ "environment": {
+  "numpy": "2.5.2",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.12.13"
+ },
+ "evidence_class": "contract_and_capability (geometry only)",
+ "evidence_tier": "EXPLORATORY_COMMITTED",
+ "flags": {
+  "sdf_gradient_qualified": false,
+  "shape_update_allowed": false,
+  "topology_birth_qualified": false
+ },
+ "gates": {
+  "all_pass": true,
+  "cell_components": 1,
+  "crossing_slope_fail_nodes": 0,
+  "eikonal_band_nodes": 8062,
+  "eikonal_max": 0.29769114508071903,
+  "eikonal_median": 2.1280614825869293e-08,
+  "eikonal_p95": 0.1693265288034885,
+  "failed_geom02": [],
+  "gate_status": {
+   "component_connectivity": "pass",
+   "domain_clearance": "pass",
+   "export_surface_integrity": "pass",
+   "inter_component_gap": "pass",
+   "mask_preservation": "pass",
+   "min_feature_width": "pass",
+   "near_zero_gradient_band": "pass",
+   "sdf_boundary_margin": "pass",
+   "sdf_distance_property": "pass",
+   "sdf_finite_structure": "pass",
+   "surface_self_intersection": "pass",
+   "topology_change_classification": "pass",
+   "volume_semantics": "pass"
+  },
+  "geom02_pass": true,
+  "p22": {
+   "n_max": 8272,
+   "n_phi": 7544,
+   "pass": true,
+   "slack": 728
+  },
+  "retained": {
+   "clearance_pass": true,
+   "volume_band_pass": true,
+   "volume_vs_gate_base": -9.317671934139238e-05,
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "sharp_volume_vs_parent": 0.0,
+  "unmeasured_geom02": [],
+  "volume_vs_parent": 0.0
+ },
+ "genesis_id": "sdf_native_genesis_v18_2026_10",
+ "issue": "#60",
+ "kind": "sdf_native_genesis_v18",
+ "lattice": {
+  "origin_m": [
+   -1.0,
+   -0.8,
+   -0.6
+  ],
+  "shape": [
+   121,
+   65,
+   49
+  ],
+  "spacing_m": 0.025
+ },
+ "lineage": {
+  "v17_baseline_npz": {
+   "path": "docs/evidence/p22_v17_volume_semantics_bridge_2026_10_11/inputs/v17_baseline.npz",
+   "sha256": "7a972b330c11d6580c49de4cba9b5f4a0b2cb664dda67e4f7053c280655feb31"
+  }
+ },
+ "measurements": {
+  "cell_centre_ties_exact_zero": 212,
+  "centroid_m": [
+   -0.024999999999999967,
+   0.0,
+   0.0
+  ],
+  "continuum_volume_m3": 0.12050585660314937,
+  "crossing_slope_fail_nodes": 0,
+  "end_layers_outside_mask": {
+   "j14_j50_min_phi_m": 0.012500000186264515,
+   "solid_outside_design_mask": 0
+  },
+  "frontal_area_x_m2": 0.4375,
+  "hard_count_invariance": {
+   "count_equal_margin_m": -1.465667612623473e-06,
+   "count_no_increase_margin_m": -1.465667612623473e-06,
+   "min_abs_parent_centre_m": 0.0,
+   "min_fluid_parent_centre_m": 0.0,
+   "rounding_allowance_m": 1.465667612623473e-06,
+   "sup_norm_dphi_m": 0.0
+  },
+  "min_zero_level_z_m": -0.24948687106748169,
+  "n_max_p22_v2": 8272,
+  "n_phi": 7544,
+  "nodes_abs_phi_below_1e-3": 420,
+  "p22_slack": 728,
+  "planform_area_m2": 1.0668011770760106,
+  "ride_height_above_ground_m": 0.6505131289325183,
+  "sharp_volume_m3": 0.11787500000000002,
+  "smoothed_volume_m3": 0.08896203352549267,
+  "smoothed_volume_vs_v17": -9.317671934139238e-05,
+  "solid_node_extent_m": {
+   "x": [
+    -0.575,
+    0.5250000000000001
+   ],
+   "y": [
+    -0.42500000000000004,
+    0.42500000000000004
+   ],
+   "z": [
+    -0.22499999999999998,
+    0.2250000000000001
+   ]
+  },
+  "v17_baseline_n_phi": 8272,
+  "v17_smoothed_volume_m3": 0.08897032348835406
+ },
+ "parameters": {
+  "L": 1.1039013452297266,
+  "alpha": 0.35596100390420754,
+  "camber": 0.0,
+  "reflex": 0.0,
+  "t": 0.1153,
+  "xc": -0.024999999999999967,
+  "y_tip": 0.4375,
+  "zc": 0.0
+ },
+ "plan": "docs/v18_mode01_plan_2026_10_19.md",
+ "rules": {
+  "bounding_box_m": {
+   "x": [
+    -0.6,
+    0.55
+   ],
+   "z": [
+    -0.25,
+    0.25
+   ]
+  },
+  "generation": 0,
+  "masks_policies": "copied from the v17 baseline (identical to the OPT-01 v1 parent masks)",
+  "source_sha256": "SHA-256 of the sorted-key JSON of the parameters",
+  "thickness": "bisection: smoothed volume = v17 baseline smoothed volume, rounded to 0.1 mm",
+  "y_tip": "0.45 - h/2 (flat tips on the cell-centre plane)"
+ },
+ "shape": "stadium section (thickness t, round edges) extruded over |y| <= y_tip with flat tips; exact extrusion SDF (scripts/v18_plate.py)",
+ "solver_started": false,
+ "span_tip_to_tip_m": 0.875,
+ "state": {
+  "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+  "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+  "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+  "source_sha256": "63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e",
+  "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+  "zero_level_margin_m": 0.35088423639535904
+ }
+}
