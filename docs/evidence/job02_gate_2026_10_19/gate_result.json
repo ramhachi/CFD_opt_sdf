@@ -1,0 +1,51 @@
+{
+  "campaign_sha256": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+  "comparisons": [
+    {
+      "byte_identical": true,
+      "kernel": "f24",
+      "output_csv_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e",
+      "reference": "native flow_24 parent (OPT-01 v1 Stage B kernel a, origin -1.0,-0.8,-0.6)",
+      "reference_csv": "docs/evidence/opt01b_stage_b_2026_10_15/kernel_output/opt01b_a/states/opt01b__parent/flow_24.forces.csv",
+      "reference_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e",
+      "run": "opt01b__parent",
+      "table_csv_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e"
+    },
+    {
+      "byte_identical": true,
+      "kernel": "f24",
+      "output_csv_sha256": "471ea4105b4dd94cd322aa0940e119cb3fd61fda772dbcd6d3881e95b135b44a",
+      "reference": "GRID-02 shifted flow_24 parent (kernel s24, origin -0.9875,-0.7875,-0.6)",
+      "reference_csv": "docs/evidence/grid02_trend_2026_10_16/kernel_output/grid02_s24/states/opt01b__parent/flow_24.forces.csv",
+      "reference_sha256": "471ea4105b4dd94cd322aa0940e119cb3fd61fda772dbcd6d3881e95b135b44a",
+      "run": "opt01b__parent__grid02_shift",
+      "table_csv_sha256": "471ea4105b4dd94cd322aa0940e119cb3fd61fda772dbcd6d3881e95b135b44a"
+    },
+    {
+      "byte_identical": true,
+      "kernel": "f32",
+      "output_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+      "reference": "native flow_32 parent (OPT-01 v1 Stage B kernel b, origin -1.0,-0.8,-0.6)",
+      "reference_csv": "docs/evidence/opt01b_stage_b_2026_10_15/kernel_output/opt01b_b/states/opt01b__parent/flow_32.forces.csv",
+      "reference_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+      "run": "opt01b__parent",
+      "table_csv_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2"
+    },
+    {
+      "byte_identical": true,
+      "kernel": "f32",
+      "output_csv_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+      "reference": "GRID-02 shifted flow_32 parent (kernel s32, origin -0.9875,-0.7875,-0.6)",
+      "reference_csv": "docs/evidence/grid02_trend_2026_10_16/kernel_output/grid02_s32/states/opt01b__parent/flow_32.forces.csv",
+      "reference_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+      "run": "opt01b__parent__grid02_shift",
+      "table_csv_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d"
+    }
+  ],
+  "kind": "job02_byte_identity_gate_result",
+  "spec_sha256": "19c3b542be79f92f88dd363632ec70d8832cefc484e0a7bdadbcd46a63181711",
+  "table_freeze_sha256": "b268080af5a0445158122976863c60cd0ac2e9958859ad28118083c996ae89b9",
+  "table_sha256": "224efac43edc9576d0b3f7bd7aaa8e9796da6c6dbef2b283592ae9d06bc91943",
+  "table_source_commit": "ffc9fb9e7b8a27b4bc064e236d9863e22c2cf05b",
+  "verdict": "JOB02_GATE_PASS"
+}

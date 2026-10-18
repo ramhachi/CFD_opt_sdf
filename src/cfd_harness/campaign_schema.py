@@ -54,7 +54,7 @@ def forbidden_env(key):
 
 
 COMMON_ENV_KEYS = ("W4_CANONICAL_DESIGN_SPACING_M", "W4_CANONICAL_STATE_LABEL", "W4_POINT_SHAPE", "W4_CELL_SHAPE", "W4_SOURCE_SURFACE_SHA256", "W4_MARGIN_GATE_M")
-ORIGIN_ENV = "W4_CANONICAL_ORIGIN_M"  # in job_env_common or (per state, per kernel) in a run's env
+ORIGIN_ENV = "W4_CANONICAL_ORIGIN_M"  # in job_env_common or in a run's env (per-run x, y placement; z is ride height and fixed per kernel)
 BUDGET_KEYS = ("per_state_timeout_s", "solver_wall_time_cap_s", "kernel_timeout_s", "instantiate_timeout_s", "gpu_probe_timeout_s", "reserve_s")
 CASE_KEYS = ("case_id", "flow_dims", "flow_spacing_m", "solver_length", "solver_time_unit_s", "solver_viscosity", "reynolds", "density_kg_m3", "dynamic_viscosity_pa_s", "reference_length_m",
              "reference_area_m2", "freestream_mps")
@@ -150,8 +150,17 @@ def out_dir_name(c, kernel):
     return f"{c['out_prefix']}{kernel}"
 
 
+def run_name(run):
+    """A run's output name (index entry, states/<name>/, table key): its state, or its own `name` when the same state runs at several placements in one kernel (JOB-02)."""
+    return run.get("name", run["state"])
+
+
 def run_names(kernel):
-    return [r["state"] for r in kernel["runs"]]
+    return [run_name(r) for r in kernel["runs"]]
+
+
+def runs_by_name(kernel):
+    return {run_name(r): r for r in kernel["runs"]}
 
 
 def effective_env(c, run):
@@ -214,13 +223,17 @@ def validate_kernel(c, k, kernel):
     req(cfg["per_state_timeout_s"] <= cfg["solver_wall_time_cap_s"] and cfg["solver_wall_time_cap_s"] + cfg["reserve_s"] + cfg["instantiate_timeout_s"] + cfg["gpu_probe_timeout_s"] <= cfg["kernel_timeout_s"],
         f"kernel {k}: the aggregate solver cap is vacuous or does not fit the kernel timeout once setup and reserve are paid")
     runs = kernel["runs"]
-    req(isinstance(runs, list) and runs and len({r.get("state") for r in runs}) == len(runs), f"kernel {k}: runs must be a nonempty list of distinct states")
+    req(isinstance(runs, list) and runs and all(isinstance(r, dict) and isinstance(r.get("state"), str) and isinstance(r.get("name", ""), str) for r in runs)
+        and len(set(run_names(kernel))) == len(runs),
+        f"kernel {k}: runs must be a nonempty list of distinct run names (the state, or the run's own name)")
     for r in runs:
-        req(set(r) == {"state", "env"} and r["state"] in c["states"] and isinstance(r["env"], dict) and all(isinstance(a, str) and isinstance(b, str) for a, b in r["env"].items()), f"kernel {k}: run {r}")
+        req(set(r) - {"name"} == {"state", "env"} and r["state"] in c["states"] and isinstance(r["env"], dict) and all(isinstance(a, str) and isinstance(b, str) for a, b in r["env"].items()), f"kernel {k}: run {r}")
+        req("name" not in r or (NAME.fullmatch(r["name"]) and r["name"] not in (".", "..") and r["name"] not in c["states"]), f"kernel {k}: a run name must be a safe name that is not a state name")
         req(all(cfg[a] == b for a, b in r["env"].items() if a in cfg), f"kernel {k}: a run env contradicts the kernel config")
         req(set(r["env"]) <= {ORIGIN_ENV, *c["job_env_keys"]}, f"kernel {k}: run env keys must be {ORIGIN_ENV} or declared in job_env_keys")
         env = effective_env(c, r)
         req(ORIGIN_ENV in env and len(floats(env[ORIGIN_ENV])) == 3, f"kernel {k}: {ORIGIN_ENV} missing for {r['state']}")
+    req(len({floats(effective_env(c, r)[ORIGIN_ENV])[2] for r in runs}) == 1, f"kernel {k}: per-run placement moves x and y only; z of {ORIGIN_ENV} is ride height (one value per kernel)")
     req(c["states"][runs[0]["state"]]["direction"] is None, f"kernel {k}: the first state must be a baseline state")
     req(all(isinstance(p, str) and safe_rel(p) for p in kernel.get("pins", [])), f"kernel {k}: pins must be safe repository paths")
     req(kernel.get("first_state_csv_sha256") is None or is_sha(kernel["first_state_csv_sha256"]), f"kernel {k}: first_state_csv_sha256")

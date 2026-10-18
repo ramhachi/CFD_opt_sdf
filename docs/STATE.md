@@ -1,6 +1,6 @@
 # STATE — current position in one page (overwrite at each milestone; the history is in `docs/phase_plan.md`)
 
-Updated: 2026-10-19 (incl. the T2-0b row). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
+Updated: 2026-10-19 (incl. the T2-0b row and M1 done: JOB-02 gate passed). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
 Re-plan document: `docs/roadmap_review_2026_10_16.md`.
 
 ## Goal
@@ -26,9 +26,9 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 | --- | --- | --- |
 | M0 re-baseline | #41, #18 closed; #24, #25, #39 closed | done 2026-10-16 |
 | T2-0 FSAE RANS feasibility (parallel) | #57 | T2-0a done (exploratory). T2-0b done 2026-10-19 (REGISTERED_FROZEN): **T20B_NO_GO** for the 2D-section SA wall-function evaluator: G2 fails (Cl peak at h/c 0.179 not 0.134; mean error 4.24 % but 5.45 % with the 0.15 deg incidence ambiguity), G3b fails (h/c 0.09 incidence derivative med30 0.055 vs fine30 0.082 per deg), G6 fails (+-0.25 deg not resolved above remeshing noise at h/c 0.134); G2d, G3a, G3c, G4, G5 pass; LM_DATA_AGREES (limit cycle, ~3.5 h/case); ADJ_FAILED; DAFoam not attempted. High-Re evaluator adoption (#66 item 1) is NO-GO on this basis; next per the registered table: wall-resolved/LM study or another validation case, and a fixed-topology (morphing) mesh study. Record: `docs/evidence/t20b_registered_2026_10_19/` |
-| M1 common harness + per-state placement job | #58 closed, #59 | harness v1.1 merged; #59 byte-identity check folded into the UNC-01 smoke |
+| M1 common harness + per-state placement job | #58 closed, #59 closed | done 2026-10-19: harness v1.1 merged; JOB-02 per-run (x, y) placement in one kernel (optional run `name`, z fixed per kernel) passed its byte-identity gate on Kaggle T4 (`JOB02_GATE_PASS`, 4/4 force CSVs: native and GRID-02-shifted parents, flow_24 and flow_32; `docs/evidence/job02_gate_2026_10_19/`). The gate was run ahead of UNC-01 instead of inside its smoke because its references are the existing parents and do not depend on B1; the UNC-01 smoke only has to check its new (v18) parent |
 | M1' wide-support volume-neutral modes (solver-free) | #60 | done (exploratory) 2026-10-19: B1 = v18 analytic plate (user); v18 parent passes all gates; MODE-01 v18 `V18_BASIS_READY` (heave, pitch, camber, reflex, twist, sweep + surge control), binding only in the M2 registration; min_feature_width is the binding gate on the smooth plate (40-50 % of sub-cell placements fail) |
-| M2 paired-difference uncertainty sigma_d | #61 | pre-registration draft `docs/unc01_preregistration_draft_2026_10_19.md` (not frozen); waits for JOB-02 (#59) |
+| M2 paired-difference uncertainty sigma_d | #61 | pre-registration draft `docs/unc01_preregistration_draft_2026_10_19.md` (not frozen); JOB-02 (#59) is done (2026-10-19), so the freeze now waits only for the draft's own TODOs |
 | M3a fidelity go/no-go (no optimizer) | #62 | after M2 |
 | M3b screening + response surface + independent verification | SCREEN-01, XV-01 | only if M3a GO |
 | M4 evaluator / product-scope decision | — | after M3, T2-0 |
