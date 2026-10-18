@@ -1,6 +1,6 @@
 # STATE — current position in one page (overwrite at each milestone; the history is in `docs/phase_plan.md`)
 
-Updated: 2026-10-16. Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
+Updated: 2026-10-19 (M1 done: JOB-02 gate passed). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
 Re-plan document: `docs/roadmap_review_2026_10_16.md`.
 
 ## Goal
@@ -26,7 +26,7 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 | --- | --- | --- |
 | M0 re-baseline | #41, #18 closed; #24, #25, #39 closed | done 2026-10-16 |
 | T2-0 FSAE RANS feasibility (parallel) | #57 | T2-0a done (exploratory): 2D ground-effect wing, SA Cl within ~5 % of experiment, peak h/c matches; T2-0b next |
-| M1 common harness + per-state placement job | #58 closed, #59 | harness v1.1 merged; #59 byte-identity check folded into the UNC-01 smoke |
+| M1 common harness + per-state placement job | #58 closed, #59 closed | done 2026-10-19: harness v1.1 merged; JOB-02 per-run (x, y) placement in one kernel (optional run `name`, z fixed per kernel) passed its byte-identity gate on Kaggle T4 (`JOB02_GATE_PASS`, 4/4 force CSVs: native and GRID-02-shifted parents, flow_24 and flow_32; `docs/evidence/job02_gate_2026_10_19/`). The gate was run ahead of UNC-01 instead of inside its smoke because its references are the existing parents and do not depend on B1; the UNC-01 smoke only has to check its new parent |
 | M1' wide-support volume-neutral modes (solver-free) | #60 | prescreen done (exploratory): the OPT-01 v1 parent admits no wide-support mode (lattice-plane ties, pinned end layers, 2-3 cell slab); parent choice awaits the user (v18 analytic plate recommended) |
 | M2 paired-difference uncertainty sigma_d | #61 | after M1, M1' |
 | M3a fidelity go/no-go (no optimizer) | #62 | after M2 |
