@@ -90,7 +90,7 @@ def test_cl_plateau_ignores_period_two_alternation_and_counts_settling():
 def test_smoke_filter_drops_force_lines():
     ns = runner_ns()
     ns["MODE"] = "smoke"
-    kept = ns["_keep_text"]("Time = 5\nCl    : 1.2\n    Cd = 0.03\nsum of forces:\nSolving for Ux, Initial residual = 1e-3\n")
+    kept = ns["_keep_text"]("Time = 5\nCl    : 1.2\n    Cd = 0.03\nsum of forces:\n        Total    : (1 2 3)\n        Pressure : (1 2 3)\n        Viscous  : (1 2 3)\nSolving for Ux, Initial residual = 1e-3\n")
     assert kept == "Time = 5\nSolving for Ux, Initial residual = 1e-3"
 
 
@@ -140,7 +140,7 @@ def test_adjoint_dictionaries_patch_the_t20a_case_text():
     m = t20_case.MODELS["sa-wf"]
     f = t20_foam.system_and_constant(m, t20_case.MESHES["med30"], dict(u=30, nu=t20_case.NU, chord=t20_case.CHORD, z=t20_case.Z, iters=5000))
     sol, sch, cd = adj.fv_solution(f["system/fvSolution"]), adj.fv_schemes(f["system/fvSchemes"]), adj.control_dict(f["system/controlDict"])
-    assert '"(pa).*"' in sol and 'equations { "Ua.*" 0.7; "(U|nuTilda)" 0.9; }' in sol and 'fields { "pa.*" 0.3; }' in sol
+    assert '"(pa).*"' in sol and 'equations { "(U|nuTilda)" 0.7; "Ua.*" 0.7; }' in sol and 'fields { p 0.3; "pa.*" 0.3; }' in sol and "consistent no;" in sol and "0.9" not in sol
     assert "default Gauss linear;" in sch and f"div(-phi,Ua{adj.SOLVER}) bounded Gauss upwind;" in sch and "default none;" not in sch
     assert "application adjointOptimisationFoam;" in cd and "startFrom startTime;" in cd and "endTime 100000;" in cd
     d = adj.dynamic_mesh_dict(*adj.box_bounds(0.05, t20_case.CHORD, t20_case.Z))

@@ -368,7 +368,7 @@ def blown_up(forces) -> bool:
     return bool(forces) and any(abs(forces[k][m]) > 100 for k in ("Cl", "Cd") for m in ("last", "tail_min", "tail_max"))   # a wing at these Re has |Cl|, |Cd| of order 1
 
 
-FORCE_LINE = re.compile(r"\b(C[dlmsy]\w*|[Ff]orces?|[Mm]oments?)\b")
+FORCE_LINE = re.compile(r"\b(C[dlmsy]\w*|[Ff]orces?|[Mm]oments?|Total|Pressure|Viscous|Internal|Coefficients?)\b")   # forces/forceCoeffs output lines
 
 
 def _keep_text(text: str) -> str:

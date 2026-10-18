@@ -158,14 +158,16 @@ def fv_schemes(primal: str) -> str:
 
 
 def fv_solution(primal: str) -> str:
-    """Primal fvSolution plus the adjoint solver entries and relaxation (Stage S values)."""
+    """Primal fvSolution plus the adjoint solver entries, with plain SIMPLE relaxation for the whole adjointOptimisationFoam run: its primal solver does not
+    run the T2-0a SIMPLEC setting (consistent yes, U 0.9, p unrelaxed) stably (development smoke 1: residuals grew about 4x per iteration from a 200-iteration
+    start), so consistent no with p 0.3, U and nuTilda 0.7 (the Stage S values were p 0.2, U 0.5) and the adjoint fields pa 0.3, Ua 0.7."""
     extra = ('    "(pa).*" { solver GAMG; smoother GaussSeidel; tolerance 1e-9; relTol 0.1; }\n'
              '    "(Ua).*" { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-10; relTol 0.1; }\n'
              '    "(m|ma|d|da).*" { solver PCG; preconditioner DIC; tolerance 1e-9; relTol 0.01; }\n')
-    out = primal.replace("solvers\n{\n", "solvers\n{\n" + extra, 1)
-    out = out.replace("relaxationFactors\n{\n", 'relaxationFactors\n{\n    fields { "pa.*" 0.3; }\n', 1)
-    out = out.replace("    equations { ", '    equations { "Ua.*" 0.7; ', 1)
-    assert out.count('"Ua.*" 0.7') == 1 and out.count('"pa.*" 0.3') == 1 and '"(pa).*"' in out, "primal fvSolution layout differs from t20_foam"
+    out = primal.replace("solvers\n{\n", "solvers\n{\n" + extra, 1).replace("consistent yes;", "consistent no;", 1)
+    i = out.index("relaxationFactors\n{\n")
+    out = out[:i] + 'relaxationFactors\n{\n    fields { p 0.3; "pa.*" 0.3; }\n    equations { "(U|nuTilda)" 0.7; "Ua.*" 0.7; }\n}\n'
+    assert '"(pa).*"' in out and "consistent no;" in out, "primal fvSolution layout differs from t20_foam"
     return out
 
 
