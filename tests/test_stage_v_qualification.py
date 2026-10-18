@@ -12,6 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from cfd_sdf import cfd
+from conftest import requires_work  # noqa: E402
 
 REAL_CASE = Path(__file__).resolve().parent.parent / "work" / "stage_sv_laminar" / "case_a_coarse"
 
@@ -78,6 +79,7 @@ def _converged_solver_log(n_iterations: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+@requires_work("work/stage_sv_laminar/case_a_coarse/log.simpleFoam")
 def test_real_historical_run_without_residual_control_is_not_called_converged() -> None:
     """A run that completes the 500-step endTime with no declared convergence criterion (the
     situation for every existing Stage V case) must not qualify as solver_converged."""

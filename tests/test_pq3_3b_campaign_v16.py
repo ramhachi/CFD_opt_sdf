@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
 from scripts.pq3_3b_preflight_v6_2026_09 import sha256_array  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/pq3_3b_campaign_manifest_v16_2026_09.json"
 V15_OUTCOME = ROOT / "docs/evidence/pq3_3b_campaign_v15_outcome_2026_09.json"
@@ -39,6 +40,7 @@ def test_manifest_and_sidecar_are_consistent():
     assert sidecar == ca.sha256_file(MANIFEST)
 
 
+@requires_work("work/pq3_3b_campaign_v15/checkpoints/state_0010.json")
 def test_start_state_is_the_recorded_v15_checkpoint_10_unchanged():
     manifest = _manifest()
     outcome = json.loads(V15_OUTCOME.read_text())

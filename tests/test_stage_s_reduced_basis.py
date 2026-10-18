@@ -32,6 +32,7 @@ from cfd_sdf.stage_s_reduced_basis import (  # noqa: E402
     preserves_y_symmetry,
     sine_mode_vector,
 )
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/stage_s_reduced_basis_fd_manifest_2026_09.json"
 EVIDENCE = ROOT / "docs/evidence/stage_s_reduced_basis_mode_preflight_2026_09.json"
@@ -97,6 +98,7 @@ def test_normal_displacement_on_a_translated_patch():
     assert result["max_abs_normal_displacement_m"] == pytest.approx(2.5e-3, rel=1e-6)
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv")
 def test_registered_manifest_contract_and_reduced_spec():
     manifest = json.loads(MANIFEST.read_text())
     assert manifest["kind"] == "stage_s_reduced_basis_fd_manifest"

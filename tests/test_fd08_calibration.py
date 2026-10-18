@@ -44,6 +44,7 @@ from preflight_fd08_cpu import (
     verify_preview_dataset,
 )
 from register_fd08_calibration import DEFAULT_STATE, build as build_calibration_criteria, write_cpu_preview
+from conftest import requires_work  # noqa: E402
 
 
 def _calibration_rows(epsilons: tuple[float, ...], slope: float) -> list[dict]:
@@ -560,6 +561,7 @@ def main():
     }
 
 
+@requires_work("work/sdf_native_genesis_v17/sdf_design_state.npz")
 def test_calibration_retry_registration_uses_append_only_round_paths():
     criteria = build_calibration_criteria(
         DEFAULT_STATE,

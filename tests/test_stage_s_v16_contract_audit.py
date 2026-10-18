@@ -6,15 +6,24 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
 from scripts import stage_s_v16_contract_audit_2026_09 as audit  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 
 MANIFEST = ROOT / "docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json"
+CASE_METADATA = ROOT / "work/stage_s_work_f_v1/baseline/V1/case_metadata.json"
+
+
+def _recorded_source_project_is_another_root() -> bool:
+    """The audit compares metadata["source_project"] (an absolute path baked in at run time) with this checkout's root."""
+    return CASE_METADATA.is_file() and json.loads(CASE_METADATA.read_text(encoding="utf-8"))["source_project"] != str(audit.ORIGINAL_SPEC)
 
 
 def _manifest() -> dict:
@@ -65,12 +74,15 @@ def test_audit_is_solver_free_and_retains_raw_mesh_semantics() -> None:
     assert "not a clean mesh claim" in qualification["interpretation"]
 
 
+@requires_work("work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl")
 def test_every_recorded_artifact_hash_is_current() -> None:
     manifest = _manifest()
     for key, ref in manifest["artifacts"].items():
         assert ca.sha256_file(ROOT / ref["path"]) == ref["sha256"], key
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/case_metadata.json")
+@pytest.mark.skipif(_recorded_source_project_is_another_root(), reason="case_metadata.json bakes in the absolute source_project path of another checkout root")
 def test_build_manifest_refuses_a_pq2_hash_registration_mismatch(monkeypatch) -> None:
     original = audit.PQ2_CANDIDATE_SHA
     monkeypatch.setattr(audit, "PQ2_CANDIDATE_SHA", audit.V16_CANDIDATE_SHA)

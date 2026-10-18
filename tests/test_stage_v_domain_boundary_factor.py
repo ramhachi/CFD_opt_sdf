@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 PQ2_MANIFEST = ROOT / "docs/evidence/stage_v_domain_boundary_factor_manifest_2026_09.json"
 RUN_MANIFEST = ROOT / "docs/evidence/stage_v_domain_boundary_factor_run_manifest_2026_09.json"
@@ -32,6 +33,7 @@ def _script_module():
     return module
 
 
+@requires_work("work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml")
 def test_registered_run_manifest_contract():
     pq2 = json.loads(PQ2_MANIFEST.read_text())
     manifest = json.loads(RUN_MANIFEST.read_text())
@@ -59,6 +61,7 @@ def test_registered_run_manifest_contract():
             assert ca.sha256_file(ROOT / record["path"]) == record["sha256"]
 
 
+@requires_work("work/stage_sv_laminar/project_matched_re_laminar.yaml")
 def test_extended_spec_diff_and_top_block_helper():
     module = _script_module()
     extended = module._extended_spec()
@@ -75,11 +78,13 @@ def test_extended_spec_diff_and_top_block_helper():
     assert any("symmetryPlane" in line for line in block)
 
 
+@requires_work("work/stage_v_fixed_domain_2026_09/opt_q100_b0_step0_try0_block/V2/system/snappyHexMeshDict")
 def test_extended_domain_reuses_baseline_location_in_mesh():
     pq2 = _script_module()
     assert pq2._location_in_mesh(pq2.BASELINE_CASE) == pytest.approx((-0.7, 0.0, 0.18))
 
 
+@requires_work("work/stage_v_domain_boundary_factor_2026_09/specs/project_matched_re_laminar_domain_extended_v1.yaml")
 def test_extended_case_bundle_uses_declared_grid_without_sdf_arrays():
     pq2 = _script_module()
     spec = pq2.load_problem_spec(pq2.EXT_SPEC)
@@ -93,6 +98,7 @@ def test_extended_case_bundle_uses_declared_grid_without_sdf_arrays():
     assert bundle.arrays == {}
 
 
+@requires_work("work/stage_v_domain_boundary_factor_2026_09/top_pressure_outlet/V2/stage_v_qualification.json")
 def test_treatment_cases_match_the_registered_definition():
     manifest = json.loads(RUN_MANIFEST.read_text())
     treatments = {entry["name"]: entry for entry in manifest["treatments"]}

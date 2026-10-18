@@ -23,6 +23,7 @@ from cfd_sdf.stage_s_perturbation import (  # noqa: E402
     movement_to_text,
 )
 from cfd_sdf.stage_s_adjoint_qualification import active_var_ids  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 EVIDENCE = ROOT / "docs/evidence/stage_s_work_f_perturbation_sides_2026_09.json"
 QUALIFICATION = ROOT / "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json"
@@ -102,6 +103,7 @@ def test_movement_text_is_loadable_and_hashed():
     assert movement_sha256(movement) != movement_sha256(-movement)
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/boundary")
 def test_baseline_patch_extraction_is_closed_and_oriented():
     baseline = extract_patch_surface(BASE_CASE, time_name="constant")
     assert baseline.vertices.shape[1] == 3
@@ -115,6 +117,7 @@ def test_baseline_patch_extraction_is_closed_and_oriented():
     assert mesh.volume > 0.0
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/constant/polyMesh/points")
 def test_fixed_patches_do_not_move_in_a_registered_side():
     evidence = json.loads(EVIDENCE.read_text())
     side = next(iter(evidence["sides"].values()))
@@ -129,6 +132,7 @@ def test_fixed_patches_do_not_move_in_a_registered_side():
     assert result["interior_max_displacement_m"] > 0.0
 
 
+@requires_work("work/stage_s_work_f_v1/tools/moveControlPoints")
 def test_registered_side_evidence_reverifies():
     evidence = json.loads(EVIDENCE.read_text())
     qualification = json.loads(QUALIFICATION.read_text())
@@ -164,6 +168,7 @@ def test_registered_side_evidence_reverifies():
 RESULT = ROOT / "docs/evidence/stage_s_work_f_surface_fd_result_2026_09.json"
 
 
+@requires_work("work/stage_s_work_f_v1/perturbations/downforce_gradient_aligned__eps0_0001__minus/stage_v_qualification.json")
 def test_registered_surface_fd_result_reverifies():
     result = json.loads(RESULT.read_text())
     sides = json.loads(EVIDENCE.read_text())

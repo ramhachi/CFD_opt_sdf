@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/stage_v_v16_domain_boundary_contract_manifest_v2_2026_09.json"
 AUDIT = ROOT / "docs/evidence/stage_s_v16_contract_audit_manifest_2026_09.json"
@@ -56,6 +57,7 @@ def test_contract_binds_the_v16_candidate_and_two_one_factor_treatments():
     assert manifest["budget"] == {"max_new_runs": 2, "mesh_levels": ["V1"], "v2_runs": 0, "v3_runs": 0}
 
 
+@requires_work("work/stage_sv_laminar/project_matched_re_laminar.yaml")
 def test_extended_spec_changes_only_domain_and_problem_id():
     module = _module()
     import yaml
@@ -89,6 +91,7 @@ def test_copied_treatment_case_drops_old_postprocessing():
         assert (case_dir / "system").is_dir()
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/constant/triSurface/design_candidate.stl")
 def test_registered_artifacts_are_current():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     for key, ref in manifest["artifacts"].items():

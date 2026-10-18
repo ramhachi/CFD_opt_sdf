@@ -26,6 +26,7 @@ from cfd_sdf.stage_s_adjoint_case import (  # noqa: E402
     render_adjoint_case,
     verify_adjoint_case,
 )
+from conftest import requires_work  # noqa: E402
 
 PREFLIGHT = ROOT / "docs/evidence/stage_s_work_f_adjoint_preflight_2026_09.json"
 ADJOINT_CASE = ROOT / "work/stage_s_work_f_v1/adjoint/base"
@@ -232,6 +233,7 @@ def test_verify_fails_closed_for_a_wrong_direction(tmp_path: Path):
     assert "downforce_direction" in verdict["failed_checks"]
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/system/optimisationDict")
 def test_registered_adjoint_preflight_reverifies():
     artifact = json.loads(PREFLIGHT.read_text())
     assert artifact["kind"] == "stage_s_work_f_adjoint_preflight"
@@ -253,6 +255,7 @@ def test_registered_adjoint_preflight_reverifies():
 RUN = ROOT / "docs/evidence/stage_s_work_f_adjoint_run_2026_09.json"
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425")
 def test_registered_adjoint_run_reverifies():
     evidence = json.loads(RUN.read_text())
     assert evidence["summary"]["adjoint_converged"] is True

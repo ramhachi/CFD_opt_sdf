@@ -29,6 +29,7 @@ from cfd_sdf.stage_s_surface_fd import (  # noqa: E402
     evaluate_work_f_fd,
     worst_case_offset_mesh,
 )
+from conftest import requires_work  # noqa: E402
 
 CATALOG = ROOT / "docs/evidence/stage_s_work_f_surface_fd_catalog_2026_09.json"
 PREFLIGHT = ROOT / "docs/evidence/stage_s_work_f_surface_fd_preflight_2026_09.json"
@@ -81,6 +82,7 @@ def test_epsilon_ladder_is_dimensionless_and_requires_four_levels():
         build_epsilon_ladder(0.05, (0.0, 0.005, 0.01, 0.02))
 
 
+@requires_work("work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl")
 def test_response_manifests_share_the_catalog_and_identity_contract():
     manifests = _manifests()
     assert set(manifests) == {"drag", "downforce"}
@@ -106,6 +108,7 @@ def test_response_manifests_share_the_catalog_and_identity_contract():
     assert drag.fixture["near_zero_absolute_error"] > 0.0
 
 
+@requires_work("work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl")
 def test_manifest_validation_rejects_missing_roles_and_seeds():
     from cfd_sdf.fd_preregistration import build_fd_campaign_manifest
 
@@ -143,6 +146,7 @@ def test_worst_case_offset_mesh_keeps_a_box_valid():
         assert abs(offset.volume - baseline_volume) / baseline_volume < 0.01
 
 
+@requires_work("work/pq4_1_v16_state_v2/sweep/threshold_0.5/iso_surface.stl")
 def test_evaluation_requires_both_responses_and_resolvable_aligned_directions():
     manifests = _manifests()
     rows = {

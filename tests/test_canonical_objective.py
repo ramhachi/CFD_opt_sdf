@@ -18,6 +18,7 @@ from cfd_sdf.canonical_objective import (  # noqa: E402
 from cfd_sdf.problem_spec import load_problem_spec  # noqa: E402
 from cfd_sdf.problem_spec_compiler import VolumeBudget, compile_problem  # noqa: E402
 from cfd_sdf.preflight_v4_core import inherit_level_start_rho  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 REPO = pytest.importorskip("pathlib").Path(__file__).resolve().parents[1]
 SPEC = REPO / "work" / "pq0_2_smoke" / "project_downforce_volume.yaml"
@@ -48,6 +49,7 @@ def test_maximize_objective_has_negative_sense_sign():
     assert canonical_sense_sign("minimize") == 1
 
 
+@requires_work("work/pq0_2_smoke/project_downforce_volume.yaml")
 def test_raw_response_gradient_and_canonical_objective_gradient_have_opposite_sign():
     compiled = _compiled()
     raw_grad = np.full(8, 1.5)

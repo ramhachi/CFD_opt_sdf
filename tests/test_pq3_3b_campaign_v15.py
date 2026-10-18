@@ -23,6 +23,7 @@ from scripts.pq3_3b_campaign_v6_2026_09 import (  # noqa: E402
 )
 import scripts.pq3_3b_campaign_v6_2026_09 as campaign  # noqa: E402
 import scripts.pq3_3b_v15_register_2026_09 as register_v15  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/pq3_3b_campaign_manifest_v15_2026_09.json"
 BOOTSTRAP = ROOT / "work/pq3_3b_campaign_v15_bootstrap.npy"
@@ -111,6 +112,7 @@ def test_v15_declares_the_per_attempt_solver_budget():
     assert "freshness is recorded separately" in budget["semantics"]
 
 
+@requires_work("work/pq3_3b_campaign_v14/checkpoints/rho_0005.npy")
 def test_v15_bootstrap_is_deterministic_from_the_pinned_v14_checkpoint():
     manifest = _manifest()
     provenance = manifest["bootstrap_provenance"]
@@ -148,6 +150,7 @@ def test_v15_entry_preflight_is_registered_and_verifiable():
     assert "must pass before the v15 campaign" in entry["requirement"]
 
 
+@requires_work("work/pq3_3b_margin_masks/topology_state.json")
 def test_pinned_evidence_and_margin_mask_hashes_verify():
     manifest = _manifest()
     for key, ref in manifest["pinned_evidence"].items():
