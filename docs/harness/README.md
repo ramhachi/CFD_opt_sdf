@@ -62,8 +62,12 @@ kernels           {k: {kernel_id "<owner>/<slug>", job "scripts/....jl",
                        case {case_id, flow_dims, flow_spacing_m, solver_length, solver_time_unit_s, solver_viscosity, reynolds, density_kg_m3,
                              dynamic_viscosity_pa_s, reference_length_m, reference_area_m2, freestream_mps},
                        config {per_state_timeout_s, solver_wall_time_cap_s, kernel_timeout_s, instantiate_timeout_s, gpu_probe_timeout_s, reserve_s, ...extras echoed into run_identity.config},
-                       runs [{state, env}]   ordered; the first state must be a baseline state; env = per-state job overrides
+                       runs [{state, env, name?}]   ordered; the first state must be a baseline state; env = per-run job overrides
                                              (W4_CANONICAL_ORIGIN_M is required here or in job_env_common; GRID02_CASE where the job reads it),
+                                             name (optional, JOB-02) = the run's output name (index entry, states/<name>/, table key) when the same state runs
+                                             more than once in a kernel, e.g. at several flow-grid placements; default = the state. A name may not equal any
+                                             state name; run names are distinct within a kernel. Per-run placement moves x and y of W4_CANONICAL_ORIGIN_M only:
+                                             z is ride height and must be one value per kernel,
                        pins (optional)       extra pinned repo paths, first_state_csv_sha256 (optional)}}
 sparse, pins      extra sparse-checkout paths / extra pinned repo paths (files or directories)
 ```
@@ -86,3 +90,5 @@ Replay equivalence: `tests/test_harness_replay.py` verifies the five saved GRID-
 Not verifiable offline: the Kaggle side (real Julia/CUDA, the `kaggle` CLI, provider listing). Tests use a fake job, a scratch git remote and a fake `kaggle`.
 
 Harness v1.1 vs v1: legacy decided by the campaign (S1); run-env allowlist and device/identity keys forbidden (S2); identity-free pagination until no new ref (S3); remote check against `repo_url` (S4); freeze re-validation in `verify` (S5); Julia include closure and tool hashes (S6); smoke verify bound to the rendering at a given commit, freeze gated on a verified smoke table, cross-state campaign rules, CLI exit 3 on malformed input, duplicate-JSON-key rejection, `campaign_work_root` in the run identity.
+
+JOB-02 (#59) addition, harness version unchanged: optional run `name` so one kernel can run the same state at several (x, y) placements; a campaign without names behaves byte for byte as before (`tests/test_job02_per_state_placement.py`, and the unchanged replay/runner suites). Gate on Kaggle: `docs/evidence/job02_gate_2026_10_19/`.

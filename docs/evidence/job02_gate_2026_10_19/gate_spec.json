@@ -1,0 +1,38 @@
+{
+  "campaign_path": "docs/harness/job02_gate_campaign.json",
+  "campaign_sha256": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+  "comparisons": [
+    {
+      "kernel": "f24",
+      "reference": "native flow_24 parent (OPT-01 v1 Stage B kernel a, origin -1.0,-0.8,-0.6)",
+      "reference_csv": "docs/evidence/opt01b_stage_b_2026_10_15/kernel_output/opt01b_a/states/opt01b__parent/flow_24.forces.csv",
+      "reference_sha256": "e62b6babf8ffc5c3bd361de6d2ddcae8e047d8554db3a825a84d8c885f6a332e",
+      "run": "opt01b__parent"
+    },
+    {
+      "kernel": "f24",
+      "reference": "GRID-02 shifted flow_24 parent (kernel s24, origin -0.9875,-0.7875,-0.6)",
+      "reference_csv": "docs/evidence/grid02_trend_2026_10_16/kernel_output/grid02_s24/states/opt01b__parent/flow_24.forces.csv",
+      "reference_sha256": "471ea4105b4dd94cd322aa0940e119cb3fd61fda772dbcd6d3881e95b135b44a",
+      "run": "opt01b__parent__grid02_shift"
+    },
+    {
+      "kernel": "f32",
+      "reference": "native flow_32 parent (OPT-01 v1 Stage B kernel b, origin -1.0,-0.8,-0.6)",
+      "reference_csv": "docs/evidence/opt01b_stage_b_2026_10_15/kernel_output/opt01b_b/states/opt01b__parent/flow_32.forces.csv",
+      "reference_sha256": "282aceed7ba22a8dbd0c2115f6937f636dcdd0bf336296694faea087029f09b2",
+      "run": "opt01b__parent"
+    },
+    {
+      "kernel": "f32",
+      "reference": "GRID-02 shifted flow_32 parent (kernel s32, origin -0.9875,-0.7875,-0.6)",
+      "reference_csv": "docs/evidence/grid02_trend_2026_10_16/kernel_output/grid02_s32/states/opt01b__parent/flow_32.forces.csv",
+      "reference_sha256": "667127c5880a54798413e08f5c38c4167967c785f840a521d3661b6226b75b6d",
+      "run": "opt01b__parent__grid02_shift"
+    }
+  ],
+  "issue": 59,
+  "kind": "job02_byte_identity_gate_spec",
+  "on_failure": "JOB02_GATE_FAIL: fail closed, diagnose and record the cause; no threshold, no re-run to pass",
+  "rule": "for every run: the downloaded force CSV bytes equal the reference CSV bytes and the verified state-force table's forces_csv_sha256 equals reference_sha256; no tolerance, no other file compared (job summaries carry the GPU UUID and wall times)"
+}

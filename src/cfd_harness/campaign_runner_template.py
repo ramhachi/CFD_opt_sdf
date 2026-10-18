@@ -205,7 +205,7 @@ def main():
                 raise RuntimeError("the baked kernel identity or output names differ from the campaign")
             cfg, case_id, job = kernel["config"], kernel["case"]["case_id"], kernel["job"]
             names = SC.run_names(kernel)[:1] if SMOKE else SC.run_names(kernel)
-            runs = {r["state"]: r for r in kernel["runs"]}
+            runs = SC.runs_by_name(kernel)
             for rel, want in [(campaign["baseline"]["path"], campaign["baseline"]["sha256_fortran_raw"])] + [(d["path"], d["sha256_fortran_raw"]) for d in campaign["directions"].values()]:
                 if PINS.get(rel) != want:
                     raise RuntimeError(f"the baseline or a direction raw is not pinned to the campaign hash: {rel}")
@@ -222,7 +222,7 @@ def main():
             directions = {n: S.read_f4(source / d["path"]) for n, d in campaign["directions"].items()}
             if not all(np.all(np.isfinite(a)) for a in [baseline_phi, *directions.values()]):
                 raise RuntimeError("baseline or direction phi has non-finite values")
-            raws = {n: generate_phi(S, campaign["states"][n], baseline_phi, directions) for n in names}
+            raws = {n: generate_phi(S, campaign["states"][runs[n]["state"]], baseline_phi, directions) for n in names}
             with tempfile.TemporaryDirectory(prefix="dry-", dir=base) as dry:
                 schema_dry_write(SC, dry)
             self_test = {"harness_version": HARNESS_VERSION, "imports": True, "schema_dry_write": True, "phi_identities_verified": len(raws), "gpu_probe": False}
@@ -249,7 +249,8 @@ def main():
             write_json(OUT / "self_test.json", self_test)
             solver_elapsed_s = 0.0
             for position, name in enumerate(names):
-                row, run_spec = campaign["states"][name], runs[name]
+                run_spec = runs[name]
+                row = campaign["states"][run_spec["state"]]
                 stage = f"state:{name}"
                 outdir = OUT / "states" / name
                 outdir.mkdir(parents=True, exist_ok=False)

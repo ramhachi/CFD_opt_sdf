@@ -91,10 +91,10 @@ def check_kernel(out, c, campaign_sha, campaign_rel, freeze, smoke=False, smoke_
     entries = index["states"]
     SC.req(index["status"] == "COMPLETE" and [e.get("name") for e in entries] == names, "completed entries differ from the exact registered state order")
     SC.req({p.name for p in (out / "states").iterdir() if p.is_dir()} == set(names), "state directories differ from the exact plan")
-    runs = {r["state"]: r for r in kernel["runs"]}
+    runs = SC.runs_by_name(kernel)
     states, process_total, summary_total = {}, 0.0, 0.0
     for name, entry in zip(names, entries):
-        row = c["states"][name]
+        row = c["states"][runs[name]["state"]]
         for key in ("kind", "direction", "step_mm", "sign"):
             SC.equal(entry.get(key), row[key], f"index state {key}")
         SC.req(entry["complete"] is True and type(entry.get("exit_code")) is int and entry["exit_code"] == 0, "state process is incomplete")
