@@ -26,6 +26,7 @@ from cfd_sdf.stage_s_adjoint_qualification import (  # noqa: E402
     response_derivative_vector,
     var_id_to_ijk_component,
 )
+from conftest import requires_work  # noqa: E402
 
 ARTIFACT = ROOT / "docs/evidence/stage_s_work_f_adjoint_qualification_2026_09.json"
 RUN_EVIDENCE = ROOT / "docs/evidence/stage_s_work_f_adjoint_run_2026_09.json"
@@ -184,6 +185,7 @@ def test_build_direction_artifact_refuses_a_swapped_response(tmp_path: Path):
         assert record["unit_inf_norm"] == pytest.approx(1.0)
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425")
 def test_registered_qualification_reverifies():
     artifact = json.loads(ARTIFACT.read_text())
     run = json.loads(RUN_EVIDENCE.read_text())

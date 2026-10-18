@@ -13,6 +13,7 @@ import sys
 sys.path.insert(0, str(ROOT / "src"))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 
 MANIFEST = ROOT / "docs/evidence/stage_v_domain_continuation_manifest_2026_09.json"
@@ -63,5 +64,6 @@ def test_continuation_judgment_is_fail_closed():
     assert "keep S2 blocked" in evidence["decision"]
 
 
+@requires_work("work/stage_v_domain_continuation_2026_09/specs/geometry/design_domain.stl")
 def test_staged_geometry_is_byte_identical_to_base():
     assert ca.sha256_file(STAGED_GEOMETRY) == ca.sha256_file(BASE_SPEC_GEOMETRY)

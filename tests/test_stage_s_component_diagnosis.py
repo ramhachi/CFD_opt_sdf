@@ -32,6 +32,7 @@ from cfd_sdf.stage_s_component_diagnosis import (  # noqa: E402
     relative_gate,
     single_scalar_hypothesis,
 )
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/stage_s_work_f_component_diagnosis_manifest_2026_09.json"
 AUDIT = ROOT / "docs/evidence/stage_s_work_f_derivative_component_audit_2026_09.json"
@@ -146,6 +147,7 @@ def test_holdout_seed_is_deterministic():
         holdout_seed("abc", 0)
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/derivatives/volumetricBSplinesadjDownforceadjDownforceESI425")
 def test_registered_component_manifest_reverifies():
     manifest = json.loads(MANIFEST.read_text())
     assert manifest["kind"] == "stage_s_work_f_component_diagnosis_manifest"

@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
 from cfd_sdf.problem_spec import load_problem_spec  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 MANIFEST = ROOT / "docs/evidence/stage_s_work_f_manifest_2026_09.json"
 PREFLIGHT = ROOT / "docs/evidence/stage_s_work_f_v1_preflight_2026_09.json"
@@ -33,6 +34,7 @@ def test_manifest_and_sidecar_are_consistent():
     assert sidecar == ca.sha256_file(MANIFEST)
 
 
+@requires_work("work/stage_sv_laminar/project_matched_re_laminar.yaml")
 def test_registration_binds_the_baseline_and_response_identities():
     manifest = _manifest()
     baseline = json.loads(BASELINE.read_text())
@@ -50,6 +52,7 @@ def test_registration_binds_the_baseline_and_response_identities():
     assert ca.sha256_file(ROOT / manifest["preflight"]["script_path"]) == manifest["preflight"]["script_sha256"]
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/case_metadata.json")
 def test_preflight_artifact_passed_and_matches_the_manifest():
     preflight = json.loads(PREFLIGHT.read_text())
     assert preflight["manifest"]["sha256"] == ca.sha256_file(MANIFEST)
@@ -83,6 +86,7 @@ def test_mesh_evidence_passed_without_starting_the_solver():
 SOLVER = ROOT / "docs/evidence/stage_s_work_f_v1_solver_2026_09.json"
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/postProcessing/forceCoeffs/0/coefficient.dat")
 def test_solver_evidence_qualified_and_reconfirmed_clearance():
     evidence = json.loads(SOLVER.read_text())
     assert evidence["manifest"]["sha256"] == ca.sha256_file(MANIFEST)

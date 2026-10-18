@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from cfd_sdf import campaign_assertions as ca  # noqa: E402
+from conftest import requires_work  # noqa: E402
 
 ARTIFACT = ROOT / "docs/evidence/stage_s_baseline_v16_2026_09.json"
 
@@ -31,6 +32,7 @@ def test_baseline_binds_the_selected_handoff_and_clearance():
     assert artifact["fields"]["solver_audit_field"] == "beta_solver"
 
 
+@requires_work("work/pq4_1_v16_state/beta_solver.vti")
 def test_baseline_file_hashes_reverify():
     artifact = _artifact()
     for name, record in artifact["fields"]["bundle"].items():
@@ -66,6 +68,7 @@ def test_baseline_candidate_matches_the_v16_outcome():
 V2_ARTIFACT = ROOT / "docs/evidence/stage_s_baseline_v16_v2_2026_09.json"
 
 
+@requires_work("work/pq4_1_v16_state_v2/beta_solver.vti")
 def test_baseline_v2_supersedes_v1_and_binds_the_repaired_judgment():
     artifact = json.loads(V2_ARTIFACT.read_text())
     assert artifact["kind"] == "stage_s_baseline_v16_v2"

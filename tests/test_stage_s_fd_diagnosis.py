@@ -24,6 +24,7 @@ from cfd_sdf.stage_s_realized_direction import (  # noqa: E402
     read_control_points_csv,
     read_control_points_file,
 )
+from conftest import requires_work  # noqa: E402
 
 D1_MANIFEST = ROOT / "docs/evidence/stage_s_work_f_realized_direction_audit_manifest_2026_09.json"
 D1_ARTIFACT = ROOT / "docs/evidence/stage_s_work_f_realized_direction_audit_2026_09.json"
@@ -51,6 +52,7 @@ def _write_cp_file(tmp_path: Path, values: np.ndarray, name: str = "boxcpsBsplin
     return path
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv")
 def test_control_point_parsers_and_count_validation(tmp_path: Path):
     values = np.zeros((4, 3), dtype=np.float64)
     values[1] = (1e-4, -2.5e-4, 0.0)
@@ -65,6 +67,7 @@ def test_control_point_parsers_and_count_validation(tmp_path: Path):
         read_control_points_file(bad)
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv")
 def test_case_audit_detects_clipping_and_accepts_exact_application():
     ids = _ids()
     mask = active_mask_from_ids(ids)
@@ -83,6 +86,7 @@ def test_case_audit_detects_clipping_and_accepts_exact_application():
     assert bad["realized_equals_prescribed"] is False
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv")
 def test_pair_audit_odd_even_and_direction_comparison():
     ids = _ids()
     mask = active_mask_from_ids(ids)
@@ -104,6 +108,7 @@ def test_pair_audit_odd_even_and_direction_comparison():
     assert np.max(np.abs(skewed.delta_even[mask])) > 0.0
 
 
+@requires_work("work/stage_s_work_f_v1/adjoint/base/optimisation/controlPoints/boxcpsBsplines0.csv")
 def test_registered_d1_audit_reverifies():
     manifest = json.loads(D1_MANIFEST.read_text())
     artifact = json.loads(D1_ARTIFACT.read_text())
@@ -129,6 +134,7 @@ def test_registered_d1_audit_reverifies():
         )
 
 
+@requires_work("work/stage_s_work_f_v1/baseline/V1/case_metadata.json")
 def test_registered_d2_audit_reverifies():
     manifest = json.loads(D2_MANIFEST.read_text())
     artifact = json.loads(D2_ARTIFACT.read_text())
