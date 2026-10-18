@@ -7483,3 +7483,18 @@ User decisions (verbatim): 「二層化はOK、期限なし、OpenFOAMは残し�
 Evidence-class discipline (§3) and the claims limits of AGENTS.md are unchanged. All qualification flags stay false; `shape_update_allowed=false`.
 
 **2026-10-16 addendum (compute backend, user decision).** User (verbatim): 「今回はkaggleのt4を使っているけど、gpu貸出APIとかでコスト削りつつできるのはわかっているのでバックエンドは必要になった段階で切り替える判断をしたい。まだ全面切り替えはしたくないが」 — Kaggle T4/CPU remain the execution backends; a switch to a rented-GPU API is decided only when needed. Triggers to raise it: weekly GPU need above the Kaggle quota, round-trip latency dominating a milestone, or a run class Kaggle cannot hold. The user also confirmed T2-0 (high-Re evaluator feasibility first) after asking why a wing section is studied: it is a validation case for the evaluator, not a change of product (see STATE.md).
+
+## 2026-10-19 T2-0b registered feasibility result (#57)
+
+T2-0b ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20b_registration_2026_10_19.md`, SHA-256 fa06aa4e...0595; one three-angle plan review, one source
+review, three development smokes; frozen source 941e8a76; kernels `cfd-opt-sdf-t20b-wf` 60/60 and `cfd-opt-sdf-t20b-lm` 4/4 completed, one submission each).
+Verdict **T20B_NO_GO** (scope: 2D single-element Tyrrell 026 section, Re_c 4.6e5, moving ground, OpenFOAM v2512 SA wall functions, med30 primary).
+Failing gates: G2 (Cl maximum at h/c 0.179, 1.412 vs 1.396 at 0.134; mean |e| 4.24 % nominal, 5.45 % with the +0.15 deg incidence shift), G3b (h/c 0.09 incidence
+derivative med30 0.055 vs fine30 0.082 per deg), G6 (at h/c 0.134 the +-0.25 deg change, 0.0327, is below 5 sqrt(2) sigma_mesh = 0.0341). Passing: G2d 0.288,
+G3a 4.46 %, G3c 0.236, G4 (SST/SA derivatives within 2 %), G5 (about 15 s to the force plateau). Labels: LM_DATA_AGREES (cycle means within 4.8 %, limit cycle with
+8-9 % Cl std at 0.134/0.09, about 3.5 h per case), ADJ_FAILED (frozen-turbulence adjoint SIGFPE after 1322 iterations), DAFOAM_NOT_ATTEMPTED (T2-0's "DAFoam
+feasibility" item was narrowed to the adjointOptimisationFoam test by the registration: R5, #23 parked, #66 does not require an adjoint). Thresholds were set
+after T2-0a was visible; T2-0a's own numbers stay non-citable. Consequences: #66 item 1 (high-Re evaluator) is NO-GO on this basis; the pre-agreed next actions are a
+wall-resolved/transition evaluator study or another validation case (G2) and a fixed-topology morphing mesh study (G3b/G6). Evidence:
+`docs/evidence/t20b_registered_2026_10_19/` (README.md, note.md, analysis.md, verdict.json, freeze.json, SHA256SUMS). All qualification flags false;
+`shape_update_allowed=false`.

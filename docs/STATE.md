@@ -1,6 +1,6 @@
 # STATE — current position in one page (overwrite at each milestone; the history is in `docs/phase_plan.md`)
 
-Updated: 2026-10-16. Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
+Updated: 2026-10-19 (T2-0b row). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
 Re-plan document: `docs/roadmap_review_2026_10_16.md`.
 
 ## Goal
@@ -25,7 +25,7 @@ R1 decide on paired differences with measured sigma_d and the E2 rule I_f > 2 ma
 | ID | Issue | Status |
 | --- | --- | --- |
 | M0 re-baseline | #41, #18 closed; #24, #25, #39 closed | done 2026-10-16 |
-| T2-0 FSAE RANS feasibility (parallel) | #57 | T2-0a done (exploratory): 2D ground-effect wing, SA Cl within ~5 % of experiment, peak h/c matches; T2-0b next |
+| T2-0 FSAE RANS feasibility (parallel) | #57 | T2-0a done (exploratory). T2-0b done 2026-10-19 (REGISTERED_FROZEN): **T20B_NO_GO** for the 2D-section SA wall-function evaluator: G2 fails (Cl peak at h/c 0.179 not 0.134; mean error 4.24 % but 5.45 % with the 0.15 deg incidence ambiguity), G3b fails (h/c 0.09 incidence derivative med30 0.055 vs fine30 0.082 per deg), G6 fails (+-0.25 deg not resolved above remeshing noise at h/c 0.134); G2d, G3a, G3c, G4, G5 pass; LM_DATA_AGREES (limit cycle, ~3.5 h/case); ADJ_FAILED; DAFoam not attempted. High-Re evaluator adoption (#66 item 1) is NO-GO on this basis; next per the registered table: wall-resolved/LM study or another validation case, and a fixed-topology (morphing) mesh study. Record: `docs/evidence/t20b_registered_2026_10_19/` |
 | M1 common harness + per-state placement job | #58 closed, #59 | harness v1.1 merged; #59 byte-identity check folded into the UNC-01 smoke |
 | M1' wide-support volume-neutral modes (solver-free) | #60 | prescreen done (exploratory): the OPT-01 v1 parent admits no wide-support mode (lattice-plane ties, pinned end layers, 2-3 cell slab); parent choice awaits the user (v18 analytic plate recommended) |
 | M2 paired-difference uncertainty sigma_d | #61 | after M1, M1' |
