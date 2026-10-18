@@ -80,7 +80,10 @@ def sha(path) -> str:
 
 
 def write_json(path, value) -> None:
-    Path(path).write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+    """Atomic (temp file + rename): a kernel kill never leaves a truncated JSON."""
+    tmp = Path(f"{path}.tmp")
+    tmp.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
 
 
 def run(cmd, **kw):
@@ -187,9 +190,10 @@ def force_summary(rows: list[dict], history: list[dict] | None = None) -> dict:
     out["force_plateau"] = all(out[k]["tail_rel_std"] < PLATEAU_REL and out[k]["tail_rel_drift"] < PLATEAU_REL for k in ("Cl", "Cd"))
     cl = np.array([r["Cl"] for r in rows[-n:]])
     blocks = cl[len(cl) % BLOCK:].reshape(-1, BLOCK).mean(1)
-    out["cl_block_rel_std"] = float(blocks.std() / abs(blocks.mean()))
-    out["cl_block_rel_drift"] = _rel_drift(blocks) if len(blocks) > 2 else float("inf")
-    out["cl_plateau"] = bool(len(blocks) > 2 and out["cl_block_rel_std"] < PLATEAU_REL and out["cl_block_rel_drift"] < PLATEAU_REL)
+    ok = len(blocks) > 2   # fewer than 3 blocks (a history of about 280 rows or less): no plateau, statistics recorded as None (JSON has no inf/nan)
+    out["cl_block_rel_std"] = float(blocks.std() / abs(blocks.mean())) if ok else None
+    out["cl_block_rel_drift"] = _rel_drift(blocks) if ok else None
+    out["cl_plateau"] = bool(ok and out["cl_block_rel_std"] < PLATEAU_REL and out["cl_block_rel_drift"] < PLATEAU_REL)
     hist = np.array([r["Cl"] for r in (history or rows)])
     off = np.flatnonzero(np.abs(hist / out["Cl"]["tail_mean"] - 1) > SETTLE_REL)
     out["iterations_to_plateau"] = int(off[-1] + 2) if len(off) else 1   # 1-based iteration after the last excursion
@@ -351,7 +355,7 @@ def run_adjoint(case: Path, keep: Path, source: Path, spec: dict, timeout: float
     if rec["adjoint_iterations_logged"] == 0:
         return rec   # ADJ_NOT_RUN: fatal or missing before the first adjoint iteration
     rec["status"] = "ADJ_FAILED"
-    if stage["returncode"] or stage["timed_out"] or not ders or not csvs or not rec["box_contains_section"]:
+    if not ders or not csvs or not rec["box_contains_section"]:   # a nonzero return code with finite derivatives is still ADJ_RUNS (registered definition)
         return rec
     try:
         rec["projection"] = adj.projected_derivatives(ders[-1].read_text(), csvs[0].read_text(), x_low, y_le)
@@ -368,7 +372,7 @@ def blown_up(forces) -> bool:
     return bool(forces) and any(abs(forces[k][m]) > 100 for k in ("Cl", "Cd") for m in ("last", "tail_min", "tail_max"))   # a wing at these Re has |Cl|, |Cd| of order 1
 
 
-FORCE_LINE = re.compile(r"\b(C[dlmsy]\w*|[Ff]orces?|[Mm]oments?|Total|Pressure|Viscous|Internal|Coefficients?)\b")   # forces/forceCoeffs output lines
+FORCE_LINE = re.compile(r"\b(C[dlmsy]\w*|\w*[Ff]orces?|[Mm]oments?|Total|Pressure|Viscous|Internal|Coefficients?)\b|^\s*\w+\s*:\s*" + NUM + r"\s*$")   # forces/forceCoeffs/objective lines
 
 
 def _keep_text(text: str) -> str:
@@ -413,6 +417,8 @@ def run_case(spec: dict, source: Path, deadline: float) -> dict:
         if name == "simpleFoam":
             rec["pre_solver_wall_s"] = time.monotonic() - t0
         timeout = min(cap * (0.3 if lm else 1), deadline - time.monotonic()) if name == "simpleFoam" else 900
+        if name == "simpleFoam" and timeout < cap * (0.3 if lm else 1):
+            rec["deadline_limited"] = True
         if name == "checkMesh":  # gmshToFoam writes every patch as `patch`: front/back must be empty and airfoil/ground wall
             sys.path.insert(0, str(source / "scripts"))
             import t20_foam
@@ -429,17 +435,19 @@ def run_case(spec: dict, source: Path, deadline: float) -> dict:
     if lm and solve and rec["status"] == "simpleFoam_FAILED":
         rec["status"], rec["lm_failed_stage"] = "LM_DIVERGED", "stage1_kOmegaSST"
     if lm and solve and rec["status"] == "COMPLETED":
+        rec["deadline_limited"] = rec.get("deadline_limited") or deadline - time.monotonic() < cap - rec["stages"][-1]["wall_s"]
         stage = run_lm_stage(case, min(cap - rec["stages"][-1]["wall_s"], deadline - time.monotonic()))
         rec["stages"].append(stage)
         if stage["returncode"] or stage["timed_out"]:
             rec["status"], rec["lm_failed_stage"] = ("SOLVER_TIMEOUT_PARTIAL" if stage["timed_out"] else "LM_DIVERGED"), "stage2_kOmegaSSTLM"
-    if not lm and solve and rec["status"] == "COMPLETED":   # registered one-time continuation if the Cl plateau fails
+    if not lm and solve and rec["status"] == "COMPLETED" and (spec["iters"] >= 5000 or spec.get("force_continuation")):   # registered one-time continuation if the Cl plateau fails
         try:
             plateau = force_summary(read_coefficients(dats()))["cl_plateau"] and not spec.get("force_continuation")
         except Exception:
             plateau = True   # unreadable history: left to the parser below, not continued
         if not plateau:
             _continue(case, spec["cont_iters"])
+            rec["deadline_limited"] = rec.get("deadline_limited") or deadline - time.monotonic() < cap - rec["stages"][-1]["wall_s"]
             stage = timed_run("simpleFoam_cont", "simpleFoam", case, min(cap - rec["stages"][-1]["wall_s"], deadline - time.monotonic()))
             rec["stages"].append(stage)
             rec["continued_to"] = spec["cont_iters"]
@@ -479,6 +487,8 @@ def run_case(spec: dict, source: Path, deadline: float) -> dict:
     if rec["status"] in ("LM_DIVERGED", "SOLVER_DIVERGED") or rec["status"].endswith("_FAILED"):
         log = text("simpleFoam_lm") if rec.get("lm_failed_stage") == "stage2_kOmegaSSTLM" else text("simpleFoam_cont") or text("simpleFoam")
         rec["failure_log_tail"] = _keep_text("\n".join(log.splitlines()[-40:])).splitlines()
+    if rec.get("deadline_limited") and ("TIMEOUT" in rec["status"] or rec["status"] == "SOLVER_TIMEOUT_PARTIAL"):
+        rec["status"] = "DEADLINE_LIMITED"   # cut by the kernel budget, not by the per-case cap: an infrastructure loss (registration section 6)
     if not solve and "check_mesh" in rec:
         rec["status"] = "MESH_OK" if rec["status"] == "COMPLETED" and rec["check_mesh"]["mesh_ok"] and not rec["check_mesh"]["failed_check_counts"] else (
             "MESH_FAILED" if rec["status"] == "COMPLETED" else rec["status"])
@@ -487,11 +497,15 @@ def run_case(spec: dict, source: Path, deadline: float) -> dict:
         rec["mesh_cells_3d"], rec["mesh_proxy_failures"] = man["mesh_stats"]["cells_3d"], man["mesh_quality_failures"]
         rec["h_m"], rec["x_lowest_m"] = man["h_m"], man["mesh_stats"]["x_lowest_m"]
     if solve and spec.get("adjoint") and rec["status"] == "COMPLETED":
-        rec["adjoint"] = run_adjoint(case, keep, source, spec, min(ADJ_TIMEOUT_S, deadline - time.monotonic()))
+        left = deadline - time.monotonic()
+        try:
+            rec["adjoint"] = run_adjoint(case, keep, source, spec, min(ADJ_TIMEOUT_S, left)) if left > 600 else {"status": "ADJ_NOT_RUN", "reason": "kernel budget"}
+        except Exception as exc:
+            rec["adjoint"] = {"status": "ADJ_FAILED", "error": f"{type(exc).__name__}: {exc}"}
     if MODE == "smoke":   # registration section 8: no force, coefficient or derivative value leaves the smoke kernel
         for k in ("forces", "forces_stage1_kOmegaSST"):
             if k in rec:
-                rec[k] = {"cl_plateau": rec[k]["cl_plateau"], "rows": rec[k]["rows"], "values": "suppressed (smoke)"}
+                rec[k] = {"rows": rec[k]["rows"], "values": "suppressed (smoke), including the force-derived plateau flag"}
         if "adjoint" in rec and "projection" in rec["adjoint"]:
             rec["adjoint"]["projection"] = {k: v for k, v in rec["adjoint"]["projection"].items() if k in ("n_vars", "n_cps", "varids_complete", "box_contains_section")}
     if case.exists():

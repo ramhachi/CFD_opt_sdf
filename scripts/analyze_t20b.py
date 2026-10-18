@@ -28,7 +28,7 @@ PREDICTED = {"G2": "pass", "G2d": "uncertain", "G3a": "fail", "G3b": "uncertain"
              "G6": "uncertain", "LM": "LM_NOT_QUALIFIED", "ADJ": "not ADJ_CONSISTENT"}
 SCOPE = "2D single-element section (Tyrrell 026, Zerihan & Zhang), Re_c 4.6e5, moving ground, OpenFOAM v2512 SA wall functions, med30/fine30"
 GATES = ("G2", "G2d", "G3a", "G3b", "G3c", "G4", "G5", "G6")
-INFRA = {"NOT_RUN_TIME_BUDGET", "RUNNER_EXCEPTION"}
+INFRA = {"NOT_RUN_TIME_BUDGET", "RUNNER_EXCEPTION", "DEADLINE_LIMITED"}
 MECH = {"GENERATOR_FAILED", "gmshToFoam_FAILED", "gmshToFoam_TIMEOUT", "checkMesh_FAILED", "checkMesh_TIMEOUT", "PARSE_FAILED"}
 
 
@@ -36,23 +36,32 @@ def cid(model, h, mesh, da):
     return f"{model}_h{h}_{mesh}_da{'0' if da == 0 else format(da, '+g')}"
 
 
-def load_runs(dirs) -> tuple[dict, dict]:
-    """{case id: record} with first-run priority; {case id: run index}. Ids listed only in result.json (no case directory) keep their status."""
-    cases, origin = {}, {}
+def _read(p: Path):
+    try:
+        return json.loads(p.read_text())
+    except (OSError, ValueError):
+        return None   # unreadable (e.g. truncated by a kill): the case stays INFRA_LOSS
+
+
+def load_runs(dirs) -> tuple[dict, dict, dict]:
+    """{case id: record} with first-run priority, a later run only replacing an INFRA_LOSS record; {case id: run index}; {input path: sha256}.
+    Ids listed only in result.json (no case directory) keep their status."""
+    cases, origin, hashes = {}, {}, {}
     for k, d in enumerate(dirs):
         found = {}
         res = Path(d) / "result.json"
-        if res.is_file():
-            for r in json.loads(res.read_text()).get("cases", []):
-                found[r["id"]] = r
-        for p in sorted(Path(d).glob("cases/*/case_result.json")):
-            r = json.loads(p.read_text())
+        for r in ((_read(res) or {}).get("cases", []) if res.is_file() else []):
             found[r["id"]] = r
+        for p in sorted(Path(d).glob("cases/*/case_result.json")):
+            hashes[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
+            r = _read(p)
+            if r is not None:
+                found[r["id"]] = r
         for i, r in found.items():
-            if i.endswith("_smoke") or i in cases:
+            if i.endswith("_smoke") or (i in cases and classify(cases[i]) != "INFRA_LOSS"):
                 continue
             cases[i], origin[i] = r, k
-    return cases, origin
+    return cases, origin, hashes
 
 
 def classify(r) -> str:
@@ -175,8 +184,13 @@ def g3a(D, exp):
     return worst <= TH["G3a"], {"fine30_over_med30_minus_1": r, "max_abs": worst}
 
 
+def scan_ids():
+    """The 14 sa-wf med30 incidence-scan cases behind sigma_mesh: implicit inputs of every gate that uses delta (registration section 6 defines delta from sigma)."""
+    return [cid("sa-wf", h, "med30", da) for h in SCAN for da in SCAN_DA]
+
+
 def g3b(D, exp):
-    D.need([cid("sa-wf", h, m, da) for h in INC for m in ("med30", "fine30") for da in (-1.0, 0.0, 1.0)])
+    D.need([cid("sa-wf", h, m, da) for h in INC for m in ("med30", "fine30") for da in (-1.0, 0.0, 1.0)] + scan_ids())
     rows, ok = {}, True
     for h in INC:
         a, b, delta = D.d("sa-wf", "med30", h), D.d("sa-wf", "fine30", h), D.delta(h, 1.0)
@@ -195,7 +209,7 @@ def g3c(D, exp):
 
 
 def g4(D, exp):
-    D.need([cid(m, h, "med30", da) for m in ("sa-wf", "sst-wf") for h in SCAN for da in (-1.0, 0.0, 1.0)])
+    D.need([cid(m, h, "med30", da) for m in ("sa-wf", "sst-wf") for h in SCAN for da in (-1.0, 0.0, 1.0)] + scan_ids())
     rows, ok = {}, True
     for h in SCAN:
         a, b, delta = D.d("sa-wf", "med30", h), D.d("sst-wf", "med30", h), D.delta(h, 1.0)
@@ -222,6 +236,7 @@ def g5(D, exp):
 
 
 def g6(D, exp):
+    D.need(scan_ids())
     rows, ok = {}, True
     for h in SCAN:
         sig = D.sigma_mesh(h)   # needs the 7 scan cases
@@ -275,16 +290,21 @@ def labels(cases: dict, lm_cases: dict, exp: dict, gates: dict, t20a: dict | Non
     try:
         D.need([cid("sa-wf", h, "med30", 0.0) for h in HEIGHTS])
         cl = {h: D.cl("sa-wf", h, "med30") for h in HEIGHTS}
-        robust = all(mean_abs_err(cl, exp, exp_offset=o) < TH["G2_mean"] for o in (-0.005, 0.005))
-        out["G2_robustness"] = "ROBUST" if robust and gates["G2"]["value"] else "MARGINAL"
+        if gates["G2"]["value"] is None:
+            out["G2_robustness"] = "UNDETERMINED"
+        else:
+            d = {h: D.d("sa-wf", "med30", h) for h in INC}
+            shift = lambda h: INCIDENCE_SHIFT_DEG * d_interp(d, h)
+            robust = all(mean_abs_err(cl, exp, sh, o) < TH["G2_mean"] for o in (-0.005, 0.005) for sh in (None, shift))
+            out["G2_robustness"] = "ROBUST" if robust and gates["G2"]["value"] else "MARGINAL"
         dis = statistics.mean(abs(cl[h] / exp[h] - 1) for h in (0.313, 0.179))
         out["G2_disjoint"] = {"mean_abs_e": dis, "label": "G2_DISJOINT_OK" if dis < TH["G2_mean"] else "G2_DISJOINT_NOT_OK"}
         if t20a:
             shared = [h for h in HEIGHTS if h in t20a]
             rep = max(abs(cl[h] / t20a[h] - 1) for h in shared)
             out["replication_vs_T20A"] = {"heights": shared, "max_rel_diff": rep, "label": "REPLICATED" if rep <= TH["replicated"] else "NOT_REPLICATED"}
-    except Gate as g:
-        out["G2_robustness"] = f"not computable: {g.reason}"
+    except (Gate, KeyError) as g:
+        out["G2_robustness"] = f"not computable: {g}"
     for mesh in ("fine30", "coa30"):
         try:
             D.need([cid("sa-wf", h, mesh, 0.0) for h in HEIGHTS])
@@ -294,6 +314,12 @@ def labels(cases: dict, lm_cases: dict, exp: dict, gates: dict, t20a: dict | Non
             out[f"{mesh}_vs_exp"] = f"not computable: {g.reason}"
     if isinstance(out.get("fine30_vs_exp"), dict):
         out["agreement_mesh_specific"] = out["fine30_vs_exp"]["mean_abs_e"] >= TH["G2_mean"]
+    i = cid("sa-wf", 0.224, "med30", 0.0)
+    if classify(cases.get(i)) == "VALID" and classify(lm_cases.get(i)) == "VALID":
+        a, b = cases[i]["forces"]["Cl"]["tail_mean"], lm_cases[i]["forces"]["Cl"]["tail_mean"]
+        out["negative_control"] = {"case": i, "abs_dCl_kernelL_minus_kernelW": abs(b - a), "rel": abs(b / a - 1)}
+    else:
+        out["negative_control"] = f"not computable: W {classify(cases.get(i))}, L {classify(lm_cases.get(i))}"
     out["LM"] = lm_label(lm_cases, exp)
     out["ADJ"] = adj_label(cases, lm_cases)
     return out
@@ -323,7 +349,8 @@ def adj_label(wf_cases, lm_cases):
     r = lm_cases.get(cid("sa-wf", 0.224, "med30", 0.0))
     a = (r or {}).get("adjoint")
     if a is None:
-        return {"label": "ADJ_NOT_RUN", "reason": "no adjoint record (primal case " + ((r or {}).get("status") or "missing") + ")"}
+        return {"label": "ADJ_NOT_RUN", "reason": "no adjoint record: the kernel-L primal case was " + classify(r) + " (" + ((r or {}).get("status") or "missing")
+                + "); this is not the registered binary/fatal meaning of ADJ_NOT_RUN"}
     out = {"label": a["status"], "record_status": a["status"], "wall_s": (a.get("stage") or {}).get("wall_s"), "converged_in": a.get("converged_in")}
     res = (a.get("primal") or {}).get("last_initial_residuals") or {}
     out["ADJ_PRIMAL_UNCONVERGED"] = any((res.get(k) or 0) > TH["ADJ_residual"] for k in ("p", "Ux", "Uy", "nuTilda"))
@@ -353,9 +380,9 @@ def adj_label(wf_cases, lm_cases):
 def descriptive(cases, lm_cases) -> list[str]:
     genua = json.loads(GENUA.read_text())["genua_ride_height_sweep"]["cases"]
     gname = {("sa-wf", "med30"): "Med30SA", ("sa-wf", "fine30"): "Fine30SA", ("sa-wf", "coa30"): "Coa30SA"}
-    lines = ["| case | class | Cl | Cd | Cd Genua | Cl plateau (block rel std) | iters to plateau | cost min | capped wall min | cells | s per cell-iter (x1e6) | RSS MB | y+ airfoil min/avg/max |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
-    for i, r in sorted({**cases, **lm_cases}.items()):
+    lines = ["| kernel | case | class | Cl | Cd | Cd Genua | Cl plateau (block rel std) | iters to plateau | cost min | capped wall min | cells | s per cell-iter (x1e6) | RSS MB | y+ airfoil min/avg/max | y+ outside 11-300 |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for kern, i, r in [("W", i, r) for i, r in sorted(cases.items())] + [("L", i, r) for i, r in sorted(lm_cases.items())]:
         f = r.get("forces") or {}
         cl, cd = (f.get("Cl") or {}).get("tail_mean"), (f.get("Cd") or {}).get("tail_mean")
         g = genua.get(gname.get((r.get("model"), r.get("mesh"))), {}).get(f"{r.get('h_over_c')}") if r.get("delta_alpha_deg") == 0 else None
@@ -366,9 +393,10 @@ def descriptive(cases, lm_cases) -> list[str]:
         fmt = lambda v, s=".4f": "-" if v is None else format(v, s)
         cost = case_cost_min(r) if classify(r) == "VALID" and "pre_solver_wall_s" in r else None
         per = solver / (iters * r["mesh_cells_3d"]) * 1e6 if iters and r.get("mesh_cells_3d") else None
-        lines.append(f"| {i} | {classify(r)} | {fmt(cl)} | {fmt(cd)} | {fmt(g and g['Cd'], '.3f')} | {f.get('cl_plateau', '-')} ({fmt(f.get('cl_block_rel_std'), '.2e')}) | "
+        lines.append(f"| {kern} | {i} | {classify(r)} | {fmt(cl)} | {fmt(cd)} | {fmt(g and g['Cd'], '.3f')} | {f.get('cl_plateau', '-')} ({fmt(f.get('cl_block_rel_std'), '.2e')}) | "
                      f"{f.get('iterations_to_plateau', '-')} | {fmt(cost, '.1f')} | {fmt(r.get('total_wall_s', 0) / 60, '.1f')} | {r.get('mesh_cells_3d', '-')} | {fmt(per, '.2f')} | "
-                     f"{rss:.0f} | {fmt(y.get('min'), '.1f')}/{fmt(y.get('average'), '.1f')}/{fmt(y.get('max'), '.1f')} |")
+                     f"{rss:.0f} | {fmt(y.get('min'), '.1f')}/{fmt(y.get('average'), '.1f')}/{fmt(y.get('max'), '.1f')} | "
+                     f"{'-' if not y else (y['min'] < 11 or y['max'] > 300)} |")
     return lines
 
 
@@ -382,8 +410,8 @@ def main(argv=None):
     if (a.out / "verdict.json").exists():
         raise SystemExit("verdict.json exists: the registered analysis is written once")
     exp = {float(h): p["Cl"] for h, p in json.loads(EXP.read_text())["points"].items()}
-    wf, wf_origin = load_runs(a.wf)
-    lm, lm_origin = load_runs(a.lm)
+    wf, wf_origin, wf_hash = load_runs(a.wf)
+    lm, lm_origin, lm_hash = load_runs(a.lm)
     t20a = None
     if a.t20a.is_dir():
         t20a = {}
@@ -401,6 +429,8 @@ def main(argv=None):
            "thresholds_set_after_exploratory_visible": True, "case_classes": classes, "runs_used": {"wf": [str(p) for p in a.wf], "lm": [str(p) for p in a.lm]},
            "cases_from_resubmission": sorted([i for i, k in wf_origin.items() if k] + [i for i, k in lm_origin.items() if k]),
            "analyzer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "registration": "docs/t20b_registration_2026_10_19.md",
+           "input_sha256": {**wf_hash, **lm_hash, **{str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (EXP, GENUA, ROOT / "docs/t20b_registration_2026_10_19.md")}},
+           "t20a_replication_input": str(a.t20a) if t20a else "MISSING (replication label not computed)",
            "qualification_flags": "unchanged (all false; shape_update_allowed=false)"}
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out / "verdict.json").write_text(json.dumps(out, indent=1, sort_keys=True, default=str) + "\n")

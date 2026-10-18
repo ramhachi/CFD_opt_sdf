@@ -286,3 +286,41 @@ def test_lm_label_needs_stationary_cycles():
     assert A.lm_label(lm, EXP)["label"] == "LM_NOT_QUALIFIED"
     del lm[A.cid("sst-lm", 0.09, "wr2", 0.0)]
     assert A.lm_label(lm, EXP)["label"] == "LM_INCOMPLETE"
+
+
+# ---- source-review regressions -------------------------------------------------------
+
+def test_short_or_diverged_history_writes_valid_json(tmp_path):
+    ns = runner_ns()
+    for n in (15, 40, 260):
+        rows = [{"Time": float(t), "Cl": 1.0 + 0.01 * t, "Cd": 0.03} for t in range(1, n + 1)]
+        s = ns["force_summary"](rows)
+        assert not s["cl_plateau"] and s["cl_block_rel_drift"] is None
+        ns["write_json"](tmp_path / f"r{n}.json", s)
+        assert json.loads((tmp_path / f"r{n}.json").read_text())["rows"] == n
+
+
+def test_smoke_filter_drops_adjoint_objective_lines():
+    ns = runner_ns()
+    ns["MODE"] = "smoke"
+    assert ns["_keep_text"]("downforce : 1.3579482\n   lift : -1031217.1\nadjoint Mesh Movement Iteration: 3\n") == "adjoint Mesh Movement Iteration: 3"
+
+
+def test_resubmission_replaces_a_listed_infra_record(tmp_path):
+    w = world()
+    lost = A.cid("sst-wf", 0.134, "med30", 1.0)
+    second = {lost: w.pop(lost)}
+    out = tmp_path / "analysis"
+    first = write(tmp_path, "wf", w, listed=[{"id": lost, "status": "NOT_RUN_TIME_BUDGET"}])
+    A.main(["--wf", str(first), str(write(tmp_path, "wf2", second)), "--lm", str(write(tmp_path, "lm", lm_world())), "--out", str(out), "--t20a", str(tmp_path / "none")])
+    v = json.loads((out / "verdict.json").read_text())
+    assert v["verdict"] == "T20B_GO_2D_SECTION" and v["cases_from_resubmission"] == [lost] and v["t20a_replication_input"].startswith("MISSING")
+    assert v["labels"]["negative_control"]["abs_dCl_kernelL_minus_kernelW"] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_deadline_limited_is_infrastructure_and_scan_failures_reach_delta_gates(tmp_path):
+    assert A.classify({"status": "DEADLINE_LIMITED"}) == "INFRA_LOSS"
+    w = world()
+    w[A.cid("sa-wf", 0.134, "med30", 0.5)]["status"] = "simpleFoam_FAILED"
+    v = run(tmp_path, w, lm_world())
+    assert all(v["gates"][k]["value"] is False for k in ("G3b", "G4", "G6")) and v["verdict"] == "T20B_NO_GO"
