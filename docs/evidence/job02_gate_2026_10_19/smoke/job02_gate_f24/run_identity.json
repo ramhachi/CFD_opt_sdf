@@ -1,0 +1,58 @@
+{
+  "campaign_sha256": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+  "campaign_work_root": "/kaggle/working",
+  "case_id": "flow_24",
+  "config": {
+    "gpu_probe_timeout_s": 300,
+    "instantiate_timeout_s": 2400,
+    "kernel_timeout_s": 10800,
+    "per_state_timeout_s": 900,
+    "reserve_s": 300,
+    "solver_wall_time_cap_s": 6300
+  },
+  "cuda_device_order": "PCI_BUS_ID",
+  "cuda_visible_devices": "0",
+  "direction_files": {},
+  "expected_names": [
+    "opt01b__parent"
+  ],
+  "failure_stage": null,
+  "harness_version": "harness v1.1",
+  "kernel": "f24",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-job02-gate-f24-smoke",
+  "numpy_version": "2.1.3",
+  "pins": {
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/harness/job02_gate_campaign.json": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+  },
+  "platform": "Linux 1898bb8af59e 6.18.48+ #1 SMP Sun Sep 27 17:32:16 UTC 2026 x86_64",
+  "python_version": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+  "runner_sha256": "f5b715577c28017b00c7a5a9cb466b97398c14a3100e5aba8aa83cc1affa3813",
+  "selected_gpu": {
+    "index": 0,
+    "name": "Tesla T4",
+    "uuid": "GPU-a5bfbccb-6245-3320-9348-ed8bd490af27"
+  },
+  "smoke": true,
+  "source_commit": "ffc9fb9e7b8a27b4bc064e236d9863e22c2cf05b",
+  "verified": {
+    "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "docs/harness/job02_gate_campaign.json": "c991b92597faee3109e77a69759ffab8882cb7eaa0c73ba3eb2a069e4f8cd319",
+    "julia/CFDSDFWaterLily/src": "9e2cb6ef8ba35c5e5bbe9db5943cbefd9e93013e7d1b01ce934deda5190d0c85",
+    "julia/CFDSDFWaterLilyT4/Manifest.toml": "c537ae8ef4eaacf7a6e8e906fce8f524a20b9f2ce7e571db9de2a50ec9ed4707",
+    "julia/CFDSDFWaterLilyT4/Project.toml": "e4b56407b8df30b5abe0e26fede29520dbbf69c0580be39bb7d5e657bb984194",
+    "scripts/fd08_v2_campaign_io.py": "dda177cda3c8f02626be7af3f9ae2d2cad984c8eeea6a09c3445e64ac906c3d2",
+    "scripts/grid01_gpu.py": "bfaed961f3136d14bdeb7e4fccfab807f5fb8c257b45cd3ebb875963104fff38",
+    "scripts/step01_states.py": "f3c5ea30cc88c5efe2cbdd8f96ceeb481321ebc0b84228b3287c6ab718b7ca87",
+    "scripts/waterlily_xfid_candidate_c_job.jl": "1d8dbcb63a867c74dc398a38a42cb061748511e9a53f987b1dd702cbb9b08447",
+    "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8"
+  }
+}
