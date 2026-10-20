@@ -1,0 +1,1865 @@
+{
+ "analyzer_sha256": "c01020d490bab5a72836633acc9b49e09bc70de7c848419f6c72d1921dedc10b",
+ "case_classes": {
+  "SOLVER_FAIL": 12,
+  "UNSTEADY": 14,
+  "VALID": 245
+ },
+ "cases_from_resubmission": [],
+ "gates": {
+  "G3bm@0.09": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.09_fine30_morph-da+1": "UNSTEADY",
+     "M:sa-wf_h0.09_xfine30_da0": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+0.25": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+0.5": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+1": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-0.25": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-0.5": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-1": "UNSTEADY"
+    },
+    "reason": "M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY), M:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+1 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-1 (UNSTEADY)"
+   },
+   "value": false
+  },
+  "G3bm@0.134": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.134_xfine30_da0": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+0.25": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+0.5": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+1": "UNSTEADY"
+    },
+    "reason": "M:sa-wf_h0.134_xfine30_da0 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.25 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.5 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+1 (UNSTEADY)"
+   },
+   "value": false
+  },
+  "G3bm@0.224": {
+   "detail": {
+    "sign_ok": true,
+    "xfine30": {
+     "a": 0.13020947738,
+     "allowed": 0.032552369345,
+     "b": 0.12024572606999995,
+     "margin": -0.6939162490938477,
+     "noise_3rss": 0.0014427586847463897,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "value": true
+  },
+  "G6m@0.134": {
+   "detail": {
+    "consistency": {
+     "a": 0.06260984890000021,
+     "allowed": 0.01878578826488909,
+     "b": 0.06307128950999996,
+     "margin": -0.9754367182524786,
+     "noise_3rss": 0.01878578826488909,
+     "pass": false,
+     "unresolved": true
+    },
+    "dCl_pm0.25": 0.031304924450000104,
+    "resolved": true,
+    "sigma_eff": 0.0021478240721434835
+   },
+   "value": false
+  },
+  "G6m@0.224": {
+   "detail": {
+    "consistency": {
+     "a": 0.1317600038599993,
+     "allowed": 0.03294000096499983,
+     "b": 0.13020947738,
+     "margin": -0.9529287664063272,
+     "noise_3rss": 0.0037841142920742167,
+     "pass": true,
+     "unresolved": false
+    },
+    "dCl_pm0.25": 0.06588000192999965,
+    "resolved": true,
+    "sigma_eff": 0.00043264683140551645
+   },
+   "value": true
+  },
+  "G7m_fine30@0.09": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.09_fine30_morph-da+1": "UNSTEADY",
+     "R:sa-wf_h0.09_fine30_da+1": "UNSTEADY"
+    },
+    "reason": "M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY), R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)"
+   },
+   "value": false
+  },
+  "G7m_fine30@0.134": {
+   "detail": {
+    "a": 0.06307128950999996,
+    "allowed": 0.02582761894233536,
+    "b": 0.07793983025499984,
+    "dM_minus_dR_in_remesh_sigma_d": -1.7545682321347265,
+    "margin": -0.42431624153211805,
+    "noise_3rss": 0.02582761894233536,
+    "pass": true,
+    "undetectable_bias": 0.02582761894233536,
+    "unresolved": false
+   },
+   "value": true
+  },
+  "G7m_fine30@0.224": {
+   "detail": {
+    "a": 0.13020947738,
+    "allowed": 0.032552369345,
+    "b": 0.12378218459500001,
+    "dM_minus_dR_in_remesh_sigma_d": 0.8730426621542808,
+    "margin": -0.8025553004488993,
+    "noise_3rss": 0.022104898602735984,
+    "pass": true,
+    "undetectable_bias": 0.032552369345,
+    "unresolved": false
+   },
+   "value": true
+  },
+  "G7m_xfine30@0.09": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.09_xfine30_da0": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+0.25": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+0.5": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da+1": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-0.25": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-0.5": "SOLVER_FAIL",
+     "M:sa-wf_h0.09_xfine30_morph-da-1": "UNSTEADY",
+     "R:sa-wf_h0.09_xfine30_da+0.25": "SOLVER_FAIL",
+     "R:sa-wf_h0.09_xfine30_da+0.5": "SOLVER_FAIL",
+     "R:sa-wf_h0.09_xfine30_da+1": "SOLVER_FAIL",
+     "R:sa-wf_h0.09_xfine30_da-0.25": "SOLVER_FAIL",
+     "R:sa-wf_h0.09_xfine30_da-0.5": "SOLVER_FAIL",
+     "R:sa-wf_h0.09_xfine30_da-1": "UNSTEADY",
+     "R:sa-wf_h0.09_xfine30_da0": "SOLVER_FAIL"
+    },
+    "reason": "M:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+1 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-1 (UNSTEADY), R:sa-wf_h0.09_xfine30_da+0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+1 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-1 (UNSTEADY), R:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL)"
+   },
+   "value": false
+  },
+  "G7m_xfine30@0.134": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.134_xfine30_da0": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+0.25": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+0.5": "UNSTEADY",
+     "M:sa-wf_h0.134_xfine30_morph-da+1": "UNSTEADY",
+     "R:sa-wf_h0.134_xfine30_da+0.25": "UNSTEADY",
+     "R:sa-wf_h0.134_xfine30_da+0.5": "UNSTEADY",
+     "R:sa-wf_h0.134_xfine30_da+1": "UNSTEADY",
+     "R:sa-wf_h0.134_xfine30_da0": "UNSTEADY"
+    },
+    "reason": "M:sa-wf_h0.134_xfine30_da0 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.25 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.5 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+1 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+0.25 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+0.5 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+1 (UNSTEADY), R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)"
+   },
+   "value": false
+  },
+  "G7m_xfine30@0.224": {
+   "detail": {
+    "a": 0.12024572606999995,
+    "allowed": 0.030911598675000013,
+    "b": 0.12364639470000005,
+    "dM_minus_dR_in_remesh_sigma_d": -1.176376943532275,
+    "margin": -0.889987293580179,
+    "noise_3rss": 0.008743550097260194,
+    "pass": true,
+    "undetectable_bias": 0.030911598675000013,
+    "unresolved": false
+   },
+   "value": true
+  },
+  "G8m@0.09": {
+   "detail": {
+    "bad_inputs": {
+     "M:sa-wf_h0.09_fine30_morph-da+1": "UNSTEADY",
+     "M:sa-wf_h0.09_fine30_morphB2-da+1": "UNSTEADY"
+    },
+    "reason": "M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY), M:sa-wf_h0.09_fine30_morphB2-da+1 (UNSTEADY)"
+   },
+   "value": false
+  },
+  "G8m@0.134": {
+   "detail": {
+    "0.25": {
+     "a": 0.06260984890000021,
+     "allowed": 0.0257738888657218,
+     "b": 0.08358980264000015,
+     "margin": -0.1859996817204248,
+     "noise_3rss": 0.0257738888657218,
+     "pass": false,
+     "unresolved": true
+    },
+    "1.0": {
+     "a": 0.06307128950999996,
+     "allowed": 0.02140494021625,
+     "b": 0.085619760865,
+     "margin": 0.053423701593985636,
+     "noise_3rss": 0.00644347221643045,
+     "pass": false,
+     "unresolved": false
+    }
+   },
+   "value": false
+  },
+  "G8m@0.224": {
+   "detail": {
+    "0.25": {
+     "a": 0.1317600038599993,
+     "allowed": 0.03294000096499983,
+     "b": 0.12684297999999927,
+     "margin": -0.8507278774756386,
+     "noise_3rss": 0.005191761976866197,
+     "pass": true,
+     "unresolved": false
+    },
+    "1.0": {
+     "a": 0.13020947738,
+     "allowed": 0.032552369345,
+     "b": 0.1280237204600001,
+     "margin": -0.9328541373798457,
+     "noise_3rss": 0.0012979404942165492,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "value": true
+  }
+ },
+ "input_sha256": {
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/recursing-jackson-15f62e/data/t20/zerihan_zhang_cl_genua2009_fig6.json": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b",
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/recursing-jackson-15f62e/docs/t20c_registration_2026_10_20.md": "3e41e05fa11c3798a8c7381618ef9c0b2ba65c8c1be1fea25a713bc94ed34582",
+  "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/recursing-jackson-15f62e/scripts/analyze_t20b.py": "0ae4cd46919228e18ba8104a7bc120ac3382610f47c19522faf5f53b93433e88",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_da0/case_result.json": "fd625725fa7279ff7e24be84e689bbc45334da74e65209041c996963f889141b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da+0.25/case_result.json": "6b26ad3ad930176219b505c9e2eb54c7e7e1d821cae39b0d05fc1e7feb71cfd9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da+0.5/case_result.json": "e9233a904a098a17d85c1769b73dd22ac2776be088fc61b160bcec805b407cb6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da+1/case_result.json": "334f22bb72624daac9fbd9c647f9fe53d8fd9d3589f7b0f593a1d6bbd1d0918e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da-0.25/case_result.json": "0b5fc2a9e3657273a493bbd23411fb0de017b2cb13b22241670f2c397082f369",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da-0.5/case_result.json": "1855e73150533982d9941a075d0fdaafe09c989dbdd6272b3b44056b360229a1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morph-da-1/case_result.json": "4826fc674ca0982ddc07fa31033090b7ce930350ceeb2a7eceac2e36b70017c6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphB2-da+0.25/case_result.json": "65c4ef57d68149b5f0798d75df6112bb2e4936c674b5e1d313a63d7a0f911eb2",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphB2-da+1/case_result.json": "93e377d3c6bdc6eb7814f9114e6c26d67d0d10cd3ff26ef8949c7fd19c17bdef",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphB2-da-0.25/case_result.json": "d585d3b27030898c97e626bc900c43b76be71ebfeb9f6d6b69aebd7e023b3be4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphB2-da-1/case_result.json": "5a9398f5f0ade5555fb7b20163b4f548165bc13370b958faef00402e27b92272",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphLin-da+1/case_result.json": "e30b155f14cf1b65c307d4056b16fc4783ea632e3388bc5661d88d92faaccf65",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_fine30_morphLin-da-1/case_result.json": "8290c265ae3c3fc0bd9901b8c66a308a44571c06b9d74b19fc7df879a71bab2b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_da0/case_result.json": "4e7d9ed9f4c9cfe7190fe7eb59c7d2e581b50a22ab9c7e77f04caa1bedc034f6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da+0.25/case_result.json": "c50d2335e7a938af9652ba4b6dba3a7687272dfd8eccd06e4d63ac53496775d5",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da+0.5/case_result.json": "79d920a6768f2955eb7c3a8e4a104a31a4d8c85fc7e0fad7a2c6ab1cea67a6dd",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da+1/case_result.json": "9794c66c5e401abdd0a6b3bd4b952acd754a3cb481ca6f156c92661e9559b0f9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da-0.25/case_result.json": "19c23fd02c983ec16ea50e6f18f74bb405ed4dd72ba0ce40f9477464f6ba0cfb",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da-0.5/case_result.json": "23f8e05b2ff08d6031465ee9ace86a2923deca481a346593cda11b234979450e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morph-da-1/case_result.json": "ede2c8e9c469ddd1d00ec1919c44314f785e806bfe450a566b14ff15f0f82f2a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morphB2-da+0.25/case_result.json": "977dc617c53cf6874fb9e06d7cd9d1dc07bcf38ae4a0f1a9658c9731cc1cb7d5",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morphB2-da+1/case_result.json": "0ae0c809bb9ff138a52de02a9199e0297a32cfa9b05284c1bdddc9e65755dc00",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morphB2-da-0.25/case_result.json": "c3e0866bfd74d259aebf9df695c9e94536834bead2943e4586d3ab8fc3e975df",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_med30_morphB2-da-1/case_result.json": "a08944911fe3efecd268bbaa938ba7e67c2b0cdd923e7d8ce8a1323de14552f4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_da0/case_result.json": "4ed69ce727468d51ab2e8eea2b92272f1997d3d4bc2e3f192d656a5ec8d03106",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da+0.25/case_result.json": "ec1ba1fe0b5e26deab11e9d7d9d189e8617c08fd585dd6e199c82334341a701d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da+0.5/case_result.json": "32d7bb67c6d58d82e5dabe199a48e36d0be9fbe88fd76d61eccca004097b2487",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da+1/case_result.json": "9d70ce607bbdd224cc5016b5c09a03c12dfc832cd71dd07c90be957b2666900a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da-0.25/case_result.json": "6b96bebb1a63c13876b6aa951b959fbb15ac1dfdaf36a3dbc6918eda28a90b19",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da-0.5/case_result.json": "b89ea7fbaa0b91bbe4947ebc00965735b9b933e7fc3810e620c153dc2a6cc63a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.09_xfine30_morph-da-1/case_result.json": "ff7724aa0b9d37a5e9f6ab0f32c13e80eaef15c786d430a566a0385f8202e467",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_da0/case_result.json": "3184a7c6e64a3586dcf3e539786ffec3b341aa767c205fe3634fef11664c64b8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da+0.25/case_result.json": "152fe31d16ca628c7991fde3c81b874d9c88870b2d597e4f19512b36b0a157b8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da+0.5/case_result.json": "c267e1c67a5fa905d442439faf243e957ae85318edb85867a1c95bf85f3e8205",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da+1/case_result.json": "4d2e0b90045b4c25435a92b1c30c97d4aeb5fc2842462d4ce6562f776cc0cfef",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da-0.25/case_result.json": "3bdd4ac43ae577764efeb658c3ae99564badbb7b2fdbf93166c2aadd674a1f35",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da-0.5/case_result.json": "96233f902f6843919a7d30d5aa9115501b63e0b70b8db0e1af2afb29ed615dc7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morph-da-1/case_result.json": "ec8c7493c931e63605440df2d1de7bc679d75582671356ee60bd4fd0251bce11",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphB2-da+0.25/case_result.json": "799cbf046d41e4104f7f080854e70ec1036ceff66ad5267f4e7d012b55a6b3e9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphB2-da+1/case_result.json": "eea299c74447da4ba5f736f4711e343a518d1535b8dd0d6e057faca6207cca31",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphB2-da-0.25/case_result.json": "8058d1cca3a05ddd1f127441a7a9511dc3eaff8df6814bf13fe666a94752f6d4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphB2-da-1/case_result.json": "31d25f175b9d9498e5b455f867a69b5474a009b9c33163aa74840061a8cc4701",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphLin-da+1/case_result.json": "3492c0354453072e5869ab4cc710e8d1d35d9cff5fdbb2c7f3255edaff3e6583",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_fine30_morphLin-da-1/case_result.json": "8d8c36859d78e23e0d36252bb44b30eee26cd0b63268d9d18bb5008c5249f014",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_da0/case_result.json": "324590a8a395f1a68928fa2d11b690b10359a74f12ee0d6179efffd34dd5f3a2",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da+0.25/case_result.json": "0c548c9f0e04a1fed857de9805cec7e7602a060d5a59802dece72f1dda6985b4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da+0.5/case_result.json": "44bdeb648c08f440f224d88ee987d576b3ab026fea5aa99c35f0e3f523555beb",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da+1/case_result.json": "1ac0b8355e9128e1cf07be19fe4d96a289af9f45a2d8827deaf726dcd36d9d72",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da-0.25/case_result.json": "59af3004cf269cda2cc03a5b1efef80416935858a4c87e68deced0ff5eade7be",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da-0.5/case_result.json": "9a95eb085e2b7363eb7ff526c11e14298a25713167e87c09d46e6e644021ef78",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morph-da-1/case_result.json": "d46d068c228ac7940561c5dc48d85089686939e9ce4cfa46a9b4537814504ac8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morphB2-da+0.25/case_result.json": "0d8bd03d3bf86d55a11d7b4e9ee25bb373237b66baa37957cf01929a417f83cd",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morphB2-da+1/case_result.json": "be7e95637c0d287ec180a9ac35e3277fe4ff288aa2d49c7054370596a4671071",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morphB2-da-0.25/case_result.json": "7ffafbe591e10f83ff51fa81a78e685bf40b950f40308de2e38608c49b55be4c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_med30_morphB2-da-1/case_result.json": "e05c7659fe36b3b28b77a36bfcdcbbc576ddd9a8340d3ccfc13fd3aaf87c1129",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_da0/case_result.json": "1892c43f537f21cd00baf4c47e4e63f04c6e75d54c0e624635c382f69e7583a4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da+0.25/case_result.json": "2351769051bd9779b45101ff951d52b2a93d519d3b5165b35f504328d4775168",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da+0.5/case_result.json": "93113ce8f68c7a2dbe670d5a8fc1bd4ef54be0dcfd040e75ff10f070e2cbf254",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da+1/case_result.json": "4393c9583a296587b3fe886206265cd48bb990b0f9605bdd5ba2dae67ffceb9c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da-0.25/case_result.json": "26d0612c02aa21c4cfc9f4637f8a5c6e397ba31b895787f362fda9bb9a10bad7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da-0.5/case_result.json": "68ec50ab75da366e81335830e3ce1ce1730eff5e17fe158e6e29cd79f1067fdc",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.134_xfine30_morph-da-1/case_result.json": "8d02366306189b3d5c58596dd9dd9f19219bc36ca835f47eb45b4864fc117545",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_coa30_da0_smoke/case_result.json": "23329814085e9c16c049ae62ed8f6ceed9134bbd0092d66dd309ad4bbf3e67f8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_da0/case_result.json": "d894688418467af41222413a947a202f3af5b54f3d41bcd589c941bdcf21b45e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da+0.25/case_result.json": "01b79a128851352d41750191d493165fd39cd44253b0ac4728d9d1485a56b8a9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da+0.5/case_result.json": "956b931571bbb31cb54e4d3a03da69d8a63f9f8b57cef314e7533cd0594f0900",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da+1/case_result.json": "392f6ff538fc7757764becb5df1b0b36146e4771c45ec8de6732d59a2465cbd7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da-0.25/case_result.json": "a7aa5b0ab6700225f18e8d2cfad4366a607fd493e3364d8936fdc59fa674236d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da-0.5/case_result.json": "5950d743c0801e96c91460e6f1a73e57fa0ab0612f269895d89201dda6af1a41",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morph-da-1/case_result.json": "69bce9ded11fdcb46484f6930a7f6a045e3f16b65fde873f05e16419794239aa",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphB2-da+0.25/case_result.json": "3c89f3b5651f4bef56aec9113cbd6384b591b78948b3c06279e0dcfce450e4fb",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphB2-da+1/case_result.json": "8f6dd706ea0d3e644e8dc98b457aaa1b0518675df98ecc78cf0cb1f47502f73f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphB2-da-0.25/case_result.json": "af3013bf46e44fc9aeb3c78374346d0ab6e14e94ba0c970c171353f3b85b5177",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphB2-da-1/case_result.json": "890e34e51eb772743866434c8608a8cb31760ca8c2183b141195984986e7a645",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphLin-da+1/case_result.json": "fdaeb6f5bbba3912d943b0b29768355506952cf557eedf506ae9a674518ce13a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_fine30_morphLin-da-1/case_result.json": "46e5dbb8478a766f35f62b033d0b61cc8086ede7990a8fd7d0f436f1ee6c16b6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_da0/case_result.json": "08809089d012761ab0eaecba66ccdb681ea46cd1899f368392f256d98b842e16",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da+0.25/case_result.json": "056eb4b1c8e1746ea019c78c24a59b37b0dcaa7fe474119ebca3b2569ce26251",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da+0.5/case_result.json": "2ce461144786bb7a9bc760a84828d0bc0b15ef467c06604b6ebdf34deae355bf",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da+1/case_result.json": "c8ebd0f2d4b21ac5f745806adb8e4d8fb54bc31f6c9151e15a4bb8b88476623d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da-0.25/case_result.json": "06b0cb0283e91ce1c3d27244591d5352ffda87889e11110e4a8d73e410445f7f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da-0.5/case_result.json": "fa4d2889d6c21eb538243e748ef2b7fbc49ed2b627e7931650c3fe7b153e3649",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morph-da-1/case_result.json": "d6c3a136a0234db3a7c0d2af1f1051bb81b9b9161fde66ffd959d078f6bd8162",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morphB2-da+0.25/case_result.json": "78cf110349a680d678b2fa47c74315d517e7cf84e4f14b4c7b9f2b689932d07d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morphB2-da+1/case_result.json": "01d43945d06e9b3db27295c035b441467ec9597556874c99ae6a870fea86a3e1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morphB2-da-0.25/case_result.json": "3c71db3dbcf708313a96a8f028a29494ebe0f65603dd1d3b0938f0b846d186e7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_med30_morphB2-da-1/case_result.json": "6a5df6df07d98649bc83ab3c9a0fcc57bd23a6ff3203b0b5bd70aa9d0ac4b921",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_da0/case_result.json": "6b53ee01c444a7ac84eefd450306aef9d9a43e7aee67fc842d0a27be57130f9e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da+0.25/case_result.json": "7f4227edb25dddb09292a0421473e731c477c7a47b4722a10111baa5d05a839f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da+0.5/case_result.json": "0b10227ca40577f756bc2a094eb12a8afd4c3976edb93d548a9b438b3744c097",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da+1/case_result.json": "ef218b19a6544dcd2182cde61a5c6a4a02d5e2d16423261de4c932fdcc6a7931",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da-0.25/case_result.json": "9616298c43efaec247fd2f2859f4df290ced3c049aa6e22de8a4068fd2fdd421",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da-0.5/case_result.json": "95af99946a9f28a1e4e71dbba06b5d6616278d13170a7336bcbd90a6322d5ab8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c/cases/sa-wf_h0.224_xfine30_morph-da-1/case_result.json": "46940d596d50f5780e625d5a20f8d81aa9206d8a7c84d24eb880ca81754af690",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_coa30_da0/case_result.json": "003ee87ae5124d14e99f6e2151f6f0aeda7df796c52cf7371d97c6f63bc0c801",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da+0.25/case_result.json": "35daf756d88dd07c94a37e0ca8a61e7012be7afcb3a860a0b09047adeb9f5ece",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da+0.5/case_result.json": "719c56635c185b1ee660b210e674cad368430a43769b50613d3cd2c3e0833343",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da+1/case_result.json": "0b5d167649093c3f2be9f19e1f7dfb9d5658ea5f5d6208d0faf5b22f8d001af1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da-0.25/case_result.json": "f5ea156092ea52e8aaf5f584bcfa0437f263886fa32cd3a37f0138feefa1f271",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da-0.5/case_result.json": "b5befa727aabe7c7f87794a11cbb7c2fb0186d4c483fd4b82ae6f17794b60073",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da-1/case_result.json": "bc6fd75c5365afc332dc04c821c036e41641c8ab54d9cc2afd192ad521169183",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_fine30_da0/case_result.json": "e41bcd59c532564225c8761c13818009f8efebf8b8a1dcb8b537ad7b24376bda",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da+0.25/case_result.json": "ca0536949efd2095ec0a125653b27cb355c3183d76e2e7c66a01abfc155d1124",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da+0.5/case_result.json": "00e2268333950e73c16268e60d71f7e03840a0c50dbb76f74ae7d8724d00e67f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da+1/case_result.json": "3f9adb40b4260d2d1b459c6c416d282a86d28a8196c8bdc7729db6b021af7e48",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da-0.25/case_result.json": "e89d6a1f9c3672ce3df37e771caf06c747382945b3c1b3b33b1c3c09811432de",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da-0.5/case_result.json": "9f60662a736341e8f69d520b9c8a6786207ad831626896f333e209c0dc5bb592",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da-1/case_result.json": "a4069fe48817beb4b5c0b30fb0f41c60419aaac197e9347d3610f6b9b91b0f92",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_med30_da0/case_result.json": "cdf32841cfbd608f71d843e1c4faa009e8753024868e505f161382f98dbb4ac1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da+0.25/case_result.json": "bc36519dd60bb5113728eae64cbae16480af9867c626337f41ff7289d63d37a8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da+0.5/case_result.json": "43a7cbb4b199431784ce9f9fe701732da9580b4444ef5e964be3e84d179b3fd8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da+1/case_result.json": "db56b6a13e510016cdb32223d11de94251c8175da372f0e14b4ad4c40b554f7c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da-0.25/case_result.json": "ad25d3dd570626f3598618191833158083da60830f27c7308d4184edba30484b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da-0.5/case_result.json": "12a48a9615ecd2deab5cc1b2c5a32e49c8e8e9eb825acfb71c4e2a27623b5a58",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da-1/case_result.json": "8813f1a3203865250ea688ce4bebce0e5337d2303c5a842f701e09e558b6b5ee",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.09_xfine30_da0/case_result.json": "7fa8b56ab22bbfe55c5fa8625b995eeeaa322e4a3e1b3289ce75a9d32b67ff21",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_coa30_da0/case_result.json": "1e1e4526b8b71cc9129b6db90ad4d26b3c2f28855684ffa07e8e8e0261a92919",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da+0.25/case_result.json": "5848c2d7def62b6974edfc89978e010866f1d585b5bc319a2f4af07331eee8ab",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da+0.5/case_result.json": "7cf30867e2c90eb6aed723f5b0ed6b86b83baa5cf4338c62e241743b40d8d9cf",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da+1/case_result.json": "1f3ad8af44ca329f50b71c067d205e6ac78089c1684eea4973d24dab08a16a79",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da-0.25/case_result.json": "d202826d09683fafdbc8a774be969f76131c55748b9ed12ea162dc980ca79733",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da-0.5/case_result.json": "537031e9393f42a6236bef3c702bca3b26bf2e3b28318e40f2a732c0df813d59",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da-1/case_result.json": "2abcb0818f1123474d53db82c4f3aa8a18942bbacb8ef4be426ef727280aec4a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_fine30_da0/case_result.json": "2154f4330bca07f77d803b8e2cd15c8accccf872dd55ce9fb306ff6b3083ee60",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da+0.25/case_result.json": "170ef687232aed1663f4d04823688074cc7ae78c7bdc77af61729849e31aaee9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da+0.5/case_result.json": "c34ff1e3faf094172601d378ee13f603988beb31fada2dd527c002c898075824",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da+1/case_result.json": "e659f203b10a80fadba9aef3718210916191ebd5b93c51c11c6580bf50c8943c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da-0.25/case_result.json": "845580c44d615d17b43ce619a20518bda5966334a7aea9e5c6892f39fa024592",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da-0.5/case_result.json": "7bcd5277e144c69dc1b7fa6c2973ddf58eec4027b8d532d0823db6a4c6a8fd36",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da-1/case_result.json": "47a8cf82ae3070b2ae6ff961535ebbd16b676bc731ed317d672cb6a816fbc4d1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_med30_da0/case_result.json": "e59cc76bb698651ac1ceb002e4e9cac632cb02ad8334731dbd06f44f7f732a87",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da+0.25/case_result.json": "3eaedef2add6fd2c6492c308797dd430404bae077d7f1505400d0c038216bf45",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da+0.5/case_result.json": "20b82456c18a88afaf3e2ee58645dbd10b62dc1bb45a0de4a606dbcdd7c7c4d4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da+1/case_result.json": "1cdd1310acf3689ccb8b164b4ffdae6f88e06cac37177250a4eb0130bc2dd97e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da-0.25/case_result.json": "4451866395db192a4954ac19a4a7c673c17b300439ac95933ad1afceb3f76af1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da-0.5/case_result.json": "14e91f2decc60177e946ca44515e39fddd3e592b29e8dc0f688d4fc619b7e893",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da-1/case_result.json": "ce0ff066ebaa658dcb3de709fb81614a2d6f4a56024a021722eedeb3de6730c1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.134_xfine30_da0/case_result.json": "b8639ee2e2bde12e83e1a39b38d75a97d7f96012fe5b69ce706a8e2b8db5d440",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.179_coa30_da0/case_result.json": "e82070421c4f54d822f85da6286c3812d112a5422d8a4c2a322b53b6792505fa",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.179_fine30_da0/case_result.json": "8d7469ad3fbdbb3bbc007dc1f3dd6ea748d197ee189622c9c7e51bf86516cb00",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.179_med30_da0/case_result.json": "2c6d5113d16c5d3949e8adfef725477d13a3405b86004a0e6b8d15e627bdaf62",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.179_xfine30_da0/case_result.json": "9c6250fb11592eb1ae41d4c7bb379c449541c996350b38f493a87b6790c58463",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_coa30_da0/case_result.json": "d349322d25e1768128742cc631acd656fcb70b34d18f44f9e8c7fba3d9eda09a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_coa30_da0_smoke/case_result.json": "97dcb758bbb9c537008020fa170f23e9d623b3ce4e0e95925e46a4d616e5b685",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da+0.25/case_result.json": "16adab8d67fd915de7bfef9d78105a97e0ad3f3388ca8312ddc35b23d2a91e91",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da+0.5/case_result.json": "bafac604f9c737ca4151a479556076e8dc2e305d8b410c7dd9f064af3cbf5bcb",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da+1/case_result.json": "b0f1626ecbbd7e0ccfa7483cf268bdd7476c10347ddb393983ecf8fddb286b0d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da-0.25/case_result.json": "a4c40f347867c45adf89f30b19c634b8726d2c4951303dbf3ede4c4d80c92487",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da-0.5/case_result.json": "fdd6618fda32205072e0aebbec6e9ae533969ff266c6cdc79586a84934e25d6f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da-1/case_result.json": "15784e16f982e9004f205607d1baa369e0a2f3fae9af9f268bbb6dbd10269409",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_fine30_da0/case_result.json": "28e0e6915534c206e14fcfdab1913d12d4b6bc96c5a07f7fb95949327e4727d7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da+0.25/case_result.json": "024e0b7197a0467a71d196a6014a35a1c1bef45066b120458672983dcb3244f9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da+0.5/case_result.json": "f359cac6d8635147d996cdc4a74f6c2d20a4ea7bc7c387391f8ef0e5dec1d407",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da+1/case_result.json": "737f48350354f31b736520e552bd5244a54e033ab760c7a6cc346ff5891db94f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da-0.25/case_result.json": "0a290a44a18ddb5f6bb5e960c1c47bce48c77ba1b32973e997878a73512af487",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da-0.5/case_result.json": "9fe60dd1df73416b515e34a363d237acf6774c1d852ff72929808cb58f98dcd8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da-1/case_result.json": "bca743b51a00ee5a125f33bec209e5feb4de8070f605280164581a99fc8f99f0",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_med30_da0/case_result.json": "d8dc07ae169cdde446fcf848982a1d34866c0d109b762f54173b697811bffb2d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da+0.25/case_result.json": "26cb9bdf730d3d44951c311fd5b590ad0f06e97fce3100620b45ec8154f5e659",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da+0.5/case_result.json": "88002a8cea1546b357d0eb6dc2b2589316364efd5d0d729954a2f2a4925c1346",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da+1/case_result.json": "c48c2bced4ec928429a925cf7490790fc3b75003bf7d7d9138293756050a7145",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da-0.25/case_result.json": "b4ca52368a521ce1bd7cf12f1effc9b87ca08cc9b8eb205a5173d9f085b29523",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da-0.5/case_result.json": "a07afd1374c75f5ac6952d974b0de8e4c8dad7e3851372cbb6f4c7862b884ec0",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da-1/case_result.json": "0e38bc0d811106697bed001f1ddffa05410a60a9c421d0344c2e89d964f59d68",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.224_xfine30_da0/case_result.json": "6dbb783d8011c1081b320052e941099488ab8639037bc4c1ff087f60913a19ba",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.313_coa30_da0/case_result.json": "9fa35aec21c425dbc5695357e327ba7d7503d6f482bf13c35bb8f282bba6613a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.313_fine30_da0/case_result.json": "7f95589ce6ba7b49cd822ff10d2e3c2c1c214003d4a975eab4447479cf33dcd7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.313_med30_da0/case_result.json": "5a777172517c8115dd75d3c472bdfbd9c4d5a9714355c7122e252ade09676ef8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.313_xfine30_da0/case_result.json": "f4dc2b5adc82c6e00dffe3c53390654464d6e64ccff14f0e6bf5df5038ca1243",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.448_coa30_da0/case_result.json": "51f91a41f0a3844ed6ba9afe902f2207abbeffbc7ad628980ad5eb4997f1e368",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.448_fine30_da0/case_result.json": "d00fe16cfa4d748170a028d48df36703823713872ea578a34f63358410060825",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.448_med30_da0/case_result.json": "ea9f1fd3b34810f51990d60c25f5a601110c7135e8016f2aef963633284b4df6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.448_xfine30_da0/case_result.json": "b69d28bd4a0e3c6b68159b7bfd3e83376140e17ad8b9a103324a89908ce3a9ef",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.671_coa30_da0/case_result.json": "5b211ab65b49964549f892af61da7f3826785a2a874b082013e68ec2a14a96d4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.671_fine30_da0/case_result.json": "23be9c928267a769a768895838b6010be127e8151a13a1abf7380228ce3e16ac",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.671_med30_da0/case_result.json": "4899145a158302f2834abdb49140050f8450b71ecfc6949f0498e5a9b3d03296",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c/cases/sa-wf_h0.671_xfine30_da0/case_result.json": "ece3f16b12c33721f0b70b71d3577159c867c093735710fa4ddfbb713770eae9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_camber+0.5mm/case_result.json": "3ac623e30d6697755caf8c8fc5763e36d5f3b8810bfe1cd912aed8405cab565a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_camber-0.5mm/case_result.json": "04712252ced8a45ed3a967e2baab966b881b2a74249451f274e1015e8f7b8042",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_da0/case_result.json": "e7fe41603cfd0951fff812ca7bd4c9475a84f6f7e0f891cb569b4817fa56d7c7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_flap+0.5mm/case_result.json": "355aaecb2dbb5c7bbd972e8ce073f099ca40f15d3baea5b1fe0436039a1900bd",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_flap-0.5mm/case_result.json": "cab18f6b91390f1fd9817a649b5049072faf134e8f3bffd2b661ee877de364d0",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_heave+0.5mm/case_result.json": "16c88d7fae69540fef910ea044e8a719de6057bcc5adc50e514f4d054b706ed5",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_heave-0.5mm/case_result.json": "08b67db4a8d3c72e01014d58c589b85b2ec8852821da17628590390fe58f5829",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-camber+0.25mm/case_result.json": "1f1118326c1c6c9ce0d1801f72139b755198eeabb02c1505dd56a8d2d3212d6f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-camber+0.5mm/case_result.json": "8db0d5feaf5168868b45598b007b25bce75f0fcde93db1206d5e74a41db83cf8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-camber-0.25mm/case_result.json": "9a1a0ea3f305fa6f33d70ab26e9a77b40bcf84048e40889c1bd6a0e91b2b061b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-camber-0.5mm/case_result.json": "c920e3a0c7761288f81be7e101ce48217255dc30bbec3d85740bec8356589c74",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-flap+0.25mm/case_result.json": "d41bd49e682343dd6913f1fd4126d43a71575aa7ead3c77874a3029fe4400b5d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-flap+0.5mm/case_result.json": "aad8a1c6130287da9cc40f0df42c67e7726e0d16c7684710ade6bbd2603fc3c1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-flap-0.25mm/case_result.json": "eac5d6ae706ea3881cd7b51811e9ed9231950b88796ba98cf70dccf79422302e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-flap-0.5mm/case_result.json": "0a6bf7408e62f5ceb278df382f8d96eebb393a64322d016708b82ef6a9a80377",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-heave+0.25mm/case_result.json": "18c8a4f18eec5857c96e9e8762e7834ddeb1851274dbdfaa10c9fe147e9a8e39",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-heave+0.5mm/case_result.json": "d90efdab1b945e143ecb74bb0452a80f424ebf2826d01044c1644c762ef4c288",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-heave-0.25mm/case_result.json": "6210471087ce80a9ce35dd6ec26ce8ac076d01322e688cac3ee60489ee1898b6",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_fine30_morph-heave-0.5mm/case_result.json": "cae9b977292de68af49bc624c8a15fc95b6a27a99a34f725e8ff6f15eced90c9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_da0/case_result.json": "aa6fbdb57d93b91199b50ca34a6701db12068ff5ac75c3e51dc21e9e13df2711",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-camber+0.25mm/case_result.json": "b184f4f39b56a1de1376bb142e322ac191bca014eab1fbe3324231e9eca6b199",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-camber+0.5mm/case_result.json": "d02f283ef45580ed2bbe32af7822f26f6a90bb1add66f4016420cdd72870ca1c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-camber-0.25mm/case_result.json": "343dcbdc228919dcab05fdf3580e882073cbf218d52ae718cbb434322ff17ee5",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-camber-0.5mm/case_result.json": "3f515813f5824279fb242e71ceec4f79f69acc5a69209f75c5d2c63af7e4833d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-flap+0.25mm/case_result.json": "a91a601138aa94d8efcd6d6ec82857551ee78f2e88dd9cba765093eafbd4795b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-flap+0.5mm/case_result.json": "7e7109e4a5ed42096c87ddbed27f717c569a7cd9691939d7b41a39b18cf32795",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-flap-0.25mm/case_result.json": "7d7a81c2bccea1261ac1edf6d748ab98bccfc48abc8654ba13d3720c55918cdc",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-flap-0.5mm/case_result.json": "e1f01b91e842518f49b6d48a2a1d351cc08441acf5da9a645dbeadfafc532fb3",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-heave+0.25mm/case_result.json": "5c4472aa1122b14e067d6f1a835fe034b16cf54d38bf67ac176c097af6fbface",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-heave+0.5mm/case_result.json": "1e8eb830efaaa13155a6828f72618a3231596362171f878c9f1c760490de8672",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-heave-0.25mm/case_result.json": "0bd0e807c8a377544ecba87386777fa65c9fac8f63a64fc03db0dea29f5186c8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.09_med30_morph-heave-0.5mm/case_result.json": "631db4ad65db1f4c3de5dc80ac2423eb510b419ec2445c0dcf3d9516805b9304",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_camber+0.5mm/case_result.json": "1a6da3acc232e5808086d0a67fdda08805ed5d7e610dd8b8a0c7a45630e28907",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_camber-0.5mm/case_result.json": "52b0d832cc2bb31952dfcd9cdf82e55f63feda063dd3eb95f0fbb1821e38c0a9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_da0/case_result.json": "a395c5aa7e8e548c45c850d0992531a00e4e4b39af3dac530b5d83884b5216ba",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_flap+0.5mm/case_result.json": "a8c89a784a3ebf2ad53863b0253fb30fc296a270f54de12919a1cb9a4f8c11e7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_flap-0.5mm/case_result.json": "c6263892249e4c2be399c6b51788897381ede3a2ef2bc13429a48e59a30c8dfa",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_heave+0.5mm/case_result.json": "3e4b6a6981e30c33bf38517393eecd8717707bb532af1277a5224b215e225940",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_heave-0.5mm/case_result.json": "7d6e3478eead6bb30377dcafbfb7ae86b432530d88845767700c3d11f0adb0fe",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-camber+0.25mm/case_result.json": "bd860c2ef18f6fda0d4541ba0944e08e581f5ffbcb10959ced2b9ad08ca1674c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-camber+0.5mm/case_result.json": "612c43be11f76fc9fc9dc7c891b08b550c2dcbef5749eb9bef74dc07d96deba8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-camber-0.25mm/case_result.json": "b1563140885a5e04c0ccbe2fa23899edc33d03f73cc5546a3bdf4cce108420d8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-camber-0.5mm/case_result.json": "b30ff2fb269d5099e142d6f6f7d5f1538722bc654b539b5d5d89c8569fb32c9e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-flap+0.25mm/case_result.json": "9cc66a7ba6a6e8b90951d12ac5520372424ba17a11ed097537c95775d7cbe0ec",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-flap+0.5mm/case_result.json": "60c33ab90688eaff5a1a9bca3bda91870da39957acc42a3b453eb750873840a3",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-flap-0.25mm/case_result.json": "455b1c3c28f7e36656a72c5cd88ed3b197d54fc77715b5260e498450e7ac88d2",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-flap-0.5mm/case_result.json": "e433f9c342967b51a82ba77f208cb06bc5d9c85d8a2605ee15fecd46f7a26848",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-heave+0.25mm/case_result.json": "1145af32f95f295228fba524d4c0938f330765deeba1eb1742f5f4356c3fdd1d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-heave+0.5mm/case_result.json": "aebb58318a758afb213908ea4923ec936d2a5668b7a13b4f0490cb4b163950f3",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-heave-0.25mm/case_result.json": "fefe1d3413cd73b7746f1787393c61fec592243d9de73bcc5efefab2779e0f6a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_fine30_morph-heave-0.5mm/case_result.json": "4b988765a739a314994ca985f3623e82e69557edd10cff118e9ee775dd7a8e1a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_da0/case_result.json": "23755b3cda253ec87ff55a18df8e31086f4261a5f9a5e97d677555772d4a6a5f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-camber+0.25mm/case_result.json": "059a56dc93c96ec2da77bf140b527317dd827ba0994cd14c948f0a513689c339",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-camber+0.5mm/case_result.json": "00e89bdf8d28b4cda5cd8f75c4a0ecc3a263b747b7936fc9cbf11f8fa4823f6d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-camber-0.25mm/case_result.json": "affcdc77bf0ec6e44cfa275a397a870199b79c25ea7692994892285cf0add10c",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-camber-0.5mm/case_result.json": "522b7a7f5fff56de5817c00774b26117c2493288caf0d1c82f7b6100c64753f1",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-flap+0.25mm/case_result.json": "908d94dd75cb635b3d3b4e92cfb10090d22cecc61f97e5de4333ef73c598da74",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-flap+0.5mm/case_result.json": "46f7698d111c4ff369e78e7ba636d5764dc0e14b79feba6d2d11234360d8f641",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-flap-0.25mm/case_result.json": "21520083555cebbb16df41c4f5bfc4a30f73c8daa9962a23cc6f57e940700513",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-flap-0.5mm/case_result.json": "5ebb4bda28cb2459ea2586a40b935ca87011be6b80e456e6e4d612aca67c4ed3",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-heave+0.25mm/case_result.json": "cdb4ce0a22c70926bde93fccdccb883c9d4d354e23bc112f9d7e3b32f6a17ade",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-heave+0.5mm/case_result.json": "43a29b993824aaaf209c82aa4a8e5eaaecf88d83df00ac0580f81c80f20896ff",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-heave-0.25mm/case_result.json": "e9b4a19b28d1cc46badd6e1a5ed7e6556b4215d07f921ef209a495f56b9ca52d",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.134_med30_morph-heave-0.5mm/case_result.json": "53c2f442677a22c02ca809d8f3faf3bb6f994037a321a90a623e7091c0b233dc",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_coa30_da0_smoke/case_result.json": "f963e0baea1165f70ef79fb4e745bd571dcd4bca5f1d57e0f4f6d40090e341b4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_camber+0.5mm/case_result.json": "e0692ea5bac03594ee884b3941c226ffe53b2249f7e826718f3920d3ecd54fb8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_camber-0.5mm/case_result.json": "fef70f7d3853510d81facd364428b00d7609c730e03283ea67e3b605464cf064",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_da0/case_result.json": "51cebb053d2676f0b6427bb0cd84d6f595eecc64edf63e59cd40fa8dc5ccb13f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_flap+0.5mm/case_result.json": "6909d372735a2f9bf7efb7c1a8334a5253542fdb7902dc46ba556e896a4a3579",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_flap-0.5mm/case_result.json": "32f6949dca91d2ae4a40ebdec431d8ead47c7f1890f3532794c5950c44003cbd",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_heave+0.5mm/case_result.json": "b13968bb1e2e61d0d27433cdbe0e1ddf7ceb0170a5cf3d091f81be5555321e32",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_heave-0.5mm/case_result.json": "18532e2303cae02a52a02badd0859bafe79e0b19ac75b2b134d8ad6be54cd35a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-camber+0.25mm/case_result.json": "6b72b22c716b74f8e3e4853fe6fc125ba56c8536d10dd9bc96a31d1a639ff8aa",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-camber+0.5mm/case_result.json": "c880281be17b6162b5958f377ef277842503085a88bc0158c88daaf956ba9a7e",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-camber-0.25mm/case_result.json": "0fa014b444e800845f496c3fb084c3ba99becec1d0c4bcbed6908cd969e11e5a",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-camber-0.5mm/case_result.json": "8a86940bbf672a0d32c83e84f9edf23e808234bbef1c9f1714f0b2b4f39f9ed8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-flap+0.25mm/case_result.json": "92a63bd629b1c5f0873fee60021d1c4d87c68d0d7abd76efa8c0c1641f03e3cd",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-flap+0.5mm/case_result.json": "85001f9e65eb975ff2f6810526156aa4d04f63cb2393b2a726f0ec9c9c907720",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-flap-0.25mm/case_result.json": "73f8b12550e68c552fb84b292cfe084d0f082c8e36ead5058c14cad244504212",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-flap-0.5mm/case_result.json": "bb9628e574deb2ca2b3398015893949640372eb1a87bfe49ef04f0e583dcd489",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-heave+0.25mm/case_result.json": "f1f99b5e50c6f8ef20c52381943d264c42faf7cce4eff650a807e9f9043fff08",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-heave+0.5mm/case_result.json": "67492b83d65a50eef4c16d9a762103db7f2507177abf490779f2286432e57534",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-heave-0.25mm/case_result.json": "5c17e98a2998f5f0612ae926dbeb16f27fb0c6331374dab73a40f645415b6f9b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_fine30_morph-heave-0.5mm/case_result.json": "c5543270dc75eced74238e8a6ec538a4545b6b10c074753731f0ccebe195773b",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_da0/case_result.json": "d394eb793350fa31bce5bf2d8f0b81fce2e5566bc85b00c6ef1ee83ae4ef12a7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-camber+0.25mm/case_result.json": "e91c22ddcb63b0ba92d6915a5834f94fccadbe42f4ec119f8335d9713f7b6c24",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-camber+0.5mm/case_result.json": "00b731409e15792bed9147f4e42ed4ed165473352bd120b66f19f22c7df7503f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-camber-0.25mm/case_result.json": "0a0c1b7ea4ca3eb48db82221bb16a14cd7ea2d9407e73213818caa68c343b4c8",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-camber-0.5mm/case_result.json": "4d803e21ceae816e0518f71674618bbb93d94375877e6294d34fd07151b67df7",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-flap+0.25mm/case_result.json": "b00a9f18f5940f85a8c6bac4a835acd87a90979d53836e06f5ffba31741b816f",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-flap+0.5mm/case_result.json": "0aa5196e72aa7545d6ee7086b04648deca9174938d5b8fb3965c9d780b304d35",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-flap-0.25mm/case_result.json": "f6dfdcbe5066c4280d81bac26ac266912121a5fffb2e39900cfc98c41d8331c4",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-flap-0.5mm/case_result.json": "5a1ca8feaf86d0db53541fef8d74a412c0def3c11a60365caf74749bc78c7540",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-heave+0.25mm/case_result.json": "d0c52c7e53a013d59d53f6193d3af86c30aacf29964d1b55b57de0f6ccd278d9",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-heave+0.5mm/case_result.json": "14b24008a93a329a44b88e9b81e080dcccbe6897faf6733eead9753c5290bdc2",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-heave-0.25mm/case_result.json": "b1e604a1ad46857be86a88e0fe5a31680d76d70f893bd956bf609fcc7962f571",
+  "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c/cases/sa-wf_h0.224_med30_morph-heave-0.5mm/case_result.json": "e285572a5f0e1abdf40c2c079e2cf476315a32ac021cf95309dd7a6e9cd14426"
+ },
+ "labels": {
+  "BLEND": {
+   "0.09": "not computable: M:sa-wf_h0.09_fine30_morphLin-da+1 (UNSTEADY)",
+   "0.134": "not computable: KeyError: 'xfine30'",
+   "0.224": {
+    "abs_diff_in_G3bm_bands": 0.03206238965091787,
+    "d_linear": 0.12916577063,
+    "d_smoothstep": 0.13020947738
+   }
+  },
+  "G6M_009": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+  "MED30": {
+   "attached": false,
+   "full": false,
+   "gates": {
+    "G3bm@0.09": {
+     "detail": {
+      "bad_inputs": {
+       "M:sa-wf_h0.09_fine30_morph-da+1": "UNSTEADY",
+       "M:sa-wf_h0.09_xfine30_da0": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da+0.25": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da+0.5": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da+1": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da-0.25": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da-0.5": "SOLVER_FAIL",
+       "M:sa-wf_h0.09_xfine30_morph-da-1": "UNSTEADY"
+      },
+      "reason": "M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY), M:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+1 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-1 (UNSTEADY)"
+     },
+     "value": false
+    },
+    "G3bm@0.134": {
+     "detail": {
+      "bad_inputs": {
+       "M:sa-wf_h0.134_xfine30_da0": "UNSTEADY",
+       "M:sa-wf_h0.134_xfine30_morph-da+0.25": "UNSTEADY",
+       "M:sa-wf_h0.134_xfine30_morph-da+0.5": "UNSTEADY",
+       "M:sa-wf_h0.134_xfine30_morph-da+1": "UNSTEADY"
+      },
+      "reason": "M:sa-wf_h0.134_xfine30_da0 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.25 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.5 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+1 (UNSTEADY)"
+     },
+     "value": false
+    },
+    "G3bm@0.224": {
+     "detail": {
+      "fine30": {
+       "a": 0.12805688749999988,
+       "allowed": 0.032552369345,
+       "b": 0.13020947738,
+       "margin": -0.9338730198964535,
+       "noise_3rss": 0.001090482761470246,
+       "pass": true,
+       "unresolved": false
+      },
+      "sign_ok": true,
+      "xfine30": {
+       "a": 0.12805688749999988,
+       "allowed": 0.03201422187499997,
+       "b": 0.12024572606999995,
+       "margin": -0.7560096428237819,
+       "noise_3rss": 0.0012593870528744553,
+       "pass": true,
+       "unresolved": false
+      }
+     },
+     "value": true
+    },
+    "G6m@0.134": {
+     "detail": {
+      "consistency": {
+       "a": 0.047421349999998696,
+       "allowed": 0.013217539375000031,
+       "b": 0.052870157500000126,
+       "margin": -0.5877593139380063,
+       "noise_3rss": 0.0034597581222349716,
+       "pass": true,
+       "unresolved": false
+      },
+      "dCl_pm0.25": 0.023710674999999348,
+      "resolved": true,
+      "sigma_eff": 0.00039556241526573393
+     },
+     "value": true
+    },
+    "G6m@0.224": {
+     "detail": {
+      "consistency": {
+       "a": 0.1286615000000011,
+       "allowed": 0.032165375000000274,
+       "b": 0.12805688749999988,
+       "margin": -0.9812030016749003,
+       "noise_3rss": 0.0024281832975712103,
+       "pass": true,
+       "unresolved": false
+      },
+      "dCl_pm0.25": 0.06433075000000055,
+      "resolved": true,
+      "sigma_eff": 0.00027762000000008946
+     },
+     "value": true
+    },
+    "G7m_med30@0.09": {
+     "detail": {
+      "a": 0.049700127945000006,
+      "allowed": 0.013871175393750046,
+      "b": 0.055484701575000184,
+      "dM_minus_dR_in_remesh_sigma_d": -2.32308110002332,
+      "margin": -0.5829788416772135,
+      "noise_3rss": 0.008140156231627392,
+      "pass": true,
+      "undetectable_bias": 0.013871175393750046,
+      "unresolved": false
+     },
+     "value": true
+    },
+    "G7m_med30@0.134": {
+     "detail": {
+      "a": 0.052870157500000126,
+      "allowed": 0.017094861941249928,
+      "b": 0.06837944776499971,
+      "dM_minus_dR_in_remesh_sigma_d": -4.041890163824859,
+      "margin": -0.09275135895800096,
+      "noise_3rss": 0.01154195669360438,
+      "pass": true,
+      "undetectable_bias": 0.017094861941249928,
+      "unresolved": false
+     },
+     "value": true
+    },
+    "G7m_med30@0.224": {
+     "detail": {
+      "a": 0.12805688749999988,
+      "allowed": 0.03247610019874997,
+      "b": 0.12990440079499987,
+      "dM_minus_dR_in_remesh_sigma_d": -1.002690914807682,
+      "margin": -0.9431116025725557,
+      "noise_3rss": 0.005558948889486772,
+      "pass": true,
+      "undetectable_bias": 0.03247610019874997,
+      "unresolved": false
+     },
+     "value": true
+    },
+    "G8m@0.09": {
+     "detail": {
+      "0.25": {
+       "a": 0.04912774570000078,
+       "allowed": 0.018294726234498508,
+       "b": 0.043696340559999935,
+       "margin": -0.703116347827124,
+       "noise_3rss": 0.018294726234498508,
+       "pass": false,
+       "unresolved": true
+      },
+      "1.0": {
+       "a": 0.049700127945000006,
+       "allowed": 0.012425031986250001,
+       "b": 0.04903729365999998,
+       "margin": -0.9466533135903762,
+       "noise_3rss": 0.004573681558624627,
+       "pass": true,
+       "unresolved": false
+      }
+     },
+     "value": false
+    },
+    "G8m@0.134": {
+     "detail": {
+      "0.25": {
+       "a": 0.047421349999998696,
+       "allowed": 0.016603235075000056,
+       "b": 0.06641294030000022,
+       "margin": 0.14384878695102513,
+       "noise_3rss": 0.004746748983188807,
+       "pass": false,
+       "unresolved": false
+      },
+      "1.0": {
+       "a": 0.052870157500000126,
+       "allowed": 0.016580268018750066,
+       "b": 0.06632107207500026,
+       "margin": -0.1887396174905645,
+       "noise_3rss": 0.0011866872457972017,
+       "pass": true,
+       "unresolved": false
+      }
+     },
+     "value": false
+    },
+    "G8m@0.224": {
+     "detail": {
+      "0.25": {
+       "a": 0.1286615000000011,
+       "allowed": 0.032388269999999886,
+       "b": 0.12955307999999954,
+       "margin": -0.9724721326579514,
+       "noise_3rss": 0.0033314400000010727,
+       "pass": true,
+       "unresolved": false
+      },
+      "1.0": {
+       "a": 0.12805688749999988,
+       "allowed": 0.03201422187499997,
+       "b": 0.12739771423500001,
+       "margin": -0.9794099863625104,
+       "noise_3rss": 0.0008328600000002682,
+       "pass": true,
+       "unresolved": false
+      }
+     },
+     "value": true
+    }
+   }
+  },
+  "SURVIVES_2SIGMA": {
+   "G3bm@0.09": false,
+   "G3bm@0.134": false,
+   "G3bm@0.224": true,
+   "G6m@0.134": false,
+   "G6m@0.224": true,
+   "G7m_fine30@0.09": false,
+   "G7m_fine30@0.134": true,
+   "G7m_fine30@0.224": true,
+   "G7m_xfine30@0.09": false,
+   "G7m_xfine30@0.134": false,
+   "G7m_xfine30@0.224": true,
+   "G8m@0.09": false,
+   "G8m@0.134": false,
+   "G8m@0.224": true
+  },
+  "UNSTEADY_cases": {
+   "M:sa-wf_h0.09_fine30_morph-da+1": {
+    "tail_max": 1.42733544,
+    "tail_min": 1.3540533,
+    "tail_rel_std": 0.01910006260005358
+   },
+   "M:sa-wf_h0.09_fine30_morphB2-da+1": {
+    "tail_max": 1.40893536,
+    "tail_min": 1.35144346,
+    "tail_rel_std": 0.014995119702675976
+   },
+   "M:sa-wf_h0.09_fine30_morphLin-da+1": {
+    "tail_max": 1.42588107,
+    "tail_min": 1.354568,
+    "tail_rel_std": 0.018906627936429946
+   },
+   "M:sa-wf_h0.09_xfine30_morph-da-1": {
+    "tail_max": 1.26033596,
+    "tail_min": 1.19108461,
+    "tail_rel_std": 0.020433554916886913
+   },
+   "M:sa-wf_h0.134_xfine30_da0": {
+    "tail_max": 1.34011186,
+    "tail_min": 1.31199414,
+    "tail_rel_std": 0.007392271815241626
+   },
+   "M:sa-wf_h0.134_xfine30_morph-da+0.25": {
+    "tail_max": 1.38355644,
+    "tail_min": 1.34015153,
+    "tail_rel_std": 0.010834021609999214
+   },
+   "M:sa-wf_h0.134_xfine30_morph-da+0.5": {
+    "tail_max": 1.42169064,
+    "tail_min": 1.37311634,
+    "tail_rel_std": 0.013126457531247488
+   },
+   "M:sa-wf_h0.134_xfine30_morph-da+1": {
+    "tail_max": 1.49976084,
+    "tail_min": 1.42077671,
+    "tail_rel_std": 0.019261231553397925
+   },
+   "R:sa-wf_h0.09_fine30_da+1": {
+    "tail_max": 1.43294215,
+    "tail_min": 1.35938383,
+    "tail_rel_std": 0.0188143320965531
+   },
+   "R:sa-wf_h0.09_xfine30_da-1": {
+    "tail_max": 1.27166034,
+    "tail_min": 1.20087323,
+    "tail_rel_std": 0.020344087169045004
+   },
+   "R:sa-wf_h0.134_xfine30_da+0.25": {
+    "tail_max": 1.41402363,
+    "tail_min": 1.36140444,
+    "tail_rel_std": 0.013882608241898072
+   },
+   "R:sa-wf_h0.134_xfine30_da+0.5": {
+    "tail_max": 1.42376594,
+    "tail_min": 1.37359987,
+    "tail_rel_std": 0.012910590420793164
+   },
+   "R:sa-wf_h0.134_xfine30_da+1": {
+    "tail_max": 1.52555111,
+    "tail_min": 1.44375135,
+    "tail_rel_std": 0.019492255898540353
+   },
+   "R:sa-wf_h0.134_xfine30_da0": {
+    "tail_max": 1.34011186,
+    "tail_min": 1.31199414,
+    "tail_rel_std": 0.007392271815241626
+   }
+  },
+  "noise": {
+   "M:fine30:0.09": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+   "M:fine30:0.134": {
+    "chi2_90_upper_fit": 0.004866359949964993,
+    "d": {
+     "0.25": 0.06260984890000021,
+     "0.5": 0.06396543760999984,
+     "1.0": 0.06307128950999996
+    },
+    "eff": 0.0021478240721434835,
+    "fit_cubic": 0.0021478240721434835,
+    "fit_quadratic": 0.001869794692977645,
+    "iter": 0.0003562510933743158,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.09631900524041546
+   },
+   "M:fine30:0.224": {
+    "chi2_90_upper_fit": 0.000980254966008413,
+    "d": {
+     "0.25": 0.1317600038599993,
+     "0.5": 0.13068243618999986,
+     "1.0": 0.13020947738
+    },
+    "eff": 0.00043264683140551645,
+    "fit_cubic": 0.00043264683140551645,
+    "fit_quadratic": 0.0004530131821536946,
+    "iter": 0.00014184958550125126,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.009398010482843815
+   },
+   "M:med30:0.09": {
+    "chi2_90_upper_fit": 0.0034542215769984915,
+    "d": {
+     "0.25": 0.04912774570000078,
+     "0.5": 0.054846403440000024,
+     "1.0": 0.049700127945000006
+    },
+    "eff": 0.0015245605195415427,
+    "fit_cubic": 0.0015245605195415427,
+    "fit_quadratic": 0.0018352917136116491,
+    "iter": 0.000591098128274893,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.08676251963697924
+   },
+   "M:med30:0.134": {
+    "chi2_90_upper_fit": 0.0008962322009174288,
+    "d": {
+     "0.25": 0.047421349999998696,
+     "0.5": 0.04840660928999996,
+     "1.0": 0.052870157500000126
+    },
+    "eff": 0.00039556241526573393,
+    "fit_cubic": 0.00039556241526573393,
+    "fit_quadratic": 0.0016513916997233445,
+    "iter": 0.00022419250002787567,
+    "nonlinear": true,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.02116164425777842
+   },
+   "M:med30:0.224": {
+    "chi2_90_upper_fit": 0.0003452934799447691,
+    "d": {
+     "0.25": 0.1286615000000011,
+     "0.5": 0.1291053249999996,
+     "1.0": 0.12805688749999988
+    },
+    "eff": 0.00027762000000008946,
+    "fit_cubic": 0.00015239925854331908,
+    "fit_quadratic": 0.00034758560069357125,
+    "iter": 0.00027762000000008946,
+    "nonlinear": true,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.006131868060375051
+   },
+   "M:xfine30:0.09": "not computable: M:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da+1 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.25 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-0.5 (SOLVER_FAIL), M:sa-wf_h0.09_xfine30_morph-da-1 (UNSTEADY)",
+   "M:xfine30:0.134": "not computable: M:sa-wf_h0.134_xfine30_da0 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.25 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+0.5 (UNSTEADY), M:sa-wf_h0.134_xfine30_morph-da+1 (UNSTEADY)",
+   "M:xfine30:0.224": {
+    "chi2_90_upper_fit": 0.001188980825750083,
+    "d": {
+     "0.25": 0.11975973170000032,
+     "0.5": 0.12190438175999962,
+     "1.0": 0.12024572606999995
+    },
+    "eff": 0.0005247703961729004,
+    "fit_cubic": 0.0005247703961729004,
+    "fit_quadratic": 0.0005956275710029156,
+    "iter": 1.3688393733288583e-05,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.012343680489194094
+   },
+   "R:fine30:0.09": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+   "R:fine30:0.134": {
+    "chi2_90_upper_fit": 0.02715304923043258,
+    "d": {
+     "0.25": 0.009912736920000054,
+     "0.5": 0.06817623614000001,
+     "1.0": 0.07793983025499984
+    },
+    "eff": 0.011984311347466133,
+    "fit_cubic": 0.011984311347466133,
+    "fit_quadratic": 0.013317499602776707,
+    "iter": 0.0003562510933743158,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.4349092264593725
+   },
+   "R:fine30:0.224": {
+    "chi2_90_upper_fit": 0.023589196006520836,
+    "d": {
+     "0.25": 0.1150105899999998,
+     "0.5": 0.15456878618000025,
+     "1.0": 0.12378218459500001
+    },
+    "eff": 0.010411363636526899,
+    "fit_cubic": 0.010411363636526899,
+    "fit_quadratic": 0.01151834570577575,
+    "iter": 0.00011764000000002992,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.23790001292591756
+   },
+   "R:med30:0.09": {
+    "chi2_90_upper_fit": 0.007978614896075632,
+    "d": {
+     "0.25": 0.03389297632000021,
+     "0.5": 0.04960904652000009,
+     "1.0": 0.055484701575000184
+    },
+    "eff": 0.003521453676330929,
+    "fit_cubic": 0.003521453676330929,
+    "fit_quadratic": 0.004539832328550067,
+    "iter": 0.0004611184726248024,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.17951209637864143
+   },
+   "R:med30:0.134": {
+    "chi2_90_upper_fit": 0.012294983154819177,
+    "d": {
+     "0.25": 0.06544502254000051,
+     "0.5": 0.06517646499999974,
+     "1.0": 0.06837944776499971
+    },
+    "eff": 0.005426532574251772,
+    "fit_cubic": 0.005426532574251772,
+    "fit_quadratic": 0.004821029537321327,
+    "iter": 0.00021934250002849138,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.22446147823657475
+   },
+   "R:med30:0.224": {
+    "chi2_90_upper_fit": 0.0059039274763927,
+    "d": {
+     "0.25": 0.13148646000000008,
+     "0.5": 0.1306999600000005,
+     "1.0": 0.12990440079499987
+    },
+    "eff": 0.002605766462893233,
+    "fit_cubic": 0.002605766462893233,
+    "fit_quadratic": 0.0022821764566427556,
+    "iter": 0.00028013500000001473,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.05673572642109322
+   },
+   "R:xfine30:0.09": "not computable: R:sa-wf_h0.09_xfine30_da+0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+1 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-1 (UNSTEADY), R:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL)",
+   "R:xfine30:0.134": "not computable: R:sa-wf_h0.134_xfine30_da+0.25 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+0.5 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+1 (UNSTEADY), R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)",
+   "R:xfine30:0.224": {
+    "chi2_90_upper_fit": 0.009262715664843548,
+    "d": {
+     "0.25": 0.13850576980000007,
+     "0.5": 0.13324087185,
+     "1.0": 0.12364639470000005
+    },
+    "eff": 0.004088206356070027,
+    "fit_cubic": 0.004088206356070027,
+    "fit_quadratic": 0.005151716266678876,
+    "iter": 1.1951438381634261e-05,
+    "nonlinear": false,
+    "note": "relative to the scan's smoothness only; accuracy is bounded by G7m's band",
+    "smallest_resolved_incidence_deg": 0.09351824432183176
+   },
+   "per_pair_ratio_R_over_M": {
+    "fine30:0.134": 5.579745335243422,
+    "fine30:0.224": 24.06434736319243,
+    "med30:0.09": 2.309815603377871,
+    "med30:0.134": 13.718524219765154,
+    "med30:0.224": 9.38609056585402,
+    "xfine30:0.224": 7.790466813457694
+   },
+   "pooled_noise_reduction_R_over_M": 8.231650045131992
+  },
+  "remeshed_rules": {
+   "G3bR:fine30-xfine30:0.09": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+   "G3bR:fine30-xfine30:0.134": "not computable: R:sa-wf_h0.134_xfine30_da+0.25 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+0.5 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+1 (UNSTEADY), R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)",
+   "G3bR:fine30-xfine30:0.224": {
+    "a": 0.12378218459500001,
+    "allowed": 0.030945546148750003,
+    "b": 0.12364639470000005,
+    "margin": -0.9956119729040411,
+    "noise_3rss": 0.023727508464188286,
+    "pass": false,
+    "sign_ok": true,
+    "unresolved": true
+   },
+   "G3bR:med30-fine30:0.09": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+   "G3bR:med30-fine30:0.134": {
+    "a": 0.06837944776499971,
+    "allowed": 0.027907335668886327,
+    "b": 0.07793983025499984,
+    "margin": -0.6574240334716392,
+    "noise_3rss": 0.027907335668886327,
+    "pass": false,
+    "unresolved": true
+   },
+   "G3bR:med30-fine30:0.224": {
+    "a": 0.12990440079499987,
+    "allowed": 0.03247610019874997,
+    "b": 0.12378218459500001,
+    "margin": -0.8114854874035795,
+    "noise_3rss": 0.022767066177707254,
+    "pass": false,
+    "sign_ok": true,
+    "unresolved": true
+   },
+   "G6R:fine30:0.09": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+   "G6R:fine30:0.134": {
+    "consistency": {
+     "a": 0.009912736920000054,
+     "allowed": 0.10481991443988553,
+     "b": 0.07793983025499984,
+     "margin": -0.3510098372193054,
+     "noise_3rss": 0.10481991443988553,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": false
+   },
+   "G6R:fine30:0.224": {
+    "consistency": {
+     "a": 0.1150105899999998,
+     "allowed": 0.09106224078649496,
+     "b": 0.12378218459500001,
+     "margin": -0.9036747336849953,
+     "noise_3rss": 0.09106224078649496,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": false
+   },
+   "G6R:med30:0.09": {
+    "consistency": {
+     "a": 0.03389297632000021,
+     "allowed": 0.030800140479917668,
+     "b": 0.055484701575000184,
+     "margin": -0.29897315666211893,
+     "noise_3rss": 0.030800140479917668,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": false
+   },
+   "G6R:med30:0.134": {
+    "consistency": {
+     "a": 0.06544502254000051,
+     "allowed": 0.04746277559440967,
+     "b": 0.06837944776499971,
+     "margin": -0.9381741756934917,
+     "noise_3rss": 0.04746277559440967,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": false
+   },
+   "G6R:med30:0.224": {
+    "consistency": {
+     "a": 0.13148646000000008,
+     "allowed": 0.03287161500000002,
+     "b": 0.12990440079499987,
+     "margin": -0.9518715705023861,
+     "noise_3rss": 0.02279114834149745,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": true
+   },
+   "G6R:xfine30:0.09": "not computable: R:sa-wf_h0.09_xfine30_da+0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da+1 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.25 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-0.5 (SOLVER_FAIL), R:sa-wf_h0.09_xfine30_da-1 (UNSTEADY), R:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL)",
+   "G6R:xfine30:0.134": "not computable: R:sa-wf_h0.134_xfine30_da+0.25 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+0.5 (UNSTEADY), R:sa-wf_h0.134_xfine30_da+1 (UNSTEADY), R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)",
+   "G6R:xfine30:0.224": {
+    "consistency": {
+     "a": 0.13850576980000007,
+     "allowed": 0.03575720189766769,
+     "b": 0.12364639470000005,
+     "margin": -0.5844368599499046,
+     "noise_3rss": 0.03575720189766769,
+     "pass": false,
+     "unresolved": true
+    },
+    "pass": false,
+    "resolved": true
+   }
+  },
+  "replication": {
+   "cross_kernel": {
+    "cases": 14,
+    "cpu_models": {
+     "M:docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c": "AMD EPYC 7B12",
+     "R:docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+     "S:docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    },
+    "identical_Cl": 14,
+    "identical_mesh_sha": 12,
+    "label": "CROSS_KERNEL_DIFFERENT",
+    "note": "a difference with a different CPU model is reported, not a defect"
+   },
+   "vs_T20B": {
+    "cases": 41,
+    "cpu_models": {
+     "M:docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c": "AMD EPYC 7B12",
+     "R:docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+     "S:docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    },
+    "identical_mesh_sha": 36,
+    "label": "NOT_BITWISE",
+    "max_rel_dCl": 2.983578728965597e-06
+   }
+  },
+  "series": {
+   "Cl": {
+    "0.09": "not computable: R:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL)",
+    "0.134": "not computable: R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)",
+    "0.179": "not computable: ValueError: remeshed sigma missing for [('fine30', 0.09), ('xfine30', 0.134), ('xfine30', 0.09)]",
+    "0.224": {
+     "R": 1.0072391149570896,
+     "coa30": 1.3602358150599998,
+     "e2": -0.03659413775999987,
+     "e3": -0.03685904693000008,
+     "label": "DIVERGENT",
+     "noise": 0.029447783315148815,
+     "values": {
+      "fine30": 1.30828086883,
+      "med30": 1.34487500659,
+      "xfine30": 1.2714218219
+     }
+    },
+    "0.313": "not computable: ValueError: remeshed sigma missing for [('fine30', 0.09), ('xfine30', 0.134), ('xfine30', 0.09)]",
+    "0.448": "not computable: ValueError: remeshed sigma missing for [('fine30', 0.09), ('xfine30', 0.134), ('xfine30', 0.09)]",
+    "0.671": "not computable: ValueError: remeshed sigma missing for [('fine30', 0.09), ('xfine30', 0.134), ('xfine30', 0.09)]"
+   },
+   "G2_by_level": {
+    "coa30": {
+     "G2d_E": 0.36640301791169033,
+     "G2d_pass": false,
+     "e_h": {
+      "0.09": -0.05423381271370831,
+      "0.134": -0.033574970850126284,
+      "0.179": 0.005112072618299823,
+      "0.224": 0.058051992641835026,
+      "0.313": 0.05745409465231499,
+      "0.448": 0.05353877560973408,
+      "0.671": 0.04553633476510943
+     },
+     "mean_abs_e_nominal": 0.04392886483587542,
+     "peak_h": 0.179,
+     "peak_margin": -0.02268898821415033,
+     "peak_ok": false,
+     "rise_breaks_after_h": [
+      0.179
+     ]
+    },
+    "fine30": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+    "med30": {
+     "G2_pass": false,
+     "G2d_E": 0.28832311751441925,
+     "G2d_pass": true,
+     "e_h": {
+      "0.09": -0.04217090490069941,
+      "0.134": 0.007678621340690528,
+      "0.179": 0.03725344198988112,
+      "0.224": 0.04610367174752317,
+      "0.313": 0.05734522151726895,
+      "0.448": 0.055534506129111705,
+      "0.671": 0.05042072927045904
+     },
+     "mean_abs_e_nominal": 0.04235815669937627,
+     "mean_abs_e_plus_0p15deg": 0.05454742070308505,
+     "peak_h": 0.179,
+     "peak_margin": -0.009076697355000496,
+     "peak_margin_in_noise": -0.5913715768474689,
+     "peak_noise": 0.015348551926332483,
+     "peak_ok": false,
+     "rise_breaks_after_h": [
+      0.179
+     ]
+    },
+    "xfine30": "not computable: R:sa-wf_h0.09_xfine30_da0 (SOLVER_FAIL), R:sa-wf_h0.134_xfine30_da0 (UNSTEADY)"
+   },
+   "PEAK": "not computable (an input case of fine30 or xfine30 is not valid)",
+   "d_M": {
+    "0.09": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+    "0.134": "not computable: M:sa-wf_h0.134_xfine30_morph-da+1 (UNSTEADY)",
+    "0.224": {
+     "R": -4.628727191637421,
+     "e2": 0.002152589880000111,
+     "e3": -0.009963751310000046,
+     "label": "DIVERGENT",
+     "noise": 0.001360245932799942,
+     "values": {
+      "fine30": 0.13020947738,
+      "med30": 0.12805688749999988,
+      "xfine30": 0.12024572606999995
+     }
+    }
+   },
+   "d_R": {
+    "0.09": "not computable: R:sa-wf_h0.09_fine30_da+1 (UNSTEADY)",
+    "0.134": "not computable: R:sa-wf_h0.134_xfine30_da+1 (UNSTEADY)",
+    "0.224": {
+     "R": 0.02217985947637121,
+     "e2": -0.006122216199999864,
+     "e3": -0.0001357898949999603,
+     "label": "NOT_RESOLVED",
+     "noise": 0.02237050951425166,
+     "values": {
+      "fine30": 0.12378218459500001,
+      "med30": 0.12990440079499987,
+      "xfine30": 0.12364639470000005
+     }
+    }
+   },
+   "level_stats": {
+    "coa30": {
+     "cells": [
+      7349,
+      9503
+     ],
+     "max_non_orthogonality": 63.170768,
+     "median_cost_to_plateau_min": 0.16133397586419546,
+     "n_layers": [
+      10,
+      11,
+      7,
+      8
+     ],
+     "yplus_airfoil_avg": [
+      29.666109,
+      30.412637
+     ]
+    },
+    "fine30": {
+     "cells": [
+      25298,
+      28022
+     ],
+     "max_non_orthogonality": 45.915118,
+     "median_cost_to_plateau_min": 0.5769322345397353,
+     "n_layers": [
+      4
+     ],
+     "yplus_airfoil_avg": [
+      31.398968,
+      32.838458
+     ]
+    },
+    "med30": {
+     "cells": [
+      13722,
+      15919
+     ],
+     "max_non_orthogonality": 43.868342,
+     "median_cost_to_plateau_min": 0.26234184520832493,
+     "n_layers": [
+      7
+     ],
+     "yplus_airfoil_avg": [
+      30.951998,
+      32.410412
+     ]
+    },
+    "xfine30": {
+     "cells": [
+      50303,
+      52741
+     ],
+     "max_non_orthogonality": 46.098168,
+     "median_cost_to_plateau_min": 1.9645666177994943,
+     "n_layers": [
+      2
+     ],
+     "yplus_airfoil_avg": [
+      31.348203,
+      32.646424
+     ]
+    }
+   }
+  },
+  "shapes": {
+   "camber:0.09": {
+    "fine30": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+    "med30": {
+     "dCl": {
+      "0.25": 0.007997544679999802,
+      "0.5": 0.015290398209999667
+     },
+     "d_per_mm": {
+      "0.25": 0.015995089359999604,
+      "0.5": 0.015290398209999667
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00015978453694033058,
+     "linearity": {
+      "a": 0.015995089359999604,
+      "allowed": 0.014463251017562753,
+      "b": 0.015290398209999667,
+      "margin": -0.9512771264811605,
+      "noise_3rss": 0.014463251017562753,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": false,
+     "sigma_eff_incidence_scan": 0.0015245605195415427
+    },
+    "med30_vs_fine30": "not computable",
+    "morph_vs_remesh_fine30": "not computable"
+   },
+   "camber:0.134": {
+    "fine30": {
+     "dCl": {
+      "0.25": 0.009330021440000058,
+      "0.5": 0.0183420944299999
+     },
+     "d_per_mm": {
+      "0.25": 0.018660042880000116,
+      "0.5": 0.0183420944299999
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 7.158904324491719e-05,
+     "linearity": {
+      "a": 0.018660042880000116,
+      "allowed": 0.020376048243933645,
+      "b": 0.0183420944299999,
+      "margin": -0.9843959708872952,
+      "noise_3rss": 0.020376048243933645,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": false,
+     "sigma_eff_incidence_scan": 0.0021478240721434835
+    },
+    "med30": {
+     "dCl": {
+      "0.25": 0.009774667980000595,
+      "0.5": 0.01782033428999963
+     },
+     "d_per_mm": {
+      "0.25": 0.01954933596000119,
+      "0.5": 0.01782033428999963
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.000386965301836623,
+     "linearity": {
+      "a": 0.01954933596000119,
+      "allowed": 0.004887333990000298,
+      "b": 0.01782033428999963,
+      "margin": -0.646228051215821,
+      "noise_3rss": 0.003752634566991233,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00039556241526573393
+    },
+    "med30_vs_fine30": {
+     "a": 0.01782033428999963,
+     "allowed": 0.009265695961259347,
+     "b": 0.0183420944299999,
+     "margin": -0.9436890502147065,
+     "noise_3rss": 0.009265695961259347,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": 0.0183420944299999,
+     "allowed": 0.05165523788467072,
+     "b": 0.04086322772000006,
+     "margin": -0.5640106557967558,
+     "noise_3rss": 0.05165523788467072,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "camber:0.224": {
+    "fine30": {
+     "dCl": {
+      "0.25": 0.022956353349999903,
+      "0.5": 0.046087056900000034
+     },
+     "d_per_mm": {
+      "0.25": 0.045912706699999806,
+      "0.5": 0.046087056900000034
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 5.326238638779219e-05,
+     "linearity": {
+      "a": 0.045912706699999806,
+      "allowed": 0.011521764225000009,
+      "b": 0.046087056900000034,
+      "margin": -0.9848677514488691,
+      "noise_3rss": 0.004104448229088899,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00043264683140551645
+    },
+    "med30": {
+     "dCl": {
+      "0.25": 0.026767329999999312,
+      "0.5": 0.05383438000000029
+     },
+     "d_per_mm": {
+      "0.25": 0.053534659999998624,
+      "0.5": 0.05383438000000029
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 6.707316237982774e-05,
+     "linearity": {
+      "a": 0.053534659999998624,
+      "allowed": 0.013458595000000073,
+      "b": 0.05383438000000029,
+      "margin": -0.9777302162668787,
+      "noise_3rss": 0.002633734572048685,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00027762000000008946
+    },
+    "med30_vs_fine30": {
+     "a": 0.05383438000000029,
+     "allowed": 0.013458595000000073,
+     "b": 0.046087056900000034,
+     "margin": -0.42435870163265804,
+     "noise_3rss": 0.002180965522940492,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": 0.046087056900000034,
+     "allowed": 0.04420979720547197,
+     "b": 0.0539679099999999,
+     "margin": -0.8217396686220395,
+     "noise_3rss": 0.04420979720547197,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "flap:0.09": {
+    "fine30": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+    "med30": {
+     "dCl": {
+      "0.25": 0.028109870000000203,
+      "0.5": 0.057260246500000056
+     },
+     "d_per_mm": {
+      "0.25": 0.05621974000000041,
+      "0.5": 0.057260246500000056
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00033875873980684847,
+     "linearity": {
+      "a": 0.05621974000000041,
+      "allowed": 0.014463251017562753,
+      "b": 0.057260246500000056,
+      "margin": -0.9280586018498773,
+      "noise_3rss": 0.014463251017562753,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.0015245605195415427
+    },
+    "med30_vs_fine30": "not computable",
+    "morph_vs_remesh_fine30": "not computable"
+   },
+   "flap:0.134": {
+    "fine30": {
+     "dCl": {
+      "0.25": 0.027588176859999924,
+      "0.5": 0.0548069818000001
+     },
+     "d_per_mm": {
+      "0.25": 0.05517635371999985,
+      "0.5": 0.0548069818000001
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00014638870745833633,
+     "linearity": {
+      "a": 0.05517635371999985,
+      "allowed": 0.020376048243933645,
+      "b": 0.0548069818000001,
+      "margin": -0.9818722494382727,
+      "noise_3rss": 0.020376048243933645,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.0021478240721434835
+    },
+    "med30": {
+     "dCl": {
+      "0.25": 0.026926036589999924,
+      "0.5": 0.051862578840000007
+     },
+     "d_per_mm": {
+      "0.25": 0.05385207317999985,
+      "0.5": 0.051862578840000007
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00047517557900402034,
+     "linearity": {
+      "a": 0.05385207317999985,
+      "allowed": 0.013463018294999962,
+      "b": 0.051862578840000007,
+      "margin": -0.8522252368372164,
+      "noise_3rss": 0.003752634566991233,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00039556241526573393
+    },
+    "med30_vs_fine30": {
+     "a": 0.051862578840000007,
+     "allowed": 0.013701745450000025,
+     "b": 0.0548069818000001,
+     "margin": -0.785107454320713,
+     "noise_3rss": 0.009265695961259347,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": 0.0548069818000001,
+     "allowed": 0.05165523788467072,
+     "b": 0.05338234566000044,
+     "margin": -0.9724202965983739,
+     "noise_3rss": 0.05165523788467072,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "flap:0.224": {
+    "fine30": {
+     "dCl": {
+      "0.25": 0.03691470500000005,
+      "0.5": 0.07408539248000046
+     },
+     "d_per_mm": {
+      "0.25": 0.0738294100000001,
+      "0.5": 0.07408539248000046
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00018629231961977548,
+     "linearity": {
+      "a": 0.0738294100000001,
+      "allowed": 0.018521348120000114,
+      "b": 0.07408539248000046,
+      "margin": -0.9861790578989258,
+      "noise_3rss": 0.004104448229088899,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00043264683140551645
+    },
+    "med30": {
+     "dCl": {
+      "0.25": 0.04082525999999986,
+      "0.5": 0.08213483500000018
+     },
+     "d_per_mm": {
+      "0.25": 0.08165051999999973,
+      "0.5": 0.08213483500000018
+     },
+     "expected_sign_ok": true,
+     "fit5_quadratic_sigma": 0.00010846954295566325,
+     "linearity": {
+      "a": 0.08165051999999973,
+      "allowed": 0.020533708750000046,
+      "b": 0.08213483500000018,
+      "margin": -0.9764136617550663,
+      "noise_3rss": 0.002633734572048685,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00027762000000008946
+    },
+    "med30_vs_fine30": {
+     "a": 0.08213483500000018,
+     "allowed": 0.020533708750000046,
+     "b": 0.07408539248000046,
+     "margin": -0.6079888627036404,
+     "noise_3rss": 0.002180965522940492,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": 0.07408539248000046,
+     "allowed": 0.04420979720547197,
+     "b": 0.052770931609999794,
+     "margin": -0.5178792435772016,
+     "noise_3rss": 0.04420979720547197,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "heave:0.09": {
+    "fine30": "not computable: M:sa-wf_h0.09_fine30_morph-da+1 (UNSTEADY)",
+    "med30": {
+     "dCl": {
+      "0.25": 0.0040031874999999495,
+      "0.5": 0.009427072500000078
+     },
+     "d_per_mm": {
+      "0.25": 0.008006374999999899,
+      "0.5": 0.009427072500000078
+     },
+     "expected_sign_ok": null,
+     "fit5_quadratic_sigma": 0.0003782912946082981,
+     "linearity": {
+      "a": 0.008006374999999899,
+      "allowed": 0.014463251017562753,
+      "b": 0.009427072500000078,
+      "margin": -0.9017719115657314,
+      "noise_3rss": 0.014463251017562753,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": false,
+     "sigma_eff_incidence_scan": 0.0015245605195415427
+    },
+    "med30_vs_fine30": "not computable",
+    "morph_vs_remesh_fine30": "not computable"
+   },
+   "heave:0.134": {
+    "fine30": {
+     "dCl": {
+      "0.25": 0.002120655099999702,
+      "0.5": 0.0034936252499999654
+     },
+     "d_per_mm": {
+      "0.25": 0.004241310199999404,
+      "0.5": 0.0034936252499999654
+     },
+     "expected_sign_ok": null,
+     "fit5_quadratic_sigma": 0.00017197033312692432,
+     "linearity": {
+      "a": 0.004241310199999404,
+      "allowed": 0.020376048243933645,
+      "b": 0.0034936252499999654,
+      "margin": -0.9633056939673256,
+      "noise_3rss": 0.020376048243933645,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": false,
+     "sigma_eff_incidence_scan": 0.0021478240721434835
+    },
+    "med30": {
+     "dCl": {
+      "0.25": 0.002393878579999509,
+      "0.5": 0.0051961815399999
+     },
+     "d_per_mm": {
+      "0.25": 0.004787757159999018,
+      "0.5": 0.0051961815399999
+     },
+     "expected_sign_ok": null,
+     "fit5_quadratic_sigma": 0.00011081653894914207,
+     "linearity": {
+      "a": 0.004787757159999018,
+      "allowed": 0.003752634566991233,
+      "b": 0.0051961815399999,
+      "margin": -0.8911632953569613,
+      "noise_3rss": 0.003752634566991233,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": false,
+     "sigma_eff_incidence_scan": 0.00039556241526573393
+    },
+    "med30_vs_fine30": {
+     "a": 0.0051961815399999,
+     "allowed": 0.009265695961259347,
+     "b": 0.0034936252499999654,
+     "margin": -0.8162516558800909,
+     "noise_3rss": 0.009265695961259347,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": 0.0034936252499999654,
+     "allowed": 0.05165523788467072,
+     "b": 0.006829577310000001,
+     "margin": -0.9354189004521065,
+     "noise_3rss": 0.05165523788467072,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "heave:0.224": {
+    "fine30": {
+     "dCl": {
+      "0.25": -0.003099540400000045,
+      "0.5": -0.006387905669999805
+     },
+     "d_per_mm": {
+      "0.25": -0.00619908080000009,
+      "0.5": -0.006387905669999805
+     },
+     "expected_sign_ok": null,
+     "fit5_quadratic_sigma": 4.250788489893621e-05,
+     "linearity": {
+      "a": -0.00619908080000009,
+      "allowed": 0.004104448229088899,
+      "b": -0.006387905669999805,
+      "margin": -0.9539950659722097,
+      "noise_3rss": 0.004104448229088899,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00043264683140551645
+    },
+    "med30": {
+     "dCl": {
+      "0.25": -0.003660044999999945,
+      "0.5": -0.0074225155799994
+     },
+     "d_per_mm": {
+      "0.25": -0.00732008999999989,
+      "0.5": -0.0074225155799994
+     },
+     "expected_sign_ok": null,
+     "fit5_quadratic_sigma": 2.533088233631025e-05,
+     "linearity": {
+      "a": -0.00732008999999989,
+      "allowed": 0.002633734572048685,
+      "b": -0.0074225155799994,
+      "margin": -0.961110135741645,
+      "noise_3rss": 0.002633734572048685,
+      "pass": true,
+      "unresolved": false
+     },
+     "resolved": true,
+     "sigma_eff_incidence_scan": 0.00027762000000008946
+    },
+    "med30_vs_fine30": {
+     "a": -0.0074225155799994,
+     "allowed": 0.002180965522940492,
+     "b": -0.006387905669999805,
+     "margin": -0.5256184019797434,
+     "noise_3rss": 0.002180965522940492,
+     "pass": true,
+     "unresolved": false
+    },
+    "morph_vs_remesh_fine30": {
+     "a": -0.006387905669999805,
+     "allowed": 0.04420979720547197,
+     "b": 0.007841176049999676,
+     "margin": -0.6781464150611777,
+     "noise_3rss": 0.04420979720547197,
+     "pass": true,
+     "unresolved": false
+    }
+   },
+   "holds": {
+    "linear": false,
+    "mesh": false,
+    "remesh": false,
+    "resolved": false
+   },
+   "label": "SHAPE_NOT_RESOLVED"
+  }
+ },
+ "next_action": {
+  "action": "steady RANS does not settle at that (mesh, h, alpha): an unsteady/solver-convergence study there; no mesh-dependence or morph conclusion",
+  "failing": {
+   "G3bm@0.09": 5,
+   "G3bm@0.134": 5,
+   "G6m@0.134": 8,
+   "G7m_fine30@0.09": 5,
+   "G7m_xfine30@0.09": 5,
+   "G7m_xfine30@0.134": 5,
+   "G8m@0.09": 5,
+   "G8m@0.134": 7
+  },
+  "row": 5
+ },
+ "predicted": {
+  "G3bm": "pass at 0.224/0.134; 0.09 likely fails through UNSTEADY +1 deg cases",
+  "G6m": "pass",
+  "G7m": "pass at 0.224/0.134, uncertain at 0.09",
+  "G8m": "uncertain",
+  "peak": "uncertain",
+  "replication": "REPLICATED_BITWISE",
+  "shapes": "resolved",
+  "verdict": "T20C_MORPH_GO_FINE30_ATTACHED most likely, T20C_MORPH_NO_GO second"
+ },
+ "qualification_flags": "unchanged (all false; shape_update_allowed=false)",
+ "registration": "docs/t20c_registration_2026_10_20.md",
+ "runs_used": {
+  "morph": [
+   "docs/evidence/t20c_registered_2026_10_20/kernel_morph_run1/t20c"
+  ],
+  "remesh": [
+   "docs/evidence/t20c_registered_2026_10_20/kernel_remesh_run1/t20c"
+  ],
+  "shape": [
+   "docs/evidence/t20c_registered_2026_10_20/kernel_shape_run1/t20c"
+  ]
+ },
+ "scope": "2D single-element section (Tyrrell 026), Re_c 4.6e5, moving ground, OpenFOAM v2512 SA wall functions; morph at fine30 against xfine30",
+ "thresholds": {
+  "G2_mean": 0.05,
+  "G2d": 0.3,
+  "bitwise": 1e-12,
+  "chi2_90_3dof": 2.265716272147219,
+  "delta_floor": 0.01,
+  "nonlinear": 2.0,
+  "peak_tol": 0.005,
+  "power": 0.5,
+  "resolve": 5.0,
+  "tol": 0.25,
+  "unsteady": 0.005
+ },
+ "thresholds_set_after_exploratory_visible": true,
+ "thresholds_set_after_t20b_visible": true,
+ "verdict": "T20C_MORPH_NO_GO"
+}
