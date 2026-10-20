@@ -1,0 +1,4680 @@
+{
+ "checks": {
+  "errors": [],
+  "opt01": {
+   "n": 77,
+   "r0_status_mismatch": [],
+   "sha_mismatch": []
+  },
+  "regen6p25": {
+   "n": 41,
+   "r0_status_mismatch": [],
+   "sha_mismatch": []
+  },
+  "reinit04": {
+   "baseline": {
+    "r0_status_match": true,
+    "state_sha_match": true
+   },
+   "lowdim03_parent": {
+    "r0_status_match": true,
+    "state_sha_match": true
+   }
+  },
+  "roundtip": {
+   "r0_width_mismatch": []
+  },
+  "v18_phase0": {
+   "n": 99,
+   "r0_status_mismatch": [],
+   "sha_mismatch": []
+  },
+  "valid": true
+ },
+ "criteria": {
+  "n": {
+   "K1": 1954,
+   "K2_thin_not_represented": 5,
+   "K2_thin_represented": 171,
+   "K3_thick": 144,
+   "historical_failures": 57,
+   "short_represented": 114
+  },
+  "r0": {
+   "K1_by_kind": {
+    "combo": 240,
+    "roundtip": 33,
+    "v18": 982
+   },
+   "K1_evaluated": 1954,
+   "K1_not_pass": 1255,
+   "K2_thin_passed": 0,
+   "K3_thick_not_passed": 141,
+   "K4_historical_still_failing": 57,
+   "K4_passed_with_no_other_failing_gate": [],
+   "K4_rim_mismatch_passed": [],
+   "K5_not_relaxation": true,
+   "K6_phi_scale_invariant": true,
+   "aligned_slab_fail_fraction": {
+    "1.0": 0.96875,
+    "1.125": 0.84375,
+    "1.25": 0.71875,
+    "1.375": 0.59375,
+    "1.5": 0.46875,
+    "1.625": 0.34375,
+    "1.75": 0.21875,
+    "1.875": 0.09375,
+    "2.0": 0.0,
+    "2.25": 0.0,
+    "2.5": 0.0
+   },
+   "aligned_slab_w50_cells": 1.46875,
+   "historical": [
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "bump_upper"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "P1_upstream_lobe"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "baseline"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "lowdim03_parent"
+    }
+   ],
+   "meets_K1_K6": false,
+   "short_features_not_passed": 114
+  },
+  "r1": {
+   "K1_by_kind": {
+    "combo": 0,
+    "roundtip": 0,
+    "v18": 0
+   },
+   "K1_evaluated": 1954,
+   "K1_not_pass": 0,
+   "K2_thin_passed": 37,
+   "K3_thick_not_passed": 6,
+   "K4_historical_still_failing": 14,
+   "K4_passed_with_no_other_failing_gate": [
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    }
+   ],
+   "K4_rim_mismatch_passed": [
+    25,
+    -25
+   ],
+   "K5_not_relaxation": true,
+   "K6_phi_scale_invariant": false,
+   "K6_thin_passed_with_phi_x2": 46,
+   "aligned_slab_fail_fraction": {
+    "1.0": 1.0,
+    "1.125": 1.0,
+    "1.25": 1.0,
+    "1.375": 1.0,
+    "1.5": 1.0,
+    "1.625": 1.0,
+    "1.75": 0.96875,
+    "1.875": 0.84375,
+    "2.0": 0.71875,
+    "2.25": 0.46875,
+    "2.5": 0.21875
+   },
+   "aligned_slab_w50_cells": 2.21875,
+   "historical": [
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "bump_upper"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "P1_upstream_lobe"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": true,
+     "state": "baseline"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": true,
+     "state": "lowdim03_parent"
+    }
+   ],
+   "meets_K1_K6": false,
+   "short_features_not_passed": 2
+  },
+  "r2": {
+   "K1_by_kind": {
+    "combo": 0,
+    "roundtip": 40,
+    "v18": 326
+   },
+   "K1_evaluated": 384,
+   "K1_not_pass": 366,
+   "K2_thin_passed": 0,
+   "K3_thick_not_passed": 144,
+   "K4_historical_still_failing": 57,
+   "K4_passed_with_no_other_failing_gate": [],
+   "K4_rim_mismatch_passed": [],
+   "K5_not_relaxation": true,
+   "K6_phi_scale_invariant": true,
+   "aligned_slab_fail_fraction": {
+    "1.0": 1.0,
+    "1.125": 1.0,
+    "1.25": 1.0,
+    "1.375": 1.0,
+    "1.5": 0.9375,
+    "1.625": 0.6875,
+    "1.75": 0.4375,
+    "1.875": 0.1875,
+    "2.0": 0.0,
+    "2.25": 0.0,
+    "2.5": 0.0
+   },
+   "aligned_slab_w50_cells": 1.71875,
+   "historical": [
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "bump_upper"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "P1_upstream_lobe"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "baseline"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "lowdim03_parent"
+    }
+   ],
+   "meets_K1_K6": false,
+   "short_features_not_passed": 114
+  },
+  "r3": {
+   "K1_by_kind": {
+    "combo": 0,
+    "roundtip": 0,
+    "v18": 0
+   },
+   "K1_evaluated": 1954,
+   "K1_not_pass": 0,
+   "K2_thin_passed": 6,
+   "K3_thick_not_passed": 0,
+   "K4_historical_still_failing": 2,
+   "K4_passed_with_no_other_failing_gate": [
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    }
+   ],
+   "K4_rim_mismatch_passed": [
+    25,
+    -25
+   ],
+   "K5_not_relaxation": true,
+   "K6_phi_scale_invariant": true,
+   "aligned_slab_fail_fraction": {
+    "1.0": 1.0,
+    "1.125": 1.0,
+    "1.25": 1.0,
+    "1.375": 1.0,
+    "1.5": 0.875,
+    "1.625": 0.375,
+    "1.75": 0.0,
+    "1.875": 0.0,
+    "2.0": 0.0,
+    "2.25": 0.0,
+    "2.5": 0.0
+   },
+   "aligned_slab_w50_cells": 1.59375,
+   "historical": [
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "heave"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": true,
+     "state": "thickness"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "bump_upper"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": true,
+     "state": "P1_upstream_lobe"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": true,
+     "state": "baseline"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "lowdim03_parent"
+    }
+   ],
+   "meets_K1_K6": false,
+   "short_features_not_passed": 29
+  },
+  "r4": {
+   "K1_by_kind": {
+    "combo": 153,
+    "roundtip": 20,
+    "v18": 744
+   },
+   "K1_evaluated": 1954,
+   "K1_not_pass": 917,
+   "K2_thin_passed": 2,
+   "K3_thick_not_passed": 130,
+   "K4_historical_still_failing": 53,
+   "K4_passed_with_no_other_failing_gate": [],
+   "K4_rim_mismatch_passed": [],
+   "K5_not_relaxation": true,
+   "K6_phi_scale_invariant": true,
+   "aligned_slab_fail_fraction": {
+    "1.0": 0.96875,
+    "1.125": 0.84375,
+    "1.25": 0.71875,
+    "1.375": 0.59375,
+    "1.5": 0.46875,
+    "1.625": 0.34375,
+    "1.75": 0.21875,
+    "1.875": 0.09375,
+    "2.0": 0.0,
+    "2.25": 0.0,
+    "2.5": 0.0
+   },
+   "aligned_slab_w50_cells": 1.46875,
+   "historical": [
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "heave"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "surge"
+    },
+    {
+     "amplitude": 25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -25,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "rim_mismatch (real defect, expected fail; one lattice-congruent pair)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "surge"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -20,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -3,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": -5,
+     "bundle_still_fails_via": [],
+     "family": "opt01",
+     "label": "thinned_slab (near the limit, no expectation)",
+     "passes": false,
+     "state": "thickness"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.04,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band"
+     ],
+     "family": "opt01",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -0.5,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -1,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "sdf_distance_property",
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "pitch"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -10,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": true,
+     "state": "camber"
+    },
+    {
+     "amplitude": 30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": -30,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "camber"
+    },
+    {
+     "amplitude": 0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.01,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": -0.02,
+     "bundle_still_fails_via": [
+      "near_zero_gradient_band",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "tie_plateau (designated gate: near_zero_gradient_band)",
+     "passes": false,
+     "state": "aspect"
+    },
+    {
+     "amplitude": 10,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "bump_upper"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": -2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "D1_filtered_seed11"
+    },
+    {
+     "amplitude": 2,
+     "bundle_still_fails_via": [
+      "volume_semantics"
+     ],
+     "family": "regen6p25",
+     "label": "other",
+     "passes": false,
+     "state": "P1_upstream_lobe"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "baseline"
+    },
+    {
+     "amplitude": null,
+     "bundle_still_fails_via": [
+      "export_surface_integrity",
+      "volume_semantics"
+     ],
+     "family": "reinit04",
+     "label": "broken_export (designated gates: export, volume)",
+     "passes": false,
+     "state": "lowdim03_parent"
+    }
+   ],
+   "meets_K1_K6": false,
+   "short_features_not_passed": 110
+  }
+ },
+ "meta": {
+  "evidence_tier": "EXPLORATORY_COMMITTED",
+  "flags_changed": false,
+  "h_m": 0.025,
+  "kind": "width_rule_study",
+  "parameters": {
+   "combos": {
+    "basis_a_star": {
+     "camber": 19.7,
+     "heave": 31.1,
+     "pitch": 3.1,
+     "reflex": 29.3,
+     "surge": 31.1,
+     "sweep": 11.3,
+     "twist": 1.1
+    },
+    "n": 200,
+    "noise": "U(-h/16, h/16) on active nodes",
+    "noisy": 50
+   },
+   "guard_cells": 0.25,
+   "limit_cells": 1.5,
+   "opening": {
+    "crop_pad_cells": 3,
+    "k": 4,
+    "radius_cells": 0.75,
+    "tau_cells": 1.0,
+    "unmeasured_band_cells": 0.25
+   },
+   "r2_evaluated_on": "D1 (parent, 256 phases), phase 0 of every MODE-01 v18 state, round tips, synthetic, historical; not on D2 phases != 0 or D3 (compute deviation, plan \u00a79)",
+   "r2_shifts_cells": [
+    [
+     -0.25,
+     -0.25,
+     -0.25
+    ],
+    [
+     -0.25,
+     -0.25,
+     0.25
+    ],
+    [
+     -0.25,
+     0.25,
+     -0.25
+    ],
+    [
+     -0.25,
+     0.25,
+     0.25
+    ],
+    [
+     0.25,
+     -0.25,
+     -0.25
+    ],
+    [
+     0.25,
+     -0.25,
+     0.25
+    ],
+    [
+     0.25,
+     0.25,
+     -0.25
+    ],
+    [
+     0.25,
+     0.25,
+     0.25
+    ]
+   ],
+   "synthetic": {
+    "aligned_slab_phases": 32,
+    "draws": 16,
+    "lattice_nodes": 26,
+    "refinement": 8,
+    "seed": 20261020
+   }
+  },
+  "phases": {
+   "unit": "fraction of h by which the lattice origin is shifted (x, y, z)",
+   "v18_modes": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.25
+    ],
+    [
+     0.0,
+     0.0,
+     0.5
+    ],
+    [
+     0.0,
+     0.0,
+     0.75
+    ],
+    [
+     0.25,
+     0.0,
+     0.0
+    ],
+    [
+     0.25,
+     0.0,
+     0.25
+    ],
+    [
+     0.25,
+     0.0,
+     0.5
+    ],
+    [
+     0.25,
+     0.0,
+     0.75
+    ],
+    [
+     0.5,
+     0.0,
+     0.0
+    ],
+    [
+     0.5,
+     0.0,
+     0.25
+    ],
+    [
+     0.5,
+     0.0,
+     0.5
+    ],
+    [
+     0.5,
+     0.0,
+     0.75
+    ],
+    [
+     0.75,
+     0.0,
+     0.0
+    ],
+    [
+     0.75,
+     0.0,
+     0.25
+    ],
+    [
+     0.75,
+     0.0,
+     0.5
+    ],
+    [
+     0.75,
+     0.0,
+     0.75
+    ]
+   ],
+   "v18_parent": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.125
+    ],
+    [
+     0.0,
+     0.0,
+     0.25
+    ],
+    [
+     0.0,
+     0.0,
+     0.375
+    ],
+    [
+     0.0,
+     0.0,
+     0.5
+    ],
+    [
+     0.0,
+     0.0,
+     0.625
+    ],
+    [
+     0.0,
+     0.0,
+     0.75
+    ],
+    [
+     0.0,
+     0.0,
+     0.875
+    ],
+    [
+     0.0,
+     0.25,
+     0.0
+    ],
+    [
+     0.0,
+     0.25,
+     0.125
+    ],
+    [
+     0.0,
+     0.25,
+     0.25
+    ],
+    [
+     0.0,
+     0.25,
+     0.375
+    ],
+    [
+     0.0,
+     0.25,
+     0.5
+    ],
+    [
+     0.0,
+     0.25,
+     0.625
+    ],
+    [
+     0.0,
+     0.25,
+     0.75
+    ],
+    [
+     0.0,
+     0.25,
+     0.875
+    ],
+    [
+     0.0,
+     0.5,
+     0.0
+    ],
+    [
+     0.0,
+     0.5,
+     0.125
+    ],
+    [
+     0.0,
+     0.5,
+     0.25
+    ],
+    [
+     0.0,
+     0.5,
+     0.375
+    ],
+    [
+     0.0,
+     0.5,
+     0.5
+    ],
+    [
+     0.0,
+     0.5,
+     0.625
+    ],
+    [
+     0.0,
+     0.5,
+     0.75
+    ],
+    [
+     0.0,
+     0.5,
+     0.875
+    ],
+    [
+     0.0,
+     0.75,
+     0.0
+    ],
+    [
+     0.0,
+     0.75,
+     0.125
+    ],
+    [
+     0.0,
+     0.75,
+     0.25
+    ],
+    [
+     0.0,
+     0.75,
+     0.375
+    ],
+    [
+     0.0,
+     0.75,
+     0.5
+    ],
+    [
+     0.0,
+     0.75,
+     0.625
+    ],
+    [
+     0.0,
+     0.75,
+     0.75
+    ],
+    [
+     0.0,
+     0.75,
+     0.875
+    ],
+    [
+     0.125,
+     0.0,
+     0.0
+    ],
+    [
+     0.125,
+     0.0,
+     0.125
+    ],
+    [
+     0.125,
+     0.0,
+     0.25
+    ],
+    [
+     0.125,
+     0.0,
+     0.375
+    ],
+    [
+     0.125,
+     0.0,
+     0.5
+    ],
+    [
+     0.125,
+     0.0,
+     0.625
+    ],
+    [
+     0.125,
+     0.0,
+     0.75
+    ],
+    [
+     0.125,
+     0.0,
+     0.875
+    ],
+    [
+     0.125,
+     0.25,
+     0.0
+    ],
+    [
+     0.125,
+     0.25,
+     0.125
+    ],
+    [
+     0.125,
+     0.25,
+     0.25
+    ],
+    [
+     0.125,
+     0.25,
+     0.375
+    ],
+    [
+     0.125,
+     0.25,
+     0.5
+    ],
+    [
+     0.125,
+     0.25,
+     0.625
+    ],
+    [
+     0.125,
+     0.25,
+     0.75
+    ],
+    [
+     0.125,
+     0.25,
+     0.875
+    ],
+    [
+     0.125,
+     0.5,
+     0.0
+    ],
+    [
+     0.125,
+     0.5,
+     0.125
+    ],
+    [
+     0.125,
+     0.5,
+     0.25
+    ],
+    [
+     0.125,
+     0.5,
+     0.375
+    ],
+    [
+     0.125,
+     0.5,
+     0.5
+    ],
+    [
+     0.125,
+     0.5,
+     0.625
+    ],
+    [
+     0.125,
+     0.5,
+     0.75
+    ],
+    [
+     0.125,
+     0.5,
+     0.875
+    ],
+    [
+     0.125,
+     0.75,
+     0.0
+    ],
+    [
+     0.125,
+     0.75,
+     0.125
+    ],
+    [
+     0.125,
+     0.75,
+     0.25
+    ],
+    [
+     0.125,
+     0.75,
+     0.375
+    ],
+    [
+     0.125,
+     0.75,
+     0.5
+    ],
+    [
+     0.125,
+     0.75,
+     0.625
+    ],
+    [
+     0.125,
+     0.75,
+     0.75
+    ],
+    [
+     0.125,
+     0.75,
+     0.875
+    ],
+    [
+     0.25,
+     0.0,
+     0.0
+    ],
+    [
+     0.25,
+     0.0,
+     0.125
+    ],
+    [
+     0.25,
+     0.0,
+     0.25
+    ],
+    [
+     0.25,
+     0.0,
+     0.375
+    ],
+    [
+     0.25,
+     0.0,
+     0.5
+    ],
+    [
+     0.25,
+     0.0,
+     0.625
+    ],
+    [
+     0.25,
+     0.0,
+     0.75
+    ],
+    [
+     0.25,
+     0.0,
+     0.875
+    ],
+    [
+     0.25,
+     0.25,
+     0.0
+    ],
+    [
+     0.25,
+     0.25,
+     0.125
+    ],
+    [
+     0.25,
+     0.25,
+     0.25
+    ],
+    [
+     0.25,
+     0.25,
+     0.375
+    ],
+    [
+     0.25,
+     0.25,
+     0.5
+    ],
+    [
+     0.25,
+     0.25,
+     0.625
+    ],
+    [
+     0.25,
+     0.25,
+     0.75
+    ],
+    [
+     0.25,
+     0.25,
+     0.875
+    ],
+    [
+     0.25,
+     0.5,
+     0.0
+    ],
+    [
+     0.25,
+     0.5,
+     0.125
+    ],
+    [
+     0.25,
+     0.5,
+     0.25
+    ],
+    [
+     0.25,
+     0.5,
+     0.375
+    ],
+    [
+     0.25,
+     0.5,
+     0.5
+    ],
+    [
+     0.25,
+     0.5,
+     0.625
+    ],
+    [
+     0.25,
+     0.5,
+     0.75
+    ],
+    [
+     0.25,
+     0.5,
+     0.875
+    ],
+    [
+     0.25,
+     0.75,
+     0.0
+    ],
+    [
+     0.25,
+     0.75,
+     0.125
+    ],
+    [
+     0.25,
+     0.75,
+     0.25
+    ],
+    [
+     0.25,
+     0.75,
+     0.375
+    ],
+    [
+     0.25,
+     0.75,
+     0.5
+    ],
+    [
+     0.25,
+     0.75,
+     0.625
+    ],
+    [
+     0.25,
+     0.75,
+     0.75
+    ],
+    [
+     0.25,
+     0.75,
+     0.875
+    ],
+    [
+     0.375,
+     0.0,
+     0.0
+    ],
+    [
+     0.375,
+     0.0,
+     0.125
+    ],
+    [
+     0.375,
+     0.0,
+     0.25
+    ],
+    [
+     0.375,
+     0.0,
+     0.375
+    ],
+    [
+     0.375,
+     0.0,
+     0.5
+    ],
+    [
+     0.375,
+     0.0,
+     0.625
+    ],
+    [
+     0.375,
+     0.0,
+     0.75
+    ],
+    [
+     0.375,
+     0.0,
+     0.875
+    ],
+    [
+     0.375,
+     0.25,
+     0.0
+    ],
+    [
+     0.375,
+     0.25,
+     0.125
+    ],
+    [
+     0.375,
+     0.25,
+     0.25
+    ],
+    [
+     0.375,
+     0.25,
+     0.375
+    ],
+    [
+     0.375,
+     0.25,
+     0.5
+    ],
+    [
+     0.375,
+     0.25,
+     0.625
+    ],
+    [
+     0.375,
+     0.25,
+     0.75
+    ],
+    [
+     0.375,
+     0.25,
+     0.875
+    ],
+    [
+     0.375,
+     0.5,
+     0.0
+    ],
+    [
+     0.375,
+     0.5,
+     0.125
+    ],
+    [
+     0.375,
+     0.5,
+     0.25
+    ],
+    [
+     0.375,
+     0.5,
+     0.375
+    ],
+    [
+     0.375,
+     0.5,
+     0.5
+    ],
+    [
+     0.375,
+     0.5,
+     0.625
+    ],
+    [
+     0.375,
+     0.5,
+     0.75
+    ],
+    [
+     0.375,
+     0.5,
+     0.875
+    ],
+    [
+     0.375,
+     0.75,
+     0.0
+    ],
+    [
+     0.375,
+     0.75,
+     0.125
+    ],
+    [
+     0.375,
+     0.75,
+     0.25
+    ],
+    [
+     0.375,
+     0.75,
+     0.375
+    ],
+    [
+     0.375,
+     0.75,
+     0.5
+    ],
+    [
+     0.375,
+     0.75,
+     0.625
+    ],
+    [
+     0.375,
+     0.75,
+     0.75
+    ],
+    [
+     0.375,
+     0.75,
+     0.875
+    ],
+    [
+     0.5,
+     0.0,
+     0.0
+    ],
+    [
+     0.5,
+     0.0,
+     0.125
+    ],
+    [
+     0.5,
+     0.0,
+     0.25
+    ],
+    [
+     0.5,
+     0.0,
+     0.375
+    ],
+    [
+     0.5,
+     0.0,
+     0.5
+    ],
+    [
+     0.5,
+     0.0,
+     0.625
+    ],
+    [
+     0.5,
+     0.0,
+     0.75
+    ],
+    [
+     0.5,
+     0.0,
+     0.875
+    ],
+    [
+     0.5,
+     0.25,
+     0.0
+    ],
+    [
+     0.5,
+     0.25,
+     0.125
+    ],
+    [
+     0.5,
+     0.25,
+     0.25
+    ],
+    [
+     0.5,
+     0.25,
+     0.375
+    ],
+    [
+     0.5,
+     0.25,
+     0.5
+    ],
+    [
+     0.5,
+     0.25,
+     0.625
+    ],
+    [
+     0.5,
+     0.25,
+     0.75
+    ],
+    [
+     0.5,
+     0.25,
+     0.875
+    ],
+    [
+     0.5,
+     0.5,
+     0.0
+    ],
+    [
+     0.5,
+     0.5,
+     0.125
+    ],
+    [
+     0.5,
+     0.5,
+     0.25
+    ],
+    [
+     0.5,
+     0.5,
+     0.375
+    ],
+    [
+     0.5,
+     0.5,
+     0.5
+    ],
+    [
+     0.5,
+     0.5,
+     0.625
+    ],
+    [
+     0.5,
+     0.5,
+     0.75
+    ],
+    [
+     0.5,
+     0.5,
+     0.875
+    ],
+    [
+     0.5,
+     0.75,
+     0.0
+    ],
+    [
+     0.5,
+     0.75,
+     0.125
+    ],
+    [
+     0.5,
+     0.75,
+     0.25
+    ],
+    [
+     0.5,
+     0.75,
+     0.375
+    ],
+    [
+     0.5,
+     0.75,
+     0.5
+    ],
+    [
+     0.5,
+     0.75,
+     0.625
+    ],
+    [
+     0.5,
+     0.75,
+     0.75
+    ],
+    [
+     0.5,
+     0.75,
+     0.875
+    ],
+    [
+     0.625,
+     0.0,
+     0.0
+    ],
+    [
+     0.625,
+     0.0,
+     0.125
+    ],
+    [
+     0.625,
+     0.0,
+     0.25
+    ],
+    [
+     0.625,
+     0.0,
+     0.375
+    ],
+    [
+     0.625,
+     0.0,
+     0.5
+    ],
+    [
+     0.625,
+     0.0,
+     0.625
+    ],
+    [
+     0.625,
+     0.0,
+     0.75
+    ],
+    [
+     0.625,
+     0.0,
+     0.875
+    ],
+    [
+     0.625,
+     0.25,
+     0.0
+    ],
+    [
+     0.625,
+     0.25,
+     0.125
+    ],
+    [
+     0.625,
+     0.25,
+     0.25
+    ],
+    [
+     0.625,
+     0.25,
+     0.375
+    ],
+    [
+     0.625,
+     0.25,
+     0.5
+    ],
+    [
+     0.625,
+     0.25,
+     0.625
+    ],
+    [
+     0.625,
+     0.25,
+     0.75
+    ],
+    [
+     0.625,
+     0.25,
+     0.875
+    ],
+    [
+     0.625,
+     0.5,
+     0.0
+    ],
+    [
+     0.625,
+     0.5,
+     0.125
+    ],
+    [
+     0.625,
+     0.5,
+     0.25
+    ],
+    [
+     0.625,
+     0.5,
+     0.375
+    ],
+    [
+     0.625,
+     0.5,
+     0.5
+    ],
+    [
+     0.625,
+     0.5,
+     0.625
+    ],
+    [
+     0.625,
+     0.5,
+     0.75
+    ],
+    [
+     0.625,
+     0.5,
+     0.875
+    ],
+    [
+     0.625,
+     0.75,
+     0.0
+    ],
+    [
+     0.625,
+     0.75,
+     0.125
+    ],
+    [
+     0.625,
+     0.75,
+     0.25
+    ],
+    [
+     0.625,
+     0.75,
+     0.375
+    ],
+    [
+     0.625,
+     0.75,
+     0.5
+    ],
+    [
+     0.625,
+     0.75,
+     0.625
+    ],
+    [
+     0.625,
+     0.75,
+     0.75
+    ],
+    [
+     0.625,
+     0.75,
+     0.875
+    ],
+    [
+     0.75,
+     0.0,
+     0.0
+    ],
+    [
+     0.75,
+     0.0,
+     0.125
+    ],
+    [
+     0.75,
+     0.0,
+     0.25
+    ],
+    [
+     0.75,
+     0.0,
+     0.375
+    ],
+    [
+     0.75,
+     0.0,
+     0.5
+    ],
+    [
+     0.75,
+     0.0,
+     0.625
+    ],
+    [
+     0.75,
+     0.0,
+     0.75
+    ],
+    [
+     0.75,
+     0.0,
+     0.875
+    ],
+    [
+     0.75,
+     0.25,
+     0.0
+    ],
+    [
+     0.75,
+     0.25,
+     0.125
+    ],
+    [
+     0.75,
+     0.25,
+     0.25
+    ],
+    [
+     0.75,
+     0.25,
+     0.375
+    ],
+    [
+     0.75,
+     0.25,
+     0.5
+    ],
+    [
+     0.75,
+     0.25,
+     0.625
+    ],
+    [
+     0.75,
+     0.25,
+     0.75
+    ],
+    [
+     0.75,
+     0.25,
+     0.875
+    ],
+    [
+     0.75,
+     0.5,
+     0.0
+    ],
+    [
+     0.75,
+     0.5,
+     0.125
+    ],
+    [
+     0.75,
+     0.5,
+     0.25
+    ],
+    [
+     0.75,
+     0.5,
+     0.375
+    ],
+    [
+     0.75,
+     0.5,
+     0.5
+    ],
+    [
+     0.75,
+     0.5,
+     0.625
+    ],
+    [
+     0.75,
+     0.5,
+     0.75
+    ],
+    [
+     0.75,
+     0.5,
+     0.875
+    ],
+    [
+     0.75,
+     0.75,
+     0.0
+    ],
+    [
+     0.75,
+     0.75,
+     0.125
+    ],
+    [
+     0.75,
+     0.75,
+     0.25
+    ],
+    [
+     0.75,
+     0.75,
+     0.375
+    ],
+    [
+     0.75,
+     0.75,
+     0.5
+    ],
+    [
+     0.75,
+     0.75,
+     0.625
+    ],
+    [
+     0.75,
+     0.75,
+     0.75
+    ],
+    [
+     0.75,
+     0.75,
+     0.875
+    ],
+    [
+     0.875,
+     0.0,
+     0.0
+    ],
+    [
+     0.875,
+     0.0,
+     0.125
+    ],
+    [
+     0.875,
+     0.0,
+     0.25
+    ],
+    [
+     0.875,
+     0.0,
+     0.375
+    ],
+    [
+     0.875,
+     0.0,
+     0.5
+    ],
+    [
+     0.875,
+     0.0,
+     0.625
+    ],
+    [
+     0.875,
+     0.0,
+     0.75
+    ],
+    [
+     0.875,
+     0.0,
+     0.875
+    ],
+    [
+     0.875,
+     0.25,
+     0.0
+    ],
+    [
+     0.875,
+     0.25,
+     0.125
+    ],
+    [
+     0.875,
+     0.25,
+     0.25
+    ],
+    [
+     0.875,
+     0.25,
+     0.375
+    ],
+    [
+     0.875,
+     0.25,
+     0.5
+    ],
+    [
+     0.875,
+     0.25,
+     0.625
+    ],
+    [
+     0.875,
+     0.25,
+     0.75
+    ],
+    [
+     0.875,
+     0.25,
+     0.875
+    ],
+    [
+     0.875,
+     0.5,
+     0.0
+    ],
+    [
+     0.875,
+     0.5,
+     0.125
+    ],
+    [
+     0.875,
+     0.5,
+     0.25
+    ],
+    [
+     0.875,
+     0.5,
+     0.375
+    ],
+    [
+     0.875,
+     0.5,
+     0.5
+    ],
+    [
+     0.875,
+     0.5,
+     0.625
+    ],
+    [
+     0.875,
+     0.5,
+     0.75
+    ],
+    [
+     0.875,
+     0.5,
+     0.875
+    ],
+    [
+     0.875,
+     0.75,
+     0.0
+    ],
+    [
+     0.875,
+     0.75,
+     0.125
+    ],
+    [
+     0.875,
+     0.75,
+     0.25
+    ],
+    [
+     0.875,
+     0.75,
+     0.375
+    ],
+    [
+     0.875,
+     0.75,
+     0.5
+    ],
+    [
+     0.875,
+     0.75,
+     0.625
+    ],
+    [
+     0.875,
+     0.75,
+     0.75
+    ],
+    [
+     0.875,
+     0.75,
+     0.875
+    ]
+   ]
+  },
+  "plan": "docs/width_rule_plan_2026_10_20.md (rev. 2)",
+  "script_sha256": "d56117d9dd3bfd336c40d1e4bb7918182aeedca7564b1816338cf40172230fc7",
+  "shape_update_allowed": false,
+  "solver_started": false,
+  "versions": {
+   "numpy": "2.5.2",
+   "scipy": "1.18.1"
+  }
+ }
+}

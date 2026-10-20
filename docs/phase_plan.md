@@ -7510,3 +7510,22 @@ wall-resolved/transition evaluator study or another validation case (G2) and a f
 
 ## JOB-02 (#59) closed (2026-10-19): per-run flow-grid placement in one kernel, byte-identity gate JOB02_GATE_PASS
 The harness gains an optional run `name`, so one kernel can run the same state at several (x, y) placements of `W4_CANONICAL_ORIGIN_M`; z (ride height) must stay one value per kernel; campaigns without names are unchanged (run name = state); Julia jobs and the measurement contract are unchanged. Engineering gate (capability evidence, not a PROC-01 scientific registration; spec frozen with hashes before the run, one independent source review with no blockers): on Kaggle T4 the parent ran at the native and the GRID-02-shifted origin in one flow_24 and one flow_32 kernel, and all four force CSVs equal the historical references byte for byte (OPT-01 v1 Stage B native parents `e62b6bab…`/`282aceed…`, GRID-02 shifted parents `471ea410…`/`667127c5…`). Evidence: `docs/evidence/job02_gate_2026_10_19/`. The gate was run ahead of UNC-01 (#61) rather than folded into its smoke, because its references are the existing parents and do not depend on the B1 parent choice (#60); the UNC-01 smoke only has to check its new (v18) parent. M1 is complete; with B1 decided (v18, entry above) the M2 freeze no longer waits for JOB-02. All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-20 WIDTH-RULE (exploratory): smooth-body width rule for M3 (UNC-01 draft §9 TODO 0, #62, #64)
+Solver-free study, `EXPLORATORY_COMMITTED`. Plan: [width_rule_plan_2026_10_20.md](width_rule_plan_2026_10_20.md), rev. 2. Rev. 2 records one adversarial review (sonnet; numerical and governance angles; 13 findings, each with its decision) and was committed with the code before the run. The compute deviation (§9) was committed before the rerun. Evidence: [evidence/width_rule_2026_10_20/](evidence/width_rule_2026_10_20/README.md).
+- **Origin of the gate.** GEOM-02 `min_feature_width` (1.5h, guard h/4) is a lattice-representability limit, not a manufacturing or physical one. Its estimator binarises cells. The solver and the export use the trilinear phi.
+- **Decomposition.** No v18 state is physically thin: all are >= 103.8 mm thick and the SDF ridge is >= 90 mm. The registered estimator still fails:
+  - 1,089 of 1,824 v18 (state, sub-cell phase) pairs, always at exactly one cell (25.0 mm);
+  - at tips 890, leading/trailing-edge rounds 645 each, faces 370 (pairs containing each location);
+  - 190 of 200 optimiser-like basis combinations.
+  These failures are occupancy protrusions of 0.75–1.15 cells.
+- **Verdict `NO_CANDIDATE_MEETS_K1_K6`.** R3, the opening defect of the trilinear body (ball 0.75h, tolerance h), passes every v18 state, combination and round tip, and every thick synthetic shape. It fails every lattice-held thin slab, fin and slot. It misses:
+  - 6 draws of 0.5h necks whose represented body is two components;
+  - the OPT-01 v1 rim mismatch (zero level on frozen nodes; impossible on v18, whose frozen nodes have |phi| >= h/2);
+  - two thinned-slab states with SDF width 40–44 mm.
+  R1 fails K6 (phi units); R2 and R4 fail K1.
+- **Proposal** (not adopted; [width_rule_decision_2026_10_20.md](width_rule_decision_2026_10_20.md)):
+  - M3a keeps R0 with designs chosen R0-clean, R3 descriptive.
+  - M3b registers R3 plus a frozen-node margin precondition and the fixed-topology gates, with R0 reported alongside.
+  - The composite is validated in a registered run on disjoint data before any optimiser run.
+- GEOM-02 v2, its profile/policy and every record are unchanged. All qualification flags stay false; `shape_update_allowed=false`.
