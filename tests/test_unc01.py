@@ -501,3 +501,23 @@ def test_u2_drift_path_with_kernel_outputs(tmp_path):
         DRIFT.clear()
     res = A.u2(cpath, spath, bpath, tabs, tmp_path / "out", None, None)
     assert res["grids"]["flow_32"]["drift_flagged"] == ["v18__D0_p3__k3"] and len(res["grids"]["flow_32"]["drift"]) == 48
+
+
+def test_per_kernel_verify_equals_joint_harness_table(tmp_path):
+    """scripts/unc01_verify.py (freeze 1 amendment 1) runs the harness's own checks on one kernel: rows equal the JOB-02 joint table; a tampered output fails closed."""
+    import shutil
+    import unc01_verify as UV
+    ev = ROOT / "docs/evidence/job02_gate_2026_10_19"
+    joint = json.loads((ev / "state_force_table.json").read_text())
+    camp, frz = ROOT / "docs/harness/job02_gate_campaign.json", ROOT / "docs/harness/job02_gate_campaign.prerun_freeze.json"
+    for k in ("f24", "f32"):
+        t = UV.verify_one(camp, ev / f"kernel_output/job02_gate_{k}", frz)
+        assert t["state_forces_n"][k] == joint["state_forces_n"][k] and t["per_kernel"] is True
+        SC.require_formal_table(t)
+    bad = tmp_path / "job02_gate_f24"
+    shutil.copytree(ev / "kernel_output/job02_gate_f24", bad)
+    csv = next(bad.rglob("flow_24.forces.csv"))
+    csv.write_text(csv.read_text() + "\n")
+    r = subprocess.run([sys.executable, str(ROOT / "scripts/unc01_verify.py"), str(bad), "--campaign", str(camp), "--freeze", str(frz), "--out", str(tmp_path / "t.json")],
+                       capture_output=True, text=True)
+    assert r.returncode == 3 and not (tmp_path / "t.json").exists()
