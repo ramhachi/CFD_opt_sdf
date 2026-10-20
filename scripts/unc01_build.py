@@ -4,7 +4,7 @@ campaign JSONs of U01 (U0 smoke + U1 pilot) and U2.  Solver-free and determinist
 
     python scripts/unc01_build.py states                 # direction raws + states.json; every state must reproduce its prescreen phi SHA
     python scripts/unc01_build.py campaign u01           # docs/harness/unc01_u01_campaign.json
-    python scripts/unc01_build.py campaign u2 --L MODE   # docs/harness/unc01_u2_campaign.json (MODE = the U1 selection, analyze_unc01.py u1)
+    python scripts/unc01_build.py campaign u2 --L L,L2   # docs/harness/unc01_u2_campaign.json (L, L2 = the U1 selection, analyze_unc01.py u1)
     python scripts/unc01_build.py regate [--workers N]   # the freeze re-gate of the states with the prescreen gate stack -> regate.json
 
 Each state: analytic phi (v18_plate.mode_phi) -> direction d / max|d| (float32) and step 1000 max|d| mm -> construct_state(parent, d, step, +1),
@@ -33,12 +33,16 @@ PARENT_RAW = "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw
 HARNESS = ROOT / "docs/harness"
 OWNER, REPO_URL = "ramhachi888", "https://github.com/ramhachi/CFD_opt_sdf.git"
 
-# registered states: name -> (prescreen mode, amplitude, harness kind).  Only prescreen-tested, gate-clean points (registration §3).
+# registered states: name -> (prescreen mode, amplitude, harness kind).  Prescreen-tested gate-clean points, plus the one-cell roll (surge +25 mm, gated by
+# `regate`; lattice-congruent with the parent on flow_32).  Registration §3.
 WIDE = {"pitch": 3.1, "camber": 19.7, "reflex": 29.3, "twist": 1.1, "sweep": 11.3}   # L candidates at A* (prescreen AMPS order = tie order)
+FAMILY = {"pitch": "rigid", "camber": "section", "reflex": "section", "twist": "span", "sweep": "span"}
+L_MID = {"pitch": 1.3, "camber": 11.3, "reflex": 11.3}   # the both-signs gate-clean ladder point below A* closest to A*/2 (ties: smaller); none for twist, sweep
+ROLL_MM = 25.0                                            # one flow_32 cell = one SDF lattice cell
 STATES = {"v18__parent": ("parent", 0.0, "parent"), "v18__D0_p3": ("thickness_D0", 3.0, "candidate"),
-          "v18__s125_m5": ("offset_s125", -5.0, "candidate"), "v18__s050_m5": ("offset_s050", -5.0, "candidate"),
-          "v18__surge_p31.1": ("surge", 31.1, "control"), "v18__surge_m31.1": ("surge", -31.1, "control"),
-          **{f"v18__{m}_{s}{a:g}": (m, sg * a, "candidate") for m, a in WIDE.items() for s, sg in (("p", 1), ("m", -1))}}
+          "v18__s050_m5": ("offset_s050", -5.0, "candidate"), "v18__roll_p25": ("surge", ROLL_MM, "control"),
+          **{f"v18__{m}_{s}{a:g}": (m, sg * a, "candidate") for m, a in WIDE.items() for s, sg in (("p", 1), ("m", -1))},
+          **{f"v18__{m}_p{a:g}": (m, a, "candidate") for m, a in L_MID.items()}}
 
 # placement phases (registration §4): phase k shifts the canonical SDF origin by (f_kx, f_ky, 0) h_flow, f_k = frac(k (a1, a2)) (R2 sequence)
 R2 = (0.7548776662, 0.5698402910)
@@ -116,8 +120,8 @@ def build_states(write: bool = True) -> dict:
     parent_raw = S.read_f4(ROOT / PARENT_RAW)
     rows = {}
     for name, (mode, a, kind) in STATES.items():
-        ref = pre[(mode, a)]
-        if not ref["all_pass"]:
+        ref = pre.get((mode, a))
+        if ref is not None and not ref["all_pass"]:
             raise SystemExit(f"{name}: not gate-clean in the prescreen")
         if mode == "parent":
             child, audit, d, step = s, {"changed_node_count": 0, "maximum_pointwise_change_m": 0.0, "zero_level_margin_m": zero_level_margin_m(s.phi, s.spacing_m)}, None, 0.0
@@ -127,7 +131,8 @@ def build_states(write: bool = True) -> dict:
             child, audit = construct_state(s, d, step, 1)
             npz = npz_sha(child)
         ident = state_identity(child)
-        if ident["phi_fortran_order_sha256"] != ref["phi_fortran_sha256"]:
+        expect = ident["phi_fortran_order_sha256"] if ref is None else ref["phi_fortran_sha256"]   # the roll: no prescreen row; regate gates it
+        if ident["phi_fortran_order_sha256"] != expect:
             raise SystemExit(f"{name}: harness bytes differ from the prescreen gated bytes")
         if d is not None:
             raw = S.to_raw(d)
@@ -135,18 +140,18 @@ def build_states(write: bool = True) -> dict:
                 INPUTS.mkdir(parents=True, exist_ok=True)
                 (ROOT / dir_rel(name)).write_bytes(raw)
             regen = S.perturb(parent_raw, np.frombuffer(raw, "<f4").reshape(S.SHAPE, order="F"), step, 1)
-            if S.sha256_bytes(S.to_raw(regen)) != ref["phi_fortran_sha256"]:
+            if S.sha256_bytes(S.to_raw(regen)) != expect:
                 raise SystemExit(f"{name}: runner regeneration differs from the prescreen bytes")
         rows[name] = {"mode": mode, "amplitude": a, "kind": kind, "direction": None if d is None else name, "step_mm": float(step), "sign": 0 if d is None else 1,
                       "direction_sha256_fortran_raw": None if d is None else S.sha256_bytes(S.to_raw(d)),
                       "state_sha256": ident["state_sha256"], "npz_sha256": npz, "phi_fortran_order_sha256": ident["phi_fortran_order_sha256"],
                       "phi_c_order_sha256": ident["phi_c_order_sha256"], "zero_level_margin_m": float(audit["zero_level_margin_m"]), "margin_tolerance_m": 1e-6,
                       "changed_node_count": int(audit["changed_node_count"]), "maximum_pointwise_change_m": float(audit["maximum_pointwise_change_m"]),
-                      "prescreen_phi_fortran_sha256": ref["phi_fortran_sha256"], "prescreen_all_pass": ref["all_pass"]}
+                      "prescreen_phi_fortran_sha256": None if ref is None else ref["phi_fortran_sha256"], "prescreen_all_pass": None if ref is None else ref["all_pass"]}
     rec = {"kind": "unc01_states", "parent": {"npz": "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz", "raw": PARENT_RAW, "state_sha256": s.state_sha256,
                                                "source_sha256": s.source_sha256}, "v18_plate_sha256": sha(ROOT / "scripts/v18_plate.py"),
            "prescreen_sha256": sha(PRESCREEN), "states": rows,
-           "check": "every state's Fortran phi SHA equals the prescreen gated bytes, and step01_states.perturb on the written raws reproduces it"}
+           "check": "every prescreen point's Fortran phi SHA equals the prescreen gated bytes; step01_states.perturb on the written raws reproduces every state; the roll has no prescreen row (regate.json gates it)"}
     if write:
         (OUT / "states.json").write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
     return rec
@@ -167,7 +172,7 @@ def kernel(cid: str, k: str, case_id: str, runs: list, per_state: int, cap: int,
 
 
 def phase_runs(states: list, case_id: str, phases) -> list:
-    """Phase-major: every state of phase k (parent first) before phase k+1, so a stopped kernel keeps whole phases."""
+    """Phase-major: every state of phase k (parent first) before phase k+1 (diagnostic order only; a kernel that stops fails verify as a whole)."""
     return [run(s, case_id, k) for k in phases for s in states]
 
 
@@ -180,22 +185,24 @@ def kernels_u01() -> dict:
             "f48": kernel("unc01_u01", "f48", "flow_48", [run("v18__parent", "flow_48", 0)], 6000, 6000, 9000)}
 
 
-def u2_states(L: str) -> dict:
-    if L not in WIDE:
-        raise SystemExit(f"L must be one of {list(WIDE)}")
-    Lp, Lm = f"v18__{L}_p{WIDE[L]:g}", f"v18__{L}_m{WIDE[L]:g}"
-    return {"flow_32": ["v18__parent", "v18__D0_p3", Lp, Lm, "v18__s125_m5", "v18__s050_m5", "v18__surge_p31.1", "v18__surge_m31.1"],
-            "flow_24": ["v18__parent", "v18__D0_p3", Lp, "v18__s050_m5"], "flow_24_reduced": ["v18__parent", Lp], "flow_48": ["v18__parent", Lp]}
+def u2_states(L: str, L2: str) -> dict:
+    """Registration §4: flow_32 parent, D0, L+, L-, L_mid+ (L2- when L has no mid point), L2+, s050, roll; flow_24 parent, D0, L+; flow_48 parent, L+."""
+    if L not in WIDE or L2 not in WIDE or FAMILY[L] == FAMILY[L2]:
+        raise SystemExit(f"L, L2 must be L candidates of different families: {L}, {L2}")
+    Lp, Lm, L2p, L2m = f"v18__{L}_p{WIDE[L]:g}", f"v18__{L}_m{WIDE[L]:g}", f"v18__{L2}_p{WIDE[L2]:g}", f"v18__{L2}_m{WIDE[L2]:g}"
+    mid = f"v18__{L}_p{L_MID[L]:g}" if L in L_MID else L2m
+    return {"flow_32": ["v18__parent", "v18__D0_p3", Lp, Lm, mid, L2p, "v18__s050_m5", "v18__roll_p25"],
+            "flow_24": ["v18__parent", "v18__D0_p3", Lp], "flow_24_reduced": ["v18__parent", Lp], "flow_48": ["v18__parent", Lp]}
 
 
-def kernels_u2(L: str) -> dict:
-    st, ph = u2_states(L), U2_PHASES
+def kernels_u2(L: str, L2: str) -> dict:
+    st, ph = u2_states(L, L2), U2_PHASES
     k32 = {f"f32{b}": kernel("unc01_u2", f"f32{b}", "flow_32", phase_runs(st["flow_32"], "flow_32", ph["flow_32"][2 * i:2 * i + 2]), 900, 9000, 12000)
            for i, b in enumerate("abc")}
     k48 = {f"f48{b}": kernel("unc01_u2", f"f48{b}", "flow_48", phase_runs(st["flow_48"], "flow_48", ph["flow_48"][2 * i:2 * i + 2]), 6000, 11000, 14400)
            for i, b in enumerate("ab")}
     return {**k48, **k32,
-            "f24": kernel("unc01_u2", "f24", "flow_24", phase_runs(st["flow_24"], "flow_24", ph["flow_24"]), 900, 6000, 9000),
+            "f24": kernel("unc01_u2", "f24", "flow_24", phase_runs(st["flow_24"], "flow_24", ph["flow_24"]), 900, 4800, 8400),
             "f24r": kernel("unc01_u2", "f24r", "flow_24", phase_runs(st["flow_24_reduced"], "flow_24", ph["flow_24"]), 900, 3600, 6600)}
 
 
@@ -222,7 +229,7 @@ def write_campaign(which: str, L: str | None) -> Path:
     rec = json.loads((OUT / "states.json").read_text())
     if build_states(write=False)["states"] != rec["states"]:
         raise SystemExit("states.json no longer re-derives")
-    c = campaign("unc01_u01", kernels_u01(), rec) if which == "u01" else campaign("unc01_u2", kernels_u2(L), rec)
+    c = campaign("unc01_u01", kernels_u01(), rec) if which == "u01" else campaign("unc01_u2", kernels_u2(*L.split(",")), rec)
     SC.validate_campaign(c)
     path = HARNESS / f"unc01_{which}_campaign.json"
     text = json.dumps(c, indent=1, sort_keys=True) + "\n"
@@ -240,14 +247,16 @@ def regate(workers: int) -> dict:
     with mp.get_context("spawn").Pool(workers, initializer=P._init) as pool:
         rows = pool.map(P.work, tasks)
     pre = {(r["mode"], r["amplitude"]): r for r in json.loads(PRESCREEN.read_text())["states"]}
+    built = json.loads((OUT / "states.json").read_text())["states"]
     out = {}
     for name, r in zip(STATES, rows):
-        ref = pre[(r["mode"], r["amplitude"])]
-        out[name] = {"all_pass": r.get("all_pass"), "phi_fortran_sha256": r.get("phi_fortran_sha256"), "error": r.get("error"),
-                     "same_as_prescreen": {k: r.get(k) == ref.get(k) for k in ("all_pass", "phi_fortran_sha256", "failed_geom02", "unmeasured_geom02", "gate_status", "p22")}}
+        ref = pre.get((r["mode"], r["amplitude"]))
+        out[name] = {"all_pass": r.get("all_pass"), "phi_fortran_sha256": r.get("phi_fortran_sha256"), "error": r.get("error"), "failed_geom02": r.get("failed_geom02"),
+                     "same_bytes_as_states_json": r.get("phi_fortran_sha256") == built[name]["phi_fortran_order_sha256"],
+                     "same_as_prescreen": None if ref is None else {k: r.get(k) == ref.get(k) for k in ("all_pass", "phi_fortran_sha256", "failed_geom02", "unmeasured_geom02", "gate_status", "p22")}}
     rec = {"kind": "unc01_regate", "gate_stack": "scripts/mode01_v18_prescreen.py work() (13 GEOM-02 v2 gates, P22-v2, smoothed-volume band, clearance)",
-           "states": out, "all_pass": all(v["all_pass"] for v in out.values()),
-           "identical_to_prescreen": all(all(v["same_as_prescreen"].values()) for v in out.values())}
+           "states": out, "all_pass": all(v["all_pass"] for v in out.values()), "all_same_bytes_as_states_json": all(v["same_bytes_as_states_json"] for v in out.values()),
+           "identical_to_prescreen": all(all(v["same_as_prescreen"].values()) for v in out.values() if v["same_as_prescreen"] is not None)}
     (OUT / "regate.json").write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
     return rec
 
