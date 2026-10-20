@@ -1,0 +1,74 @@
+{
+  "dataset": "work/local_openfoam/datasets/u3_smoke",
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "1",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/kernels/u3_smoke/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/runs/u3_smoke_a:/kaggle/working",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/datasets/u3_smoke:/kaggle/input/cfd-opt-sdf-unc01-u3-smoke-inputs:ro",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/runner.py"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      9.8671875,
+      9.8623046875,
+      12.3935546875
+    ],
+    "swap": "total = 12288.00M  used = 11262.06M  free = 1025.94M  (encrypted)",
+    "utc": "2026-10-20T17:07:58+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      7.6796875,
+      11.0791015625,
+      17.23388671875
+    ],
+    "swap": "total = 13312.00M  used = 11576.38M  free = 1735.62M  (encrypted)",
+    "utc": "2026-10-20T16:52:05+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [
+      "ramhachi888/cfd-opt-sdf-unc01-u3-smoke-inputs"
+    ],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/cfd-opt-sdf-unc01-u3-smoke",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "cfd-opt-sdf-unc01-u3-smoke"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "work/local_openfoam/kernels/u3_smoke/runner.py",
+  "runner_sha256": "1e3d71aa07719957d590c9a8e02eb6c6c4ed9e4ba89454c03819b8d3752d8db3",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": null,
+  "wall_s": 953.3921197499999
+}

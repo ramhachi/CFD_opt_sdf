@@ -1,6 +1,6 @@
 # STATE — current position in one page (overwrite at each milestone; the history is in `docs/phase_plan.md`)
 
-Updated: 2026-10-19 (incl. the T2-0b row and M1 done: JOB-02 gate passed). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
+Updated: 2026-10-19 (incl. the T2-0b row and M1 done: JOB-02 gate passed); 2026-10-21 compute backend: LOCAL-OF-01 (OpenFOAM local for the U3 pipeline, T2-0c stays on Kaggle CPU). Integration branch: `codex/kaggle-batch-migration`. Roadmap authority: `docs/phase_plan.md` (latest entry: "2026-10-16 roadmap re-baseline").
 Re-plan document: `docs/roadmap_review_2026_10_16.md`.
 
 ## Goal
@@ -37,8 +37,10 @@ NO-GO branch (pre-committed): smooth-advection-scheme WaterLily test first, then
 
 ## Compute backend (user, 2026-10-16)
 Kaggle T4 (GPU) and Kaggle CPU (OpenFOAM) stay the backends for now. The user knows GPU rental APIs could cut cost and wants to decide a switch only when it becomes necessary, not a full switch now. Triggers to raise the decision: weekly GPU need above the Kaggle quota (~30 h), queue/round-trip latency dominating a milestone, or a run class Kaggle cannot hold (e.g. 3D high-Re WaterLily, > 12 h sessions). The harness keeps the runner portable (working root via CAMPAIGN_WORK_ROOT); submission stays the only Kaggle-specific step.
+OpenFOAM runs locally in Docker (user, 2026-10-20, verbatim: 「そうだね、タスクが重そうなのでopen formはローカルにしようか」), gated by LOCAL-OF-01 (`docs/local_openfoam_env_gate_2026_10_20.md`): image `sha256:e9ceb8a7…25eb` (linux/amd64 noble under Rosetta, OpenFOAM 2512.0-2 from the registered noble lock), lock `infra/local_openfoam/local_openfoam_lock.json`, wrapper `scripts/local_openfoam.py run` (usage `infra/local_openfoam/README.md`). Round 1 (2026-10-21): the U3 / XFID X3 pipeline passes bit for bit (`LOCAL_ENV_PASS_BITWISE`: X3 and v18 force histories byte-identical to Kaggle) -> UNC-01 U3 runs locally; the T2-0c pipeline fails (`LOCAL_ENV_FAIL`: OpenFOAM is deterministic locally, but gmsh meshes of rotated or displaced geometries differ from Kaggle's in 86 of 262 geometries, Cl moves by the remeshing sigma) -> T2-0c stays on Kaggle CPU. WaterLily stays on Kaggle T4.
 
 ## Standing facts to remember
-- OpenFOAM is kept (2026-10-16 reversal of the 10-02 removal direction); working Kaggle CPU recipes: `infra/kaggle/kernel_openfoam_xfid_gridphase_x3_formal/`.
+- OpenFOAM is kept (2026-10-16 reversal of the 10-02 removal direction); working Kaggle CPU recipes: `infra/kaggle/kernel_openfoam_xfid_gridphase_x3_formal/`; the same runners run locally under LOCAL-OF-01 (X3/U3 family only).
+- The T2-0 gmsh generator is not run-to-run deterministic at the mesh-file level (numbering variants; 7 of 41 geometries differ between two Kaggle sessions) and its meshes of rotated or displaced geometries depend on the platform's floating point (LOCAL-OF-01).
 - Kaggle: 2 concurrent GPU sessions, ~30 GPU h/week; per-state T4 solver time flow_24 ~175 s, flow_32 ~400 s, flow_48 ~2,200 s.
 - Full pytest in a fresh worktree (no `work/`): 0 failed, 2873 passed, 73 skipped; with `work/` symlinked to the main checkout: 0 failed, 2920 passed, 26 skipped. The 39 formerly failing tests skip via `tests/conftest.py::requires_work` (reason names the missing gitignored path) or, for one sha256-pinned test file, by node id in conftest; one more skips when `case_metadata.json` bakes in another checkout's absolute path. 74 Kaggle kernel `*.log` files were recovered with matching sha256 and are tracked (`.gitignore` negation `!docs/evidence/**/kernel_output/**/*.log`); 22 manifest logs of failed-attempt/forward-bridge kernels are not recoverable and no test uses them. Several `SHA256SUMS` still list untracked/missing logs (`kaggle_kernel.log`, `push1.log`, validation pytest logs), so `scripts/check_sha256sums_tracked.py` fails on those evidence directories (pre-existing, not addressed here).

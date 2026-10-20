@@ -245,4 +245,60 @@ reviewed by the reviewers; its blinding is covered by a test (no value or state 
 
 ## 10. Result (append-only)
 
-Not run.
+### 2026-10-21, round 1: T `LOCAL_ENV_FAIL`, U `LOCAL_ENV_PASS_BITWISE`
+
+Freeze: commit `e8579970` (pushed; #57 and #61 comments), freeze record SHA-256 `29429f6d28c684df8a07eb7be937857be9cffd1a2d8ae57776f35c65e6fd606e`.
+Comparator invoked once (`gate_ledger.jsonl`, 2026-10-20T17:16:11Z UTC): `gate_result.json` SHA-256
+`0496603b617e6057079e6214c05dc156f48b3f955c9f3c93f40181daaa6d2c7f`, comparator `41c6ff98…6715`, input hash `d3b3c87c…f9f`.
+
+**Runs** (all ten counted: return code 0, `DONE`, frozen image, lock, script and runner, registered arguments, package list after the run = lock; no
+repeat, no extra replicate, no harness fix):
+
+| run | `--cpus` / `--memory` | wall (s) | outcome |
+| --- | --- | --- | --- |
+| R1a `t20c_smoke2_a` | 4 / 8g | 2123 | FINISHED_SMOKE, MESH_OK 256, COMPLETED 7 (= Kaggle counts) |
+| R1b `t20c_smoke2_b` | 4 / 8g | 1571 | same counts |
+| R2 `t20b_a`, R3 `t20b_b` | 4 / 8g | 1106, 1046 | 5/5 COMPLETED each, none continued |
+| R4 `x3_a`, R5 `x3_b` | 1 / 8g | 1427, 1436 | 14/14 COMPLETED each |
+| R6a `u3_smoke_a`, R6b `u3_smoke_b` | 1 / 8g | 953, 953 | 8/8 COMPLETED each; R6a sanitised by the frozen M2 sanitiser |
+
+**Procedural deviation (no numerical effect):** section 4 limited concurrent runs to 4 CPUs in total because another study occupied the host. After that
+study ended, the parent session allowed up to 8 CPUs (message of 2026-10-21); R2/R3 then ran alongside R1, and R4-R6b (4 x 1 CPU) alongside R1b. The
+per-run arguments stayed the registered ones and the comparator verified them for every run (`deviations.log.gz`). Host load at the run starts: 76 (R1a,
+while the other study was still running) down to 8.
+
+**T family (T2-0c pipeline): `LOCAL_ENV_FAIL`.**
+- T1 fails: of 262 geometries, 174 agree and 88 do not; 86 differ in cell count (med30, fine30 and xfine30, remeshed and morphed; coa30 all agree) and
+  2 only in checkMesh statistics; `bases.json` differs in the six B' bases at +0.5 deg (cell counts), while the nine 0-deg baselines are bit-identical.
+  Mesh files identical to Kaggle: 62 of 262.
+- T2 passes: the local pipeline is deterministic. All 262 mesh files are identical between R1a and R1b and all 7 solver paths have identical residual,
+  continuation and y+ blocks; the 5 T2-0b cases have identical mesh files and byte-identical `coefficient.dat` in R2 and R3.
+- T3 has no pair to test: none of the 5 local T2-0b meshes equals Kaggle's (4 differ in cell count; `fine30 h/c 0.224 +1` has Kaggle's 26863 cells but a
+  different file), so T3 alone would be `INCOMPLETE`; the definite T1 failure dominates (section 5), and no extra replicate was run (R2 and R3 already
+  agree bit for bit, so a replicate would draw the same meshes).
+- Descriptive: local minus Kaggle Cl (tail means) on these different meshes: +0.0028 (`fine30 0.224 -1`), +0.0060 (`fine30 0.224 +1`), +0.0089
+  (`med30 0.134 -0.25`), -0.0103 (`med30 0.134 +0.25`), -0.0206 (the unsteady `fine30 0.09 +1`), i.e. 0.2-0.75 % of Cl for the steady cases, the size of
+  T2-0b's remeshing sigma (0.0023-0.0048): label `VARIANT_SPREAD_ABOVE_SCALE`. Kaggle self-consistency 34 of 41 (as in section 3).
+- **Diagnosis (consistent with the data, not proven):** every geometry without displacement (0 deg, no shape: 28) has Kaggle's cell count (26 identical
+  files, 2 numbering variants); the differences appear only where the generator applies a non-zero rotation or shape displacement in floating point (234
+  geometries, 86 with other cell counts). OpenFOAM itself reproduces Kaggle bit for bit (U family below). The difference therefore enters in the Python
+  numerical stack that computes the rotated or displaced contour (Python 3.12.3 / numpy 2.5.4 / scipy 1.18.1 under Rosetta without AVX-512 here; Kaggle's
+  Python 3.13.15 with unrecorded numpy/scipy on a Xeon), and gmsh turns last-bit differences of the contour into different triangulations. This is also a
+  reason for the 7 of 41 cross-session Kaggle differences being possible at all.
+- **Consequence (section 6): T2-0c stays on Kaggle CPU.** Carried note for T2-0c: its meshes depend on the platform's floating-point arithmetic at the
+  remeshing-noise level; its `REPLICATED_BITWISE` label against T2-0b can fail for that reason alone.
+
+**U family (U3 / X3 pipeline): `LOCAL_ENV_PASS_BITWISE`.**
+- U1: R4 and R5 byte-identical for 14/14 cases; R6a and R6b byte-identical for 8/8.
+- U2: all 14 X3 cases have Kaggle's mesh records (cells, points, concave cells, snappy levels), solver blocks and **byte-identical `coefficient.dat`**;
+  every discrepancy is 0 (per case, mean bias, all 42 differences); the mirror-pair direction contrasts equal Kaggle's exactly (for example D0 downforce
+  0.0037185 N, D1 downforce 0.000116 N against the 32-phase SE 7.2e-5 N; these are public X3 values).
+- U3: the sanitised v18 smoke agrees with the sanitised Kaggle archive for 8/8 cases (mesh records, stage return codes, STL hashes) with identical solver
+  blocks; the Kaggle archive reports noble.
+- U4 (blinded): the 8 v18 force histories are byte-identical to Kaggle's; mean bias 0 and every state-minus-parent discrepancy 0. No v18 force value or
+  difference is in any record.
+- **Consequence (section 6): the U3 formal kernel may run locally** with this lock (the M2 session amends #61). Throughput: the U3 smoke took 953 s for 8
+  cases here (about 119 s per case at 1 CPU with three other containers on the host) against 682 s on Kaggle; X3 cases 64-131 s (mean 97) against 39-43 s.
+
+Validation: `pytest -q tests/test_local_openfoam.py` 8 passed; full `pytest -q` 2941 passed, 73 skipped, 0 failed; `compileall` and `git diff --check`
+pass. Evidence: `docs/evidence/local_openfoam_env_2026_10_20/` (`README.md`, `SHA256SUMS`). Qualification flags unchanged (all false).
