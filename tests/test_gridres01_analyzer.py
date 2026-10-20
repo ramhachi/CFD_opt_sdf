@@ -102,3 +102,97 @@ def test_a_tampered_retained_csv_is_refused(tmp_path):
 def test_analyze_fails_closed_without_a_valid_freeze(tmp_path):
     rep = A.analyze("flow_40", tmp_path, {"kind": "nope"})
     assert rep["verdict"] == "INCOMPLETE" and rep["integrity"]["pass"] is False and rep["integrity"]["failures"]
+
+
+# ---- check_kernel replayed over the REAL retained flow_32 kernel output (identity regenerated for flow_40) -------------------------------------------------------------------------------
+import hashlib  # noqa: E402
+import json  # noqa: E402
+import shutil  # noqa: E402
+
+import build_gridres01_kernel as K  # noqa: E402
+from fd08_v2_campaign_io import recompute_force_n  # noqa: E402
+
+EV = ROOT / G.OPT01B_REL
+INV = json.loads((ROOT / A.EVIDENCE_REL / "inventory.json").read_text())
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+CASE = "flow_40"
+FREEZE = {"kind": A.FREEZE_KIND, "case_id": CASE, "source_commit": "0" * 40, "source_tree_id": "0" * 40, "inventory_sha256": sha(ROOT / A.EVIDENCE_REL / "inventory.json"), "pins": K.pins(CASE),
+          "runtime": {**A.runtime_fixed(CASE), "kernel_id": K.KERNEL_IDS[CASE], "case_id": CASE, "runner_sha256": "0" * 64}}
+
+
+def replay(tmp, mutate=None, after_manifest=None):
+    """A five-state flow_40 output built from the real retained flow_32 OPT-01 Stage B run (real CSVs, GPU and identity files); the case fields of each summary are rewritten to flow_40 and its
+    force summary recomputed with the flow_40 measurement, so that every integrity check runs on real bytes."""
+    real, out = EV / "kernel_output/opt01b_b", Path(tmp) / "k"
+    shutil.copytree(real, out, ignore=shutil.ignore_patterns("states", "output_manifest.json", "opt01b_index.json", "*.log"))
+    ident = json.loads((out / "run_identity.json").read_text())
+    ident.pop("baseline_csv_sha256", None)
+    ident.update(kernel=CASE, kernel_id=K.KERNEL_IDS[CASE], case_id=CASE, source_commit=FREEZE["source_commit"], runner_sha256=FREEZE["runtime"]["runner_sha256"], pins=FREEZE["pins"], verified=FREEZE["pins"])
+    (out / "run_identity.json").write_text(json.dumps(ident))
+    cfg = INV["grids"][CASE]["measurement"]
+    real_entries = {e["name"]: e for e in json.loads((real / "opt01b_index.json").read_text())["states"]}
+    entries = []
+    for row in INV["states"]:
+        d, src = out / "states" / row["name"], real / "states" / row["name"]
+        d.mkdir(parents=True)
+        shutil.copy(src / "flow_32.forces.csv", d / f"{CASE}.forces.csv"); shutil.copy(src / "W4_JOB_DONE", d / "W4_JOB_DONE")
+        s = json.loads((src / "flow_32.summary.json").read_text())
+        host = recompute_force_n(d / f"{CASE}.forces.csv", {"measurement": cfg})
+        case = cfg["case"]
+        s.update({"case_id": CASE, "cells_per_reference_length": G.GRIDS[CASE]["cells"], "flow_dims": case["flow_dims"], "flow_spacing_m": case["flow_spacing_m"], "solver_length": case["solver_length"],
+                  "solver_time_unit_s": case["solver_time_unit_s"], "solver_viscosity": case["solver_viscosity"], "downforce_time_weighted_n": host["downforce_n"], "drag_time_weighted_n": host["drag_n"]})
+        (d / f"{CASE}.summary.json").write_text(json.dumps(s))
+        entries.append({**real_entries[row["name"]], "forces_csv_sha256": sha(d / f"{CASE}.forces.csv")})
+    (out / "gridres01_index.json").write_text(json.dumps({"kernel": CASE, "kernel_id": K.KERNEL_IDS[CASE], "case_id": CASE, "states": entries, "status": "COMPLETE",
+                                                          "solver_process_wall_seconds_total": sum(e["seconds"] for e in entries)}))
+    if mutate:
+        mutate(out)
+    files = {str(p.relative_to(out)): sha(p) for p in sorted(out.rglob("*")) if p.is_file() and p.name != "output_manifest.json"}
+    (out / "output_manifest.json").write_text(json.dumps({"files": files}))
+    if after_manifest:
+        after_manifest(out)
+    return out
+
+
+def test_check_kernel_replay_over_the_real_retained_output_passes(tmp_path):
+    states = A.check_kernel(replay(tmp_path), CASE, FREEZE, INV)
+    assert list(states) == list(G.NAMES)
+    ret = A.retained_tables()["flow_32"]
+    assert states[G.PARENT_NAME]["downforce_n"] == pytest.approx(ret[G.PARENT_NAME]["downforce_n"] * (0.02 / 0.025) ** 2, rel=1e-12)   # flow_40 force scale on the flow_32 solver forces
+
+
+@pytest.mark.parametrize("name,mutate,match", [
+    ("fc_swap", lambda o: (lambda p, s: (s.update(phi_fortran_sha256=s["phi_c_order_sha256"], phi_c_order_sha256=s["phi_fortran_sha256"]), p.write_text(json.dumps(s))))(
+        o / "states" / G.state_name(0.625) / f"{CASE}.summary.json", json.loads((o / "states" / G.state_name(0.625) / f"{CASE}.summary.json").read_text())), "phi_fortran_sha256"),
+    ("no_done", lambda o: (o / "DONE").unlink(), "DONE"),
+    ("old_grid_dims", lambda o: (lambda p, s: (s.update(flow_dims=[200, 96, 72]), p.write_text(json.dumps(s))))(
+        o / "states" / G.PARENT_NAME / f"{CASE}.summary.json", json.loads((o / "states" / G.PARENT_NAME / f"{CASE}.summary.json").read_text())), "grid dimensions"),
+])
+def test_integrity_negatives(tmp_path, name, mutate, match):
+    with pytest.raises(ValueError, match=match):
+        A.check_kernel(replay(tmp_path, mutate=mutate), CASE, FREEZE, INV)
+
+
+def test_post_manifest_edit_and_budget_overrun_and_wrong_state_set_fail(tmp_path):
+    with pytest.raises(ValueError, match="hash mismatch"):
+        A.check_kernel(replay(tmp_path / "1", after_manifest=lambda o: (o / "nvidia_smi.csv").write_text("x")), CASE, FREEZE, INV)
+
+    def slow(o):
+        idx = json.loads((o / "gridres01_index.json").read_text()); idx["states"][2]["seconds"] = 1801.0
+        idx["solver_process_wall_seconds_total"] = sum(e["seconds"] for e in idx["states"]); (o / "gridres01_index.json").write_text(json.dumps(idx))
+    with pytest.raises(ValueError, match="exceeds budget"):
+        A.check_kernel(replay(tmp_path / "2", mutate=slow), CASE, FREEZE, INV)
+
+    def extra(o):
+        (o / "states" / "opt01b__prop__s0.9375mm").mkdir()
+    with pytest.raises(ValueError):
+        A.check_kernel(replay(tmp_path / "3", mutate=extra), CASE, FREEZE, INV)
+
+
+def test_end_to_end_replay_has_integrity_and_a_verdict_and_a_broken_input_is_incomplete(tmp_path, monkeypatch):
+    monkeypatch.setattr(A, "validate_registration", lambda *a, **k: None)   # registration is validated against the real freeze in test_gridres01_freeze
+    r = A.analyze(CASE, replay(tmp_path), FREEZE, INV)
+    assert r["integrity"]["pass"] is True and r["verdict"] == "FLOW40_SIDES_WITH_FLOW32" and set(r["grids"]) == {"flow_24", "flow_32", "flow_40"}   # 0.64 x the flow_32 forces: G_max about 3e-4 N
+    assert r["grids"]["flow_40"]["g_max_n"] == pytest.approx(0.64 * r["grids"]["flow_32"]["g_max_n"], rel=1e-9) and r["no_gradient_claim"] is True
+    bad = A.analyze(CASE, tmp_path / "missing", FREEZE, INV)
+    assert bad["integrity"]["pass"] is False and bad["verdict"] == "INCOMPLETE"
