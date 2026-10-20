@@ -1,0 +1,247 @@
+{
+  "blockers": [],
+  "disclosure": "flow_48 is parameterization only: no flow_48 run is registered by the flow_40 freeze (plan Amendment 1 G2); a flow_48 freeze needs its own review",
+  "grids": {
+    "flow_40": {
+      "case_id": "flow_40",
+      "cells": 40,
+      "job": "scripts/waterlily_gridres01_job.jl",
+      "limits": {
+        "kernel_timeout_s": 21600,
+        "per_state_timeout_s": 1800,
+        "solver_wall_time_cap_s": 9000
+      },
+      "measurement": {
+        "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+        "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+        "case": {
+          "case_id": "flow_40",
+          "density_kg_m3": 1.0,
+          "dynamic_viscosity_pa_s": 0.01,
+          "flow_dims": [
+            250,
+            120,
+            90
+          ],
+          "flow_spacing_m": 0.02,
+          "freestream_mps": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+          "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+          "reference_area_m2": 0.64,
+          "reference_length_m": 0.8,
+          "reynolds": 80.0,
+          "solver_length": 40.0,
+          "solver_time_unit_s": 0.02,
+          "solver_viscosity": 0.5
+        },
+        "case_id": "flow_40",
+        "force_unit": "N",
+        "kernel_execution_allowance_s": 21600,
+        "per_state_timeout_s": 1800,
+        "qualification_claim": "bounded GRIDRES-01 finer-grid actual-primal response check along the OPT-01 direction; no qualification",
+        "solver_wall_time_cap_s": 9000,
+        "time_window_t_u_l": [
+          80.0,
+          120.0
+        ]
+      }
+    },
+    "flow_48": {
+      "case_id": "flow_48",
+      "cells": 48,
+      "job": "scripts/waterlily_gridres01_job.jl",
+      "limits": {
+        "kernel_timeout_s": 43000,
+        "per_state_timeout_s": 3600,
+        "solver_wall_time_cap_s": 18000
+      },
+      "measurement": {
+        "aggregate_solver_time_definition": "sum of registered per-state Julia wall_seconds excluding each state's first compile/warmup step, consistent with the bound W4 job",
+        "candidate_operator": "CandidateCWaterLilyBody(NormalFloorWaterLilyBody(candidate_grid))",
+        "case": {
+          "case_id": "flow_48",
+          "density_kg_m3": 1.0,
+          "dynamic_viscosity_pa_s": 0.01,
+          "flow_dims": [
+            300,
+            144,
+            108
+          ],
+          "flow_spacing_m": 0.016666666666666666,
+          "freestream_mps": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "precedent_criteria_path": "docs/evidence/kaggle_w4_v17_candidate_c_criteria_2026_10_round2.json",
+          "precedent_criteria_sha256": "09e25e88767110312a134de8c10f3c2668a4d7f9a2f29829d163c72a1f5f3ef1",
+          "reference_area_m2": 0.64,
+          "reference_length_m": 0.8,
+          "reynolds": 80.0,
+          "solver_length": 48.0,
+          "solver_time_unit_s": 0.016666666666666666,
+          "solver_viscosity": 0.6
+        },
+        "case_id": "flow_48",
+        "force_unit": "N",
+        "kernel_execution_allowance_s": 43000,
+        "per_state_timeout_s": 3600,
+        "qualification_claim": "bounded GRIDRES-01 finer-grid actual-primal response check along the OPT-01 direction; no qualification",
+        "solver_wall_time_cap_s": 18000,
+        "time_window_t_u_l": [
+          80.0,
+          120.0
+        ]
+      }
+    }
+  },
+  "job_env_common": {
+    "W4_CANONICAL_DESIGN_SPACING_M": "0.025",
+    "W4_CANONICAL_ORIGIN_M": "-1.0,-0.8,-0.6",
+    "W4_CANONICAL_STATE_LABEL": "v17",
+    "W4_CELL_SHAPE": "120,64,48",
+    "W4_MARGIN_GATE_M": "0.15",
+    "W4_MARGIN_TOLERANCE_M": "1e-6",
+    "W4_POINT_SHAPE": "121,65,49",
+    "W4_SOURCE_SURFACE_SHA256": "5e6d210794b55a11f3dc76b8be37eeb39d27579b341212939a1c2a63d2fb8d11"
+  },
+  "kernels": {
+    "flow_40": [
+      "opt01b__parent",
+      "opt01b__prop__s0.3125mm",
+      "opt01b__prop__s0.625mm",
+      "opt01b__prop__s1.25mm",
+      "opt01b__ctrl_reverse__s1.25mm"
+    ],
+    "flow_48": [
+      "opt01b__parent",
+      "opt01b__prop__s0.3125mm",
+      "opt01b__prop__s0.625mm",
+      "opt01b__prop__s1.25mm",
+      "opt01b__ctrl_reverse__s1.25mm"
+    ]
+  },
+  "kind": "gridres01_inventory",
+  "margin_gate_m": 0.15,
+  "names": [
+    "opt01b__parent",
+    "opt01b__prop__s0.3125mm",
+    "opt01b__prop__s0.625mm",
+    "opt01b__prop__s1.25mm",
+    "opt01b__ctrl_reverse__s1.25mm"
+  ],
+  "opt01b_analysis": {
+    "path": "docs/evidence/opt01b_stage_b_2026_10_15/opt01b_analysis.json",
+    "sha256": "63413dc228980e4cf29c31e6e820ed194aa08697f35a13445b4998dc0a1c01bd"
+  },
+  "opt01b_inventory": {
+    "path": "docs/evidence/opt01b_stage_b_2026_10_15/inventory.json",
+    "sha256": "e571e729f3152d4f71ada1db6c815a66488f3f229e4f5d239349d367ca30bac7"
+  },
+  "parent": {
+    "generation": 1,
+    "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+    "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+    "raw_path": "docs/evidence/opt01b_stage_b_2026_10_15/inputs/parent.phi_f4_fortran.raw",
+    "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a"
+  },
+  "proposal": {
+    "coefficient_vector": [
+      0.8442786130380787,
+      -0.0613477770077727,
+      0.26340688157284675,
+      -0.4626520167066939
+    ],
+    "file": "docs/evidence/opt01b_stage_b_2026_10_15/inputs/robust_opt01a.dir_f4_fortran.raw",
+    "m_max_abs_sum": 1.47943582896646,
+    "sha256_fortran_raw": "32bb85a00370bcabcb8ecebed3b95482d329a8c56771e6085a2334d8049a4478"
+  },
+  "stage_status": "READY",
+  "states": [
+    {
+      "changed_node_count": 0,
+      "direction": null,
+      "kind": "parent",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0,
+      "name": "opt01b__parent",
+      "npz_sha256": "c0b949b3ba24ab9cdd110a23a80ba30c663acfabf8f30b132aee2b016eebe22b",
+      "phi_c_order_sha256": "ff4d30589c91fe40b975f79f94e8218c2fb8014b1f197946ed8ca065d0f82b54",
+      "phi_fortran_order_sha256": "2f23be7824d31d6c270ada9b3ff2b815601b3435da78e4e7e9089908608bf3d7",
+      "sign": 0,
+      "state_sha256": "c9e12f62460a3694b950c79c2bb064eefbb209e522d6fa5ef78f88e494172e3a",
+      "step_mm": 0.0,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "robust_opt01a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0003125000512227416,
+      "name": "opt01b__prop__s0.3125mm",
+      "npz_sha256": "87692e8eb0c5726e5e35494c88788a0e2090a80347fa8eb04eee9ea7933239fa",
+      "phi_c_order_sha256": "3a7d36da3dd42d88bd4d489ad1621c0e4bcaa74f790ecf279a3ffd2a44e4349c",
+      "phi_fortran_order_sha256": "7180080f621cf10372aa3f9bebf65e4ece7c1b628f5d449555bdf20faffbe2f5",
+      "sign": 1,
+      "state_sha256": "cdd1c9bfc6591ce624da3d692c221654c7dc7f255d50d7b4f1a8e7488d08bac3",
+      "step_mm": 0.3125,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "robust_opt01a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0006249999860301614,
+      "name": "opt01b__prop__s0.625mm",
+      "npz_sha256": "726ba02559a550423894083d34c3b34447583166d413f8b966a465eb59985890",
+      "phi_c_order_sha256": "22993a492c8bc6f2eb4e1b2ca8f668f61891bf60bc3f1e5d93bf59cdd86524db",
+      "phi_fortran_order_sha256": "1da54c4915809af8d7bbfaff07eb4f1757c24d1b4b969f095e291b0cfff0edb4",
+      "sign": 1,
+      "state_sha256": "a316fe9a95a94c4e42da0435992397e68c67ffe04ff1536306ae30cc5e2b9cce",
+      "step_mm": 0.625,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "robust_opt01a",
+      "kind": "candidate",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000884756446,
+      "name": "opt01b__prop__s1.25mm",
+      "npz_sha256": "e16c967e5fce616806180204ac7328834061d6e221c1e9502aa87801b463c9ea",
+      "phi_c_order_sha256": "bb117aaea192a9a79e2948a4dc5f33160657c22b378539a04d700fc788bf3306",
+      "phi_fortran_order_sha256": "e255c2de50f385ec3c40b975de872322b7b85158fa1971265ed2d1ab77451473",
+      "sign": 1,
+      "state_sha256": "8d981104f6b8b19357a36d75388ab8d4224090239e71b8d11122dd9eb0be9c10",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.34999999925494196
+    },
+    {
+      "changed_node_count": 4718,
+      "direction": "robust_opt01a",
+      "kind": "control",
+      "margin_tolerance_m": 1e-06,
+      "maximum_pointwise_change_m": 0.0012500000011641532,
+      "name": "opt01b__ctrl_reverse__s1.25mm",
+      "npz_sha256": "0765e9318bf84feedd06d16b77527e1cd2be763080bd24fecabb0568c0597f90",
+      "phi_c_order_sha256": "06d4747b3a06a16a971be4a9b17f9886a4027fa109b9b485032c2ca8fde10c8e",
+      "phi_fortran_order_sha256": "0c13ea19c86c7fb1487d889fb8d58659411c43832cc1f97f1b15a70e5893e46f",
+      "sign": -1,
+      "state_sha256": "770f0ba820cc9b628f99e552c1465e680cff95fcbde0cf91872984b883fe2291",
+      "step_mm": 1.25,
+      "zero_level_margin_m": 0.3493954790406861
+    }
+  ],
+  "steps_mm": [
+    0.3125,
+    0.625,
+    1.25,
+    -1.25
+  ]
+}
