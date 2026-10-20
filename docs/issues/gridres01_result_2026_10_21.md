@@ -43,3 +43,23 @@ rule did its job (it rejected), and further mm-scale secant steps on these grids
   OpenFOAM) to average the discretization effect; (3) a re-genesis that removes the lattice tie plateau and the commensurability special case.
 
 Not claimed: grid independence, physical or Stage V downforce, a gradient, optimizer behaviour. All flags false; `shape_update_allowed=false`.
+
+## Correction and reconciliation with GRID-02 (#56), added 2026-10-21 after the merge
+
+This study was planned on a stale base and did not know that GRID-02 (#56, 2026-10-16, `docs/evidence/grid02_trend_2026_10_16/`) had already run
+the same seven Stage B geometries on flow_16 and flow_48 and placement-shifted flow_24/flow_32, and that the 2026-10-16 roadmap re-baseline
+(`docs/STATE.md`, R3: optimise on flow_32, confirm on flow_48, flow_24 demoted) followed from it. Forward-step downforce slopes (GRID-02 fit, N/mm):
+flow_16 +4.1e-4, flow_24 +0.94e-4, flow_32 +4.9e-4, flow_48 +4.9e-4, shifted flow_24 +3.2e-4, shifted flow_32 +9.3e-4 — all positive. flow_40 here
+is negative at every forward step (−1.45e-4, −4.07e-4, −1.305e-3 N): the only negative slope among seven grid/placement cells.
+
+**flow_40 is most likely Poisson-confounded, and the interpretation above is withdrawn.** The registered confound label used the fraction of solves
+at the 32-iteration cap, which is negligible everywhere. The residuals tell a different story: the per-sample maximum final residual is 0.076–0.081
+on every flow_40 state against 3.9e-5 on flow_32 and 3.8e-3 on flow_24 (p50 about 20 times flow_32's). flow_40's 250×120×90 grid coarsens poorly
+(250 = 2·5³; the pre-run review counted 4 multigrid levels against 6 on flow_32 and 5 on flow_48). The flow_40 sign flip is therefore **not** taken as
+evidence against flow_32 ≈ flow_48, and the hypothesis "mm-scale responses are discretization-dominated on all grids" is withdrawn in favour of
+GRID-02's diagnosis (slope varies 50–100 % with grid and placement, flow_24 the outlier). The registered verdict string is unchanged (it was computed
+correctly by the frozen rule) but carries no decision weight.
+
+Lesson for grid choices: a flow grid must be checked for its pressure-solver hierarchy and residual level before its responses are compared; the cap-hit
+fraction is not a sufficient confound test. The flow_48 branch is moot (GRID-02 already has flow_48). No further GRIDRES-01 work is planned; the roadmap
+authority is the 2026-10-16 re-baseline.
