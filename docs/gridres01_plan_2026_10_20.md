@@ -67,7 +67,7 @@ Review: SOUND_WITH_REQUIRED_CHANGES (sonnet subagent, read-only). Verified by th
   +1.25) that avoids the reverse states (whose crossing-slope failures are report-only probe failures) and the max fit residual. Retained fits:
   flow_24 a = 9.9e-5 N/mm, b = −2.28e-4 N/mm² (max residual 5e-6 N), flow_32 a = 4.75e-4, b = −7.6e-5 (8e-6 N). The grids agree in the sign
   of the slope and disagree in magnitude and curvature. **Capability** of a grid along this line: G_max = max over s ∈ (0, 1.25] mm of a·s + b·s²
-  (the registered trust region): flow_24 1.1e-5 N (it cannot reach the 3e-5 N floor anywhere on the line), flow_32 5.3e-4 N.
+  (the registered trust region): flow_24 1.1e-5 N (it cannot reach the 3e-5 N floor anywhere on the line), flow_32 4.75e-4 N (at the 1.25 mm edge).
 - **G4 Verdict (downforce, preregistered).** Guard band 1e-5 N (the scale of the fit residuals, not a noise measurement):
   `FLOW40_SIDES_WITH_FLOW32` iff G_max(flow_40) > 4e-5 N; `FLOW40_SIDES_WITH_FLOW24` iff G_max(flow_40) < 2e-5 N; `AMBIGUOUS` otherwise (→ flow_48 branch,
   same rule applied to flow_48 and reported jointly). `INCOMPLETE` on integrity failure or a fit residual above 2e-5 N on any grid (the quadratic model
