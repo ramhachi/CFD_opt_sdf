@@ -1,5 +1,7 @@
 # UNC-01 (#61, M2) pre-registration — DRAFT (2026-10-19, not frozen)
 
+**Superseded (2026-10-20) by [unc01_registration_2026_10_20.md](unc01_registration_2026_10_20.md)**; the changes are listed in its §11. This draft is kept unchanged below for the record.
+
 Status: **DRAFT**. Nothing here is registered, frozen or reviewed as a source. It becomes `REGISTERED_FROZEN` only after the TODOs in §9 are closed, the freeze in §8 is written, and the PROC-01 reviews (one three-angle plan review, one source review) are recorded. No Kaggle run is authorised by this draft. All qualification flags stay false; `shape_update_allowed=false`.
 Inputs: the v18 parent (`docs/evidence/v18_genesis_2026_10_19/`, phi Fortran SHA `29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a`) and the MODE-01 v18 basis proposal `V18_BASIS_READY` (`docs/evidence/mode01_v18_prescreen_2026_10_19/`: heave 31.1 mm, pitch 3.1 deg, camber 19.7 mm, reflex 29.3 mm, twist 1.1 deg, sweep 11.3 mm, control surge 31.1 mm; plan `docs/v18_mode01_plan_2026_10_19.md`), both `EXPLORATORY_COMMITTED`; JOB-02 (#59) per-run placement (branch `feat/job02-per-state-placement`, gate `docs/evidence/job02_gate_2026_10_19/`, result pending at drafting time).
 
