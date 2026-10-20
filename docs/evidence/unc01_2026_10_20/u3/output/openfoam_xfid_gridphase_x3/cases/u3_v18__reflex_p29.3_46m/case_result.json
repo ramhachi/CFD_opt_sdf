@@ -1,0 +1,125 @@
+{
+  "forces": {
+    "downforce_n": {
+      "last": 0.19255513023999998,
+      "window_linear_drift": 8.373099254998294e-05,
+      "window_mean": 0.19258464016225352,
+      "window_std": 2.5353894698089222e-05
+    },
+    "drag_n": {
+      "last": 0.3375400224,
+      "window_linear_drift": 0.00010071198597459328,
+      "window_mean": 0.33757552941971836,
+      "window_std": 3.0493611379254678e-05
+    },
+    "last_iteration": 568.0,
+    "rows": 568,
+    "window_rows": 142
+  },
+  "id": "u3_v18__reflex_p29.3_46m",
+  "mesh": {
+    "cells": 39398,
+    "concave_cells": 2711,
+    "diagnostic_lines": [
+      "***Concave cells (using face planes) found, number of cells: 2711"
+    ],
+    "failed_check_counts": [
+      1
+    ],
+    "mesh_ok": false,
+    "only_allowed_concave_failure": true,
+    "points": 47741
+  },
+  "shift_m": [
+    0.002085938,
+    -0.001969136,
+    0.001788
+  ],
+  "snappy": {
+    "cells_per_refinement_level": {
+      "0": 2099,
+      "1": 3895,
+      "2": 18837,
+      "3": 14567
+    },
+    "refinement_block_raw": [
+      "",
+      "    0\t2099",
+      "    1\t3895",
+      "    2\t18837",
+      "    3\t14567",
+      "Writing mesh to time constant",
+      "Wrote mesh in = 0.09 s.",
+      "Mesh snapped in = 0.94 s.",
+      "Checking final mesh ...",
+      "Checking faces in error :",
+      "    non-orthogonality > 70  degrees                        : 0",
+      "    faces with face pyramid volume < 1e-13                 : 0",
+      "    faces with face-decomposition tet quality < 1e-09      : 0",
+      "    faces with concavity > 80  degrees                     : 0"
+    ],
+    "snappy_final_cells": null
+  },
+  "solver": {
+    "converged_in": 568,
+    "final_residuals": {
+      "Ux": 6.0650433e-09,
+      "Uy": 1.3081936e-08,
+      "Uz": 1.226459e-08,
+      "p": 9.3169553e-08
+    },
+    "iterations": 568
+  },
+  "stages": [
+    {
+      "child_sys_s": 0.16468000000000416,
+      "child_user_s": 2.146380999998655,
+      "peak_rss_mb_sampled": 21.64736,
+      "returncode": 0,
+      "stage": "blockMesh",
+      "timed_out": false,
+      "wall_s": 2.388848083999619
+    },
+    {
+      "child_sys_s": 0.2377480000000105,
+      "child_user_s": 2.6345500000006723,
+      "peak_rss_mb_sampled": 248.7296,
+      "returncode": 0,
+      "stage": "surfaceFeatureExtract",
+      "timed_out": false,
+      "wall_s": 2.959650335000333
+    },
+    {
+      "child_sys_s": 0.23621499999998719,
+      "child_user_s": 7.130272000000332,
+      "peak_rss_mb_sampled": 186.933248,
+      "returncode": 0,
+      "stage": "snappyHexMesh",
+      "timed_out": false,
+      "wall_s": 7.523347419999482
+    },
+    {
+      "child_sys_s": 0.12666400000000522,
+      "child_user_s": 2.3251019999988785,
+      "peak_rss_mb_sampled": 43.933696,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 2.4738512099993386
+    },
+    {
+      "child_sys_s": 0.29519099999998843,
+      "child_user_s": 24.164607000000615,
+      "peak_rss_mb_sampled": 138.805248,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 24.951520427001014
+    }
+  ],
+  "state": "v18__reflex_p29.3",
+  "status": "COMPLETED",
+  "stl_sha256": "eadbccde2819c41f55a76b8e95dbd54698a1114ebaca4189ea911a9fa1c7fa88",
+  "total_wall_s": 40.29761780999979,
+  "triangles": 640856
+}
