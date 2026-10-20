@@ -1,0 +1,87 @@
+{
+  "dataset": null,
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "4",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/kernels/t20b_wf/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/runs/t20b_b:/kaggle/working",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/scripts/local_openfoam.py:/kaggle/src/local_openfoam.py:ro",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/local_openfoam.py",
+    "subset",
+    "/kaggle/src/runner.py",
+    "t20b",
+    "sa-wf_h0.224_fine30_da-1",
+    "sa-wf_h0.224_fine30_da+1",
+    "sa-wf_h0.134_med30_da-0.25",
+    "sa-wf_h0.134_med30_da+0.25",
+    "sa-wf_h0.09_fine30_da+1"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      7.94970703125,
+      11.40625,
+      17.529296875
+    ],
+    "swap": "total = 13312.00M  used = 11576.38M  free = 1735.62M  (encrypted)",
+    "utc": "2026-10-20T16:51:43+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      12.0849609375,
+      14.65625,
+      25.14599609375
+    ],
+    "swap": "total = 13312.00M  used = 11752.38M  free = 1559.62M  (encrypted)",
+    "utc": "2026-10-20T16:34:17+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/cfd-opt-sdf-t20b-wf",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "cfd-opt-sdf-t20b-wf"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "work/local_openfoam/kernels/t20b_wf/runner.py",
+  "runner_sha256": "b10aea0d1095e335a3810ff7aca4c3f115d6dfbf46fb0f46ab3df42fe8202602",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": [
+    "t20b",
+    "sa-wf_h0.224_fine30_da-1",
+    "sa-wf_h0.224_fine30_da+1",
+    "sa-wf_h0.134_med30_da-0.25",
+    "sa-wf_h0.134_med30_da+0.25",
+    "sa-wf_h0.09_fine30_da+1"
+  ],
+  "wall_s": 1046.1489742499998
+}

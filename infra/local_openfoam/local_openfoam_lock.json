@@ -1,0 +1,82 @@
+{
+  "emulation": {
+    "cpu_flags": "flags\t\t: fpu tsc de cx8 apic sep cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx lm rep_good nopl pni cpuid pclmulqdq ssse3 cx16 sse4_1 popcnt sse4_2 aes lahf_lm movbe fma avx f16c rdrand bmi1 avx2 bmi2",
+    "cpu_model": "model name\t: VirtualApple @ 2.50GHz",
+    "note": "amd64 binaries under Rosetta on Apple silicon (Docker Desktop); the Kaggle CPU reports Intel Xeon @ 2.20GHz"
+  },
+  "host": {
+    "cpu": "Apple M4",
+    "docker_desktop": "4.58.1",
+    "docker_server": "29.1.5",
+    "machine": "arm64",
+    "macos": "26.3.1"
+  },
+  "image": {
+    "base": "ubuntu:24.04@sha256:a2d43bffc46670d7108bb3c0468c67c5557c4c92e83e1e34cbff1322ad1b94dc (linux/amd64 manifest of the index sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac)",
+    "created": "2026-10-20T15:08:05.835664086Z",
+    "dockerfile_sha256": "2a5a894900343c17db826dc8ec19330ba316d7158a56c778e20954f02f422bfd",
+    "dpkg_list": {
+      "packages": 297,
+      "path": "infra/local_openfoam/dpkg_list.txt",
+      "sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c"
+    },
+    "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "install_helper": {
+      "path": "infra/kaggle/kernel_openfoam_xfid_gridphase_x3_formal/runner.py",
+      "sha256": "0a649b433b7e85a11bdbff586bd9e96d64ced9b5b8a92af99aa4afeed9e2e9f3"
+    },
+    "platform": "linux/amd64",
+    "requirements_lock_sha256": "1e1c7ddd888e082175727c8819e6aa85cd5eeff8b4777da1716249011f46d90c",
+    "saved_tar": {
+      "bytes": 595660288,
+      "path": "work/local_openfoam/image/e9ceb8a79fd8ceb9.tar",
+      "restore": "docker load -i work/local_openfoam/image/e9ceb8a79fd8ceb9.tar (the image ID must equal image_id)",
+      "sha256": "0a7e8c47375cd6298d1e9fee7f9ff6a76c72cb6c30c0a5f244ecd66e07d27ba2"
+    },
+    "tag": "cfd-local-openfoam:2512-noble-amd64"
+  },
+  "openfoam": {
+    "foam_version": "OpenFOAM-v2512",
+    "installed": [
+      "openfoam2512=2512.0-2",
+      "openfoam2512-common=2512.0-2",
+      "openfoam2512-tools=2512.0-2"
+    ],
+    "lock_suite_used": "noble",
+    "mpi": "sys-openmpi",
+    "package_locks": {
+      "jammy": {
+        "path": "infra/kaggle/kernel_openfoam_xfid_v16_jammy_round5/openfoam_package_lock.json",
+        "sha256": "b5e59f8a7da34820fc3c6bda93b3524204dcaf4fa6e4f7f11d6c46ddddb66746"
+      },
+      "noble": {
+        "path": "infra/kaggle/kernel_openfoam_xfid_v16/openfoam_package_lock.json",
+        "sha256": "8bcf141db29d18800a55a70bca93175a37465ac18494e473efd32985317c7340"
+      }
+    },
+    "wm_options": "linux64GccDPInt32Opt"
+  },
+  "os": {
+    "dpkg_architecture": "amd64",
+    "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nVERSION_CODENAME=noble"
+  },
+  "purpose": "local Docker runtime of the registered Kaggle CPU OpenFOAM runners (gate docs/local_openfoam_env_gate_2026_10_20.md)",
+  "python": {
+    "gmsh": "4.15.2",
+    "numpy": "2.5.4",
+    "pip_freeze": [
+      "gmsh==4.15.2",
+      "numpy==2.5.4",
+      "psutil==7.2.2",
+      "scipy==1.18.1"
+    ],
+    "psutil": "7.2.2",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "scipy": "1.18.1"
+  },
+  "run_defaults": {
+    "cpus": "4",
+    "memory": "8g"
+  },
+  "schema_version": 1
+}

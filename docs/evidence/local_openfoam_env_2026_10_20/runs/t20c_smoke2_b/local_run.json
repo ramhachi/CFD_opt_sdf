@@ -1,0 +1,70 @@
+{
+  "dataset": null,
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "4",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/kernels/t20c_smoke2/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438/work/local_openfoam/runs/t20c_smoke2_b:/kaggle/working",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/runner.py"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      12.69775390625,
+      12.23046875,
+      16.990234375
+    ],
+    "swap": "total = 12288.00M  used = 11326.06M  free = 961.94M  (encrypted)",
+    "utc": "2026-10-20T16:53:53+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      20.18115234375,
+      23.42041015625,
+      33.19482421875
+    ],
+    "swap": "total = 13312.00M  used = 11848.44M  free = 1463.56M  (encrypted)",
+    "utc": "2026-10-20T16:27:42+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/cfd-opt-sdf-t20c-smoke",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "cfd-opt-sdf-t20c-smoke"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "work/local_openfoam/kernels/t20c_smoke2/runner.py",
+  "runner_sha256": "c52a27f98b148a1b52eed7a670784bd2548e8802e6caa9484cd449008f41eef7",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": null,
+  "wall_s": 1571.2541700000002
+}

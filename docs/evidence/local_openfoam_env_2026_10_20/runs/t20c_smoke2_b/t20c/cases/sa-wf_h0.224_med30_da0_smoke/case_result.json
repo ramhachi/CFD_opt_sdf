@@ -1,0 +1,125 @@
+{
+  "amp": 0.0,
+  "bl_thickness_m": 0.007749542399999998,
+  "check_mesh": {
+    "cells": 14773,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "6.7223694",
+    "max_non_orthogonality": "43.868342",
+    "max_skewness": "0.64883743",
+    "mesh_ok": true,
+    "min_determinant": "0.025733761",
+    "min_face_weight": "0.14767123",
+    "min_volume_ratio": "0.12994214",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "continued_to": 200,
+  "deadline_limited": true,
+  "delta_alpha_deg": 0.0,
+  "forces": {
+    "rows": 100,
+    "values": "suppressed (smoke), including the force-derived plateau flag"
+  },
+  "generator_wall_s": 0.2707050839999283,
+  "h_m": 0.0500416,
+  "h_over_c": 0.224,
+  "id": "sa-wf_h0.224_med30_da0_smoke",
+  "iterations_requested": 100,
+  "mesh": "med30",
+  "mesh_cells_3d": 14773,
+  "mesh_msh_sha256": "ac121835f8a81c5d929b8a800570f74c4221230c5e1c53a6bee99d367d18af09",
+  "mesh_proxy_failures": [],
+  "method": "base",
+  "mode": "smoke",
+  "model": "sa-wf",
+  "n_layers": 7,
+  "pre_solver_wall_s": 11.787759130999802,
+  "residual_converged": false,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.0011891343,
+      "Uy": 0.0024369533,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.00046722362,
+      "omega": null,
+      "p": 5.2764714e-05
+    },
+    "last_time": 100.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "solver_cont": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 100,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.00019011596,
+      "Uy": 0.00064126218,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.0002728539,
+      "omega": null,
+      "p": 2.2053113e-05
+    },
+    "last_time": 200.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 52.297728,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 5.469676460999835
+    },
+    {
+      "peak_rss_mb_sampled": 24.80128,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 6.0425977530003365
+    },
+    {
+      "peak_rss_mb_sampled": 101.318656,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 13.2154353800006
+    },
+    {
+      "peak_rss_mb_sampled": 100.286464,
+      "returncode": 0,
+      "stage": "simpleFoam_cont",
+      "timed_out": false,
+      "wall_s": 18.390865674999986
+    }
+  ],
+  "status": "COMPLETED",
+  "total_wall_s": 49.66396881499986,
+  "variant": "",
+  "x_lowest_m": 0.04542920183486107,
+  "yplus": {
+    "airfoil": {
+      "average": 32.165991,
+      "max": 63.191078,
+      "min": 1.6829086
+    },
+    "ground": {
+      "average": 6.9546058,
+      "max": 24.30102,
+      "min": 0.017754164
+    }
+  },
+  "yplus_returncode": 0
+}

@@ -7529,3 +7529,22 @@ Solver-free study, `EXPLORATORY_COMMITTED`. Plan: [width_rule_plan_2026_10_20.md
   - M3b registers R3 plus a frozen-node margin precondition and the fixed-topology gates, with R0 reported alongside.
   - The composite is validated in a registered run on disjoint data before any optimiser run.
 - GEOM-02 v2, its profile/policy and every record are unchanged. All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-21 LOCAL-OF-01: OpenFOAM moves to local Docker, gated (U3 pipeline PASS_BITWISE, T2-0c pipeline FAIL)
+
+User decision (2026-10-20, verbatim): 「そうだね、タスクが重そうなのでopen formはローカルにしようか」 (open form = OpenFOAM): the OpenFOAM work of #61 (UNC-01 U3)
+and #57 (T2-0c) moves from Kaggle CPU to the local machine, after an environment gate as in #45; WaterLily stays on Kaggle T4. Registration
+[local_openfoam_env_gate_2026_10_20.md](local_openfoam_env_gate_2026_10_20.md) (one two-angle adversarial review, 28 findings adopted or partly adopted
+before the freeze; freeze `e8579970`), evidence [local_openfoam_env_2026_10_20](evidence/local_openfoam_env_2026_10_20/README.md).
+- Environment: linux/amd64 Ubuntu 24.04.5 noble image under Rosetta (the registered runners require amd64 and an Ubuntu-codename OpenCFD lock), OpenFOAM
+  2512.0-2 installed by the X3 formal runner's own hash-locked `install_openfoam`, image ID `sha256:e9ceb8a7…25eb` saved as a tarball, lock
+  `infra/local_openfoam/local_openfoam_lock.json`; wrapper `scripts/local_openfoam.py run` mounts the kernel at the `/kaggle` paths and runs it unchanged.
+- **U family `LOCAL_ENV_PASS_BITWISE`:** 14 X3 formal cases and the 8 v18 U3 smoke cases reproduce Kaggle's force histories byte for byte (v18 compared
+  blinded), deterministic across two local runs -> the U3 formal kernel runs locally (#61 amends; `REGISTERED_AMENDED` by the M2 session).
+- **T family `LOCAL_ENV_FAIL`:** locally deterministic (262/262 mesh files and all force histories identical across two runs), but 86 of 262 T2-0c
+  smoke geometries get other cell counts than on Kaggle; every geometry without displacement matches, the differences enter where the generator rotates
+  or displaces the contour in floating point (Python stack under Rosetta vs Kaggle's Xeon; diagnosis, not proven); T2-0b cases move by 0.2-0.75 % in Cl
+  (the remeshing sigma) -> T2-0c stays on Kaggle CPU. Also found: the gmsh generator writes numbering variants of one mesh from run to run, on Kaggle too
+  (7 of 41 geometries differ between the T2-0b and T2-0c smoke sessions), which bears on T2-0c's `REPLICATED_BITWISE` prediction (sent to #57).
+- A later T-family round would need Kaggle's Python numerical stack identified (unrecorded) or mesh generation kept on Kaggle; not decided here.
+All qualification flags stay false; `shape_update_allowed=false`.
