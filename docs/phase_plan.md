@@ -7548,3 +7548,8 @@ before the freeze; freeze `e8579970`), evidence [local_openfoam_env_2026_10_20](
   (7 of 41 geometries differ between the T2-0b and T2-0c smoke sessions), which bears on T2-0c's `REPLICATED_BITWISE` prediction (sent to #57).
 - A later T-family round would need Kaggle's Python numerical stack identified (unrecorded) or mesh generation kept on Kaggle; not decided here.
 All qualification flags stay false; `shape_update_allowed=false`.
+
+## GRIDRES-01 (2026-10-21): downforce response along the OPT-01 direction not grid-resolved (flow_24/32/40)
+
+Registered verdict `FLOW40_SIDES_WITH_FLOW24` (G_max 0), but flow_40 is a third value: slope +9.8e-5, +4.73e-4, −2.31e-4 N/mm on flow_24/32/40 and the differences grow with refinement; Poisson cap saturation negligible; parent reruns byte-identical
+([record](issues/gridres01_result_2026_10_21.md)). Hypothesis: mm-scale (sub-cell) shape responses are discretization-dominated on these grids. No GRID-01 amendment. Next direction (larger resolvable shape changes with volume-neutral directions, grid-phase ensembles, or re-genesis) is undecided. All flags false.
