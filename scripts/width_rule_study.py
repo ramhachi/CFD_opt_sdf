@@ -156,9 +156,9 @@ def r4(occ: np.ndarray, h: float) -> dict:
     return _defect_rule(up, h)
 
 
-def measure(phi: np.ndarray, h: float = H, origin=None, frame=None) -> dict:
+def measure(phi: np.ndarray, h: float = H, origin=None, frame=None, with_r2=True) -> dict:
     occ = _corner_mean(phi) < 0.0
-    out = {"r0": r0(occ, h), "r1": r1(phi, h), "r2": r2(phi, h), "r3": r3(phi, h), "r4": r4(occ, h)}
+    out = {"r0": r0(occ, h), "r1": r1(phi, h), "r2": r2(phi, h) if with_r2 else {"status": "not_evaluated"}, "r3": r3(phi, h), "r4": r4(occ, h)}
     if frame is not None and out["r0"]["solid"] is not None and status(out["r0"]["solid"], h) != "pass":
         out["r0_location"] = sorted(set(classify(frame, x) for x in r0_location(occ, h, origin)))
     return out
@@ -243,11 +243,12 @@ def work(task: tuple) -> dict:
             _, mode, a, phase = task
             phi, origin, sha = v18_phi(mode, a, phase)
             p = G["v18"][1]
-            row.update(mode=mode, amplitude=a, phase=list(phase), phi_fortran_sha256=sha, min_thickness_m=min_thickness_m(p, mode, a), **measure(phi, H, origin, p))
+            row.update(mode=mode, amplitude=a, phase=list(phase), phi_fortran_sha256=sha, min_thickness_m=min_thickness_m(p, mode, a),
+                       **measure(phi, H, origin, p, with_r2=mode == "parent" or not any(phase)))  # R2 (8 x R0): D1 and phase 0 only (compute deviation)
         elif kind == "combo":
             _, i, coeffs, noise = task
             s, p = G["v18"]
-            row.update(combo=i, coeffs=dict(coeffs), noisy=noise is not None, **measure(combo_phi(dict(coeffs), noise), H, s.origin_m, p))
+            row.update(combo=i, coeffs=dict(coeffs), noisy=noise is not None, **measure(combo_phi(dict(coeffs), noise), H, s.origin_m, p, with_r2=False))
         elif kind == "roundtip":
             import v18_tip_probe as TP
             s, p0 = G["v18"]
@@ -410,6 +411,10 @@ def passes(row, rule) -> bool:
     return row[rule]["status"] == "pass"
 
 
+def ev(rows, rule) -> list:
+    return [r for r in rows if r[rule]["status"] != "not_evaluated"]
+
+
 def records() -> dict:
     out = {"v18": {(r["mode"], r["amplitude"]): r for r in json.loads(V18_PRESCREEN.read_text())["states"]}}
     for fam, f in (("opt01", "prescreen.json"), ("regen6p25", "prescreen_regen6p25.json")):
@@ -488,8 +493,8 @@ def criteria(rows: list[dict], rec: dict) -> dict:
             hrows.append({"family": fam, "state": r.get("mode", r.get("state")), "amplitude": r.get("amplitude"), "label": hist_label(fam, r, rec),
                           "passes": passes(r, rule), "bundle_still_fails_via": other})
         out[rule] = {
-            "K1_not_pass": sum(not passes(r, rule) for r in k1),
-            "K1_by_kind": {k: sum(not passes(r, rule) for r in k1 if r["task"][0] == k) for k in ("v18", "combo", "roundtip")},
+            "K1_not_pass": sum(not passes(r, rule) for r in ev(k1, rule)), "K1_evaluated": len(ev(k1, rule)),
+            "K1_by_kind": {k: sum(not passes(r, rule) for r in ev(k1, rule) if r["task"][0] == k) for k in ("v18", "combo", "roundtip")},
             "K2_thin_passed": sum(passes(r, rule) for r in thin),
             "K3_thick_not_passed": sum(not passes(r, rule) for r in thick),
             "K4_rim_mismatch_passed": [h["amplitude"] for h in hrows if h["label"].startswith("rim_mismatch") and h["passes"]],
@@ -515,7 +520,8 @@ def f3(x):
 
 
 def _counts(g, rules=RULES) -> str:
-    return " | ".join(str(sum(not passes(r, x) for r in g)) for x in rules)
+    """Not-pass counts per rule; 'k of n' when the rule was evaluated on only n of the rows (R2 outside D1 and phase 0)."""
+    return " | ".join(f"{sum(not passes(r, x) for r in ev(g, x))}" + ("" if len(ev(g, x)) == len(g) else f" of {len(ev(g, x))}") for x in rules)
 
 
 def tables(rows: list[dict], crit: dict, rec: dict) -> dict[str, str]:
@@ -566,7 +572,7 @@ def tables(rows: list[dict], crit: dict, rec: dict) -> dict[str, str]:
                      + f" | {f3(r['r0']['solid'])} | {f3(r['r1']['solid'])} | {r['r2']['n_pass']}/8 | {f3(r['r3']['solid'])} / {f3(r['r3']['void'])} | {f3(r['r4']['solid'])} / {f3(r['r4']['void'])} |")
     md["historical_table.md"] = ("| family | state | a | recorded width | label (pre-assigned) | R0 | R1 | R2 | R3 | R4 | R0 solid mm | R1 solid mm | R2 phases passing | R3 defect solid / void mm | R4 defect solid / void mm |\n"
                                  "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n" + "\n".join(lines) + "\n")
-    lines = [f"| {x} | {c['K1_not_pass']}/{crit['n']['K1']} | {c['K2_thin_passed']}/{crit['n']['K2_thin_represented']} | {c['K3_thick_not_passed']}/{crit['n']['K3_thick']} | "
+    lines = [f"| {x} | {c['K1_not_pass']}/{c['K1_evaluated']} | {c['K2_thin_passed']}/{crit['n']['K2_thin_represented']} | {c['K3_thick_not_passed']}/{crit['n']['K3_thick']} | "
              f"{len(c['K4_rim_mismatch_passed'])} | {c['K4_historical_still_failing']}/{crit['n']['historical_failures']} | {len(c['K4_passed_with_no_other_failing_gate'])} | "
              f"{None if c['aligned_slab_w50_cells'] is None else round(c['aligned_slab_w50_cells'], 3)} | {c['K5_not_relaxation']} | {c['K6_phi_scale_invariant']} | "
              f"{c['short_features_not_passed']}/{crit['n']['short_represented']} | {c['meets_K1_K6']} |" for x, c in ((x, crit[x]) for x in RULES)]
@@ -589,18 +595,31 @@ def jsonable(x):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--workers", type=int, default=5)
     ap.add_argument("--limit", type=int, default=0, help="smoke: every Nth task only, nothing written")
+    ap.add_argument("--cache", type=Path, default=ROOT / "work/width_rule_2026_10_20/rows.jsonl", help="append-only row cache; a restart skips cached tasks")
     args = ap.parse_args()
     todo = tasks()
     if args.limit:
         todo = todo[::args.limit]
-    with Pool(args.workers, initializer=_init) as pool:
-        rows = []
-        for i, r in enumerate(pool.imap(work, todo, chunksize=2)):
-            rows.append(r)
-            if i % 100 == 0 or "error" in r:
-                print(i, len(todo), r["task"][:3], r.get("error", ""), flush=True)
+    key = lambda t: json.dumps(list(t))  # noqa: E731
+    done = {}
+    if not args.limit and args.cache.exists():
+        for line in args.cache.read_text().splitlines():
+            r = json.loads(line)
+            done[json.dumps(r["task"])] = r
+    left = [t for t in todo if key(t) not in done]
+    print(f"{len(todo)} tasks, {len(todo) - len(left)} cached", flush=True)
+    args.cache.parent.mkdir(parents=True, exist_ok=True)
+    with Pool(args.workers, initializer=_init) as pool, open(args.cache, "a") as cache:
+        for i, r in enumerate(pool.imap_unordered(work, left)):
+            done[json.dumps(r["task"])] = r
+            if not args.limit:
+                cache.write(json.dumps(r) + "\n")
+                cache.flush()
+            if i % 50 == 0 or "error" in r:
+                print(i, len(left), r["task"][:3], r.get("error", ""), flush=True)
+    rows = [done[key(t)] for t in todo]
     if args.limit:
         print(json.dumps(jsonable([{k: v for k, v in r.items() if k in ("task", "error", *RULES)} for r in rows[:6]]), indent=1)[:6000])
         return
@@ -608,6 +627,7 @@ def main() -> None:
     meta = {"kind": "width_rule_study", "evidence_tier": "EXPLORATORY_COMMITTED", "plan": "docs/width_rule_plan_2026_10_20.md (rev. 2)", "solver_started": False,
             "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "h_m": H,
             "parameters": {"limit_cells": LIMIT_CELLS, "guard_cells": GUARD_CELLS, "r2_shifts_cells": R2_SHIFTS,
+                           "r2_evaluated_on": "D1 (parent, 256 phases), phase 0 of every MODE-01 v18 state, round tips, synthetic, historical; not on D2 phases != 0 or D3 (compute deviation, plan §9)",
                            "opening": {"k": OPEN_K, "radius_cells": OPEN_RADIUS_CELLS, "tau_cells": OPEN_TAU_CELLS, "unmeasured_band_cells": GUARD_CELLS, "crop_pad_cells": OPEN_PAD},
                            "synthetic": {"seed": SEED, "lattice_nodes": SYN_N, "refinement": SYN_K, "draws": SYN_DRAWS, "aligned_slab_phases": ASLAB_PHASES},
                            "combos": {"n": N_COMBOS, "noisy": N_NOISY, "basis_a_star": basis(), "noise": "U(-h/16, h/16) on active nodes"}},
