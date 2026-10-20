@@ -76,6 +76,25 @@ def test_registered_case_lists_and_ids_match_the_analyzer():
     assert ns["ITERS"] == 5000 and ns["CONT_ITERS"] == 15000 and ns["CASE_CAP_S"] == 2.5 * 3600
 
 
+def test_pack_cases_keeps_every_manifest_file(tmp_path):
+    import hashlib
+    import tarfile
+    ns = runner_ns()
+    ns["OUTPUT"] = tmp_path
+    (tmp_path / "cases/a/case_dict/0").mkdir(parents=True)
+    (tmp_path / "cases/a/case_result.json").write_text("{}")
+    (tmp_path / "cases/a/case_dict/0/U").write_text("u")
+    (tmp_path / "result.json").write_text("{}")
+    manifest = {str(p.relative_to(tmp_path)): ns["sha"](p) for p in sorted(tmp_path.rglob("*")) if p.is_file()}
+    digest = ns["pack_cases"]()
+    assert not (tmp_path / "cases").exists() and digest == hashlib.sha256((tmp_path / "cases.tar").read_bytes()).hexdigest()
+    out = tmp_path / "x"
+    with tarfile.open(tmp_path / "cases.tar") as tf:
+        tf.extractall(out, filter="data")
+    (out / "result.json").write_text("{}")
+    assert {p: hashlib.sha256((out / p).read_bytes()).hexdigest() for p in manifest} == manifest
+
+
 def test_smoke_filter_and_set_iters(tmp_path):
     ns = runner_ns()
     ns["MODE"] = "smoke"

@@ -12,6 +12,8 @@ A morphed case must keep its base's polyMesh topology (faces, owner, neighbour, 
 (BASE_TOPOLOGY_MISSING if the base had none); a case failing checkMesh is not solved (checkMesh_FAILED). All three are mechanical failures.
 MODE "smoke": development smoke before the code freeze (mesh-only pass over every registered geometry of the three kernels, each solver path at <= 200
 iterations; force values are removed before output). Measurement only: no verdict here (scripts/analyze_t20c.py). Kernel-level failures write ERROR.json and raise; DONE last.
+At the end the case files leave as one uncompressed tar, cases.tar (Kaggle's output API rate-limits per-file downloads: HTTP 429 after about 2400 files in
+the smoke); artifact_manifest.json, written before packing, lists every file inside it with its SHA-256. A kernel killed before packing leaves cases/ as files.
 """
 from __future__ import annotations
 
@@ -26,6 +28,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tarfile
 import threading
 import time
 import urllib.request
@@ -524,6 +527,15 @@ def make_bases(source: Path, bases, iters: int) -> list[dict]:
     return out
 
 
+def pack_cases() -> str:
+    """cases/ -> cases.tar (sorted members, arcname cases/...), then cases/ removed; returns the tar's SHA-256."""
+    tar = OUTPUT / "cases.tar"
+    with tarfile.open(tar, "w", format=tarfile.PAX_FORMAT) as t:
+        t.add(OUTPUT / "cases", arcname="cases")
+    shutil.rmtree(OUTPUT / "cases")
+    return sha(tar)
+
+
 def infrastructure_ok(r: dict) -> bool:
     s = r.get("solver", {})
     return r["status"] == "COMPLETED" and "forces" in r and s.get("iterations", 0) >= SMOKE_ITERS - 1 and not s.get("nan_in_log") and r["forces"]["last_iteration"] >= SMOKE_ITERS - 1
@@ -593,10 +605,12 @@ def main() -> None:
     shutil.rmtree(OUTPUT / "work", ignore_errors=True)
     manifest = {str(p.relative_to(OUTPUT)): sha(p) for p in sorted(OUTPUT.rglob("*")) if p.is_file() and p.name != "artifact_manifest.json"}
     write_json(OUTPUT / "artifact_manifest.json", manifest)
+    tar_sha = pack_cases()
     counts = {}
     for c in results:
         counts[c["status"]] = counts.get(c["status"], 0) + 1
-    (OUTPUT / "DONE").write_text(json.dumps({"status": f"FINISHED_{MODE.upper()}", "status_counts": counts, "artifact_manifest_sha256": sha(OUTPUT / "artifact_manifest.json")}, sort_keys=True) + "\n")
+    (OUTPUT / "DONE").write_text(json.dumps({"status": f"FINISHED_{MODE.upper()}", "status_counts": counts, "artifact_manifest_sha256": sha(OUTPUT / "artifact_manifest.json"),
+                                             "cases_tar_sha256": tar_sha}, sort_keys=True) + "\n")
 
 
 if __name__ == "__main__":
