@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """UNC-01 (#61, M2) analysis: the rules of docs/unc01_registration_2026_10_20.md §5 (that text governs; a disagreement is a defect here).
 
-    analyze_unc01.py u0 --campaign C --table T --kernel-root D [--smoke] [--out J]       # U0 gate (§5.1) from the native parent rows only; exit 1 on U0_FAIL
-    analyze_unc01.py u1 --campaign C --table T --kernel-root D --out J                   # U0 gate again, then the L / L2 / L_mid selection (§3); exit 1 unless selected
-    analyze_unc01.py budget --finished LOG... --pending KERNEL... [--out J]              # §4 flow_24 decision from session times only
-    analyze_unc01.py u2 --campaign C --u1 SEL --budget B --tables T... --kernel-root D --u3 R --u3-criteria K --out J   # the registered analysis, written once
+    analyze_unc01.py u0 --campaign C --tables T... --kernel-root D [--smoke] [--out J]   # U0 gate (§5.1) from the native parent rows only; exit 1 unless U0_PASS
+    analyze_unc01.py u1 --campaign C --tables T... --kernel-root D --out J               # U0 gate again, then the L / L2 / L_mid selection (§3); exit 1 unless SELECTED
+    analyze_unc01.py budget --finished KERNEL=LOG... --pending KERNEL... [--out J]       # §4 flow_24 decision from session times only
+    analyze_unc01.py u2 --campaign C --u1 SEL --budget B --tables T... --kernel-root D (--u3 R --u3-criteria K | --no-u3) --out J   # written once
 
 Kernel outputs: <kernel-root>/<out_prefix><kernel>/states/<run name>/<case_id>.{summary.json,forces.csv}.
 """
@@ -74,14 +74,17 @@ def load_rows(campaign_path, tables, smoke=False, campaign_id=None):
             SC.req(smoke or set(forces) == set(names), f"kernel {k}: table runs differ from the campaign")
             for name, f in forces.items():
                 rows[(c["kernels"][k]["case"]["case_id"], names[name]["state"], name.rsplit("__", 1)[1])] = {
-                    "downforce": f["downforce_n"], "drag": f["drag_n"], "kernel": k, "name": name}
+                    "downforce": f["downforce_n"], "drag": f["drag_n"], "kernel": k, "name": name, "csv_sha256": f.get("forces_csv_sha256"), "summary_sha256": f.get("summary_sha256")}
     return c, rows, kernels
 
 
-def run_files(c, kernel_root, kernel, name):
-    case = c["kernels"][kernel]["case"]["case_id"]
-    d = Path(kernel_root) / SC.out_dir_name(c, kernel) / "states" / name
-    return d / SC.summary_name(case), d / SC.forces_name(case)
+def run_files(c, kernel_root, row):
+    """The run's summary and force CSV under kernel_root, refused unless they are the files the verified table hashed."""
+    case = c["kernels"][row["kernel"]]["case"]["case_id"]
+    d = Path(kernel_root) / SC.out_dir_name(c, row["kernel"]) / "states" / row["name"]
+    summary, csv = d / SC.summary_name(case), d / SC.forces_name(case)
+    SC.req(SC.sha256_path(summary) == row["summary_sha256"] and SC.sha256_path(csv) == row["csv_sha256"], f"{row['name']}: kernel output differs from the verified table")
+    return summary, csv
 
 
 def drift(csv_path, window=(80.0, 120.0)):
@@ -97,15 +100,17 @@ def drift(csv_path, window=(80.0, 120.0)):
 
 
 # ---- U0 ---------------------------------------------------------------------------------------------------------------------------------------------
-def u0_gate(campaign_path, table, kernel_root, smoke=False):
-    c, rows, _ = load_rows(campaign_path, [table], smoke, "unc01_u01")
-    checks, ok = {}, True
+def u0_gate(campaign_path, tables, kernel_root, smoke=False):
+    """Reads only v18__parent__k0.  A missing row (a U01 kernel without a verified table) is U0_INCOMPLETE (§8 INFRA_LOSS), not U0_FAIL."""
+    c, rows, _ = load_rows(campaign_path, tables, smoke, "unc01_u01")
+    checks, ok, missing = {}, True, []
     for g in (("flow_24",) if smoke else ("flow_24", "flow_32", "flow_48")):
         row = rows.get((g, "v18__parent", "k0"))
         if row is None:
-            checks[g], ok = {"pass": False, "reason": "native parent row missing"}, False
+            checks[g] = {"pass": False, "reason": "native parent row missing (no verified table)"}
+            missing.append(g)
             continue
-        summary_path, csv_path = run_files(c, kernel_root, row["kernel"], row["name"])
+        summary_path, csv_path = run_files(c, kernel_root, row)
         s, d = SC.jload(summary_path), drift(csv_path)
         ratio = row["downforce"] / V17_NATIVE_PARENT_DOWNFORCE_N[g]
         tests = {"finite": all(s.get(f) is True for f in SC.SUMMARY_FLAG_KEYS), "drift_downforce": d["downforce"] <= U0_DRIFT_MAX, "drift_drag": d["drag"] <= U0_DRIFT_MAX,
@@ -113,8 +118,8 @@ def u0_gate(campaign_path, table, kernel_root, smoke=False):
         checks[g] = {"pass": all(tests.values()), "tests": tests, "drift": d, "downforce_n": row["downforce"], "drag_n": row["drag"],
                      "ratio_to_v17_native_parent": ratio, "v17_reference_n": V17_NATIVE_PARENT_DOWNFORCE_N[g]}
         ok &= checks[g]["pass"]
-    return {"kind": "unc01_u0_gate", "smoke": smoke, "campaign_sha256": SC.sha256_path(campaign_path), "table_sha256": SC.sha256_path(table),
-            "verdict": "U0_PASS" if ok else "U0_FAIL", "grids": checks, "rows_read": "v18__parent__k0 only",
+    return {"kind": "unc01_u0_gate", "smoke": smoke, "campaign_sha256": SC.sha256_path(campaign_path), "table_sha256": {Path(t).name: SC.sha256_path(t) for t in tables},
+            "verdict": "U0_FAIL" if not ok else "U0_INCOMPLETE" if missing else "U0_PASS", "grids": checks, "rows_read": "v18__parent__k0 only",
             "rule": "registration §5.1: finite flags, relative half-window drift <= 0.02 (drag, downforce), downforce > 0, gross-error check 0.5 <= F/F_v17 <= 2"}
 
 
@@ -123,30 +128,30 @@ def pm(m):
     return f"v18__{m}_p{WIDE[m]:g}", f"v18__{m}_m{WIDE[m]:g}"
 
 
-def u1(campaign_path, table, kernel_root):
-    gate = u0_gate(campaign_path, table, kernel_root)
-    out = {"kind": "unc01_u1_selection", "evidence_tier": "EXPLORATORY_COMMITTED", "u0": gate, "table_sha256": SC.sha256_path(table),
-           "analyzer_sha256": SC.sha256_path(__file__), "selection": None}
+def select(score):
+    """§3: L = argmax score, L2 = argmax over the other families, ties in WIDE order; L_mid from L_MID or L2 at -A*."""
+    L = max(WIDE, key=lambda m: (score[m], -list(WIDE).index(m)))
+    L2 = max((m for m in WIDE if FAMILY[m] != FAMILY[L]), key=lambda m: (score[m], -list(WIDE).index(m)))
+    return {"L": L, "L2": L2, "L_mid": f"v18__{L}_p{L_MID[L]:g}" if L in L_MID else pm(L2)[1]}
+
+
+def u1(campaign_path, tables, kernel_root):
+    """U0 first (needs all three U01 kernels verified, hence every U1 row); the selection only after U0_PASS."""
+    gate = u0_gate(campaign_path, tables, kernel_root)
+    out = {"kind": "unc01_u1_selection", "evidence_tier": "EXPLORATORY_COMMITTED", "u0": gate, "table_sha256": gate["table_sha256"],
+           "analyzer_sha256": SC.sha256_path(__file__), "selection": None, "verdict": gate["verdict"]}
     if gate["verdict"] != "U0_PASS":
-        out["verdict"] = "U0_FAIL"
         return out
-    _, rows, _ = load_rows(campaign_path, [table], campaign_id="unc01_u01")
-    need = [("flow_32", s, "k0") for m in WIDE for s in pm(m)] + [("flow_32", "v18__parent", "k0"), ("flow_32", "v18__D0_p3", "k0")]
-    if any(k not in rows for k in need):
-        out["verdict"] = "U1_INCOMPLETE"
-        return out
+    _, rows, _ = load_rows(campaign_path, tables, campaign_id="unc01_u01")
     F = lambda g, s, t, r: rows[(g, s, t)][r]  # noqa: E731
     score = {m: abs(F("flow_32", pm(m)[0], "k0", "downforce") - F("flow_32", pm(m)[1], "k0", "downforce")) for m in WIDE}
-    L = max(WIDE, key=lambda m: (score[m], -list(WIDE).index(m)))
-    others = [m for m in WIDE if FAMILY[m] != FAMILY[L]]
-    L2 = max(others, key=lambda m: (score[m], -list(WIDE).index(m)))
     k0 = {s: {r: F("flow_32", s, "k0", r) - F("flow_32", "v18__parent", "k0", r) for r in RESP} for m in WIDE for s in pm(m)}
     k0["v18__D0_p3"] = {r: F("flow_32", "v18__D0_p3", "k0", r) - F("flow_32", "v18__parent", "k0", r) for r in RESP}
     bridge = {g: {r: {"parent_half_minus_k0_n": F(g, "v18__parent", "half", r) - F(g, "v18__parent", "k0", r),
                       "parent_half_minus_k0_rel": F(g, "v18__parent", "half", r) / F(g, "v18__parent", "k0", r) - 1,
                       "D0_difference_k0_n": F(g, "v18__D0_p3", "k0", r) - F(g, "v18__parent", "k0", r),
                       "D0_difference_half_n": F(g, "v18__D0_p3", "half", r) - F(g, "v18__parent", "half", r)} for r in RESP} for g in ("flow_24", "flow_32")}
-    out.update(verdict="SELECTED", selection={"L": L, "L2": L2, "L_mid": f"v18__{L}_p{L_MID[L]:g}" if L in L_MID else pm(L2)[1], "scores_n": score,
+    out.update(verdict="SELECTED", selection={**select(score), "scores_n": score,
                                               "rule": "registration §3: L = argmax |F32(m+,k0) - F32(m-,k0)| (downforce); L2 = argmax over other families; ties in WIDE order"},
                k0_differences_flow32=k0, bridge=bridge, bridge_reference_v17_grid02="parent downforce change at the same placement: flow_24 +1.7 %, flow_32 -9.6 % (GRID-02)")
     return out
@@ -158,13 +163,24 @@ def log_wall(path):
     return max(float(r["time"]) for r in json.loads(Path(path).read_text()))
 
 
-def budget(finished_logs, pending):
-    done = sum(log_wall(p) for p in finished_logs)
-    pend = sum(EST_S[k] + SETUP_S for k in pending)
+NON24 = ("f48a", "f48b", "f32a", "f32b", "f32c")
+
+
+def decide(walls, pending):
+    """§4 from recorded inputs: walls = {kernel: session wall s} of finished U2 kernels, pending = pushed unfinished kernels."""
+    SC.req(set(walls) <= set(NON24) and set(pending) <= set(NON24) and not set(walls) & set(pending) and set(walls) | set(pending) == set(NON24),
+           "finished and pending must partition the five non-flow_24 U2 kernels")
+    done, pend = sum(walls.values()), sum(EST_S[k] + SETUP_S for k in pending)
     t24, t24r = done + pend + EST_S["f24"] + SETUP_S, done + pend + EST_S["f24r"] + SETUP_S
-    push = "f24" if t24 <= CAP_S else "f24r" if t24r <= CAP_S else None
-    return {"kind": "unc01_budget_decision", "finished_session_wall_s": done, "pending": list(pending), "pending_estimate_s": pend,
-            "T_f24_s": t24, "T_f24r_s": t24r, "cap_s": CAP_S, "push": push, "rule": "registration §4"}
+    return {"finished_session_wall_s": walls, "pending": sorted(pending), "pending_estimate_s": pend, "T_f24_s": t24, "T_f24r_s": t24r, "cap_s": CAP_S,
+            "push": "f24" if t24 <= CAP_S else "f24r" if t24r <= CAP_S else None}
+
+
+def budget(finished, pending):
+    """finished: ['kernel=log path', ...]."""
+    walls = {k: log_wall(p) for k, p in (x.split("=", 1) for x in finished)}
+    return {"kind": "unc01_budget_decision", **decide(walls, pending), "logs_sha256": {x.split("=", 1)[0]: SC.sha256_path(x.split("=", 1)[1]) for x in finished},
+            "rule": "registration §4"}
 
 
 # ---- U2 statistics ------------------------------------------------------------------------------------------------------------------------------------
@@ -225,7 +241,7 @@ def grid_tables(c, rows, kernels, kernel_root, f24_pushed):
             e["corr_between_differences"] = {r: {f"{a}|{b}": corr(e["differences"][a][r]["deltas_n"], e["differences"][b][r]["deltas_n"])
                                                  for i, a in enumerate(states[1:]) for b in states[i + 2:]} for r in RESP}
             if kernel_root is not None:
-                e["drift"] = {F[s][p]["name"]: drift(run_files(c, kernel_root, F[s][p]["kernel"], F[s][p]["name"])[1]) for s in states for p in full}
+                e["drift"] = {F[s][p]["name"]: drift(run_files(c, kernel_root, F[s][p])[1]) for s in states for p in full}
                 e["drift_flagged"] = sorted(n for n, v in e["drift"].items() if max(v.values()) > RUN_DRIFT_FLAG)
         out[g] = e
     return out
@@ -332,13 +348,15 @@ def pair_stats(per_shift, pairs):
     return s
 
 
-def u3(result_path, criteria_path, grids, ro):
+def u3(result_path, criteria_path, grids, ro, sel_path):
     if criteria_path is None or result_path is None:
-        return {"status": "INCOMPLETE", "reason": "no U3 output"}
+        return {"status": "INCOMPLETE", "reason": "no U3 output (--no-u3)"}
     crit, res = SC.jload(criteria_path), SC.jload(result_path)
     SC.req(res["criteria_sha256"] == SC.sha256_path(criteria_path), "U3 result belongs to other criteria")
-    states = list(crit["states"])
-    if "v18__parent" not in states:
+    SC.req(crit.get("u1_selection_sha256") == SC.sha256_path(sel_path), "U3 criteria were prepared from another U1 selection")
+    SC.req(set(crit["states"]) | set(crit.get("not_run_export_gate", [])) == set(grids["flow_32"]["states"]), "U3 states differ from the U2 flow_32 states")
+    states = ["v18__parent"] + sorted(s for s in crit["states"] if s != "v18__parent")   # the criteria are written with sort_keys
+    if "v18__parent" not in crit["states"]:
         return {"status": "INCOMPLETE", "reason": "parent STL failed the export gate", "not_run_export_gate": crit.get("not_run_export_gate", [])}
     cases = {c["id"]: c for c in res["cases"]}
     val = {}
@@ -366,10 +384,10 @@ def u3(result_path, criteria_path, grids, ro):
             wl = g32["differences"].get(s, {}).get(r) if g32["complete"] else None
             if wl is not None and wl["resolved"] and d["resolved"]:
                 rho = d["delta_bar_n"] / wl["delta_bar_n"]
-                w = tq(0.95, wl["P"] - 1) * math.hypot(d["se_n"] / d["delta_bar_n"], wl["se_n"] / wl["delta_bar_n"])
-                d.update(retention_vs_flow32=rho, retention_90=sorted([rho * math.exp(-w), rho * math.exp(w)]), sign_agrees_with_flow32=rho > 0)
+                w = tq(0.95, min(wl["P"], d["P"]) - 1) * math.hypot(d["se_n"] / d["delta_bar_n"], wl["se_n"] / wl["delta_bar_n"])   # min-dof rule (§5.6)
+                d.update(retention_vs_flow32=rho, abs_retention_90=[abs(rho) * math.exp(-w), abs(rho) * math.exp(w)], sign_agrees_with_flow32=rho > 0)
             else:
-                d.update(retention_vs_flow32=None, retention_90=None, sign_agrees_with_flow32=None)
+                d.update(retention_vs_flow32=None, abs_retention_90=None, sign_agrees_with_flow32=None)
             out["differences"][s][r] = d
     return out
 
@@ -414,7 +432,8 @@ def m3a(grids, ro, U3, Q3):
             e["sigma_d_vs_delta_fit"] = loglog([(abs(d[s][r]["delta_bar_n"]), d[s][r]["sigma_d_n"]) for s in wide + [ro["s050"]]])
         e["grid_ratio_Lplus_32_over_48"] = Q3[r]["flow32_vs_flow48_Lplus"]
         if U3.get("status") == "COMPLETE":
-            e["retention"] = {s: {k: v[r][k] for k in ("retention_vs_flow32", "retention_90", "sign_agrees_with_flow32", "delta_bar_n", "se_n", "resolved")} for s, v in U3["differences"].items()}
+            e["retention"] = {s: {k: v[r][k] for k in ("retention_vs_flow32", "abs_retention_90", "sign_agrees_with_flow32", "delta_bar_n", "se_n", "resolved")} for s, v in U3["differences"].items()}
+        e["E2"] = q4(grids, ro, r)
         out[r] = e
     return out
 
@@ -430,21 +449,32 @@ def outcome(grids, U3):
 
 
 def u2(campaign_path, sel_path, budget_path, tables, kernel_root, u3_result, u3_criteria):
+    import unc01_build as B
     load_max_change()
     sel = SC.jload(sel_path)
     SC.req(sel.get("kind") == "unc01_u1_selection" and sel.get("verdict") == "SELECTED", "u2 needs a SELECTED U1 record")
+    SC.req({k: sel["selection"][k] for k in ("L", "L2", "L_mid")} == select(sel["selection"]["scores_n"]), "the U1 selection does not follow from its scores")
     c, rows, kernels = load_rows(campaign_path, tables, campaign_id="unc01_u2")
     ro = roles(sel["selection"])
-    SC.req(set(dict.fromkeys(r["state"] for k in ("f32a", "f32b", "f32c") for r in c["kernels"][k]["runs"]))
-           == {"v18__parent", *(ro[k] for k in ("D0", "Lp", "Lm", "mid", "L2p", "s050", "roll"))}, "the U2 campaign does not match the U1 selection")
+    st = B.u2_states(sel["selection"]["L"], sel["selection"]["L2"])
+    for k, kern in c["kernels"].items():
+        want = st["flow_24_reduced" if k == "f24r" else kern["case"]["case_id"]]
+        SC.req(list(dict.fromkeys(r["state"] for r in kern["runs"])) == want, f"kernel {k}: states do not match the U1 selection")
+    SC.req(set(st["flow_32"]) == {"v18__parent", *(ro[k] for k in ("D0", "Lp", "Lm", "mid", "L2p", "s050", "roll"))}, "roles do not match the U2 states")
     bud = SC.jload(budget_path)
     SC.req(bud.get("kind") == "unc01_budget_decision", "u2 needs the §4 budget decision record")
+    SC.req(decide(bud["finished_session_wall_s"], bud["pending"])["push"] == bud["push"], "the budget decision does not follow from its recorded inputs")
     grids = grid_tables(c, rows, kernels, kernel_root, bud["push"])
+    for g in ("flow_32",):
+        if grids[g]["complete"]:
+            e = grids[g]
+            even = {r: [(a + b) / 2 for a, b in zip(e["differences"][ro["Lp"]][r]["deltas_n"], e["differences"][ro["Lm"]][r]["deltas_n"])] for r in RESP}
+            e["L_even_part"] = {r: {"per_phase_n": even[r], "mean_n": sum(even[r]) / len(even[r]), "sd_n": stats(even[r])["sigma_d_n"]} for r in RESP}
     if grids["flow_32"]["complete"]:
         k0 = sel["k0_differences_flow32"]
         grids["flow_32"]["native_phase_atypicality"] = {s: {r: (k0[s][r] - d[r]["delta_bar_n"]) / d[r]["sigma_d_n"] if d[r]["sigma_d_n"] > 0 else None for r in RESP}
                                                          for s, d in grids["flow_32"]["differences"].items() if s in k0}
-    U3 = u3(u3_result, u3_criteria, grids, ro)
+    U3 = u3(u3_result, u3_criteria, grids, ro, sel_path)
     Q3 = {r: q3(grids, ro, r) for r in RESP}
     return {"kind": "unc01_u2_analysis", "evidence_tier": "REGISTERED_FROZEN", "registration": "docs/unc01_registration_2026_10_20.md", "campaign_sha256": SC.sha256_path(campaign_path),
             "u1_selection_sha256": SC.sha256_path(sel_path), "budget_decision": bud, "analyzer_sha256": SC.sha256_path(__file__), "selection": sel["selection"], "roles": ro,
@@ -460,7 +490,6 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["u0", "u1", "budget", "u2"])
     ap.add_argument("--campaign")
-    ap.add_argument("--table")
     ap.add_argument("--tables", nargs="*")
     ap.add_argument("--u1")
     ap.add_argument("--budget")
@@ -468,24 +497,29 @@ def main():
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--u3")
     ap.add_argument("--u3-criteria")
+    ap.add_argument("--no-u3", action="store_true", help="u2 without U3 output (recorded; U3 then INCOMPLETE)")
     ap.add_argument("--finished", nargs="*", default=[])
     ap.add_argument("--pending", nargs="*", default=[])
     ap.add_argument("--out")
     a = ap.parse_args()
     if a.cmd == "u0":
-        res = u0_gate(a.campaign, a.table, a.kernel_root, a.smoke)
+        res = u0_gate(a.campaign, a.tables, a.kernel_root, a.smoke)
     elif a.cmd == "u1":
-        res = u1(a.campaign, a.table, a.kernel_root)
+        res = u1(a.campaign, a.tables, a.kernel_root)
     elif a.cmd == "budget":
         res = budget(a.finished, a.pending)
     else:
         SC.req(bool(a.out) and not Path(a.out).exists(), "u2 is written once: --out must name a new file")
+        SC.req(bool(a.kernel_root), "u2 needs --kernel-root (per-run drift and the hash check of every kernel output)")
+        SC.req(a.no_u3 != bool(a.u3 and a.u3_criteria), "give --u3 and --u3-criteria, or --no-u3")
         res = u2(a.campaign, a.u1, a.budget, a.tables, a.kernel_root, a.u3, a.u3_criteria)
+        res["u3_input"] = "not supplied (--no-u3)" if a.no_u3 else {"result_sha256": SC.sha256_path(a.u3), "criteria_sha256": SC.sha256_path(a.u3_criteria)}
     res = clean(res)
     if a.out:
-        Path(a.out).write_text(json.dumps(res, indent=1, sort_keys=True, allow_nan=False) + "\n")
+        with open(a.out, "x" if a.cmd == "u2" else "w") as fh:
+            fh.write(json.dumps(clean(res), indent=1, sort_keys=True, allow_nan=False) + "\n")
     print(json.dumps({k: res[k] for k in ("verdict", "selection", "push", "outcome") if k in res}, indent=1))
-    if a.cmd == "u0" and res["verdict"] != "U0_PASS" or a.cmd == "u1" and res["verdict"] != "SELECTED":
+    if a.cmd in ("u0", "u1") and res["verdict"] not in ("U0_PASS", "SELECTED"):
         sys.exit(1)
 
 

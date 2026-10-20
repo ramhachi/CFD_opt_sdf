@@ -7,7 +7,7 @@ the X3 generator at Halton indices 33-48 (16 exact mirror pairs, disjoint from X
 the X3 formal runner byte for byte except the bound criteria SHA (it discovers `x3_criteria.json`, so the criteria keep that file name).
 
     python scripts/unc01_u3_prepare.py prepare --u1 SEL [--smoke] [--dataset DIR]
-    python scripts/unc01_u3_prepare.py strip-smoke RESULT_IN RESULT_OUT      # the archived smoke copy without force fields
+    python scripts/unc01_u3_prepare.py strip-smoke OUTPUT_DIR SANITISED_DIR  # the archived smoke copy without force values
 Writes docs/evidence/unc01_2026_10_20/u3[/smoke]/{u3_criteria.json(+.sha256),export.json}, the dataset directory (untracked, under work/; STLs are re-derivable)
 and infra/kaggle/kernel_unc01_u3[_smoke]/{runner.py,kernel-metadata.json}.  Refuses to overwrite different criteria.
 """
@@ -73,13 +73,29 @@ def case_order(states):
 
 
 def strip_smoke(src: Path, dst: Path) -> dict:
-    """The development smoke keeps statuses, stage return codes, mesh statistics and times only: force fields are removed (registration §6)."""
-    res = json.loads(src.read_text())
-    for c in res.get("cases", []):
-        c.pop("forces", None)
-    res["forces_removed_from"] = {"path": src.name, "sha256": B.sha(src)}
-    dst.write_text(json.dumps(res, indent=2, sort_keys=True) + "\n")
-    return res
+    """Sanitised copy of a development-smoke output directory (registration §6): statuses, stage return codes, mesh statistics and times only.
+    result.json and every case_result.json lose their force fields; force histories and solver logs (coefficient.dat.gz, log.simpleFoam.gz) are not copied;
+    the SHA-256 of every changed or excluded file is recorded in EXCLUDED_SHA256.json."""
+    if dst.exists():
+        raise SystemExit(f"refusing to overwrite {dst}")
+    excluded = {}
+    for f in sorted(q for q in src.rglob("*") if q.is_file()):
+        rel = f.relative_to(src)
+        if f.name in ("coefficient.dat.gz", "log.simpleFoam.gz"):
+            excluded[rel.as_posix()] = B.sha(f)
+            continue
+        (dst / rel).parent.mkdir(parents=True, exist_ok=True)
+        if f.name in ("result.json", "case_result.json"):
+            rec = json.loads(f.read_text())
+            for c in rec.get("cases", [rec]):
+                c.pop("forces", None)
+            excluded[rel.as_posix()] = B.sha(f)
+            (dst / rel).write_text(json.dumps(rec, indent=2, sort_keys=True) + "\n")
+        else:
+            shutil.copy2(f, dst / rel)
+    (dst / "EXCLUDED_SHA256.json").write_text(json.dumps({"note": "force fields removed or files excluded (registration §6); SHA-256 of the originals", "files": excluded},
+                                                         indent=1, sort_keys=True) + "\n")
+    return excluded
 
 
 def main():

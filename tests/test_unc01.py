@@ -96,7 +96,7 @@ def test_states_record_matches_prescreen_and_roll_is_a_lattice_roll():
 
 
 # ---- planted data -----------------------------------------------------------------------------------------------------------------------------------
-SEL = {"L": "pitch", "L2": "camber", "L_mid": "v18__pitch_p1.3", "scores_n": {}}
+SEL = {"L": "pitch", "L2": "camber", "L_mid": "v18__pitch_p1.3", "scores_n": {"pitch": 0.04, "camber": 0.01, "reflex": 0.005, "twist": 0.002, "sweep": 0.001}}
 EFFECT = {"v18__D0_p3": 3e-3, "v18__pitch_p3.1": 2e-2, "v18__pitch_m3.1": -1.8e-2, "v18__pitch_p1.3": 8e-3, "v18__camber_p19.7": 6e-3,
           "v18__s050_m5": 2e-5, "v18__roll_p25": 1e-5}
 BASE = {"flow_24": 0.33, "flow_32": 0.36, "flow_48": 0.365}
@@ -112,17 +112,25 @@ def planted(rel=0.02, g24=1.0, g48=1.0, extra=None):
     return value
 
 
-def table(c, cpath, kernels, value):
+def table(c, cpath, kernels, value, root=None):
+    """A formal-looking table; with root, every run's summary/CSV is written there and hashed into the table (as harness verify does)."""
     sf = {}
     for k in kernels:
         kern = c["kernels"][k]
-        sf[k] = {r["name"]: {f"{q}_n": value(kern["case"]["case_id"], r["state"], 0 if r["name"].endswith("half") else int(r["name"].rsplit("__k", 1)[1]), q,
-                                            "half" if r["name"].endswith("half") else "k") for q in A.RESP} for r in kern["runs"]}
+        sf[k] = {}
+        for r in kern["runs"]:
+            kk, tag = (0, "half") if r["name"].endswith("half") else (int(r["name"].rsplit("__k", 1)[1]), "k")
+            row = {f"{q}_n": value(kern["case"]["case_id"], r["state"], kk, q, tag) for q in A.RESP}
+            if root is not None:
+                summ, csv = write_run(root, c, k, r["name"], row["downforce_n"] / SC.force_scale_n(kern["case"]), **DRIFT.get(r["name"], {}))
+                row.update(summary_sha256=SC.sha256_path(summ), forces_csv_sha256=SC.sha256_path(csv))
+            sf[k][r["name"]] = row
     return {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "smoke": False, "integrity": {"pass": True, "failures": []},
             "campaign_id": c["campaign_id"], "campaign_sha256": SC.sha256_path(cpath), "state_forces_n": sf}
 
 
 ALL = ("f48a", "f48b", "f32a", "f32b", "f32c", "f24")
+DRIFT = {}   # run name -> write_run kwargs (slope, finite) for the U0 / drift fixtures
 
 
 def setup(tmp_path, kernels=ALL, value=None, push="f24", sel=SEL):
@@ -138,8 +146,15 @@ def setup(tmp_path, kernels=ALL, value=None, push="f24", sel=SEL):
     k0 = {s: {q: 0.0 for q in A.RESP} for s in REC["states"] if s != "v18__parent"}
     spath = tmp_path / "sel.json"
     spath.write_text(json.dumps({"kind": "unc01_u1_selection", "verdict": "SELECTED", "selection": sel, "k0_differences_flow32": k0}))
+    walls = {"f48a": 9000.0, "f48b": 9000.0, "f32a": 6500.0, "f32b": 6500.0, "f32c": 6500.0}
+    if push == "f24r":
+        walls["f48a"] = 46800 - 3240 - 260 - sum(v for k, v in walls.items() if k != "f48a") + 1000
+    if push is None:
+        walls["f48a"] = 46800 - sum(v for k, v in walls.items() if k != "f48a")
+    dec = A.decide(walls, [])
+    assert dec["push"] == push
     bpath = tmp_path / "budget.json"
-    bpath.write_text(json.dumps({"kind": "unc01_budget_decision", "push": push}))
+    bpath.write_text(json.dumps({"kind": "unc01_budget_decision", **dec}))
     return cpath, spath, bpath, tabs
 
 
@@ -245,9 +260,13 @@ def test_tables_and_selection_must_match(tmp_path):
     with pytest.raises(ValueError):
         A.u2(cpath, spath, bpath, tabs, None, None, None)
     sel = json.loads(spath.read_text())
-    sel["selection"] = {**SEL, "L2": "twist"}
+    sel["selection"] = {**SEL, "L2": "twist", "scores_n": {**SEL["scores_n"], "twist": 0.02}}      # self-consistent, but not the campaign's selection
     spath.write_text(json.dumps(sel))
-    with pytest.raises(ValueError, match="does not match the U1 selection"):
+    with pytest.raises(ValueError, match="do not match the U1 selection"):
+        A.u2(cpath, spath, bpath, tabs[:0], None, None, None)
+    sel["selection"]["L"] = "camber"                                                                  # inconsistent with its own scores
+    spath.write_text(json.dumps(sel))
+    with pytest.raises(ValueError, match="does not follow from its scores"):
         A.u2(cpath, spath, bpath, tabs[:0], None, None, None)
 
 
@@ -262,25 +281,31 @@ def test_u2_cli_written_once(tmp_path):
 
 def test_budget_decision(tmp_path):
     logs = []
-    for i, w in enumerate((9800, 9900, 7000, 7100)):
-        p = tmp_path / f"l{i}.log"
+    for k, w in zip(("f48a", "f48b", "f32a", "f32b"), (9800, 9900, 7000, 7100)):
+        p = tmp_path / f"{k}.log"
         p.write_text(json.dumps([{"stream_name": "stdout", "time": 1.0, "data": ""}, {"stream_name": "stdout", "time": float(w), "data": ""}]))
-        logs.append(p)
+        logs.append(f"{k}={p}")
     d = A.budget(logs, ["f32c"])
-    assert d["push"] == "f24" and d["T_f24_s"] == 33800 + 6640 + 260 + 3240 + 260
-    big = tmp_path / "big.log"
-    big.write_text(json.dumps([{"time": 43500.0}]))
-    assert A.budget([big], [])["push"] == "f24r"
-    big.write_text(json.dumps([{"time": 46000.0}]))
-    assert A.budget([big], [])["push"] is None
+    assert d["push"] == "f24" and d["T_f24_s"] == 33800 + 6640 + 260 + 3240 + 260 and set(d["logs_sha256"]) == {"f48a", "f48b", "f32a", "f32b"}
+    walls = {"f48a": 46800 - 3240 - 260 - 4 * 6000.0, "f48b": 6000.0, "f32a": 6000.0, "f32b": 6000.0, "f32c": 6000.0}
+    assert A.decide(walls, [])["push"] == "f24" and A.decide(walls, [])["T_f24_s"] == 46800       # equality pushes f24
+    walls["f48a"] += 1
+    assert A.decide(walls, [])["push"] == "f24r"
+    walls["f48a"] += 2000
+    assert A.decide(walls, [])["push"] is None
+    with pytest.raises(ValueError, match="partition"):
+        A.decide({"f48a": 1.0}, ["f48a", "f48b", "f32a", "f32b", "f32c"])
+    with pytest.raises(ValueError, match="partition"):
+        A.decide({}, ["f24", "f48a", "f48b", "f32a", "f32b", "f32c"])
 
 
 # ---- U3 -----------------------------------------------------------------------------------------------------------------------------------------------
-def u3_files(tmp_path, states, fail=(), wl=0.8):
+def u3_files(tmp_path, states, spath, fail=(), wl=0.8, not_run=()):
     import unc01_u3_prepare as U
     order = U.case_order(states)
     kpath = tmp_path / "crit.json"
-    kpath.write_text(json.dumps({"states": {s: {} for s in states}, "case_order": order, "not_run_export_gate": []}))
+    kpath.write_text(json.dumps({"states": {s: {} for s in states}, "case_order": order, "not_run_export_gate": list(not_run), "u1_selection_sha256": B.sha(spath)},
+                                sort_keys=True))                                 # sorted like the real criteria (parent is not first)
     cases = []
     for spec in order:
         j = int(spec["id"].rsplit("_", 1)[1][:-1])
@@ -298,36 +323,55 @@ def test_u3_pairs_retention_and_labels(tmp_path):
     order = U.case_order(states)
     assert len(order) == 8 * 32 and order[0]["id"] == "u3_v18__parent_33p" and order[1]["id"] == "u3_v18__D0_p3_33p" and order[8]["id"] == "u3_v18__parent_33m"
     cpath, spath, bpath, tabs = setup(tmp_path)
-    rpath, kpath = u3_files(tmp_path, states, fail=("u3_v18__s050_m5_40m",))
+    rpath, kpath = u3_files(tmp_path, states, spath, fail=("u3_v18__s050_m5_40m",))
     res = A.u2(cpath, spath, bpath, tabs, None, rpath, kpath)
     u3 = res["u3"]
     assert u3["status"] == "COMPLETE" and 40 not in u3["pairs_used"] and len(u3["pairs_used"]) == 15        # the mirror is dropped too
     d0 = u3["differences"]["v18__D0_p3"]["downforce"]
-    assert d0["P"] == 15 and abs(d0["retention_vs_flow32"] - 0.8) < 0.02 and d0["retention_90"][0] < 0.8 < d0["retention_90"][1] and d0["sign_agrees_with_flow32"]
+    assert d0["P"] == 15 and abs(d0["retention_vs_flow32"] - 0.8) < 0.02 and d0["abs_retention_90"][0] < 0.8 < d0["abs_retention_90"][1] and d0["sign_agrees_with_flow32"]
     assert res["Q2"]["OF_downforce"]["label"] == "S050_UNRESOLVED" and res["outcome"]["label"] == "M2_COMPLETE"
     many = [f"u3_v18__parent_{i}p" for i in range(33, 38)]
-    rpath, kpath = u3_files(tmp_path / "x" if (tmp_path / "x").mkdir() is None else tmp_path, states, fail=many)
+    rpath, kpath = u3_files(tmp_path / "x" if (tmp_path / "x").mkdir() is None else tmp_path, states, spath, fail=many)
     assert A.u2(cpath, spath, bpath, tabs, None, rpath, kpath)["u3"]["status"] == "INCOMPLETE"             # 11 whole pairs < 12
     no_s050 = [s for s in states if s != "v18__s050_m5"]
     (tmp_path / "y").mkdir()
-    rpath, kpath = u3_files(tmp_path / "y", no_s050)
+    rpath, kpath = u3_files(tmp_path / "y", no_s050, spath, not_run=["v18__s050_m5"])
     assert A.u2(cpath, spath, bpath, tabs, None, rpath, kpath)["Q2"]["OF_downforce"]["label"] == "NOT_MEASURED"
+    (tmp_path / "z").mkdir()
+    rpath, kpath = u3_files(tmp_path / "z", [s for s in states if s != "v18__parent"], spath, not_run=["v18__parent"])
+    res = A.u2(cpath, spath, bpath, tabs, None, rpath, kpath)
+    assert res["u3"]["status"] == "INCOMPLETE" and "parent" in res["u3"]["reason"]
+    (tmp_path / "w").mkdir()
+    rpath, kpath = u3_files(tmp_path / "w", states, spath, wl=-0.5)                # opposite sign on OpenFOAM
+    d0 = A.u2(cpath, spath, bpath, tabs, None, rpath, kpath)["u3"]["differences"]["v18__D0_p3"]["downforce"]
+    assert d0["sign_agrees_with_flow32"] is False and d0["abs_retention_90"][0] < 0.5 < d0["abs_retention_90"][1]
+    cp, sp, bp, tb = setup(tmp_path / "red", kernels=("f48a", "f48b", "f32a", "f32c", "f24"))        # retention with the reduced flow_32 phase set
+    rpath, kpath = u3_files(tmp_path / "red", states, sp)
+    d0 = A.u2(cp, sp, bp, tb, None, rpath, kpath)["u3"]["differences"]["v18__D0_p3"]["downforce"]
+    assert d0["retention_vs_flow32"] is not None and abs(d0["retention_vs_flow32"] - 0.8) < 0.02
 
 
 def test_strip_smoke(tmp_path):
     import unc01_u3_prepare as U
-    src = tmp_path / "result.json"
-    src.write_text(json.dumps({"cases": [{"id": "a", "status": "COMPLETED", "forces": {"drag_n": {}}, "mesh": {"cells": 1}}]}))
-    out = U.strip_smoke(src, tmp_path / "stripped.json")
-    assert "forces" not in json.dumps(out["cases"]) and out["cases"][0]["mesh"] == {"cells": 1} and out["forces_removed_from"]["sha256"] == B.sha(src)
+    src = tmp_path / "out"
+    (src / "cases/a/retained").mkdir(parents=True)
+    (src / "result.json").write_text(json.dumps({"cases": [{"id": "a", "status": "COMPLETED", "forces": {"drag_n": {}}, "mesh": {"cells": 1}}]}))
+    (src / "cases/a/case_result.json").write_text(json.dumps({"id": "a", "forces": {"drag_n": {}}, "mesh": {"cells": 1}}))
+    for n in ("coefficient.dat.gz", "log.simpleFoam.gz", "log.checkMesh.gz"):
+        (src / "cases/a/retained" / n).write_bytes(b"x")
+    excl = U.strip_smoke(src, tmp_path / "clean")
+    clean = tmp_path / "clean"
+    assert "forces" not in (clean / "result.json").read_text() and "forces" not in (clean / "cases/a/case_result.json").read_text()
+    assert (clean / "cases/a/retained/log.checkMesh.gz").exists() and not (clean / "cases/a/retained/log.simpleFoam.gz").exists()
+    assert set(excl) == {"result.json", "cases/a/case_result.json", "cases/a/retained/coefficient.dat.gz", "cases/a/retained/log.simpleFoam.gz"}
 
 
 # ---- U0 / U1 --------------------------------------------------------------------------------------------------------------------------------------------
-def write_run(root, c, kernel, name, downforce_solver, slope=0.0):
+def write_run(root, c, kernel, name, downforce_solver, slope=0.0, finite=True):
     case = c["kernels"][kernel]["case"]["case_id"]
     d = root / SC.out_dir_name(c, kernel) / "states" / name
     d.mkdir(parents=True)
-    (d / SC.summary_name(case)).write_text(json.dumps({"finite_u": True, "finite_p": True, "finite_forces": True}))
+    (d / SC.summary_name(case)).write_text(json.dumps({"finite_u": True, "finite_p": finite, "finite_forces": True}))
     lines = [",".join(FORCE_COLUMNS)]
     for i in range(1, 260):
         t = i * 0.5
@@ -336,56 +380,124 @@ def write_run(root, c, kernel, name, downforce_solver, slope=0.0):
                "pressure_fy_solver": 0.0, "pressure_fz_solver": -dn, "viscous_fx_solver": 0.5, "viscous_fy_solver": 0.0, "viscous_fz_solver": 0.0}
         lines.append(",".join(repr(float(row[k])) for k in FORCE_COLUMNS))
     (d / SC.forces_name(case)).write_text("\n".join(lines) + "\n")
+    return d / SC.summary_name(case), d / SC.forces_name(case)
 
 
-def u01(tmp_path, score, drop=None):
+def u01(tmp_path, score, scale=1.0, kernels=("f24", "f32", "f48")):
+    tmp_path.mkdir(parents=True, exist_ok=True)
     c = B.campaign("unc01_u01", B.kernels_u01(), REC)
     cpath = tmp_path / "c.json"
     cpath.write_text(json.dumps(c))
 
     def value(g, s, k, r, tag="k"):
-        v = BASE[g] if r == "downforce" else 0.35
+        v = BASE[g] * scale if r == "downforce" else 0.35
         for m, sc in score.items():
             if s.startswith(f"v18__{m}_"):
                 v += sc if s.rsplit("_", 1)[1].startswith("p") else -sc
         return v + (2e-3 if tag == "half" else 0) + (1e-3 if s == "v18__D0_p3" else 0)
-    t = table(c, cpath, ["f24", "f32", "f48"], value)
-    if drop:
-        del t["state_forces_n"]["f32"][drop]
-    tpath = tmp_path / "t.json"
-    tpath.write_text(json.dumps(t))
-    return c, cpath, tpath
+    tabs = []
+    for k in kernels:
+        t = tmp_path / f"t_{k}.json"
+        t.write_text(json.dumps(table(c, cpath, [k], value, root=tmp_path / "out")))
+        tabs.append(t)
+    return c, cpath, tabs
 
 
 def test_u0_gate_and_u1_selection(tmp_path):
-    c, cpath, tpath = u01(tmp_path, {"pitch": 1e-2, "camber": 3e-2, "reflex": 3e-2, "twist": 1e-3, "sweep": 1e-3})
-    for k, g in (("f24", "flow_24"), ("f32", "flow_32"), ("f48", "flow_48")):
-        write_run(tmp_path, c, k, "v18__parent__k0", BASE[g] / SC.force_scale_n(c["kernels"][k]["case"]))
-    out = A.u1(cpath, tpath, tmp_path)
-    assert out["u0"]["verdict"] == "U0_PASS" and out["verdict"] == "SELECTED"
+    c, cpath, tabs = u01(tmp_path, {"pitch": 1e-2, "camber": 3e-2, "reflex": 3e-2, "twist": 1e-3, "sweep": 1e-3})
+    out = A.u1(cpath, tabs, tmp_path / "out")
+    assert out["u0"]["verdict"] == "U0_PASS" and out["verdict"] == "SELECTED" and out["u0"]["rows_read"] == "v18__parent__k0 only"
     sel = out["selection"]
     assert sel["L"] == "camber" and sel["L2"] == "pitch" and sel["L_mid"] == "v18__camber_p11.3"   # camber = reflex tie -> WIDE order; L2 from another family
     assert abs(out["bridge"]["flow_32"]["downforce"]["parent_half_minus_k0_n"] - 2e-3) < 1e-12 and set(out["k0_differences_flow32"]) >= {"v18__D0_p3", "v18__sweep_m11.3"}
-    (tmp_path / "t2").mkdir()
-    c2, cpath2, tpath2 = u01(tmp_path / "t2", {"pitch": 1e-3, "camber": 1e-3, "reflex": 1e-3, "twist": 5e-2, "sweep": 1e-2})
-    sel = A.u1(cpath2, tpath2, tmp_path)["selection"]                            # same campaign bytes: kernel outputs reusable
-    assert sel["L"] == "twist" and sel["L2"] == "pitch" and sel["L_mid"] == "v18__pitch_m3.1"         # twist has no mid point -> L2 at -A*
-    (tmp_path / "bad").mkdir()
-    for k in ("f24", "f32", "f48"):
-        write_run(tmp_path / "bad", c, k, "v18__parent__k0", 0.3 / SC.force_scale_n(c["kernels"][k]["case"]), slope=2e-3)
-    g = A.u0_gate(cpath, tpath, tmp_path / "bad")
-    assert g["verdict"] == "U0_FAIL" and not g["grids"]["flow_32"]["tests"]["drift_downforce"] and g["rows_read"] == "v18__parent__k0 only"
-    assert A.u1(cpath, tpath, tmp_path / "bad")["verdict"] == "U0_FAIL"
+    assert A.select({"pitch": 1e-3, "camber": 1e-3, "reflex": 1e-3, "twist": 5e-2, "sweep": 1e-2}) == {"L": "twist", "L2": "pitch", "L_mid": "v18__pitch_m3.1"}  # no mid -> L2 at -A*
+
+
+def test_u0_gate_branches(tmp_path):
+    DRIFT.update({"v18__parent__k0": {"slope": 2e-3}})
+    try:
+        c, cpath, tabs = u01(tmp_path / "drift", {})
+        g = A.u0_gate(cpath, tabs, tmp_path / "drift" / "out")
+        assert g["verdict"] == "U0_FAIL" and not g["grids"]["flow_32"]["tests"]["drift_downforce"]
+        assert A.u1(cpath, tabs, tmp_path / "drift" / "out")["verdict"] == "U0_FAIL"
+        DRIFT.update({"v18__parent__k0": {"finite": False}})
+        c, cpath, tabs = u01(tmp_path / "finite", {})
+        assert not A.u0_gate(cpath, tabs, tmp_path / "finite" / "out")["grids"]["flow_48"]["tests"]["finite"]
+    finally:
+        DRIFT.clear()
+    c, cpath, tabs = u01(tmp_path / "ratio", {}, scale=2.5)
+    g = A.u0_gate(cpath, tabs, tmp_path / "ratio" / "out")
+    assert g["verdict"] == "U0_FAIL" and not g["grids"]["flow_24"]["tests"]["gross_error_ratio_to_v17"]
+    c, cpath, tabs = u01(tmp_path / "neg", {}, scale=-1.0)
+    assert not A.u0_gate(cpath, tabs, tmp_path / "neg" / "out")["grids"]["flow_32"]["tests"]["downforce_positive"]
+    c, cpath, tabs = u01(tmp_path / "miss", {}, kernels=("f24", "f32"))       # f48 without a verified table
+    g = A.u0_gate(cpath, tabs, tmp_path / "miss" / "out")
+    assert g["verdict"] == "U0_INCOMPLETE" and A.u1(cpath, tabs, tmp_path / "miss" / "out")["verdict"] == "U0_INCOMPLETE"
+    c, cpath, tabs = u01(tmp_path / "ok", {})
+    csv = tmp_path / "ok" / "out" / "unc01_u01_f32" / "states" / "v18__parent__k0" / "flow_32.forces.csv"
+    csv.write_text(csv.read_text() + "\n")                                      # a kernel output that is not the verified one
+    with pytest.raises(ValueError, match="differs from the verified table"):
+        A.u0_gate(cpath, tabs, tmp_path / "ok" / "out")
 
 
 def test_smoke_table_is_a_u0_input_only(tmp_path):
-    c, cpath, tpath = u01(tmp_path, {"pitch": 1e-2}, drop=None)
-    t = json.loads(tpath.read_text())
-    t["smoke"] = True                                                             # a smoke table is never a U1 input
-    tpath.write_text(json.dumps(t))
-    for k, g in (("f24", "flow_24"), ("f32", "flow_32"), ("f48", "flow_48")):
-        write_run(tmp_path, c, k, "v18__parent__k0", BASE[g] / SC.force_scale_n(c["kernels"][k]["case"]))
+    c, cpath, tabs = u01(tmp_path, {}, kernels=("f24",))
+    t = json.loads(tabs[0].read_text())
+    t["smoke"] = True
+    tabs[0].write_text(json.dumps(t))
     with pytest.raises(ValueError):
-        A.u1(cpath, tpath, tmp_path)
-    g = A.u0_gate(cpath, tpath, tmp_path, smoke=True)                            # but it is the U0 smoke input (flow_24 only)
+        A.u1(cpath, tabs, tmp_path / "out")
+    g = A.u0_gate(cpath, tabs, tmp_path / "out", smoke=True)
     assert g["verdict"] == "U0_PASS" and list(g["grids"]) == ["flow_24"]
+
+
+def test_flow24_and_ratio_branches(tmp_path):
+    mk = lambda m, se, P=6: {"delta_bar_n": m, "se_n": se, "P": P, "resolved": abs(m) > A.tq(0.95, P - 1) * se}  # noqa: E731
+    assert A.ratio_label(mk(0.5, 0.005), mk(1.0, 0.01, 4))["label"] == "DIFFERENT"            # interval entirely below 0.8
+    def d0_24_zero(g, s, k, r):           # flow_24 D0 unresolved, L+ consistent -> FLOW24_UNRESOLVED
+        return (-3e-3 * (1 + 0.02 * math.cos(1.7 * k + len(s))) + 1e-5 * math.sin(2.9 * k) if g == "flow_24" and s == "v18__D0_p3" else 0)
+    assert run(tmp_path / "u", value=planted(extra=d0_24_zero))["Q3"]["downforce"]["flow24_vs_flow32"]["label"] == "FLOW24_UNRESOLVED"
+    def d0_24_noisy(g, s, k, r):          # flow_24 D0 resolved but noisy -> INDETERMINATE
+        return (1.5e-3 * math.sin(2.0 * k + 0.3) if g == "flow_24" and s == "v18__D0_p3" else 0)
+    assert run(tmp_path / "i", value=planted(extra=d0_24_noisy))["Q3"]["downforce"]["flow24_vs_flow32"]["label"] == "FLOW24_INDETERMINATE"
+
+
+def test_e2_and_m3a_numbers(tmp_path):
+    res = run(tmp_path)
+    g32, g48 = res["grids"]["flow_32"], res["grids"]["flow_48"]
+    e2 = res["Q4_E2"]["downforce"]["common_phases"]
+    i = [g32["phases_used"].index(k) for k in (1, 2, 3, 4)]
+    b32 = sum(g32["parent_forces_n"]["downforce"][j] for j in i) / 4
+    b48 = sum(g48["parent_forces_n"]["downforce"]) / 4
+    c48 = sum(g48["state_forces_n"]["v18__pitch_p3.1"]["downforce"]) / 4
+    assert abs(e2["S_b"] - abs(b48 - b32) / abs(b48)) < 1e-15 and e2["denominator_n"] == abs(b48)
+    assert abs(e2["I_f_Lplus_descriptive"] - (c48 - b48) / abs(b48)) < 1e-15 and e2["I_f_Lplus_descriptive"] > 0   # more downforce = positive improvement
+    assert res["Q4_E2"]["drag"]["common_phases"]["I_f_Lplus_descriptive"] == -(sum(g48["state_forces_n"]["v18__pitch_p3.1"]["drag"]) / 4 - sum(g48["parent_forces_n"]["drag"]) / 4) / abs(sum(g48["parent_forces_n"]["drag"]) / 4)
+    m = res["M3a_tables"]["downforce"]
+    d0 = g32["differences"]["v18__D0_p3"]["downforce"]
+    assert m["planning"]["v18__D0_p3"]["phases_needed_at_r"] == math.ceil(9 * d0["r"] ** 2) and m["largest_r_hi_wide"] == max(v["r_hi"] for v in m["planning"].values())
+    fit = m["sigma_d_vs_delta_fit"]
+    import numpy as np
+    pts = [(abs(g32["differences"][s]["downforce"]["delta_bar_n"]), g32["differences"][s]["downforce"]["sigma_d_n"])
+           for s in ("v18__D0_p3", "v18__pitch_p3.1", "v18__pitch_m3.1", "v18__pitch_p1.3", "v18__camber_p19.7", "v18__s050_m5")]
+    slope = np.polyfit(np.log([a for a, _ in pts]), np.log([b for _, b in pts]), 1)[0]
+    assert abs(fit["slope"] - slope) < 1e-9 and "E2" in m and "L_even_part" in g32
+    assert abs(g32["L_even_part"]["downforce"]["mean_n"] - (g32["differences"]["v18__pitch_p3.1"]["downforce"]["delta_bar_n"] + g32["differences"]["v18__pitch_m3.1"]["downforce"]["delta_bar_n"]) / 2) < 1e-15
+    assert A.q4({"flow_32": g32, "flow_48": {**g48, "parent_mean_n": {"downforce": 1e-4, "drag": 1e-4}, "parent_forces_n": {"downforce": [1e-4] * 4, "drag": [1e-4] * 4}}},
+                res["roles"], "downforce")["common_phases"]["denominator_n"] == A.J_SCALE_N                 # J_scale binds for a tiny parent
+
+
+def test_u2_drift_path_with_kernel_outputs(tmp_path):
+    cpath, spath, bpath, _ = setup(tmp_path)
+    c = json.loads(cpath.read_text())
+    DRIFT.update({"v18__D0_p3__k3": {"slope": 2e-4}})
+    try:
+        tabs = []
+        for k in ALL:
+            t = tmp_path / f"d_{k}.json"
+            t.write_text(json.dumps(table(c, cpath, [k], planted(), root=tmp_path / "out")))
+            tabs.append(t)
+    finally:
+        DRIFT.clear()
+    res = A.u2(cpath, spath, bpath, tabs, tmp_path / "out", None, None)
+    assert res["grids"]["flow_32"]["drift_flagged"] == ["v18__D0_p3__k3"] and len(res["grids"]["flow_32"]["drift"]) == 48
