@@ -30,7 +30,7 @@ B2_TARGETS = (-1.0, -0.25, 0.25, 1.0)
 TH = {"tol": 0.25, "delta_floor": 0.01, "resolve": 5.0, "power": 0.5, "unsteady": 0.005, "nonlinear": 2.0, "chi2_90_3dof": math.sqrt(3 / 0.5844),
       "peak_tol": B.PEAK_TOL, "G2_mean": B.TH["G2_mean"], "G2d": B.TH["G2d"], "bitwise": 1e-12}
 INFRA = B.INFRA
-MECH = B.MECH | {"TOPOLOGY_CHANGED"}
+MECH = B.MECH | {"TOPOLOGY_CHANGED", "BASE_TOPOLOGY_MISSING"}
 FAILING = ("SOLVER_FAIL", "MECHANICAL_FAIL", "UNSTEADY")
 V_GO, V_ATT, V_NO, V_INC = "T20C_MORPH_GO_FINE30", "T20C_MORPH_GO_FINE30_ATTACHED", "T20C_MORPH_NO_GO", "T20C_INCOMPLETE"
 PREDICTED = {"G6m": "pass", "G3bm": "pass at 0.224/0.134; 0.09 likely fails through UNSTEADY +1 deg cases", "G7m": "pass at 0.224/0.134, uncertain at 0.09",
@@ -83,6 +83,15 @@ class Gate(Exception):
         self.value, self.bad = value, bad
 
 
+def scan_keys(X, mesh, h):
+    """The 7 cases of a scan: kernel R remeshed (0 deg = the sweep case) or kernel M morphed (0 deg = the kernel-M baseline)."""
+    return [(X, rid(h, mesh, a) if X == "R" or a == 0 else mid(h, mesh, a)) for a in A7]
+
+
+def b2_keys(h, mesh):
+    return [("M", mid(h, mesh, a, "B2")) for a in B2_TARGETS]
+
+
 class Data:
     def __init__(self, kernels: dict, sigma_scale: float = 1.0):
         self.k, self.scale = kernels, sigma_scale
@@ -102,12 +111,8 @@ class Data:
     def cl(self, key):
         return self.rec(key)["forces"]["Cl"]["tail_mean"]
 
-    def scan(self, X, mesh, h):
-        """The 7 cases of a scan: kernel R remeshed (0 deg = the sweep case) or kernel M morphed (0 deg = the kernel-M baseline)."""
-        return [(X, rid(h, mesh, a) if X == "R" or a == 0 else mid(h, mesh, a)) for a in A7]
-
     def sigma(self, X, mesh, h) -> dict:
-        keys = self.scan(X, mesh, h)
+        keys = scan_keys(X, mesh, h)
         self.need(keys)
         y = np.array([self.cl(k) for k in keys])
         res = lambda deg: math.sqrt(float(((y - np.polyval(np.polyfit(A7, y, deg), A7)) ** 2).sum()) / (len(A7) - deg - 1))
@@ -165,7 +170,7 @@ def g7m(D, h, mesh):
 
 def g8m(D, h, mesh="fine30"):
     sa = D.sigma("M", mesh, h)["eff"]
-    keys = [("M", mid(h, mesh, a, "B2")) for a in B2_TARGETS]
+    keys = b2_keys(h, mesh)
     D.need(keys)
     sb = max(sa, D.scale * max(D.rec(k)["forces"]["Cl"]["tail_std"] for k in keys))
     out = {s: compare(D.d("M", mesh, h, s), D.d("M", mesh, h, s, "B2"), sa / (math.sqrt(2) * s), sb / (math.sqrt(2) * s)) for s in (1.0, 0.25)}
@@ -173,18 +178,21 @@ def g8m(D, h, mesh="fine30"):
 
 
 def atoms_spec(mesh="fine30", finer=("xfine30",), g7_meshes=("fine30", "xfine30")):
-    """(name, h) -> gate function: the verdict's per-height gate values."""
-    spec = {("G6m", h): (lambda D, h=h: g6m(D, h, mesh)) for h in ATT}
-    spec |= {("G3bm", h): (lambda D, h=h: g3bm(D, h, mesh, finer)) for h in H}
-    spec |= {(f"G7m_{m}", h): (lambda D, h=h, m=m: g7m(D, h, m)) for m in g7_meshes for h in H}
-    spec |= {("G8m", h): (lambda D, h=h: g8m(D, h, mesh)) for h in H}
+    """(name, h) -> (gate function, every input case) of the verdict's per-height gate values. All inputs are checked before anything is computed, so a
+    failed input fails the gate even when another input is lost (registration section 6 input rule)."""
+    S = scan_keys
+    spec = {("G6m", h): ((lambda D, h=h: g6m(D, h, mesh)), S("M", mesh, h)) for h in ATT}
+    spec |= {("G3bm", h): ((lambda D, h=h: g3bm(D, h, mesh, finer)), S("M", mesh, h) + [k for m2 in finer for k in S("M", m2, h)]) for h in H}
+    spec |= {(f"G7m_{m}", h): ((lambda D, h=h, m=m: g7m(D, h, m)), S("M", m, h) + S("R", m, h)) for m in g7_meshes for h in H}
+    spec |= {("G8m", h): ((lambda D, h=h: g8m(D, h, mesh)), S("M", mesh, h) + b2_keys(h, mesh)) for h in H}
     return spec
 
 
 def evaluate(D, spec) -> dict:
     out = {}
-    for key, fn in spec.items():
+    for key, (fn, inputs) in spec.items():
         try:
+            D.need(inputs)
             ok, detail = fn(D)
             out[key] = {"value": bool(ok), "detail": detail}
         except Gate as g:
@@ -209,35 +217,48 @@ def verdict(gates: dict) -> str:
     return seen.pop() if len(seen) == 1 else V_INC
 
 
-def next_action(gates: dict, v: str) -> dict:
-    """Registration section 6 next-action table: the first matching row."""
+def _comparisons(detail):
+    """Every consistency-rule result inside a gate detail."""
+    if isinstance(detail, dict):
+        if "unresolved" in detail and "pass" in detail:
+            yield detail
+        for v in detail.values():
+            yield from _comparisons(v)
+
+
+def failure_row(name: str, g: dict) -> int:
+    """Rows 5-9 for one failing per-height gate. Interpretation recorded at freeze 2 (freeze.json): a gate that fails only through noise (every failing
+    comparison UNRESOLVED, or G6m's resolution test) is a noise failure, row 8, whichever gate it is; rows 6, 7, 9 need a resolved disagreement."""
+    d = g["detail"]
+    if set((d.get("bad_inputs") or {}).values()) & {"UNSTEADY", "SOLVER_FAIL"}:
+        return 5
+    failed = [c for c in _comparisons(d) if not c["pass"]]
+    if d.get("sign_ok") is False or d.get("bad_inputs") or "reason" in d:
+        noise = False
+    else:
+        noise = (bool(failed) and all(c["unresolved"] for c in failed)) or (name == "G6m" and not failed and d.get("resolved") is False)
+    if noise:
+        return 8
+    return next(r for r, pre in ((6, "G7m"), (7, "G8m"), (8, "G6m"), (9, "G3bm")) if name.startswith(pre))
+
+
+def next_action(gates: dict, v: str, mechanical_elsewhere=()) -> dict:
+    """Registration section 6 next-action table: the first matching row (rows 5-9 by failure_row). `mechanical_elsewhere`: MECHANICAL_FAIL cases that are
+    not gate inputs (shape, blend, coa30 sweep), reported with the row (section 8: a result, never an amendment)."""
+    flag = {"mechanical_fail_outside_gate_inputs": sorted(mechanical_elsewhere)} if mechanical_elsewhere else {}
     bad = {c for g in gates.values() for c in (g["detail"].get("bad_inputs") or {}).values()}
     if "MECHANICAL_FAIL" in bad:
-        return {"row": 1, "action": NEXT[1]}
+        return {"row": 1, "action": NEXT[1], **flag}
     if v == V_INC:
-        return {"row": 2, "action": NEXT[2]}
+        return {"row": 2, "action": NEXT[2], **flag}
     if v == V_GO:
-        return {"row": 3, "action": NEXT[3]}
+        return {"row": 3, "action": NEXT[3], **flag}
     failing = {k: g for k, g in gates.items() if g["value"] is False and (v != V_ATT or k[1] == 0.09)}
-    if any(set((g["detail"].get("bad_inputs") or {}).values()) & {"UNSTEADY", "SOLVER_FAIL"} for g in failing.values()):
-        row = 5
-    else:
-        names = {k[0] for k in failing}
-        row = next((r for r, pre in ((6, "G7m"), (7, "G8m"), (8, "G6m"), (9, "G3bm")) if any(n.startswith(pre) for n in names)), 10)
-    seen = {f"{k[0]}@{k[1]}": sorted({c for c in (g["detail"].get("bad_inputs") or {}).values()})
-            or [x for x, c in _flat(g["detail"]) if c] or ["value"] for k, g in failing.items()}   # what failed, for the reader; the row is the table's
+    rows = {f"{k[0]}@{k[1]}": failure_row(k[0], g) for k, g in failing.items()}
+    row = min(rows.values(), default=10)
     if v == V_ATT:
-        return {"row": 4, "action": NEXT[4], "row_for_0.09": row, "action_for_0.09": NEXT[row], "failing_at_0.09": seen}
-    return {"row": row, "action": NEXT[row], "failing": seen}
-
-
-def _flat(detail, prefix=""):
-    """(path, True) for every `unresolved: true` inside a gate detail."""
-    for k, v in (detail.items() if isinstance(detail, dict) else ()):
-        if k == "unresolved" and v is True:
-            yield f"{prefix}UNRESOLVED", True
-        elif isinstance(v, dict):
-            yield from _flat(v, f"{prefix}{k}.")
+        return {"row": 4, "action": NEXT[4], "row_for_0.09": row, "action_for_0.09": NEXT[row], "failing_at_0.09": rows, **flag}
+    return {"row": row, "action": NEXT[row], "failing": rows, **flag}
 
 
 # ---- labels -------------------------------------------------------------------------
@@ -267,9 +288,9 @@ def noise_labels(D) -> dict:
         for h in H:
             r, mm = out[f"R:{m}:{h}"], out[f"M:{m}:{h}"]
             if isinstance(r, dict) and isinstance(mm, dict) and mm["eff"] > 0:
-                ratios.append(r["eff"] / mm["eff"])
-    out["pooled_noise_reduction_R_over_M"] = math.exp(statistics.mean(math.log(x) for x in ratios)) if ratios else None
-    out["per_pair_ratio_count"] = len(ratios)
+                ratios.append((f"{m}:{h}", r["eff"] / mm["eff"]))
+    out["pooled_noise_reduction_R_over_M"] = math.exp(statistics.mean(math.log(x) for _, x in ratios)) if ratios else None
+    out["per_pair_ratio_R_over_M"] = dict(ratios)
     return out
 
 
@@ -288,7 +309,11 @@ def remesh_gate_labels(D) -> dict:
         for h in H:
             def g3br(m=m, m2=m2, h=h):
                 sa, sb = D.sigma("R", m, h)["eff"], D.sigma("R", m2, h)["eff"]
-                return compare(D.d("R", m, h, 1.0), D.d("R", m2, h, 1.0), sa / math.sqrt(2), sb / math.sqrt(2))
+                c = compare(D.d("R", m, h, 1.0), D.d("R", m2, h, 1.0), sa / math.sqrt(2), sb / math.sqrt(2))
+                if h == 0.224:
+                    c["sign_ok"] = D.d("R", m, h, 1.0) > 0
+                    c["pass"] = c["pass"] and c["sign_ok"]
+                return c
             out[f"G3bR:{m}-{m2}:{h}"] = _try(g3br)
     return out
 
@@ -301,7 +326,13 @@ def series_labels(D, exp) -> dict:
             s = _try(lambda m=m, h=h: D.sigma("R", m, h)["eff"])
             if isinstance(s, float):
                 sig_r[(m, h)] = s
-    any_sig = max(sig_r.values()) if sig_r else float("nan")
+
+    def cl_noise(h):
+        """2 sqrt(2) x the largest sigma_eff,R at h over the levels (unscanned h: over all remeshed scans); a missing scan makes it undefined."""
+        need = [(m, h) for m in LEVELS] if h in H else [(m, x) for m in LEVELS for x in H]
+        if any(k not in sig_r for k in need):
+            raise ValueError(f"remeshed sigma missing for {[k for k in need if k not in sig_r]}")
+        return 2 * math.sqrt(2) * max(sig_r[k] for k in need)
 
     def trend(v, n):
         e2, e3 = v["fine30"] - v["med30"], v["xfine30"] - v["fine30"]
@@ -311,11 +342,12 @@ def series_labels(D, exp) -> dict:
 
     for h in HEIGHTS:
         def cl_h(h=h):
-            keys = [("R", rid(h, m)) for m in ("coa30", *LEVELS)]
-            D.need(keys)
-            v = {m: D.cl(("R", rid(h, m))) for m in ("coa30", *LEVELS)}
-            n = 2 * math.sqrt(2) * max([sig_r[(m, h)] for m in LEVELS if (m, h) in sig_r] or [any_sig])
-            return trend(v, n)
+            D.need([("R", rid(h, m)) for m in LEVELS])
+            v = {m: D.cl(("R", rid(h, m))) for m in LEVELS}
+            res = trend(v, cl_noise(h))
+            c = D.rec(("R", rid(h, "coa30")))
+            res["coa30"] = c["forces"]["Cl"]["tail_mean"] if classify(c) == "VALID" else classify(c)
+            return res
         out["Cl"][h] = _try(cl_h)
     for X in ("M", "R"):
         for h in H:
@@ -341,6 +373,8 @@ def series_labels(D, exp) -> dict:
                 d = {h: D.d("R", m, h, 1.0) for h in H}
                 res["mean_abs_e_plus_0p15deg"] = B.mean_abs_err(cl, exp, lambda h: B.INCIDENCE_SHIFT_DEG * B.d_interp(d, h))
                 res["G2_pass"] = res["mean_abs_e_nominal"] < TH["G2_mean"] and res["mean_abs_e_plus_0p15deg"] < TH["G2_mean"] and res["peak_ok"] and not rise
+                if any((m, h) not in sig_r for h in H):
+                    raise ValueError(f"remeshed sigma missing at {m}")
                 res["peak_noise"] = 2 * math.sqrt(2) * max(sig_r[(m, h)] for h in H)
                 res["peak_margin_in_noise"] = margin / res["peak_noise"] if res["peak_noise"] else float("inf")
                 peaks[m] = res
@@ -467,19 +501,23 @@ def jkey(d):
 
 
 def descriptive(kernels) -> list[str]:
-    lines = ["| kernel | case | class | Cl | Cd | Cl raw tail rel std | Cl block rel std | iters to plateau | cost min | capped wall min | cells | layers | max non-orth | morph area ratio | y+ airfoil avg |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| kernel | case | class | Cl | Cd | Cl raw tail rel std | Cl block rel std | iters to plateau | cost min | capped wall min | cells | layers | max non-orth | "
+             "morph area ratio | s per cell-iter (x1e6) | RSS MB | y+ airfoil min/avg/max |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     fmt_ = lambda v, s=".4f": "-" if v is None else format(v, s)
     for k in ("R", "M", "S"):
         for i, r in sorted(kernels[k].items()):
             f = r.get("forces") or {}
             cl, cd = f.get("Cl") or {}, f.get("Cd") or {}
-            mo = r.get("morph") or {}
+            mo, y = r.get("morph") or {}, ((r.get("yplus") or {}).get("airfoil") or {})
             cost = B.case_cost_min(r) if classify(r) in ("VALID", "UNSTEADY") and "pre_solver_wall_s" in r else None
+            solver = sum(s["wall_s"] for s in r.get("stages", []) if s["stage"].startswith("simpleFoam"))
+            per = solver / (f["history_rows"] * r["mesh_cells_3d"]) * 1e6 if f.get("history_rows") and r.get("mesh_cells_3d") else None
+            rss = max((s.get("peak_rss_mb_sampled") or 0 for s in r.get("stages", [])), default=0)
             lines.append(f"| {k} | {i} | {classify(r)} | {fmt_(cl.get('tail_mean'))} | {fmt_(cd.get('tail_mean'))} | {fmt_(cl.get('tail_rel_std'), '.2e')} | "
                          f"{fmt_(f.get('cl_block_rel_std'), '.2e')} | {f.get('iterations_to_plateau', '-')} | {fmt_(cost, '.1f')} | {fmt_((r.get('total_wall_s') or 0) / 60, '.1f')} | "
                          f"{r.get('mesh_cells_3d', '-')} | {r.get('n_layers', '-')} | {(r.get('check_mesh') or {}).get('max_non_orthogonality', '-')} | "
-                         f"{fmt_(mo.get('area_ratio_min'), '.3f')}-{fmt_(mo.get('area_ratio_max'), '.3f')} | {fmt_(((r.get('yplus') or {}).get('airfoil') or {}).get('average'), '.1f')} |")
+                         f"{fmt_(mo.get('area_ratio_min'), '.3f')}-{fmt_(mo.get('area_ratio_max'), '.3f')} | {fmt_(per, '.2f')} | {rss:.0f} | "
+                         f"{fmt_(y.get('min'), '.1f')}/{fmt_(y.get('average'), '.1f')}/{fmt_(y.get('max'), '.1f')} |")
     return lines
 
 
@@ -501,9 +539,12 @@ def main(argv=None):
             res = d / "result.json"
             cpu[f"{k}:{d}"] = (B._read(res) or {}).get("cpu_model") if res.is_file() else None
     D = Data(kernels)
-    gates = evaluate(D, atoms_spec())
+    spec = atoms_spec()
+    gates = evaluate(D, spec)
     v = verdict(gates)
-    act = next_action(gates, v)
+    inputs = {f"{k}:{i}" for _, keys in spec.values() for k, i in keys}
+    mech = [f"{k}:{i}" for k, cs in kernels.items() for i, r in cs.items() if classify(r) == "MECHANICAL_FAIL" and f"{k}:{i}" not in inputs]
+    act = next_action(gates, v, mech)
     D2 = Data(kernels, 2.0)
     g2s = evaluate(D2, atoms_spec())
     med = evaluate(D, atoms_spec("med30", ("fine30", "xfine30"), ("med30",)))
@@ -524,7 +565,7 @@ def main(argv=None):
            "runs_used": {n: [str(p) for p in getattr(a, n)] for n in ("remesh", "morph", "shape")},
            "cases_from_resubmission": sorted(f"{k}:{i}" for k, v_ in loaded.items() for i, o in v_[1].items() if o),
            "analyzer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "registration": str(REG.relative_to(ROOT)),
-           "input_sha256": {**hashes, **{str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (B.EXP, REG)}},
+           "input_sha256": {**hashes, **{str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (B.EXP, REG, Path(B.__file__))}},
            "qualification_flags": "unchanged (all false; shape_update_allowed=false)"}
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out / "verdict.json").write_text(json.dumps(out, indent=1, sort_keys=True, default=str) + "\n")

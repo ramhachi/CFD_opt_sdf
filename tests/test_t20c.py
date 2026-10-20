@@ -267,7 +267,7 @@ def test_morph_noise_fails_g6m_through_the_power_requirement():
     v, act, g = run(k)
     assert v == A.V_NO and not g[("G6m", 0.134)]["value"]
     assert g[("G6m", 0.134)]["detail"]["consistency"]["unresolved"] or not g[("G6m", 0.134)]["detail"]["resolved"]
-    assert act["row"] in (7, 8)   # the registered precedence reads G8m before G6m; the UNRESOLVED flags are in the gate details
+    assert act["row"] == 8 and set(act["failing"].values()) == {8}   # freeze-2 interpretation: failures only through noise are row 8
 
 
 def test_sign_check_and_mechanical_and_solver_failures():
@@ -282,6 +282,59 @@ def test_sign_check_and_mechanical_and_solver_failures():
     k["R"][A.rid(0.224, "fine30", -1.0)]["forces"]["cl_plateau"] = False
     v, act, _ = run(k)
     assert v == A.V_NO and act["row"] == 5
+
+
+def test_failed_input_dominates_a_lost_input_in_the_same_gate():
+    k = world()
+    k["M"][A.mid(0.224, "fine30", 0.25)]["status"] = "NOT_RUN_TIME_BUDGET"
+    k["M"][A.mid(0.224, "fine30", 1.0, "B2")]["forces"]["Cl"]["tail_rel_std"] = 0.02
+    v, act, g = run(k)
+    assert g[("G8m", 0.224)]["value"] is False and v == A.V_NO and act["row"] == 5
+
+
+def test_single_component_failures_and_power_by_gate():
+    k = world()
+    for a in (-0.25, 0.25):   # B' disagrees only at s = 0.25
+        r = k["M"][A.mid(0.134, "fine30", a, "B2")]
+        r["forces"]["Cl"]["tail_mean"] += 0.5 * SLOPE[0.134] * a
+    v, act, g = run(k)
+    d = g[("G8m", 0.134)]["detail"]
+    assert d["1.0"]["pass"] and not d["0.25"]["pass"] and not d["0.25"]["unresolved"] and v == A.V_NO and act["row"] == 7
+    k = world()
+    for a in A.A7:   # a noisy xfine30 morph scan: G3bm UNRESOLVED (power), G7m(xfine30) has no power requirement
+        if a:
+            k["M"][A.mid(0.134, "xfine30", a)]["forces"]["Cl"]["tail_std"] = 0.006
+    v, act, g = run(k)
+    assert g[("G3bm", 0.134)]["detail"]["xfine30"]["unresolved"] and g[("G7m_xfine30", 0.134)]["value"] is True
+    assert g[("G7m_xfine30", 0.134)]["detail"]["unresolved"] is False and v == A.V_NO and act["row"] == 8
+    v, act, g = run(world(slope=lambda m, h: 0.001 if h == 0.134 else SLOPE[h], remesh_slope=lambda m, h: 0.001 if h == 0.134 else SLOPE[h],
+                          b2_slope=lambda m, h: 0.001 if h == 0.134 else SLOPE[h]))
+    assert g[("G6m", 0.134)]["detail"]["resolved"] is False and act["row"] == 8
+
+
+def test_unsteady_boundary_and_mechanical_statuses():
+    r = rec("x", 1.0, tail_std=0.005)
+    assert A.classify(r) == "VALID"
+    r["forces"]["Cl"]["tail_rel_std"] = 0.0051
+    assert A.classify(r) == "UNSTEADY"
+    for st in ("TOPOLOGY_CHANGED", "BASE_TOPOLOGY_MISSING", "GENERATOR_FAILED", "checkMesh_FAILED"):
+        assert A.classify({**rec("x", 1.0), "status": st}) == "MECHANICAL_FAIL"
+    assert A.classify({**rec("x", 1.0), "status": "RUNNER_EXCEPTION"}) == "INFRA_LOSS"
+    k = world()
+    k["S"][A.sid(0.134, "fine30", "flap", 0.5)]["status"] = "TOPOLOGY_CHANGED"
+    D = A.Data(k)
+    spec = A.atoms_spec()
+    g = A.evaluate(D, spec)
+    act = A.next_action(g, A.verdict(g), ["S:" + A.sid(0.134, "fine30", "flap", 0.5)])
+    assert act["row"] == 3 and act["mechanical_fail_outside_gate_inputs"] == ["S:" + A.sid(0.134, "fine30", "flap", 0.5)]
+
+
+def test_smoke_mesh_pass_has_one_case_per_id():
+    ns = runner_ns()
+    unique = {}
+    for sp in ns["make_specs"](ns["M_CASES"] + ns["S_CASES"] + ns["R_CASES"], solve=False):
+        unique.setdefault(sp["id"], sp)
+    assert len(unique) == 256 and sum(s["method"] == "base" for s in unique.values()) == 9
 
 
 def test_infrastructure_loss_enumeration():
@@ -346,7 +399,11 @@ def test_main_writes_once(tmp_path):
     args = ["--remesh", str(tmp_path / "remesh"), "--morph", str(tmp_path / "morph"), "--shape", str(tmp_path / "shape"), "--t20b", str(tmp_path / "none"), "--out", str(out)]
     A.main(args)
     v = json.loads((out / "verdict.json").read_text())
-    assert v["verdict"] == A.V_GO and v["thresholds_set_after_t20b_visible"] and v["labels"]["MED30"]["full"] in (True, False)
+    lab = v["labels"]
+    assert v["verdict"] == A.V_GO and v["thresholds_set_after_t20b_visible"] and lab["MED30"]["full"] is True and v["next_action"]["row"] == 3
+    assert all(lab["SURVIVES_2SIGMA"].values()) and lab["G6M_009"]["pass"] and all(isinstance(b, dict) for b in lab["BLEND"].values())
+    assert all(x["pass"] for x in lab["remeshed_rules"].values() if isinstance(x, dict) and "pass" in x) and len(lab["noise"]["per_pair_ratio_R_over_M"]) == 9
+    assert any(p.endswith("analyze_t20b.py") for p in v["input_sha256"])
     assert "T2-0c registered verdict" in (out / "analysis.md").read_text() and v["labels"]["noise"]["pooled_noise_reduction_R_over_M"] > 1
     with pytest.raises(SystemExit):
         A.main(args)

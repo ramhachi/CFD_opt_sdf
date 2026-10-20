@@ -4,11 +4,12 @@ cases on Kaggle CPU, OpenFOAM v2512, SA wall functions; remeshed and fixed-topol
 
 Template: scripts/build_t20c_kernel.py fills PIN_SOURCE_COMMIT, PIN_MODE and PIN_PINS and verifies the pins.
 Order (cheap failures first): environment -> pinned source -> gmsh install + one meshing probe -> OpenFOAM install (hash-locked, as T2-0b)
--> smoke stage (infrastructure gate) -> [morph: base stage, the 12 baseline meshes generated once] -> registered case list, independent cases concurrently.
+-> smoke stage (infrastructure gate) -> [morph, shape, smoke: base stage, the base meshes generated once] -> registered case list, cases concurrently.
 MODE "remesh" (kernel R): the 0-deg sweep and the remeshed incidence scans (every geometry meshed by the pinned generator).
 MODE "morph" (kernel M): the 0-deg baselines solved, the morphed incidence scans, the second-baseline (B', +0.5 deg) morphs and the linear-blend morphs.
 MODE "shape" (kernel S): the 0-deg baselines solved, the morphed shape cases and the remeshed shape cases.
-A morphed case must keep its base's polyMesh topology (faces, owner, neighbour, boundary SHA-256 recorded in the base stage), else TOPOLOGY_CHANGED.
+A morphed case must keep its base's polyMesh topology (faces, owner, neighbour, boundary SHA-256 recorded in the base stage), else TOPOLOGY_CHANGED
+(BASE_TOPOLOGY_MISSING if the base had none); a case failing checkMesh is not solved (checkMesh_FAILED). All three are mechanical failures.
 MODE "smoke": development smoke before the code freeze (mesh-only pass over every registered geometry of the three kernels, each solver path at <= 200
 iterations; force values are removed before output). Measurement only: no verdict here (scripts/analyze_t20c.py). Kernel-level failures write ERROR.json and raise; DONE last.
 """
@@ -343,9 +344,12 @@ def generate(spec: dict, source: Path, case: Path) -> subprocess.CompletedProces
     elif spec["method"] == "morph":
         cmd = py + ["--base", str(base_dir(spec["mesh"], spec["h"], base_da(spec))), "--mode", spec["mode"], "--amp", str(spec["amp"])]
         cmd += ["--blend", "linear"] if spec["variant"] == "lin" else []
-    else:
-        shutil.copytree(base_dir(spec["mesh"], spec["h"]), case)
-        gen = subprocess.CompletedProcess([], 0, f"copied {base_dir(spec['mesh'], spec['h'])}\n", "")
+    else:   # a missing base (its generation failed) is a generator failure of this case, not an infrastructure loss
+        try:
+            shutil.copytree(base_dir(spec["mesh"], spec["h"]), case)
+            gen = subprocess.CompletedProcess([], 0, f"copied {base_dir(spec['mesh'], spec['h'])}\n", "")
+        except OSError as exc:
+            gen = subprocess.CompletedProcess([], 1, "", f"base copy failed: {type(exc).__name__}: {exc}\n")
     if spec["method"] != "base":
         gen = subprocess.run(cmd, capture_output=True, text=True, env={**os.environ, "PYTHONPATH": f"{source}/scripts"})
     if not gen.returncode and spec["method"] != "remesh" and spec["iters"] != BASE_ITERS[0]:
@@ -380,20 +384,21 @@ def run_case(spec: dict, source: Path, deadline: float) -> dict:
         if name == "simpleFoam" and timeout < CASE_CAP_S:
             rec["deadline_limited"] = True
         if name == "checkMesh":  # gmshToFoam writes every patch as `patch`: front/back must be empty and airfoil/ground wall
-            sys.path.insert(0, str(source / "scripts"))
-            import t20_foam
             b = case / "constant/polyMesh/boundary"
             b.write_text(t20_foam.fix_boundary(b.read_text()))
             if spec["method"] == "morph":   # registration section 4: only `points` may differ from the base's polyMesh
                 rec["topology"] = topology(case)
                 rec["base_topology"] = BASE_TOPOLOGY.get(base_dir(spec["mesh"], spec["h"], base_da(spec)).name)
                 if rec["topology"] != rec["base_topology"]:
-                    rec["status"] = "TOPOLOGY_CHANGED"
+                    rec["status"] = "TOPOLOGY_CHANGED" if rec["base_topology"] else "BASE_TOPOLOGY_MISSING"
                     break
         stage = timed_run(name, command, case, timeout)
         rec["stages"].append(stage)
         if name == "checkMesh":
             rec["check_mesh_returncode"] = stage["returncode"]
+            cm = parse_check_mesh((case / "log.checkMesh").read_text(errors="replace")) if (case / "log.checkMesh").is_file() else {}
+            if solve and (not cm.get("mesh_ok") or cm.get("failed_check_counts")):
+                rec["status"] = "checkMesh_FAILED"   # mechanical either way; not solving keeps the kernel budget for the other cases
         elif stage["returncode"] or stage["timed_out"]:
             rec["status"] = f"{name}_{'TIMEOUT' if stage['timed_out'] else 'FAILED'}"
     text = lambda n: (case / f"log.{n}").read_text(errors="replace") if (case / f"log.{n}").is_file() else ""
@@ -490,8 +495,6 @@ def make_bases(source: Path, bases, iters: int) -> list[dict]:
     """The kernel's base meshes, generated once (concurrently) by the pinned generator, and their polyMesh topology hashes (gmshToFoam and the patch fix on a
     scratch copy); morphs and baseline solves read them. A failed base fails its cases (their generator or topology check fails)."""
     BASE_ITERS[0] = iters
-    sys.path.insert(0, str(source / "scripts"))
-    import t20_foam
 
     def one(item):
         mesh, h, da = item
@@ -527,7 +530,7 @@ def infrastructure_ok(r: dict) -> bool:
 
 
 def main() -> None:
-    global SOURCE
+    global SOURCE, t20_foam
     require(SOURCE_COMMIT != "PIN_SOURCE_COMMIT" and MODE in BUDGET_S, "runner has not been rendered by scripts/build_t20c_kernel.py")
     require(not OUTPUT.exists(), f"refusing to overwrite prior output: {OUTPUT}")
     OUTPUT.mkdir(parents=True)
@@ -543,6 +546,7 @@ def main() -> None:
     gmsh_version = install_gmsh()
     sys.path.insert(0, str(SOURCE / "scripts"))
     import t20_case
+    import t20_foam
     probe = OUTPUT / "work" / "mesh_probe"
     probe_man = t20_case.write_case(probe, 0.09, "sa-wf", "coa30", iters=1)   # fail fast on meshing before the OpenFOAM install
     require(probe_man["mesh_stats"]["gap_cells_at_lowest_point"] >= 15, f"mesh probe gap cells {probe_man['mesh_stats']['gap_cells_at_lowest_point']}")
@@ -574,7 +578,10 @@ def main() -> None:
 
     if MODE == "smoke":
         make_bases(SOURCE, BASES["smoke"], SMOKE_ITERS // 2)
-        execute(make_specs(R_CASES + M_CASES + S_CASES, solve=False), results)
+        unique = {}
+        for sp in make_specs(M_CASES + S_CASES + R_CASES, solve=False):   # one per id: the base copies win over the identical remeshed 0-deg geometry
+            unique.setdefault(sp["id"], sp)
+        execute(list(unique.values()), results)
         execute(make_specs(DEV_SMOKE, SMOKE_ITERS // 2, cont_iters=SMOKE_ITERS, force_continuation=True, suffix="_smoke"), results)
     else:
         smoke = execute(make_specs(GATE_SMOKE, SMOKE_ITERS, suffix="_smoke"), [])
