@@ -1,0 +1,56 @@
+{
+ "environment": {
+  "numpy": "2.5.2",
+  "python": "3.12.13",
+  "scikit-image": "0.25.2",
+  "scipy": "1.18.1"
+ },
+ "file_sha256": {
+  "docs/evidence/unc01_2026_10_20/freeze1.json": "b0df254ecdfae2e2a43e709331b276e6bed25b6356d2b61ab189ddfac7dda4d6",
+  "docs/evidence/unc01_2026_10_20/u01/state_force_table.json": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2",
+  "docs/evidence/unc01_2026_10_20/u01/u0_gate.json": "38b04d9aab525a8f55d5de2e590c9d4cb6635525e5ea78394b5b277bb28b4172",
+  "docs/evidence/unc01_2026_10_20/u01/u1_selection.json": "4a3e94565b95ea7bb15df9747da655568b71e19d9213e003c7f04a9567d7b6c6",
+  "docs/evidence/unc01_2026_10_20/u3/export.json": "39d5e933d22a267ac4cfaaa67d557542e7d0564a12a9de280f4c884f90aee993",
+  "docs/evidence/unc01_2026_10_20/u3/smoke": "0ea7f3921178fce3835d3e57ff1dd857e03088d87f52c9e8f8d1c08912ae045d",
+  "docs/evidence/unc01_2026_10_20/u3/u3_criteria.json": "b06264dc2d636db7410d9c205b18ec99cafcbd9f4a9673ef8b95e754ee620ec9",
+  "docs/harness/unc01_u2_campaign.json": "844e41847982d0bd1bd2973d75d88e2d9efc390d4b2e7498b47f93911e86c103",
+  "docs/harness/unc01_u2_campaign.prerun_freeze.json": "0ed5001a64baf8a2a8b4931dfbdaf91ce8ece588f1d0fcb9e5cccf692475baf1",
+  "docs/unc01_registration_2026_10_20.md": "d8868ddf8a3e213183facea8501a72796903d8cc5733ca800bb6d643033ad926",
+  "infra/kaggle/kernel_unc01_u3/kernel-metadata.json": "ecd0bb07c56942bd371b73a79e6a0d112a8edac19a645d2f1c371c9f2c48596b",
+  "infra/kaggle/kernel_unc01_u3/runner.py": "d53a16be27e403bdf989392cba7010b8129b0b8041cac42f09c167049bba2eb1",
+  "scripts/analyze_unc01.py": "1bc7ef2af2d1ef5a98823ead4f02f824ecd0449729538bd7b3669f58cf527279",
+  "scripts/unc01_verify.py": "fd9ae7e876bcec58d0ab0827b5fc97146d1c89662ea73696817e6aef855b6c18"
+ },
+ "freeze1_amendment1_sha256": "0bd5adc075821f8aacce7ebf03a13710acf131bad059d4c123ab13c039600c33",
+ "frozen_utc": "2026-10-20T14:55:17.969598+00:00",
+ "harness_tool_sha256": {
+  "scripts/harness.py": "e9d036846ffd33fced8a1507a8fb191e49e0179a517c25a393354c83de4655fa",
+  "src/cfd_harness/campaign_build.py": "7e3ee902bc3ed020edd5e37cbd9060490f9c0f5119e72a60448edbdcf0688a68",
+  "src/cfd_harness/campaign_runner_template.py": "d53e2df74af8becc4e512c19e14381c549006a499c38c2cfab2ba89b6ab9ead1",
+  "src/cfd_harness/campaign_schema.py": "4c3c494ed381930d9d1e51b063efbbdcf1fa4586c1ac7e84d2b999a5c984d1b8",
+  "src/cfd_harness/campaign_verify.py": "8db4714799e258e08ce1a2e8ed9de4b5ff90ba3d9fa56513ec6d6997b0e57a2e"
+ },
+ "kind": "unc01_freeze2",
+ "registration": "docs/unc01_registration_2026_10_20.md",
+ "registration_sha256": "d8868ddf8a3e213183facea8501a72796903d8cc5733ca800bb6d643033ad926",
+ "selection": {
+  "L": "pitch",
+  "L2": "reflex",
+  "L_mid": "v18__pitch_p1.3",
+  "rule": "registration \u00a73: L = argmax |F32(m+,k0) - F32(m-,k0)| (downforce); L2 = argmax over other families; ties in WIDE order",
+  "scores_n": {
+   "camber": 0.02348268408762416,
+   "pitch": 0.08326561744664307,
+   "reflex": 0.03023320656846812,
+   "sweep": 0.00013019180982432044,
+   "twist": 0.002834598760516227
+  }
+ },
+ "source_commit": "907f50867cbc7d6860eff50e4ed9085144ba72b0",
+ "status": "REGISTERED_FROZEN (freeze 2)",
+ "u01_table_sha256": {
+  "state_force_table.json": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2"
+ },
+ "u1_analyzer_sha256": "1bc7ef2af2d1ef5a98823ead4f02f824ecd0449729538bd7b3669f58cf527279",
+ "u3_environment": "registration \u00a715: local OpenFOAM after a passed environment gate and a REGISTERED_AMENDED record, else Kaggle CPU as frozen"
+}
