@@ -1,0 +1,26 @@
+{
+ "command": "python3 scripts/local_openfoam.py run infra/kaggle/kernel_unc01_u3 --out work/local_openfoam/u3_formal --dataset work/kaggle_unc01_u3_dataset --cpus 1",
+ "date_utc": "2026-10-20T17:23:51.827939+00:00",
+ "file_sha256": {
+  "docs/evidence/local_openfoam_env_2026_10_20/freeze.json": "29429f6d28c684df8a07eb7be937857be9cffd1a2d8ae57776f35c65e6fd606e",
+  "docs/evidence/local_openfoam_env_2026_10_20/gate_result.json": "0496603b617e6057079e6214c05dc156f48b3f955c9f3c93f40181daaa6d2c7f",
+  "docs/evidence/unc01_2026_10_20/freeze2.json": "0009678849bda973d20d678ea086db297aa56159c9107055cbc95496901c403c",
+  "docs/evidence/unc01_2026_10_20/u3/u3_criteria.json": "b06264dc2d636db7410d9c205b18ec99cafcbd9f4a9673ef8b95e754ee620ec9",
+  "docs/unc01_registration_2026_10_20.md": "8711a7cea48e5ceb2f15a9ddec410c7d9aadcd1ea29b7cd906a50049e90c91a3",
+  "infra/kaggle/kernel_unc01_u3/kernel-metadata.json": "ecd0bb07c56942bd371b73a79e6a0d112a8edac19a645d2f1c371c9f2c48596b",
+  "infra/kaggle/kernel_unc01_u3/runner.py": "d53a16be27e403bdf989392cba7010b8129b0b8041cac42f09c167049bba2eb1",
+  "infra/local_openfoam/local_openfoam_lock.json": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "scripts/local_openfoam.py": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d"
+ },
+ "gate_verdict": "LOCAL_ENV_PASS_BITWISE (U family)",
+ "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+ "image_tarball_sha256": "0a7e8c47375cd6298d1e9fee7f9ff6a76c72cb6c30c0a5f244ecd66e07d27ba2",
+ "kind": "unc01_amendment2_u3_local",
+ "parent_commit": "3537e16af1117ac35020ec49a5a19efc051daf3f",
+ "rules_changed": false,
+ "status": "REGISTERED_AMENDED",
+ "u2_values_read": false,
+ "u3_formal_output_exists": false,
+ "user_decision_verbatim": "そうだね、タスクが重そうなのでopen formはローカルにしようか",
+ "validity": "local_run.json return code 0 and dpkg_after_matches_lock true; else INFRA_LOSS"
+}
