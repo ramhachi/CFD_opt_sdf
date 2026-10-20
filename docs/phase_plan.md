@@ -7510,3 +7510,23 @@ wall-resolved/transition evaluator study or another validation case (G2) and a f
 
 ## JOB-02 (#59) closed (2026-10-19): per-run flow-grid placement in one kernel, byte-identity gate JOB02_GATE_PASS
 The harness gains an optional run `name`, so one kernel can run the same state at several (x, y) placements of `W4_CANONICAL_ORIGIN_M`; z (ride height) must stay one value per kernel; campaigns without names are unchanged (run name = state); Julia jobs and the measurement contract are unchanged. Engineering gate (capability evidence, not a PROC-01 scientific registration; spec frozen with hashes before the run, one independent source review with no blockers): on Kaggle T4 the parent ran at the native and the GRID-02-shifted origin in one flow_24 and one flow_32 kernel, and all four force CSVs equal the historical references byte for byte (OPT-01 v1 Stage B native parents `e62b6bab…`/`282aceed…`, GRID-02 shifted parents `471ea410…`/`667127c5…`). Evidence: `docs/evidence/job02_gate_2026_10_19/`. The gate was run ahead of UNC-01 (#61) rather than folded into its smoke, because its references are the existing parents and do not depend on the B1 parent choice (#60); the UNC-01 smoke only has to check its new (v18) parent. M1 is complete; with B1 decided (v18, entry above) the M2 freeze no longer waits for JOB-02. All qualification flags stay false; `shape_update_allowed=false`.
+
+## 2026-10-21 T2-0c registered fixed-topology morphing and mesh series (#57): T20C_MORPH_NO_GO
+
+T2-0c ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20c_registration_2026_10_20.md`, SHA-256 3e41e05f...4582; one three-angle plan review with 38 findings,
+one source review, three development smokes; freeze 2 at a8673a2d, source 6d11badf; kernels `cfd-opt-sdf-t20c-remesh` 82/82, `-morph` 93/93, `-shape` 96/96 completed on
+Kaggle CPU, one submission each). It is the pre-agreed T2-0b next action for G3b/G6: incidence changed by moving the nodes of one gmsh baseline (generator-side node
+mapping, fixed polyMesh topology checked by hash) instead of remeshing, on med30/fine30 and a new xfine30 (1 mm, two wall layers), gated at fine30 against xfine30.
+Verdict **T20C_MORPH_NO_GO**; next action row 5: steady SA-WF RANS does not settle on xfine30 at h/c 0.09 (no plateau after 15000 iterations, 12 SOLVER_FAIL) and at
+0.134 for incidence >= 0 (UNSTEADY, raw Cl std 0.7-2 %), so an unsteady/solver-convergence study comes before any mesh-dependence or morph conclusion there. At h/c 0.224
+every gate passes (morph sigma 24x below remeshing on fine30, +-0.25 deg resolved, the derivative agrees between fine30 and xfine30, between two base-mesh realisations and
+with the geometry-identical remeshed cases). At 0.134 the morph removes T2-0b's remeshing jumps (G6 passes on med30, T2-0b's failing case) but the morphed derivative depends
+on the base mesh realisation by 26-29 % (fine30 0.063 vs 0.086 per deg). The T2-0b G3b failure at 0.09 rested on a limit-cycling fine30 +1 deg case (found by the plan
+review; UNSTEADY class added). Labels: remeshing alone fixes neither G6 nor G3b on any level; the mesh-series and peak labels are not computable except at 0.224 (Cl falls in
+equal steps med30 -> fine30 -> xfine30), so this study makes no G2 routing decision and the T2-0b G2 action stays the default; shapes `SHAPE_NOT_RESOLVED` (camber and flap
+resolved and consistent at 0.224/0.134, heave not); `NOT_BITWISE` against T2-0b (36/41 identical meshes; gmsh writes renumbered variants run to run). Operational findings:
+the Kaggle output API returns HTTP 429 after about 2400 per-file downloads (the registered kernels pack cases/ into one tar); a local Docker OpenFOAM backend was gated by
+LOCAL-OF-01 and failed for this pipeline (platform-dependent gmsh meshes), so T2-0c stayed on Kaggle CPU. #66 item 1 is unchanged (NO-GO under T2-0b's G2); the M3a NO-GO
+branch is not triggered by this result. Cap from the registration: at most one more registered T2-0 study before a T2-0 summary is written as M4 input. Evidence:
+`docs/evidence/t20c_registered_2026_10_20/` (README.md, note.md, analysis.md, verdict.json, freeze.json, SHA256SUMS). All qualification flags false;
+`shape_update_allowed=false`.

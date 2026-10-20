@@ -1,0 +1,116 @@
+[
+  {
+    "base": "med30_h0.224_da0",
+    "bl_thickness_m": 0.007749542399999998,
+    "cells_3d": 14773,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.224,
+    "log_tail": "/kaggle/working/t20c/work/base/med30_h0.224_da0: med30 cells=14773 layers=7\n",
+    "mesh": "med30",
+    "mesh_msh_sha256": "ac121835f8a81c5d929b8a800570f74c4221230c5e1c53a6bee99d367d18af09",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "ba7e06232afb0fd93a892064548908471a85f5d16c3b7ccb6a9eb6550bd17e1c",
+      "faces": "38e92fa2ecaf3c93337e3b5db1ccede85780493ccc3738dfafc21afc9cc24c46",
+      "neighbour": "5f3d20cac9f5576aa29a50992e9f8ce98092459fc04151572636d1ad054b99f1",
+      "owner": "533c416e632900502137106d294551e4b2db4cf2583a26097fccefa11a976ee8"
+    },
+    "wall_s": 4.7627767910000784
+  },
+  {
+    "base": "med30_h0.134_da0",
+    "bl_thickness_m": 0.007749542399999998,
+    "cells_3d": 14151,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.134,
+    "log_tail": "/kaggle/working/t20c/work/base/med30_h0.134_da0: med30 cells=14151 layers=7\n",
+    "mesh": "med30",
+    "mesh_msh_sha256": "f56752697bfb6de38f049a39716685ee46ef0815bd66002fa2cfe0682c1bd9c1",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "31ee556fd80b47c5d0fe6a201fd435334bc613126094bba3377b99f107111e91",
+      "faces": "e8a81cd0304dfb26748b7d7b80149b5dbf1eb31ccda2e4d14234d6b05b8f49e9",
+      "neighbour": "64dbb2befb9ef6351559e02980ac0005f56eb940f9bd2ef279a2c170ff660966",
+      "owner": "b353968831c70f5139acf80bcc50dca57cf1c8624846c73c276a6482b4f48134"
+    },
+    "wall_s": 4.9098807200000465
+  },
+  {
+    "base": "med30_h0.09_da0",
+    "bl_thickness_m": 0.007749542399999998,
+    "cells_3d": 13722,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.09,
+    "log_tail": "/kaggle/working/t20c/work/base/med30_h0.09_da0: med30 cells=13722 layers=7\n",
+    "mesh": "med30",
+    "mesh_msh_sha256": "9f9c32a17228d842d2a4907a3a49566b0a637c58ac7aa26b9281940ec8ac14ea",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "6344879b5cef524a413328ca58d30b1c7b635c2a34096fbf9a477fda867520f4",
+      "faces": "632adc30fcdadff9cddc5cc38ad25059dba38b252d0c6b430cffc7b9b38e8796",
+      "neighbour": "036f28275825021098e32e96c184ec61132aadee319bf9b6d22f8432a16b10dd",
+      "owner": "d63173122fa80632f457b656bb870ade51eda7e697c814da017cef986181e987"
+    },
+    "wall_s": 4.827651875000015
+  },
+  {
+    "base": "fine30_h0.224_da0",
+    "bl_thickness_m": 0.0032208,
+    "cells_3d": 26916,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.224,
+    "log_tail": "/kaggle/working/t20c/work/base/fine30_h0.224_da0: fine30 cells=26916 layers=4\n",
+    "mesh": "fine30",
+    "mesh_msh_sha256": "1c81dbaf6ff60513d5fc959520dae6f1c7c9f9fb7c5d7a02c23ca03eda46da62",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "ed2902a47bdb512a7c65f50e6c6f8af73f69dffadda8aa6ed2673fa799109977",
+      "faces": "8e79cda3f542a0259e87894aa93d0d9ddb02e79d858a14e13841543f20065f5f",
+      "neighbour": "eb6152c373cd2ea107a30cd15fb5ad05cbc31f2b81d3b64ab3da01e565224a9e",
+      "owner": "8adc91f750f06d198e34a12b7ad6b14be9f884ebacf675196d146563195532f8"
+    },
+    "wall_s": 7.496622645000002
+  },
+  {
+    "base": "fine30_h0.134_da0",
+    "bl_thickness_m": 0.0032208,
+    "cells_3d": 26074,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.134,
+    "log_tail": "/kaggle/working/t20c/work/base/fine30_h0.134_da0: fine30 cells=26074 layers=4\n",
+    "mesh": "fine30",
+    "mesh_msh_sha256": "5f85b8061365442d37f1e81e4bed97e8ea0e9425c9038198bae1980a8c4291c9",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "0f670f2622d75a4abd7384d6565b4cc7517362603c0cc1ac0fc61aa88bf70bf3",
+      "faces": "3e3502f8f529fda43b59c30931aca39be450851967d6409dd1479d251fb12c9f",
+      "neighbour": "2e40d9b5fe88ace3ececb97d375897201949e1c9cbef5f8147c7771e11e45712",
+      "owner": "43564170ed8aa9fc4a36be295a3626087d60ba8cd7cab2792af07ab583d029fc"
+    },
+    "wall_s": 5.040135953000004
+  },
+  {
+    "base": "fine30_h0.09_da0",
+    "bl_thickness_m": 0.0032208,
+    "cells_3d": 25298,
+    "delta_alpha_deg": 0.0,
+    "h_over_c": 0.09,
+    "log_tail": "/kaggle/working/t20c/work/base/fine30_h0.09_da0: fine30 cells=25298 layers=4\n",
+    "mesh": "fine30",
+    "mesh_msh_sha256": "a4f3b3b53c1b8f891d39a98debc9c7da3de7a12dad8211061f1fc6ec56f886df",
+    "mesh_quality_failures": [],
+    "returncode": 0,
+    "topology": {
+      "boundary": "167b1022f5f7a7f01585e59dfc1c5bff4f58a81b5c3294f54709a50ce63e6d02",
+      "faces": "c5d3892973891220ec6b2281ae277f5e544240634a7737006e509305bee09ac0",
+      "neighbour": "590390c90799c4290af6dac534a363ad09e90ec2bda5867214bcda3c2971f989",
+      "owner": "aaf0e456395774696d8177c53e9de4424bef348f96a506f10dc5740833c05f93"
+    },
+    "wall_s": 5.004786419999959
+  }
+]
