@@ -21,7 +21,8 @@ def test_job_builds_and_locally_validates_the_case(cells, dims, nu):
     r = smoke(cells)
     if r.returncode and "GRIDRES01_SMOKE_OK" not in r.stdout and "Pkg" in r.stderr:
         pytest.skip("Julia project is not instantiated here")
-    assert r.returncode == 0 and f"GRIDRES01_SMOKE_OK flow_{cells} dims={dims} nu={nu}" in r.stdout, r.stderr[-800:]
+    assert r.returncode == 0 and f"GRIDRES01_SMOKE_OK flow_{cells} dims={dims} nu=" in r.stdout, r.stderr[-800:]
+    assert float(r.stdout.split("nu=")[1].split()[0]) == pytest.approx(float(nu), abs=1e-12)   # n/80 up to float rounding (flow_32 prints 0.3999999999999999)
 
 
 @pytest.mark.skipif(shutil.which("julia") is None, reason="julia not installed")
