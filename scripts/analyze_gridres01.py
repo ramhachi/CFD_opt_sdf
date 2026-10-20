@@ -37,7 +37,7 @@ RETAINED = {"flow_24": "a", "flow_32": "b"}  # OPT-01 Stage B kernel letters
 Q = ("downforce", "drag")
 EDGE_MM, HI_N, LO_N, RESIDUAL_MAX_N = 1.25, 4e-5, 2e-5, 2e-5
 REQUIRED_FILES = {f"scripts/{n}.py" for n in ("analyze_gridres01", "gridres01_states", "gridres01_runner_template", "build_gridres01_kernel", "build_gridres01_inputs", "freeze_gridres01",
-                                              "step01_states", "grid01_gpu", "waterlily_gridres01_job.jl")} | {"src/cfd_sdf/lowdim03_contract.py", "docs/gridres01_plan_2026_10_20.md"}
+                                              "step01_states", "grid01_gpu")} | {"scripts/waterlily_gridres01_job.jl", "src/cfd_sdf/lowdim03_contract.py", "docs/gridres01_plan_2026_10_20.md"}
 FROZEN_PARAMETERS = {"min_downforce_gain_n": MIN_DOWNFORCE_GAIN_N, "drag_allowance_n": DRAG_ALLOWANCE_N, "steps_mm": list(G.STEPS_MM), "edge_mm": EDGE_MM, "g_max_sides_with_flow32_above_n": HI_N,
                      "g_max_sides_with_flow24_below_n": LO_N, "fit_residual_incomplete_above_n": RESIDUAL_MAX_N}
 
