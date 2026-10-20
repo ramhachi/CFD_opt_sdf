@@ -5,7 +5,9 @@ Copy-adapted from the frozen analyze_opt01b (never edited).  Per grid: downforce
 production `recompute_force_n`), a no-intercept least-squares fit Delta(s) = a*s + b*s^2 on the matched steps (+0.3125, +0.625, +1.25, -1.25 mm; the parent adds a zero row) and the forward-only fit,
 the max fit residual, and the capability G_max = max(0, sup over s in (0, 1.25] mm of a*s + b*s^2).  Verdict on the analysed fine grid (plan Amendment 1 G4, downforce):
 FLOWxx_SIDES_WITH_FLOW32 iff G_max > 4e-5 N; FLOWxx_SIDES_WITH_FLOW24 iff G_max < 2e-5 N; AMBIGUOUS otherwise; INCOMPLETE on an integrity failure or any fit residual above 2e-5 N.
---check verifies integrity and prints the verdict; --write writes the analysis once (never overwrites).  No partial analysis is ever written.
+--check verifies integrity and prints the verdict; --write writes the analysis once (never overwrites).  Amendment 2: the kernel also reruns the OPT-01 parent on flow_24 and flow_32 with the passive Poisson probe
+(their force CSVs must equal the retained Stage B ones byte for byte), and every run's Poisson statistics are reported with the descriptive label POISSON_CONFOUNDED (see gridres01_states).  A residual-gate INCOMPLETE is a
+scientific outcome and IS written (all deltas, fits, labelled verdict and reason); only integrity failures refuse to write.
 The joint reading of flow_40 and flow_48 is not defined here: a flow_48 freeze states it (plan G2: reviewed separately).
 """
 from __future__ import annotations
@@ -32,14 +34,15 @@ from grid01_gpu import select_worker_gpu  # noqa: E402
 EVIDENCE_REL = "docs/evidence/gridres01_2026_10_20"
 FREEZE_KIND = "gridres01_prerun_freeze"
 INFRA = ROOT / "infra/kaggle"
-PARENT_INTEGRATION_COMMIT = "170e41446901ffadec70850be5a5a32180931b37"  # the committed plan with Amendment 1: the source must descend from it
-RETAINED = {"flow_24": "a", "flow_32": "b"}  # OPT-01 Stage B kernel letters
+PARENT_INTEGRATION_COMMIT = "d0e79b4696d8b28d4f02e5fff272efa9ee0c28cb"  # the committed plan with Amendments 1 and 2: the source must descend from it
+RETAINED = G.RETAINED_KERNEL  # OPT-01 Stage B kernel letters
 Q = ("downforce", "drag")
 EDGE_MM, HI_N, LO_N, RESIDUAL_MAX_N = 1.25, 4e-5, 2e-5, 2e-5
 REQUIRED_FILES = {f"scripts/{n}.py" for n in ("analyze_gridres01", "gridres01_states", "gridres01_runner_template", "build_gridres01_kernel", "build_gridres01_inputs", "freeze_gridres01",
-                                              "step01_states", "grid01_gpu")} | {"scripts/waterlily_gridres01_job.jl", "src/cfd_sdf/lowdim03_contract.py", "docs/gridres01_plan_2026_10_20.md"}
+                                              "step01_states", "grid01_gpu")} | {"scripts/waterlily_gridres01_job.jl", "scripts/gridres01_poisson_probe.jl", "scripts/gridres01_poisson_passivity_check.jl", "src/cfd_sdf/lowdim03_contract.py", "docs/gridres01_plan_2026_10_20.md"}
 FROZEN_PARAMETERS = {"min_downforce_gain_n": MIN_DOWNFORCE_GAIN_N, "drag_allowance_n": DRAG_ALLOWANCE_N, "steps_mm": list(G.STEPS_MM), "edge_mm": EDGE_MM, "g_max_sides_with_flow32_above_n": HI_N,
-                     "g_max_sides_with_flow24_below_n": LO_N, "fit_residual_incomplete_above_n": RESIDUAL_MAX_N}
+                     "g_max_sides_with_flow24_below_n": LO_N, "fit_residual_incomplete_above_n": RESIDUAL_MAX_N,
+                     "poisson_iteration_cap": G.POISSON_ITERATION_CAP, "poisson_confounded_cap_fraction_excess_above": G.POISSON_MATERIAL_ABS, "parent_reruns": list(G.GRIDS["flow_40"]["parent_reruns"])}
 
 
 def runtime_fixed(case: str) -> dict:
@@ -107,7 +110,54 @@ def report(tables: dict, fine: str) -> dict:
     worst = max(r["fit"]["downforce"]["max_residual_n"] for r in grids.values())
     incomplete = not all(math.isfinite(x) for x in (worst, *[r["g_max_n"] for r in grids.values()])) or worst > RESIDUAL_MAX_N
     verdict = "INCOMPLETE" if incomplete else f"{fine.upper().replace('_', '')}_{classify(grids[fine]['g_max_n'])}"
-    return {"verdict": verdict, "fine_grid": fine, "grids": grids, "max_downforce_fit_residual_n": worst, "report_only_labels": labels(grids, fine)}
+    over = sorted(g for g, r in grids.items() if not r["fit"]["downforce"]["max_residual_n"] <= RESIDUAL_MAX_N)
+    reason = (f"downforce fit residual above {RESIDUAL_MAX_N:g} N (or not finite) on {over}: the quadratic model does not hold there" if incomplete
+              else f"G_max({fine}) = {grids[fine]['g_max_n']:.3e} N against the guard band [{LO_N:g}, {HI_N:g}] N")
+    return {"verdict": verdict, "verdict_reason": reason, "fine_grid": fine, "grids": grids, "max_downforce_fit_residual_n": worst, "report_only_labels": labels(grids, fine)}
+
+
+# ---- Poisson statistics (Amendment 2 H1/H3) -------------------------------------------------------------------------------------------------------------------------------------------------
+def csv_steps(path: Path) -> list:
+    return [int(float(line.split(",")[0])) for line in Path(path).read_text().splitlines()[1:]]
+
+
+def poisson_summary(path: Path, steps: list | None = None) -> dict:
+    """Parse one run's <case>.poisson.csv (header, one row per force sample): the solves at the iteration cap, iteration quantiles over all solves, residual (final r.r of the last solve of each sample) quantiles."""
+    lines = Path(path).read_text().splitlines()
+    if not lines or lines[0] != "step,t_u_l,solves,iters_sum,iters_max,solves_at_cap,final_residual_l2,iters":
+        raise ValueError("poisson CSV header differs")
+    steps_seen, iters, resid = [], [], []
+    for line in lines[1:]:
+        f = line.split(",")
+        if len(f) != 8:
+            raise ValueError("poisson CSV row is malformed")
+        n = [int(x) for x in f[7].split()]
+        if not n or not all(0 <= v <= G.POISSON_ITERATION_CAP for v in n):
+            raise ValueError("poisson iteration counts are missing or exceed the solver cap")
+        if (int(f[2]), int(f[3]), int(f[4]), int(f[5])) != (len(n), sum(n), max(n), sum(v == G.POISSON_ITERATION_CAP for v in n)):
+            raise ValueError("poisson CSV row aggregates differ from its iteration counts")
+        r = float(f[6])
+        if not math.isfinite(r) or r < 0:
+            raise ValueError("poisson residual is not a finite non-negative number")
+        steps_seen.append(int(float(f[0]))); iters += n; resid.append(r)
+    if not steps_seen:
+        raise ValueError("poisson CSV has no samples")
+    if steps is not None and steps_seen != steps:
+        raise ValueError("poisson samples do not match the force samples")
+    q = lambda x: {k: float(np.percentile(x, p)) for k, p in (("p50", 50), ("p90", 90), ("p99", 99))} | {"min": float(np.min(x)), "max": float(np.max(x)), "mean": float(np.mean(x))}
+    at_cap = sum(v == G.POISSON_ITERATION_CAP for v in iters)
+    return {"samples": len(steps_seen), "solves": len(iters), "solves_at_cap": at_cap, "cap_fraction": at_cap / len(iters), "iterations": q(iters), "final_residual_l2": q(resid)}
+
+
+def poisson_report(stats: dict, fine: str) -> dict:
+    """stats: 'flow_24' / 'flow_32' -> summary of the parent rerun, fine grid -> {state name -> summary}.  Descriptive only: POISSON_CONFOUNDED iff the cap-hit fraction of flow_24 or of the worst flow_40 state
+    exceeds flow_32's by more than G.POISSON_MATERIAL_ABS (absolute); it never changes the verdict."""
+    frac = {"flow_24": stats["flow_24"]["cap_fraction"], "flow_32": stats["flow_32"]["cap_fraction"], fine: max(v["cap_fraction"] for v in stats[fine].values())}
+    excess = {g: frac[g] - frac["flow_32"] for g in ("flow_24", fine)}
+    confounded = any(e > G.POISSON_MATERIAL_ABS for e in excess.values())
+    return {"cap_fraction_by_grid": frac, "cap_fraction_excess_over_flow_32": excess, "material_threshold_abs": G.POISSON_MATERIAL_ABS, "iteration_cap": G.POISSON_ITERATION_CAP,
+            "label": "POISSON_CONFOUNDED" if confounded else None,
+            "note": "descriptive: the grids differ in multigrid depth (WaterLily 1.8.0: flow_24 4, flow_32 6, flow_40 4, flow_48 5 levels) and the Poisson solve is capped; a label of None does not exclude a pressure-solver effect"}
 
 
 # ---- retained flow_24 / flow_32 values (OPT-01 Stage B), hash-checked ---------------------------------------------------------------------------------------------------------------------
@@ -184,13 +234,53 @@ def _manifest(out: Path, grid: str) -> None:
         raise ValueError("manifest path set differs from actual output")
     if any(p.is_symlink() for p in out.rglob("*")):
         raise ValueError("symlinks are not permitted in retained kernel output")
-    required = {"gridres01_index.json", "run_identity.json", "nvidia_smi.csv", "gpu_device_probe.json", "DONE"} | {f"states/{n}/{f}" for n in G.NAMES for f in (f"{grid}.forces.csv", f"{grid}.summary.json", "W4_JOB_DONE")}
+    required = {"gridres01_index.json", "run_identity.json", "nvidia_smi.csv", "gpu_device_probe.json", "DONE"} | {f"states/{n}/{f}" for n in G.NAMES for f in (f"{grid}.forces.csv", f"{grid}.poisson.csv", f"{grid}.summary.json", "W4_JOB_DONE")}
+    required |= {f"parent_reruns/{g}/{f}" for g in G.GRIDS[grid]["parent_reruns"] for f in (f"{g}.forces.csv", f"{g}.poisson.csv", f"{g}.summary.json", "W4_JOB_DONE")}
     if not required <= set(files):
         raise ValueError("manifest omits required output files")
     for relative, digest in files.items():
         rel = Path(relative)
         if rel.is_absolute() or ".." in rel.parts or not _is_sha(digest) or sha256(out / rel) != digest:
             raise ValueError(f"unsafe manifest path, malformed digest or hash mismatch: {relative}")
+
+
+def check_parent_reruns(out: Path, case: str, freeze: dict, inventory: dict, index: dict, selected: dict) -> tuple:
+    """Amendment 2 H2: the instrumented parent reruns on the retained grids.  Each force CSV must equal the retained Stage B parent CSV byte for byte (hash from the inventory, itself pinned to the Stage B
+    analysis): otherwise the instrumentation is not passive (or the run is not reproducible) and the record is refused.  Returns (poisson summaries by grid, process seconds, Julia summary seconds)."""
+    plan, runtime = inventory["grids"][case]["parent_reruns"], freeze["runtime"]
+    entries = index.get("parent_reruns")
+    if not isinstance(entries, list) or [e.get("case_id") for e in entries] != [r["case_id"] for r in plan]:
+        raise ValueError("parent reruns differ from the registered plan")
+    rerun_dir = out / "parent_reruns"
+    if ({p.name for p in rerun_dir.iterdir() if p.is_dir()} if rerun_dir.exists() else set()) != {r["case_id"] for r in plan}:
+        raise ValueError("parent rerun directories differ from the plan")
+    parent, stats, process_total, summary_total = inventory["states"][0], {}, 0.0, 0.0
+    for rec, entry in zip(plan, entries):
+        g, directory = rec["case_id"], out / "parent_reruns" / rec["case_id"]
+        csv, poisson_path, summary_path = directory / f"{g}.forces.csv", directory / f"{g}.poisson.csv", directory / f"{g}.summary.json"
+        if entry.get("complete") is not True or type(entry.get("exit_code")) is not int or entry["exit_code"] != 0 or entry.get("name") != parent["name"]:
+            raise ValueError("parent rerun process is incomplete")
+        seconds = finite(entry.get("seconds"), "parent rerun process wall time")
+        if not 0 < seconds <= runtime["per_state_timeout_s"]:
+            raise ValueError("parent rerun process wall time exceeds budget")
+        process_total += seconds
+        digest = sha256(csv)
+        if entry.get("forces_csv_sha256") != digest or entry.get("poisson_csv_sha256") != sha256(poisson_path):
+            raise ValueError("parent rerun CSV differs from index")
+        if digest != rec["retained_forces_csv_sha256"] or entry.get("retained_forces_csv_sha256") != digest or entry.get("byte_identical_to_retained") is not True:
+            raise ValueError(f"instrumented {g} parent is not byte-identical to the retained Stage B force CSV: the instrumentation is not passive (or the run is not reproducible)")
+        summary = jload(summary_path)
+        for key, want in (("case_id", g), ("cells_per_reference_length", rec["cells"]), ("flow_dims", rec["flow_dims"]), ("gpu_name", "Tesla T4"), ("gpu_uuid", selected["uuid"]),
+                          ("phi_fortran_sha256", parent["phi_fortran_order_sha256"]), ("phi_c_order_sha256", parent["phi_c_order_sha256"]), ("state_sha256", parent["state_sha256"]), ("julia_threads", 1)):
+            _equal(summary.get(key), want, f"parent rerun summary {key}")
+        if any(summary.get(key) is not True for key in ("finite_u", "finite_p", "finite_forces")):
+            raise ValueError("parent rerun fields or forces are not finite")
+        wall = finite(summary.get("wall_seconds"), "parent rerun Julia wall time")
+        if not 0 < wall <= runtime["per_state_timeout_s"]:
+            raise ValueError("parent rerun Julia wall time exceeds budget")
+        summary_total += wall
+        stats[g] = poisson_summary(poisson_path, csv_steps(csv))
+    return stats, process_total, summary_total
 
 
 def check_kernel(out: Path, case: str, freeze: dict, inventory: dict) -> dict:
@@ -234,6 +324,10 @@ def check_kernel(out: Path, case: str, freeze: dict, inventory: dict) -> dict:
         csv, summary_path = directory / f"{case}.forces.csv", directory / f"{case}.summary.json"
         if entry.get("forces_csv_sha256") != sha256(csv):
             raise ValueError("state force CSV differs from index")
+        poisson_path = directory / f"{case}.poisson.csv"
+        if entry.get("poisson_csv_sha256") != sha256(poisson_path):
+            raise ValueError("state Poisson CSV differs from index")
+        poisson = poisson_summary(poisson_path, csv_steps(csv))
         summary, job_env = jload(summary_path), inventory["job_env_common"]
         for key, want in (("canonical_sdf_origin_m", [float(v) for v in job_env["W4_CANONICAL_ORIGIN_M"].split(",")]), ("canonical_design_spacing_m", float(job_env["W4_CANONICAL_DESIGN_SPACING_M"])),
                           ("canonical_state_label", job_env["W4_CANONICAL_STATE_LABEL"]), ("canonical_design_point_shape", [int(v) for v in job_env["W4_POINT_SHAPE"].split(",")]),
@@ -268,11 +362,18 @@ def check_kernel(out: Path, case: str, freeze: dict, inventory: dict) -> dict:
             if _rel_error(host[f"{q}_n"], finite(summary.get(f"{q}_time_weighted_n"), f"summary {q}")) > SUMMARY_REL:
                 raise ValueError("host recomputation differs from Julia force summary")
         states[row["name"]] = {f"{q}_n": host[f"{q}_n"] for q in Q}
-        states[row["name"]].update({"forces_csv_sha256": sha256(csv), "summary_sha256": sha256(summary_path), "solver_process_wall_seconds": process_seconds, "julia_summary_wall_seconds": wall,
+        states[row["name"]].update({"poisson": poisson, "forces_csv_sha256": sha256(csv), "summary_sha256": sha256(summary_path), "solver_process_wall_seconds": process_seconds, "julia_summary_wall_seconds": wall,
                                     "peak_vram_bytes": summary.get("peak_vram_bytes")})
+    _, rerun_process, rerun_summary = check_parent_reruns(out, case, freeze, inventory, index, selected)
+    process_total, summary_total = process_total + rerun_process, summary_total + rerun_summary
     if finite(index.get("solver_process_wall_seconds_total"), "total process time") != process_total or process_total > runtime["solver_wall_time_cap_s"] or summary_total > runtime["solver_wall_time_cap_s"]:
         raise ValueError("aggregate wall-time budget or recorded process sum differs")
     return states
+
+
+def rerun_poisson(out: Path, case: str, freeze: dict, inventory: dict) -> dict:
+    selected = select_worker_gpu((out / "nvidia_smi.csv").read_text())
+    return check_parent_reruns(out, case, freeze, inventory, jload(out / "gridres01_index.json"), selected)[0]
 
 
 def analyze(case: str, kernel_dir: Path, freeze: Any, inventory: Any | None = None) -> dict:
@@ -282,19 +383,26 @@ def analyze(case: str, kernel_dir: Path, freeze: Any, inventory: Any | None = No
         inventory = inventory if inventory is not None else jload(ROOT / EVIDENCE_REL / "inventory.json")
         validate_registration(freeze, inventory, case)
         fine = check_kernel(Path(kernel_dir), case, freeze, inventory)
+        poisson = {**rerun_poisson(Path(kernel_dir), case, freeze, inventory), case: {n: v["poisson"] for n, v in fine.items()}}
         rep = report({**retained_tables(), case: fine}, case)
         base.update(rep)
-        base["integrity"] = {"pass": rep["verdict"] != "INCOMPLETE", "failures": [] if rep["verdict"] != "INCOMPLETE" else ["a fit residual exceeds 2e-5 N or a quantity is not finite: the quadratic model does not hold"]}
-        base.update({"state_forces_n": {case: fine}, "frozen_parameters": FROZEN_PARAMETERS, "qualification_flags": {k: False for k in FLAGS},
+        base["integrity"] = {"pass": True, "failures": []}   # H3: a residual-gate INCOMPLETE is a scientific outcome (verdict + verdict_reason), written like any other; only integrity failures are not
+        base["poisson"] = {"per_run": poisson, **poisson_report(poisson, case)}
+        base.update({"state_forces_n": {case: {n: {k: v for k, v in rec.items() if k != "poisson"} for n, rec in fine.items()}}, "frozen_parameters": FROZEN_PARAMETERS, "qualification_flags": {k: False for k in FLAGS},
                      "provenance": {"source_commit": freeze["source_commit"], "source_tree_id": freeze["source_tree_id"], "inventory_sha256": freeze["inventory_sha256"], "analyzer_sha256": sha256(Path(__file__)),
                                     "kernel_manifest_sha256": sha256(Path(kernel_dir) / "output_manifest.json")},
                      "disclosures": ("Non-blind: the flow_24/flow_32 values and the quadratic structure were known before the run.  The direction was selected as the max-min of the flow_24/flow_32 predictions: a selected line, not a random draw.  "
                                      "Lattice commensurability confound: the design lattice (0.025 m) equals the flow_32 spacing, flow_24 is coarser, flow_40/48 finer; resolution and lattice alignment change together, "
                                      "and any convergence is that of this interpolated-lattice body only.  The 3e-5 N floor is nominal, the 1e-5 N guard band is the scale of the fit residuals, not a noise measurement.  "
-                                     "Not claimed: grid independence, physical or Stage V downforce, a gradient, optimizer behaviour.  No GRIDRES-01 result alone supports a GRID-01 amendment.")})
+                                     "Multigrid-depth confound: WaterLily 1.8.0 builds 4, 6, 4 and 5 multigrid levels on flow_24, flow_32, flow_40 and flow_48 and caps the pressure solve at 32 iterations (tol 1e-4), so part of any flow_24/flow_32 "
+                                     "difference may be pressure-solver convergence rather than resolution; the Poisson statistics above are descriptive, reported not gating.  "
+                                     "The verdict uses the fit including the -1.25 mm reverse state (a report-only probe for the gates); the forward-only G_max is reported without classification; with 3 dof per fit one outlier is partly absorbed, "
+                                     "so read G_max together with the acceptance emulation.  Not claimed: grid independence, physical or Stage V downforce, a gradient, optimizer behaviour.  "
+                                     "No GRIDRES-01 result alone supports a GRID-01 amendment.")})
     except Exception as exc:  # noqa: BLE001 -- every untrusted-input failure is fail-closed
         base["integrity"] = {"pass": False, "failures": [f"{type(exc).__name__}: {exc}"]}
         base["verdict"] = "INCOMPLETE"
+        base["verdict_reason"] = "integrity failure: no analysis is written"
     return base
 
 
@@ -319,15 +427,15 @@ def main() -> None:
         raise SystemExit(3) from exc
     result = analyze(args.grid, args.kernel_dir, freeze)
     if args.check or result["integrity"]["pass"] is not True:
-        print(json.dumps({"integrity": result["integrity"], "verdict": result["verdict"]}, indent=2, sort_keys=True, allow_nan=False))
+        print(json.dumps({"integrity": result["integrity"], "verdict": result["verdict"], "verdict_reason": result.get("verdict_reason")}, indent=2, sort_keys=True, allow_nan=False))
         if result["integrity"]["pass"] is not True:
-            raise SystemExit(3)
+            raise SystemExit(3)   # integrity failures never write an analysis
         return
     result["provenance"]["freeze_sha256"] = freeze_sha
     data = json.dumps(result, sort_keys=True, indent=2, allow_nan=False) + "\n"
     with args.write.open("x") as handle:
         handle.write(data)
-    print(result["verdict"], hashlib.sha256(data.encode()).hexdigest())
+    print(result["verdict"], result["verdict_reason"], hashlib.sha256(data.encode()).hexdigest())
 
 
 if __name__ == "__main__":

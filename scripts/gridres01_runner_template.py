@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""GRIDRES-01 pinned five-state worker (parent first, then +0.3125/+0.625/+1.25 mm and the -1.25 mm reverse diagnostic along the OPT-01 Stage A robust direction) on one finer grid; reuses the amended GRID-01 GPU/runtime protocol (copy-adapted from the frozen OPT-01 Stage B worker)."""
+"""GRIDRES-01 pinned worker: first the instrumented OPT-01 parent on each retained grid (PARENT_RERUNS: flow_24, flow_32; plan Amendment 2 H2, each must reproduce its retained Stage B force CSV byte for byte or the
+kernel stops), then the five states (parent, +0.3125/+0.625/+1.25 mm and the -1.25 mm reverse diagnostic along the OPT-01 Stage A robust direction) on one finer grid; every run records the passive Poisson probe (H1).
+Reuses the amended GRID-01 GPU/runtime protocol (copy-adapted from the frozen OPT-01 Stage B worker)."""
 import hashlib
 import json
 import os
@@ -21,6 +23,7 @@ PROJECT = "julia/CFDSDFWaterLilyT4"
 CASE_ID = "PIN_CASE_ID"
 JOB = "PIN_JOB"
 CELLS = "PIN_CELLS"
+PARENT_RERUNS = "PIN_PARENT_RERUNS"  # retained grids whose parent is rerun first, instrumented
 STATES_MODULE = "scripts/step01_states.py"
 EVIDENCE = "docs/evidence/gridres01_2026_10_20"
 OPT01B_EVIDENCE = "docs/evidence/opt01b_stage_b_2026_10_15"  # the parent and direction raw files live here (the same bytes as OPT-01 Stage B)
@@ -38,7 +41,7 @@ SPARSE = [
 OUT = Path(f"/kaggle/working/gridres01_{KERNEL}")
 INSTANTIATE_TIMEOUT_S = 2400
 PER_STATE_TIMEOUT_S = "PIN_PER_STATE_TIMEOUT_S"
-SOLVER_WALL_TIME_CAP_S = "PIN_SOLVER_WALL_TIME_CAP_S"  # five states x the per-state timeout
+SOLVER_WALL_TIME_CAP_S = "PIN_SOLVER_WALL_TIME_CAP_S"  # aggregate over the parent reruns and the five states
 GPU_PROBE_TIMEOUT_S = 300
 KERNEL_TIMEOUT_S = "PIN_KERNEL_TIMEOUT_S"  # must equal `kaggle kernels push --timeout`
 MARGIN_S = 300
@@ -143,6 +146,9 @@ def expected_plan(inventory):
     grid = inventory["grids"][CASE_ID]
     if grid["case_id"] != CASE_ID or grid["job"] != JOB or grid["cells"] != CELLS or L.GRIDS[CASE_ID]["cells"] != CELLS:
         raise ValueError("wrong grid/job binding")
+    reruns = grid["parent_reruns"]
+    if [r["case_id"] for r in reruns] != PARENT_RERUNS or list(L.GRIDS[CASE_ID]["parent_reruns"]) != PARENT_RERUNS or any(r["cells"] != L.RERUN_CELLS[r["case_id"]] for r in reruns):
+        raise ValueError("parent reruns differ from the registered plan")
     caps = {"per_state_timeout_s": PER_STATE_TIMEOUT_S, "solver_wall_time_cap_s": SOLVER_WALL_TIME_CAP_S, "kernel_timeout_s": KERNEL_TIMEOUT_S}
     if grid["limits"] != caps or {k: L.GRIDS[CASE_ID][k] for k in caps} != caps:
         raise ValueError("registered caps differ from the pinned runner constants")
@@ -153,10 +159,10 @@ def expected_plan(inventory):
     return rows
 
 
-def state_env(base_env, inventory, row, gpu_uuid):
+def state_env(base_env, inventory, row, gpu_uuid, cells):
     env = dict(base_env)
     env.update(inventory["job_env_common"])
-    env["GRIDRES01_CELLS"] = str(CELLS)
+    env["GRIDRES01_CELLS"] = str(cells)
     for key in ("CUDA_DEVICE_ORDER", "CUDA_VISIBLE_DEVICES", "JULIA_NUM_THREADS"):
         if env.get(key) != base_env.get(key):
             raise RuntimeError(f"state environment changes probed device/thread configuration: {key}")
@@ -275,26 +281,31 @@ def main():
             if observed != expected_device:
                 raise RuntimeError("observed CUDA singleton/default UUID differs from selected physical GPU")
             solver_elapsed_s = 0.0
-            for name in EXPECTED_NAMES:
-                row = by_name[name]
-                stage = f"state:{name}"
-                outdir = OUT / "states" / name
+            parent_row = by_name[EXPECTED_NAMES[0]]
+            # (case id, cells, state row, output dir, retained hash or None): the instrumented parent reruns first, so that an instrumentation that is not passive is detected before the flow_40 states
+            runs = [(r["case_id"], r["cells"], parent_row, OUT / "parent_reruns" / r["case_id"], r["retained_forces_csv_sha256"]) for r in inventory["grids"][CASE_ID]["parent_reruns"]]
+            runs += [(CASE_ID, CELLS, by_name[name], OUT / "states" / name, None) for name in EXPECTED_NAMES]
+            index["parent_reruns"] = []
+            for run_case, run_cells, row, outdir, retained_sha in runs:
+                name = row["name"]
+                stage = f"state:{run_case}:{name}"
                 outdir.mkdir(parents=True, exist_ok=False)
                 raw = generate_phi(S, source, row, baseline_phi, directions)
-                phi_path = base / (name + ".phi.f32f")
+                phi_path = base / (run_case + "." + name + ".phi.f32f")
                 phi_path.write_bytes(raw)
                 t0 = time.time()
                 code = run(
                     [str(julia), "--startup-file=no", project, str(source / JOB), str(phi_path), str(outdir)],
                     outdir / "job.log",
-                    state_env(env, inventory, row, gpu_uuid),
+                    state_env(env, inventory, row, gpu_uuid, run_cells),
                     min(PER_STATE_TIMEOUT_S, remaining(started), SOLVER_WALL_TIME_CAP_S - solver_elapsed_s),
                 )
                 resolved_phi = phi_path.resolve()
-                if resolved_phi.parent != base.resolve() or resolved_phi.name != name + ".phi.f32f":
+                if resolved_phi.parent != base.resolve() or resolved_phi.name != run_case + "." + name + ".phi.f32f":
                     raise RuntimeError("unexpected temporary phi cleanup target")
                 resolved_phi.unlink()
-                csv = outdir / f"{CASE_ID}.forces.csv"
+                csv = outdir / f"{run_case}.forces.csv"
+                poisson = outdir / f"{run_case}.poisson.csv"
                 entry = {
                     "name": name,
                     "kind": row["kind"],
@@ -304,16 +315,25 @@ def main():
                     "exit_code": code,
                     "seconds": time.time() - t0,
                     "forces_csv_sha256": sha256(csv) if csv.is_file() else None,
-                    "complete": code == 0 and csv.is_file() and (outdir / "W4_JOB_DONE").is_file() and (outdir / f"{CASE_ID}.summary.json").is_file(),
+                    "poisson_csv_sha256": sha256(poisson) if poisson.is_file() else None,
+                    "complete": code == 0 and csv.is_file() and poisson.is_file() and (outdir / "W4_JOB_DONE").is_file() and (outdir / f"{run_case}.summary.json").is_file(),
                 }
                 solver_elapsed_s += entry["seconds"]
                 index["solver_process_wall_seconds_total"] = solver_elapsed_s
-                index["states"].append(entry)
+                if retained_sha is not None:
+                    entry.update({"case_id": run_case, "retained_forces_csv_sha256": retained_sha, "byte_identical_to_retained": entry["forces_csv_sha256"] == retained_sha})
+                    index["parent_reruns"].append(entry)
+                else:
+                    index["states"].append(entry)
                 write_json(OUT / "gridres01_index.json", index)
                 if entry["seconds"] > PER_STATE_TIMEOUT_S or solver_elapsed_s > SOLVER_WALL_TIME_CAP_S:
                     raise RuntimeError("registered per-state or aggregate solver wall-time budget exceeded")
                 if not entry["complete"]:
-                    raise RuntimeError(f"state did not complete: {name} (exit {code})")
+                    raise RuntimeError(f"state did not complete: {run_case} {name} (exit {code})")
+                if retained_sha is not None and not entry["byte_identical_to_retained"]:
+                    raise RuntimeError(f"instrumented {run_case} parent differs from the retained Stage B force CSV: the instrumentation is not passive (or the run is not reproducible); stopped before flow_40")
+            if [entry["case_id"] for entry in index["parent_reruns"]] != PARENT_RERUNS:
+                raise RuntimeError("completed parent reruns differ from the registered plan")
             if [entry["name"] for entry in index["states"]] != EXPECTED_NAMES:
                 raise RuntimeError("completed state sequence differs from the registered plan")
         stage = "completed"
@@ -331,7 +351,7 @@ def main():
         print((OUT / "ERROR.txt").read_text(), flush=True)
     finally:
         if not failed:
-            (OUT / "DONE").write_text("all five registered GRIDRES-01 states completed; joint host integrity and actual response analysis are still required.\n")
+            (OUT / "DONE").write_text("all registered GRIDRES-01 runs (instrumented parent reruns and the five states) completed; joint host integrity and actual response analysis are still required.\n")
         files = {str(p.relative_to(OUT)): sha256(p) for p in sorted(OUT.rglob("*")) if p.is_file() and p.name != "output_manifest.json"}
         write_json(OUT / "output_manifest.json", {"files": files})
         print("OUTPUT_MANIFEST_SHA256", sha256(OUT / "output_manifest.json"), flush=True)

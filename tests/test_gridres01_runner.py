@@ -28,7 +28,8 @@ def test_rendered_worker_accepts_the_exact_plan_and_regenerates_every_state_in_b
     spec = G.GRIDS[case]
     assert (ns["CASE_ID"], ns["CELLS"], ns["JOB"]) == (case, spec["cells"], INV["grids"][case]["job"])
     assert (ns["PER_STATE_TIMEOUT_S"], ns["SOLVER_WALL_TIME_CAP_S"], ns["KERNEL_TIMEOUT_S"]) == (spec["per_state_timeout_s"], spec["solver_wall_time_cap_s"], spec["kernel_timeout_s"])
-    assert ns["SOLVER_WALL_TIME_CAP_S"] == 5 * ns["PER_STATE_TIMEOUT_S"] and ns["EXPECTED_NAMES"] == list(G.NAMES)
+    assert ns["SOLVER_WALL_TIME_CAP_S"] == {"flow_40": 10800, "flow_48": 18000}[case]
+    assert ns["PARENT_RERUNS"] == list(spec["parent_reruns"]) and ns["EXPECTED_NAMES"] == list(G.NAMES)
     rows = ns["expected_plan"](INV)
     assert [r["name"] for r in rows] == ns["EXPECTED_NAMES"] and len(rows) == 5 and rows[0]["kind"] == "parent"
     parent = S.read_f4(ROOT / INV["parent"]["raw_path"])
@@ -49,6 +50,9 @@ def test_rendered_worker_rejects_a_wrong_plan_wrong_caps_a_blocked_inventory_or_
         ns["expected_plan"](bad)
     bad = json.loads(json.dumps(INV)); bad["stage_status"], bad["blockers"] = "BLOCKED", [{"state": "x"}]
     with pytest.raises(ValueError, match="blocked"):
+        ns["expected_plan"](bad)
+    bad = json.loads(json.dumps(INV)); bad["grids"]["flow_40"]["parent_reruns"].reverse()
+    with pytest.raises(ValueError, match="parent reruns"):
         ns["expected_plan"](bad)
     bad = json.loads(json.dumps(INV)); bad["parent"]["raw_path"] = "elsewhere.raw"
     with pytest.raises(ValueError):

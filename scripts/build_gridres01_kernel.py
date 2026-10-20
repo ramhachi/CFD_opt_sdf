@@ -29,7 +29,7 @@ def sha(path):
 
 def pins(case):
     inv = json.loads((EVIDENCE / 'inventory.json').read_text())
-    paths = {f'{PROJECT}/Project.toml', f'{PROJECT}/Manifest.toml', inv['grids'][case]['job'], 'scripts/step01_states.py', 'scripts/gridres01_states.py', 'scripts/grid01_gpu.py',
+    paths = {f'{PROJECT}/Project.toml', f'{PROJECT}/Manifest.toml', inv['grids'][case]['job'], 'scripts/step01_states.py', 'scripts/gridres01_states.py', 'scripts/gridres01_poisson_probe.jl', 'scripts/grid01_gpu.py',
              str((EVIDENCE / 'inventory.json').relative_to(ROOT)), inv['parent']['raw_path'], inv['proposal']['file'], 'julia/CFDSDFWaterLily/src'}
     return {p: sha(ROOT / p) for p in sorted(paths)}
 
@@ -53,7 +53,7 @@ def verify_source(source_commit, paths):
 def render(source_commit, case):
     inv = json.loads((EVIDENCE / 'inventory.json').read_text())
     grid = inv['grids'][case]
-    substitutions = {'PIN_KERNEL': case, 'PIN_KERNEL_ID': KERNEL_IDS[case], 'PIN_SOURCE_COMMIT': source_commit, 'PIN_CASE_ID': case, 'PIN_JOB': grid['job'], 'PIN_CELLS': grid['cells'],
+    substitutions = {'PIN_KERNEL': case, 'PIN_KERNEL_ID': KERNEL_IDS[case], 'PIN_SOURCE_COMMIT': source_commit, 'PIN_CASE_ID': case, 'PIN_JOB': grid['job'], 'PIN_CELLS': grid['cells'], 'PIN_PARENT_RERUNS': [r['case_id'] for r in grid['parent_reruns']],
                      'PIN_PER_STATE_TIMEOUT_S': grid['limits']['per_state_timeout_s'], 'PIN_SOLVER_WALL_TIME_CAP_S': grid['limits']['solver_wall_time_cap_s'],
                      'PIN_KERNEL_TIMEOUT_S': grid['limits']['kernel_timeout_s']}
     text = TEMPLATE.read_text()

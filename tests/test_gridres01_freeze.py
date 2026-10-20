@@ -18,7 +18,7 @@ INV = json.loads((E / "inventory.json").read_text())
 def test_the_committed_freeze_validates_and_binds_the_caps_the_kernel_and_the_ancestry():
     A.validate_registration(FREEZE, INV, "flow_40")
     r = FREEZE["runtime"]
-    assert (r["per_state_timeout_s"], r["solver_wall_time_cap_s"], r["kernel_timeout_s"], r["kernel_id"]) == (1800, 9000, 21600, "ramhachi888/cfd-opt-sdf-gridres01-f40")
+    assert (r["per_state_timeout_s"], r["solver_wall_time_cap_s"], r["kernel_timeout_s"], r["kernel_id"]) == (1800, 10800, 21600, "ramhachi888/cfd-opt-sdf-gridres01-f40")
     assert FREEZE["case_id"] == "flow_40" and not any(FREEZE["qualification_flags"].values()) and FREEZE["parent_integration_commit"] == A.PARENT_INTEGRATION_COMMIT
     assert (E / "prerun_freeze_flow_40.json.sha256").read_text().strip() == A.sha256(E / "prerun_freeze_flow_40.json")
     assert "scripts/waterlily_gridres01_job.jl" in FREEZE["pins"] and not any("flow_48" in k for k in FREEZE["file_hashes"])   # nothing about flow_48 is frozen

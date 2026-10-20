@@ -1,5 +1,6 @@
 # GRIDRES-01 job: the W4 Candidate C evaluator and measurement contract unchanged, applied to one registered
-# canonical-lattice state per invocation on the finer grid flow_40 (or flow_48; GRIDRES01_CELLS).
+# canonical-lattice state per invocation on flow_40 (or flow_48; GRIDRES01_CELLS), and (plan Amendment 2 H2) on the retained
+# parents flow_24 / flow_32 as instrumented reruns.  Every run writes <case>.poisson.csv from the passive probe (H1).
 # Copied from scripts/waterlily_lowdim02_flow32_job.jl.  The frozen W4 case matrix and its case validator only know
 # n in {16, 24, 32}, so the case is built with the frozen `build_case` and validated LOCALLY here (plan Amendment 1 G1);
 # nothing under julia/CFDSDFWaterLily/src is edited.  GRIDRES01_SMOKE=1 builds and validates the case, then exits (no GPU, no phi).
@@ -28,6 +29,7 @@ using .CFDSDFWaterLily: GridSDFWaterLilyBody, V16_PROFILE_POINT_SHAPE,
     v16_native_far_field_uBC, NormalFloorWaterLilyBody, CandidateCWaterLilyBody
 using .CFDSDFWaterLily.DeviceGridSDF
 using .CFDSDFWaterLily.V16W4Sensitivity
+include(joinpath(@__DIR__, "gridres01_poisson_probe.jl"))
 
 length(ARGS) == 2 || error("usage: waterlily_gridres01_job.jl <phi_fortran.raw> <output_dir>")
 phi_raw_path, output_dir = ARGS
@@ -61,8 +63,8 @@ const T_END = 120.0
 const BURN_IN = 80.0
 const SAMPLE_EVERY = 8
 const GRIDRES_CELLS = parse(Int, get(ENV, "GRIDRES01_CELLS", "40"))
-const GRIDRES_DIMS = Dict(40 => (250, 120, 90), 48 => (300, 144, 108))   # = span / (0.8 / n) for the base box
-haskey(GRIDRES_DIMS, GRIDRES_CELLS) || error("GRIDRES01_CELLS must be 40 or 48")
+const GRIDRES_DIMS = Dict(24 => (150, 72, 54), 32 => (200, 96, 72), 40 => (250, 120, 90), 48 => (300, 144, 108))   # = span / (0.8 / n) for the base box
+haskey(GRIDRES_DIMS, GRIDRES_CELLS) || error("GRIDRES01_CELLS must be 24, 32, 40 or 48")
 const GRIDRES_CASE_ID = "flow_$(GRIDRES_CELLS)"
 const EXPECTED_CASE_IDS = (GRIDRES_CASE_ID,)
 const C_TRANSITION_WIDTH = Float32(1.1444091796875e-4)
@@ -173,6 +175,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
     flush(stdout)
     first_step_seconds = time() - warm_started
     step = 1
+    probe = PoissonProbe()
     peak_vram = CUDA.used_memory()
     started = time()
     while sim_time(sim) < T_END
@@ -189,6 +192,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
                 Float64(pressure[3]), Float64(viscous[1]), Float64(viscous[2]),
                 Float64(viscous[3]),
             ))
+            probe_sample!(probe, sim, step, sim_time(sim))   # passive read of sim.pois (H1); after the force evaluation
         end
         if step % 50 == 0
             peak_vram = max(peak_vram, CUDA.used_memory())
@@ -314,6 +318,7 @@ function run_case_measurement(case, owned, phi_margin, phi_f_sha, phi_c_sha, rou
     )
     csv_path = joinpath(output_dir, case.case_id * ".forces.csv")
     write_force_csv(csv_path, history)
+    write_poisson_csv(joinpath(output_dir, case.case_id * ".poisson.csv"), probe)
     csv_sha = bytes2hex(sha256(read(csv_path)))
     summary_path = joinpath(output_dir, case.case_id * ".summary.json")
     open(summary_path, "w") do io

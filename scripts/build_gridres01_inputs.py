@@ -31,14 +31,21 @@ def sha(path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def grid_entry(case_id: str, spec: dict, template: dict) -> dict:
+def retained_parent_reruns(spec: dict, analysis: dict) -> list:
+    """Amendment 2 H2: the retained grids whose OPT-01 parent the kernel reruns instrumented, with the Stage B parent force CSV hash it must reproduce byte for byte."""
+    return [{"case_id": g, "cells": G.RERUN_CELLS[g], "flow_dims": list(G.RERUN_DIMS[g]), "retained_forces_csv": f"{G.OPT01B_REL}/kernel_output/opt01b_{G.RETAINED_KERNEL[g]}/states/{G.PARENT_NAME}/{g}.forces.csv",
+             "retained_forces_csv_sha256": analysis["state_forces_n"][g][G.PARENT_NAME]["forces_csv_sha256"]} for g in spec["parent_reruns"]]
+
+
+def grid_entry(case_id: str, spec: dict, template: dict, analysis: dict) -> dict:
     """Measurement block of one grid: the Stage B flow_32 block with the case fields rebuilt from the cell count."""
     n, h = spec["cells"], 0.8 / spec["cells"]
     m = copy.deepcopy(template)
     m["case"].update({"case_id": case_id, "flow_dims": list(spec["dims"]), "flow_spacing_m": h, "solver_length": float(n), "solver_time_unit_s": h, "solver_viscosity": n / 80})
     m.update({"case_id": case_id, "per_state_timeout_s": spec["per_state_timeout_s"], "solver_wall_time_cap_s": spec["solver_wall_time_cap_s"], "kernel_execution_allowance_s": spec["kernel_timeout_s"],
               "qualification_claim": "bounded GRIDRES-01 finer-grid actual-primal response check along the OPT-01 direction; no qualification"})
-    return {"case_id": case_id, "cells": n, "job": JOB, "measurement": m, "limits": {k: spec[k] for k in ("per_state_timeout_s", "solver_wall_time_cap_s", "kernel_timeout_s")}}
+    return {"case_id": case_id, "cells": n, "job": JOB, "measurement": m, "limits": {k: spec[k] for k in ("per_state_timeout_s", "solver_wall_time_cap_s", "kernel_timeout_s")},
+            "parent_reruns": retained_parent_reruns(spec, analysis)}
 
 
 def build() -> dict:
@@ -46,6 +53,10 @@ def build() -> dict:
     if sha(src) != G.OPT01B_INVENTORY_SHA:
         raise ValueError("the OPT-01 Stage B inventory differs from its pinned hash")
     inv = json.loads(src.read_text())
+    ana_path = ROOT / G.OPT01B_REL / "opt01b_analysis.json"
+    if sha(ana_path) != G.OPT01B_ANALYSIS_SHA:
+        raise ValueError("the OPT-01 Stage B analysis differs from its pinned hash")
+    analysis = json.loads(ana_path.read_text())
     if inv["stage_status"] != "READY" or inv["blockers"]:
         raise ValueError("the OPT-01 Stage B inventory is blocked")
     by_name = {r["name"]: r for r in inv["states"]}
@@ -69,8 +80,8 @@ def build() -> dict:
             "parent": {k: inv["parent"][k] for k in ("state_sha256", "phi_fortran_order_sha256", "phi_c_order_sha256", "generation", "raw_path")},
             "proposal": {k: inv["proposal"][k] for k in ("file", "sha256_fortran_raw", "coefficient_vector", "m_max_abs_sum")},
             "job_env_common": inv["job_env_common"], "margin_gate_m": inv["margin_gate_m"], "states": rows,
-            "grids": {case_id: grid_entry(case_id, spec, template) for case_id, spec in G.GRIDS.items()}, "kernels": {case_id: list(G.NAMES) for case_id in G.GRIDS},
-            "disclosure": "flow_48 is parameterization only: no flow_48 run is registered by the flow_40 freeze (plan Amendment 1 G2); a flow_48 freeze needs its own review"}
+            "grids": {case_id: grid_entry(case_id, spec, template, analysis) for case_id, spec in G.GRIDS.items()}, "kernels": {case_id: list(G.NAMES) for case_id in G.GRIDS},
+            "disclosure": "flow_48 is parameterization only: no flow_48 run is registered by the flow_40 freeze (plan Amendment 1 G2); a flow_48 freeze needs its own review and two kernels (Amendment 2 H4)"}
 
 
 def main():
