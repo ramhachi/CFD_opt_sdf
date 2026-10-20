@@ -83,3 +83,24 @@ Review: SOUND_WITH_REQUIRED_CHANGES (sonnet subagent, read-only). Verified by th
   lattice (0.025 m) equals the flow_32 spacing; flow_24 is coarser than the lattice, flow_40/48 finer; the sequence changes resolution and lattice
   alignment together, and any convergence is that of this interpolated-lattice body only. The 3e-5 N floor is nominal. Not claimed: grid
   independence, physical or Stage V downforce, a gradient, optimizer behaviour.
+
+## Amendment 2 after the pre-run review of the first freeze (2026-10-20, before any submission)
+
+The pre-run review (PASS_WITH_REQUIRED_CHANGES) counted the WaterLily 1.8.0 multigrid levels on CPU: flow_24 4, flow_32 6, flow_40 4,
+flow_48 5, with the Poisson solve capped at 32 iterations, tol 1e-4 (`MultiLevelPoisson.jl:108`). The flow_24/flow_32 disagreement could
+therefore partly be a pressure-solver convergence difference rather than resolution, and flow_40 shares flow_24's shallow hierarchy. These items
+are added (the first freeze is superseded and never submitted):
+
+- **H1 Passive Poisson instrumentation.** The job records, at every force sample, the Poisson iteration count of the last solves and the final
+  residual (reads of `sim.pois` state only; no solver setting changes). Per run: fraction of solves that hit the 32-iteration cap, residual
+  quantiles. Reported, not gating.
+- **H2 Instrumented parent reruns on flow_24 and flow_32** in the same kernel (two extra runs, about 10 min): their force CSVs must be
+  byte-identical to the retained Stage B parent CSVs (else INCOMPLETE: the instrumentation would not be passive), and they give the Poisson
+  statistics of the retained grids. The verdict rule G4 is unchanged; the record states whether any grid saturates the iteration cap and
+  treats the verdict as confounded if flow_24 or flow_40 saturate materially more than flow_32 (descriptive label `POISSON_CONFOUNDED`).
+- **H3 Writable INCOMPLETE.** A residual-gate INCOMPLETE (the quadratic model fails on a grid) is a scientific outcome: the analysis is written
+  with all deltas and fits and the verdict labelled INCOMPLETE with its reason; only integrity failures refuse to write.
+- **H4 Notes.** The verdict uses the fit including the −1.25 mm reverse state (a report-only probe for gates); the forward-only G_max is reported
+  without classification. With 3 dof per fit a single outlier is partly absorbed: read G_max together with the acceptance emulation. The submission
+  command is recorded (`kaggle` 2.2.4, `--accelerator NvidiaTeslaT4 --timeout 21600`) and the identity-free check is re-run before the push.
+  flow_48 needs two kernels (Kaggle GPU session limit) before any flow_48 freeze.
