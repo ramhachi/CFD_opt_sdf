@@ -24,7 +24,8 @@ import t20_case as C  # noqa: E402
 
 # Genua's family continued: ds halves, y1 fixed. The equal-area last layer (0.433 ds = 0.43 mm) is below y1; last = 0.65 gives two layers (1.32 mm) at every
 # height (fine30's own four-layer stack fails the quality proxy at the LE): registration section 3
-C.MESHES["xfine30"] = dict(wall="wf", ds=1e-3, y1=0.6e-3, g=1.2, te=2, fan=4, last=0.65)
+XFINE30 = dict(wall="wf", ds=1e-3, y1=0.6e-3, g=1.2, te=2, fan=4, last=0.65)   # added to t20_case.MESHES only during remesh_case (no import side effect)
+MESHES = {**C.MESHES, "xfine30": XFINE30}
 MODES = ("incidence", "camber", "flap", "heave")
 SHAPES = ("camber", "flap", "heave")
 FLAP_XI = 0.7
@@ -179,7 +180,8 @@ def morph_case(base: Path, out: Path, mode: str, amp: float, kind: str = "smooth
 def remesh_case(out: Path, h_over_c: float, mesh: str, delta_alpha_deg: float = 0.0, iters: int | None = None, shape: str | None = None, shape_amp: float = 0.0) -> dict:
     """A case meshed by the pinned generator: the T2-0b geometry, or (shape) the camber/flap contour of section 4 (the generator reads it through
     t20_case.airfoil_points, patched for this call only) or heave (ride height h + amp)."""
-    orig = C.airfoil_points
+    orig, orig_meshes = C.airfoil_points, C.MESHES
+    C.MESHES = MESHES
     if shape in ("camber", "flap"):
         def shaped(h, da=0.0):
             assert da == 0, "shape modes are meshed at 0 deg"
@@ -193,7 +195,7 @@ def remesh_case(out: Path, h_over_c: float, mesh: str, delta_alpha_deg: float = 
         h_eff = h_over_c + (shape_amp * 1e-3 / C.CHORD if shape == "heave" else 0.0)
         man = C.write_case(out, h_eff, "sa-wf", mesh, delta_alpha_deg, iters)
     finally:
-        C.airfoil_points = orig
+        C.airfoil_points, C.MESHES = orig, orig_meshes
     man["generator_sha256"]["t20c_case.py"] = C.sha256(Path(__file__))
     if shape:
         man["shape"] = {"mode": shape, "amp": shape_amp, "amp_unit": "mm", "h_over_c_nominal": h_over_c}
@@ -205,7 +207,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--h-over-c", type=float, help="remeshed case (t20_case.write_case)")
-    ap.add_argument("--mesh", choices=sorted(C.MESHES))
+    ap.add_argument("--mesh", choices=sorted(MESHES))
     ap.add_argument("--delta-alpha-deg", type=float, default=0.0)
     ap.add_argument("--iters", type=int)
     ap.add_argument("--base", type=Path, help="morphed case: the baseline case directory")

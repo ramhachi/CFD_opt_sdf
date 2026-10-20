@@ -97,7 +97,7 @@ def base(tmp_path_factory):
 
 
 def test_xfine30_level_and_layers():
-    assert M.C.MESHES["xfine30"] == dict(wall="wf", ds=1e-3, y1=0.6e-3, g=1.2, te=2, fan=4, last=0.65)
+    assert M.MESHES["xfine30"] == M.XFINE30 == dict(wall="wf", ds=1e-3, y1=0.6e-3, g=1.2, te=2, fan=4, last=0.65) and "xfine30" not in t20_case.MESHES
     for h in (0.671, 0.224, 0.09):
         n_spec, n, total = t20_case.layers(1e-3, 0.6e-3, 1.2, h * t20_case.CHORD, 0.65)
         assert n_spec == n == 2 and total == pytest.approx(1.32e-3)
@@ -150,7 +150,7 @@ def test_shape_modes_signs_ride_height_and_remeshed_contour(base, tmp_path):
     assert man["h_m"] == pytest.approx(0.224 * t20_case.CHORD + 0.5e-3) and man["morph"]["inverted_cells"] == 0
     rem = M.remesh_case(tmp_path / "rc", 0.224, "coa30", iters=5000, shape="camber", shape_amp=0.5)
     assert rem["shape"]["mode"] == "camber" and rem["h_m"] == pytest.approx(0.224 * t20_case.CHORD, abs=1e-12)
-    assert t20_case.airfoil_points(0.224)[0][5, 1] == q0[5, 1]                 # the patch is undone
+    assert t20_case.airfoil_points(0.224)[0][5, 1] == q0[5, 1] and "xfine30" not in t20_case.MESHES   # the patches are undone
     with pytest.raises(ValueError, match="unmorphed"):
         M.morph_case(tmp_path / "rc", tmp_path / "x", "incidence", 1.0)
 
