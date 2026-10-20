@@ -1,0 +1,73 @@
+{
+  "amp": -0.5,
+  "bl_thickness_m": 0.0013200000000000002,
+  "check_mesh": {
+    "cells": 49621,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "3.2483549",
+    "max_non_orthogonality": "42.075538",
+    "max_skewness": "0.55724933",
+    "mesh_ok": true,
+    "min_determinant": "0.07304641",
+    "min_face_weight": "0.13513709",
+    "min_volume_ratio": "0.12212383",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "check_mesh_returncode": 0,
+  "delta_alpha_deg": -0.5,
+  "generator_wall_s": 11.649153916000046,
+  "h_m": 0.020106000000000002,
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_xfine30_da-0.5_mesh",
+  "iterations_requested": 5000,
+  "mesh": "xfine30",
+  "mesh_cells_3d": 49621,
+  "mesh_msh_sha256": "3edb933d82aa70b4bd9fd7d7a00eb8cdab6df505759aded2a8095fd99140ebf0",
+  "mesh_proxy_failures": [],
+  "method": "remesh",
+  "mode": "smoke",
+  "model": "sa-wf",
+  "n_layers": 2,
+  "residual_converged": false,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 0,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": null,
+      "Uy": null,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": null,
+      "omega": null,
+      "p": null
+    },
+    "last_time": null,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 83.234816,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 2.373491223999963
+    },
+    {
+      "peak_rss_mb_sampled": 120.786944,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 3.1368867359999513
+    }
+  ],
+  "status": "MESH_OK",
+  "total_wall_s": 17.16127696600006,
+  "variant": "",
+  "x_lowest_m": 0.046277346787474236
+}
