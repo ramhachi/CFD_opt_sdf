@@ -7457,3 +7457,8 @@ earlier than exact AD and at a different place ([record](issues/23_grad_ta1_resu
 
 Decisions D1–D3 (with Amendments 1–2) registered: OPT-01 v1 uses a dual-grid φ-space subspace step (supersedes #25 for this step only; the 2026-10-14 sentence "#30 still depends on #25 … no separate first accepted update gate" is superseded), GEOM-02 profile v2 (crossing-slope rule, report-only for secant probes), no reinitialization, and amends the LOWDIM exit rule for one contract-testing cycle.
 Stage A FOUND, Stage B `OPT01_V1_REJECT`: all four proposal steps passed every gate; flow_24 downforce +3.5e-6 N at 0.3125 mm then negative while flow_32 gained +1.3e-4 to +4.7e-4 N ([record](issues/30_opt01_v1_result_2026_10_15.md)). The outcome was recorded as more likely before submission. #30 is closed (Done: unambiguous verdict). The binding constraint is grid disagreement in the downforce response; next directions (grid study, re-genesis, basis) are open and undecided. All flags false.
+
+## GRIDRES-01 (2026-10-21): downforce response along the OPT-01 direction not grid-resolved (flow_24/32/40)
+
+Registered verdict `FLOW40_SIDES_WITH_FLOW24` (G_max 0), but flow_40 is a third value: slope +9.8e-5, +4.73e-4, −2.31e-4 N/mm on flow_24/32/40 and the differences grow with refinement; Poisson cap saturation negligible; parent reruns byte-identical
+([record](issues/gridres01_result_2026_10_21.md)). Hypothesis: mm-scale (sub-cell) shape responses are discretization-dominated on these grids. No GRID-01 amendment. Next direction (larger resolvable shape changes with volume-neutral directions, grid-phase ensembles, or re-genesis) is undecided. All flags false.

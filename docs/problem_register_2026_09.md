@@ -2063,3 +2063,7 @@ A second forward-AD convention fails with a different, direction-independent gro
 ## #30 OPT-01 (2026-10-15): closed with a prospective REJECT under the OPT-01 v1 contract
 
 All gates passed; the both-grid downforce rule rejected every step (flow_24 vs flow_32 disagree). #25 superseded for this step only and stays open. See the [record](issues/30_opt01_v1_result_2026_10_15.md).
+
+## GRIDRES-01 (2026-10-21): sub-cell response not grid-resolved
+
+flow_24/32/40 give downforce slopes of different sign and growing differences along the OPT-01 direction. See the [record](issues/gridres01_result_2026_10_21.md).
