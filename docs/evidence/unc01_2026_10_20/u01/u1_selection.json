@@ -1,0 +1,166 @@
+{
+ "analyzer_sha256": "1bc7ef2af2d1ef5a98823ead4f02f824ecd0449729538bd7b3669f58cf527279",
+ "bridge": {
+  "flow_24": {
+   "downforce": {
+    "D0_difference_half_n": -0.0009971704265731018,
+    "D0_difference_k0_n": -0.00048361404244146033,
+    "parent_half_minus_k0_n": 0.000572477097971924,
+    "parent_half_minus_k0_rel": 0.0021854695109622124
+   },
+   "drag": {
+    "D0_difference_half_n": 0.00213566261197079,
+    "D0_difference_k0_n": 0.002594073866636848,
+    "parent_half_minus_k0_n": -0.006672005970423112,
+    "parent_half_minus_k0_rel": -0.024200380257817677
+   }
+  },
+  "flow_32": {
+   "downforce": {
+    "D0_difference_half_n": 0.0005539601518733117,
+    "D0_difference_k0_n": 0.0007131166708466141,
+    "parent_half_minus_k0_n": -0.0033935574849589534,
+    "parent_half_minus_k0_rel": -0.012706816393390552
+   },
+   "drag": {
+    "D0_difference_half_n": 0.0008257784510906641,
+    "D0_difference_k0_n": 0.0038674027514800646,
+    "parent_half_minus_k0_n": 0.006728314506518951,
+    "parent_half_minus_k0_rel": 0.024308425236115427
+   }
+  }
+ },
+ "bridge_reference_v17_grid02": "parent downforce change at the same placement: flow_24 +1.7 %, flow_32 -9.6 % (GRID-02)",
+ "evidence_tier": "EXPLORATORY_COMMITTED",
+ "k0_differences_flow32": {
+  "v18__D0_p3": {
+   "downforce": 0.0007131166708466141,
+   "drag": 0.0038674027514800646
+  },
+  "v18__camber_m19.7": {
+   "downforce": 0.013074017294138596,
+   "drag": 0.0025956521630935425
+  },
+  "v18__camber_p19.7": {
+   "downforce": -0.010408666793485566,
+   "drag": 0.00014751087205344682
+  },
+  "v18__pitch_m3.1": {
+   "downforce": -0.04198842720126328,
+   "drag": -0.02650908997505519
+  },
+  "v18__pitch_p3.1": {
+   "downforce": 0.04127719024537979,
+   "drag": 0.0324510095060756
+  },
+  "v18__reflex_m29.3": {
+   "downforce": 0.016193901648579923,
+   "drag": 0.012855138463550242
+  },
+  "v18__reflex_p29.3": {
+   "downforce": -0.014039304919888196,
+   "drag": -0.009491185078567776
+  },
+  "v18__sweep_m11.3": {
+   "downforce": 3.661531149556918e-06,
+   "drag": 0.0002648898097346031
+  },
+  "v18__sweep_p11.3": {
+   "downforce": -0.00012653027867476352,
+   "drag": -9.791223595678744e-05
+  },
+  "v18__twist_m1.1": {
+   "downforce": -0.0012354665183012536,
+   "drag": -0.0005611418677957669
+  },
+  "v18__twist_p1.1": {
+   "downforce": 0.0015991322422149734,
+   "drag": 0.0007282446119955543
+  }
+ },
+ "kind": "unc01_u1_selection",
+ "selection": {
+  "L": "pitch",
+  "L2": "reflex",
+  "L_mid": "v18__pitch_p1.3",
+  "rule": "registration \u00a73: L = argmax |F32(m+,k0) - F32(m-,k0)| (downforce); L2 = argmax over other families; ties in WIDE order",
+  "scores_n": {
+   "camber": 0.02348268408762416,
+   "pitch": 0.08326561744664307,
+   "reflex": 0.03023320656846812,
+   "sweep": 0.00013019180982432044,
+   "twist": 0.002834598760516227
+  }
+ },
+ "table_sha256": {
+  "state_force_table.json": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2"
+ },
+ "u0": {
+  "campaign_sha256": "ee3cfe38927e7a66eefb155434da0f81ec594991b65e9a45be20dc2b936a0a66",
+  "grids": {
+   "flow_24": {
+    "downforce_n": 0.2619469615569629,
+    "drag_n": 0.27569839396501955,
+    "drift": {
+     "downforce": 3.1947800251729922e-06,
+     "drag": 4.025600838877709e-06
+    },
+    "pass": true,
+    "ratio_to_v17_native_parent": 0.7892821548661049,
+    "tests": {
+     "downforce_positive": true,
+     "drift_downforce": true,
+     "drift_drag": true,
+     "finite": true,
+     "gross_error_ratio_to_v17": true
+    },
+    "v17_reference_n": 0.33188
+   },
+   "flow_32": {
+    "downforce_n": 0.2670659101302601,
+    "drag_n": 0.2767894028989826,
+    "drift": {
+     "downforce": 2.1295180306769039e-07,
+     "drag": 2.3560740518734094e-07
+    },
+    "pass": true,
+    "ratio_to_v17_native_parent": 0.7381997626465258,
+    "tests": {
+     "downforce_positive": true,
+     "drift_downforce": true,
+     "drift_drag": true,
+     "finite": true,
+     "gross_error_ratio_to_v17": true
+    },
+    "v17_reference_n": 0.36178
+   },
+   "flow_48": {
+    "downforce_n": 0.26730741220163023,
+    "drag_n": 0.2868187278940599,
+    "drift": {
+     "downforce": 3.0014917754795586e-06,
+     "drag": 7.213780410375483e-06
+    },
+    "pass": true,
+    "ratio_to_v17_native_parent": 0.7336555844699608,
+    "tests": {
+     "downforce_positive": true,
+     "drift_downforce": true,
+     "drift_drag": true,
+     "finite": true,
+     "gross_error_ratio_to_v17": true
+    },
+    "v17_reference_n": 0.36435
+   }
+  },
+  "kind": "unc01_u0_gate",
+  "rows_read": "v18__parent__k0 only",
+  "rule": "registration \u00a75.1: finite flags, relative half-window drift <= 0.02 (drag, downforce), downforce > 0, gross-error check 0.5 <= F/F_v17 <= 2",
+  "smoke": false,
+  "table_sha256": {
+   "state_force_table.json": "8804272bcb6ec90f64c0f95b23955ce18db31e6a01e33976ec7c2ff6a696b7f2"
+  },
+  "verdict": "U0_PASS"
+ },
+ "verdict": "SELECTED"
+}
