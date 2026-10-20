@@ -1,0 +1,54 @@
+{
+  "case_id": "flow_24",
+  "kernel": "f24",
+  "kernel_id": "ramhachi888/cfd-opt-sdf-unc01-u01-f24",
+  "parent_forces_csv_sha256": "b498c8950b5a475f02a2efc7f4096848126ce292fe20ad959eba48c3bb1afa9a",
+  "solver_process_wall_seconds_total": 700.1703295707703,
+  "states": [
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "b498c8950b5a475f02a2efc7f4096848126ce292fe20ad959eba48c3bb1afa9a",
+      "kind": "parent",
+      "name": "v18__parent__k0",
+      "seconds": 175.21720576286316,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__D0_p3",
+      "exit_code": 0,
+      "forces_csv_sha256": "89807ea54fea565710be1935ffb3b4192fdbd10a83fdab6028fe89b67bc73058",
+      "kind": "candidate",
+      "name": "v18__D0_p3__k0",
+      "seconds": 175.91376996040344,
+      "sign": 1,
+      "step_mm": 3.000020980834961
+    },
+    {
+      "complete": true,
+      "direction": null,
+      "exit_code": 0,
+      "forces_csv_sha256": "95dc094f36ea049b4a3f79d06008de20aeb424c6bcf2b91651faa048b6e8330b",
+      "kind": "parent",
+      "name": "v18__parent__half",
+      "seconds": 174.5913212299347,
+      "sign": 0,
+      "step_mm": 0.0
+    },
+    {
+      "complete": true,
+      "direction": "v18__D0_p3",
+      "exit_code": 0,
+      "forces_csv_sha256": "675af2c6b355e2750688a160e8574527d5705c191811edab0d857206a149c536",
+      "kind": "candidate",
+      "name": "v18__D0_p3__half",
+      "seconds": 174.44803261756897,
+      "sign": 1,
+      "step_mm": 3.000020980834961
+    }
+  ],
+  "status": "COMPLETE"
+}

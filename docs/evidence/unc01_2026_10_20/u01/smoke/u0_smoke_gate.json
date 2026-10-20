@@ -1,0 +1,31 @@
+{
+ "campaign_sha256": "ee3cfe38927e7a66eefb155434da0f81ec594991b65e9a45be20dc2b936a0a66",
+ "grids": {
+  "flow_24": {
+   "downforce_n": 0.2619469615569629,
+   "drag_n": 0.27569839396501955,
+   "drift": {
+    "downforce": 3.1947800251729922e-06,
+    "drag": 4.025600838877709e-06
+   },
+   "pass": true,
+   "ratio_to_v17_native_parent": 0.7892821548661049,
+   "tests": {
+    "downforce_positive": true,
+    "drift_downforce": true,
+    "drift_drag": true,
+    "finite": true,
+    "gross_error_ratio_to_v17": true
+   },
+   "v17_reference_n": 0.33188
+  }
+ },
+ "kind": "unc01_u0_gate",
+ "rows_read": "v18__parent__k0 only",
+ "rule": "registration \u00a75.1: finite flags, relative half-window drift <= 0.02 (drag, downforce), downforce > 0, gross-error check 0.5 <= F/F_v17 <= 2",
+ "smoke": true,
+ "table_sha256": {
+  "smoke_verify_table.json": "409552a13fff4b63fe82079cd90886bfc59a8d6371784eac284b23d9e01cb104"
+ },
+ "verdict": "U0_PASS"
+}
