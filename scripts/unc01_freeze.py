@@ -35,7 +35,9 @@ FREEZE1 = ["docs/unc01_registration_2026_10_20.md", "scripts/unc01_build.py", "s
            "docs/harness/unc01_u01_campaign.json"]
 FREEZE2 = ["docs/evidence/unc01_2026_10_20/freeze1.json", "docs/evidence/unc01_2026_10_20/u01/u1_selection.json", "docs/harness/unc01_u2_campaign.json",
            "docs/harness/unc01_u2_campaign.prerun_freeze.json", "docs/evidence/unc01_2026_10_20/u3/u3_criteria.json", "docs/evidence/unc01_2026_10_20/u3/export.json",
-           "docs/evidence/unc01_2026_10_20/u3/smoke", "infra/kaggle/kernel_unc01_u3/runner.py", "infra/kaggle/kernel_unc01_u3/kernel-metadata.json"]
+           "docs/evidence/unc01_2026_10_20/u3/smoke", "infra/kaggle/kernel_unc01_u3/runner.py", "infra/kaggle/kernel_unc01_u3/kernel-metadata.json",
+           "docs/unc01_registration_2026_10_20.md", "scripts/unc01_verify.py", "scripts/analyze_unc01.py", "docs/evidence/unc01_2026_10_20/u01/state_force_table.json",
+           "docs/evidence/unc01_2026_10_20/u01/u0_gate.json"]
 
 
 def git(*a):
@@ -72,7 +74,9 @@ def main():
     elif kind == "freeze2":
         sel = json.loads((EV / "u01/u1_selection.json").read_text())
         SC.req(sel.get("verdict") == "SELECTED", "freeze 2 needs a SELECTED U1 record")
-        extra = {"status": "REGISTERED_FROZEN (freeze 2)", "selection": sel["selection"], "u01_table_sha256": sel["table_sha256"], "u1_analyzer_sha256": sel["analyzer_sha256"]}
+        extra = {"status": "REGISTERED_FROZEN (freeze 2)", "selection": sel["selection"], "u01_table_sha256": sel["table_sha256"], "u1_analyzer_sha256": sel["analyzer_sha256"],
+                 "u3_environment": "registration §15: local OpenFOAM after a passed environment gate and a REGISTERED_AMENDED record, else Kaggle CPU as frozen",
+                 "freeze1_amendment1_sha256": SC.sha256_path(EV / "freeze1_amendment1.json"), "registration_sha256": SC.sha256_path(ROOT / "docs/unc01_registration_2026_10_20.md")}
         print(record("freeze2", FREEZE2, extra))
     else:
         raise SystemExit("freeze1 | freeze2")
