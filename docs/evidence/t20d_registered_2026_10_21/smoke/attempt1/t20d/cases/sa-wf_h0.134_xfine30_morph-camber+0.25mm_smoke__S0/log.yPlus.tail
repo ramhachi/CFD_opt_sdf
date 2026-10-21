@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : simpleFoam -postProcess -func yPlus -latestTime
+Date   : Oct 21 2026
+Time   : 09:54:02
+Host   : a4e9324ecdc1
+I/O    : uncollated
+Case   : /kaggle/working/t20d/work/sa-wf_h0.134_xfine30_morph-camber+0.25mm_smoke
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 100
+
+
+SIMPLE: convergence criteria
+    field p	 tolerance 1e-06
+    field U	 tolerance 1e-07
+    field nuTilda	 tolerance 1e-06
+
+Time = 100
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type RAS
+Selecting RAS turbulence model SpalartAllmaras
+Selecting patchDistMethod meshWave
+ft2 term: inactive
+RAS
+{
+    model           SpalartAllmaras;
+    turbulence      on;
+    printCoeffs     on;
+    sigmaNut        0.66666;
+    kappa           0.41;
+    Cb1             0.1355;
+    Cb2             0.622;
+    Cw2             0.3;
+    Cw3             2;
+    Cv1             7.1;
+    ck              0.07;
+    ft2             false;
+    Ct3             1.2;
+    Ct4             0.5;
+}
+
+No MRF models present
+
+No finite volume options present
+yPlus yPlus write:
+    writing field yPlus
+    patch ground y+ : min = 0.0024877941, max = 29.455967, average = 8.772702
+    patch airfoil y+ : min = 1.9522966, max = 63.303792, average = 32.156319
+
+End

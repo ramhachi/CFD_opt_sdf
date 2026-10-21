@@ -6,7 +6,7 @@ URANS (U, dt 1e-5 s), its time-step control (Udt2, dt 2e-5 s) and a relaxed stea
 Template: scripts/build_t20d_kernel.py fills PIN_SOURCE_COMMIT, PIN_MODE and PIN_PINS and verifies the pins.
 Order (cheap failures first): environment -> pinned source -> gmsh install + one meshing probe -> OpenFOAM install (hash-locked, as T2-0b/T2-0c)
 -> infrastructure smoke -> bases generated once -> phase 1: every S0 (4 concurrent) -> phase 2: every stage-2 run (4 concurrent, longest first).
-MODE "xp1", "xp2", "xo", "f": the registered kernels (registration section 5). MODE "smoke": development smoke before the code freeze (mesh-only pass over
+MODE "xp1", "xp2", "xo1", "xo2", "f1", "f2": the registered kernels (registration section 5). MODE "smoke": development smoke before the code freeze (mesh-only pass over
 every registered geometry of the four kernels, each solver path shortened; coefficient files, force values and force log lines are removed before output).
 A morphed geometry must keep its base's polyMesh topology (TOPOLOGY_CHANGED / BASE_TOPOLOGY_MISSING), a geometry failing checkMesh is not solved
 (checkMesh_FAILED); all mechanical. Measurement only: no statistic or verdict here (scripts/analyze_t20d.py). Kernel-level failures write ERROR.json and raise;

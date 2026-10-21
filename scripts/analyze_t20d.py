@@ -631,19 +631,20 @@ def labels(R: Runs, data: dict, diff: dict) -> dict:
     gh = {}
     for name, (k, g) in (("x134 0", Q1_TARGETS["x134 0"]), ("x09 0", Q1_TARGETS["x09 0"])):
         def half(k=k, g=g):
-            a, b = k_u(k, g, "Udt05"), k_u(k, g)
-            need(R, [a, b])
-            files = sorted(R.dirs[b].glob("coefficient*.dat.gz"))
-            t, cl = read_coefficients(files)
-            sub = urans_stats(t, cl, S.DT["U"], S.T_TR_S, S.END_TIME_S["Udt05"])   # U over the common interval
-            st = R.stats(a)
-            res = {"U_common": {x: sub.get(x) for x in ("class", "m", "se", "r", "f")}, "Udt05": {x: st.get(x) for x in ("class", "m", "se", "r", "f")},
-                   "Udt2": {x: R.stats(k_u(k, g, "Udt2")).get(x) for x in ("class", "m", "se", "r", "f")}}
-            if sub.get("class") in VALID_U:
-                res["GT(U_common, Udt05)"] = gt_rule(sub, st)
-                m3 = [R.stats(k_u(k, g, "Udt2")).get("m"), R.m(k_u(k, g)), st["m"]]
-                if None not in m3 and (m3[1] - m3[2]) != 0 and (m3[0] - m3[1]) / (m3[1] - m3[2]) > 0:
-                    res["observed_order"] = math.log((m3[0] - m3[1]) / (m3[1] - m3[2])) / math.log(2)
+            """dt/2 against dt over the common interval (T_TR_S, END_TIME_S['Udt05']]; the observed order from the three steps on that interval."""
+            a, b, c = k_u(k, g, "Udt05"), k_u(k, g), k_u(k, g, "Udt2")
+            need(R, [a, b, c])
+            sub = {}
+            for kind, key in (("Udt2", c), ("U", b)):
+                tt, cl = read_coefficients(sorted(R.dirs[key].glob("coefficient*.dat.gz")))
+                sub[kind] = urans_stats(tt, cl, S.DT[kind], S.T_TR_S, S.END_TIME_S["Udt05"])
+            sub["Udt05"] = R.stats(a)
+            res = {x: {y: s.get(y) for y in ("class", "m", "se", "r", "f")} for x, s in sub.items()}
+            if all(s.get("class") in VALID_U for s in sub.values()):
+                res["GT(U, Udt05) on the common interval"] = gt_rule(sub["U"], sub["Udt05"])
+                m2, m1, m05 = sub["Udt2"]["m"], sub["U"]["m"], sub["Udt05"]["m"]
+                if m1 != m05 and (m2 - m1) / (m1 - m05) > 0:
+                    res["observed_order"] = math.log((m2 - m1) / (m1 - m05)) / math.log(2)
             return res
         gh[name] = _try(half)
     out["GT_HALF"] = gh
