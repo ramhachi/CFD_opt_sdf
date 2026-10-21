@@ -216,6 +216,7 @@ The approved re-baseline (`phase_plan.md`, 2026-10-16) sets the minimum gain "wi
 - The design prescreen and STL exports (geometry only). The first prescreen run evaluated every revision-1 candidate (`prescreen_run1_designs.json`): every single-mode candidate passed; of the combinations only C1 (camber -11.3, reflex -11.3), C2 (heave -31.1, pitch +0.7; also heave -13.7, pitch +1.3) and C4 (three variants) had a gate-clean candidate, C3 and C5 none (all `min_feature_width`, some also the export gates); every outward one-sided bump failed and the inward bump_lower -15/-10 and bump_small +20/+15/+10 passed. Revision 3 therefore appended fallback candidates to C3, C5, N1, N2 and restored N3, in a declared order and on geometry alone (the rule controls C3 asked for); no slot was removed.
 - The OpenFOAM timing probe of the parent on V2 and V3 at 49 + (statuses, stage times, cell counts, iterations, convergence; force fields removed by the registered sanitiser before anything was read; `p0_probe/`).
 - The operating-characteristics simulation (synthetic data only).
+- The WaterLily harness smoke (the parent at flow_32 phase 7, a registered-phase parent force, as M2's smoke; no design difference) and the OpenFOAM development smokes (statuses only, sanitised).
 
 Nothing in §1-§8 was chosen after a force of an M3a design was seen; no M3a force exists.
 
