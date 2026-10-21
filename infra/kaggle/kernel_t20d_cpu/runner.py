@@ -254,9 +254,14 @@ FORCE_LINE = re.compile(r"\b(C[dlmsy]\w*|\w*[Ff]orces?|[Mm]oments?|Total|Pressur
 LOG_TAIL = 200                                         # lines of a stage-2 solver log kept uncompressed in the record directory
 
 
+def _scrub(text: str) -> str:
+    """Drop every line that could carry a force or coefficient value."""
+    return "\n".join(l for l in text.splitlines() if not FORCE_LINE.search(l))
+
+
 def _keep_text(text: str) -> str:
-    """Smoke mode: drop every log line that could carry a force or coefficient value."""
-    return "\n".join(l for l in text.splitlines() if not FORCE_LINE.search(l)) if MODE == "smoke" else text
+    """Smoke mode: the kept logs without force lines; registered modes keep the logs whole (the record fields are always scrubbed)."""
+    return _scrub(text) if MODE == "smoke" else text
 
 
 def parse_yplus(text: str) -> dict:
@@ -362,7 +367,7 @@ def run_s0(g: dict, source: Path, deadline: float) -> dict:
     t0 = time.monotonic()
     gen = generate(g, source, case)
     rec["generator_wall_s"] = time.monotonic() - t0
-    rec["generator_log_tail"] = (gen.stdout + gen.stderr)[-2000:]
+    rec["generator_log_tail"] = _scrub((gen.stdout + gen.stderr)[-2000:])
     if gen.returncode:
         rec["status"] = "GENERATOR_FAILED"
     for name, command in (("gmshToFoam", "gmshToFoam mesh.msh"), ("checkMesh", "checkMesh -allGeometry -allTopology")):
@@ -404,7 +409,7 @@ def run_s0(g: dict, source: Path, deadline: float) -> dict:
         if "morph" in man:
             rec["morph"] = man["morph"]
     if rec["status"] in ("SOLVER_DIVERGED",) or rec["status"].endswith("_FAILED"):
-        rec["failure_log_tail"] = _keep_text("\n".join((text("simpleFoam") or rec["generator_log_tail"]).splitlines()[-40:])).splitlines()
+        rec["failure_log_tail"] = _scrub("\n".join((text("simpleFoam") or rec["generator_log_tail"]).splitlines()[-40:])).splitlines()
     rec["total_wall_s"] = time.monotonic() - t0
     keep = OUTPUT / "cases" / rec["id"]
     keep.mkdir(parents=True, exist_ok=True)
@@ -453,6 +458,16 @@ def _finish_stage2(rec: dict, case: Path | None, keep_work: bool) -> dict:
             shutil.rmtree(case, ignore_errors=True)
     write_json(keep / "case_result.json", rec)
     return rec
+
+
+def stage2_order(geoms) -> list:
+    """Phase-2 queue (taken 4 at a time in order): the S1 runs that feed a US1 first, then longest first, with each US1 placed right after the first
+    WORKERS jobs, so it starts when the first worker frees up (in practice its S1's: the S1 runs are the shortest of that first batch)."""
+    runs = [(g, k) for g in geoms for k in g["kinds"]]
+    first = [gk for gk in runs if gk[1] == S1 and US1 in gk[0]["kinds"]]
+    rest = sorted((gk for gk in runs if gk not in first and gk[1] != US1), key=lambda gk: -EXPECTED_COST[gk[0]["mesh"]][gk[1]])
+    queue = first + rest
+    return queue[:WORKERS] + [gk for gk in runs if gk[1] == US1] + queue[WORKERS:]
 
 
 def make_geometries(items, iters=S0_ITERS, solve=True, suffix="", ends=None):
@@ -596,11 +611,7 @@ def main() -> None:
                         s1_done[g["id"]].set()
             return (f"{g['id']}__{k}", fn)
 
-        runs = [(g, k) for g in geoms for k in g["kinds"]]
-        first = [gk for gk in runs if gk[1] == S1 and US1 in gk[0]["kinds"]]
-        rest = sorted((gk for gk in runs if gk not in first and gk[1] != US1), key=lambda gk: -EXPECTED_COST[gk[0]["mesh"]][gk[1]])
-        last = [gk for gk in runs if gk[1] == US1]
-        execute([stage2_job(g, k) for g, k in first + rest + last])
+        execute([stage2_job(g, k) for g, k in stage2_order(geoms)])
         # a S1 work directory kept for its US1, and every S0 work directory, are removed with work/ at the end
 
     if MODE == "smoke":   # bases of all six kernels once; the mesh-only pass (one per id), then the shortened solver paths

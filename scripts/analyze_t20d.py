@@ -206,12 +206,19 @@ class Runs:
         if len(cl) < 2 or not np.isfinite(cl).all() or np.abs(cl).max() > TH["blowup"]:
             return {"class": "SOLVER_FAIL", "reason": "coefficient history empty, non-finite or |Cl| > 100"}
         kind = r.get("kind")
+        if kind in (*URANS, "S1") and r.get("source_run"):
+            src = self.cls((key[0], r["source_run"]))
+            if src in ("MECHANICAL_FAIL", "INFRA_LOSS", "SOLVER_FAIL"):
+                return {"class": src, "reason": f"source {r['source_run']} {src}"}
         if kind in URANS:
             dt, end = S.DT[kind], (r.get("stage2") or {}).get("end_time_s") or S.END_TIME_S[kind]
             if t[-1] < end - dt / 2:
                 return {"class": "SOLVER_FAIL", "reason": f"history ends at {t[-1]:.6g} s < {end} s"}
             return urans_stats(t, cl, dt, S.T_TR_S, end)
         return steady_stats(cl)
+
+
+BASES_WALL, SRC = {}, {}   # (kernel, run dir) -> {base name: generation wall s}; (kernel, run id) -> run dir
 
 
 def lost(r) -> bool:
@@ -231,6 +238,9 @@ def load(kdirs: dict) -> tuple[Runs, dict]:
         runs = []
         for d in kdirs.get(k, []):
             found, where = {}, {}
+            CPU[str(d)] = (B._read(Path(d) / "result.json") or {}).get("cpu_model") if (Path(d) / "result.json").is_file() else None
+            bj = Path(d) / "bases.json"
+            BASES_WALL[(k, str(d))] = {b["base"]: b["wall_s"] for b in (B._read(bj) or [])} if bj.is_file() else {}
             res = Path(d) / "result.json"
             for r in ((B._read(res) or {}).get("runs", []) if res.is_file() else []):
                 found[r["id"]] = r
@@ -243,11 +253,12 @@ def load(kdirs: dict) -> tuple[Runs, dict]:
         for c, kinds in reg[k]:
             sets.setdefault(K.set_key(c), []).extend(f"{K._case_id(*c)}__{x}" for x in ("S0", *kinds))
         for skey, ids in sets.items():
-            pick = next((i for i, (found, _, _) in enumerate(runs) if not any(lost(found.get(j)) for j in ids)), 0)
+            pick = next((i for i, (found, _, _) in enumerate(runs) if not any(lost(found.get(j)) for j in ids)), len(runs) - 1)
             if runs:
                 found, where, src = runs[pick]
                 for j in ids:
                     recs[(k, j)] = found.get(j)
+                    SRC[(k, j)] = src
                     if j in where:
                         dirs[(k, j)] = where[j]
                     prov[f"{k}:{j}"] = src
@@ -282,7 +293,7 @@ def gate(fn) -> dict:
         return {"outcome": PASS if ok else fail, "detail": detail}
     except Out as o:
         return {"outcome": o.outcome, "detail": {"bad_inputs": {f"{k[0]}:{k[1]}": v for k, v in o.bad.items()}}}
-    except (KeyError, TypeError, ValueError, ZeroDivisionError, np.linalg.LinAlgError) as exc:
+    except (ValueError, ZeroDivisionError, FloatingPointError, np.linalg.LinAlgError) as exc:
         return {"outcome": FV, "detail": {"reason": f"undefined quantity: {type(exc).__name__}: {exc}"}}
 
 
@@ -295,6 +306,7 @@ def gt_rule(a: dict, b: dict) -> dict:
     tol = min(max(TH["gt_mean"] * abs(a["m"]), 3 * math.hypot(a["se"], b["se"])), TH["gt_cap"] * abs(a["m"]))
     out = {"class_a": a["class"], "class_b": b["class"], "m_a": a["m"], "m_b": b["m"], "allowed": tol, "same_class": a["class"] == b["class"],
            "mean_ok": abs(a["m"] - b["m"]) <= tol}
+    out["error_bound_dt_run"] = {"p=1": abs(a["m"] - b["m"]), "p=2": abs(a["m"] - b["m"]) / 3}   # |m_a - m_b| / (2^p - 1)
     ok = out["same_class"] and out["mean_ok"]
     if ok and a["class"] == "VALID_PERIODIC":
         out["amp_ratio"] = a["r"] / b["r"]
@@ -381,17 +393,20 @@ def q1_class(R: Runs, name: str, kernel: str, geometry: str) -> dict:
             lab = "STEADY_SOLVER_ARTEFACT" if abs(R.m(s1) - R.m(u)) <= TH["tol_eq"] * abs(R.m(u)) else "STEADY_BRANCH_MISMATCH"
     elif ts and R.cls(u) == "VALID_PERIODIC":
         lab = "UNSTEADY_IN_URANS"
-    if name in US1_AT:   # an invalid US1 leaves the start dependence unchecked: INDETERMINATE (interpretation recorded at freeze 2)
+    if name in US1_AT:   # registration 6.2: different classes (neither run lost), or valid runs that differ in m or amplitude; a lost run leaves it unchecked
         us1 = k_u(kernel, geometry, "US1")
-        out["US1"] = R.cls(us1)
-        if R.cls(u) in VALID_U and R.cls(us1) in VALID_U:
+        cu, c1 = R.cls(u), R.cls(us1)
+        out["US1"] = c1
+        if "INFRA_LOSS" in (cu, c1):
+            lab = "INDETERMINATE"
+        elif cu != c1:
+            lab = "START_DEPENDENT"
+        elif cu in VALID_U:
             a, b = R.stats(u), R.stats(us1)
             out["m_US1"] = b["m"]
-            if (a["class"] != b["class"] or abs(a["m"] - b["m"]) > max(TH["tol_eq"] * abs(a["m"]), 3 * math.hypot(a["se"], b["se"]))
+            if (abs(a["m"] - b["m"]) > max(TH["tol_eq"] * abs(a["m"]), 3 * math.hypot(a["se"], b["se"]))
                     or (a["class"] == "VALID_PERIODIC" and not TH["amp"][0] <= a["r"] / b["r"] <= TH["amp"][1])):
                 lab = "START_DEPENDENT"
-        else:
-            lab = "INDETERMINATE"
     out["label"] = lab
     return out
 
@@ -421,21 +436,26 @@ def realisation_pairs(R: Runs) -> list[tuple]:
 
 
 def sigma_real80(R: Runs) -> dict:
-    d = []
+    """Pooled realisation noise of a remeshed Cl at h/c 0.134 (registration section 6.3): every pair run is a G2u input (need() before this); a pair is
+    excluded only when its two mesh files are identical; fewer than 2 pairs is an undefined quantity (ValueError -> FAIL_VALUE)."""
+    d, same = [], []
     for a, b in realisation_pairs(R):
-        if R.cls(a) in VALID_U and R.cls(b) in VALID_U and (R.rec(a) or {}).get("mesh_msh_sha256") != (R.rec(b) or {}).get("mesh_msh_sha256"):
-            d.append(R.m(a) - R.m(b))
+        if (R.rec(a) or {}).get("mesh_msh_sha256") == (R.rec(b) or {}).get("mesh_msh_sha256"):
+            same.append(f"{a[0]}:{a[1]} = {b[0]}:{b[1]}")
+            continue
+        d.append(R.m(a) - R.m(b))
     nu = len(d)
     if nu < 2:
-        return {"nu": nu, "sigma": None}
+        raise ValueError(f"sigma_real80 undefined: {nu} realisation pairs with different mesh files")
     s = math.sqrt(sum(x * x for x in d) / (2 * nu))
-    return {"nu": nu, "sigma_point": s, "sigma": s * math.sqrt(nu / chi2.ppf(TH["chi2_q"], nu)), "differences": d}
+    return {"nu": nu, "sigma_point": s, "sigma": s * math.sqrt(nu / chi2.ppf(TH["chi2_q"], nu)), "differences": d, "identical_mesh_pairs": same}
 
 
-def g2u(R: Runs, L: str, exp: dict, sreal: dict) -> dict:
+def g2u(R: Runs, L: str, exp: dict) -> dict:
     def fn():
         req = [g2_key(L, h) for h in HEIGHTS] + [g2_key(L, h, a) for h in (0.224, 0.134) for a in (-1.0, 1.0)]
-        need(R, req)
+        need(R, req + [k for pair in realisation_pairs(R) for k in pair])
+        sreal = sigma_real80(R)
         m = {h: R.m(g2_key(L, h)) for h in HEIGHTS}
         d = {h: (R.m(g2_key(L, h, 1.0)) - R.m(g2_key(L, h, -1.0))) / 2 for h in (0.224, 0.134)}
         opt = [g2_key(L, 0.09, a) for a in (-1.0, 1.0)]
@@ -443,8 +463,6 @@ def g2u(R: Runs, L: str, exp: dict, sreal: dict) -> dict:
         d[0.09] = d[0.134] if unverified else (R.m(opt[1]) - R.m(opt[0])) / 2
         shift = lambda h: B.INCIDENCE_SHIFT_DEG * B.d_interp(d, h)
         e0, e1 = B.mean_abs_err(m, exp), B.mean_abs_err(m, exp, shift)
-        if sreal["sigma"] is None:
-            raise Out(FI, {("sigma_peak", L): f"fewer than 2 valid realisation pairs ({sreal['nu']})"})
         sp = max(sreal["sigma"], max(R.se(g2_key(L, h)) for h in (0.179, 0.134, 0.09)))
         n = 2 * math.sqrt(2) * sp
         tri = lambda x: "pass" if x >= n else "fail" if x < -n else "noise"
@@ -453,7 +471,7 @@ def g2u(R: Runs, L: str, exp: dict, sreal: dict) -> dict:
         tests = {"peak": tri(peak), **{k: tri(v) for k, v in rise.items()}}
         mean_ok = e0 < TH["G2_mean"] and e1 < TH["G2_mean"]
         robust = all(B.mean_abs_err(m, exp, sh, o) < TH["G2_mean"] for o in (-TH["robust"], TH["robust"]) for sh in (None, shift))
-        detail = {"m": m, "d_R": d, "SHIFT_UNVERIFIED": unverified, "mean_abs_e_nominal": e0, "mean_abs_e_plus_0p15deg": e1, "e_h": {h: m[h] / exp[h] - 1 for h in HEIGHTS},
+        detail = {"sigma_real80": sreal, "m": m, "d_R": d, "SHIFT_UNVERIFIED": unverified, "mean_abs_e_nominal": e0, "mean_abs_e_plus_0p15deg": e1, "e_h": {h: m[h] / exp[h] - 1 for h in HEIGHTS},
                   "G2d_E": B.rel_l1(B.increments(m), B.increments(exp)), "ROBUST": robust, "sigma_peak": sp, "noise_band": n, "peak_margin": peak,
                   "rise_margins": rise, "tests": tests, "peak_h": max(m, key=m.get), "margins_in_band_units": {"peak": peak / n, **{k: v / n for k, v in rise.items()}},
                   "PEAK_NONDIAGNOSTIC": (exp[0.134] - (1 - TH["peak_tol"]) * max(exp[0.179], exp[0.09])) < n}
@@ -467,10 +485,9 @@ def g2u(R: Runs, L: str, exp: dict, sreal: dict) -> dict:
 
 
 def data_verdict(R: Runs, exp: dict) -> dict:
-    sreal = sigma_real80(R)
-    out = {"sigma_real80": sreal, "G2u": {}, "GTd": {}, "level": {}}
+    out = {"G2u": {}, "GTd": {}, "level": {}}
     for L in ("fine30", "xfine30"):
-        out["G2u"][L] = g2u(R, L, exp, sreal)
+        out["G2u"][L] = g2u(R, L, exp)
         out["GTd"][L] = {c: gt_at(R, *GTD_COND[c]) for c in GTD[L]}
         out["level"][L] = worst([out["G2u"][L]["outcome"], *(g["outcome"] for g in out["GTd"][L].values())], LEVEL_ORDER)
     out["outcome"] = worst(list(out["level"].values()), DATA_ORDER)
@@ -582,27 +599,29 @@ def diff_verdict(R: Runs) -> dict:
 
 
 def cost_rule(R: Runs) -> dict:
-    """Evaluation cost of the 15 xfine30 h/c 0.134 U runs of XP1 and XP2 (registration section 6.3)."""
+    """Evaluation cost of the 15 xfine30 h/c 0.134 U runs of XP1 and XP2 (registration section 6.3): generation (a copied base adds its base's generation
+    time) or morph + gmshToFoam + checkMesh + S0 + U wall time. A run without its U time counts with its observed time when that already exceeds 30 min."""
     reg = K.registered()
-    costs, missing = {}, []
+    costs, partial = {}, {}
     for k in ("xp1", "xp2"):
         for c, kinds in reg[k]:
-            key = k_u(k, K._case_id(*c))
-            r = R.rec(key)
-            stage = [s for s in (r or {}).get("stages", []) if s["stage"] == "pimpleFoam"]
-            if r and stage and r.get("pre_solver_wall_s") is not None:
-                costs[f"{k}:{key[1]}"] = (r["pre_solver_wall_s"] + (r.get("s0_wall_s") or 0.0) + stage[0]["wall_s"]) / 60
+            g = K._case_id(*c)
+            s0 = R.rec((k, f"{g}__S0")) or {}
+            base = BASES_WALL.get((k, SRC.get((k, f"{g}__S0"), "")), {}).get(f"{c[2]}_h{c[1]}_da0", 0.0) if c[0] == "base" else 0.0
+            obs = (s0.get("pre_solver_wall_s") or 0.0) + base + sum(s["wall_s"] for s in s0.get("stages", []) if s["stage"] == "simpleFoam")
+            u = [s["wall_s"] for s in (R.rec(k_u(k, g)) or {}).get("stages", []) if s["stage"] == "pimpleFoam"]
+            if s0.get("pre_solver_wall_s") is not None and u:
+                costs[f"{k}:{g}"] = (obs + u[0]) / 60
             else:
-                missing.append(f"{k}:{key[1]}")
-    over = any(v > TH["cost_max_min"] for v in costs.values())
-    if over or not missing:
-        vals = sorted(costs.values())
-        ok = (not over) and bool(vals) and statistics.median(vals) <= TH["cost_median_min"]
+                partial[f"{k}:{g}"] = obs / 60
+    over = any(v > TH["cost_max_min"] for v in (*costs.values(), *partial.values()))
+    if over or not partial:
+        ok = (not over) and bool(costs) and statistics.median(costs.values()) <= TH["cost_median_min"]
         label = "AFFORDABLE" if ok else "NOT_AFFORDABLE"
     else:
         label = UND
     return {"label": label, "median_min": statistics.median(costs.values()) if costs else None, "max_min": max(costs.values()) if costs else None,
-            "missing": missing, "costs_min": costs}
+            "incomplete_observed_min": partial, "costs_min": costs}
 
 
 def verdict(data: str, diff: str, cost: str) -> str:
@@ -672,21 +691,60 @@ def labels(R: Runs, data: dict, diff: dict) -> dict:
             if isinstance(s, dict):
                 classes = [R.cls(scan_key(L, a)) for a in A7]
                 d1 = d_scan(R, L, 1.0)
-                e[L].update(SCAN_KINK=len(set(classes)) > 1, classes=dict(zip(A7, classes)), d1=d1, d025=d_scan(R, L, 0.25),
+                e[L].update(SCAN_KINK=len(set(classes)) > 1, two_piece_fit=two_piece(A7, [s["m"][a] for a in A7], classes),
+                            classes=dict(zip(A7, classes)), d1=d1, d025=d_scan(R, L, 0.25),
                             smallest_resolved_deg=2 * math.sqrt(2) * s["eff"] / abs(d1) if d1 else None,
                             MDD_PCT=100 * 2 * math.sqrt(2) * s["eff"] / s["m"][0.0], G6u_rule=g6u(R, L)["outcome"], G8u_rule=g8u(R, L)["outcome"])
                 rem = "xo2" if L == "xfine30" else "f1"
-                e[L]["morph_vs_remesh_d1"] = _try(lambda L=L, rem=rem: C.compare(d1, (R.m(k_u(rem, gid(0.134, L, 1.0))) - R.m(k_u(rem, gid(0.134, L, -1.0)))) / 2,
-                                                                                  s["eff"] / math.sqrt(2), math.hypot(R.se(k_u(rem, gid(0.134, L, 1.0))), R.se(k_u(rem, gid(0.134, L, -1.0)))) / 2,
-                                                                                  power=False))
+                rp, rm = k_u(rem, gid(0.134, L, 1.0)), k_u(rem, gid(0.134, L, -1.0))
+                sd_m = math.hypot(R.se(scan_key(L, 1.0)), R.se(scan_key(L, -1.0))) / 2   # SE only (registration 6.6)
+                e[L]["morph_vs_remesh_d1"] = _try(lambda L=L, rp=rp, rm=rm, d1=d1, sd_m=sd_m: C.compare(
+                    d1, (R.m(rp) - R.m(rm)) / 2, sd_m, math.hypot(R.se(rp), R.se(rm)) / 2, power=False))
         b = (R.rec(("xp1", f"{gid(0.134, 'xfine30')}__S0")) or {}).get("mesh_msh_sha256")
         b2 = ((R.rec(("xp2", f"{gid(0.134, 'xfine30', 0.25, morph=True, mode='camber')}__S0")) or {}).get("morph") or {}).get("base_mesh_msh_sha256")
         e["B2_NOT_B"] = None if not (b and b2) else b != b2
         return e
     out["Q3_extras"] = _try(q3_extras)
+
+    def level_step():
+        keys = [g2_key(L, h) for L in ("fine30", "xfine30") for h in HEIGHTS]
+        need(R, keys)
+        return {"max_abs_rel": max(abs(R.m(g2_key("xfine30", h)) / R.m(g2_key("fine30", h)) - 1) for h in HEIGHTS),
+                "per_h": {h: R.m(g2_key("xfine30", h)) / R.m(g2_key("fine30", h)) - 1 for h in HEIGHTS}}
+    out["level_step"] = _try(level_step)
+    out["lag1_batch_autocorrelation"] = {f"{k}:{j}": R.stats((k, j)).get("lag1") for (k, j) in sorted(R.recs) if j.split("__")[-1] in URANS
+                                         and R.cls((k, j)) in (*VALID_U, "NONSTATIONARY", "TOO_FEW_CYCLES")}
+    out["per_geometry"] = {f"{k}:{j[:-4]}": {x: (r or {}).get(x) for x in ("mesh_msh_sha256", "mesh_cells_3d", "n_layers", "bl_thickness_m", "yplus")}
+                           for (k, j), r in sorted(R.recs.items()) if j.endswith("__S0")}
+    out["CPU_MIXED"] = cpu_mixed()
     out["SURVIVES_2SIGMA"] = _try(lambda: survives_2sigma(R))
     out["steady_scans_0179"] = {L: _try(lambda L=L: steady_scan(R, L)) for L in ("xfine30", "fine30")}
     out["cost"] = _try(lambda: cost_labels(R, diff))
+    return out
+
+
+def two_piece(x, y, classes) -> dict | None:
+    """SCAN_KINK companion: two straight lines split at the first class change of the scan (each side at least 2 points), residual sigma with n - 4 dof."""
+    cut = next((i for i in range(1, len(classes)) if classes[i] != classes[i - 1]), None)
+    if cut is None or cut < 2 or len(x) - cut < 2 or len(x) <= 4:
+        return None
+    res = []
+    for xs, ys in ((x[:cut], y[:cut]), (x[cut:], y[cut:])):
+        res += list(np.array(ys) - np.polyval(np.polyfit(xs, ys, 1), xs))
+    return {"split_after_deg": x[cut - 1], "sigma": math.sqrt(sum(v * v for v in res) / (len(x) - 4))}
+
+
+GATE_KERNELS = {"G2u(fine30)": ("f1", "f2", "xp1", "xp2", "xo2"), "G2u(xfine30)": ("xo1", "xo2", "xp1", "xp2", "f1", "f2"), "GTd": ("xo1", "xp1", "f1"),
+                "GT134": ("xp1",), "G6u": ("xp1",), "G8u": ("xp1", "xp2"), "G3bu": ("xp1", "f2"), "GSu": ("xp1", "xp2"), "cost": ("xp1", "xp2")}
+CPU = {}   # run directory -> CPU model (from its result.json)
+
+
+def cpu_mixed() -> dict:
+    """Per gate: the CPU models of the run directories its kernels' runs came from, and whether they differ."""
+    out = {}
+    for gname, ks in GATE_KERNELS.items():
+        models = sorted({str(CPU.get(src)) for (k, j), src in SRC.items() if k in ks})
+        out[gname] = {"models": models, "mixed": len(models) > 1}
     return out
 
 
@@ -758,14 +816,20 @@ def cost_labels(R: Runs, diff: dict) -> dict:
 # ---- main -------------------------------------------------------------------------------------------
 
 def completeness(R: Runs) -> dict:
+    """Counts per run family (S0, U-type, S1) and class family (valid / invalid / mechanical / lost); the lost run ids and their geometry ids per kernel
+    (the `--only` input of a resubmission). No value."""
     fam = lambda c: "valid" if c in (*VALID_U, "CONVERGED", "NOT_CONVERGED") else "lost" if c == "INFRA_LOSS" else "mechanical" if c == "MECHANICAL_FAIL" else "invalid"
-    counts, lost = {}, []
+    counts, lost_ids, geoms = {}, [], {}
     for key in sorted(R.recs):
+        kind = key[1].rsplit("__", 1)[1]
+        run_family = "S0" if kind == "S0" else "S1" if kind == "S1" else "U-type"
         f = fam(R.cls(key))
-        counts[f] = counts.get(f, 0) + 1
+        counts.setdefault(run_family, {}).setdefault(f, 0)
+        counts[run_family][f] += 1
         if f == "lost":
-            lost.append(f"{key[0]}:{key[1]}")
-    return {"counts": counts, "lost": lost}
+            lost_ids.append(f"{key[0]}:{key[1]}")
+            geoms.setdefault(key[0], set()).add(key[1].rsplit("__", 1)[0])
+    return {"counts": counts, "lost": lost_ids, "lost_geometries": {k: sorted(v) for k, v in geoms.items()}}
 
 
 def expected_keys() -> list:
@@ -795,6 +859,10 @@ def main(argv=None):
     R, prov = load({k: getattr(a, k) for k in KERNELS})
     for key in expected_keys():
         R.recs.setdefault(key, None)
+    missing = [f"{k}:{j}" for (k, j), r in R.recs.items() if r and r.get("status") == "COMPLETED"
+               and not ((k, j) in R.dirs and list(R.dirs[(k, j)].glob("coefficient*.dat.gz")))]
+    if missing:   # e.g. cases.tar not extracted: nothing is printed or written (registration section 8)
+        raise SystemExit(f"{len(missing)} completed runs have no extracted case files (extract cases.tar first), e.g. {missing[:3]}")
     if a.completeness:
         print(json.dumps(completeness(R), indent=1))
         return

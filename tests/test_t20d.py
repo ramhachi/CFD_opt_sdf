@@ -96,7 +96,7 @@ def test_stage2_urans_copy_and_dictionaries(tmp_path):
     assert "nOuterCorrectors 2;" in sol and "pFinal" in sol and '".*" 1;' in sol and "SIMPLE" not in sol
     assert json.loads((u / "case_manifest.json").read_text())["stage2"]["kind"] == "U"
     assert S.stage2_case(s0, tmp_path / "u05", "Udt05")["end_time_s"] == 0.0819
-    assert "writeInterval 4096;" not in (tmp_path / "u05/system/controlDict").read_text()
+    assert "writeInterval 16380;" in (tmp_path / "u05/system/controlDict").read_text() and "deltaT 5e-06;" in (tmp_path / "u05/system/controlDict").read_text()
 
 
 def test_stage2_s1_and_us1(tmp_path):
@@ -209,18 +209,18 @@ def write_one(out: Path, k: str, c: tuple, kind: str, tw: dict, wall_s=7200.0, s
     if tw.get("drop"):
         return
     m = model_cl(c) + tw.get("m_shift", 0.0)
-    rec = {"id": rid, "geometry": g, "kind": kind, "status": tw.get("status", "COMPLETED"), "mesh_msh_sha256": f"{k}-{g}", "mesh_cells_3d": 50000,
+    rec = {"id": rid, "geometry": g, "kind": kind, "status": tw.get("status", "COMPLETED"), "mesh_msh_sha256": tw.get("sha", f"{k}-{g}"), "mesh_cells_3d": 50000,
            "pre_solver_wall_s": 60.0, "s0_wall_s": s0_wall, "solver": {"iterations": 10, "nan_in_log": False}, "source_run": f"{g}__S0"}
     if kind == "S0":
         rec["stages"] = [{"stage": "simpleFoam", "wall_s": s0_wall}]
         if c[0] == "morph":
             rec["morph"] = {"base_mesh_msh_sha256": f"base-{k}"}
         n = np.arange(5000)
-        write_run(out / "cases" / rid, rec, n + 1.0, m + 1e-5 * (-1) ** n)
+        write_run(out / "cases" / rid, rec, n + 1.0, tw["cl_fn"](n, m) if tw.get("cl_fn") else m + 1e-5 * (-1) ** n)
     elif kind == "S1":
         rec["stages"] = [{"stage": "simpleFoam", "wall_s": 2400.0}]
         n = np.arange(10000)
-        write_run(out / "cases" / rid, rec, n + 5001.0, m + 1e-6 * (-1) ** n)
+        write_run(out / "cases" / rid, rec, n + 5001.0, tw["cl_fn"](n, m) if tw.get("cl_fn") else m + 1e-6 * (-1) ** n)
     else:
         dt, end = S.DT[kind], S.END_TIME_S[kind]
         rec["stages"] = [{"stage": "pimpleFoam", "wall_s": wall_s}]
@@ -281,6 +281,8 @@ def test_qualified_unaffordable_on_the_nominal_tree(tree, tmp_path):
     assert q1["per_condition"]["x09 0"]["label"] == "UNSTEADY_IN_URANS" and q1["per_condition"]["x134 0"]["label"] == "STEADY_SOLVER_ARTEFACT"
     assert q1["per_condition"]["x224 0"]["label"] == "CONTROL_OK" and q1["Q1_FORM_09"] == "URANS_REQUIRED" and q1["Q1_FORM_134"] == "STEADY_RELAXED_SUFFICES"
     assert v["labels"]["G2_ACTION"]["label"] == "G2_INDEPENDENT_DATA_NEXT"
+    assert "undefined quantity" not in json.dumps(v["DATA"]) + json.dumps(v["DIFF"])
+    assert v["DATA"]["G2u"]["xfine30"]["detail"]["sigma_real80"]["nu"] == 12 and v["labels"]["level_step"]["max_abs_rel"] == pytest.approx(1 - 1 / 1.003, rel=1e-4)
     with pytest.raises(SystemExit):   # written once
         analyse(dirs, tmp_path / "a")
 
@@ -345,7 +347,105 @@ def test_completeness_prints_no_value(tree, capsys):
     _, dirs = tree
     A.main([*sum(([f"--{k}", str(dirs[k])] for k in A.KERNELS), []), "--completeness"])
     out = json.loads(capsys.readouterr().out)
-    assert set(out) == {"counts", "lost"} and out["lost"] == [] and sum(out["counts"].values()) == len(A.expected_keys())
+    assert set(out) == {"counts", "lost", "lost_geometries"} and out["lost"] == [] and out["lost_geometries"] == {}
+    assert sum(n for fam in out["counts"].values() for n in fam.values()) == len(A.expected_keys()) and set(out["counts"]) == {"S0", "U-type", "S1"}
+
+
+def test_noise_band_makes_the_peak_indeterminate(tree, tmp_path):
+    v = variant(tree, tmp_path, lambda k, rid, c, kind: {"m_shift": 0.02} if k == "f2" and c[5] == "B2" and kind == "U" else None)
+    assert v["DATA"]["G2u"]["fine30"]["detail"]["tests"]["peak"] == "noise" and v["DATA"]["outcome"] == "INDETERMINATE_NOISE"
+    assert v["DIFF"]["outcome"] == "PASS" and v["verdict"] == A.V_NO and v["labels"]["G2_ACTION"]["label"] == "G2_INDEPENDENT_DATA_NEXT"
+    assert v["DATA"]["G2u"]["fine30"]["detail"]["PEAK_NONDIAGNOSTIC"]
+
+
+def test_lost_or_identical_realisation_pairs(tree, tmp_path):
+    v = variant(tree, tmp_path / "l", lambda k, rid, c, kind: {"drop": True} if (k, rid) == A.scan_key("fine30", 0.25, "B2") else None)
+    assert v["DATA"]["G2u"]["fine30"]["outcome"] == v["DATA"]["G2u"]["xfine30"]["outcome"] == "UNDETERMINED" and v["verdict"] == A.V_INC
+    pairs = {x for pr in A.realisation_pairs(None) for x in pr}
+    v = variant(tree, tmp_path / "s", lambda k, rid, c, kind: {"sha": "same"} if (k, rid) in pairs else None)
+    assert v["DATA"]["G2u"]["fine30"]["outcome"] == "FAIL_VALUE" and "undefined quantity" in json.dumps(v["DATA"]["G2u"]["fine30"]["detail"])
+
+
+def test_shift_unverified_and_gtd_input_failure(tree, tmp_path):
+    drift = lambda t, m: m * (1 + 0.01 * t / t[-1])
+    v = variant(tree, tmp_path, lambda k, rid, c, kind: {"cl_fn": drift} if (k, rid) == A.g2_key("xfine30", 0.09, 1.0) else None)
+    g = v["DATA"]["G2u"]["xfine30"]
+    assert g["outcome"] == "PASS" and g["detail"]["SHIFT_UNVERIFIED"]
+    assert v["DATA"]["GTd"]["xfine30"]["x09+1"]["outcome"] == "FAIL_INPUT" and v["DATA"]["outcome"] == "FAIL_INPUT"
+    assert v["labels"]["G2_ACTION"]["label"] == "UNDECIDED" and v["labels"]["Q1"]["per_condition"]["x09+1"]["label"] == "INDETERMINATE"
+
+
+def test_diff_value_failures(tree, tmp_path):
+    wiggle = lambda k, rid, c, kind: {"m_shift": 0.01 * (1 if c[4] in (0.25, -0.5, 1.0) else -1)} if k == "xp1" and c[0] == "morph" and kind in ("U", "Udt2") else None
+    v = variant(tree, tmp_path / "w", wiggle)
+    assert v["DIFF"]["G6u"]["outcome"] == "FAIL_VALUE" and v["DIFF"]["outcome"] == "FAIL_VALUE"
+    flat = lambda k, rid, c, kind: {"m_shift": -0.05 * c[4]} if k == "xp2" and c[3] in ("camber", "flap") else None
+    v = variant(tree, tmp_path / "f", flat)
+    assert v["DIFF"]["GSu"]["outcome"] == "FAIL_VALUE" and not v["DIFF"]["GSu"]["detail"]["camber"]["resolved"]
+    half = lambda k, rid, c, kind: {"m_shift": -0.04 * c[4]} if k == "f2" and c[3] == "incidence" else None   # fine30 slope 0.04 against xfine30 0.08
+    v = variant(tree, tmp_path / "h", half)
+    assert v["DIFF"]["G3bu"]["outcome"] == "FAIL_VALUE"
+    step = lambda k, rid, c, kind: {"m_shift": 0.01} if (k, rid) == A.k_u("xp1", A.gid(0.134, "xfine30"), "Udt2") else None
+    v = variant(tree, tmp_path / "t", step)
+    assert v["DIFF"]["GT134"]["outcome"] == "FAIL_TIMESTEP" and v["DIFF"]["outcome"] == "FAIL_TIMESTEP"
+
+
+def test_q1_steady_labels_and_controls(tree, tmp_path):
+    osc = lambda n, m: m + 0.03 * m * np.sin(2 * np.pi * n / 14)
+    def tw(k, rid, c, kind):
+        if (k, rid) == (A.Q1_TARGETS["x134 0"][0], f"{A.Q1_TARGETS['x134 0'][1]}__S1"):
+            return {"cl_fn": osc}
+        if (k, rid) == (A.Q1_TARGETS["x134+1"][0], f"{A.Q1_TARGETS['x134+1'][1]}__S1"):
+            return {"m_shift": 0.02}
+        if (k, rid) == (A.Q1_CONTROLS["x224 0"][0], f"{A.Q1_CONTROLS['x224 0'][1]}__S0"):
+            return {"m_shift": 0.02}
+    q = variant(tree, tmp_path, tw)["labels"]["Q1"]
+    assert q["per_condition"]["x134 0"]["label"] == "STEADY_URANS_ONLY" and q["per_condition"]["x134+1"]["label"] == "STEADY_BRANCH_MISMATCH"
+    assert q["per_condition"]["x224 0"]["label"] == "CONTROL_NOT_OK" and q["Q1_FORM_134"] == q["Q1_FORM_09"] == "INDETERMINATE"
+
+
+def test_source_failure_propagates(tree, tmp_path):
+    bad = lambda n, m: m + 0 * n + 1e3   # |Cl| > 100 in S0
+    v = variant(tree, tmp_path, lambda k, rid, c, kind: {"cl_fn": bad} if (k, rid) == (A.g2_key("xfine30", 0.448)[0], A.g2_key("xfine30", 0.448)[1].replace("__U", "__S0")) else None)
+    assert v["labels"]["U_class_map"][f"xo2:{A.g2_key('xfine30', 0.448)[1]}"] == "SOLVER_FAIL" and v["DATA"]["outcome"] == "FAIL_INPUT"
+
+
+def test_precedence_and_verdict_branches():
+    assert A.worst([A.FV, A.FT], A.LEVEL_ORDER) == A.FT and A.worst([A.FV, A.FT], A.DATA_ORDER) == A.FV
+    assert A.worst([A.MEC, A.FI, A.UND], A.DIFF_ORDER) == A.MEC and A.worst([], A.DIFF_ORDER) == A.PASS
+    assert A.verdict(A.MEC, A.FV, "NOT_AFFORDABLE") == A.V_DEF
+    assert A.verdict(A.UND, A.PASS, "UNDETERMINED") == A.V_INC and A.verdict(A.PASS, A.UND, "x") == A.V_INC
+    assert A.verdict(A.UND, A.FV, "x") == A.V_NO and A.verdict(A.NOISE, A.PASS, "AFFORDABLE") == A.V_NO
+    assert A.verdict(A.PASS, A.PASS, "AFFORDABLE") == A.V_Q and A.verdict(A.PASS, A.PASS, "NOT_AFFORDABLE") == A.V_QU
+
+
+def test_missing_case_files_refuse_before_output(tree, tmp_path, capsys):
+    dirs = tweaked(tree, tmp_path / "t", lambda *a: None)
+    recs = [json.loads(p.read_text()) for p in (dirs["xo2"] / "cases").glob("*/case_result.json")]
+    (dirs["xo2"] / "result.json").write_text(json.dumps({"runs": recs}))
+    shutil.rmtree(dirs["xo2"] / "cases")
+    with pytest.raises(SystemExit):
+        analyse(dirs, tmp_path / "a")
+    assert not (tmp_path / "a" / "verdict.json").exists()
+
+
+def test_completeness_lists_lost_geometries(tree, tmp_path, capsys):
+    dirs = tweaked(tree, tmp_path / "t", lambda k, rid, c, kind: {"drop": True} if (k, rid) == A.shape_key("flap", 0.25) else None)
+    A.main([*sum(([f"--{k}", str(dirs[k])] for k in A.KERNELS), []), "--completeness"])
+    out = json.loads(capsys.readouterr().out)
+    assert out["lost"] == [f"xp2:{A.shape_key('flap', 0.25)[1]}"] and out["lost_geometries"] == {"xp2": [A.shape_key("flap", 0.25)[1][:-3]]}
+    assert out["counts"]["U-type"]["lost"] == 1
+
+
+def test_runner_queue_order_and_scrub():
+    ns = runner_ns()
+    geoms = ns["make_geometries"](ns["GEOMETRIES"]["xp1"])
+    order = [(g["id"], k) for g, k in ns["stage2_order"](geoms)]
+    assert order[0] == ("sa-wf_h0.134_xfine30_da0", "S1") and order[4] == ("sa-wf_h0.134_xfine30_da0", "US1")
+    assert sorted(order) == sorted((g["id"], k) for g in geoms for k in g["kinds"]) and order[1][1] == "Udt05"
+    text = "Time = 1e-05\nCourant Number mean: 0.01 max: 4.1\nforceCoeffs forceCoeffs write:\n    Cl       = 1.33\n    Cd: 0.05\nsmoothSolver:  Solving for Ux, Initial residual = 1e-5"
+    kept = ns["_scrub"](text)
+    assert "1.33" not in kept and "0.05" not in kept and "Courant Number" in kept and "Solving for Ux" in kept
 
 
 def test_resubmission_replaces_whole_sets_only(tree, tmp_path):
@@ -356,3 +456,10 @@ def test_resubmission_replaces_whole_sets_only(tree, tmp_path):
     assert all(prov[f"xp1:{j}"] == str(second["xp1"]) for j in scan)
     assert prov[f"xp1:{A.gid(0.134, 'xfine30')}__S0"] == str(second["xp1"])
     assert all(v == str(first[k]) for kk, v in prov.items() for k in [kk.split(":")[0]] if k != "xp1")
+    lost_both = tweaked(tree, tmp_path / "r3", lambda k, rid, c, kind: {"drop": True} if k == "xo1" and rid.endswith("_da0__US1") else None)
+    R, prov = A.load({k: [first[k]] + ([lost_both[k]] if k in ("xo1", "xp2") else []) for k in A.KERNELS})
+    j = f"{A.gid(0.09, 'xfine30')}__S0"
+    assert prov[f"xo1:{j}"] == str(first["xo1"])   # the first run's set is complete there
+    both = tweaked(tree, tmp_path / "r4", lambda k, rid, c, kind: {"drop": True} if (k, rid) == A.scan_key("xfine30", -1.0) else None)
+    R, prov = A.load({k: [first[k]] + ([both[k]] if k == "xp1" else []) for k in A.KERNELS})   # incomplete in both runs: whole from the resubmission
+    assert all(prov[f"xp1:{A.scan_key('xfine30', a)[1]}"] == str(both["xp1"]) for a in A.A7)
