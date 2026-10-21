@@ -354,3 +354,17 @@ def test_builder_layout_with_planted_designs(tmp_path, monkeypatch):
     assert [c[0] for c in ext["ext_v3"][1]] == [f"V3_{B.PARENT}_49m", "V3_v18__d1_49m"] and len(ext["ext_v1"][1]) == 2 * 16
     with pytest.raises(SystemExit):
         B.kernels48([B.PARENT])
+
+
+def test_harness_wrapper_exempts_only_the_unaddressable_placeholder():
+    from cfd_harness import campaign_schema as SC
+    original = SC.parse_listing
+    import fid01_harness as H
+    try:
+        SC.parse_listing = H.parse_listing
+        out = "ref,title,author,lastRunTime,totalVotes\nramhachi888/a,a,x,2026,0\n,[Private Notebook],,2010-04-01 00:00:00,0\n,other,,2010,0\n"
+        rows = SC.parse_listing(out)
+        assert [r["title"] for r in rows] == ["a", "other"]
+        assert not all(r.get("ref", "").startswith("ramhachi888/") for r in rows)                  # an empty ref with another title still fails closed
+    finally:
+        SC.parse_listing = original                                                                # the harness itself stays unpatched for other tests
