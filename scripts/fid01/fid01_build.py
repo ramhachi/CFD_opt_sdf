@@ -36,10 +36,12 @@ ROLL = "v18__roll_p25"
 PARENT = "v18__parent"
 UNC01_STATES = B.OUT / "states.json"
 
-# WaterLily (§4): flow_32 phases 7-10 (P = 4), flow_48 phase 7 (wide designs only)
+# WaterLily (§4): flow_32 phases 7-10 (P = 4), one kernel per phase; flow_48 phase 7 for the d_set run set (second campaign fid01_f48)
 PHASES = {"flow_32": (7, 8, 9, 10), "flow_48": (7,)}
-F32 = {"f32a": (7, 8), "f32b": (9, 10)}
-F32_CFG, F48_CFG = (900, 20000, 23000), (6000, 20000, 23000)        # per-state / aggregate cap / kernel timeout (s)
+F32 = {f"f32k{k}": (k,) for k in PHASES["flow_32"]}
+F32_CFG = (900, 13000, 16000)                                    # per-state / aggregate cap / kernel timeout (s)
+CAMPAIGN48 = ROOT / "docs/harness/fid01_f48_campaign.json"
+DSET = OUT / "d_set.json"
 EST_S = {"flow_32": 415, "flow_48": 2340}
 SETUP_S = 260
 
@@ -48,12 +50,13 @@ PAIR_TAGS = lambda pairs: [f"{i}{m}" for i in pairs for m in "pm"]  # noqa: E731
 LEVELS = {"V1": {"blocks": None, "end_time": None, "shifts": PAIR_TAGS(range(49, 65))},
           "V2": {"blocks": (50, 26, 18), "end_time": None, "shifts": PAIR_TAGS(range(49, 51))},
           "V3": {"blocks": (100, 52, 36), "end_time": 6000, "shifts": ["49p"]}}
-EXTENSION_SHIFTS = {"V1": PAIR_TAGS(range(65, 73)), "V2": PAIR_TAGS(range(51, 53)), "V3": ["49m", "50p", "50m"]}
-EX_SLOTS = ("W4", "N1")                       # + the parent: exported at r = 16 and run on V3 (§3.4)
+EXTENSION_SHIFTS = {"V1": PAIR_TAGS(range(65, 73)), "V2": PAIR_TAGS(range(51, 53)), "V3": ["49m"]}
+EX_SLOTS = ("W4", "W6")                       # + the parent: exported at r = 16 and run on V1 at every V1 shift (§3.4)
 EX_REFINEMENT = 16
 V3_GROUP = 6
 SMOKE_SHIFT = "80p"
-STAGE_TIMEOUT_S = {"V1": 1800, "V2": 3600, "V3": 6 * 3600}
+STAGE_TIMEOUT_S = {"V1": 7200, "V2": 43200, "V3": 259200}   # hang detectors (>= 8x the measured need); a timeout is INFRA_LOSS (§10)
+STOP_AFTER_FAILURES = 10
 
 
 def sha(path) -> str:
@@ -89,6 +92,8 @@ def build_states(write: bool = True) -> dict:
     unc = json.loads(UNC01_STATES.read_text())
     parent_raw = S.read_f4(ROOT / B.PARENT_RAW)
     rows = {n: {**unc["states"][n], "direction_path": None if n == PARENT else dir_rel(n), "slot": None} for n in (PARENT, ROLL)}
+    if len(designs()) < 12 or len({d["family"] for d in designs().values()}) < 4:
+        raise SystemExit("fewer than 12 designs or 4 families (registration §3.2)")
     for slot, d in designs().items():
         dvec, step = V.harness_direction(s, D.design_phi(s, p, d["spec"]))
         child, audit = construct_state(s, dvec, step, 1)
@@ -106,7 +111,8 @@ def build_states(write: bool = True) -> dict:
                            "step_mm": float(step), "sign": 1, "direction_sha256_fortran_raw": S.sha256_bytes(raw), "state_sha256": ident["state_sha256"],
                            "npz_sha256": B.npz_sha(child), "phi_fortran_order_sha256": ident["phi_fortran_order_sha256"], "phi_c_order_sha256": ident["phi_c_order_sha256"],
                            "zero_level_margin_m": float(audit["zero_level_margin_m"]), "margin_tolerance_m": 1e-6, "changed_node_count": int(audit["changed_node_count"]),
-                           "maximum_pointwise_change_m": float(audit["maximum_pointwise_change_m"]), "slot": slot, "stratum": d["stratum"], "family": d["family"]}
+                           "maximum_pointwise_change_m": float(audit["maximum_pointwise_change_m"]), "slot": slot, "stratum": d["stratum"], "family": d["family"],
+                           "spec": d["spec"]}
     rows[ROLL]["direction_path"] = dir_rel(ROLL)
     rec = {"kind": "fid01_states", "parent": unc["parent"], "v18_plate_sha256": sha(ROOT / "scripts/v18_plate.py"), "designs_sha256": sha(OUT / "designs.json"),
            "unc01_states_sha256": sha(UNC01_STATES), "states": rows,
@@ -118,32 +124,39 @@ def build_states(write: bool = True) -> dict:
 
 # ---- WaterLily campaign ----------------------------------------------------------------------------------------------------------------------------
 def kernels() -> dict:
-    st, wide = state_names(), wide_names()
-    half = (len(wide) + 1) // 2
-    out = {k: B.kernel("fid01", k, "flow_32", [B.run(s, "flow_32", ph) for ph in phases for s in st], *F32_CFG) for k, phases in F32.items()}
-    for k, group in (("f48a", wide[:half]), ("f48b", wide[half:])):
-        out[k] = B.kernel("fid01", k, "flow_48", [B.run(s, "flow_48", PHASES["flow_48"][0]) for s in (PARENT, *group)], *F48_CFG)
-    return out
+    st = state_names()
+    return {k: B.kernel("fid01", k, "flow_32", [B.run(s, "flow_32", ph) for ph in phases for s in st], *F32_CFG) for k, phases in F32.items()}
+
+
+def kernels48(run_set: list[str]) -> dict:
+    """The flow_48 kernel of the second campaign: the d_set run set (parent first) at k = 7; aggregate cap 1.3x the estimate."""
+    n = len(run_set)
+    cap = max(int(1.3 * n * EST_S["flow_48"]), 6000)
+    return {"f48": B.kernel("fid01_f48", "f48", "flow_48", [B.run(s, "flow_48", PHASES["flow_48"][0]) for s in run_set], 6000, cap, cap + 3300)}
 
 
 def estimate_s(kern: dict) -> int:
     return len(kern["runs"]) * EST_S[kern["case"]["case_id"]] + SETUP_S
 
 
-def write_campaign() -> Path:
+def write_campaign(which: str = "f32") -> Path:
     from cfd_harness import campaign_schema as SC
     rec = json.loads((OUT / "states.json").read_text())
     if build_states(write=False)["states"] != rec["states"]:
         raise SystemExit("states.json no longer re-derives")
-    c = B.campaign("fid01", kernels(), rec)
+    if which == "f32":
+        c, path = B.campaign("fid01", kernels(), rec), CAMPAIGN
+    else:
+        ds = json.loads(DSET.read_text())
+        c, path = B.campaign("fid01_f48", kernels48(ds["run_sets"]["flow_48"]), rec), CAMPAIGN48
     c["directions"] = {n: {"path": rec["states"][n]["direction_path"], "sha256_fortran_raw": rec["states"][n]["direction_sha256_fortran_raw"]}
                        for n in c["states"] if rec["states"][n]["direction"]}
     SC.validate_campaign(c)
     text = json.dumps(c, indent=1, sort_keys=True) + "\n"
-    if CAMPAIGN.exists() and CAMPAIGN.read_text() != text:
-        raise SystemExit(f"refusing to overwrite a different {CAMPAIGN}")
-    CAMPAIGN.write_text(text)
-    return CAMPAIGN
+    if path.exists() and path.read_text() != text:
+        raise SystemExit(f"refusing to overwrite a different {path}")
+    path.write_text(text)
+    return path
 
 
 # ---- OpenFOAM inputs --------------------------------------------------------------------------------------------------------------------------------
@@ -189,6 +202,12 @@ def _export_one(task):
     return name, r, rec
 
 
+def export_key(state: str) -> str:
+    """export.json key of a case state: '<name>|r8', or '<name>|r16' for the EX states '<name>__r16' (names may contain '__r', e.g. reflex, roll)."""
+    suffix = f"__r{EX_REFINEMENT}"
+    return f"{state[:-len(suffix)]}|r{EX_REFINEMENT}" if state.endswith(suffix) else f"{state}|r8"
+
+
 def stl_file(name: str, r: int) -> str:
     return f"{name}.stl" if r == 8 else f"{name}__r{r}.stl"
 
@@ -200,9 +219,10 @@ def of_export(workers: int) -> dict:
         res = pool.map(_export_one, tasks)
     recs = {f"{n}|r{r}": rec for n, r, rec in res}
     v0 = recs[f"{PARENT}|r8"]["stl_volume_m3"]
+    sdf = {r["name"]: r["volume_vs_parent"] for r in json.loads((OUT / "designs.json").read_text())["rows"]}
     for k, rec in recs.items():
         rec["stl_volume_vs_parent"] = rec["stl_volume_m3"] / v0 - 1.0
-        rec["g5a_pass"] = bool(rec["pass"] and abs(rec["stl_volume_vs_parent"]) <= 0.10)
+        rec["sdf_smoothed_volume_vs_parent"] = 0.0 if k.startswith(PARENT) else sdf.get(k.split("|")[0])   # G5a chain check (§6.3)
     out = {"kind": "fid01_of_export", "pipeline": "geom02_canonical.export_from_state (r = 8; EX r = 16) + X1 practical gate (double and float32 STL)",
            "states_sha256": sha(OUT / "states.json"), "exports": recs, "all_pass": all(r["pass"] for r in recs.values())}
     OF.mkdir(parents=True, exist_ok=True)
@@ -220,9 +240,10 @@ def shifts(tags) -> list[tuple[str, list]]:
     return out
 
 
-def of_kernels(extension: dict | None = None) -> dict:
-    """kernel -> (level, [(case id, state, stl file, shift_m)]) in shift-major order.  V1 by groups of four pairs, V2 and V3 one kernel per shift
-    (V3 additionally carries the EX r = 16 cases).  extension = {level: [state names]} builds the §6.8 kernels instead."""
+def of_kernels(extension: dict | None = None, stage: str = "v1") -> dict:
+    """kernel -> (level, [(case id, state, stl file, shift_m)]) in shift-major order.  Stage v1 (freeze 2): V1, every state and the EX r = 16 STLs,
+    four kernels of four whole mirror pairs.  Stage v23 (freeze 3, after d_set): V2 one kernel per shift for the d_set V2 run set; V3 one kernel per
+    shift for the V3 run set in groups of <= V3_GROUP cases.  extension = {level: [state names]} builds the §6.8 kernels instead."""
     out = {}
     if extension:
         for lev, names in extension.items():
@@ -230,17 +251,20 @@ def of_kernels(extension: dict | None = None) -> dict:
             cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for tag, sh in shifts(EXTENSION_SHIFTS[lev]) for n in sts]
             out[f"ext_{lev.lower()}"] = (lev, cases)
         return out
-    st = state_names()
-    v1 = LEVELS["V1"]["shifts"]
-    for g in range(4):   # four kernels of four whole mirror pairs each
-        out[f"v1_{g + 1}"] = ("V1", [(f"V1_{n}_{tag}", n, stl_file(n, 8), sh) for tag, sh in shifts(v1[8 * g:8 * g + 8]) for n in st])
-    for lev in ("V2", "V3"):   # NC (the roll) has references on WaterLily and V1 only (§3.4); one kernel per shift, V3 in groups of <= V3_GROUP cases
+    if stage == "v1":
+        v1 = LEVELS["V1"]["shifts"]
+        ex = [(f"{n}__r{EX_REFINEMENT}", stl_file(n, EX_REFINEMENT)) for n in ex_names()]
+        for g in range(4):   # four kernels of four whole mirror pairs each
+            out[f"v1_{g + 1}"] = ("V1", [(f"V1_{n}_{tag}", n, f, sh) for tag, sh in shifts(v1[8 * g:8 * g + 8])
+                                         for n, f in [(s, stl_file(s, 8)) for s in state_names()] + ex])
+        return out
+    sets = json.loads(DSET.read_text())["run_sets"]
+    for lev in ("V2", "V3"):
         for tag, sh in shifts(LEVELS[lev]["shifts"]):
-            cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in st if n != ROLL]
+            cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in sets[lev]]
             if lev == "V2":
                 out[f"v2_{tag}"] = (lev, cases)
                 continue
-            cases += [(f"{lev}_{n}__r{EX_REFINEMENT}_{tag}", f"{n}__r{EX_REFINEMENT}", stl_file(n, EX_REFINEMENT), sh) for n in ex_names()]
             for g in range(0, len(cases), V3_GROUP):
                 out[f"v3_{tag}_{g // V3_GROUP + 1}"] = (lev, cases[g:g + V3_GROUP])
     return out
@@ -277,7 +301,7 @@ def _link(src: Path, dst: Path) -> None:
         shutil.copy2(src, dst)
 
 
-def of_prepare(smoke: bool = False, extension: dict | None = None) -> dict:
+def of_prepare(smoke: bool = False, extension: dict | None = None, stage: str = "v1") -> dict:
     """Datasets under work/fid01_of/<kernel>/ (untracked; re-derivable), criteria under of/criteria/ (tracked), kernels under infra/fid01/<kernel>/.
     smoke: the parent and the first design on every level at its first shift (statuses only, §2)."""
     import prepare_kaggle_xfid_gridphase_x3 as x3
@@ -286,11 +310,14 @@ def of_prepare(smoke: bool = False, extension: dict | None = None) -> dict:
     if exp["states_sha256"] != sha(OUT / "states.json") or not exp["all_pass"]:
         raise SystemExit("export.json does not belong to states.json or an export failed the X1 gate")
     x3c = json.loads((x3.EVID / "formal/x3_criteria.json").read_text())
-    ks = of_kernels(extension)
-    if smoke:   # V1 and V2: the parent and the first design at a shift outside every registered set (Halton 80 +); V3: the timing probe (§2)
-        first = state_names()[1]
+    if smoke:   # V1 and V2: the parent and the first design at a shift outside every registered set (Halton 80 +), V1 also the parent's r = 16 STL;
+        first = state_names()[1]          # V3: the timing probe (§2)
         (tag, sh), = shifts([SMOKE_SHIFT])
-        ks = {f"smoke_{lev.lower()}": (lev, [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in (PARENT, first)]) for lev in ("V1", "V2")}
+        r16 = [(f"V1_{PARENT}__r{EX_REFINEMENT}_{tag}", f"{PARENT}__r{EX_REFINEMENT}", stl_file(PARENT, EX_REFINEMENT), sh)]
+        ks = {f"smoke_{lev.lower()}": (lev, [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in (PARENT, first)] + (r16 if lev == "V1" else []))
+              for lev in ("V1", "V2")}
+    else:
+        ks = of_kernels(extension, stage)
     summary = {}
     for kname, (lev, cases) in ks.items():
         ds, kd = WORK / kname, KERNELS / kname
@@ -300,7 +327,7 @@ def of_prepare(smoke: bool = False, extension: dict | None = None) -> dict:
         files = {}
         for _, state, f, _ in cases:
             _link(WORK / "stl" / f, ds / "states" / f)
-            key = f"{state.split('__r')[0]}|r{EX_REFINEMENT if '__r' in state else 8}"
+            key = export_key(state)
             files[state] = {"file": f"states/{f}", "sha256": exp["exports"][key]["stl_sha256"], "triangles": exp["exports"][key]["triangles"]}
         shutil.copy2(x3.R5 / "openfoam_package_lock.json", ds / "openfoam_package_lock_jammy.json")
         shutil.copy2(x3.NOBLE / "openfoam_package_lock.json", ds / "openfoam_package_lock_noble.json")
@@ -310,7 +337,7 @@ def of_prepare(smoke: bool = False, extension: dict | None = None) -> dict:
                 "level": lev, "template_changes": {"blockMesh_cells": LEVELS[lev]["blocks"], "endTime": LEVELS[lev]["end_time"]},
                 "states_sha256": sha(OUT / "states.json"), "export_sha256": sha(OF / "export.json"),
                 "environment": x3c["environment"], "force_window": x3c["force_window"], "stage_timeout_s": STAGE_TIMEOUT_S[lev],
-                "per_case_failure_policy": x3c["per_case_failure_policy"], "stop_after_consecutive_failures": 3 if lev == "V1" else 6,
+                "per_case_failure_policy": x3c["per_case_failure_policy"], "stop_after_consecutive_failures": STOP_AFTER_FAILURES,
                 "launch_deadline_hours": 200.0, "case_template_origin": x3c["case_template_origin"] + f"; level {lev} changes only the listed template entries",
                 "shift_design": {**x3c["shift_design"], "shift_tags": sorted({c[0].rsplit("_", 1)[1] for c in cases})},
                 "states": files, "not_run_export_gate": [], "export": {"profile": str(U.PROFILE.relative_to(ROOT)), "profile_sha256": sha(U.PROFILE)},
@@ -341,20 +368,21 @@ def of_prepare(smoke: bool = False, extension: dict | None = None) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["states", "campaign", "of-export", "of-prepare"])
+    ap.add_argument("cmd", choices=["states", "campaign", "campaign48", "of-export", "of-prepare"])
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--stage", choices=["v1", "v23"], default="v1")
     a = ap.parse_args()
     if a.cmd == "states":
         rec = build_states()
         print(json.dumps({n: (r["step_mm"], r["phi_fortran_order_sha256"][:12]) for n, r in rec["states"].items()}, indent=1))
-    elif a.cmd == "campaign":
-        print(write_campaign())
+    elif a.cmd in ("campaign", "campaign48"):
+        print(write_campaign("f32" if a.cmd == "campaign" else "f48"))
     elif a.cmd == "of-export":
         out = of_export(a.workers)
         print(json.dumps({k: (v["pass"], v["triangles"], round(v["stl_volume_vs_parent"], 4)) for k, v in out["exports"].items()}, indent=1))
     else:
-        print(json.dumps(of_prepare(a.smoke), indent=1))
+        print(json.dumps(of_prepare(a.smoke, stage=a.stage), indent=1))
 
 
 if __name__ == "__main__":

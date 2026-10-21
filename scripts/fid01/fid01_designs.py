@@ -3,8 +3,8 @@
 
 A design is a dict {mode: amplitude}.  Analytic modes (heave, pitch, camber, reflex, twist, sweep; units as v18_plate.UNITS) are applied JOINTLY to the
 plate parameters, so a combination is again an exact plate SDF (v18_plate.plate_phi); a single analytic mode reproduces v18_plate.raw_mode bit for bit.
-One-sided Gaussian normal offsets (bump_lower, bump_upper: sigma 0.125 m; bump_small: lower, sigma 0.05 m; mode01_modes.raw_mode applied to the v18
-parent) are the narrow-support designs.  As everywhere else only ACTIVE nodes change, and the gated bytes are the harness state model
+One-sided Gaussian normal offsets of mode01_modes applied to the v18 parent (bump_lower, bump_upper: sigma 0.125 m, narrow; bump_lower_s300: sigma
+0.3 m, mid support) are the support designs.  As everywhere else only ACTIVE nodes change, and the gated bytes are the harness state model
 (v18_plate.harness_state).  Registration: docs/fid01_registration_2026_10_21.md.
 
     python scripts/fid01/fid01_designs.py prescreen [--workers N]   # every candidate through the MODE-01 v18 gate stack -> designs.json rows
@@ -28,29 +28,32 @@ import v18_plate as V  # noqa: E402
 
 OUT = ROOT / "docs/evidence/fid01_2026_10_21"
 STL = ROOT / "work/fid01_of/stl"
+CACHE = ROOT / "work/fid01_prescreen"
 ANALYTIC = ("heave", "pitch", "camber", "reflex", "twist", "sweep")
-BUMPS = ("bump_lower", "bump_upper", "bump_small")
+BUMPS = ("bump_lower", "bump_upper", "bump_small", "bump_lower_s300")
+SIGMA_MID_M = 0.3   # bump_lower_s300: one-sided Gaussian normal offset on the ground-facing surface, sigma 0.3 m (mid support)
 
 # slot -> (stratum, family, candidates in order; the first that passes every gate is the design).  Registration §3.
 P_, M_ = 1, -1
 SLOTS = {
-    "W1": ("wide", "rigid", [{"heave": -31.1}, {"heave": -13.7}]),
+    "W1": ("wide", "rigid", [{"heave": -31.1}]),
+    "W1b": ("wide", "rigid", [{"heave": -13.7}]),
     "W2": ("wide", "rigid", [{"heave": 31.1}, {"heave": 13.7}]),
     "W3": ("wide", "rigid", [{"pitch": -0.7}]),
-    "W4": ("wide", "section", [{"camber": -19.7}, {"camber": -11.3}]),
+    "W8": ("wide", "rigid", [{"pitch": 0.7}]),
+    "W4": ("wide", "section", [{"camber": -19.7}]),
+    "W4b": ("wide", "section", [{"camber": -11.3}]),
     "W5": ("wide", "section", [{"camber": 19.7}, {"camber": 11.3}]),
     "W6": ("wide", "section", [{"reflex": -29.3}, {"reflex": -19.7}]),
     "W7": ("wide", "span", [{"twist": 2.3}, {"twist": 1.1}]),
-    "W8": ("wide", "span", [{"twist": -1.1}]),
     "C1": ("wide", "combination", [{"camber": c, "reflex": r} for c in (-19.7, -11.3) for r in (-29.3, -19.7, -11.3)]),
     "C2": ("wide", "combination", [{"heave": h, "pitch": t} for h in (-31.1, -13.7) for t in (1.3, 0.7)]),
     "C3": ("wide", "combination", [{"heave": h, "camber": c, "twist": t} for h in (-31.1, -13.7) for c in (-19.7, -11.3) for t in (2.3, 1.1)]),
     "C4": ("wide", "combination", [{"pitch": t, "reflex": r, "sweep": 11.3} for t in (-1.3, -0.7) for r in (29.3, 19.7, 11.3)]),
     "C5": ("wide", "combination", [{"camber": c, "twist": -1.1, **sw} for c in (19.7, 11.3) for sw in ({"sweep": -11.3}, {})]),
     "N1": ("narrow", "local", [{"bump_lower": a} for a in (20.0, 15.0, 10.0)]),
-    "N2": ("narrow", "local", [{"bump_lower": a} for a in (-20.0, -15.0, -10.0)]),
-    "N3": ("narrow", "local", [{"bump_upper": a} for a in (20.0, 15.0, 10.0)]),
-    "N4": ("narrow", "local", [{"bump_small": a} for a in (20.0, 15.0, 10.0)]),
+    "N2": ("narrow", "local", [{"bump_upper": a} for a in (20.0, 15.0, 10.0)]),
+    "M1": ("mid", "local", [{"bump_lower_s300": a} for a in (15.0, 10.0)]),
 }
 
 
@@ -62,7 +65,7 @@ def raw_design(s, p: dict, spec: dict) -> np.ndarray:
     """float64 phi on the whole lattice (before the active-set mask)."""
     if len(spec) == 1 and next(iter(spec)) in BUMPS:
         (m, a), = spec.items()
-        return M.raw_mode(s, m, a)
+        return M._bump(s, a, -1.0, SIGMA_MID_M) if m == "bump_lower_s300" else M.raw_mode(s, m, a)
     if not spec or not set(spec) <= set(ANALYTIC):
         raise ValueError(f"not a registered design: {spec}")
     q = dict(p)
@@ -113,9 +116,26 @@ def _init() -> None:
 
 
 def prescreen(workers: int) -> dict:
+    """Every candidate through the gate stack; per-candidate rows are cached under work/fid01_prescreen/ (deterministic, keyed by name) so an edited
+    slot list re-uses the rows of unchanged candidates."""
     tasks = [(slot, i, spec) for slot, (_, _, cands) in SLOTS.items() for i, spec in enumerate(cands)]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    done = {}
+    if (OUT / "designs.json").exists():   # rows of an earlier prescreen run (same code, deterministic) seed the cache
+        for r in json.loads((OUT / "designs.json").read_text())["rows"]:
+            r = {k: v for k, v in r.items() if k not in ("slot", "index")}
+            done[r["name"]] = r
+            (CACHE / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
+    for f in CACHE.glob("*.json"):
+        r = json.loads(f.read_text())
+        done[r["name"]] = r
+    todo = [t for t in tasks if name(t[2]) not in done]
     with mp.get_context("spawn").Pool(workers, initializer=_init) as pool:
-        rows = pool.map(work, tasks)
+        for r in pool.imap_unordered(work, todo):
+            (CACHE / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
+            done[r["name"]] = r
+            print(r["name"], r.get("all_pass", r.get("error")), flush=True)
+    rows = [{**done[name(spec)], "slot": slot, "index": i} for slot, i, spec in tasks]
     if any("error" in r for r in rows):
         raise SystemExit(f"design build errors: {[(r['name'], r['error']) for r in rows if 'error' in r]}")
     chosen = {}
