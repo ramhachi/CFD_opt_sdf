@@ -29,6 +29,18 @@ import v18_plate as V  # noqa: E402
 OUT = ROOT / "docs/evidence/fid01_2026_10_21"
 STL = ROOT / "work/fid01_of/stl"
 CACHE = ROOT / "work/fid01_prescreen"
+DEPENDENCIES = ["scripts/v18_plate.py", "scripts/mode01_modes.py", "scripts/mode01_prescreen.py", "scripts/mode01_v18_prescreen.py", "scripts/evaluate_opt01_v1_states.py",
+                "scripts/geom02_canonical.py", "scripts/width_rule_study.py", "scripts/sdf_native_genesis_v18_2026_10.py", "scripts/build_xfid45_stage_v_input_2026_10_04.py",
+                "scripts/unc01_u3_prepare.py", "src/cfd_sdf/fd08_v2_campaign.py", "docs/evidence/opt01_v1_2026_10_15/geom02_gate_profile_v2.json"]
+
+
+def fingerprint() -> str:
+    """Hash of the code and profile a cached prescreen or X1 row depends on; a cached row is reused only under the same fingerprint (SR14)."""
+    import hashlib
+    h = hashlib.sha256()
+    for p in DEPENDENCIES:
+        h.update(p.encode() + hashlib.sha256((ROOT / p).read_bytes()).digest())
+    return h.hexdigest()
 ANALYTIC = ("heave", "pitch", "camber", "reflex", "twist", "sweep")
 BUMPS = ("bump_lower", "bump_upper", "bump_small", "bump_lower_s300")
 SIGMA_MID_M = 0.3   # bump_lower_s300: one-sided Gaussian normal offset on the ground-facing surface, sigma 0.3 m (mid support)
@@ -48,11 +60,14 @@ SLOTS = {
     "W7": ("wide", "span", [{"twist": 2.3}, {"twist": 1.1}]),
     "C1": ("wide", "combination", [{"camber": c, "reflex": r} for c in (-19.7, -11.3) for r in (-29.3, -19.7, -11.3)]),
     "C2": ("wide", "combination", [{"heave": h, "pitch": t} for h in (-31.1, -13.7) for t in (1.3, 0.7)]),
-    "C3": ("wide", "combination", [{"heave": h, "camber": c, "twist": t} for h in (-31.1, -13.7) for c in (-19.7, -11.3) for t in (2.3, 1.1)]),
+    "C3": ("wide", "combination", [{"heave": h, "camber": c, "twist": t} for h in (-31.1, -13.7) for c in (-19.7, -11.3) for t in (2.3, 1.1)]
+           + [{"heave": -13.7, "reflex": -19.7, "twist": 2.3}, {"heave": -13.7, "reflex": -11.3, "sweep": 11.3}]),   # rev. 3 fallbacks (geometry only)
     "C4": ("wide", "combination", [{"pitch": t, "reflex": r, "sweep": 11.3} for t in (-1.3, -0.7) for r in (29.3, 19.7, 11.3)]),
-    "C5": ("wide", "combination", [{"camber": c, "twist": -1.1, **sw} for c in (19.7, 11.3) for sw in ({"sweep": -11.3}, {})]),
-    "N1": ("narrow", "local", [{"bump_lower": a} for a in (20.0, 15.0, 10.0)]),
-    "N2": ("narrow", "local", [{"bump_upper": a} for a in (20.0, 15.0, 10.0)]),
+    "C5": ("wide", "combination", [{"camber": c, "twist": -1.1, **sw} for c in (19.7, 11.3) for sw in ({"sweep": -11.3}, {})]
+           + [{"reflex": 19.7, "twist": -1.1}, {"camber": 11.3, "sweep": -11.3}]),                                       # rev. 3 fallbacks
+    "N1": ("narrow", "local", [{"bump_lower": a} for a in (20.0, 15.0, 10.0, -15.0, -10.0)]),   # outward first, then inward (rev. 3 fallbacks)
+    "N2": ("narrow", "local", [{"bump_upper": a} for a in (20.0, 15.0, 10.0, -15.0, -10.0)]),
+    "N3": ("narrow", "local", [{"bump_small": a} for a in (20.0, 15.0, 10.0)]),                 # sigma 0.05 m (rev. 3: restored, the narrowest support)
     "M1": ("mid", "local", [{"bump_lower_s300": a} for a in (15.0, 10.0)]),
 }
 
@@ -120,18 +135,20 @@ def prescreen(workers: int) -> dict:
     slot list re-uses the rows of unchanged candidates."""
     tasks = [(slot, i, spec) for slot, (_, _, cands) in SLOTS.items() for i, spec in enumerate(cands)]
     CACHE.mkdir(parents=True, exist_ok=True)
-    done = {}
-    if (OUT / "designs.json").exists():   # rows of an earlier prescreen run (same code, deterministic) seed the cache
-        for r in json.loads((OUT / "designs.json").read_text())["rows"]:
-            r = {k: v for k, v in r.items() if k not in ("slot", "index")}
-            done[r["name"]] = r
+    done, fp = {}, fingerprint()
+    old = json.loads((OUT / "designs.json").read_text()) if (OUT / "designs.json").exists() else {}
+    if old and old.get("code_fingerprint", fp) == fp:   # rows of an earlier run with the same code seed the cache (a first run predates the field)
+        for r in old["rows"]:
+            r = {**{k: v for k, v in r.items() if k not in ("slot", "index")}, "code_fingerprint": fp}
             (CACHE / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
     for f in CACHE.glob("*.json"):
         r = json.loads(f.read_text())
-        done[r["name"]] = r
+        if r.get("code_fingerprint") == fp:
+            done[r["name"]] = r
     todo = [t for t in tasks if name(t[2]) not in done]
     with mp.get_context("spawn").Pool(workers, initializer=_init) as pool:
         for r in pool.imap_unordered(work, todo):
+            r["code_fingerprint"] = fp
             (CACHE / f"{r['name']}.json").write_text(json.dumps(r, sort_keys=True))
             done[r["name"]] = r
             print(r["name"], r.get("all_pass", r.get("error")), flush=True)
@@ -145,7 +162,9 @@ def prescreen(workers: int) -> dict:
     rec = {"kind": "fid01_design_prescreen", "evidence_tier": "solver-free admissibility (registration §3)", "rule": "per slot, the first candidate in the "
            "registered order whose harness bytes pass every MODE-01 v18 gate (13 GEOM-02 v2 gates incl. R0 min_feature_width, P22-v2, smoothed-volume band, "
            "clearance); R3 descriptive only", "slots": {k: {"stratum": v[0], "family": v[1], "candidates": v[2]} for k, v in SLOTS.items()},
-           "designs": chosen, "rows": rows, "solver_started": False}
+           "designs": chosen, "rows": rows, "solver_started": False, "code_fingerprint": fp}
+    if old.get("code_fingerprint") == fp and "x1" in old:
+        rec["x1"] = old["x1"]   # X1 results of the same code stay valid; `select` re-chooses the designs
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "designs.json").write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
     return rec
@@ -171,6 +190,8 @@ def select(workers: int) -> dict:
     rec = json.loads((OUT / "designs.json").read_text())
     rows = {r["name"]: r for r in rec["rows"]}
     clean = {slot: [n for n in (name(c) for c in cands) if rows[n]["all_pass"]] for slot, (_, _, cands) in SLOTS.items()}
+    if rec.get("code_fingerprint") != fingerprint():
+        raise SystemExit("designs.json was not produced by the current code: run prescreen again")
     x1, chosen, pos = rec.get("x1", {}), {}, {slot: 0 for slot in SLOTS}
     with mp.get_context("spawn").Pool(workers) as pool:
         while True:

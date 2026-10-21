@@ -38,7 +38,9 @@ def test_single_modes_reproduce_v18_plate_and_combos_are_joint():
 def test_slots_meet_the_issue_and_exclude_m2_openfoam_states():
     fams = {f for st, f, _ in D.SLOTS.values()}
     assert len(D.SLOTS) >= 12 and len(fams) >= 4 and {st for st, _, _ in D.SLOTS.values()} == {"wide", "narrow", "mid"}
-    m2_of = {"v18__pitch_p3.1", "v18__pitch_m3.1", "v18__pitch_p1.3", "v18__reflex_p29.3", "v18__thickness_D0_p3", "v18__offset_s050_m5", "v18__twist_m1.1"}
+    import unc01_build as UB
+    m2_of = {n for n in UB.u2_states("pitch", "reflex")["flow_32"] if n not in ("v18__parent", "v18__roll_p25")} | {"v18__twist_m1.1"}
+    assert m2_of == {"v18__D0_p3", "v18__pitch_p3.1", "v18__pitch_m3.1", "v18__pitch_p1.3", "v18__reflex_p29.3", "v18__s050_m5", "v18__twist_m1.1"}
     names = [D.name(c) for _, _, cands in D.SLOTS.values() for c in cands]
     assert not m2_of & set(names) and len(names) == len(set(names))
     assert D.name({"camber": -11.3, "reflex": -19.7}) == "v18__camber_m11.3_reflex_m19.7"
@@ -122,7 +124,7 @@ def planted(rho=None, wl_over=None, nc_wl=-1.648e-3, nc_of=-6.6e-4, drop=None, e
                 v[(F.ROLL, t)] = {"downforce": p0["downforce"] + nc_of + 4e-5 * rng.standard_normal(), "drag": p0["drag"] - 7e-4}
                 for n in (F.PARENT, "W_s1", "W_s2"):
                     if (n, t) in v:
-                        v[(f"{n}__r16", t)] = {k: x + 1e-6 for k, x in v[(n, t)].items()}
+                        v[(f"{n}__r4", t)] = {k: x + 1e-6 for k, x in v[(n, t)].items()}
     export = {f"{n}|r8": {"pass": True, "stl_volume_vs_parent": 0.002, "sdf_smoothed_volume_vs_parent": 0.003, **export_over.get(n, {})} for n in DESIGNS}
     wl32_k7 = {s: f["k7"] for s, f in forces.items()}
     wl48 = {s: {**wl32_k7[s], "downforce": wl32_k7[s]["downforce"] + r48.get(s, 0.0)} for s in (F.PARENT, "W_p1", "C_1", "C_4")}
@@ -239,7 +241,7 @@ def test_wl_floor_data_loss_and_write_once(tmp_path):
 def test_of_values_reads_a_result_tree_and_binds_the_frozen_set(tmp_path, monkeypatch):
     crit_dir = tmp_path / "of/criteria"
     crit_dir.mkdir(parents=True)
-    crit = {"level": "V2", "registered_before_run": True, "case_order": [{"id": "V2_v18__parent_49p", "state": F.PARENT}, {"id": "V2_x_49p", "state": "x"},
+    crit = {"level": "V2", "registered_before_run": True, "evidence_class": "fid01_openfoam_uncertified_geometry", "case_order": [{"id": "V2_v18__parent_49p", "state": F.PARENT}, {"id": "V2_x_49p", "state": "x"},
                                                                           {"id": "V2_x_49m", "state": "x"}]}
     cp = crit_dir / "v2_49p.json"
     cp.write_text(json.dumps(crit))
@@ -256,15 +258,21 @@ def test_of_values_reads_a_result_tree_and_binds_the_frozen_set(tmp_path, monkey
     vals, recs = F.of_values([tmp_path / "run"], accepted=[h])
     assert list(vals["V2"]) == [(F.PARENT, "49p")] and recs["v2_49p"]["case_counts"] == {"valid": 1, "NOT_CONVERGED": 1, "snappyHexMesh_FAILED": 1}
     with pytest.raises(ValueError):
-        F.of_values([tmp_path / "run"], accepted=[h, "0" * 64])
+        F.of_values([tmp_path / "run"], accepted=[h, "0" * 64])                       # a frozen kernel missing
+    assert F.of_values([tmp_path / "run"], accepted=[h, "0" * 64], lost=["0" * 64])[1]["_lost_criteria_sha256"] == ["0" * 64]   # declared lost
     with pytest.raises(ValueError):
         F.of_values([tmp_path / "run", tmp_path / "run"])
+    res = json.loads((out / "result.json").read_text())
+    res["cases"][0]["stages"] = [{"name": "simpleFoam", "timed_out": True}]
+    (out / "result.json").write_text(json.dumps(res))
+    vals, recs = F.of_values([tmp_path / "run"], accepted=[h])
+    assert "V2" not in vals and recs["v2_49p"]["case_counts"]["TIMED_OUT"] == 1                                   # a timeout is never a value
 
 
 def test_export_key_handles_names_with_r():
     import fid01_build as B
     assert B.export_key("v18__reflex_m29.3") == "v18__reflex_m29.3|r8" and B.export_key("v18__roll_p25") == "v18__roll_p25|r8"
-    assert B.export_key("v18__reflex_m29.3__r16") == "v18__reflex_m29.3|r16" and B.stl_file("v18__parent", 16) == "v18__parent__r16.stl"
+    assert B.export_key("v18__reflex_m29.3__r4") == "v18__reflex_m29.3|r4" and B.stl_file("v18__parent", 4) == "v18__parent__r4.stl"
 
 
 def test_run_sets_from_tiers():
@@ -275,9 +283,73 @@ def test_run_sets_from_tiers():
     assert rs["flow_48"] == [F.PARENT, "W_p1", "C_1", "W_s2"]                 # tier B, then the largest positive and the largest negative tier-A design
 
 
-def test_budget_rule(tmp_path):
+def test_budget_rule(tmp_path, monkeypatch):
     log = tmp_path / "k.log"
     log.write_text(json.dumps([{"time": 10.0}, {"time": 9000.0}]))
-    b = F.budget([f"f32k{k}={log}" for k in (7, 8, 9, 10)], 20000)
-    assert b["T_s"] == 4 * 9000 + 20000 and b["push_f48"]
-    assert not F.budget([f"f32k{k}={log}" for k in (7, 8, 9, 10)], 30000)["push_f48"]
+    monkeypatch.setattr(F, "EVID", tmp_path)
+    (tmp_path / "d_set.json").write_text(json.dumps({"run_sets": {"flow_48": ["p", "a", "b", "c"]}}))
+    b = F.budget([f"f32k{k}={log}" for k in (7, 8, 9, 10)])
+    assert b["f48_estimate_s"] == 4 * 2340 + 260 and b["T_s"] == 4 * 9000 + b["f48_estimate_s"] and b["push_f48"]
+    (tmp_path / "d_set.json").write_text(json.dumps({"run_sets": {"flow_48": ["p"] + list("abcdefghijklm")}}))
+    assert not F.budget([f"f32k{k}={log}" for k in (7, 8, 9, 10)])["push_f48"]
+    with pytest.raises(ValueError):
+        F.budget([f"f32k7={log}"])
+
+
+def test_missing_rows_and_other_labels():
+    srec, wl, vals, export, wl48, k7 = planted()
+    k7.pop("W_p1")
+    out, _ = F.evaluate(srec, wl, vals, export, ("V1", "V2", "V3"), wl48, k7)                     # a lost k7 run does not crash R3
+    assert out["R3"]["designs"]["W_p1"]["label"] == "R3_UNRESOLVED"
+    assert F.r3_labels({F.PARENT: {"downforce": 0.0}}, {}, ["x"])["label"] == "NOT_MEASURED"
+    srec, wl, vals, export, wl48, k7 = planted()
+    for (s, tg) in list(vals["V1"]):
+        if s == "W_s1__r4":
+            vals["V1"][(s, tg)] = {k: x + 2e-3 for k, x in vals["V1"][(s, tg)].items()}        # the r = 4 export moves W_s1's difference by 2e-3 N
+        if s == F.ROLL and int(tg[:-1]) > 52:
+            del vals["V1"][(s, tg)]                                                             # NC with only 4 V1 pairs
+    out, _ = F.evaluate(srec, wl, vals, export, ("V1", "V2", "V3"), wl48, k7)
+    assert out["EX"]["W_s1"]["label"] == "EXPORT_SENSITIVE" and out["NC"]["of"]["label"] == "MISSING" and out["outcome"] == "FID01_INVALID"
+
+
+def test_g3_set_alone_unresolved_is_inconclusive_precision():
+    rho = {(n, "V3"): (0.36 if i % 2 else 0.44) for i, n in enumerate(DESIGNS)}                # V3/V1 about 0.6 with scatter: slope interval straddles 0.6
+    out = run(rho=rho)
+    if out["G3_set"]["label"] == "UNRESOLVED_STAT" and all(p["status"] == "PASS" for n, p in out["per_design"].items() if n in out["tiers"]["A"]):
+        assert out["outcome"] == "FID01_INCONCLUSIVE_PRECISION"
+    assert out["G3_set"]["label"] in ("UNRESOLVED_STAT", "FAIL", "PASS")
+
+
+def test_extension_on_v1_and_v3():
+    kw = {"rho": {("C_2", "V1"): 0.505, ("C_2", "V2"): 0.505, ("C_2", "V3"): 0.505}, "wl_sd": 4e-4}
+    out = run(**kw)
+    assert out["per_design"]["C_2"]["rules"]["G4"] == "UNRESOLVED_STAT" and out["extension_plan"] == {"V1": ["C_2"]}
+    srec, wl, vals, export, *_ = planted(**kw)
+    ext = F.extension_eval(json.loads(json.dumps(F.A.clean(out))), srec, wl, vals, export)
+    assert ext["outcome"] == "FID01_INCONCLUSIVE_PRECISION" and ext["G3_set"]["label"] == "PASS"
+    v3 = run(rho={("C_4", "V3"): -0.02}, of_noise={"V2": 1e-4, "V3": 1e-3})                # small opposite V3 value within 2 SE: G1 V3 unresolved
+    assert v3["per_design"]["C_4"]["G1_levels"]["V3"] == "UNRESOLVED_STAT" and "C_4" in v3["extension_plan"]["V3"]
+
+
+def test_builder_layout_with_planted_designs(tmp_path, monkeypatch):
+    import fid01_build as B
+    dset = {f"S{i}": {"name": f"v18__d{i}", "stratum": "wide" if i < 12 else "narrow", "family": ["rigid", "section", "span", "combination"][i % 4], "spec": {}}
+            for i in range(14)}
+    monkeypatch.setattr(B, "designs", lambda: dset)
+    monkeypatch.setattr(B, "ex_names", lambda: [B.PARENT, "v18__d4", "v18__d5"])
+    st = B.state_names()
+    assert st[0] == B.PARENT and st[-1] == B.ROLL and len(st) == 16
+    v1 = B.of_kernels()
+    assert len(v1) == 4 and sum(len(c) for _, c in v1.values()) == (16 + 3) * 32
+    monkeypatch.setattr(B, "OUT", tmp_path)
+    monkeypatch.setattr(B, "DSET", tmp_path / "d_set.json")
+    (tmp_path / "d_set.json").write_text(json.dumps({"run_sets": {"V2": [B.PARENT, "v18__d1", "v18__d2"], "V3": [B.PARENT] + [f"v18__d{i}" for i in range(7)],
+                                                                   "flow_48": [B.PARENT, "v18__d1"]}}))
+    k = B.of_kernels(stage="v23")
+    assert sorted(k) == ["v2_49m", "v2_49p", "v2_50m", "v2_50p", "v3_49p_1", "v3_49p_2"] and k["v3_49p_1"][1][0][1] == B.PARENT
+    (tmp_path / "freeze2.json").write_text(json.dumps({"of_levels": ["V1", "V2"]}))
+    assert not [n for n in B.of_kernels(stage="v23") if n.startswith("v3")]                      # §5.3 contingency: V3 not built
+    ext = B.of_kernels(extension={"V3": ["v18__d1"], "V1": ["v18__d2"]})
+    assert [c[0] for c in ext["ext_v3"][1]] == [f"V3_{B.PARENT}_49m", "V3_v18__d1_49m"] and len(ext["ext_v1"][1]) == 2 * 16
+    with pytest.raises(SystemExit):
+        B.kernels48([B.PARENT])

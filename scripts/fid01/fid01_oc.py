@@ -43,21 +43,30 @@ def study(rng, rho, tau, sigma0, v23_factor, mirror_corr=0.0):
     forces[F.ROLL] = {t: {"downforce": f["downforce"] - 1.648e-3 + 2.09e-4 * rng.standard_normal(), "drag": f["drag"]} for t, f in forces[F.PARENT].items()}
     wl = F.wl_diffs(forces)
 
-    def shifts(tags, L, vals):
-        s = sigma0 * (1.0 if L == "V1" else v23_factor)
+    def noise(s):
+        """per-shift noise of one case at a mirror pair, with the registered mirror correlation (on every level)."""
+        a, b = rng.standard_normal(2)
+        return {"p": s * a, "m": s * (mirror_corr * a + np.sqrt(1 - mirror_corr ** 2) * b)}
+
+    def shifts(tags, L, vals, only=None):
+        """The parent's own case noise enters every design's difference at that shift (shared, SR13); each case has noise s / sqrt(2) so a
+        single difference has SD s."""
+        s = sigma0 * (1.0 if L == "V1" else v23_factor) / np.sqrt(2)
         for i in sorted({t[:-1] for t in tags}):
             ms = [m for m in "pm" if f"{i}{m}" in tags]
-            p0 = 0.2 + 1e-3 * rng.standard_normal()
+            p0, ep = 0.2 + 1e-3 * rng.standard_normal(), noise(s)
             for m in ms:
-                vals[(F.PARENT, f"{i}{m}")] = {"downforce": p0, "drag": 0.34}
+                vals[(F.PARENT, f"{i}{m}")] = {"downforce": p0 + ep[m], "drag": 0.34 + ep[m]}
             for n, (_, _, d) in designs.items():
-                a, b = rng.standard_normal(2)
-                e = {"p": s * a, "m": s * (mirror_corr * a + np.sqrt(1 - mirror_corr ** 2) * b)}
+                if only is not None and n not in only:
+                    continue
+                e = noise(s)
                 for m in ms:
                     vals[(n, f"{i}{m}")] = {"downforce": p0 + true_rho[n][L] * d + e[m], "drag": 0.34 + 0.75 * 0.3 * abs(d) + e[m]}
-            if L == "V1":
+            if L == "V1" and only is None:
+                e = noise(s)
                 for m in ms:
-                    vals[(F.ROLL, f"{i}{m}")] = {"downforce": p0 - 6.61e-4 + 2.3e-4 * rng.standard_normal(), "drag": 0.34}
+                    vals[(F.ROLL, f"{i}{m}")] = {"downforce": p0 - 6.61e-4 + e[m], "drag": 0.34 + e[m]}
         return vals
     vals = {L: shifts(TAGS[L], L, {}) for L in TAGS}
     export = {f"{n}|r8": {"pass": True, "stl_volume_vs_parent": 0.0, "sdf_smoothed_volume_vs_parent": 0.0} for n in designs}
@@ -65,8 +74,8 @@ def study(rng, rho, tau, sigma0, v23_factor, mirror_corr=0.0):
     final = out["outcome"]
     if final == "EXTENSION_REQUIRED":
         ext_vals = {L: dict(v) for L, v in vals.items()}
-        for L in out["extension_plan"]:
-            shifts(EXT[L], L, ext_vals[L])
+        for L, names in out["extension_plan"].items():
+            shifts(EXT[L], L, ext_vals[L], only=set(names))
         final = F.extension_eval(json.loads(json.dumps(F.A.clean(out))), srec, wl, ext_vals, export)["outcome"]
     return out["outcome"], final
 
@@ -78,7 +87,8 @@ def main():
     a = ap.parse_args()
     good = {"V1": 0.67, "V2": 0.75, "V3": 0.80}
     scenarios = [(f"rho {r['V1']}/{r['V2']}/{r['V3']} tau {tau} sigma0 {s0:g} V2/V3 noise x{f:g} mirror corr {mc:g}", r, tau, s0, f, mc)
-                 for r in (good, {"V1": 0.67, "V2": 0.67, "V3": 0.67}) for tau in (0.0, 0.08, 0.15) for s0 in (4e-4, 7e-4, 1.2e-3) for f, mc in ((0.7, 0.0), (1.0, -0.5))]
+                 for r in (good, {"V1": 0.67, "V2": 0.67, "V3": 0.67}) for tau in (0.0, 0.08, 0.15) for s0 in (4e-4, 7e-4, 1.2e-3)
+                 for f in (0.7, 1.0) for mc in (0.0, -0.5)]
     scenarios += [(f"BAD rho {v} everywhere tau 0.08 sigma0 {s0:g}", {"V1": v, "V2": v, "V3": v}, 0.08, s0, 1.0, 0.0) for v in (0.45, 0.3) for s0 in (4e-4, 1.2e-3)]
     scenarios += [(f"BAD mesh: V3 at 0.35 of WL, V1 0.67 sigma0 {s0:g}", {"V1": 0.67, "V2": 0.6, "V3": 0.35}, 0.08, s0, 1.0, 0.0) for s0 in (4e-4, 1.2e-3)]
     rng = np.random.default_rng(20261021)
@@ -92,7 +102,7 @@ def main():
         res[name] = {"final": {k: v / a.reps for k, v in sorted(cnt.items())}, "main_analysis": {k: v / a.reps for k, v in sorted(first.items())}}
         print(name, res[name]["final"], flush=True)
     rec = {"kind": "fid01_operating_characteristics", "reps": a.reps, "seed": 20261021, "analyzer_sha256": F.SC.sha256_path(F.__file__),
-           "mix_abs_delta_n": MIX, "wl_sigma_model": "9.7e-5 (|Delta|/1e-3)^0.48 N (M2 fit)", "of_noise": "per-shift SD sigma0 on V1; V2/V3 sigma0 x factor; mirror correlation as listed",
+           "mix_abs_delta_n": MIX, "wl_sigma_model": "9.7e-5 (|Delta|/1e-3)^0.48 N (M2 fit)", "of_noise": "SD of one matched-shift difference sigma0 on V1 and sigma0 x factor on V2/V3, split equally between the parent's case (shared by every design at that shift) and the design's case; the mirror correlation applies on every level; the roll has the same noise; extension shifts only for the plan's designs and the parent",
            "scenarios": res}
     a.out.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
 

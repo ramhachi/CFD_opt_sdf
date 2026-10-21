@@ -1,0 +1,424 @@
+{
+ "all_pass": true,
+ "exports": {
+  "v18__bump_lower_m15|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": -0.01097938780322072,
+   "stl_sha256": "45a9d8fe12be5f916f00794679be3065cf4b35ca622f2aacae578316de18f4cc",
+   "stl_volume_m3": 0.11838382001352965,
+   "stl_volume_vs_parent": -0.010697643515229505,
+   "triangles": 644692
+  },
+  "v18__bump_small_p20|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0028470889912250996,
+   "stl_sha256": "cd572e67403e7855c364b70df831d6150837f6350d2dbe02d8f19a8c3d1c964a",
+   "stl_volume_m3": 0.11993093183257586,
+   "stl_volume_vs_parent": 0.0022311618582828707,
+   "triangles": 643908
+  },
+  "v18__bump_upper_m15|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": -0.010979387851227762,
+   "stl_sha256": "68ce9d5b93a8722000d8750223c820c6d503282adcae60d4b017fb63cbcccd31",
+   "stl_volume_m3": 0.11838382032358781,
+   "stl_volume_vs_parent": -0.01069764092415526,
+   "triangles": 644692
+  },
+  "v18__camber_m11.3_reflex_m11.3|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.001699880270162435,
+   "stl_sha256": "8a4f7784fb453ea8decf1942400971305a78a91b5515d86f85b31656682dbc0d",
+   "stl_volume_m3": 0.11966852742499938,
+   "stl_volume_vs_parent": 3.831744138760307e-05,
+   "triangles": 646376
+  },
+  "v18__camber_m11.3|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0021840459994839634,
+   "stl_sha256": "6aae5d54af59c8d9c0d668aa9c00e2a6eb222817d5346764a594f1eec594cafc",
+   "stl_volume_m3": 0.11966891303233784,
+   "stl_volume_vs_parent": 4.153986019939104e-05,
+   "triangles": 644132
+  },
+  "v18__camber_m19.7|r4": {
+   "double_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "double_measures": {
+    "components": [
+     160808
+    ],
+    "min_clearance_m": 0.6390625,
+    "signed_volume_m3": 0.11966432783181769,
+    "triangles": 160808
+   },
+   "float32_stl_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     160808
+    ],
+    "min_clearance_m": 0.6390624880790711,
+    "signed_volume_m3": 0.11966432786963577,
+    "triangles": 160808
+   },
+   "pass": true,
+   "refinement": 4,
+   "removed_components": [],
+   "sdf_smoothed_volume_vs_parent": 0.004109841393656444,
+   "stl_sha256": "615f0e19cadfb144dda33885d2efaaa479e1ba86237eb39ef8c2d5005e2d0039",
+   "stl_volume_m3": 0.11966432786963577,
+   "stl_volume_vs_parent": 3.2228649757826133e-06,
+   "triangles": 160808
+  },
+  "v18__camber_m19.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.004109841393656444,
+   "stl_sha256": "1dff351f6d9414f8093dc46b7a27370c664a0a8bc4adda52f5d9963c286746ed",
+   "stl_volume_m3": 0.1196697061935668,
+   "stl_volume_vs_parent": 4.816809936936117e-05,
+   "triangles": 645304
+  },
+  "v18__camber_p19.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0041098365078346966,
+   "stl_sha256": "ef4bc75963678fbecda305f7f0cbc63f866529f267de926979c0d3328d7264a4",
+   "stl_volume_m3": 0.11966970696814472,
+   "stl_volume_vs_parent": 4.817457231265365e-05,
+   "triangles": 645302
+  },
+  "v18__heave_m13.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.003331152984216379,
+   "stl_sha256": "9875c3b98efe6ecf3b9eb9b6cbe6a2d277cbb2ded10e3a820db4b58734a0e50c",
+   "stl_volume_m3": 0.11964673887027644,
+   "stl_volume_vs_parent": -0.0001437637630314903,
+   "triangles": 644220
+  },
+  "v18__heave_m31.1_pitch_p0.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0016207044134470827,
+   "stl_sha256": "9060fdaec49f4ea0bafa2bc3f8c8d851564e306abf57c15a4e1702f287edc31a",
+   "stl_volume_m3": 0.1195166342657465,
+   "stl_volume_vs_parent": -0.001231013624002908,
+   "triangles": 647340
+  },
+  "v18__heave_m31.1|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0014852042495963058,
+   "stl_sha256": "44dbb98a31bffde9b610535d889decd558813700f6419434610f3f50c7a0f8a6",
+   "stl_volume_m3": 0.1195175634638257,
+   "stl_volume_vs_parent": -0.0012232485607596155,
+   "triangles": 642980
+  },
+  "v18__heave_p31.1|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0014852063542065697,
+   "stl_sha256": "cb351367578fa05b0b7e7927440962846b339b69b8e659285fa6f7079290b7f9",
+   "stl_volume_m3": 0.11951756341827235,
+   "stl_volume_vs_parent": -0.001223248941436883,
+   "triangles": 642980
+  },
+  "v18__parent|r4": {
+   "double_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "double_measures": {
+    "components": [
+     159688
+    ],
+    "min_clearance_m": 0.6505131244659424,
+    "signed_volume_m3": 0.11965838206151495,
+    "triangles": 159688
+   },
+   "float32_stl_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     159688
+    ],
+    "min_clearance_m": 0.6505131214857102,
+    "signed_volume_m3": 0.11965838180796289,
+    "triangles": 159688
+   },
+   "pass": true,
+   "refinement": 4,
+   "removed_components": [],
+   "sdf_smoothed_volume_vs_parent": 0.0,
+   "stl_sha256": "bfdc475fd8a2d5fbe2ef1a52507cdd160f44875c0c4ad2ab755217d70acf14ca",
+   "stl_volume_m3": 0.11965838180796289,
+   "stl_volume_vs_parent": -4.646680396813707e-05,
+   "triangles": 159688
+  },
+  "v18__parent|r8": {
+   "double_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "double_measures": {
+    "components": [
+     643072
+    ],
+    "min_clearance_m": 0.6505131244659424,
+    "signed_volume_m3": 0.11966394256552511,
+    "triangles": 643072
+   },
+   "float32_stl_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     643072
+    ],
+    "min_clearance_m": 0.6505131214857102,
+    "signed_volume_m3": 0.11966394220890757,
+    "triangles": 643072
+   },
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "sdf_smoothed_volume_vs_parent": 0.0,
+   "stl_sha256": "41ceb0c6f75ab465d4d85627c53fe8c5333a36a53baba0515dff535ff80fd626",
+   "stl_volume_m3": 0.11966394220890757,
+   "stl_volume_vs_parent": 0.0,
+   "triangles": 643072
+  },
+  "v18__pitch_m0.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.001289961288968966,
+   "stl_sha256": "4ed956c2fdb26f21951771dc5c713d94ae0c7e1788bc72180a65a0d61009f541",
+   "stl_volume_m3": 0.11966393578935004,
+   "stl_volume_vs_parent": -5.364654886985676e-08,
+   "triangles": 640832
+  },
+  "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.002030714342387663,
+   "stl_sha256": "daf7173e5424f9aed0edba59ac004a450d000480a0fb489026e6eb5c255d00db",
+   "stl_volume_m3": 0.11965276998548467,
+   "stl_volume_vs_parent": -9.33633241281262e-05,
+   "triangles": 637828
+  },
+  "v18__pitch_p0.7|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0020471065330269766,
+   "stl_sha256": "88eb6f648e80eb0b61c9c315a45ac46c4f99c4fd2be1d81418e431ce538e7e2a",
+   "stl_volume_m3": 0.11967081811662461,
+   "stl_volume_vs_parent": 5.746014705954039e-05,
+   "triangles": 647440
+  },
+  "v18__reflex_m29.3|r4": {
+   "double_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "double_measures": {
+    "components": [
+     161928
+    ],
+    "min_clearance_m": 0.6402735233306885,
+    "signed_volume_m3": 0.11966927662957245,
+    "triangles": 161928
+   },
+   "float32_stl_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     161928
+    ],
+    "min_clearance_m": 0.6402735352516175,
+    "signed_volume_m3": 0.11966927694189539,
+    "triangles": 161928
+   },
+   "pass": true,
+   "refinement": 4,
+   "removed_components": [],
+   "sdf_smoothed_volume_vs_parent": 0.0029646191955157164,
+   "stl_sha256": "87ffac86d4a8061ce744940bd8a57086e560ccd5e71355a479fe8ad2c0b46113",
+   "stl_volume_m3": 0.11966927694189539,
+   "stl_volume_vs_parent": 4.458095637960291e-05,
+   "triangles": 161928
+  },
+  "v18__reflex_m29.3|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0029646191955157164,
+   "stl_sha256": "0da011f97fb968d4c2c1e47f5c203b534590231d53e87ce83b779afcf2928681",
+   "stl_volume_m3": 0.11967420199977542,
+   "stl_volume_vs_parent": 8.573836594782946e-05,
+   "triangles": 649784
+  },
+  "v18__roll_p25|r8": {
+   "double_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "double_measures": {
+    "components": [
+     643016
+    ],
+    "min_clearance_m": 0.6505131244659424,
+    "signed_volume_m3": 0.11964655578760226,
+    "triangles": 643016
+   },
+   "float32_stl_gates": {
+    "edge_manifold": true,
+    "no_duplicate_or_degenerate_faces": true,
+    "orientation_pass_without_flip": true,
+    "positive_signed_volume": true,
+    "practical_gate_pass": true,
+    "stage_v_clearance": true,
+    "vertex_link_manifold": true,
+    "watertight": true,
+    "winding_consistent": true
+   },
+   "float32_stl_measures": {
+    "components": [
+     643016
+    ],
+    "min_clearance_m": 0.6505131214857102,
+    "signed_volume_m3": 0.11964655520222878,
+    "triangles": 643016
+   },
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "sdf_smoothed_volume_vs_parent": null,
+   "stl_sha256": "f6bb73d8ebb0b00f7a7a9a74e3c88b79ab8a2015c8b54237e351f02a5814c6f5",
+   "stl_volume_m3": 0.11964655520222878,
+   "stl_volume_vs_parent": -0.0001452986284576907,
+   "triangles": 643016
+  },
+  "v18__twist_p2.3|r8": {
+   "pass": true,
+   "refinement": 8,
+   "removed_components": [],
+   "reused_from_select": true,
+   "sdf_smoothed_volume_vs_parent": 0.0011574109303535973,
+   "stl_sha256": "107061a7efd99266ca37d8f5af53b33b10a67cedd13556b1cabdb8f3944a701d",
+   "stl_volume_m3": 0.11966459313857547,
+   "stl_volume_vs_parent": 5.439647531968461e-06,
+   "triangles": 655376
+  }
+ },
+ "kind": "fid01_of_export",
+ "pipeline": "geom02_canonical.export_from_state (r = 8; EX r = 4) + X1 practical gate (double and float32 STL)",
+ "states_sha256": "a5800f93f6a58631c30abcd94351f4d760b7b01a88da746d362cc2f1ac82241b"
+}

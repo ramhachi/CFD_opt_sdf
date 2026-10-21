@@ -4,6 +4,7 @@
     python scripts/fid01/fid01_freeze.py freeze1                      # plan, sources, designs, states, raws, export, STLs, OC
     python scripts/fid01/fid01_freeze.py freeze2 --levels V1,V2,V3    # flow_32 campaign + prerun freeze, V1 criteria, OpenFOAM smoke, of_levels
     python scripts/fid01/fid01_freeze.py freeze3                      # d_set, flow_48 campaign + prerun freeze, V2/V3 criteria
+    python scripts/fid01/fid01_freeze.py freeze4 --main analysis.json # §6.8 extension: the main analysis and the extension criteria
 Refuses to overwrite, on a dirty tracked tree, or when HEAD is not on a remote branch.
 """
 from __future__ import annotations
@@ -68,8 +69,9 @@ def criteria_hashes(stage):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("kind", choices=["freeze1", "freeze2", "freeze3"])
+    ap.add_argument("kind", choices=["freeze1", "freeze2", "freeze3", "freeze4"])
     ap.add_argument("--levels", default="V1,V2,V3")
+    ap.add_argument("--main", type=Path)
     a = ap.parse_args()
     if a.kind == "freeze1":
         d = json.loads((EV / "designs.json").read_text())["designs"]
@@ -89,6 +91,14 @@ def main():
                  "docs/evidence/fid01_2026_10_21/of/criteria", "docs/evidence/fid01_2026_10_21/of/smoke", "infra/fid01", "docs/evidence/fid01_2026_10_21/p0_probe", REG]
         extra = {"status": "REGISTERED_FROZEN (freeze 2)", "of_levels": levels, "of_criteria_sha256": criteria_hashes("v1")}
         print(record("freeze2", paths, extra))
+    elif a.kind == "freeze4":
+        main = json.loads(a.main.read_text())
+        SC.req(main["outcome"] == "EXTENSION_REQUIRED", "freeze 4 only for a main analysis that requires the extension")
+        crit = sorted(SC.sha256_path(p) for p in (EV / "of/ext_criteria").glob("*.json"))
+        extra = {"status": "REGISTERED_FROZEN (freeze 4, §6.8 extension)", "main_analysis_sha256": SC.sha256_path(a.main), "of_criteria_sha256": crit,
+                 "extension_plan": main["extension_plan"]}
+        print(record("freeze4", ["docs/evidence/fid01_2026_10_21/freeze3.json", "docs/evidence/fid01_2026_10_21/of/ext_criteria", "infra/fid01",
+                                 str(a.main.resolve().relative_to(ROOT))], extra))
     else:
         paths = ["docs/evidence/fid01_2026_10_21/freeze2.json", "docs/evidence/fid01_2026_10_21/d_set.json", "docs/harness/fid01_f48_campaign.json",
                  "docs/harness/fid01_f48_campaign.prerun_freeze.json", "docs/evidence/fid01_2026_10_21/of/criteria", "infra/fid01", REG]

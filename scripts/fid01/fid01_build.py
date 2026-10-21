@@ -4,7 +4,7 @@
 
     python scripts/fid01/fid01_build.py states              # direction raws + states.json from designs.json (refuses unless every state reproduces its gated bytes)
     python scripts/fid01/fid01_build.py campaign            # docs/harness/fid01_campaign.json (§4)
-    python scripts/fid01/fid01_build.py of-export [--workers N]   # STL exports (r = 8; EX r = 16) + X1 gate + STL volumes -> of/export.json, work/fid01_of/stl/
+    python scripts/fid01/fid01_build.py of-export [--workers N]   # STL exports (r = 8; EX r = 4) + X1 gate + STL volumes -> of/export.json, work/fid01_of/stl/
     python scripts/fid01/fid01_build.py of-prepare [--smoke]      # per-kernel datasets (work/fid01_of/), criteria (of/criteria/), kernels (infra/fid01/)
 """
 from __future__ import annotations
@@ -51,9 +51,10 @@ LEVELS = {"V1": {"blocks": None, "end_time": None, "shifts": PAIR_TAGS(range(49,
           "V2": {"blocks": (50, 26, 18), "end_time": None, "shifts": PAIR_TAGS(range(49, 51))},
           "V3": {"blocks": (100, 52, 36), "end_time": 6000, "shifts": ["49p"]}}
 EXTENSION_SHIFTS = {"V1": PAIR_TAGS(range(65, 73)), "V2": PAIR_TAGS(range(51, 53)), "V3": ["49m"]}
-EX_SLOTS = ("W4", "W6")                       # + the parent: exported at r = 16 and run on V1 at every V1 shift (§3.4)
-EX_REFINEMENT = 16
+EX_SLOTS = ("W4", "W6")                       # + the parent: exported at r = 4 and run on V1 at every V1 shift (§3.4)
+EX_REFINEMENT = 4
 V3_GROUP = 6
+V3_EXT_CAP = 6
 SMOKE_SHIFT = "80p"
 STAGE_TIMEOUT_S = {"V1": 7200, "V2": 43200, "V3": 259200}   # hang detectors (>= 8x the measured need); a timeout is INFRA_LOSS (§10)
 STOP_AFTER_FAILURES = 10
@@ -132,6 +133,8 @@ def kernels48(run_set: list[str]) -> dict:
     """The flow_48 kernel of the second campaign: the d_set run set (parent first) at k = 7; aggregate cap 1.3x the estimate."""
     n = len(run_set)
     cap = max(int(1.3 * n * EST_S["flow_48"]), 6000)
+    if n < 2 or cap + 3300 > 43200:
+        raise SystemExit(f"flow_48 run set of {n} states does not fit one Kaggle session (registration §4.2)")
     return {"f48": B.kernel("fid01_f48", "f48", "flow_48", [B.run(s, "flow_48", PHASES["flow_48"][0]) for s in run_set], 6000, cap, cap + 3300)}
 
 
@@ -148,6 +151,9 @@ def write_campaign(which: str = "f32") -> Path:
         c, path = B.campaign("fid01", kernels(), rec), CAMPAIGN
     else:
         ds = json.loads(DSET.read_text())
+        bud = json.loads((OUT / "wl/budget_decision.json").read_text())
+        if not bud["push_f48"]:
+            raise SystemExit("the §4.3 budget decision does not push flow_48 (NOT_MEASURED)")
         c, path = B.campaign("fid01_f48", kernels48(ds["run_sets"]["flow_48"]), rec), CAMPAIGN48
     c["directions"] = {n: {"path": rec["states"][n]["direction_path"], "sha256_fortran_raw": rec["states"][n]["direction_sha256_fortran_raw"]}
                        for n in c["states"] if rec["states"][n]["direction"]}
@@ -203,7 +209,7 @@ def _export_one(task):
 
 
 def export_key(state: str) -> str:
-    """export.json key of a case state: '<name>|r8', or '<name>|r16' for the EX states '<name>__r16' (names may contain '__r', e.g. reflex, roll)."""
+    """export.json key of a case state: '<name>|r8', or '<name>|r4' for the EX states '<name>__r4' (names may contain '__r', e.g. reflex, roll)."""
     suffix = f"__r{EX_REFINEMENT}"
     return f"{state[:-len(suffix)]}|r{EX_REFINEMENT}" if state.endswith(suffix) else f"{state}|r8"
 
@@ -223,7 +229,7 @@ def of_export(workers: int) -> dict:
     for k, rec in recs.items():
         rec["stl_volume_vs_parent"] = rec["stl_volume_m3"] / v0 - 1.0
         rec["sdf_smoothed_volume_vs_parent"] = 0.0 if k.startswith(PARENT) else sdf.get(k.split("|")[0])   # G5a chain check (§6.3)
-    out = {"kind": "fid01_of_export", "pipeline": "geom02_canonical.export_from_state (r = 8; EX r = 16) + X1 practical gate (double and float32 STL)",
+    out = {"kind": "fid01_of_export", "pipeline": "geom02_canonical.export_from_state (r = 8; EX r = 4) + X1 practical gate (double and float32 STL)",
            "states_sha256": sha(OUT / "states.json"), "exports": recs, "all_pass": all(r["pass"] for r in recs.values())}
     OF.mkdir(parents=True, exist_ok=True)
     (OF / "export.json").write_text(json.dumps(out, indent=1, sort_keys=True) + "\n")
@@ -241,11 +247,11 @@ def shifts(tags) -> list[tuple[str, list]]:
 
 
 def of_kernels(extension: dict | None = None, stage: str = "v1") -> dict:
-    """kernel -> (level, [(case id, state, stl file, shift_m)]) in shift-major order.  Stage v1 (freeze 2): V1, every state and the EX r = 16 STLs,
+    """kernel -> (level, [(case id, state, stl file, shift_m)]) in shift-major order.  Stage v1 (freeze 2): V1, every state and the EX r = 4 STLs,
     four kernels of four whole mirror pairs.  Stage v23 (freeze 3, after d_set): V2 one kernel per shift for the d_set V2 run set; V3 one kernel per
     shift for the V3 run set in groups of <= V3_GROUP cases.  extension = {level: [state names]} builds the §6.8 kernels instead."""
     out = {}
-    if extension:
+    if extension:   # {level: [designs]} from the main analysis' extension plan (§6.8), V3 capped at V3_EXT_CAP designs by |Delta_32| (caller orders)
         for lev, names in extension.items():
             sts = [PARENT] + [n for n in names if n != PARENT]
             cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for tag, sh in shifts(EXTENSION_SHIFTS[lev]) for n in sts]
@@ -259,15 +265,28 @@ def of_kernels(extension: dict | None = None, stage: str = "v1") -> dict:
                                          for n, f in [(s, stl_file(s, 8)) for s in state_names()] + ex])
         return out
     sets = json.loads(DSET.read_text())["run_sets"]
-    for lev in ("V2", "V3"):
+    levels = json.loads((OUT / "freeze2.json").read_text())["of_levels"] if (OUT / "freeze2.json").exists() else ["V1", "V2", "V3"]
+    for lev in [x for x in ("V2", "V3") if x in levels]:   # V3 removed by the §5.3 contingency is not built
         for tag, sh in shifts(LEVELS[lev]["shifts"]):
             cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in sets[lev]]
             if lev == "V2":
                 out[f"v2_{tag}"] = (lev, cases)
                 continue
-            for g in range(0, len(cases), V3_GROUP):
+            for g in range(0, len(cases), V3_GROUP):   # the parent is in the first group (disclosed: losing that kernel twice loses V3)
                 out[f"v3_{tag}_{g // V3_GROUP + 1}"] = (lev, cases[g:g + V3_GROUP])
     return out
+
+
+def extension_plan(main_path: Path) -> dict:
+    """§6.8 from the written main analysis: the plan's designs per level; V3 limited to V3_EXT_CAP designs, the largest |Delta_32| first."""
+    main = json.loads(main_path.read_text())
+    if main["outcome"] != "EXTENSION_REQUIRED":
+        raise SystemExit("the main analysis did not require the extension")
+    plan = {lev: list(ns) for lev, ns in main["extension_plan"].items()}
+    if "V3" in plan:
+        size = lambda n: abs(main["wl_flow32"][n]["downforce"]["delta_bar_n"])  # noqa: E731
+        plan["V3"] = sorted(plan["V3"], key=size, reverse=True)[:V3_EXT_CAP]
+    return plan
 
 
 def template(dst: Path, lev: str) -> None:
@@ -294,6 +313,8 @@ def template(dst: Path, lev: str) -> None:
 
 
 def _link(src: Path, dst: Path) -> None:
+    if dst.exists():   # the same STL serves every shift of a state
+        return
     dst.parent.mkdir(parents=True, exist_ok=True)
     try:
         os.link(src, dst)
@@ -310,11 +331,11 @@ def of_prepare(smoke: bool = False, extension: dict | None = None, stage: str = 
     if exp["states_sha256"] != sha(OUT / "states.json") or not exp["all_pass"]:
         raise SystemExit("export.json does not belong to states.json or an export failed the X1 gate")
     x3c = json.loads((x3.EVID / "formal/x3_criteria.json").read_text())
-    if smoke:   # V1 and V2: the parent and the first design at a shift outside every registered set (Halton 80 +), V1 also the parent's r = 16 STL;
+    if smoke:   # V1 and V2: the parent and the first design at a shift outside every registered set (Halton 80 +), V1 also the parent's r = 4 STL;
         first = state_names()[1]          # V3: the timing probe (§2)
         (tag, sh), = shifts([SMOKE_SHIFT])
-        r16 = [(f"V1_{PARENT}__r{EX_REFINEMENT}_{tag}", f"{PARENT}__r{EX_REFINEMENT}", stl_file(PARENT, EX_REFINEMENT), sh)]
-        ks = {f"smoke_{lev.lower()}": (lev, [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in (PARENT, first)] + (r16 if lev == "V1" else []))
+        rx = [(f"V1_{PARENT}__r{EX_REFINEMENT}_{tag}", f"{PARENT}__r{EX_REFINEMENT}", stl_file(PARENT, EX_REFINEMENT), sh)]
+        ks = {f"smoke_{lev.lower()}": (lev, [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in (PARENT, first)] + (rx if lev == "V1" else []))
               for lev in ("V1", "V2")}
     else:
         ks = of_kernels(extension, stage)
@@ -339,15 +360,16 @@ def of_prepare(smoke: bool = False, extension: dict | None = None, stage: str = 
                 "environment": x3c["environment"], "force_window": x3c["force_window"], "stage_timeout_s": STAGE_TIMEOUT_S[lev],
                 "per_case_failure_policy": x3c["per_case_failure_policy"], "stop_after_consecutive_failures": STOP_AFTER_FAILURES,
                 "launch_deadline_hours": 200.0, "case_template_origin": x3c["case_template_origin"] + f"; level {lev} changes only the listed template entries",
-                "shift_design": {**x3c["shift_design"], "shift_tags": sorted({c[0].rsplit("_", 1)[1] for c in cases})},
+                "shift_design": {**{k: v for k, v in x3c["shift_design"].items() if k not in ("halton_index_range", "n_pairs")},
+                                 "shift_tags": sorted({c[0].rsplit("_", 1)[1] for c in cases})},
                 "states": files, "not_run_export_gate": [], "export": {"profile": str(U.PROFILE.relative_to(ROOT)), "profile_sha256": sha(U.PROFILE)},
                 "inputs": {q.relative_to(ds).as_posix(): sha(q) for q in sorted(ds.rglob("*")) if q.is_file()},
                 "case_order": [{"id": cid, "state": state, "shift_m": sh} for cid, state, _, sh in cases],
                 "analysis": {"script": "scripts/fid01/analyze_fid01.py", "rule": "registration §6"},
-                "qualification_flags": x3c["qualification_flags"], "immutable": True, "registered_before_run": not smoke}
+                "qualification_flags": x3c["qualification_flags"], "immutable": True, "registered_before_run": True}   # the runner requires it; smoke = class + directory
         text = json.dumps(crit, indent=2, sort_keys=True) + "\n"
         digest = hashlib.sha256(text.encode()).hexdigest()
-        cdir = OF / ("smoke/criteria" if smoke else "criteria")
+        cdir = OF / ("smoke/criteria" if smoke else "ext_criteria" if extension else "criteria")
         cdir.mkdir(parents=True, exist_ok=True)
         target = cdir / f"{kname}.json"
         if target.exists() and target.read_text() != text:
@@ -372,6 +394,7 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--stage", choices=["v1", "v23"], default="v1")
+    ap.add_argument("--extension", type=Path, help="the main analysis.json: build the §6.8 extension kernels from its plan")
     a = ap.parse_args()
     if a.cmd == "states":
         rec = build_states()
@@ -382,7 +405,7 @@ def main() -> None:
         out = of_export(a.workers)
         print(json.dumps({k: (v["pass"], v["triangles"], round(v["stl_volume_vs_parent"], 4)) for k, v in out["exports"].items()}, indent=1))
     else:
-        print(json.dumps(of_prepare(a.smoke, stage=a.stage), indent=1))
+        print(json.dumps(of_prepare(a.smoke, extension=extension_plan(a.extension) if a.extension else None, stage=a.stage), indent=1))
 
 
 if __name__ == "__main__":
