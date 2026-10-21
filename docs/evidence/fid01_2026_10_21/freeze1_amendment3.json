@@ -1,0 +1,14 @@
+{
+ "amended_commit": "d2c3112222e042c9a465c24167ddf92ab0bd2e9e",
+ "diff_sha256": "595f9393957643db079d1250210cc185ee6195c126a1b5398b91257f5cdd13a2",
+ "files_sha256": {
+  "docs/fid01_registration_2026_10_21.md": "4d692af698c8e31220a34235322d05b8339a9fa0fc1b0f7b34425c4cf3081051",
+  "scripts/fid01/fid01_build.py": "c508ec35f97fe7c88caf257cf277f4bf9eb8a9bec5c7a816abdc3c44ae11d11c",
+  "tests/fid01/test_fid01.py": "961356e9422c5fae9b8ddf750b80eacc7ff29f426b04d6d7d026c245d4b243a8"
+ },
+ "freeze1_source_commit": "7025b836b4c6ecf28a03c4767806c85d4c184f29",
+ "frozen_utc": "2026-10-21T18:28:57.427108+00:00",
+ "kind": "fid01_freeze1_amendment3",
+ "reason": "engineering, before freeze 3 and before any V2/V3 run: V3_GROUP 6 -> 2 (at most two V3 cases per local kernel) so the nine V3 cases run in parallel; the V3 probe measured 7.9 h per case, a six-case kernel would take about 48 h serially. Operating parameter only; no rule, design, shift or estimator changes.",
+ "registration": "docs/fid01_registration_2026_10_21.md \u00a75.3, \u00a710"
+}
