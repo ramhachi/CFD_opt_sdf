@@ -1,0 +1,62 @@
+{
+  "amp": 1.0,
+  "courant": {
+    "last_max": 3.7097109,
+    "last_mean": 0.043333931,
+    "max": 3.7342264
+  },
+  "deadline_limited": false,
+  "delta_alpha_deg": 1.0,
+  "geometry": "sa-wf_h0.09_fine30_da+1",
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_fine30_da+1__Udt2",
+  "kind": "Udt2",
+  "mesh": "fine30",
+  "mesh_cells_3d": 25619,
+  "mesh_msh_sha256": "ad1e9f449116ce5419bed1e9431aee69ed1dc083fd65ef4dfd5c1251275782b6",
+  "method": "remesh",
+  "mode": "f1",
+  "pre_solver_wall_s": 6.574723056000039,
+  "s0_wall_s": 303.9267511769999,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 5960,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 9.0716787e-06,
+      "Uy": 5.1010959e-05,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.00026138544,
+      "omega": null,
+      "p": 0.00010781635
+    },
+    "last_time": 0.1192,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "source_run": "sa-wf_h0.09_fine30_da+1__S0",
+  "source_status": "COMPLETED",
+  "stage2": {
+    "dt_s": 2e-05,
+    "end_iteration": null,
+    "end_time_s": 0.1192,
+    "kind": "Udt2",
+    "source_time": "5000",
+    "transient_s": 0.0447
+  },
+  "stage2_wall_s": 1218.7718305509998,
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 112.799744,
+      "returncode": 0,
+      "stage": "pimpleFoam",
+      "timed_out": false,
+      "wall_s": 1217.8667693570005
+    }
+  ],
+  "status": "COMPLETED",
+  "variant": ""
+}

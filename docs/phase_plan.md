@@ -7579,3 +7579,22 @@ LOCAL-OF-01 and failed for this pipeline (platform-dependent gmsh meshes), so T2
 branch is not triggered by this result. Cap from the registration: at most one more registered T2-0 study before a T2-0 summary is written as M4 input. Evidence:
 `docs/evidence/t20c_registered_2026_10_20/` (README.md, note.md, analysis.md, verdict.json, freeze.json, SHA256SUMS). All qualification flags false;
 `shape_update_allowed=false`.
+
+## 2026-10-22 T2-0d registered URANS and steady-solver controls (#57): T20D_NO_GO (the last registered T2-0 study)
+
+T2-0d ran under PROC-01 `REGISTERED_FROZEN` (registration `docs/t20d_registration_2026_10_21.md`, SHA-256 3f1b0ec1...79bb; one three-angle plan review with 40
+findings, one source review with 13 findings and 2 blockers fixed; development smoke 2 attempts; freeze 2 `freeze.json` 8f956a05...bfa, source commit 7a57fcc9;
+six Kaggle CPU kernels, one submission each, no loss). It is T2-0c's next-action row 5: an unsteady/solver-convergence study where steady SA-WF RANS does not
+settle. Per geometry the T2-0c steady case (S0) is followed by a time-averaged URANS (pimpleFoam, dt 1e-5 s, 6 T_c transient, 10 T_c window), 2 dt and dt/2
+controls, a relaxed steady control (SIMPLE 0.3/0.7) and, at two conditions, a second start state. Result: **T20D_NO_GO** (DATA `FAIL_INPUT`, DIFF `FAIL_VALUE`,
+cost `NOT_AFFORDABLE`). Q1: every valid URANS run (58) settles to a steady state, none oscillates; at the conditions where SIMPLEC 0.9 did not settle, relaxed
+SIMPLE does not converge either (`STEADY_URANS_ONLY`), the result does not depend on the start state, and the steady pseudo-means were 1.4-6.2 % above the settled
+values; the Q1 forms stay INDETERMINATE (two controls miss the 0.5 % agreement band; the PIMPLE and SIMPLEC steady limits differ by 0.25-0.91 %). DATA: h/c 0.09
++1 deg drifts through the window on fine30 and xfine30 (invalid input); the realisation noise of a remeshed Cl at 0.134 (sigma 0.020) exceeds the digitised
+curve's peak margin, so the peak test is non-diagnostic; xfine30 is 7.2 % below fine30 at 0.134; `G2_ACTION` UNDECIDED (T2-0b's G2 action stays the default until
+M4 decides). DIFF: on xfine30 at 0.134 the evaluator resolves +-0.25 deg (sigma 0.00058) and +-0.25 mm camber/flap, consistent between time steps and between two
+base meshes (G6u, GSu, G8u, GT134 pass), but G3bu against fine30 is unresolved by fine30's base-realisation spread. Cost: 92 min median, 134 min maximum per
+xfine30 evaluation against R5's 27.5 min. T2-0 ends with no registered high-Re evaluator GO (T2-0b, T2-0c, T2-0d all NO-GO); the T2-0 summary for M4 is
+`docs/t20_summary_for_m4_2026_10_22.md`. Operational: Kaggle allows 5 concurrent batch CPU sessions per account (the sixth kernel waited about 2.5 h).
+Evidence: `docs/evidence/t20d_registered_2026_10_21/`. All qualification flags stay false; `shape_update_allowed=false`.
+

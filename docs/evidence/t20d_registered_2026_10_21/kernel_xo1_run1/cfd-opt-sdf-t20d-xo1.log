@@ -1,0 +1,170 @@
+[{"stream_name":"stdout","time":6.7972850099999995,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.0/40.0 MB 50.2 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":13.29657206,"data":"Reading package lists...\n"}
+,{"stream_name":"stdout","time":13.678455494,"data":"Building dependency tree...\n"}
+,{"stream_name":"stdout","time":13.681145844,"data":"Reading state information...\n"}
+,{"stream_name":"stdout","time":14.11234093,"data":"libgl1 is already the newest version (1.7.0-1build1).\n"}
+,{"stream_name":"stdout","time":14.112376214,"data":"libxft2 is already the newest version (2.3.6-1build1).\n"}
+,{"stream_name":"stdout","time":14.112382434,"data":"libxft2 set to manually installed.\n"}
+,{"stream_name":"stdout","time":14.112387384,"data":"libxinerama1 is already the newest version (2:1.1.4-3build1).\n"}
+,{"stream_name":"stdout","time":14.112392317,"data":"libxinerama1 set to manually installed.\n"}
+,{"stream_name":"stdout","time":14.112397119,"data":"libxcursor1 is already the newest version (1:1.2.1-1build1).\n"}
+,{"stream_name":"stdout","time":14.112402202,"data":"libxcursor1 set to manually installed.\n"}
+,{"stream_name":"stdout","time":14.112406301,"data":"libxrender1 is already the newest version (1:0.9.10-1.1build1).\n"}
+,{"stream_name":"stdout","time":14.112409426,"data":"libxfixes3 is already the newest version (1:6.0.0-2build1).\n"}
+,{"stream_name":"stdout","time":14.112412409,"data":"libxfixes3 set to manually installed.\n"}
+,{"stream_name":"stdout","time":14.112415486,"data":"The following NEW packages will be installed:\n"}
+,{"stream_name":"stdout","time":14.113972205,"data":"  libglu1-mesa\n"}
+,{"stream_name":"stdout","time":14.220006508,"data":"0 upgraded, 1 newly installed, 0 to remove and 42 not upgraded.\n"}
+,{"stream_name":"stdout","time":14.220059331,"data":"Need to get 152 kB of archives.\n"}
+,{"stream_name":"stdout","time":14.220066182,"data":"After this operation, 379 kB of additional disk space will be used.\n"}
+,{"stream_name":"stdout","time":14.220071532,"data":"Get:1 http://archive.ubuntu.com/ubuntu noble/main amd64 libglu1-mesa amd64 9.0.2-1.1build1 [152 kB]\n"}
+,{"stream_name":"stdout","time":16.560527781,"data":"Fetched 152 kB in 0s (789 kB/s)\n"}
+,{"stream_name":"stdout","time":16.66363074,"data":"Selecting previously unselected package libglu1-mesa:amd64.\r\n"}
+,{"stream_name":"stdout","time":17.597662195,"data":"(Reading database ... \r(Reading database ... 5%\r(Reading database ... 10%\r(Reading database ... 15%\r(Reading database ... 20%\r(Reading database ... 25%\r(Reading database ... 30%\r(Reading database ... 35%\r(Reading database ... 40%\r(Reading database ... 45%\r(Reading database ... 50%\r(Reading database ... 55%\r(Reading database ... 60%\r(Reading database ... 65%\r(Reading database ... 70%\r(Reading database ... 75%\r(Reading database ... 80%\r(Reading database ... 85%\r(Reading database ... 90%\r(Reading database ... 95%\r(Reading database ... 100%\r(Reading database ... 125659 files and directories currently installed.)\r\n"}
+,{"stream_name":"stdout","time":17.601773263,"data":"Preparing to unpack .../libglu1-mesa_9.0.2-1.1build1_amd64.deb ...\r\n"}
+,{"stream_name":"stdout","time":17.623375039,"data":"Unpacking libglu1-mesa:amd64 (9.0.2-1.1build1) ...\r\n"}
+,{"stream_name":"stdout","time":17.778404057,"data":"Setting up libglu1-mesa:amd64 (9.0.2-1.1build1) ...\r\n"}
+,{"stream_name":"stdout","time":17.811757982,"data":"Processing triggers for libc-bin (2.39-0ubuntu8.9) ...\r\n"}
+,{"stream_name":"stdout","time":18.110982245,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_5.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111013387,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111055308,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.11106148,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.11108105,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111086621,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111091011,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111095745,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111163201,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero_v2.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111170931,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111175681,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_0.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.11118037,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111306996,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_loader.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111337384,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111342512,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbb.so.12 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.1113474,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111351613,"data":"/sbin/ldconfig.real: /usr/local/lib/libumf.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111356547,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111372103,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm_debug.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.11137761,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111381624,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_opencl.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111386201,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111493218,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc_proxy.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111502842,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111506996,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.111511693,"data":"\r\n"}
+,{"stream_name":"stdout","time":18.111516127,"data":"/sbin/ldconfig.real: /usr/local/lib/libhwloc.so.15 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":18.11152084,"data":"\r\n"}
+,{"stream_name":"stdout","time":22.611320197,"data":"Detected distribution code-name: noble\n"}
+,{"stream_name":"stdout","time":22.612074957,"data":"Added /etc/apt/sources.list.d/openfoam.list\n"}
+,{"stream_name":"stdout","time":22.932803371,"data":"Importing openfoam gpg key... done\n"}
+,{"stream_name":"stdout","time":22.932830811,"data":"Added /etc/apt/trusted.gpg.d/openfoam.gpg\n"}
+,{"stream_name":"stdout","time":27.392139928,"data":"Running apt-get update... done\n"}
+,{"stream_name":"stdout","time":27.392177103,"data":"\n"}
+,{"stream_name":"stdout","time":27.392183065,"data":"The repository is setup! You can now install packages.\n"}
+,{"stream_name":"stdout","time":29.768509516,"data":"Hit:1 https://cli.github.com/packages stable InRelease\n"}
+,{"stream_name":"stdout","time":29.779100427,"data":"Hit:2 https://cloud.r-project.org/bin/linux/ubuntu noble-cran40/ InRelease\n"}
+,{"stream_name":"stdout","time":29.895654336,"data":"Hit:3 https://r2u.stat.illinois.edu/ubuntu noble InRelease\n"}
+,{"stream_name":"stdout","time":29.920578614,"data":"Hit:4 http://archive.ubuntu.com/ubuntu noble InRelease\n"}
+,{"stream_name":"stdout","time":29.950649243,"data":"Hit:5 http://security.ubuntu.com/ubuntu noble-security InRelease\n"}
+,{"stream_name":"stdout","time":30.029578566,"data":"Hit:6 http://archive.ubuntu.com/ubuntu noble-updates InRelease\n"}
+,{"stream_name":"stdout","time":30.128874132,"data":"Hit:7 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu noble InRelease\n"}
+,{"stream_name":"stdout","time":30.138536637,"data":"Hit:8 http://archive.ubuntu.com/ubuntu noble-backports InRelease\n"}
+,{"stream_name":"stdout","time":31.20636365,"data":"Hit:9 https://sourceforge.net/projects/openfoam/files/repos/deb noble InRelease\n"}
+,{"stream_name":"stdout","time":33.137694584,"data":"Reading package lists...\n"}
+,{"stream_name":"stderr","time":33.157901698,"data":"W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)\n"}
+,{"stream_name":"stdout","time":37.107551563,"data":"Get:2 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-common all 2512.0-2 [1,312 kB]\n"}
+,{"stream_name":"stdout","time":37.223233781,"data":"Get:1 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512 amd64 2512.0-2 [68.3 MB]\n"}
+,{"stream_name":"stdout","time":39.556620777,"data":"Get:3 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-tools amd64 2512.0-2 [54.0 kB]\n"}
+,{"stream_name":"stderr","time":39.626656422,"data":"W: Download is performed unsandboxed as root as file '/kaggle/working/t20d/work/openfoam2512_2512.0-2_amd64.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)\n"}
+,{"stream_name":"stdout","time":39.626731287,"data":"Fetched 69.6 MB in 4s (15.8 MB/s)\n"}
+,{"stream_name":"stdout","time":41.758011711,"data":"Reading package lists...\n"}
+,{"stream_name":"stdout","time":42.147096748,"data":"Building dependency tree...\n"}
+,{"stream_name":"stdout","time":42.148520105,"data":"Reading state information...\n"}
+,{"stream_name":"stdout","time":42.535516719,"data":"The following additional packages will be installed:\n"}
+,{"stream_name":"stdout","time":42.536675304,"data":"  libptscotch-7.0 openfoam-selector\n"}
+,{"stream_name":"stdout","time":42.538081059,"data":"Suggested packages:\n"}
+,{"stream_name":"stdout","time":42.538099831,"data":"  openfoam2512-tutorials gnuplot\n"}
+,{"stream_name":"stdout","time":42.617863189,"data":"The following NEW packages will be installed:\n"}
+,{"stream_name":"stdout","time":42.618745651,"data":"  libptscotch-7.0 openfoam-selector openfoam2512 openfoam2512-common\n"}
+,{"stream_name":"stdout","time":42.619484758,"data":"  openfoam2512-tools\n"}
+,{"stream_name":"stdout","time":42.890546672,"data":"0 upgraded, 5 newly installed, 0 to remove and 116 not upgraded.\n"}
+,{"stream_name":"stdout","time":42.890577328,"data":"Need to get 70.4 MB of archives.\n"}
+,{"stream_name":"stdout","time":42.890584138,"data":"After this operation, 353 MB of additional disk space will be used.\n"}
+,{"stream_name":"stdout","time":42.89059023,"data":"Get:1 http://archive.ubuntu.com/ubuntu noble/universe amd64 libptscotch-7.0 amd64 7.0.4-1ubuntu2 [729 kB]\n"}
+,{"stream_name":"stdout","time":44.63519435,"data":"Get:2 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam-selector all 1.0.6-1 [20.3 kB]\n"}
+,{"stream_name":"stdout","time":44.866511527,"data":"Get:4 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512 amd64 2512.0-2 [68.3 MB]\n"}
+,{"stream_name":"stdout","time":45.029999481,"data":"Get:3 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-common all 2512.0-2 [1,312 kB]\n"}
+,{"stream_name":"stdout","time":89.441623267,"data":"Get:5 https://sourceforge.net/projects/openfoam/files/repos/deb noble/main amd64 openfoam2512-tools amd64 2512.0-2 [54.0 kB]\n"}
+,{"stream_name":"stdout","time":91.568826108,"data":"Fetched 70.4 MB in 47s (1,502 kB/s)\n"}
+,{"stream_name":"stdout","time":91.625574588,"data":"Selecting previously unselected package libptscotch-7.0:amd64.\r\n"}
+,{"stream_name":"stdout","time":91.709716403,"data":"(Reading database ... \r(Reading database ... 5%\r(Reading database ... 10%\r(Reading database ... 15%\r(Reading database ... 20%\r(Reading database ... 25%\r(Reading database ... 30%\r(Reading database ... 35%\r(Reading database ... 40%\r(Reading database ... 45%\r(Reading database ... 50%\r(Reading database ... 55%\r(Reading database ... 60%\r(Reading database ... 65%\r(Reading database ... 70%\r(Reading database ... 75%\r(Reading database ... 80%\r(Reading database ... 85%\r(Reading database ... 90%\r(Reading database ... 95%\r(Reading database ... 100%\r(Reading database ... 125665 files and directories currently installed.)\r\n"}
+,{"stream_name":"stdout","time":91.71389891,"data":"Preparing to unpack .../libptscotch-7.0_7.0.4-1ubuntu2_amd64.deb ...\r\n"}
+,{"stream_name":"stdout","time":91.738570843,"data":"Unpacking libptscotch-7.0:amd64 (7.0.4-1ubuntu2) ...\r\n"}
+,{"stream_name":"stdout","time":91.861797072,"data":"Selecting previously unselected package openfoam-selector.\r\n"}
+,{"stream_name":"stdout","time":91.877057424,"data":"Preparing to unpack .../openfoam-selector_1.0.6-1_all.deb ...\r\n"}
+,{"stream_name":"stdout","time":91.889152172,"data":"Unpacking openfoam-selector (1.0.6-1) ...\r\n"}
+,{"stream_name":"stdout","time":92.009699359,"data":"Selecting previously unselected package openfoam2512-common.\r\n"}
+,{"stream_name":"stdout","time":92.024579937,"data":"Preparing to unpack .../openfoam2512-common_2512.0-2_all.deb ...\r\n"}
+,{"stream_name":"stdout","time":92.037871158,"data":"Unpacking openfoam2512-common (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":92.238104157,"data":"Selecting previously unselected package openfoam2512:amd64.\r\n"}
+,{"stream_name":"stdout","time":92.25350402,"data":"Preparing to unpack .../openfoam2512_2512.0-2_amd64.deb ...\r\n"}
+,{"stream_name":"stdout","time":92.265738846,"data":"Unpacking openfoam2512:amd64 (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":94.027204515,"data":"Selecting previously unselected package openfoam2512-tools:amd64.\r\n"}
+,{"stream_name":"stdout","time":94.042679674,"data":"Preparing to unpack .../openfoam2512-tools_2512.0-2_amd64.deb ...\r\n"}
+,{"stream_name":"stdout","time":94.053802394,"data":"Unpacking openfoam2512-tools:amd64 (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":94.171621255,"data":"Setting up libptscotch-7.0:amd64 (7.0.4-1ubuntu2) ...\r\n"}
+,{"stream_name":"stdout","time":94.206087441,"data":"Setting up openfoam-selector (1.0.6-1) ...\r\n"}
+,{"stream_name":"stdout","time":94.267143351,"data":"Setting up openfoam2512-common (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":94.297805689,"data":"Setting up openfoam2512-tools:amd64 (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":94.327997539,"data":"Setting up openfoam2512:amd64 (2512.0-2) ...\r\n"}
+,{"stream_name":"stdout","time":94.351951883,"data":"Update installation directory for openfoam2512\r\n"}
+,{"stream_name":"stdout","time":94.353565979,"data":"Configuring OpenFOAM (/usr/lib/openfoam/openfoam2512)\r\n"}
+,{"stream_name":"stdout","time":94.371379167,"data":"    Replaced WM_PROJECT_DIR by '\"/usr/lib/openfoam/openfoam2512\"'  (etc/bashrc)\r\n"}
+,{"stream_name":"stdout","time":94.382729178,"data":"    Replaced WM_PROJECT_DIR by '\"/usr/lib/openfoam/openfoam2512\"'  (etc/cshrc)\r\n"}
+,{"stream_name":"stdout","time":94.391241861,"data":"    Remove automatic projectDir setting (etc/bashrc)\r\n"}
+,{"stream_name":"stdout","time":94.401062589,"data":"    Remove automatic projectDir setting (etc/cshrc)\r\n"}
+,{"stream_name":"stdout","time":94.432494213,"data":"Registered 'openfoam2512' with openfoam-selector\r\n"}
+,{"stream_name":"stdout","time":94.432515688,"data":"**\r\n"}
+,{"stream_name":"stdout","time":94.432520756,"data":"** Different ways to setup OpenFOAM (www.openfoam.com)\r\n"}
+,{"stream_name":"stdout","time":94.432525236,"data":"** - shell session:                 /usr/bin/openfoam2512\r\n"}
+,{"stream_name":"stdout","time":94.432530076,"data":"** - select for login shell:        openfoam-selector --set openfoam2512\r\n"}
+,{"stream_name":"stdout","time":94.43253504,"data":"** - source from ~/.bashrc file:  . /usr/lib/openfoam/openfoam2512/etc/bashrc\r\n"}
+,{"stream_name":"stdout","time":94.43253969,"data":"**\r\n"}
+,{"stream_name":"stdout","time":94.432543725,"data":"** Upgrade information: www.openfoam.com/documentation/\r\n"}
+,{"stream_name":"stdout","time":94.432548137,"data":"**\r\n"}
+,{"stream_name":"stdout","time":94.450683502,"data":"Processing triggers for man-db (2.12.0-4build2) ...\r\n"}
+,{"stream_name":"stdout","time":97.322746768,"data":"Processing triggers for libc-bin (2.39-0ubuntu8.9) ...\r\n"}
+,{"stream_name":"stdout","time":97.338200026,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_5.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338237387,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338248466,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338253581,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338262524,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338267705,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338272414,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338277075,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338361589,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_level_zero_v2.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338379757,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338385057,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbbind_2_0.so.3 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338402343,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338407357,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_loader.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338412304,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338416853,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbb.so.12 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338421743,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338553634,"data":"/sbin/ldconfig.real: /usr/local/lib/libumf.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338562694,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338567276,"data":"/sbin/ldconfig.real: /usr/local/lib/libtcm_debug.so.1 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.33857188,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338641334,"data":"/sbin/ldconfig.real: /usr/local/lib/libur_adapter_opencl.so.0 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338659986,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338664947,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc_proxy.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338669574,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.338709083,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc.so.2 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338715439,"data":"\r\n"}
+,{"stream_name":"stdout","time":97.33872013,"data":"/sbin/ldconfig.real: /usr/local/lib/libhwloc.so.15 is not a symbolic link\r\n"}
+,{"stream_name":"stdout","time":97.338773629,"data":"\r\n"}
+,{"stream_name":"stderr","time":23283.636525475,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":23283.636734424,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":23284.152511046,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":23284.152544949,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":23285.648145243,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":23287.413151385,"data":"[NbConvertApp] Writing 489109 bytes to __results__.html\n"}
+]

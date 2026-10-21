@@ -1,0 +1,62 @@
+{
+  "amp": -0.25,
+  "courant": {
+    "last_max": 1.8351776,
+    "last_mean": 0.022937368,
+    "max": 1.8437037
+  },
+  "deadline_limited": false,
+  "delta_alpha_deg": -0.25,
+  "geometry": "sa-wf_h0.134_fine30_morphB2-da-0.25",
+  "h_over_c": 0.134,
+  "id": "sa-wf_h0.134_fine30_morphB2-da-0.25__U",
+  "kind": "U",
+  "mesh": "fine30",
+  "mesh_cells_3d": 26059,
+  "mesh_msh_sha256": "fd1de2b70b0abc25b207c8f480db3c60921e97f83bc2fcaf39b75cb0b7a1b4a3",
+  "method": "morph",
+  "mode": "f2",
+  "pre_solver_wall_s": 10.39475944600008,
+  "s0_wall_s": 487.92051110400007,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 11920,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 7.4564189e-12,
+      "Uy": 7.3154526e-12,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 9.814305e-09,
+      "omega": null,
+      "p": 6.1445045e-08
+    },
+    "last_time": 0.1192,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "source_run": "sa-wf_h0.134_fine30_morphB2-da-0.25__S0",
+  "source_status": "COMPLETED",
+  "stage2": {
+    "dt_s": 1e-05,
+    "end_iteration": null,
+    "end_time_s": 0.1192,
+    "kind": "U",
+    "source_time": "5000",
+    "transient_s": 0.0447
+  },
+  "stage2_wall_s": 2215.830550431001,
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 118.931456,
+      "returncode": 0,
+      "stage": "pimpleFoam",
+      "timed_out": false,
+      "wall_s": 2212.0862845320007
+    }
+  ],
+  "status": "COMPLETED",
+  "variant": "B2"
+}

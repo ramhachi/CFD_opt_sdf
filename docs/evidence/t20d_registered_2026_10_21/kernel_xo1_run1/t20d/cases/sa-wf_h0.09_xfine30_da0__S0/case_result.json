@@ -1,0 +1,95 @@
+{
+  "amp": 0.0,
+  "bl_thickness_m": 0.0013200000000000002,
+  "check_mesh": {
+    "cells": 49699,
+    "diagnostic_lines": [],
+    "failed_check_counts": [],
+    "max_aspect_ratio": "3.0407998",
+    "max_non_orthogonality": "40.293849",
+    "max_skewness": "0.52278317",
+    "mesh_ok": true,
+    "min_determinant": "0.072044109",
+    "min_face_weight": "0.13953296",
+    "min_volume_ratio": "0.12213165",
+    "severe_non_orthogonal_faces": 0,
+    "unused_points": 0
+  },
+  "deadline_limited": false,
+  "delta_alpha_deg": 0.0,
+  "generator_log_tail": "/kaggle/working/t20d/work/sa-wf_h0.09_xfine30_da0: xfine30 cells=49699 layers=2",
+  "generator_wall_s": 12.455034596000019,
+  "geometry": "sa-wf_h0.09_xfine30_da0",
+  "h_m": 0.020106,
+  "h_over_c": 0.09,
+  "id": "sa-wf_h0.09_xfine30_da0__S0",
+  "iterations_requested": 5000,
+  "kind": "S0",
+  "mesh": "xfine30",
+  "mesh_cells_3d": 49699,
+  "mesh_msh_sha256": "d0be1bcd2a60cba71d86107f271ff8e80766ff7a8a321181d0469ef23c4de6b8",
+  "mesh_proxy_failures": [],
+  "method": "remesh",
+  "mode": "xo1",
+  "n_layers": 2,
+  "pre_solver_wall_s": 17.912976633000028,
+  "shape_mode": "incidence",
+  "solver": {
+    "converged_in": null,
+    "foam_fatal": false,
+    "iterations": 5000,
+    "last_initial_residuals": {
+      "ReThetat": null,
+      "Ux": 0.0082571556,
+      "Uy": 0.029753074,
+      "gammaInt": null,
+      "k": null,
+      "nuTilda": 0.0026579359,
+      "omega": null,
+      "p": 0.0026284112
+    },
+    "last_time": 5000.0,
+    "nan_in_log": false,
+    "sigfpe": false
+  },
+  "stages": [
+    {
+      "peak_rss_mb_sampled": 82.731008,
+      "returncode": 0,
+      "stage": "gmshToFoam",
+      "timed_out": false,
+      "wall_s": 2.3282504379999978
+    },
+    {
+      "peak_rss_mb_sampled": 132.071424,
+      "returncode": 0,
+      "stage": "checkMesh",
+      "timed_out": false,
+      "wall_s": 3.12786976000001
+    },
+    {
+      "peak_rss_mb_sampled": 136.269824,
+      "returncode": 0,
+      "stage": "simpleFoam",
+      "timed_out": false,
+      "wall_s": 1182.198817161
+    }
+  ],
+  "status": "COMPLETED",
+  "total_wall_s": 1202.6379964980001,
+  "variant": "",
+  "x_lowest_m": 0.04542920183486107,
+  "yplus": {
+    "airfoil": {
+      "average": 32.475343,
+      "max": 68.370515,
+      "min": 2.5555935
+    },
+    "ground": {
+      "average": 7.1268835,
+      "max": 36.265691,
+      "min": 0.0016597377
+    }
+  },
+  "yplus_returncode": 0
+}
