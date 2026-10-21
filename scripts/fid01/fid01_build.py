@@ -53,7 +53,7 @@ LEVELS = {"V1": {"blocks": None, "end_time": None, "shifts": PAIR_TAGS(range(49,
 EXTENSION_SHIFTS = {"V1": PAIR_TAGS(range(65, 73)), "V2": PAIR_TAGS(range(51, 53)), "V3": ["49m"]}
 EX_SLOTS = ("W4", "W6")                       # + the parent: exported at r = 4 and run on V1 at every V1 shift (§3.4)
 EX_REFINEMENT = 4
-V3_GROUP = 6
+V3_GROUP = 2
 V3_EXT_CAP = 6
 SMOKE_SHIFT = "80p"
 STAGE_TIMEOUT_S = {"V1": 7200, "V2": 43200, "V3": 259200}   # hang detectors (>= 8x the measured need); a timeout is INFRA_LOSS (§10)
