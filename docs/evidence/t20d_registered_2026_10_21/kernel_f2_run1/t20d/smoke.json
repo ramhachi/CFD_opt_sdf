@@ -1,0 +1,97 @@
+[
+  {
+    "amp": 0.0,
+    "bl_thickness_m": 0.019290251120639992,
+    "check_mesh": {
+      "cells": 8660,
+      "diagnostic_lines": [],
+      "failed_check_counts": [],
+      "max_aspect_ratio": "13.365813",
+      "max_non_orthogonality": "43.186814",
+      "max_skewness": "0.75320634",
+      "mesh_ok": true,
+      "min_determinant": "0.0083888028",
+      "min_face_weight": "0.11566945",
+      "min_volume_ratio": "0.13054399",
+      "severe_non_orthogonal_faces": 0,
+      "unused_points": 0
+    },
+    "deadline_limited": false,
+    "delta_alpha_deg": 0.0,
+    "generator_log_tail": "/kaggle/working/t20d/work/sa-wf_h0.224_coa30_da0_smoke: coa30 cells=8660 layers=11",
+    "generator_wall_s": 2.00360953400002,
+    "geometry": "sa-wf_h0.224_coa30_da0_smoke",
+    "h_m": 0.0500416,
+    "h_over_c": 0.224,
+    "id": "sa-wf_h0.224_coa30_da0_smoke__S0",
+    "iterations_requested": 200,
+    "kind": "S0",
+    "mesh": "coa30",
+    "mesh_cells_3d": 8660,
+    "mesh_msh_sha256": "68dcd863e0549edffd9555aa335b32534e8acef77cd476d1be85ef44336de201",
+    "mesh_proxy_failures": [],
+    "method": "remesh",
+    "mode": "f2",
+    "n_layers": 11,
+    "pre_solver_wall_s": 3.1431338039999446,
+    "shape_mode": "incidence",
+    "solver": {
+      "converged_in": null,
+      "foam_fatal": false,
+      "iterations": 200,
+      "last_initial_residuals": {
+        "ReThetat": null,
+        "Ux": 0.00047108467,
+        "Uy": 0.00085101125,
+        "gammaInt": null,
+        "k": null,
+        "nuTilda": 0.0058952178,
+        "omega": null,
+        "p": 2.3342477e-05
+      },
+      "last_time": 200.0,
+      "nan_in_log": false,
+      "sigfpe": false
+    },
+    "stages": [
+      {
+        "peak_rss_mb_sampled": 3.547136,
+        "returncode": 0,
+        "stage": "gmshToFoam",
+        "timed_out": false,
+        "wall_s": 0.518204695999998
+      },
+      {
+        "peak_rss_mb_sampled": 1.880064,
+        "returncode": 0,
+        "stage": "checkMesh",
+        "timed_out": false,
+        "wall_s": 0.6177994000000808
+      },
+      {
+        "peak_rss_mb_sampled": 67.018752,
+        "returncode": 0,
+        "stage": "simpleFoam",
+        "timed_out": false,
+        "wall_s": 6.037640006000061
+      }
+    ],
+    "status": "COMPLETED",
+    "total_wall_s": 9.722764259999963,
+    "variant": "",
+    "x_lowest_m": 0.04542920183486107,
+    "yplus": {
+      "airfoil": {
+        "average": 30.264879,
+        "max": 59.931289,
+        "min": 1.0258187
+      },
+      "ground": {
+        "average": 6.9324546,
+        "max": 24.372619,
+        "min": 0.034945899
+      }
+    },
+    "yplus_returncode": 0
+  }
+]
