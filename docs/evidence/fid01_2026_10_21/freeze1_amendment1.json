@@ -1,0 +1,17 @@
+{
+ "amended_commit": "2c146096b45ef1d4ad6609c6cbafd8ce9e1d446a",
+ "diff_sha256": "d96a29bd2baa9fa8aeac8f19e394ed55539fd28210d4b6d90f610c93bacb5968",
+ "diff_stat": " docs/fid01_registration_2026_10_21.md | 10 +++++-----\n scripts/fid01/analyze_fid01.py        |  4 ++--\n scripts/fid01/fid01_build.py          |  2 +-\n scripts/fid01/fid01_freeze.py         | 23 +++++++++++++----------\n tests/fid01/test_fid01.py             |  3 ++-\n 5 files changed, 23 insertions(+), 19 deletions(-)\n",
+ "files_sha256": {
+  "docs/fid01_registration_2026_10_21.md": "9943ebdb78bcfff6458f908de840707c458faab67e0ccaf527d7ff57e86d1280",
+  "scripts/fid01/analyze_fid01.py": "d826413e44f56e656dec82484dc17d64575594f8201c795bdc20a62d7f613ba3",
+  "scripts/fid01/fid01_build.py": "21f0f6255f9e0d697c41c72513c1455a147fccb0e43d2333a02b59397e64aa31",
+  "scripts/fid01/fid01_freeze.py": "71f7c49fb044201b5b4c07183ed884d214018a1f3144174754f505013586164c",
+  "tests/fid01/test_fid01.py": "df24e19494bfdce767c3eae79d29db9069b5745ef993c9c11df32e54829a5855"
+ },
+ "freeze1_source_commit": "7025b836b4c6ecf28a03c4767806c85d4c184f29",
+ "frozen_utc": "2026-10-21T12:37:55.383200+00:00",
+ "kind": "fid01_freeze1_amendment1",
+ "reason": "engineering, before freeze 2 and before any formal run: the V3 contingency record (of_levels) moves from freeze 2 to freeze 3 (written from the V3 probe's status, of_levels.json) so the flow_32 kernels and V1 need not wait for the probe; freeze 2 additionally records the WaterLily smoke. No rule, threshold, design or estimator changes.",
+ "registration": "docs/fid01_registration_2026_10_21.md \u00a710"
+}
