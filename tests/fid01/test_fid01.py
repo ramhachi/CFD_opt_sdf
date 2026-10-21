@@ -345,9 +345,10 @@ def test_builder_layout_with_planted_designs(tmp_path, monkeypatch):
     monkeypatch.setattr(B, "DSET", tmp_path / "d_set.json")
     (tmp_path / "d_set.json").write_text(json.dumps({"run_sets": {"V2": [B.PARENT, "v18__d1", "v18__d2"], "V3": [B.PARENT] + [f"v18__d{i}" for i in range(7)],
                                                                    "flow_48": [B.PARENT, "v18__d1"]}}))
+    (tmp_path / "of_levels.json").write_text(json.dumps({"of_levels": ["V1", "V2", "V3"]}))
     k = B.of_kernels(stage="v23")
     assert sorted(k) == ["v2_49m", "v2_49p", "v2_50m", "v2_50p", "v3_49p_1", "v3_49p_2"] and k["v3_49p_1"][1][0][1] == B.PARENT
-    (tmp_path / "freeze2.json").write_text(json.dumps({"of_levels": ["V1", "V2"]}))
+    (tmp_path / "of_levels.json").write_text(json.dumps({"of_levels": ["V1", "V2"]}))
     assert not [n for n in B.of_kernels(stage="v23") if n.startswith("v3")]                      # §5.3 contingency: V3 not built
     ext = B.of_kernels(extension={"V3": ["v18__d1"], "V1": ["v18__d2"]})
     assert [c[0] for c in ext["ext_v3"][1]] == [f"V3_{B.PARENT}_49m", "V3_v18__d1_49m"] and len(ext["ext_v1"][1]) == 2 * 16

@@ -2,8 +2,8 @@
 """FID-01 (#62, M3a) freeze records (registration §11): SHA-256 of every bound file at a clean, pushed commit.
 
     python scripts/fid01/fid01_freeze.py freeze1                      # plan, sources, designs, states, raws, export, STLs, OC
-    python scripts/fid01/fid01_freeze.py freeze2 --levels V1,V2,V3    # flow_32 campaign + prerun freeze, V1 criteria, OpenFOAM smoke, of_levels
-    python scripts/fid01/fid01_freeze.py freeze3                      # d_set, flow_48 campaign + prerun freeze, V2/V3 criteria
+    python scripts/fid01/fid01_freeze.py freeze2                      # flow_32 campaign + prerun freeze, V1 criteria, OpenFOAM smoke
+    python scripts/fid01/fid01_freeze.py freeze3                      # d_set, budget, of_levels, flow_48 campaign + prerun freeze, V2/V3 criteria
     python scripts/fid01/fid01_freeze.py freeze4 --main analysis.json # §6.8 extension: the main analysis and the extension criteria
 Refuses to overwrite, on a dirty tracked tree, or when HEAD is not on a remote branch.
 """
@@ -70,7 +70,6 @@ def criteria_hashes(stage):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("kind", choices=["freeze1", "freeze2", "freeze3", "freeze4"])
-    ap.add_argument("--levels", default="V1,V2,V3")
     ap.add_argument("--main", type=Path)
     a = ap.parse_args()
     if a.kind == "freeze1":
@@ -85,11 +84,9 @@ def main():
                  "plan_review": "one, three angles (numerical 16, controls 14, strategy 14 findings), registration §12a", "source_review": "one, registration §13"}
         print(record("freeze1", paths, extra))
     elif a.kind == "freeze2":
-        levels = a.levels.split(",")
-        SC.req(levels in (["V1", "V2", "V3"], ["V1", "V2"]), "of_levels must be V1,V2,V3 or V1,V2 (§5.3 contingency)")
         paths = ["docs/evidence/fid01_2026_10_21/freeze1.json", "docs/harness/fid01_campaign.json", "docs/harness/fid01_campaign.prerun_freeze.json",
-                 "docs/evidence/fid01_2026_10_21/of/criteria", "docs/evidence/fid01_2026_10_21/of/smoke", "infra/fid01", "docs/evidence/fid01_2026_10_21/p0_probe", REG]
-        extra = {"status": "REGISTERED_FROZEN (freeze 2)", "of_levels": levels, "of_criteria_sha256": criteria_hashes("v1")}
+                 "docs/evidence/fid01_2026_10_21/of/criteria", "docs/evidence/fid01_2026_10_21/of/smoke", "infra/fid01", "docs/evidence/fid01_2026_10_21/wl/smoke", REG]
+        extra = {"status": "REGISTERED_FROZEN (freeze 2)", "of_criteria_sha256": criteria_hashes("v1")}
         print(record("freeze2", paths, extra))
     elif a.kind == "freeze4":
         main = json.loads(a.main.read_text())
@@ -100,9 +97,15 @@ def main():
         print(record("freeze4", ["docs/evidence/fid01_2026_10_21/freeze3.json", "docs/evidence/fid01_2026_10_21/of/ext_criteria", "infra/fid01",
                                  str(a.main.resolve().relative_to(ROOT))], extra))
     else:
-        paths = ["docs/evidence/fid01_2026_10_21/freeze2.json", "docs/evidence/fid01_2026_10_21/d_set.json", "docs/harness/fid01_f48_campaign.json",
-                 "docs/harness/fid01_f48_campaign.prerun_freeze.json", "docs/evidence/fid01_2026_10_21/of/criteria", "infra/fid01", REG]
-        extra = {"status": "REGISTERED_FROZEN (freeze 3)", "of_criteria_sha256": criteria_hashes("v23"), "d_set_sha256": SC.sha256_path(EV / "d_set.json")}
+        lv = json.loads((EV / "of_levels.json").read_text())["of_levels"]
+        SC.req(lv in (["V1", "V2", "V3"], ["V1", "V2"]), "of_levels must be V1,V2,V3 or V1,V2 (§5.3 contingency)")
+        paths = ["docs/evidence/fid01_2026_10_21/freeze2.json", "docs/evidence/fid01_2026_10_21/d_set.json", "docs/evidence/fid01_2026_10_21/of_levels.json",
+                 "docs/evidence/fid01_2026_10_21/p0_probe", "docs/evidence/fid01_2026_10_21/of/criteria", "infra/fid01", REG]
+        f48 = [p for p in ("docs/harness/fid01_f48_campaign.json", "docs/harness/fid01_f48_campaign.prerun_freeze.json", "docs/evidence/fid01_2026_10_21/wl/budget_decision.json")
+               if (ROOT / p).exists()]
+        extra = {"status": "REGISTERED_FROZEN (freeze 3)", "of_levels": lv, "of_criteria_sha256": criteria_hashes("v23"), "d_set_sha256": SC.sha256_path(EV / "d_set.json"),
+                 "flow48": "pushed" if "docs/harness/fid01_f48_campaign.json" in f48 else "NOT_MEASURED (budget rule §4.3)"}
+        paths += f48
         print(record("freeze3", paths, extra))
 
 

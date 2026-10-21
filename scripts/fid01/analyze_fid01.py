@@ -547,12 +547,12 @@ def main_analysis(a):
     SC.req(tiers(wl, states_rec) == ds["tiers"], "d_set.json does not re-derive from the flow_32 tables")
     wl48 = None
     if a.campaign48:
-        check_campaign(a.campaign48, CAMPAIGN48_REL, fz3)
+        check_campaign(a.campaign48, CAMPAIGN48_REL, fz3)   # (absent when freeze 3 records flow_48 NOT_MEASURED)
         f48 = wl_load(a.campaign48, a.tables48, a.kernel_root, "fid01_f48")
         wl48 = {s: f["k7"] for s, f in f48.items() if "k7" in f}
     accepted = fz2["of_criteria_sha256"] + fz3["of_criteria_sha256"]
     vals, recs = of_values(a.of, accepted, a.lost)
-    levels = fz2["of_levels"]
+    levels = fz3["of_levels"]
     res, ofs = evaluate(states_rec, wl, vals, export["exports"], tuple(levels), wl48, {s: f["k7"] for s, f in f32.items() if "k7" in f})
     return {"kind": "fid01_analysis", "registration": "docs/fid01_registration_2026_10_21.md", "analyzer_sha256": SC.sha256_path(__file__),
             "dset_sha256": SC.sha256_path(a.dset), "freeze_sha256": {f: SC.sha256_path(EVID / f) for f in ("freeze1.json", "freeze2.json", "freeze3.json")},

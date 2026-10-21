@@ -265,7 +265,7 @@ def of_kernels(extension: dict | None = None, stage: str = "v1") -> dict:
                                          for n, f in [(s, stl_file(s, 8)) for s in state_names()] + ex])
         return out
     sets = json.loads(DSET.read_text())["run_sets"]
-    levels = json.loads((OUT / "freeze2.json").read_text())["of_levels"] if (OUT / "freeze2.json").exists() else ["V1", "V2", "V3"]
+    levels = json.loads((OUT / "of_levels.json").read_text())["of_levels"]   # the §5.3 decision record, written from the V3 probe before freeze 3
     for lev in [x for x in ("V2", "V3") if x in levels]:   # V3 removed by the §5.3 contingency is not built
         for tag, sh in shifts(LEVELS[lev]["shifts"]):
             cases = [(f"{lev}_{n}_{tag}", n, stl_file(n, 8), sh) for n in sets[lev]]
