@@ -1,0 +1,43 @@
+{
+  "schema": "geom03_post_result_publication_validation_v1",
+  "evidence_class": "byte_identity_metadata_and_reporting_validation_not_a_second_scientific_attempt",
+  "checked_at_utc": "2026-10-22T19:14:26.525705+00:00",
+  "pre_result_commit": "29bcfc4a3efe30a75344ccf1c4eeaab4aef8576c",
+  "metadata_only_frozen_validation": {
+    "runner": "validate_registration and validate_release PASS",
+    "checker": "_frozen_inputs with expected_base_specs PASS",
+    "source_pins": 23,
+    "review_pins": 8,
+    "target_arrays_or_rng_or_metrics_executed": false
+  },
+  "registered_result_identity": {
+    "sha256": "bb65314b8382ac3743f7632739552da18b4ca0e76ff0d61e425b60f7bae6d8bd",
+    "rows": 534,
+    "receipt_criteria_and_counterexamples_match": true,
+    "original_four_output_byte_streams_match": true,
+    "raw_npz_hashes_matched_to_saved_rows": 534,
+    "archived_original_member_byte_streams_read_back_and_matched": 538
+  },
+  "strict_json_files_checked": 22,
+  "source_software_validation_reused": {
+    "record": "docs/evidence/geom03_2026_10_23/validation.json",
+    "source_pins_unchanged": true,
+    "full_passed": 3117,
+    "full_skipped": 73,
+    "targeted_passed": 25,
+    "reason_not_reexecuted": "Only reporting, immutable output copies and status projections changed after the fully tested source was frozen."
+  },
+  "diff_checks": [
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check origin/codex/kaggle-batch-migration",
+      "exit_code": 0
+    }
+  ],
+  "scope": "E2 remains helper-only descriptive; official NO_GO and source/protocol/registration/reviews/seed/threshold files unchanged. No generator/check_run/controller/CFD/analysis rerun.",
+  "qualification_flags": "all false unchanged",
+  "shape_update_allowed": false
+}

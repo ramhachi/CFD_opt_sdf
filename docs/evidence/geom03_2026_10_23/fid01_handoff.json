@@ -1,0 +1,69 @@
+{
+  "schema": "fid01_to_geom_screen_xv_handoff_v1",
+  "evidence_class": "receipt_of_owner_registered_result_not_reanalysis",
+  "integration_commit": "458e2df56e310ed3959fd4c737d3aa9b9071dc69",
+  "result_commit": "b2314d9d2149fd9d3a0bdecf62d48194aee14b5e",
+  "local_merge_commit": "bd088dfc576b78b313dc894423f4e915f5707abf",
+  "analysis": {
+    "path": "docs/evidence/fid01_2026_10_21/analysis.json",
+    "sha256": "b89203d0c8ec588bfa83a87d67f81e2a731edd37655265d0a3f8cd6f9d863dd1"
+  },
+  "owner_outcome": "FID01_GO",
+  "cause": null,
+  "m3b_min_gain": {
+    "largest_non_passing_tier_B_n": 0.00521352901161827,
+    "min_gain_relative": 0.027030580470324268,
+    "paired_E2_floor": 0.006799353112692188,
+    "x_star_n": 0.007184166586553256
+  },
+  "coefficients": {
+    "J_b48": 0.26577921974115387,
+    "S_b": 0.006690411667275657,
+    "S_c": 0.010090088223621752,
+    "S_d": 0.003399676556346094,
+    "delta_min_literal_n": 0.005363471550387189,
+    "delta_min_n": 0.0018071267650359157,
+    "floor_downforce": 0.00020904201605451784,
+    "floor_drag": 0.000136408347135453,
+    "m2_analysis_sha256": "ee71c6d6983fee72a171c9188c117a478dafe51e2fd1488f15448321687f8e24",
+    "nc_of": [
+      -0.0006614761397334482,
+      5.792182318004298e-05
+    ],
+    "nc_wl": [
+      -0.0016476407624087992,
+      8.534104568937632e-05
+    ]
+  },
+  "S_d_OF": 0.006337479927119433,
+  "xv_of_min_gain_relative": 0.012674959854238867,
+  "xv_of_min_gain_formula": "registration section8:2*max(S_d,S_d_OF);receipt arithmetic only",
+  "secondary_labels": {
+    "tier_B": "TIER_B_FAIL",
+    "support": "SUPPORT_UNTESTABLE",
+    "heave": {
+      "v18__heave_m31.1": "FAIL",
+      "v18__heave_m31.1_pitch_p0.7": "PASS",
+      "v18__heave_p31.1": "FAIL"
+    },
+    "flow_R3_CHALLENGED": false,
+    "flow_R3_E2_EXCEEDED": true,
+    "EX": {
+      "v18__camber_m19.7": "EXPORT_INSENSITIVE",
+      "v18__reflex_m29.3": "EXPORT_INSENSITIVE"
+    }
+  },
+  "owner_manifest_check": {
+    "path": "docs/evidence/fid01_2026_10_21/SHA256SUMS",
+    "entries": 660,
+    "mismatches": [],
+    "missing": [],
+    "method": "SHA256 of working files imported from immutable owner result; no analyzer or force reaggregation run"
+  },
+  "parent_decision": "R3_VALIDATION_SELECTED_PROSPECTIVELY_AFTER_FID_GO; adoption requiresGEOM03_PASSandSCREENregistration",
+  "geometry_recipe_sha256_at_FID_receipt": "5a52a27cad8994ef96d45d6d79cbd960165c62d869afa7bffb7e1c8c4bdcde5b",
+  "geometry_rows_or_seed_changed_after_FID_receipt": false,
+  "registered_geometry_arrays_or_seed_executed": false,
+  "qualification_flags": "all false (unchanged)",
+  "shape_update_allowed": false
+}

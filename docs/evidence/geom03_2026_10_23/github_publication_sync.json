@@ -1,0 +1,222 @@
+{
+  "schema": "geom03_github_publication_sync_v1",
+  "evidence_class": "GitHub_body_state_readback_and_worktree_publication_receipt_not_scientific_reanalysis",
+  "result_commit": "f5d3f990b379579c675ad68ea6b7b108feefb056",
+  "published_freeze_commit": "29bcfc4a3efe30a75344ccf1c4eeaab4aef8576c",
+  "source_commit": "ce95612fec50965b97a30cba52338f066b4629ce",
+  "repository": "ramhachi/CFD_opt_sdf",
+  "issues": [
+    {
+      "number": 63,
+      "title": "ROADMAP: 実用 SDF 最適化システムまでの実行インデックス（権威は docs/phase_plan.md）",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/63",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-10-22T19:18:30Z",
+      "before_updated_at": "2026-10-22T13:58:52Z",
+      "before_state": "open",
+      "readback_equals_intended_body": true,
+      "before_body_sha256": "1d604b4f3c77780e88cc92a37d4a9e7e6c300563ebf683b78fb09c15da33af11",
+      "body_sha256": "b5749db1090acdba7d41ff39bcf108f12ed25dabbd73a1156ded802d933084a0"
+    },
+    {
+      "number": 64,
+      "title": "SCREEN-01 (M3b-1): 固定トポロジーのスクリーニングと応答曲面（L1 Re80 縮約デモ）",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/64",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-10-22T19:18:31Z",
+      "before_updated_at": "2026-10-22T17:32:19Z",
+      "before_state": "open",
+      "readback_equals_intended_body": true,
+      "before_body_sha256": "4ce27249a0131d329e4213f0e5d0b51a1affbe4a5e5a584547c8a9ee23061019",
+      "body_sha256": "a78e9504cd8d5b80e312b53f992b0bb2ba93c178e34a17c1a1e042b8870eb526"
+    },
+    {
+      "number": 65,
+      "title": "XV-01 (M3b-2): 最終候補の独立 body-fitted CFD 検証（L2）",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/65",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-10-22T19:18:33Z",
+      "before_updated_at": "2026-10-22T17:32:20Z",
+      "before_state": "open",
+      "readback_equals_intended_body": true,
+      "before_body_sha256": "d065f2360907b4aec610acad93126f5a289661c2c554ebbce4ead7176ef77a4f",
+      "body_sha256": "99d3fe4a1fc2bae6d5411e7ce3c5d0be8df37d8574540b26aa2c12c06542b60c"
+    },
+    {
+      "number": 66,
+      "title": "M4: 評価器と製品範囲の決定（L3 への入口、または撤退の登録）",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/66",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-10-22T19:18:34Z",
+      "before_updated_at": "2026-10-22T13:58:51Z",
+      "before_state": "open",
+      "readback_equals_intended_body": true,
+      "before_body_sha256": "aece3816199e8feafec45b41157ff013d54a5d27ce5c97c23b284379f0a48e05",
+      "body_sha256": "9e9b856da9db9b8285c86f88956036241691b3f8be210b7bb204e9cb6a1e5026"
+    },
+    {
+      "number": 70,
+      "title": "GEOM-03: 表現物体の幅・void・凍結境界の複合ゲートを独立データで検証する",
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/70",
+      "state": "closed",
+      "state_reason": "completed",
+      "updated_at": "2026-10-22T19:18:28Z",
+      "before_updated_at": "2026-10-22T18:47:32Z",
+      "before_state": "open",
+      "readback_equals_intended_body": true,
+      "before_body_sha256": "7c33caa2bccfd68cc87dd8610873f9f4e3fe56da3d4443e8cd5a13857216eb1a",
+      "body_sha256": "7b5b743bda7b771dce84da02bab813be68d73f70a6de41b6f9cf5044a43cc6d3"
+    }
+  ],
+  "owner_issue_preserved": {
+    "number": 62,
+    "state": "open",
+    "updated_at": "2026-10-22T17:32:09Z",
+    "mutations_by_this_continuation": 0
+  },
+  "pull_request": {
+    "number": 71,
+    "title": "FID結果を反映した計画更新とGEOM-03独立検証（NO_GO）",
+    "url": "https://github.com/ramhachi/CFD_opt_sdf/pull/71",
+    "state": "open",
+    "merged": false,
+    "base": "codex/kaggle-batch-migration",
+    "base_sha": "458e2df56e310ed3959fd4c737d3aa9b9071dc69",
+    "head": "chore/roadmap-evidence-review-2026-10-22",
+    "head_sha_at_readback": "f5d3f990b379579c675ad68ea6b7b108feefb056",
+    "mergeable_at_readback": true,
+    "updated_at": "2026-10-22T19:18:38Z",
+    "body_readback_matches_intended": true,
+    "body_sha256": "b3356134aa12730fd74f359b01843b1425603aef22edb7605fd7b9617a38aaaa"
+  },
+  "normal_result_push": {
+    "successful": true,
+    "local_and_remote_result_commit": "f5d3f990b379579c675ad68ea6b7b108feefb056",
+    "warning": "GitHub recommended50MBwarning for72.29MBarchive; push accepted; archive retained for complete input provenance."
+  },
+  "scientific_result": "GEOM03_NO_GO",
+  "geometry_r3_adopted": false,
+  "next_branch": "R0_CLEAN_FIXED_POOL_OR_PARENT",
+  "new_screen_or_xv_CFD_started": false,
+  "qualification_flags": "all false unchanged",
+  "shape_update_allowed": false,
+  "receipt_written_at_utc": "2026-10-22T19:21:04.085624+00:00",
+  "scope": "Snapshot after result f5d3f990 push and issue/PR body readback; a subsequent metadata-only receipt commit is expected to advance PR head. Existing SHA256SUMS remains immutable and covers its original46entries.",
+  "worktrees": [
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09",
+      "head": "fa3a42e08ab678a88d209af46a6b01d6d2fda9ef",
+      "status_porcelain": "?? docs/issues/45_xfid_openfoam_environment_gate.md\n",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/625d/CFD2026_09",
+      "head": "fa3a42e08ab678a88d209af46a6b01d6d2fda9ef",
+      "status_porcelain": "?? docs/issues/45_xfid_openfoam_environment_gate.md\n",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/issue45-root-certifier-integration",
+      "head": "1ba26684f15d39e622daa35bc29f0cd23f3881fa",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/p22-v17-volume-audit/CFD2026_09",
+      "head": "1c1f5af6c4caa61dc970a9a18d7768c6e6c3bb63",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/.codex/worktrees/roadmap-review-2026-10-22/CFD2026_09",
+      "head": "f5d3f990b379579c675ad68ea6b7b108feefb056",
+      "status_porcelain": "",
+      "edited_by_this_continuation": true
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/awesome-rhodes-094930",
+      "head": "1467af145250043c5faf3762052da110577190de",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/determined-dewdney-cb54d3",
+      "head": "c2f1ee29154a3351a4ef6f52582d23a57767b815",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512",
+      "head": "b2314d9d2149fd9d3a0bdecf62d48194aee14b5e",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/fix-test-hygiene-adfb7f",
+      "head": "b4940864204f5f1560c11faa4371acab89a7cba7",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/job02-per-state-placement-2c40da",
+      "head": "58425e7012c11d15ce4ccc4446c9cb1a0c811e34",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/local-openfoam-env-3fb438",
+      "head": "b72134f488529d5515fff5a82838816e7bfd93b3",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/nifty-swartz-e1c3db",
+      "head": "bdf65333f78948068cf0038ed7f099c2f034edbb",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/recursing-jackson-15f62e",
+      "head": "0ac5fbcbaf4585e89ac8f365fd26923275cee469",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/status-review-parallel-work-67587c",
+      "head": "bdf65333f78948068cf0038ed7f099c2f034edbb",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/t20b-registered-feasibility-a6d636",
+      "head": "85674cf055bd8f6100eebe11146274e10ba93736",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/v18-mode01-8a6aa6",
+      "head": "e24e331442ead82ff0a09830dc821339fa349a15",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09_review",
+      "head": "65d993fbfb475aa2353f1183e757c4cd48a0c7f7",
+      "status_porcelain": "",
+      "edited_by_this_continuation": false
+    },
+    {
+      "path": "/Users/sota/projects/FomulaTMU/CFD2026_09_w3c_r2",
+      "head": "200cdd352281d09374de000e616fdd2dffea8b06",
+      "status_porcelain": "?? work\n",
+      "edited_by_this_continuation": false
+    }
+  ],
+  "running_docker_containers_at_receipt": [],
+  "experiment_process": "Owned GEOM controller and child have exited0; terminal state saved; no restart. Other user/Claude/OpenCode/MCP processes left untouched.",
+  "local_feature_head_at_receipt": "f5d3f990b379579c675ad68ea6b7b108feefb056"
+}

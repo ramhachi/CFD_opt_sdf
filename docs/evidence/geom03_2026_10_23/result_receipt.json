@@ -1,0 +1,176 @@
+{
+  "schema": "geom03_terminal_result_receipt_v1",
+  "evidence_class": "receipt_and_integrity_of_single_registered_checker_result_not_reanalysis",
+  "source_commit": "ce95612fec50965b97a30cba52338f066b4629ce",
+  "published_freeze_commit": "29bcfc4a3efe30a75344ccf1c4eeaab4aef8576c",
+  "registration_sha256": "eed4a83e6676d3d93df5f1e1ef288e58e8a6153b78be177a5e0951808f1264ea",
+  "release_sha256": "313a65716224f15e32a763dd7eebcc89b6863718f0d14315e53077f68c0fccb6",
+  "verdict": "GEOM03_NO_GO",
+  "complete": true,
+  "checked_rows": 534,
+  "incomplete_reasons": [],
+  "counterexamples": [
+    {
+      "criterion": "K2",
+      "id": "W40_th1_q0"
+    },
+    {
+      "criterion": "K4",
+      "id": "T1_th0_q0"
+    }
+  ],
+  "criteria": {
+    "H0": {
+      "pass": true
+    },
+    "K1": {
+      "checked_rows": 52,
+      "counterexamples": [],
+      "expected_rows": 52,
+      "pass": true
+    },
+    "K2": {
+      "checked_rows": 36,
+      "counterexamples": [
+        "W40_th1_q0"
+      ],
+      "expected_rows": 36,
+      "pass": false
+    },
+    "K3": {
+      "checked_rows": 28,
+      "counterexamples": [],
+      "expected_rows": 28,
+      "pass": true
+    },
+    "K4": {
+      "checked_rows": 20,
+      "counterexamples": [
+        "T1_th0_q0"
+      ],
+      "expected_rows": 20,
+      "pass": false
+    },
+    "K5": {
+      "brackets_h": {
+        "composite": {
+          "hi": 1.75,
+          "lo": 1.5
+        },
+        "r0": {
+          "hi": 1.5,
+          "lo": 1.25
+        }
+      },
+      "checked_rows": 40,
+      "complete": true,
+      "expected_rows": 40,
+      "pass": true,
+      "q": {
+        "composite": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "r0": [
+          0.0,
+          0.25,
+          0.5,
+          0.75,
+          1.0
+        ]
+      },
+      "widths_h": [
+        1.0,
+        1.25,
+        1.5,
+        1.75,
+        2.0
+      ]
+    },
+    "K6": {
+      "checked_rows": 354,
+      "counterexamples": [],
+      "expected_rows": 354,
+      "pass": true
+    }
+  },
+  "run_started_utc": "2026-10-22T18:46:18.322951+00:00",
+  "terminal_result_time_utc": "2026-10-22T18:51:19.712905+00:00",
+  "cumulative_wall_s": 301.3899540901184,
+  "observed_peak_child_rss_bytes": 950419456,
+  "attempts": 1,
+  "resume_count": 0,
+  "terminal_stop_file_exists": false,
+  "separation": {
+    "known_native_count": 99,
+    "new_combination_count": 28,
+    "old_combination_count": 250,
+    "old_combination_hashes_sha256": "25f9871ee28e59ca6ae864eea7c7b0e3ffea27408ddabc1b07d05eb6d88c218a",
+    "schedule_sha256": "96f6ef30fe9656faf32d5067e5274c355846da49dc760684a927198c5e9df790",
+    "verified_before_outcomes": true
+  },
+  "post_result_descriptive_combo_status_counts": {
+    "r0": {
+      "pass": 1,
+      "unmeasured": 0,
+      "fail": 27,
+      "blocked": 0
+    },
+    "r3": {
+      "pass": 28,
+      "unmeasured": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    "composite": {
+      "pass": 28,
+      "unmeasured": 0,
+      "fail": 0,
+      "blocked": 0
+    }
+  },
+  "full_raw_input_archive": {
+    "path": "docs/evidence/geom03_2026_10_23/run/run.tar.xz",
+    "input_npz_files": 534,
+    "raw_input_bytes": 321545834,
+    "archive_bytes": 75801524,
+    "all_archived_member_byte_hashes_verified": 538,
+    "compression": "standard tar.xz; uid/gid/mtime normalized; original NPZ/member bytes preserved",
+    "publication_compression_seconds": 21.126046916935593,
+    "compression_is_post_result_publication_work_not_a_metric_or_second_attempt": true
+  },
+  "artifacts": {
+    "docs/evidence/geom03_2026_10_23/run/results.json": {
+      "sha256": "bb65314b8382ac3743f7632739552da18b4ca0e76ff0d61e425b60f7bae6d8bd",
+      "bytes": 2849
+    },
+    "docs/evidence/geom03_2026_10_23/run/state.json": {
+      "sha256": "3723b1dc279578fcffcd48f9b121685d23199fe7275bd920a6b78fcec1f09671",
+      "bytes": 526
+    },
+    "docs/evidence/geom03_2026_10_23/run/premeasurement_inputs.json": {
+      "sha256": "b40a1846ee397640acb4de99d969235826af5e1108c60507cfda937f30320992",
+      "bytes": 53606
+    },
+    "docs/evidence/geom03_2026_10_23/run/rows.jsonl": {
+      "sha256": "a63f91d5cba36a063937e838f6af4cb70e3fc92ade0903d6c25b16726452bcb7",
+      "bytes": 1122235
+    },
+    "docs/evidence/geom03_2026_10_23/run/run.tar.xz": {
+      "sha256": "efc99fa2ad610adfe845264b8765ef3fc4c108e3c65f40e97aa3611c8b27c299",
+      "bytes": 75801524,
+      "members": 538,
+      "input_npz_files": 534
+    },
+    "docs/evidence/geom03_2026_10_23/run/counterexamples.json": {
+      "sha256": "6f92bcb3409929e1aca8c544a4845271fbe21754174f41ed27ed6edc2b008805",
+      "bytes": 6034
+    }
+  },
+  "parent_next_branch": "R0_CLEAN_FIXED_POOL_OR_PARENT;R3_NOT_ADOPTED;NO_TERMINAL_RETRY_OR_RETUNING",
+  "qualification_flags": "all false unchanged",
+  "shape_update_allowed": false
+}

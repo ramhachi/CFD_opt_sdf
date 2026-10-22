@@ -1,5 +1,11 @@
 # 問題台帳 — 2026-09-22
 
+> **最新の投影（2026-10-23）:** UNC-01 は `M2_COMPLETE`、FID-01 は02:47JSTの再照合で登録済み FID01_GO を確認（結果b2314d9d、統合458e2df5）。
+> GEOM-03は03:51JSTに登録済みGEOM03_NO_GOで完了（534件の登録された独立照合を完了、K2/K4に反例）。R3を採用せずR0-clean fixed-pool/parent経路へ戻る。
+> T2-0b/c/d は登録済み NO-GO、#57 は調査完了として closed。高Re評価器は未採用で、旧自動 fallback は利用不能。
+> [最新計画](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation)と
+> [証拠・先行研究の照合](roadmap_review_2026_10_22.md)を参照する。下の過去の現況は日付ごとの記録。
+
 > **現況（2026-10-02）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
 > FD-07の因果介入は、このfixtureの短時間不規則応答について半セル符号補正を主要因として支持し、
 > 続く連続replacement比較では one-sided moment-level Candidate C を診断上の最有力候補に選んだ。
@@ -2067,3 +2073,37 @@ All gates passed; the both-grid downforce rule rejected every step (flow_24 vs f
 ## GRIDRES-01 (2026-10-21): sub-cell response not grid-resolved
 
 flow_24/32/40 give downforce slopes of different sign and growing differences along the OPT-01 direction. See the [record](issues/gridres01_result_2026_10_21.md).
+
+
+## 2026-10-22 — latest evidence and missing work
+
+This is an issue-state projection; [the latest phase-plan amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan) owns order. [The review](roadmap_review_2026_10_22.md) records the evidence and primary literature.
+
+- #61 UNC-01: `M2_COMPLETE` on v18/Re80; wide-arm paired differences and coarse-mesh retention recorded, not general grid or physics qualification.
+- #62 FID-01: in progress on separate branch `claude/m3a-fid01` (`78e1e76f` reviewed); freeze 3 and flow_32/48 verification do not constitute a final GO.
+- #57 T2-0: closed for the completed feasibility investigation. T2-0b/c/d all NO-GO; there is no adopted high-Re evaluator. #66's old automatic T2-0 fallback is unavailable; #67 needs new registered GO plus M4 scope choice.
+- GRIDRES-01 correction: flow_40 Poisson-confounded; the earlier all-grid discretization-dominated hypothesis was withdrawn on 2026-10-21. The previous ledger line is historical, not the corrected conclusion. GRID-02 and UNC-01 preserve R3 for their measured modes.
+- [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68): open planning task, original experimental data/conditions and validation-case contract, child of #66; no CFD.
+- [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69): open conditional task, fixed mesh inputs and existing pseudo-transient/LTS route with a registered numerical/cost gate; M4 and validation inputs first, no automatic adoption.
+- [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70): open conditional task before R3-based M3b; registered disjoint validation of represented-width + frozen-node/topology composite. M3a R0 and old results unchanged.
+
+No registration or qualification flag changed; `shape_update_allowed=false`.
+
+## 2026-10-22 — parallel preparation and primary-reference audit
+
+- #68 EVAL-VALID-01: bounded source/condition audit complete, `REFERENCE_INADEQUATE` for quantitative absolute-Cl adoption. Primary Table 15 matches all seven legacy Genua points; the observable is pressure-integrated sectional Cl and the author restricts it to qualitative trends. [Audit and M4 inputs](eval_valid01_reference_audit_2026_10_22.md). No T2-0 verdict/input changed.
+- #65 XV-01: [registration inputs](xv01_registration_requirements_2026_10_22.md) prepared; a single-finalist uncertainty rule, actual geometry/drag feasibility and final-FID label/threshold handoff remain required before freeze. Still blocked on #62 GO and SCREEN finalist.
+- #70 GEOM-03: [draft](geom03_registration_2026_10_22.md), not frozen/run/qualified; source/fixture bindings and reviews remain before any held-out measurement.
+- #62 FID-01: runtime snapshot only, V1 672 + V2 52 completed records, V3 5/9 with four advancing jobs at 22:25 JST. No final verdict, no force inspection by this continuation, no process/input/limit changes.
+
+Order authority: [latest phase-plan entry](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit). All qualification flags remain false; shape_update_allowed=false.
+
+## 2026-10-23 — GEOM-03 implementation slice
+
+- #70: completed [GEOM03_NO_GO](evidence/geom03_2026_10_23/result.md),180base+354K6=534/534 independently verified. One three-angle plan round, one source round with resolutions,25 development tests and full regression3117/73skip preceded frozen sourcece95612f/release29bcfc4a. K2 W40_th1_q0 and K4 T1_th0_q0 are valid counterexamples; R3 is not adopted and no terminal retry/retuning follows.
+- #62: remote78e1e76f and issue unchanged at02:05JST; four V3 jobs active, Claude owns the frozen analysis. #64/#65 retain their dependencies. #66 may use completed#68 audit, final M4 choice still waits for applicable M3 outcomes.
+- #70's bounded scientific validation is complete with NO_GO and is closed/completed on GitHub; #64 records the R0-clean fixed-pool/parent branch. [Execution history](next_execution_plan_2026_10_23.md), [review evidence](evidence/geom03_2026_10_23/plan_review.json). Order authority: [latest amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation). All qualification flags false; shape_update_allowed=false.
+
+Live update02:47JST: #62 owner result FID01_GO is merged458e2df5, owner branch removed, no active Docker containers. #64/#65 inherit2.70%/1.27% gain mappings and FID secondary labels. #70 R3-validation route selected, but source review/full regression/freeze/release/resource gates still precede any new geometry data. The earlier02:05 snapshot remains historical.
+
+Downstream preparation: [SCREEN/XV registration choices](screen_xv_preparation_2026_10_23.md). #65 must resolve single-finalist V2 pooled-variance as well as V3 cross-design residual issues; deterministic shift dispersion and iterative-window SD are not silently treated as iid placement SE. The80/96-case options remain proposals without an execution release.

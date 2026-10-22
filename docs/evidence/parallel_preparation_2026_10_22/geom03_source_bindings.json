@@ -1,0 +1,76 @@
+{
+  "schema": "geom03_preparation_source_bindings_v1",
+  "status": "PREPARATION_ONLY_NOT_A_FREEZE",
+  "source_commit": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+  "sources": [
+    {
+      "path": "docs/evidence/v18_genesis_2026_10_19/genesis.json",
+      "sha256": "2fce6a0837a9420ce7b8a4195584c0eba1da753161cf4ec2d2ba89dd5e79eeef"
+    },
+    {
+      "path": "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz",
+      "sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890"
+    },
+    {
+      "path": "docs/evidence/geom02_v17_gates_2026_10_14/geom02_resolved_research_policy.json",
+      "sha256": "b5bcc8c742cb9c09988a80b7e42374c7d7f9bdfccce5c5acb8713cc9204375c8"
+    },
+    {
+      "path": "scripts/width_rule_study.py",
+      "sha256": "d56117d9dd3bfd336c40d1e4bb7918182aeedca7564b1816338cf40172230fc7"
+    },
+    {
+      "path": "src/cfd_sdf/design/geometry_gates.py",
+      "sha256": "7bed1368f3a6e724fdddaeec9e21d8dc1bdb7fb76b637546142d0d083752b784"
+    },
+    {
+      "path": "src/cfd_sdf/design/geometry_gates_v2.py",
+      "sha256": "352d145e54cf5330236a9ff13279341e3bb2f59c22a3f81d62a020e713089de4"
+    }
+  ],
+  "v18_lattice": {
+    "origin_m": [
+      -1.0,
+      -0.8,
+      -0.6
+    ],
+    "shape": [
+      121,
+      65,
+      49
+    ],
+    "spacing_m": 0.025
+  },
+  "v18_arrays": {
+    "phi": {
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "dtype": "float32"
+    },
+    "design_mask": {
+      "shape": [
+        121,
+        65,
+        49
+      ],
+      "dtype": "bool"
+    }
+  },
+  "resolved_policy": {
+    "policy_sha256": "d4cd9aa42f0062923cdc8713d14d10fd334888a3c9dd5db9be15f7ac9d378d41",
+    "max_components": null,
+    "solid_neighborhood": 26,
+    "empty_solid": "inadmissible",
+    "step_allowed_events": []
+  },
+  "length_tolerance_m": 1e-09,
+  "exploratory_seed": 20261020,
+  "proposed_new_seed": 20261022,
+  "new_fixture_or_seed_executed": false,
+  "formal_plan_review_completed": false,
+  "formal_source_review_completed": false,
+  "freeze_ready": false
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "issue_publication_readback_v1",
+  "checked_utc": "2026-10-22T13:59:39.077455+00:00",
+  "mutation_method": "GitHub connector structured update_issue after a fresh state/body comparison; sequential updates, followed by independent fetch_issue readback",
+  "created_issues": [],
+  "updated_issues": [
+    {
+      "number": 68,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/68",
+      "before_updated_at": "2026-10-22T08:24:01Z",
+      "after_updated_at": "2026-10-22T13:58:42Z",
+      "before_body_sha256": "b34ddd2052b502777e5cf45a039c3d97127112200c157b1da27d936a59fbc35b",
+      "after_body_sha256": "aced16406cdd5835554c7d4ca9bf0df585760d46b54684fdb7fd70311fc846e4",
+      "state": "closed",
+      "state_reason": "completed",
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 65,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/65",
+      "before_updated_at": "2026-10-22T08:28:29Z",
+      "after_updated_at": "2026-10-22T13:58:45Z",
+      "before_body_sha256": "d815c3b906011cce9228a8ba723acd3fccbb1b339bcc9c77f96045a47cc633a3",
+      "after_body_sha256": "d065f2360907b4aec610acad93126f5a289661c2c554ebbce4ead7176ef77a4f",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 64,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/64",
+      "before_updated_at": "2026-10-22T08:28:27Z",
+      "after_updated_at": "2026-10-22T13:58:47Z",
+      "before_body_sha256": "a2a67e3f40ca7ba590ab9c1a7a49e2213c35f81eba20adb9ada191ed91903f3e",
+      "after_body_sha256": "4ce27249a0131d329e4213f0e5d0b51a1affbe4a5e5a584547c8a9ee23061019",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 70,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/70",
+      "before_updated_at": "2026-10-22T08:24:04Z",
+      "after_updated_at": "2026-10-22T13:58:48Z",
+      "before_body_sha256": "75853f8c157303ef5b5555baee81b592d59f7f6a99037f7300c4d5edae0d75e5",
+      "after_body_sha256": "692e18e2e0b78208ac94630cea50a79da3c17c16c3df0d1b47467b7cbe6e04c5",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 69,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/69",
+      "before_updated_at": "2026-10-22T08:24:03Z",
+      "after_updated_at": "2026-10-22T13:58:50Z",
+      "before_body_sha256": "7232440ceb388f72319090aa6de5bc0cde0f73d4301396005f5bca1f1998e5bf",
+      "after_body_sha256": "414a2f067ce0be0b4d3053daceb36274c1df01cda841b1c39d972ae4524f4f69",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 66,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/66",
+      "before_updated_at": "2026-10-22T08:28:25Z",
+      "after_updated_at": "2026-10-22T13:58:51Z",
+      "before_body_sha256": "01e1901365d715e20cc62aa1274bee0d7a2333688eeacca8b81e36284f654e7d",
+      "after_body_sha256": "aece3816199e8feafec45b41157ff013d54a5d27ce5c97c23b284379f0a48e05",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    },
+    {
+      "number": 63,
+      "url": "https://github.com/ramhachi/CFD_opt_sdf/issues/63",
+      "before_updated_at": "2026-10-22T08:28:23Z",
+      "after_updated_at": "2026-10-22T13:58:52Z",
+      "before_body_sha256": "58f5d482473820a24a5185a7b46b461b207ead689cc994e5ccd360ea464443ab",
+      "after_body_sha256": "1d604b4f3c77780e88cc92a37d4a9e7e6c300563ebf683b78fb09c15da33af11",
+      "state": "open",
+      "state_reason": null,
+      "body_matches_intended_payload": true
+    }
+  ],
+  "all_readbacks_match": true,
+  "messages_or_comments_posted": false,
+  "qualification_flags_changed": false
+}

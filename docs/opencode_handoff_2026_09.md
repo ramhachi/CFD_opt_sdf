@@ -10,6 +10,13 @@ This document summarizes the current implementation context. It is not a
 second roadmap. `phase_plan.md` is the sole authority for current status and
 execution order. Older Stage T/S/V material below is retained evidence context.
 
+**Entry checkpoint (2026-10-23):** start with [STATE.md](STATE.md), the
+[latest roadmap amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation), and
+[the evidence/literature review](roadmap_review_2026_10_22.md). UNC-01 is complete; FID-01 is now FID01_GO (b2314d9d merged458e2df5). Use the written-once result for SCREEN/XV inheritance; do not rerun or overwrite its analysis.
+T2-0b/c/d ended NO-GO, so automatic fallback to a T2-0 high-Re evaluator is unavailable.
+GEOM-03 completed **GEOM03_NO_GO**: [result](evidence/geom03_2026_10_23/result.md),all534 records independently verified,K2/K4 counterexamples. Sourcece95612f passed25 development tests and full regression3117/73skip, then freeze/release29bcfc4a were pushed before the one attempt. Do not relaunch/resume the terminal study or retune its rule. Read the [180-row protocol](geom03_registration_2026_10_23.md), [plan review](evidence/geom03_2026_10_23/plan_review.json), [source review](evidence/geom03_2026_10_23/source_review.json) and [execution history](next_execution_plan_2026_10_23.md). Next is the R0-clean fixed-pool/parent route; [SCREEN/XV preparation](screen_xv_preparation_2026_10_23.md) carries concrete downstream choices and the V2/V3 single-finalist SE gaps.
+The older checkpoints below retain their dated evidence, not current execution instructions.
+
 ## Read Order and Authority
 
 For a fresh terminal, read in this order:
@@ -33,7 +40,7 @@ The authority split is intentional:
 - `docs/fixed_grid_data_contract_v2.md` defines retained Stage T artifact semantics; it does not make density the current canonical design variable.
 - `docs/evidence/*.json` is machine-readable evidence; prose must not broaden its scope.
 
-## Current checkpoint (2026-10-01)
+## Historical checkpoint (2026-10-01)
 
 Use `codex/kaggle-batch-migration` as the working integration branch; `main`
 remains untouched. Canonical genesis v17 is adopted. W3/W4 v17 passed their
