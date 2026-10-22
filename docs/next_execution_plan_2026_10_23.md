@@ -2,7 +2,7 @@
 
 **位置づけ:** 本文書は [phase_plan.md 2026-10-22 並列準備 amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit) に**従属**する作業計画であり、第二の権威ではない。順序・閾値・登録・判定の変更権限は phase_plan と各登録文書にある。計画の統合時には親が phase_plan の最新節と状態投影を同期する。既存の不変 evidence は変更せず、新たな数値物理閾値・retuning・最終 scope 決定・計算 ETA を新設しない。
 
-**実装状況の明示:** 主 deliverable は `scripts/geom03_run.py` / `scripts/geom03_check.py` / `tests/test_geom03.py`。180 base rowsの具体化、三角度の計画レビューと一度のソースレビューを終え、指摘を結果を見る前に解消した。ソースレビューの修正後は25開発テストPASS、修正後の全回帰も3117PASS/73SKIP（604.17秒）。初回の全回帰3110PASS/73SKIPも履歴として保持する。[前日のdraft](geom03_registration_2026_10_22.md)は履歴として保持し、[今回の仕様](geom03_registration_2026_10_23.md)で未確定点を解消した。freeze・登録・held-out実行はまだ行われていない。形成段階のauthor revisionsや未完了のworker出力を正式レビューの通過として数えない。
+**実装状況の明示:** 主 deliverable は `scripts/geom03_run.py` / `scripts/geom03_check.py` / `tests/test_geom03.py`。180 base rowsの具体化、三角度の計画レビューと一度のソースレビューを終え、指摘を結果を見る前に解消した。修正後は25開発テストPASS、全回帰3117PASS/73SKIP（604.17秒）。初回3110PASS/73SKIPも履歴として保持する。[前日のdraft](geom03_registration_2026_10_22.md)を保持し、[今回の仕様](geom03_registration_2026_10_23.md)で未確定点を解消した。ソースce95612fをpush済み。freeze/releaseのmetadata検査は両実装でPASS、登録入力はまだ生成していない。freeze記録のcommit/pushと直前資源gate後に一試行を開始する。形成段階のauthor revisionsや未完了worker出力を正式レビューの通過として数えない。
 
 **GitHub refresh (2026-10-23 00:30 JST、直近スナップショット比較):** integration `codex/kaggle-batch-migration` = `1467af14`、FID `claude/m3a-fid01` = `78e1e76f`、当方の open PR #71 head = `73802a5b`（前回 catch-up の `e2f7b5f9` から docs 側作業分のみ前進）。前回スナップショットからのリモート変化なし。Issue: #68 は closed（参照監査完了、`REFERENCE_INADEQUATE`）、#62–#67 / #69 / #70 は open。Claude が #62 FID-01 を所有し、V3 docker 4 jobs が稼働継続（各 ~100% CPU、約 20h）。Host は 32 GiB / swap 23 GiB / loadavg ~14。最終 FID verdict は未確認、現行 force 出力は非開示のまま維持する。
 
