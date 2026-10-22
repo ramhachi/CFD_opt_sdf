@@ -1,0 +1,17 @@
+{
+ "amended_commit": "f95e400c0fd1ff3098b69343ab184b5c7b6453c2",
+ "diff_sha256": "d0e3497a0adedd7329de33b057480a03c3c14ad6698d764a9aadeae2b4dd22f0",
+ "files_sha256": {
+  "docs/fid01_registration_2026_10_21.md": "e05c4cd024c5a857c7393e3ffe013d284d65464df2cccb0bd0ceaa7b6156e7e0",
+  "scripts/fid01/fid01_harness.py": "f8d7fe45801e15e8b4d6d0fbbbe6b1827a3be9c49209804ac556c8a870d8dfab",
+  "tests/fid01/test_fid01.py": "50fede65679fc6a5329d0f71faf17d00d3f6e91e9b065db48c8ccd9e9a0b462a"
+ },
+ "freeze1_source_commit": "7025b836b4c6ecf28a03c4767806c85d4c184f29",
+ "frozen_utc": "2026-10-21T13:24:37.073907+00:00",
+ "kind": "fid01_freeze1_amendment2",
+ "placeholder_rows": [
+  ",[Private Notebook],,2010-04-01 00:00:00,0"
+ ],
+ "reason": "engineering, before freeze 2 and before any formal run: `harness.py freeze` failed closed ('kernels listing returned a different owner or malformed CSV') on an unaddressable row of the owner's Kaggle kernel listing (empty ref, title '[Private Notebook]', lastRunTime 2010-04-01, created between 2026-10-21T11:56Z and 12:35Z, persisting for more than 30 min, not reachable by `kaggle kernels status`). The harness is not edited; scripts/fid01/fid01_harness.py exempts exactly such rows from the listing parser for the freeze and for its re-validation in per-kernel verification. No rule, design or estimator changes.",
+ "registration": "docs/fid01_registration_2026_10_21.md \u00a710"
+}

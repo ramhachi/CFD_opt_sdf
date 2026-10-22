@@ -1,0 +1,74 @@
+{
+  "dataset": "/private/tmp/claude-501/-Users-sota-projects-FomulaTMU-CFD2026-09--claude-worktrees-dreamy-wu-de3512/e6de4ad1-8a46-49c0-aaa6-b0f12deebd6f/scratchpad/ofprobe/run1/ds_V2",
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "1",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/private/tmp/claude-501/-Users-sota-projects-FomulaTMU-CFD2026-09--claude-worktrees-dreamy-wu-de3512/e6de4ad1-8a46-49c0-aaa6-b0f12deebd6f/scratchpad/ofprobe/run1/kernel_V2/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/private/tmp/claude-501/-Users-sota-projects-FomulaTMU-CFD2026-09--claude-worktrees-dreamy-wu-de3512/e6de4ad1-8a46-49c0-aaa6-b0f12deebd6f/scratchpad/ofprobe/run1/out_V2:/kaggle/working",
+    "-v",
+    "/private/tmp/claude-501/-Users-sota-projects-FomulaTMU-CFD2026-09--claude-worktrees-dreamy-wu-de3512/e6de4ad1-8a46-49c0-aaa6-b0f12deebd6f/scratchpad/ofprobe/run1/ds_V2:/kaggle/input/fid01-probe-v2-inputs:ro",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/runner.py"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      89.865234375,
+      96.60498046875,
+      96.77197265625
+    ],
+    "swap": "total = 16384.00M  used = 15200.44M  free = 1183.56M  (encrypted)",
+    "utc": "2026-10-21T09:11:40+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      147.91845703125,
+      126.3251953125,
+      80.8759765625
+    ],
+    "swap": "total = 12288.00M  used = 10646.50M  free = 1641.50M  (encrypted)",
+    "utc": "2026-10-21T08:39:14+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [
+      "ramhachi888/fid01-probe-v2-inputs"
+    ],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/fid01-probe-v2",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "fid01-probe-v2"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "/private/tmp/claude-501/-Users-sota-projects-FomulaTMU-CFD2026-09--claude-worktrees-dreamy-wu-de3512/e6de4ad1-8a46-49c0-aaa6-b0f12deebd6f/scratchpad/ofprobe/run1/kernel_V2/runner.py",
+  "runner_sha256": "3189b825a178d671022c338472657c5a19ed70dfd378e8331da2a098cef0b8d8",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": null,
+  "wall_s": 1945.501227875
+}
