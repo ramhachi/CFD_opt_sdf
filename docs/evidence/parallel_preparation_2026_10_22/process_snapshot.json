@@ -1,0 +1,99 @@
+{
+  "schema": "parallel_preparation_runtime_snapshot_v1",
+  "captured_utc": "2026-10-22T13:25:58.919746+00:00",
+  "evidence_class": "status_only_not_qualification",
+  "source_branch": "claude/m3a-fid01",
+  "source_head": "78e1e76f564bd5e6c9a6c619280820ff83d7129f",
+  "host_physical_memory_bytes": 34359738368,
+  "host_logical_cpu_count": 10,
+  "swap_usage": "vm.swapusage: total = 26624.00M  used = 25086.88M  free = 1537.12M  (encrypted)",
+  "docker_vm_memory_bytes": 30172692480,
+  "docker_vm_cpus": 10,
+  "level_counts": {
+    "v1": {
+      "kernels": 4,
+      "completed_case_records": 672,
+      "host_finalized_kernels": 4
+    },
+    "v2": {
+      "kernels": 4,
+      "completed_case_records": 52,
+      "host_finalized_kernels": 4
+    },
+    "v3": {
+      "kernels": 5,
+      "completed_case_records": 5,
+      "host_finalized_kernels": 1
+    }
+  },
+  "active_containers": [
+    {
+      "container_id": "e746710dbc69",
+      "name": "gifted_wright",
+      "job": "v3_49p_4",
+      "running": true,
+      "image": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+      "memory_limit_bytes": 8589934592,
+      "nano_cpus": 1000000000,
+      "progress": [
+        {
+          "case": "V3_v18__pitch_p0.7_49p",
+          "last_iteration": 2715,
+          "converged_marker": false
+        }
+      ]
+    },
+    {
+      "container_id": "1f5e071b0d10",
+      "name": "charming_ganguly",
+      "job": "v3_49p_3",
+      "running": true,
+      "image": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+      "memory_limit_bytes": 8589934592,
+      "nano_cpus": 1000000000,
+      "progress": [
+        {
+          "case": "V3_v18__pitch_m0.7_49p",
+          "last_iteration": 2585,
+          "converged_marker": false
+        }
+      ]
+    },
+    {
+      "container_id": "f0b7528c70c2",
+      "name": "romantic_neumann",
+      "job": "v3_49p_2",
+      "running": true,
+      "image": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+      "memory_limit_bytes": 8589934592,
+      "nano_cpus": 1000000000,
+      "progress": [
+        {
+          "case": "V3_v18__camber_m19.7_49p",
+          "last_iteration": 2556,
+          "converged_marker": false
+        }
+      ]
+    },
+    {
+      "container_id": "62263b3d6c1c",
+      "name": "bold_curran",
+      "job": "v3_49p_1",
+      "running": true,
+      "image": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+      "memory_limit_bytes": 8589934592,
+      "nano_cpus": 1000000000,
+      "progress": [
+        {
+          "case": "V3_v18__camber_m11.3_49p",
+          "last_iteration": 2682,
+          "converged_marker": false
+        }
+      ]
+    }
+  ],
+  "actions": "Preserved ongoing FID processes, images, CPU/memory limits, frozen inputs and outputs; no new CFD/GPU job; parallel work limited to source research and documentation.",
+  "final_fid_verdict_confirmed": false,
+  "force_values_exposed_to_reviewers_or_published": false,
+  "inspection_method": "Case-result JSON parsed for status/counts only; force fields not displayed. Ongoing solver logs restricted to iteration/clock/convergence markers."
+}

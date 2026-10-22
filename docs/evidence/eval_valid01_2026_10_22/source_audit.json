@@ -1,0 +1,278 @@
+{
+  "schema": "eval_valid01_source_audit_v1",
+  "date": "2026-10-22",
+  "evidence_class": "primary_source_identification_and_validation_contract_audit",
+  "outcome": "REFERENCE_INADEQUATE",
+  "outcome_scope": "Current Table-15-derived absolute-Cl reference is insufficient for a quantitative evaluator-adoption gate; source identification succeeded. No existing T2-0 verdict is recomputed.",
+  "source_identification": "NUMERIC_MATCH_PRIMARY_SERIES",
+  "source": {
+    "author": "Jonathan Zerihan",
+    "year": 2001,
+    "title": "An investigation into the aerodynamics of wings in ground effect",
+    "landing_url": "https://eprints.soton.ac.uk/426058/",
+    "pdf_url": "https://eprints.soton.ac.uk/id/eprint/426058/1/00192634.pdf",
+    "pdf_sha256": "93a3dd52252c3f5152a2cfba1f8ce7496c98592b4648da2172d9b44ab3c8f6ab",
+    "bytes": 4808266,
+    "pages": 236,
+    "access": "Complete PDF fetched by curl after resuming an interrupted transfer; pdfinfo/pdftotext succeeded. Browser/web fetch returned 403.",
+    "retained_in_repository": false,
+    "visual_checks": [
+      {
+        "pdf_page": 197,
+        "printed_page": 179,
+        "object": "Table 15, all experimental Cl rows"
+      },
+      {
+        "pdf_page": 178,
+        "printed_page": 160,
+        "object": "Section 9.3.1, pressure integration and qualitative-only caveat"
+      },
+      {
+        "pdf_page": 66,
+        "printed_page": 48,
+        "object": "Figure 9, sectional versus balance coefficients"
+      }
+    ],
+    "text_checks": [
+      {
+        "pdf_page": 173,
+        "printed_page": 155,
+        "object": "9.1: compares centre-of-wing surface pressures and LDA; scope for chapter9/Table15"
+      },
+      {
+        "pdf_page": 58,
+        "printed_page": 40,
+        "object": "4.3.5: sectional pressure-integrated Cl at centre/tip versus balance CL"
+      },
+      {
+        "pdf_page": 225,
+        "printed_page": 207,
+        "object": "C.2 balance uncertainty applies to a different observable"
+      },
+      {
+        "pdf_page": 226,
+        "printed_page": 208,
+        "object": "C.2 uncertainty and C.3 balance repeatability, not Table15 Cl quadrature uncertainty"
+      }
+    ]
+  },
+  "legacy_source": {
+    "path": "data/t20/zerihan_zhang_cl_genua2009_fig6.json",
+    "sha256": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b",
+    "provenance": "Existing record identifies Genua (2009) Fig.6 Experimental series, rendered PDF p9.",
+    "genua_pdf_sha256_from_existing_provenance": "f41cd300c32dc9db41484cb86c834a7b3b60596aff3478aef0f25e98b32e0d41",
+    "genua_pdf_live_access": "Timeout in this continuation; existing provenance retained, not a new full-text verification.",
+    "changed": false
+  },
+  "interpretation": {
+    "measured_quantity": "Sectional downforce coefficient estimated by integration of wing-centre surface pressures, not whole-wing balance CL.",
+    "primary_author_limit": "Section 9.3.1 explicitly limits this integrated-Cl estimate to qualitative trends rather than quantitative absolute comparisons; discusses sparse experimental pressure sampling and the leading-edge peak.",
+    "table15_trip_condition": "UNKNOWN: tested trip configurations elsewhere in thesis do not establish which configuration generated each Table-15 pressure record.",
+    "primary_force_uncertainty_not_transferable": "Appendix C.2/C.3 uncertainty and repeatability for free-transition balance forces must not be assigned to Table-15 pressure-integrated sectional Cl.",
+    "new_digitization": false,
+    "prior_criteria_changed": false,
+    "prior_verdicts_recomputed": false,
+    "evaluator_qualified": false,
+    "shape_update_allowed": false,
+    "wing_centre_anchor": "9.1, printed p155 / PDF173 defines the centre-of-wing pressure/LDA comparison; 9.3.1 supplies the integrated-Cl interpretation; 4.3.5 p40/PDF58 independently distinguishes sectional and balance observables."
+  },
+  "matrix": [
+    {
+      "field": "chord/span/aspect ratio",
+      "status": "verified",
+      "value": "0.2234 m / 1.100 m / 4.92",
+      "source": "section 2.2.1; printed p14 / PDF p32"
+    },
+    {
+      "field": "trailing edge",
+      "status": "verified",
+      "value": "Finite TE 1.65 mm, described as approximately 0.007c; do not equate to sharpened Tyrrell026S",
+      "source": "2.2.1; p14 / PDF32"
+    },
+    {
+      "field": "endplates",
+      "status": "verified",
+      "value": "250 x 100 x 4 mm",
+      "source": "2.2.1; p14 / PDF32"
+    },
+    {
+      "field": "geometry coordinates",
+      "status": "verified",
+      "value": "Original coordinates available in thesis Table 2; not substituted into old cases",
+      "source": "2.2.1 and Table 2"
+    },
+    {
+      "field": "wind tunnel / ground",
+      "status": "verified",
+      "value": "2.1 x 1.7 m tunnel for forces/pressures; 3.5 x 2.5 m for LDA; moving belt with boundary-layer suction",
+      "source": "2.5; p17 / PDF35"
+    },
+    {
+      "field": "speed/dynamic pressure/Re",
+      "status": "verified",
+      "value": "Approximately 30 m/s; force/pressure tests at constant 56.25 mm water dynamic pressure; single-element Re range 0.430–0.462e6",
+      "source": "2.6; p18 / PDF36"
+    },
+    {
+      "field": "viscosity and per-point exact Re",
+      "status": "unknown",
+      "value": "Do not infer a single measured viscosity or identical Re for all points from approximate speed",
+      "source": "2.6"
+    },
+    {
+      "field": "incidence",
+      "status": "verified",
+      "value": "Quoted reference incidence 1 deg; true chord incidence = quoted + 2.45 deg = 3.45 deg",
+      "source": "2.7; p18 / PDF36"
+    },
+    {
+      "field": "height / pitch axis",
+      "status": "verified",
+      "value": "Height set by lowest wing point at zero stated incidence, then incidence varied around quarter chord; do not silently reinterpret as instantaneous clearance",
+      "source": "2.7; p18 / PDF36"
+    },
+    {
+      "field": "experimental turbulence intensity",
+      "status": "verified",
+      "value": "0.2 percent streamwise at 30 m/s in small tunnel; Genua's 0.3 percent is a separate modeling choice",
+      "source": "2.5; p17 / PDF35"
+    },
+    {
+      "field": "experimental turbulence length scale",
+      "status": "unknown",
+      "value": "Genua's 1 cm cannot be assigned as a measured experimental input",
+      "source": "Not established for Table-15 observations"
+    },
+    {
+      "field": "trip programme",
+      "status": "verified",
+      "value": "Chapter 6 describes x/c=0.1 trips on both surfaces, 140-grit inadequate, 60-grit excessively influential, 100-grit repeat; this is not a per-Table-15 assignment",
+      "source": "6.1; p63 / PDF81"
+    },
+    {
+      "field": "trip assignment to Table 15",
+      "status": "unknown",
+      "value": "Retain unknown; peak location/magnitude alone is not a valid identification method",
+      "source": "9.3.1 and Table 15 do not explicitly label per-record trip in inspected pages"
+    },
+    {
+      "field": "balance versus pressure integral",
+      "status": "verified",
+      "value": "Table 15 uses estimated sectional Cl from integrated surface pressure; balance CL is a different observable",
+      "source": "9.3.1 p160–161 / PDF178–179; Table15 p179 / PDF197"
+    },
+    {
+      "field": "Cl sign",
+      "status": "verified",
+      "value": "Positive lift denotes downforce in the thesis",
+      "source": "Nomenclature; preserve distinction Cl sectional vs CL whole-wing"
+    },
+    {
+      "field": "integrated Cl uncertainty",
+      "status": "unknown",
+      "value": "No justified total experimental-plus-quadrature uncertainty for Table15 established; legacy +/-0.005 is digitization only",
+      "source": "9.3.1 and Appendix C"
+    },
+    {
+      "field": "Cp/Cd",
+      "status": "verified",
+      "value": "Primary Cp distributions exist; Chapter9 Cd curve is computational. Other balance-drag experiments are separate data; no matched Table15 experimental Cd contract established",
+      "source": "9.3.1 / Figure75–79; 6.3 drag-repeatability caveat"
+    },
+    {
+      "field": "full vehicle / high-Re ground-effect adoption",
+      "status": "not_applicable",
+      "value": "No full-vehicle, general high-Re or manufacturing qualification from this audit",
+      "source": "Evidence scope"
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "TMR_2DN00",
+      "url": "https://tmbwg.github.io/turbmodels/naca0012_val.html",
+      "numerics_url": "https://tmbwg.github.io/turbmodels/naca0012numerics_val.html",
+      "disposition": "CANDIDATE_FOR_M4_SELECTION_NOT_ADOPTED",
+      "useful_scope": "Bounded free-air attached-flow numerical/model baseline; official geometry, nested grids and experimental force data.",
+      "fixed_reference_conditions": "Re=6e6; corrected sharp-TE NACA0012 geometry; numerics benchmark M=0.15, alpha=10deg, full compressible Navier-Stokes, reference T=540R and specified viscosity law; farfield about500c.",
+      "limits": "Incompressible pimpleFoam is not the identical equation system of the compressible numerical benchmark. Ladson tripped force data at Re6e6 and Gregory/O'Reilly Cp at Re3e6 must not be merged as a single validation case. Near-stall 2D limitations and missing experimental Cf remain. No ground effect."
+    },
+    {
+      "id": "TMR_2DN44",
+      "url": "https://tmbwg.github.io/turbmodels/naca4412sep_val.html",
+      "disposition": "REJECTED_AS_QUANTITATIVE_REPLACEMENT_REFERENCE",
+      "fixed_reference_conditions": "NACA4412, Re1.52e6, incidence13.87deg; experiment trips at 2.5percent upper and10.3percent lower; wind-tunnel boundaries differ from free-air grids.",
+      "reason": "Official case documentation calls comparisons qualitative because of reference-velocity and Cp normalization inconsistency and wind-tunnel mismatch. Useful context, but it does not repair the absolute-reference deficiency."
+    }
+  ],
+  "table15_comparison": {
+    "evidence_class": "source_identification_not_new_validation",
+    "primary_source": "Zerihan 2001 Table 15, printed p179 / PDF p197; manually transcribed after rendered-page inspection",
+    "rows": [
+      {
+        "h_over_c": 0.671,
+        "primary_table15_sectional_Cl": 0.902,
+        "legacy_genua_digitized_Cl": 0.9027044693401658,
+        "absolute_difference": 0.0007044693401657698
+      },
+      {
+        "h_over_c": 0.448,
+        "primary_table15_sectional_Cl": 1.009,
+        "legacy_genua_digitized_Cl": 1.0090189935199747,
+        "absolute_difference": 1.8993519974808137e-05
+      },
+      {
+        "h_over_c": 0.313,
+        "primary_table15_sectional_Cl": 1.145,
+        "legacy_genua_digitized_Cl": 1.1449740098628964,
+        "absolute_difference": 2.5990137103582e-05
+      },
+      {
+        "h_over_c": 0.224,
+        "primary_table15_sectional_Cl": 1.286,
+        "legacy_genua_digitized_Cl": 1.285603944342703,
+        "absolute_difference": 0.0003960556572970564
+      },
+      {
+        "h_over_c": 0.179,
+        "primary_table15_sectional_Cl": 1.362,
+        "legacy_genua_digitized_Cl": 1.3614418018135404,
+        "absolute_difference": 0.0005581981864597463
+      },
+      {
+        "h_over_c": 0.134,
+        "primary_table15_sectional_Cl": 1.385,
+        "legacy_genua_digitized_Cl": 1.385384850988133,
+        "absolute_difference": 0.000384850988133012
+      },
+      {
+        "h_over_c": 0.09,
+        "primary_table15_sectional_Cl": 1.371,
+        "legacy_genua_digitized_Cl": 1.3700817627219288,
+        "absolute_difference": 0.0009182372780711656
+      }
+    ],
+    "max_absolute_difference": 0.0009182372780711656,
+    "legacy_digitization_band": 0.005,
+    "all_inside_legacy_digitization_band": true,
+    "legacy_input_sha256": "dd6ca2af10318f3b0603f94c60ea0e6f4753e4053fb614ee7efee3273a6ff90b",
+    "legacy_input_changed": false
+  },
+  "reproduction": "Read the seven printed Table-15 experimental Cl entries; for each existing h/c key compute abs(legacy points[key][Cl] - primary value). All are <= legacy 0.005 digitization band. This does not establish experimental uncertainty.",
+  "reference_inputs": [
+    {
+      "url": "https://tmbwg.github.io/turbmodels/NACA0012_validation/CLCD_Ladson_expdata.dat",
+      "bytes": 1343,
+      "sha256": "78cd2f6aa4968e80f44cbf6c96f699bd9c6e45681d958ec528a10cf72ed23357",
+      "retained_in_repository": false,
+      "role": "public candidate input, not selected campaign/frozen measurement",
+      "header_conditions": "Ladson NASA TM4074 (1988), Re6million, tripped, M0.15, separate grit zones; a future registration must name exact zone and angles/interpolation rather than call the entire file one series."
+    },
+    {
+      "url": "https://tmbwg.github.io/turbmodels/NACA0012_grids/n0012points_superbig_clust_fix.dat",
+      "bytes": 824246,
+      "sha256": "74e147db4fa052be7ab79465a756c55b39b1786bfd7141a86257e89586728ae1",
+      "retained_in_repository": false,
+      "role": "public candidate input, not selected campaign/frozen measurement"
+    }
+  ]
+}

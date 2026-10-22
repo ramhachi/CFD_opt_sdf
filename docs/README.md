@@ -9,7 +9,7 @@ the current production path.
 
 ## Current checkpoint (2026-10-22)
 
-Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan),
+Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit),
 and the [evidence review and literature comparison](roadmap_review_2026_10_22.md).
 UNC-01 is `M2_COMPLETE`; FID-01 is in progress on a separate branch, with no final registered verdict confirmed.
 T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed feasibility investigation.

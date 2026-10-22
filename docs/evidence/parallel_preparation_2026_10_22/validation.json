@@ -1,0 +1,263 @@
+{
+  "schema": "parallel_preparation_validation_v1",
+  "status": "validated",
+  "created_utc": "2026-10-22T14:02:01.424634+00:00",
+  "scope": "Primary-reference audit, XV requirements and GEOM draft preparation, issue synchronisation; no new CFD/GPU/held-out GEOM campaign or adoption.",
+  "checkout": {
+    "worktree": "/Users/sota/.codex/worktrees/roadmap-review-2026-10-22/CFD2026_09",
+    "branch": "chore/roadmap-evidence-review-2026-10-22",
+    "parent_commit": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+    "integration_snapshot": "1467af145250043c5faf3762052da110577190de",
+    "fid_snapshot": "78e1e76f564bd5e6c9a6c619280820ff83d7129f",
+    "pr": "https://github.com/ramhachi/CFD_opt_sdf/pull/71",
+    "github_catchup": "docs/evidence/parallel_preparation_2026_10_22/github_catchup.json",
+    "other_worktrees_preserved": true
+  },
+  "prior_record": {
+    "path": "docs/evidence/roadmap_review_2026_10_22/validation.json",
+    "sha256": "c7d75b2beb256060e70bbb5c42c4d4b308a5229109b8e1b58ce195874f4b13b0",
+    "binding_commit": "e2f7b5f984fa32ca9fe3a173d02a2cc21ea1dff8",
+    "old_document_hashes_verified_against_that_commit": true,
+    "immutable_source_references_rechecked": 15,
+    "note": "The prior record is an immutable dated validation snapshot. Its document hashes bind its own commit, not the documents changed by this continuation."
+  },
+  "validation": {
+    "compileall": {
+      "command": ".venv/bin/python -m compileall src tests",
+      "exit_code": 0,
+      "fresh_this_continuation": true,
+      "log_path": "/tmp/cfd20261022-parallel-compileall.txt",
+      "log_sha256": "fbb315673aa8b3c553d8fa303b35d8459ab8a750b27fd0afa164035644e1fb6e"
+    },
+    "pytest": {
+      "fresh_this_continuation": false,
+      "reuse_reason": "Documentation/evidence JSON only. Code trees and working files remain identical to the already-tested integration; no new code, dependency, failure or unresolved code concern justifies repeating the 43-minute suite.",
+      "prior_command": ".venv/bin/python -m pytest -q --junitxml=/tmp/cfd20261022-pytest.xml",
+      "prior_exit_code": 0,
+      "prior_summary": "3068 passed, 73 skipped, 7294 warnings in 2590.68s (0:43:10)",
+      "prior_log_sha256": "a3c765927635d8f389455ea1e9ee495080adcb72c04677c90702dd6591bacc43",
+      "prior_junit_sha256": "5214144ecede7d248b9043b2509a875d47b0dd0e419685675adf47c6ae0c639e",
+      "log_and_junit_rehashed_now": true,
+      "code_trees": {
+        "src": "cd2dcb8f429cd756a32d763b298f13a207da565c",
+        "tests": "9ef35dcfdd04e47928ff0c8b92018351f3184397",
+        "scripts": "1ef614011247a55b2a3d5df97f9da0095e02afed",
+        "julia": "ff51266d1312ef3370e54537411e66fe766c17ee",
+        "infra": "fc1c128b6b7f9f02a299dd4d37d07d0cf0796ea1"
+      },
+      "working_code_diff_paths": []
+    },
+    "primary_source": {
+      "external_files_rehashed_now": [
+        {
+          "url": "https://eprints.soton.ac.uk/id/eprint/426058/1/00192634.pdf",
+          "sha256": "93a3dd52252c3f5152a2cfba1f8ce7496c98592b4648da2172d9b44ab3c8f6ab",
+          "bytes": 4808266,
+          "retained_in_repository": false
+        },
+        {
+          "url": "https://tmbwg.github.io/turbmodels/NACA0012_validation/CLCD_Ladson_expdata.dat",
+          "sha256": "78cd2f6aa4968e80f44cbf6c96f699bd9c6e45681d958ec528a10cf72ed23357",
+          "bytes": 1343,
+          "retained_in_repository": false
+        },
+        {
+          "url": "https://tmbwg.github.io/turbmodels/NACA0012_grids/n0012points_superbig_clust_fix.dat",
+          "sha256": "74e147db4fa052be7ab79465a756c55b39b1786bfd7141a86257e89586728ae1",
+          "bytes": 824246,
+          "retained_in_repository": false
+        }
+      ],
+      "table15_rows": 7,
+      "comparison_max_abs": 0.0009182372780711656,
+      "inside_legacy_digitization_band": true,
+      "legacy_input_changed": false,
+      "outcome": "REFERENCE_INADEQUATE",
+      "scope": "Current quantitative absolute-Cl adoption reference only; source identification succeeded; no old T20 rejudgment."
+    },
+    "geom_preparation": {
+      "source_hashes_rechecked": 6,
+      "base_row_enumeration": 136,
+      "new_fixture_or_seed_executed": false,
+      "freeze_ready": false,
+      "formal_plan_review_completed": false,
+      "formal_source_review_completed": false,
+      "remaining_blockers": [
+        "exact formula/parent/frozen-mask/label bindings",
+        "K5 spanning-array boundary and P1 contract",
+        "non-SDF phi-space combination coverage",
+        "optional historical control source bindings",
+        "implementation and formal plan/source reviews"
+      ]
+    },
+    "prior_manifest_integrity": {
+      "fresh_this_continuation": false,
+      "prior_manifests": 11,
+      "prior_entries": 6258,
+      "prior_problems": 0,
+      "scope": "The prior record and its source result hashes were rechecked; unchanged historical campaign manifests were not broadly rehashed again."
+    },
+    "local_links": {
+      "status": "passed",
+      "checked": 30,
+      "errors": [],
+      "scope": "All new Markdown targets plus added targets in six previously tracked documents; local heading anchors checked."
+    },
+    "new_manifest_integrity": {
+      "status": "passed",
+      "checker": "scripts/check_sha256sums_tracked.py::check",
+      "manifests": 2,
+      "entries": 15,
+      "problems": 0,
+      "scope": "New audit/preparation JSON plus the nine changed Markdown documents; exact paths staged and checked before commit."
+    },
+    "diff_check": {
+      "status": "passed_after_correction",
+      "commands": [
+        "git diff --check",
+        "git diff --cached --check"
+      ],
+      "initial_finding": "One extra blank line at EOF in the new reference audit; removed before commit."
+    },
+    "json_parse": {
+      "status": "passed",
+      "files": 6
+    }
+  },
+  "workers": [
+    {
+      "role": "geom_draft_author",
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "opencode-go/glm-5.3-flash",
+      "attempt_number": 1,
+      "reason": "explicit CLI model; no model switch",
+      "status": "delivered_initial_draft_parent_revised",
+      "log_sha256": "56a1dc24f397850859e63b6694f1ad7f09e242f91fe63aac942f9299df0faf04",
+      "formal_registration_review": false
+    },
+    {
+      "role": "geom_draft_revision",
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "opencode-go/glm-5.3-flash",
+      "attempt_number": 2,
+      "reason": "explicit CLI model; no model switch",
+      "status": "partial_revision_parent_stopped_own_worker_and_integrated",
+      "log_sha256": "2d920291fef848cfa43d6b4e96535ce1c96f4668239e01aa0e9671331e444eda",
+      "formal_registration_review": false
+    },
+    {
+      "role": "xv_author",
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "opencode-go/glm-5.3-flash",
+      "attempt_number": 1,
+      "reason": "explicit CLI model; no model switch",
+      "status": "delivered_draft",
+      "log_sha256": "50d61e35440fc2c7666449a6a03a3771d157179d4f25f8a6fa41c5f489fea815",
+      "formal_registration_review": false
+    },
+    {
+      "role": "xv_revision",
+      "requested_model": "opencode-go/glm-5.3-flash",
+      "actual_model": "opencode-go/glm-5.3-flash",
+      "attempt_number": 2,
+      "reason": "explicit CLI model; no model switch",
+      "status": "delivered_parent_revised_and_verified",
+      "log_sha256": "5c0c275ecbb2c3cf762f8a61932a9a72e5c5f41bd3b410afab3e2b5c9a8cff3b",
+      "formal_registration_review": false
+    },
+    {
+      "role": "source_and_xv_review",
+      "requested_model": "opencode-go/mimo-v2.6-flash",
+      "actual_model": "opencode-go/mimo-v2.6-flash",
+      "attempt_number": 1,
+      "reason": "explicit CLI model; no model switch",
+      "status": "completed_four_clarifications_resolved",
+      "log_sha256": "7ff1ca6f0e0d91074005a9fe1ff2cfbcc15a66d9638b8709de2fb4c499e837be",
+      "formal_registration_review": false
+    },
+    {
+      "role": "geom_draft_review",
+      "requested_model": "opencode-go/glm-5.3",
+      "actual_model": "opencode-go/glm-5.3",
+      "attempt_number": 1,
+      "reason": "explicit CLI model; no model switch",
+      "status": "not_completed_external_directory_access_denied",
+      "log_sha256": "8c68ea0424273aafd300c1489258142b65c72519831a45ce8108afe887127db4",
+      "formal_registration_review": false
+    },
+    {
+      "role": "geom_draft_review",
+      "requested_model": "opencode-go/glm-5.3",
+      "actual_model": "opencode-go/glm-5.3",
+      "attempt_number": 2,
+      "reason": "same-model inline-context retry after access failure",
+      "status": "not_completed_output_length_no_review_delivered",
+      "log_sha256": "b2347fd512baaea5be8149bcbfb6483865cc082f6f0338dc6be4c9f5371aa625",
+      "formal_registration_review": false
+    }
+  ],
+  "review_adjudication": [
+    {
+      "finding": "Wing-centre provenance needed an exact primary anchor",
+      "resolution": "Added primary section9.1 printed155/PDF173 text anchor; no new visual verification claimed."
+    },
+    {
+      "finding": "p40 citation absent from visual_checks",
+      "resolution": "Added separate text_checks; retained only actually inspected renderings as visual checks."
+    },
+    {
+      "finding": "x* undefined in XV gain mapping",
+      "resolution": "Added registered FID section8 definition and final-record handoff requirement."
+    },
+    {
+      "finding": "WL-defined S_d inside OF gain floor ambiguous",
+      "resolution": "Explicitly inherited from final FID, not recomputed as OF placement SD."
+    },
+    {
+      "finding": "G5 test eligibility and completed-record wording needed precision",
+      "resolution": "Both eligibility conditions required; G5 not-tested PASS is not constraint feasibility; 78e1e76f is definitions, not final FID result."
+    },
+    {
+      "finding": "GEOM draft crossing direction/count/boundary/topology and discretionary verdict conflicts",
+      "resolution": "Parent fixed pass-fraction bracket and136 count, pinned known source metadata, removed result-based label exclusion/discretion, separated node/dense/analytic observables, and left unresolved design items as explicit pre-freeze blockers."
+    },
+    {
+      "finding": "Strong GEOM draft reviewer did not deliver a review",
+      "resolution": "Recorded both access and output-length failures; no formal review, freeze, qualification or execution claimed."
+    }
+  ],
+  "github_readback": {
+    "path": "docs/evidence/parallel_preparation_2026_10_22/issue_updates.json",
+    "all_bodies_match": true,
+    "closed_completed": [
+      68
+    ],
+    "updated_open": [
+      63,
+      64,
+      65,
+      66,
+      69,
+      70
+    ],
+    "comments_or_messages_posted": false
+  },
+  "document_sha256_excluding_self_reference": {
+    "docs/README.md": "f4ce5c568634fdc4ea128854d3151a69e948220ab2dbb38bd46a62e042e9e73f",
+    "docs/STATE.md": "4ba8e647b2ce8551a4a92663cee197c1dc3b6a3592798e352e4f0d9328c1e310",
+    "docs/opencode_handoff_2026_09.md": "d7daaa0fc0cc946581084f1c1fe6291bd6b40317a47888ee30e370935d2379a9",
+    "docs/phase_plan.md": "09b3cdf77c8ac498cee2a0503e6687db9054dda9208575e0783476a6fb30618e",
+    "docs/problem_register_2026_09.md": "c2c5b3952d760c62e37a033fea25f78fdd7318a4ef8f6c218f152ec10b46d668",
+    "docs/roadmap_review_2026_10_22.md": "4ba6aa40bd55f35b9b655a77a5c53991fd816b1447237e6f4101eb8edcdfd100",
+    "docs/eval_valid01_reference_audit_2026_10_22.md": "ea6bb712e6552282640a1f852f5fef535a801c5842f13b1b1aed2b1b79588bd3",
+    "docs/xv01_registration_requirements_2026_10_22.md": "ffd8328ac2b2344cdf7d03be2e44ce5a87b6985c9d7dd27ca0eaab8f53d6e76d",
+    "docs/geom03_registration_2026_10_22.md": "65185f4e22428c79650a84d68b9e0376fd040f982b2a1f1097f3cfae47a2ec14"
+  },
+  "qualification_flags_changed": false,
+  "shape_update_allowed": false,
+  "frozen_fid_modified": false,
+  "new_cfd_gpu_jobs_started": 0,
+  "new_paid_compute_started": false,
+  "runtime_snapshot": "docs/evidence/parallel_preparation_2026_10_22/process_snapshot.json",
+  "validated_utc": "2026-10-22T14:04:14.522122+00:00"
+}

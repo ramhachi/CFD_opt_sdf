@@ -2087,3 +2087,12 @@ This is an issue-state projection; [the latest phase-plan amendment](phase_plan.
 - [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70): open conditional task before R3-based M3b; registered disjoint validation of represented-width + frozen-node/topology composite. M3a R0 and old results unchanged.
 
 No registration or qualification flag changed; `shape_update_allowed=false`.
+
+## 2026-10-22 — parallel preparation and primary-reference audit
+
+- #68 EVAL-VALID-01: bounded source/condition audit complete, `REFERENCE_INADEQUATE` for quantitative absolute-Cl adoption. Primary Table 15 matches all seven legacy Genua points; the observable is pressure-integrated sectional Cl and the author restricts it to qualitative trends. [Audit and M4 inputs](eval_valid01_reference_audit_2026_10_22.md). No T2-0 verdict/input changed.
+- #65 XV-01: [registration inputs](xv01_registration_requirements_2026_10_22.md) prepared; a single-finalist uncertainty rule, actual geometry/drag feasibility and final-FID label/threshold handoff remain required before freeze. Still blocked on #62 GO and SCREEN finalist.
+- #70 GEOM-03: [draft](geom03_registration_2026_10_22.md), not frozen/run/qualified; source/fixture bindings and reviews remain before any held-out measurement.
+- #62 FID-01: runtime snapshot only, V1 672 + V2 52 completed records, V3 5/9 with four advancing jobs at 22:25 JST. No final verdict, no force inspection by this continuation, no process/input/limit changes.
+
+Order authority: [latest phase-plan entry](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit). All qualification flags remain false; shape_update_allowed=false.

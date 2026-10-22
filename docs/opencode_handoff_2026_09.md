@@ -11,7 +11,7 @@ second roadmap. `phase_plan.md` is the sole authority for current status and
 execution order. Older Stage T/S/V material below is retained evidence context.
 
 **Entry checkpoint (2026-10-22):** start with [STATE.md](STATE.md), the
-[latest roadmap amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan), and
+[latest roadmap amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit), and
 [the evidence/literature review](roadmap_review_2026_10_22.md). UNC-01 is complete; FID-01 is ongoing on a separate branch.
 T2-0b/c/d ended NO-GO, so automatic fallback to a T2-0 high-Re evaluator is unavailable.
 The older checkpoints below retain their dated evidence, not current execution instructions.
