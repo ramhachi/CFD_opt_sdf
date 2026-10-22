@@ -1,0 +1,409 @@
+{
+  "schema": "geom03_development_pair_check_v1",
+  "evidence_class": "known_development_fields_only_not_registered_validation",
+  "registered_seed_executed": false,
+  "core_function_names": [
+    "_worst",
+    "_box",
+    "_corner_mean",
+    "_min_feature_width_m",
+    "_r0_status",
+    "_r0",
+    "_trilinear_refine",
+    "_r3_ball",
+    "_opening_defect",
+    "_r3_status",
+    "_r3",
+    "_p1",
+    "_mask_preservation_status",
+    "_events",
+    "_p2",
+    "_validate_pair",
+    "check_pair",
+    "sign_body_hashes"
+  ],
+  "core_ast_sha256": "8c7ac797f1bf88b72e85873108bb1f6b7f38c8fdf740f8b8e9c12916b36890a2",
+  "checker_file_sha256_at_test": "6aaeb9426beed91fec2b34840db709dd151b43de5942ad5fd0f6a17ee267a09e",
+  "rows": [
+    {
+      "id": "bar_dev17",
+      "shape": [
+        17,
+        17,
+        17
+      ],
+      "phi_fortran_sha256": "0d3c7e877fbd2cd86f6f1dcfc744b0d525485f9ebf426c3bcfaac6941a315fdc",
+      "agreement": false,
+      "reference": {
+        "r0": {
+          "solid": 0.08838834764831845,
+          "void": null,
+          "status": "pass"
+        },
+        "r3": {
+          "solid": 0.010825317547305485,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.09475000202655792,
+          "candidate_margin_m": 0.09475000202655792,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "composite": "pass"
+      },
+      "checker": {
+        "r0": {
+          "solid": 0.08838834764831845,
+          "void": null,
+          "status": "pass"
+        },
+        "r3": {
+          "solid": 0.010825317547305485,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.09475000202655792,
+          "candidate_margin_m": 0.09475000202655792,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid_mask",
+            "forbidden_mask",
+            "root_mask"
+          ]
+        },
+        "composite": "pass"
+      }
+    },
+    {
+      "id": "box_dev15",
+      "shape": [
+        15,
+        15,
+        15
+      ],
+      "phi_fortran_sha256": "56f68d084d57a2f692ab8809c5fc590c16c39a5765b5bf9e5b78f62a7f85fcc2",
+      "agreement": false,
+      "reference": {
+        "r0": {
+          "solid": 0.1,
+          "void": null,
+          "status": "pass"
+        },
+        "r3": {
+          "solid": 0.008838834764831846,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.06324999779462814,
+          "candidate_margin_m": 0.06324999779462814,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "composite": "pass"
+      },
+      "checker": {
+        "r0": {
+          "solid": 0.1,
+          "void": null,
+          "status": "pass"
+        },
+        "r3": {
+          "solid": 0.008838834764831846,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.06324999779462814,
+          "candidate_margin_m": 0.06324999779462814,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid_mask",
+            "forbidden_mask",
+            "root_mask"
+          ]
+        },
+        "composite": "pass"
+      }
+    },
+    {
+      "id": "empty_dev9x11x13",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "phi_fortran_sha256": "7e56d34ce1cadc676c203d0cadfa562af5b3adc301e4ec948b61824256b549ee",
+      "agreement": false,
+      "reference": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "p1": {
+          "parent_margin_m": 0.02500000037252903,
+          "candidate_margin_m": 0.02500000037252903,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "fail",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 0,
+          "candidate_components": 0,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "composite": "fail"
+      },
+      "checker": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "p1": {
+          "parent_margin_m": 0.02500000037252903,
+          "candidate_margin_m": 0.02500000037252903,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "fail",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 0,
+          "candidate_components": 0,
+          "empty_masks": [
+            "fixed_solid_mask",
+            "forbidden_mask",
+            "root_mask"
+          ]
+        },
+        "composite": "fail"
+      }
+    },
+    {
+      "id": "two_points_dev9x11x13",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "phi_fortran_sha256": "539cf17e0cae66a917f8fba0ff857600641e49f13de6385b9503f379bc3e1ad9",
+      "agreement": false,
+      "reference": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": "inf",
+          "void": 0.0,
+          "status": "fail"
+        },
+        "p1": {
+          "parent_margin_m": 0.02500000037252903,
+          "candidate_margin_m": 0.02500000037252903,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 2,
+          "candidate_components": 2,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "composite": "fail"
+      },
+      "checker": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": "inf",
+          "void": 0.0,
+          "status": "fail"
+        },
+        "p1": {
+          "parent_margin_m": 0.02500000037252903,
+          "candidate_margin_m": 0.02500000037252903,
+          "status": "pass"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "pass",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 2,
+          "candidate_components": 2,
+          "empty_masks": [
+            "fixed_solid_mask",
+            "forbidden_mask",
+            "root_mask"
+          ]
+        },
+        "composite": "fail"
+      }
+    },
+    {
+      "id": "clip_dev9x11x13",
+      "shape": [
+        9,
+        11,
+        13
+      ],
+      "phi_fortran_sha256": "4bfc50878a5b7ede77b3bd512d83d53cd5b5674212d57b08797d21f7f96c2d36",
+      "agreement": false,
+      "reference": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": 0.0,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.004999999888241291,
+          "candidate_margin_m": 0.004999999888241291,
+          "status": "fail"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "fail",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid",
+            "forbidden",
+            "root"
+          ]
+        },
+        "composite": "blocked"
+      },
+      "checker": {
+        "r0": {
+          "solid": null,
+          "void": null,
+          "status": "unmeasured"
+        },
+        "r3": {
+          "solid": 0.0,
+          "void": 0.0,
+          "status": "pass"
+        },
+        "p1": {
+          "parent_margin_m": 0.004999999888241291,
+          "candidate_margin_m": 0.004999999888241291,
+          "status": "fail"
+        },
+        "p2": {
+          "statuses": {
+            "mask_preservation": "fail",
+            "component_connectivity": "pass",
+            "topology_change_classification": "pass"
+          },
+          "events": [],
+          "parent_components": 1,
+          "candidate_components": 1,
+          "empty_masks": [
+            "fixed_solid_mask",
+            "forbidden_mask",
+            "root_mask"
+          ]
+        },
+        "composite": "blocked"
+      }
+    }
+  ]
+}

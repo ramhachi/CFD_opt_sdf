@@ -7,13 +7,15 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-## Current checkpoint (2026-10-22)
+## Current checkpoint (2026-10-23)
 
-Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit),
+Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation),
 and the [evidence review and literature comparison](roadmap_review_2026_10_22.md).
-UNC-01 is `M2_COMPLETE`; FID-01 is in progress on a separate branch, with no final registered verdict confirmed.
+UNC-01 is `M2_COMPLETE`; FID-01 is registered `FID01_GO` (result b2314d9d, integration458e2df5). SCREEN gain2.70% and XV OF gain1.27% come from that record; pure heave is a failed secondary arm.
+The [FID receipt and SCREEN/XV handoff](fid01_to_screen_xv_handoff_2026_10_23.md) binds the exact values, units and secondary labels to the written-once owner analysis.
 T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed feasibility investigation.
 There is no adopted high-Re evaluator. M4 prepares the replacement decision; M3b requires FID-01 GO and a registered geometry-admissibility path.
+GEOM-03 has an [exact180-row prospective protocol](geom03_registration_2026_10_23.md), one three-angle plan review and one source-review round with verified resolutions. The final source passes25 development tests; full regression passes3117 with73 skipped. No registered fixture/seed or study verdict is available. [Next execution plan](next_execution_plan_2026_10_23.md), [concrete SCREEN/XV registration choices](screen_xv_preparation_2026_10_23.md).
 All qualification flags remain false; `shape_update_allowed=false`.
 
 ## Historical checkpoint (2026-10-02)

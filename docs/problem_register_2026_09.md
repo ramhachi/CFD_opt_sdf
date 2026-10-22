@@ -1,8 +1,8 @@
 # 問題台帳 — 2026-09-22
 
-> **最新の投影（2026-10-22）:** UNC-01 は `M2_COMPLETE`、FID-01 は別ブランチで進行中で最終判定未確認。
+> **最新の投影（2026-10-23）:** UNC-01 は `M2_COMPLETE`、FID-01 は02:47JSTの再照合で登録済み FID01_GO を確認（結果b2314d9d、統合458e2df5）。
 > T2-0b/c/d は登録済み NO-GO、#57 は調査完了として closed。高Re評価器は未採用で、旧自動 fallback は利用不能。
-> [最新計画](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan)と
+> [最新計画](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation)と
 > [証拠・先行研究の照合](roadmap_review_2026_10_22.md)を参照する。下の過去の現況は日付ごとの記録。
 
 > **現況（2026-10-02）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
@@ -2096,3 +2096,13 @@ No registration or qualification flag changed; `shape_update_allowed=false`.
 - #62 FID-01: runtime snapshot only, V1 672 + V2 52 completed records, V3 5/9 with four advancing jobs at 22:25 JST. No final verdict, no force inspection by this continuation, no process/input/limit changes.
 
 Order authority: [latest phase-plan entry](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit). All qualification flags remain false; shape_update_allowed=false.
+
+## 2026-10-23 — GEOM-03 implementation slice
+
+- #70: [exact prospective protocol](geom03_registration_2026_10_23.md),180 base rows; one three-angle plan round and one source-review round completed with verified resolutions. Final source passes25 development tests; full regression3117/73skip passes. No freeze, held-out fixture/seed, GEOM verdict or adoption.
+- #62: remote78e1e76f and issue unchanged at02:05JST; four V3 jobs active, Claude owns the frozen analysis. #64/#65 retain their dependencies. #66 may use completed#68 audit, final M4 choice still waits for applicable M3 outcomes.
+- No duplicate issue is needed; keep#70 open through its scientific validation. [Execution plan](next_execution_plan_2026_10_23.md), [review evidence](evidence/geom03_2026_10_23/plan_review.json). Order authority: [latest amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation). All qualification flags false; shape_update_allowed=false.
+
+Live update02:47JST: #62 owner result FID01_GO is merged458e2df5, owner branch removed, no active Docker containers. #64/#65 inherit2.70%/1.27% gain mappings and FID secondary labels. #70 R3-validation route selected, but source review/full regression/freeze/release/resource gates still precede any new geometry data. The earlier02:05 snapshot remains historical.
+
+Downstream preparation: [SCREEN/XV registration choices](screen_xv_preparation_2026_10_23.md). #65 must resolve single-finalist V2 pooled-variance as well as V3 cross-design residual issues; deterministic shift dispersion and iterative-window SD are not silently treated as iid placement SE. The80/96-case options remain proposals without an execution release.

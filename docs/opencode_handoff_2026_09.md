@@ -10,10 +10,11 @@ This document summarizes the current implementation context. It is not a
 second roadmap. `phase_plan.md` is the sole authority for current status and
 execution order. Older Stage T/S/V material below is retained evidence context.
 
-**Entry checkpoint (2026-10-22):** start with [STATE.md](STATE.md), the
-[latest roadmap amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit), and
-[the evidence/literature review](roadmap_review_2026_10_22.md). UNC-01 is complete; FID-01 is ongoing on a separate branch.
+**Entry checkpoint (2026-10-23):** start with [STATE.md](STATE.md), the
+[latest roadmap amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation), and
+[the evidence/literature review](roadmap_review_2026_10_22.md). UNC-01 is complete; FID-01 is now FID01_GO (b2314d9d merged458e2df5). Use the written-once result for SCREEN/XV inheritance; do not rerun or overwrite its analysis.
 T2-0b/c/d ended NO-GO, so automatic fallback to a T2-0 high-Re evaluator is unavailable.
+GEOM-03: read the [180-row protocol](geom03_registration_2026_10_23.md), [one plan-review round](evidence/geom03_2026_10_23/plan_review.json), [one source-review round and resolutions](evidence/geom03_2026_10_23/source_review.json), and [execution plan](next_execution_plan_2026_10_23.md). Final source passes25 development tests; full regression passes3117 with73 skipped. Do not execute registered arrays/seeds before freeze and explicit release/resource gates. [SCREEN/XV preparation](screen_xv_preparation_2026_10_23.md) carries concrete downstream choices and the V2/V3 single-finalist SE gaps.
 The older checkpoints below retain their dated evidence, not current execution instructions.
 
 ## Read Order and Authority

@@ -1,7 +1,7 @@
 # STATE — current position in one page
 
-Updated: 2026-10-23 (FID-01 registered GO received). Integration: `codex/kaggle-batch-migration` at `458e2df5` when refreshed; this continuation is on PR #71's feature branch until integrated.
-Roadmap authority: [phase_plan.md, latest amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit).
+Updated: 2026-10-23 (GEOM-03 plan review and implementation). Integration: `codex/kaggle-batch-migration` at `458e2df5` after the live FID refresh; this continuation is on PR #71's feature branch until integrated.
+Roadmap authority: [phase_plan.md, latest amendment](phase_plan.md#2026-10-23-geom-03-plan-review-and-implementation).
 Rationale and primary sources: [2026-10-22 review](roadmap_review_2026_10_22.md). Earlier decisions remain in phase_plan and the [2026-10-16 review](roadmap_review_2026_10_16.md).
 
 ## Goal and claim boundary
@@ -30,11 +30,11 @@ FID-01 tier A retains literal E2 (about 2.0%, 5.363e-3 N); the paired 0.68% is a
 | --- | --- | --- |
 | M0 / M1 / M1' | #58, #59, #60 | Done: harness and JOB-02 byte gate; user selected B1=v18; mode prescreen exploratory, binding at M2 |
 | M2 | #61 | Done: `M2_COMPLETE` |
-| M3a | #62 | Done: FID01_GO; preserve registered secondary labels and written-once analysis |
+| M3a | #62 | Done: FID01_GO, owner analysis b89203d0; preserve secondary labels |
 | M4 preparation | #66 | Prepare now in parallel: the T2-0 fallback is unavailable. Final evaluator/product decision retains the required M3-result dependency |
 | High-Re validation contract | [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68) | Audit done: original quantitative reference inadequate; source matrix and bounded alternatives return to M4, no evaluator GO |
-| Geometry before M3b | [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) | [Draft registration](geom03_registration_2026_10_22.md) prepared, not frozen or run. Required if adopting R3; failure keeps the registered R0-clean/parent branch |
-| M3b / L1 | #64 | FID01_GO received; geometry-admissibility path and SCREEN registration remain |
+| Geometry before M3b | [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) | [Exact180-row protocol](geom03_registration_2026_10_23.md), plan/source reviews resolved;25 development tests and full regression3117/73skip pass. Not frozen or run. Required if adopting R3; failure keeps the registered R0-clean/parent branch |
+| M3b / L1 | #64 | FID01_GO received; geometry-admissibility path and new SCREEN registration remain |
 | Independent verification / L2 | #65 | [Preparation requirements](xv01_registration_requirements_2026_10_22.md) available; requires frozen SCREEN finalist, single-finalist uncertainty and actual constraint checks; meshes judgment-only |
 | High-Re numeric/cost recovery | [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69) | Conditional on M4 selecting new work, validation inputs and a registered bounded comparison; not a continuation of #57 |
 | M4 final | #66 | Choose scope/evaluator, new evidence work, or research NO-GO after the applicable M3 outcome |
@@ -49,4 +49,8 @@ Do not assume a local high-Re pipeline is equivalent: consume hash-pinned base m
 The 22:25 JST [status snapshot](evidence/parallel_preparation_2026_10_22/process_snapshot.json) found four advancing FID V3 jobs (5/9 case records complete). Preserve their resources and registered outputs; no extra CFD/GPU job was started. Parallel work is source research and preparation only.
 Validation and exact hashes for this continuation: [audit record](evidence/parallel_preparation_2026_10_22/validation.json); the [earlier review validation](evidence/roadmap_review_2026_10_22/validation.json) remains its dated record. Other historical manifests with missing logs are not covered by its scoped integrity checks.
 
-Live refresh at2026-10-23 02:47JST: FID result merged, owner branch removed, no Docker containers active; this supersedes the earlier active-job snapshot above. Geometry review/validation and its own freeze/release remain required.
+GEOM-03 continuation: [next execution plan](next_execution_plan_2026_10_23.md), [review record](evidence/geom03_2026_10_23/plan_review.json). The4 FID V3 jobs were still active at02:05JST; no registered geometry data were generated or measured. Development fixtures/tests are a separate evidence class.
+
+At02:47JST the integration branch advanced to458e2df5 (FID result b2314d9d), owner branch was removed and Docker had no active containers. Select the proposed R3-composite validation route because the R0 occupancy alias blocks most optimizer-like combinations; adoption still requires GEOM03_PASS and SCREEN registration. Freeze/release follows the source review and full regression. Pure-heave treatment must be explicit in SCREEN; do not change GEOM fixture definitions after reading FID results.
+
+[SCREEN/XV preparation](screen_xv_preparation_2026_10_23.md) identifies the five-wide-mode/heave-fixed proposal and the single-finalist V2 as well as V3 uncertainty gap. The80/96-case XV options are unregistered proposals, not a compute launch or transferred SE qualification.
