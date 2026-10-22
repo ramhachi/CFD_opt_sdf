@@ -2,7 +2,7 @@
 
 **位置づけ:** 本文書は [phase_plan.md 2026-10-22 並列準備 amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit) に**従属**する作業計画であり、第二の権威ではない。順序・閾値・登録・判定の変更権限は phase_plan と各登録文書にある。計画の統合時には親が phase_plan の最新節と状態投影を同期する。既存の不変 evidence は変更せず、新たな数値物理閾値・retuning・最終 scope 決定・計算 ETA を新設しない。
 
-**実装状況の明示:** 主 deliverable は `scripts/geom03_run.py` / `scripts/geom03_check.py` / `tests/test_geom03.py`。180 base rowsの具体化、三角度の計画レビューと一度のソースレビューを終え、指摘を結果を見る前に解消した。修正後は25開発テストPASS、全回帰3117PASS/73SKIP（604.17秒）。初回3110PASS/73SKIPも履歴として保持する。[前日のdraft](geom03_registration_2026_10_22.md)を保持し、[今回の仕様](geom03_registration_2026_10_23.md)で未確定点を解消した。ソースce95612fをpush済み。freeze/releaseのmetadata検査は両実装でPASS、登録入力はまだ生成していない。freeze記録のcommit/pushと直前資源gate後に一試行を開始する。形成段階のauthor revisionsや未完了worker出力を正式レビューの通過として数えない。
+**実行完了:** 180base+354K6の一試行は[GEOM03_NO_GO](evidence/geom03_2026_10_23/result.md)で終了した。全534記録の登録された独立照合を完了（E2の数値一致は記述的対照のまま）、K2/K4に反例各1件、301.39秒/観測906.39MiB、attempt1/resume0。三角度計画レビュー、一度のソースレビューと指摘解消、開発25件PASS、全回帰3117PASS/73SKIPの後、sourcece95612fとfreeze/release29bcfc4aを順にpushしてから実行した。登録仕様・seed・閾値は変更しない。R3は採用せず、次は[SCREENのR0-clean fixed-pool/parent経路](screen_xv_preparation_2026_10_23.md)。以下はこの試行の事前計画と依存判断の履歴を保持する。前日のdraft、初回3110PASS/73SKIP、未完了worker出力の記録も保持し、正式レビューや科学的成功へ読み替えない。
 
 **GitHub refresh (2026-10-23 00:30 JST、直近スナップショット比較):** integration `codex/kaggle-batch-migration` = `1467af14`、FID `claude/m3a-fid01` = `78e1e76f`、当方の open PR #71 head = `73802a5b`（前回 catch-up の `e2f7b5f9` から docs 側作業分のみ前進）。前回スナップショットからのリモート変化なし。Issue: #68 は closed（参照監査完了、`REFERENCE_INADEQUATE`）、#62–#67 / #69 / #70 は open。Claude が #62 FID-01 を所有し、V3 docker 4 jobs が稼働継続（各 ~100% CPU、約 20h）。Host は 32 GiB / swap 23 GiB / loadavg ~14。最終 FID verdict は未確認、現行 force 出力は非開示のまま維持する。
 
@@ -39,7 +39,7 @@ GEOM-03 #70 の **exact prospective design → plan review → 実装 → source
 | source review（一度）と validate/commit/push | M4 #66 の最終 evaluator/product 決定（適用 M3 結果待ち） |
 | M4 判断資料の delta 整理（outcome/cause/secondary-label → 分岐の対応表。決定はしない。既存 [t20 summary](t20_summary_for_m4_2026_10_22.md) と [参照監査](eval_valid01_reference_audit_2026_10_22.md) を参照） | EVAL-PT-01 #69（M4 の新研究選択と validation inputs の後） |
 | 公開同期チェック（§5）の実施手順整備 | #67 L3（新規登録 high-Re evaluator GO と M4 scope 決定の後） |
-| | **GEOM-03 held-out 試行の launch**（freeze commit + resource gate + 採用判断、§4） |
+| | **GEOM-03はGEOM03_NO_GOで終端済み。再launch/resume/retuningしない** |
 
 ## 3. FID-01 との分離原則（成果物・資源）
 
@@ -49,6 +49,7 @@ GEOM-03 #70 の **exact prospective design → plan review → 実装 → source
 
 ## 4. 依存駆動の資源スケジューリングと GEOM 実行要否の事前決定
 
+- 実行結果:03:46JSTにfreeze/release公開と資源gateを満たして開始し、03:51JSTにGEOM03_NO_GOで完了した。以下の待機・分岐条件はlaunch前の判断記録。現在の次段はR0-clean fixed-pool/parentである。
 - **00:30JSTの履歴snapshot**（32 GiB / swap23 GiB / loadavg約14、V3 4 jobs active）はlaunch条件を満たさなかった。02:47JSTにはDocker jobが終了し、FID01_GOを受領した。freeze前の現段階を「資源待ちの実行結果」とは呼ばず、実際のlaunch直前にFID container不在・load<=4・利用可能メモリを再取得する。未達なら **`WAITING_FOR_RESOURCES`**（attempt消費なし、科学的verdictなし）。
 - **2 時間（≤2 h wall / ≤200 rows / ≤3 GiB RSS、単一の数値処理 child と軽量 watchdog、数値ライブラリは単一スレッド、draft §11 の値を再設定しない）を支出する前に、実行要否を先に決める。** 判断順序:
   1. FID-01 が完成し登録 verdict が得られる。
@@ -88,7 +89,7 @@ commit/push の直前に [github_catchup.json](evidence/parallel_preparation_202
 
 - 新日付の具体化案（未確定設計の解消、最小実装との対応）+ 三角度 plan review 記録（findings/resolution、日付付き）+ source review 記録。
 - implementation commit（2 scripts + 1 test のみ）+ compileall/pytest/`git diff --check` の実施結果記録 + 公開同期 snapshot（新日付、`github_and_worktree_catchup_v1`）。
-- 後続（gate 後）: freeze `registration.json` の hash 群、run artifacts（`rows.jsonl` / `results.json` / `stop_reason.json`、draft §13）。
+- 完了証拠: [freeze](evidence/geom03_2026_10_23/registration.json)、[終端results/rows/全入力archive](evidence/geom03_2026_10_23/run/)、[結果受領とhash](evidence/geom03_2026_10_23/result_receipt.json)。全件完了のNO_GOなのでbudget stopファイルはない。
 
 ## 9. 回帰と負荷管理 / 明示的非作業
 
@@ -97,8 +98,8 @@ commit/push の直前に [github_catchup.json](evidence/parallel_preparation_202
 ## 10. 重要な未解決判断（後続を gating）
 
 1. FID-01はFID01_GOとして受領済み。登録分析はownerが一度だけ書いた不変記録を読む。
-2. R3 compositeの検証経路を選択済み。実行はソース検証・freeze・release・資源gate後、採用はGEOM03_PASSとSCREEN登録後。
-3. K5 は finite-array clipped-domain、P1 は z 両端の frozen fluid planes、K1(b) は28新規 phi-space combinations として具体化済み。独立実装と小入力テストでこの契約への適合を検査する。
+2. R3 compositeを一度検証しGEOM03_NO_GOで終端。採用せず、R0-clean fixed-pool/parent経路を選択済み。
+3. K5のfinite-array、P1のfrozen fluid planes、28新規phi-space combinationsは登録通り検証した。K1/K3/K5/K6/H0成功とK2/K4失敗を保持し、成功部分だけでR3を採用しない。
 4. SCREEN finalist の存在、XV の SINGLE_FINALIST SE rule と budget 数値（registration 時）。
 5. M4 の high-Re path（現状 option なし。EVAL-PT-01 は conditional）。
 6. PR #71 の merge タイミング（parent/integration 判断）。

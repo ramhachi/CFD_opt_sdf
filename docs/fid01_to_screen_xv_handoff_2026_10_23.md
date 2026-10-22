@@ -31,8 +31,8 @@ FIDのG5 fidelity PASSはdrag制約の合格ではない。
 
 ## 次の有限な仕事
 
-1. **GEOM-03**: R0 occupancy aliasの問題に対し、[180件の既定入力](geom03_registration_2026_10_23.md)でR3+P1+P2を検証する経路を選ぶ。入力とseedはFID最終結果を読む前に定めたまま維持する。ソースレビュー・全回帰・source commitの後にfreeze/releaseを作り、資源gate後に一度だけ実行する。形状幅R3とflow格子確認R3は別物である。
-2. **SCREEN登録案**: GEOM03_PASSの場合に、その研究用geometry profileと他のgeometry/volume/drag拘束を固定する。NO_GO/INCOMPLETEではregistered R0-clean fixed set/parent経路へ戻し、閾値を緩めない。最初の検索空間はheaveを固定したwide-mode案から検討する。これは登録前の設計案であり、FIDがheave係数0を定めたという意味ではない。位相集約、対照、有限予算、候補生成・選択規則を結果を見る前に固定する。
+1. **GEOM-03**: [180件の既定入力](geom03_registration_2026_10_23.md)を維持し、ソースレビュー・全回帰・source commit/push・freeze/release/pushの後に一度実行した。[結果はGEOM03_NO_GO](evidence/geom03_2026_10_23/result.md)、534件完了、K2/K4に反例。入力とseedをFID forceで選別せず、閾値を調整せず終端した。形状幅R3とflow格子確認R3は別物である。
+2. **SCREEN登録案**: 現在はregistered R0-clean fixed set/parent経路へ戻す。元のgeometry/volume/drag拘束を固定し、R0の保守性と選択バイアスを明記する。最初の検索空間はheaveを固定したwide-mode案から検討する。これは登録前の設計案であり、FIDがheave係数0を定めたという意味ではない。位相集約、対照、有限予算、候補生成・選択規則をforceを見る前に固定する。
 3. **XV登録案**: SCREENのfrozen parent/finalist/geometry版/constraint marginsを受領後、[既存準備要件](xv01_registration_requirements_2026_10_22.md)のSINGLE_FINALIST V3 SE・V1–V3整合・未解像時の分類と予算を埋める。FIDの8-design回帰を単一候補へコピーせず、1観測からSE=0を推論しない。XV格子は判定専用でfeedbackしない。
 4. **M4**: T2-0のNO_GOと#68のREFERENCE_INADEQUATEは不変。FID01_GOから高Re評価器GOやFSAE資格へ飛ばない。適用M3の最終結果を受けて新しい参照・数値調査か範囲限定を決める。
 

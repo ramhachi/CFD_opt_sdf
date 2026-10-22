@@ -5,6 +5,16 @@ SCREEN/XVの登録・凍結・計算開始ではない。[FID受領票](fid01_to
 が結果・単位・副ラベルの引継ぎ元。GEOM-03の形状・seed・閾値には影響しない。
 元のFID分析やT2-0の結果も変更しない。
 
+**GEOMの完了後に選択した経路:** [登録結果](evidence/geom03_2026_10_23/result.md)は
+GEOM03_NO_GO（全534記録完了、K2/K4の反例各1件）。R3は採用せず、以下のR0-clean
+fixed-pool/parent分岐を次の仕事とする。登録仕様・seed・閾値の事後変更や再試行はしない。
+
+まず既存のjoint analytic builder/harnessと元のgeometry/volume/clearance拘束を使う
+有限poolの生成・選別規則を登録する。R0合格集合だけに選択を限定し、その偏りを記録する。
+forceを見て欠けた点やrandom方向を補充しない。小さな応答曲面は事前のdesign matrixのrankを
+満たす場合だけ使う契約とし、固定集合で識別不能ならpoolの再生成やR3救済へ進まない。
+必要な候補が得られない場合のparent/NO_GAIN/INCOMPLETEの分類も登録時に固定する。
+
 ## SCREENで次に決めること
 
 1. **geometry pathを先に固定する。** GEOM03_PASSなら検証した研究用profileの版・hashと
