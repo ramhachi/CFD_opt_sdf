@@ -1,9 +1,13 @@
 # Authoritative Roadmap: Generic Aerodynamic Topology Optimization
 
-Date: 2026-10-01
+Date: 2026-10-22 (latest order correction; dated records below retain their original scope)
 Status: authoritative
 Scope: generic rigid-object aerodynamic topology and shape optimization
 Architecture decision: SDF-native production research direction adopted on 2026-09-26
+
+Latest execution order: [2026-10-22 evidence-based roadmap correction](#2026-10-22-evidence-based-roadmap-correction-and-issue-plan).
+The [current position](STATE.md) projects that order; the [review and primary-source comparison](roadmap_review_2026_10_22.md)
+records its rationale. Older "current" checkpoints below are dated history where superseded.
 
 This is the only implementation roadmap for the project. Historical
 density/Brinkman, B-spline, body-fitted, and front-wing-specific work is
@@ -620,6 +624,9 @@ to its registered candidate and conditions; it does not establish
 grid-independent downforce, high-Re or full-vehicle qualification.
 
 ## 11. Current SDF-native execution order
+
+The latest controlling amendment is [the 2026-10-22 order correction](#2026-10-22-evidence-based-roadmap-correction-and-issue-plan),
+following the 2026-10-16 re-baseline. Read it before the historical gate sequence in this section.
 
 `phase_plan.md` is the sole current roadmap and order authority. The older
 [`downforce_optimization_architecture_plan_2026_09.md`](downforce_optimization_architecture_plan_2026_09.md)
@@ -7598,3 +7605,22 @@ xfine30 evaluation against R5's 27.5 min. T2-0 ends with no registered high-Re e
 `docs/t20_summary_for_m4_2026_10_22.md`. Operational: Kaggle allows 5 concurrent batch CPU sessions per account (the sixth kernel waited about 2.5 h).
 Evidence: `docs/evidence/t20d_registered_2026_10_21/`. All qualification flags stay false; `shape_update_allowed=false`.
 
+
+
+## 2026-10-22 evidence-based roadmap correction and issue plan
+
+This amendment follows the user's request to analyse the current state, revise the plan and file issues with reference to prior research. It controls execution order where the 2026-10-16 re-baseline or older entries conflict. The goal, evidence classes, PROC-01 and immutable result contracts are unchanged. Rationale, source limitations and alternatives: [review](roadmap_review_2026_10_22.md); current projection: [STATE](STATE.md).
+
+**Evidence checkpoint.** Integration `1467af14`: UNC-01 #61 is `M2_COMPLETE`; T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed investigation. Separate public branch `claude/m3a-fid01` at `78e1e76f` has FID-01 freeze 3 and verified flow_32/flow_48 output; a final registered verdict was not confirmed. Do not import an incomplete result into a GO claim. GRIDRES-01's flow_40 is Poisson-confounded; the correction and R3 remain in force.
+
+**Order now.** Finish #62 under its frozen contract. In parallel prepare M4 #66's evidence packet and EVAL-VALID-01's source/condition matrix without new CFD. Preparing M4 is earlier than the old serial order; the final product/evaluator decision retains the applicable M3-result dependency. Literal E2 stays the tier-A threshold; M3b uses the gain mapping in #62's completed registration, not a post-hoc 0.68% replacement.
+
+**Branches.** `FID01_GO` -> a registered geometry-admissibility path (GEOM-03 if adopting R3 composite, otherwise a registered R0-clean fixed set) -> SCREEN-01 #64 -> XV-01 #65 -> M4 final. `FID01_NO_GO/WL_OF` -> the existing pre-committed bounded smooth-advection WaterLily study, filed and registered only when triggered; `OF_MESH` -> M4's reference/evaluator choice, not the automatic WaterLily intervention. Inconclusive/incomplete/invalid outcomes retain #62's classifications and retry cap.
+
+**Correct the unavailable fallback.** “Then move to the T2-0 evaluator” is replaced by “M4 chooses a new registered evaluator investigation, bounded scope or research NO-GO”. T2-0 has no adopted evaluator and its study cap is exhausted. A future high-Re evaluator requires a *new* registered GO: EVAL-VALID-01 first establishes the data and physics contract; conditional EVAL-PT-01 tests a fixed-mesh numerical/cost route. Neither is T2-0e or an automatic solver adoption. #67 remains blocked on this new evidence and M4's scope decision; #57's NO-GO results stay unchanged.
+
+**Geometry.** WIDTH-RULE remains exploratory and no candidate met K1–K6. #62 retains R0. Before #64 uses R3, GEOM-03 must freeze and validate R3 + frozen-node margin + fixed topology on disjoint shapes/seeds (solid and void features), with declared limitations and no retuning after the result. Failure returns to a registered R0-clean fixed set with its selection bias or to parent choice. It does not lower the old threshold or change manufacturing claims.
+
+**Research-informed candidates, unvalidated here.** Use official benchmark geometry/data for model and validation separation; identify the ground-effect experimental series before model tuning. Existing OpenFOAM v2512 `localEuler`/LTS is a candidate steady solver route, not a physical transient scheme. Reuse fixed mesh inputs and existing morphing; distinguish convergence, mesh-realisation, grid, model and extraction errors. References and access limits are in review §4. No new solver campaign, GPU measurement, threshold relaxation, optimizer, AD diagnostic campaign, paid compute or production gate was started/adopted by this documentation task. Existing local CPU/Julia fixtures invoked by the required full pytest are regression validation, recorded separately. All qualification flags remain false; `shape_update_allowed=false`.
+
+**Issue roles.** #63 projects the roadmap, #66 owns the final evaluator/product decision, #64/#65 own L1/L2, #67 owns conditional L3. New [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68), [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69) and [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) carry the bounded missing work; the issue ledger links their filed records. #23 remains the sole off-path gradient research issue; #28/#20/#53 keep their reopen triggers. Exact source hashes, integrity checks and validation are in [the audit record](evidence/roadmap_review_2026_10_22/validation.json).

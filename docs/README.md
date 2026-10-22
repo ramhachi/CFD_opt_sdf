@@ -7,7 +7,16 @@ order. Earlier density/Brinkman Stage T and B-spline Stage S plans remain
 available as historical capability and evidence context; they do not define
 the current production path.
 
-## Current checkpoint (2026-10-02)
+## Current checkpoint (2026-10-22)
+
+Read [STATE.md](STATE.md), the [latest roadmap amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan),
+and the [evidence review and literature comparison](roadmap_review_2026_10_22.md).
+UNC-01 is `M2_COMPLETE`; FID-01 is in progress on a separate branch, with no final registered verdict confirmed.
+T2-0b/c/d are registered NO-GO outcomes and #57 is closed for the completed feasibility investigation.
+There is no adopted high-Re evaluator. M4 prepares the replacement decision; M3b requires FID-01 GO and a registered geometry-admissibility path.
+All qualification flags remain false; `shape_update_allowed=false`.
+
+## Historical checkpoint (2026-10-02)
 
 Canonical v17 W3 and W4 passed their own finite-box contracts; flow_24 is the
 chosen FD/optimization grid, not a converged physical reference. FD-05 and

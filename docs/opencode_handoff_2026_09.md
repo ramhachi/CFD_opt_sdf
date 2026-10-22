@@ -10,6 +10,12 @@ This document summarizes the current implementation context. It is not a
 second roadmap. `phase_plan.md` is the sole authority for current status and
 execution order. Older Stage T/S/V material below is retained evidence context.
 
+**Entry checkpoint (2026-10-22):** start with [STATE.md](STATE.md), the
+[latest roadmap amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan), and
+[the evidence/literature review](roadmap_review_2026_10_22.md). UNC-01 is complete; FID-01 is ongoing on a separate branch.
+T2-0b/c/d ended NO-GO, so automatic fallback to a T2-0 high-Re evaluator is unavailable.
+The older checkpoints below retain their dated evidence, not current execution instructions.
+
 ## Read Order and Authority
 
 For a fresh terminal, read in this order:
@@ -33,7 +39,7 @@ The authority split is intentional:
 - `docs/fixed_grid_data_contract_v2.md` defines retained Stage T artifact semantics; it does not make density the current canonical design variable.
 - `docs/evidence/*.json` is machine-readable evidence; prose must not broaden its scope.
 
-## Current checkpoint (2026-10-01)
+## Historical checkpoint (2026-10-01)
 
 Use `codex/kaggle-batch-migration` as the working integration branch; `main`
 remains untouched. Canonical genesis v17 is adopted. W3/W4 v17 passed their

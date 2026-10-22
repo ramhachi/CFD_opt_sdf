@@ -1,5 +1,10 @@
 # 問題台帳 — 2026-09-22
 
+> **最新の投影（2026-10-22）:** UNC-01 は `M2_COMPLETE`、FID-01 は別ブランチで進行中で最終判定未確認。
+> T2-0b/c/d は登録済み NO-GO、#57 は調査完了として closed。高Re評価器は未採用で、旧自動 fallback は利用不能。
+> [最新計画](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan)と
+> [証拠・先行研究の照合](roadmap_review_2026_10_22.md)を参照する。下の過去の現況は日付ごとの記録。
+
 > **現況（2026-10-02）:** v17 FD-05/FD-06は登録基準でFAILを保持する。
 > FD-07の因果介入は、このfixtureの短時間不規則応答について半セル符号補正を主要因として支持し、
 > 続く連続replacement比較では one-sided moment-level Candidate C を診断上の最有力候補に選んだ。
@@ -2067,3 +2072,18 @@ All gates passed; the both-grid downforce rule rejected every step (flow_24 vs f
 ## GRIDRES-01 (2026-10-21): sub-cell response not grid-resolved
 
 flow_24/32/40 give downforce slopes of different sign and growing differences along the OPT-01 direction. See the [record](issues/gridres01_result_2026_10_21.md).
+
+
+## 2026-10-22 — latest evidence and missing work
+
+This is an issue-state projection; [the latest phase-plan amendment](phase_plan.md#2026-10-22-evidence-based-roadmap-correction-and-issue-plan) owns order. [The review](roadmap_review_2026_10_22.md) records the evidence and primary literature.
+
+- #61 UNC-01: `M2_COMPLETE` on v18/Re80; wide-arm paired differences and coarse-mesh retention recorded, not general grid or physics qualification.
+- #62 FID-01: in progress on separate branch `claude/m3a-fid01` (`78e1e76f` reviewed); freeze 3 and flow_32/48 verification do not constitute a final GO.
+- #57 T2-0: closed for the completed feasibility investigation. T2-0b/c/d all NO-GO; there is no adopted high-Re evaluator. #66's old automatic T2-0 fallback is unavailable; #67 needs new registered GO plus M4 scope choice.
+- GRIDRES-01 correction: flow_40 Poisson-confounded; the earlier all-grid discretization-dominated hypothesis was withdrawn on 2026-10-21. The previous ledger line is historical, not the corrected conclusion. GRID-02 and UNC-01 preserve R3 for their measured modes.
+- [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68): open planning task, original experimental data/conditions and validation-case contract, child of #66; no CFD.
+- [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69): open conditional task, fixed mesh inputs and existing pseudo-transient/LTS route with a registered numerical/cost gate; M4 and validation inputs first, no automatic adoption.
+- [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70): open conditional task before R3-based M3b; registered disjoint validation of represented-width + frozen-node/topology composite. M3a R0 and old results unchanged.
+
+No registration or qualification flag changed; `shape_update_allowed=false`.
