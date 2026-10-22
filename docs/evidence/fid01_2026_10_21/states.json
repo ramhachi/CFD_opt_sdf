@@ -1,0 +1,481 @@
+{
+ "check": "every design's Fortran phi SHA equals its prescreen gated bytes; step01_states.perturb on the written raw reproduces it; parent and roll = UNC-01 rows",
+ "designs_sha256": "e476bd911eb0a1220ae70c1a162492955ce125de135f84fc93b338ef767cb03e",
+ "kind": "fid01_states",
+ "parent": {
+  "npz": "docs/evidence/v18_genesis_2026_10_19/v18_parent.npz",
+  "raw": "docs/evidence/v18_genesis_2026_10_19/v18_parent.phi_f4_fortran.raw",
+  "source_sha256": "63fe4730ad6216fe4d224ac7f729603f2587bf1b28c507ef3070bbd2aaf30e0e",
+  "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd"
+ },
+ "states": {
+  "v18__bump_lower_m15": {
+   "amplitude": null,
+   "changed_node_count": 6878,
+   "direction": "v18__bump_lower_m15",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__bump_lower_m15.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2da44f6d130ff560501ea3f628a69a620c0e204a05dff6adef1ce78b919afba8",
+   "family": "local",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.013722962234169245,
+   "mode": {
+    "bump_lower": -15.0
+   },
+   "npz_sha256": "2b40ffa84aa87380e2f1ec11c1bb56e5874740a2713f0b616c5bebde02b346cc",
+   "phi_c_order_sha256": "58fb1853433271c2c4bfecc045c3bfd642dd30381227a951dbacf796487ebc0e",
+   "phi_fortran_order_sha256": "0cd3b9242104d18d37b8ccef19844f2b34a5495b8a95a0a1365ec0a362c19c7d",
+   "sign": 1,
+   "slot": "N1",
+   "spec": {
+    "bump_lower": -15.0
+   },
+   "state_sha256": "ca185a5d05ddecd007eda53bd3bb56f5ec2cab2d05beb22612e6a3fae89d70d9",
+   "step_mm": 13.722962234169245,
+   "stratum": "narrow",
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__bump_small_p20": {
+   "amplitude": null,
+   "changed_node_count": 1684,
+   "direction": "v18__bump_small_p20",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__bump_small_p20.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "efbb98f76f7ca232fa4799bc4f22f23443773ab75d8bddcfa18f86cc35cdc008",
+   "family": "local",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01667550392448902,
+   "mode": {
+    "bump_small": 20.0
+   },
+   "npz_sha256": "3b967ffbaec861ecc84f0bfe78a129389454bd0d698724e00988541dce6712f2",
+   "phi_c_order_sha256": "bc845c3ec234110af8e1596d6d1f26bfc874c2dce1d5b27a9cf0fd9e2cf6461c",
+   "phi_fortran_order_sha256": "3b7b87931bba6d3bf60ddf9e621fdfca0b9838c41a94d5cd5bc0b7b19fa9766c",
+   "sign": 1,
+   "slot": "N3",
+   "spec": {
+    "bump_small": 20.0
+   },
+   "state_sha256": "5c0ff692c1431979faa24a99f896d090cd52d7aa5e08eccc1a090f7f2ba96e88",
+   "step_mm": 16.67550392448902,
+   "stratum": "narrow",
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__bump_upper_m15": {
+   "amplitude": null,
+   "changed_node_count": 6878,
+   "direction": "v18__bump_upper_m15",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__bump_upper_m15.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "5f61557fcce94ee540a4e1e7e28a5107a4891cbccff5f4fa6a3f0c23b38c1d12",
+   "family": "local",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.013722962234169245,
+   "mode": {
+    "bump_upper": -15.0
+   },
+   "npz_sha256": "dd6f6fdf5f77ecc2127a01e795c1eb54ac141081544890deb61145c5cec8b188",
+   "phi_c_order_sha256": "fc1452abb99f0cc56ca170492542a7298a2e6493b6316eb851c11115c71e7ba9",
+   "phi_fortran_order_sha256": "148de0811595ef92fb15a35bc46ffe8842f8f57d108ab9c9c1617dcadbcfd963",
+   "sign": 1,
+   "slot": "N2",
+   "spec": {
+    "bump_upper": -15.0
+   },
+   "state_sha256": "a122d5a9267d18a7db8cc86d3e1460c38e32ae7de699fd4f0503b0ed67abdfb1",
+   "step_mm": 13.722962234169245,
+   "stratum": "narrow",
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__camber_m11.3": {
+   "amplitude": null,
+   "changed_node_count": 106947,
+   "direction": "v18__camber_m11.3",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__camber_m11.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "3091f9d59e4aa6864eadcbbae503766e10c74069140378f4dfba197fb9b3c456",
+   "family": "section",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.00753331184387207,
+   "mode": {
+    "camber": -11.3
+   },
+   "npz_sha256": "3cdb0a877e460f06d2803572e19cdc065c825fcd86218bbe942d96b335775d00",
+   "phi_c_order_sha256": "7a8605ed35a4502815dcf13fa4c6e28399e39afdfb2df8a1acc82d2cc5bd9084",
+   "phi_fortran_order_sha256": "26a5b7902f0258609370026ce156bbbf86e204d4917bfac4e2c82380d66e6473",
+   "sign": 1,
+   "slot": "W4b",
+   "spec": {
+    "camber": -11.3
+   },
+   "state_sha256": "a46113eb0d5d2afa3a97886c3963e1881f87ab46cc675195753cdbd78354c6d4",
+   "step_mm": 7.53331184387207,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.34397189682349566
+  },
+  "v18__camber_m11.3_reflex_m11.3": {
+   "amplitude": null,
+   "changed_node_count": 106955,
+   "direction": "v18__camber_m11.3_reflex_m11.3",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__camber_m11.3_reflex_m11.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "9774c5d5c32849b1f2cad78b259918c6d6fd3311317139ee66a43b3a29078624",
+   "family": "combination",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01205328106880188,
+   "mode": {
+    "camber": -11.3,
+    "reflex": -11.3
+   },
+   "npz_sha256": "3ebf6276d827fc1bbef964e36bd2ec9f9536517262460e563548c74e55ad68e6",
+   "phi_c_order_sha256": "dafd40ed90c3a434f418f11e7ce8ec46b14ae8703c9644d2430b2da195adb02b",
+   "phi_fortran_order_sha256": "2f2aa49773838ebf3e7a94eddc0e87593af61c69122a38ebd40b8ec6eb3b824a",
+   "sign": 1,
+   "slot": "C1",
+   "spec": {
+    "camber": -11.3,
+    "reflex": -11.3
+   },
+   "state_sha256": "be76d2b626bb9ff75b069e6d3a662118f978f48ad93f5e285121c2bc7bd8f66b",
+   "step_mm": 12.05328106880188,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.34019314441829923
+  },
+  "v18__camber_m19.7": {
+   "amplitude": null,
+   "changed_node_count": 106971,
+   "direction": "v18__camber_m19.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__camber_m19.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "d103bb0f5e6f366a9a021530b144049415edff65d90c9d79f35477bfa3eac42a",
+   "family": "section",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01313328742980957,
+   "mode": {
+    "camber": -19.7
+   },
+   "npz_sha256": "2d7a813e6591300250f0e80144b4f66ff134b94cf04ad0f70510280541ee2fc4",
+   "phi_c_order_sha256": "28bd7d8535192d897460de5381b5b19a1ffa4562412ed02430a487c206066cfe",
+   "phi_fortran_order_sha256": "c339770e712e8cac83b926445b77181c5fb9910d8ff52551a3aa5f85bf228dc2",
+   "sign": 1,
+   "slot": "W4",
+   "spec": {
+    "camber": -19.7
+   },
+   "state_sha256": "478cb24041555ed28220498534dbae1844368f2be6cf3720854124d238e02d9a",
+   "step_mm": 13.13328742980957,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.33930964991450313
+  },
+  "v18__camber_p19.7": {
+   "amplitude": null,
+   "changed_node_count": 106971,
+   "direction": "v18__camber_p19.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__camber_p19.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "f99c55afbadbd9fd857a29b16766a410dd0a0d98628a1884e7bd5905a7d51760",
+   "family": "section",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01313328742980957,
+   "mode": {
+    "camber": 19.7
+   },
+   "npz_sha256": "ec969579df95faab60bcb1bf7010e4963d05c9c8ae0c544dbe3e0f734997ec06",
+   "phi_c_order_sha256": "1df339358da1015dc8c07a122de71013cc9ef6460d0e472b257920467250e99f",
+   "phi_fortran_order_sha256": "6cfc5e9cd6b8c759d9c976bb8cb39c58c9888d136024b93dc20591ece1822629",
+   "sign": 1,
+   "slot": "W5",
+   "spec": {
+    "camber": 19.7
+   },
+   "state_sha256": "cda6771386f190f9d8f7decb697e9ceb12eb7bd3497a2674a348d758927e6023",
+   "step_mm": 13.13328742980957,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.33930964991450313
+  },
+  "v18__heave_m13.7": {
+   "amplitude": null,
+   "changed_node_count": 107025,
+   "direction": "v18__heave_m13.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__heave_m13.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "121c6a651f67d99d5b141af04fa5ecacfb6fa766cadd7433271b50b526d10532",
+   "family": "rigid",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.013688847422599792,
+   "mode": {
+    "heave": -13.7
+   },
+   "npz_sha256": "2e461b64215be8674a8b0fc66d156cbe72efb1c48215ec1dc07d6c228bb0b73f",
+   "phi_c_order_sha256": "f497e9cc45f6aabf5d89083977e060bed5284bb70a8b460385c6d4f27d4b70dc",
+   "phi_fortran_order_sha256": "cab942a44cd034b6ce033bc34eeab616138d3f0006f02bacc0be462291d3f1b5",
+   "sign": 1,
+   "slot": "W1b",
+   "spec": {
+    "heave": -13.7
+   },
+   "state_sha256": "6dd811f61052cdd082963f659a72de4df78bdfec52afdb6427270e9abb5a78e7",
+   "step_mm": 13.688847422599792,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.3369608171284199
+  },
+  "v18__heave_m31.1": {
+   "amplitude": null,
+   "changed_node_count": 107145,
+   "direction": "v18__heave_m31.1",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__heave_m31.1.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2bdf45c831498300fa96a6528be96908dbc971cfde87882ac44ee9277415450d",
+   "family": "rigid",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03107672929763794,
+   "mode": {
+    "heave": -31.1
+   },
+   "npz_sha256": "7f80541cbf43230710cd5e90b8b6ffd3056cadd87a8d3d0485a8cd4ffc63388b",
+   "phi_c_order_sha256": "04a8af98760fef416a9f35161bc132a84d20b7848b83ac6285b633d5c62508f8",
+   "phi_fortran_order_sha256": "cc7ce7b115dfe3974a179be4aa7fe35d5603b7408957eb67c7f14212ecebf616",
+   "sign": 1,
+   "slot": "W1",
+   "spec": {
+    "heave": -31.1
+   },
+   "state_sha256": "0364fd10e07a4cbc9b2b9dbb157daf87f90f3d7787d893ba8c70208bfa356f03",
+   "step_mm": 31.07672929763794,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.3194645375944674
+  },
+  "v18__heave_m31.1_pitch_p0.7": {
+   "amplitude": null,
+   "changed_node_count": 107147,
+   "direction": "v18__heave_m31.1_pitch_p0.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__heave_m31.1_pitch_p0.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "40d227a0d64cdf4217b840154b258627c67cb339cc708f646282993d18cf5f92",
+   "family": "combination",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03745974600315094,
+   "mode": {
+    "heave": -31.1,
+    "pitch": 0.7
+   },
+   "npz_sha256": "161890afe1baa3733957e0c45ca2da1f602c2d536a7b77221c1e1e5d8edc1162",
+   "phi_c_order_sha256": "26e576d082273bfb76cb633593faa51b684f0d1d51680ab97bb17c5ec7a10191",
+   "phi_fortran_order_sha256": "bbb0accc7ebe85220b9ad556ef484b5f8ba99fdeb4b451551998b1eb83034839",
+   "sign": 1,
+   "slot": "C2",
+   "spec": {
+    "heave": -31.1,
+    "pitch": 0.7
+   },
+   "state_sha256": "ada24e1086f34c9779e7c159d069395e81b8c7f6fb565d702de0e608e7391a38",
+   "step_mm": 37.45974600315094,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.3136941695585847
+  },
+  "v18__heave_p31.1": {
+   "amplitude": null,
+   "changed_node_count": 107145,
+   "direction": "v18__heave_p31.1",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__heave_p31.1.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "e28bea90129a96be4fafe786cbe72ad3a49ec095664908c7c56c913588341646",
+   "family": "rigid",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.03107672929763794,
+   "mode": {
+    "heave": 31.1
+   },
+   "npz_sha256": "1bf7c160b6b4b870bc1da145d2236da8709cc292698fc6bef5a0f06baf905b32",
+   "phi_c_order_sha256": "b40d7859ac1678ebdeffb8203740a1e16feaf5e10b7a4fa4d80f89652db757a7",
+   "phi_fortran_order_sha256": "e71fc989179f638666e875d77a082d453f2dfaeb28e6466b3c04f6ca2d152041",
+   "sign": 1,
+   "slot": "W2",
+   "spec": {
+    "heave": 31.1
+   },
+   "state_sha256": "733a2276da41847db4dcbbb524ef28a2c9bfcbaacace7b13a56e342f4c76a94b",
+   "step_mm": 31.07672929763794,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.3194645375944674
+  },
+  "v18__parent": {
+   "amplitude": 0.0,
+   "changed_node_count": 0,
+   "direction": null,
+   "direction_path": null,
+   "direction_sha256_fortran_raw": null,
+   "kind": "parent",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.0,
+   "mode": "parent",
+   "npz_sha256": "36967c90cb48b7fe3475436098b138d4e7998212defb6dcb61bf8cefc52d5890",
+   "phi_c_order_sha256": "0197e688bf41c87407705e9fee3c78392230fb7edf71b3f58e0aa08c65dceebe",
+   "phi_fortran_order_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "prescreen_all_pass": true,
+   "prescreen_phi_fortran_sha256": "29d53b2318c54548da321f265aa2102d59e24d96bbd04fb2dd70d62fbc10c82a",
+   "sign": 0,
+   "slot": null,
+   "state_sha256": "e7376e3576a045daa4c62353052890c43b4ed8b4562033c889cb1a4580d902bd",
+   "step_mm": 0.0,
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__pitch_m0.7": {
+   "amplitude": null,
+   "changed_node_count": 106916,
+   "direction": "v18__pitch_m0.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__pitch_m0.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "50e78524c8f53e23642dba791c24dbb3bfbd7a1a8eed8309475bc47f88d02bf3",
+   "family": "rigid",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.006743073463439941,
+   "mode": {
+    "pitch": -0.7
+   },
+   "npz_sha256": "5b888cb572c4dd60e4637276a4f35ab542ccbeaf557bfba06ec4a2d2dbc9856f",
+   "phi_c_order_sha256": "0fc9b3bc8b13ac54e9dd735225f48efa1f11bd00c615a5741d4f4b00cc390418",
+   "phi_fortran_order_sha256": "7e88b675eca91b682a190fc7620eabc648b02d1f51d369b7d0644faea3ce1e68",
+   "sign": 1,
+   "slot": "W3",
+   "spec": {
+    "pitch": -0.7
+   },
+   "state_sha256": "a3184e50cf2fdc058cde493ea982d97af4cdb4aa6187b6e1bd3baea612f2333b",
+   "step_mm": 6.743073463439941,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.35669866763055325
+  },
+  "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3": {
+   "amplitude": null,
+   "changed_node_count": 106973,
+   "direction": "v18__pitch_m1.3_reflex_p29.3_sweep_p11.3",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__pitch_m1.3_reflex_p29.3_sweep_p11.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "37f1a099dd28d986bd46289854a2f248b2cfd459008edf0a306a8934ba50900d",
+   "family": "combination",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.027322471141815186,
+   "mode": {
+    "pitch": -1.3,
+    "reflex": 29.3,
+    "sweep": 11.3
+   },
+   "npz_sha256": "959de4799a3e7b04894030bfb3ab72c82adcb5d3d00ad30b62c28c98f18a0207",
+   "phi_c_order_sha256": "c1b4bcacab9a16088671922ebb78a496f3a3810e17b03eafe52b7ff8da5e4f44",
+   "phi_fortran_order_sha256": "df994eb49da9e4641a2167b74819761d93b2915750a9aa604dda7f1362443486",
+   "sign": 1,
+   "slot": "C4",
+   "spec": {
+    "pitch": -1.3,
+    "reflex": 29.3,
+    "sweep": 11.3
+   },
+   "state_sha256": "fccde5202a13ce69bfccd8dd3159ff8e03d333918c89e2c2c97c0b839ea464a5",
+   "step_mm": 27.322471141815186,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.3624999985098839
+  },
+  "v18__pitch_p0.7": {
+   "amplitude": null,
+   "changed_node_count": 106924,
+   "direction": "v18__pitch_p0.7",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__pitch_p0.7.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "109c7687945669e4b089987b49b1a3957ca333487f427ce4fdf8dfcca957d44d",
+   "family": "rigid",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.006743103265762329,
+   "mode": {
+    "pitch": 0.7
+   },
+   "npz_sha256": "090a48d48541a93949a59395d4e9a1e13e193b2572247f3ab5e0f50dbb2fb275",
+   "phi_c_order_sha256": "b199490bfe8fea46fecc66f704d692841e3f874e9ea1a4b985e376d3d267395a",
+   "phi_fortran_order_sha256": "9131d84abfa469d16c35d337080a3505eb91680c8be5e1e4cd1bde0ae561c9c0",
+   "sign": 1,
+   "slot": "W8",
+   "spec": {
+    "pitch": 0.7
+   },
+   "state_sha256": "3d63120efe53a5adade060f162f65445ac8d18b65726f1a72321f1f72f996755",
+   "step_mm": 6.743103265762329,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.34466603482142094
+  },
+  "v18__reflex_m29.3": {
+   "amplitude": null,
+   "changed_node_count": 106932,
+   "direction": "v18__reflex_m29.3",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__reflex_m29.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "dedd79921bd85d4bd5e4ba1ed4beab91b55d04bb8e3b93ec5a896f6b8de71478",
+   "family": "section",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.011719956994056702,
+   "mode": {
+    "reflex": -29.3
+   },
+   "npz_sha256": "fd17ce9c8588bdd2a6db4418cc73870edbf660dcd2b8e79ea88afebbd5d0d0c1",
+   "phi_c_order_sha256": "eeb11999f58988ece57afd410ab4978bccdec289c308e502d1e8bf5d6563062e",
+   "phi_fortran_order_sha256": "2a47821872ec2aefed7029c005780f6faa8c20c384e337a15a8bfc280773737f",
+   "sign": 1,
+   "slot": "W6",
+   "spec": {
+    "reflex": -29.3
+   },
+   "state_sha256": "a4348fcac8ba21d57ace838bb70c5fa685db1a26afd31d08d71c3a1d426cc189",
+   "step_mm": 11.719956994056702,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.34046744685620073
+  },
+  "v18__roll_p25": {
+   "amplitude": 25.0,
+   "changed_node_count": 106999,
+   "direction": "v18__roll_p25",
+   "direction_path": "docs/evidence/unc01_2026_10_20/inputs/v18__roll_p25.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "2796e8361d4af8eac564e8495b498a202c8000a9e333171299bb06bace4ad040",
+   "kind": "control",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.024999618530273438,
+   "mode": "surge",
+   "npz_sha256": "e1e5e1b4f4060f738d363fcffa754474dbf781211b3b5e42876cdca3c19940a2",
+   "phi_c_order_sha256": "2c95b001de01bfe8a49a009eab241d18b3447325512f562ed5e698c90b0b50c4",
+   "phi_fortran_order_sha256": "355a7ceee5c9e97ec1099336b8a68e134eecaa71d347843daec7f0d4c8099df1",
+   "prescreen_all_pass": null,
+   "prescreen_phi_fortran_sha256": null,
+   "sign": 1,
+   "slot": null,
+   "state_sha256": "b53c18a9b5f985a9aa8d49b194c58aef8c9bd86d2ce605c3ace24657790be415",
+   "step_mm": 24.999618530273438,
+   "zero_level_margin_m": 0.35088423639535904
+  },
+  "v18__twist_p2.3": {
+   "amplitude": null,
+   "changed_node_count": 106956,
+   "direction": "v18__twist_p2.3",
+   "direction_path": "docs/evidence/fid01_2026_10_21/inputs/v18__twist_p2.3.dir_f4_fortran.raw",
+   "direction_sha256_fortran_raw": "8d28c0c29493f5534f93d6c699064f2c968debf5aaa8aa5ee0a3de7c7f9af8f1",
+   "family": "span",
+   "kind": "candidate",
+   "margin_tolerance_m": 1e-06,
+   "maximum_pointwise_change_m": 0.01352161169052124,
+   "mode": {
+    "twist": 2.3
+   },
+   "npz_sha256": "7bf635441c4ab0ba31662129be542ca5e8c8334c30fd4dc01356462adf5d2a66",
+   "phi_c_order_sha256": "de62749107e1250758c9b6c4254d0e846e9f9eb9edd503fb3a634fb3110a6787",
+   "phi_fortran_order_sha256": "ad1a4f63538337da843dff8e4a2c4ea4a37032405d8b2a341cd8ad645fe4c791",
+   "sign": 1,
+   "slot": "W7",
+   "spec": {
+    "twist": 2.3
+   },
+   "state_sha256": "51a2fb6e22aca18992c8cf312be7a53d51a54abb979c3c8135c0da48ff2edcba",
+   "step_mm": 13.52161169052124,
+   "stratum": "wide",
+   "zero_level_margin_m": 0.33908155318349603
+  }
+ },
+ "unc01_states_sha256": "8b405fe0f787c2e6afde40e46404729249f4bf412a298f23aa2c9c83290c0501",
+ "v18_plate_sha256": "4641c2f4cc06135825a67cb32a07dcb2a60adb6462a7d0b6149926d3812c6df7"
+}

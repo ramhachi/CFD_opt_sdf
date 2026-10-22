@@ -1,6 +1,6 @@
 # STATE — current position in one page
 
-Updated: 2026-10-22 (parallel preparation and primary-reference audit). Integration: `codex/kaggle-batch-migration` at `1467af14` when reviewed; this continuation is on PR #71's feature branch until integrated.
+Updated: 2026-10-23 (FID-01 registered GO received). Integration: `codex/kaggle-batch-migration` at `458e2df5` when refreshed; this continuation is on PR #71's feature branch until integrated.
 Roadmap authority: [phase_plan.md, latest amendment](phase_plan.md#2026-10-22-parallel-preparation-and-primary-reference-audit).
 Rationale and primary sources: [2026-10-22 review](roadmap_review_2026_10_22.md). Earlier decisions remain in phase_plan and the [2026-10-16 review](roadmap_review_2026_10_16.md).
 
@@ -12,7 +12,7 @@ No optimized shape has yet had its improvement independently confirmed. L1 is a 
 ## Latest evidence
 
 - **UNC-01 #61: `M2_COMPLETE`** (2026-10-21). On the v18 plate, wide pitch/reflex downforce differences have placement SD sigma_d = 2.1–5.5e-4 N on flow_32. For pitch +3.1 deg, flow_32/48 = 0.980 [0.962, 0.999]; coarse OpenFOAM retains 0.63–0.71 of wide-arm downforce differences. Scope: one parent, selected modes and placements, Re80. This is not grid convergence or optimized-shape verification. [Record](evidence/unc01_2026_10_20/analysis.md).
-- **FID-01 #62: in progress on `claude/m3a-fid01`** (public snapshot `78e1e76f`). Freeze 3, four flow_32 kernels and the flow_48 kernel output are committed as verified. Tier A has eight designs and tier B four. No final OpenFOAM-inclusive registered verdict was confirmed. Do not change its registration or infer GO from this checkpoint.
+- **FID-01 #62: completed `FID01_GO`**, result `b2314d9d` merged at `458e2df5` (2026-10-23). Tier A8/8 and G3-set PASS on the registered Re80 v18 designs;733/733 OF cases valid. V1 retention0.57–0.77; V3/V1 slope1.086 [0.992,1.181]. Pure heave ±31.1 FAIL (`TIER_B_FAIL`); local support `SUPPORT_UNTESTABLE`. Flow-grid R3 is confirmed, with `R3_E2_EXCEEDED`; this does not validate the geometry-width R3 proposal. Registered M3b minimum gain2.70% and XV OF minimum1.27% now apply. No optimizer-selected design, high-Re/FSAE or converged-mesh claim. [Written-once owner record](evidence/fid01_2026_10_21/analysis.md).
 - **T2-0 #57: completed with no evaluator GO** (closed 2026-10-22). T2-0b/c/d are `T20B_NO_GO`, `T20C_MORPH_NO_GO`, `T20D_NO_GO`. The final study gives DATA `FAIL_INPUT`, DIFF `FAIL_VALUE`, cost `NOT_AFFORDABLE` (median 92.4 min/evaluation on Kaggle CPU). Fixed-topology morphs help at h/c=0.224; the peak remains uncertified across mesh realisations/levels. URANS settling is a statement about the 2D SA model, not experimental steadiness. [M4 summary](t20_summary_for_m4_2026_10_22.md).
 - **EVAL-VALID-01 #68: bounded audit complete, `REFERENCE_INADEQUATE` for quantitative absolute-Cl adoption.** Primary Zerihan thesis Table 15 matches all seven legacy points (max difference 0.00091824). The observable is pressure-integrated sectional Cl, explicitly limited by the author to qualitative trends. Per-record trip and total integrated-Cl uncertainty remain unknown. Old T2-0 results stay unchanged. [Source/condition matrix and M4 packet](eval_valid01_reference_audit_2026_10_22.md).
 - **Geometry width:** exploratory WIDTH-RULE is `NO_CANDIDATE_MEETS_K1_K6`; R0 rejects 190/200 optimizer-like v18 combinations through one-cell occupancy artefacts. R3 + frozen-node margin + topology is a proposal requiring registered disjoint validation. M3a retains R0. [Proposal](width_rule_decision_2026_10_20.md).
@@ -30,11 +30,11 @@ FID-01 tier A retains literal E2 (about 2.0%, 5.363e-3 N); the paired 0.68% is a
 | --- | --- | --- |
 | M0 / M1 / M1' | #58, #59, #60 | Done: harness and JOB-02 byte gate; user selected B1=v18; mode prescreen exploratory, binding at M2 |
 | M2 | #61 | Done: `M2_COMPLETE` |
-| M3a | #62 | Complete the existing registered campaign and retain its cause/secondary labels |
+| M3a | #62 | Done: FID01_GO; preserve registered secondary labels and written-once analysis |
 | M4 preparation | #66 | Prepare now in parallel: the T2-0 fallback is unavailable. Final evaluator/product decision retains the required M3-result dependency |
 | High-Re validation contract | [EVAL-VALID-01 #68](https://github.com/ramhachi/CFD_opt_sdf/issues/68) | Audit done: original quantitative reference inadequate; source matrix and bounded alternatives return to M4, no evaluator GO |
 | Geometry before M3b | [GEOM-03 #70](https://github.com/ramhachi/CFD_opt_sdf/issues/70) | [Draft registration](geom03_registration_2026_10_22.md) prepared, not frozen or run. Required if adopting R3; failure keeps the registered R0-clean/parent branch |
-| M3b / L1 | #64 | Only after `FID01_GO`, the geometry-admissibility path, and new registration |
+| M3b / L1 | #64 | FID01_GO received; geometry-admissibility path and SCREEN registration remain |
 | Independent verification / L2 | #65 | [Preparation requirements](xv01_registration_requirements_2026_10_22.md) available; requires frozen SCREEN finalist, single-finalist uncertainty and actual constraint checks; meshes judgment-only |
 | High-Re numeric/cost recovery | [EVAL-PT-01 #69](https://github.com/ramhachi/CFD_opt_sdf/issues/69) | Conditional on M4 selecting new work, validation inputs and a registered bounded comparison; not a continuation of #57 |
 | M4 final | #66 | Choose scope/evaluator, new evidence work, or research NO-GO after the applicable M3 outcome |
@@ -48,3 +48,5 @@ WaterLily stays on Kaggle T4. User decision 2026-10-20 moved OpenFOAM to local D
 Do not assume a local high-Re pipeline is equivalent: consume hash-pinned base meshes or requalify that pipeline. Backend changes are raised on the existing quota/latency/run-size triggers; no rented API or new spending was selected.
 The 22:25 JST [status snapshot](evidence/parallel_preparation_2026_10_22/process_snapshot.json) found four advancing FID V3 jobs (5/9 case records complete). Preserve their resources and registered outputs; no extra CFD/GPU job was started. Parallel work is source research and preparation only.
 Validation and exact hashes for this continuation: [audit record](evidence/parallel_preparation_2026_10_22/validation.json); the [earlier review validation](evidence/roadmap_review_2026_10_22/validation.json) remains its dated record. Other historical manifests with missing logs are not covered by its scoped integrity checks.
+
+Live refresh at2026-10-23 02:47JST: FID result merged, owner branch removed, no Docker containers active; this supersedes the earlier active-job snapshot above. Geometry review/validation and its own freeze/release remain required.

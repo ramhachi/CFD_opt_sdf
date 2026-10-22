@@ -1,0 +1,74 @@
+{
+  "dataset": "work/fid01_of/v2_50m",
+  "docker_args": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--cpus",
+    "1",
+    "--memory",
+    "8g",
+    "--memory-swap",
+    "8g",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/infra/fid01/v2_50m/runner.py:/kaggle/src/runner.py:ro",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/work/fid01_of_out/v2_50m:/kaggle/working",
+    "-v",
+    "/Users/sota/projects/FomulaTMU/CFD2026_09/.claude/worktrees/dreamy-wu-de3512/work/fid01_of/v2_50m:/kaggle/input/fid01-of-v2-50m-inputs:ro",
+    "-w",
+    "/kaggle/working",
+    "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+    "bash",
+    "-c",
+    "\"$@\"; rc=$?; dpkg-query -W -f='${Package}=${Version} ${Architecture}\\n' | LC_ALL=C sort | sha256sum | cut -c1-64 > /kaggle/working/dpkg_after.sha256; exit $rc",
+    "_",
+    "python",
+    "/kaggle/src/runner.py"
+  ],
+  "dpkg_after_matches_lock": true,
+  "dpkg_after_sha256": "1d22ec7dd4dec845f22d1a186972e999cf4df04b1163cc34f9e734388440389c",
+  "host_after": {
+    "loadavg": [
+      19.32470703125,
+      17.0703125,
+      16.498046875
+    ],
+    "swap": "total = 21504.00M  used = 20256.88M  free = 1247.12M  (encrypted)",
+    "utc": "2026-10-22T01:20:50+00:00"
+  },
+  "host_before": {
+    "loadavg": [
+      3.041015625,
+      1.927734375,
+      1.92333984375
+    ],
+    "swap": "total = 16384.00M  used = 14967.62M  free = 1416.38M  (encrypted)",
+    "utc": "2026-10-21T19:15:02+00:00"
+  },
+  "image_id": "sha256:e9ceb8a79fd8ceb928983000fffa5a4f2056c354c2e599d098fbcabbce8a25eb",
+  "kernel_metadata": {
+    "code_file": "runner.py",
+    "competition_sources": [],
+    "dataset_sources": [
+      "ramhachi888/fid01-of-v2-50m-inputs"
+    ],
+    "enable_gpu": false,
+    "enable_internet": true,
+    "id": "ramhachi888/fid01-of-v2-50m",
+    "is_private": true,
+    "kernel_sources": [],
+    "kernel_type": "script",
+    "language": "python",
+    "model_sources": [],
+    "title": "fid01-of-v2-50m"
+  },
+  "lock_sha256": "c105b7df7faa310561c0fb607f8dcc8a82be3b21789520489677c7326be11fcd",
+  "returncode": 0,
+  "runner": "infra/fid01/v2_50m/runner.py",
+  "runner_sha256": "d0cf21ebf95a5e287290638cfdf1f0792bc7fe76352ba304f8c00540d1411ff3",
+  "script_sha256": "10fee253e6611141644b1c90a4e0854dbce99894a7038cfba801ad433d4be13d",
+  "subset": null,
+  "wall_s": 21947.621136083002
+}
