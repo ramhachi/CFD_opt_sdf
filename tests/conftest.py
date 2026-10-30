@@ -1,11 +1,16 @@
 """Shared test helpers."""
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
+
+# scripts/freeze_grad_ta1.py imports tomllib (Python >= 3.11) and is hash-pinned by the GRAD-TA1 freeze, so it cannot be edited;
+# its test module (also pinned) is not collected on the 3.10 CI job instead.
+collect_ignore = ["test_grad_ta1_kernel.py"] if sys.version_info < (3, 11) else []
 
 
 def requires_work(*relpaths: str):
