@@ -17,14 +17,14 @@ jobs:
     strategy:
       # Every OS reports its own result. Python 3.10 is not tested: the byte-replay tests of frozen records need numpy >= 2.3
       # (3.11+), and pyproject.toml's requires-python cannot be raised because frozen registrations pin that file.
+      # Windows is not tested: the research runs on Linux (Kaggle) and macOS (local), and the pinned sources use POSIX-only
+      # modules and locale-default text I/O (301 failures on 2026-10-30, Actions run 41069911541); see docs/git_branching_strategy.md.
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             python-version: "3.12"
           - os: macos-latest
-            python-version: "3.12"
-          - os: windows-latest
             python-version: "3.12"
     steps:
       - name: Check out repository

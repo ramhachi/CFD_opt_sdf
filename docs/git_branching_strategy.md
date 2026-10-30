@@ -61,7 +61,9 @@ requests whose base is `codex/kaggle-batch-migration`; GitHub creates a merge co
 (first sync 2026-10-30, after PR #71/#72), never by rebase or force-push, and nothing is committed to `main` directly. `main` stays the
 default branch, so a default-branch search sees the last synced milestone rather than live work; branch protection was not enabled. The
 Python CI (`.github/workflows/ci.yml`: compileall, `git diff --check`, `pytest -q` on Linux/macOS/Windows) runs on pushes to `main`, so each
-sync is also the first CI run of that milestone on GitHub runners; a CI failure there is recorded, not fixed on `main`.
+sync is also the first CI run of that milestone on GitHub runners; a CI failure there is recorded, not fixed on `main`. Since 2026-10-30 CI also
+runs on pull requests to the integration branch and on demand (`workflow_dispatch`), on Python 3.12 for ubuntu and macOS only; Python 3.10 and
+Windows are not tested (reasons in the workflow file), and two exact replays of macOS-produced records are skipped off macOS (`tests/conftest.py`).
 
 Cleanup rule (user decision 2026-10-14): after a `--no-ff` merge, delete the local and remote feature branches that are fully contained in the
 integration branch (`git branch -r --merged origin/codex/kaggle-batch-migration`), remove their worktrees, and leave untouched any branch
