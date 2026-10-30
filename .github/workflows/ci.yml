@@ -14,10 +14,11 @@ jobs:
     name: Python ${{ matrix.python-version }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      # Every OS reports its own result. Python 3.10 is not tested: the byte-replay tests of frozen records need numpy >= 2.3
+      # (3.11+), and pyproject.toml's requires-python cannot be raised because frozen registrations pin that file.
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            python-version: "3.10"
           - os: ubuntu-latest
             python-version: "3.12"
           - os: macos-latest
