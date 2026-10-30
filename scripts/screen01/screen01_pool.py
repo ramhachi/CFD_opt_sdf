@@ -338,55 +338,57 @@ def cloud(u_star, radius, n, seed):
 
 def propose(beta_y, beta_z, is_admissible, exclude=(), m_d=M_D, targets=TARGETS, n_cloud=N_CLOUD, radius=R_CLOUD, seed=SEED_CLOUD, gate_cap=GATE_CAP,
             n_per_target=N_PER_TARGET, n_prop=N_PROP, gate_round=GATE_ROUND, n_grid=N_GRID, grid=None):
-    """Registered refinement step (§5.3).  For each target tau in `targets`: u*_tau = constrained argmax of the fitted surface over the box grid with
-    predicted drag <= -tau m_d; candidate list = u*_tau followed by the Sobol cloud (radius, clipped to the box) filtered to predicted drag <= -tau m_d and
-    predicted downforce >= 0.9 y*(tau), ordered by predicted downforce descending, excluding already-evaluated names.  The lists are interleaved
-    round-robin over the targets and gated (`is_admissible(u) -> bool`, the full P0 admissibility) in rounds of `gate_round`, stopping after the round in
-    which every target has >= n_per_target admissible points or `gate_cap` points were gated.  Proposals: per target the admissible point with the
-    largest predicted downforce, then the remaining admissible points by predicted downforce, up to n_prop.  Deterministic given the inputs."""
+    """Registered refinement step (§5.2, §5.11).  Per target tau: u*_tau = constrained argmax of the fitted surface over the box grid with predicted drag
+    <= -tau m_d (ties -> first grid point in C order); a target with no feasible grid point or y*_tau <= 0 contributes nothing.  Candidate list = u*_tau
+    first, then the Sobol cloud (seed + 0-based target index, max-norm radius, clipped to the box) filtered to predicted drag <= -tau m_d and predicted
+    downforce >= 0.9 y*_tau, by predicted downforce descending (stable); distinct names only, already-evaluated names excluded.  The lists are interleaved
+    round-robin into one queue; a name an earlier list already queued is skipped (every point is gated once, owned by the target that queued it first).
+    Gated (`is_admissible(u) -> bool`, the full P0 admissibility) in rounds of `gate_round`, stopping after the round in which every target with a queued
+    point has >= n_per_target admissible points of its own, or `gate_cap` points were gated.  Proposals: per target (target order) its admissible point with
+    the largest predicted downforce, then the remaining admissible points by predicted downforce (ties -> gated earlier), up to n_prop.  Deterministic."""
     lists, stars = [], {}
     for i, tau in enumerate(targets):
         us, ys, zs = constrained_argmax(beta_y, beta_z, tau * m_d, n_grid, grid)
-        if us is None:
-            stars[tau] = None
+        if us is None or ys <= 0:
+            stars[tau] = None if us is None else {"u": [float(v) for v in us], "y_pred": ys, "z_pred": zs, "n_candidates": 0, "no_predicted_gain": True}
             lists.append([])
             continue
-        C = np.vstack([us[None, :], cloud(us, radius, n_cloud, seed + i)])
+        C = cloud(us, radius, n_cloud, seed + i)
         y, z = predict9(beta_y, C), predict9(beta_z, C)
         keep = (z <= -tau * m_d) & (y >= 0.9 * ys)
         order = np.argsort(-y[keep], kind="stable")
-        pts = [(tuple(C[keep][j]), float(y[keep][j]), float(z[keep][j])) for j in order]
+        pts = [(tuple(us), ys, zs)] + [(tuple(C[keep][j]), float(y[keep][j]), float(z[keep][j])) for j in order]
         seen, uniq = set(exclude), []
         for u, yy, zz in pts:
             n = D.name(u_to_spec(u))
             if n not in seen:
                 seen.add(n)
                 uniq.append((u, yy, zz, n))
-        stars[tau] = {"u": [float(v) for v in us], "y_pred": ys, "z_pred": zs, "n_candidates": len(uniq)}
+        stars[tau] = {"u": [float(v) for v in us], "y_pred": ys, "z_pred": zs, "n_candidates": 0}
         lists.append(uniq)
-    queue = [(tau, item) for k in range(max((len(l) for l in lists), default=0)) for tau, l in zip(targets, lists) if k < len(l) for item in [l[k]]]
+    queue, taken = [], set()
+    for k in range(max(map(len, lists), default=0)):
+        for tau, l in zip(targets, lists):
+            if k < len(l) and l[k][3] not in taken:
+                taken.add(l[k][3])
+                queue.append((tau, l[k]))
+                stars[tau]["n_candidates"] += 1
+    has = {tau: stars[tau] is not None and stars[tau]["n_candidates"] > 0 for tau in targets}
     gated, adm = [], {tau: [] for tau in targets}
     pos = 0
     while pos < len(queue) and len(gated) < gate_cap:
-        batch = queue[pos:pos + gate_round]
-        pos += gate_round
+        batch = queue[pos:pos + min(gate_round, gate_cap - len(gated))]
+        pos += len(batch)
         for tau, (u, yy, zz, n) in batch:
             ok = bool(is_admissible(np.asarray(u)))
-            gated.append({"name": n, "u": [float(v) for v in u], "target": tau, "y_pred": yy, "z_pred": zz, "admissible": ok})
             if ok:
-                adm[tau].append((yy, n, u, zz))
-        if all(len(adm[tau]) >= n_per_target for tau in targets if lists[targets.index(tau)]):
+                adm[tau].append((-yy, len(gated), n, u, zz))      # sort key (-y_pred, gated index): ties -> gated earlier
+            gated.append({"name": n, "u": [float(v) for v in u], "target": tau, "y_pred": yy, "z_pred": zz, "admissible": ok})
+        if all(len(adm[tau]) >= n_per_target for tau in targets if has[tau]):
             break
-    props, used = [], set()
-    for tau in targets:
-        for yy, n, u, zz in sorted(adm[tau], key=lambda t: -t[0])[:1]:
-            if n not in used and len(props) < n_prop:
-                props.append({"name": n, "u": [float(v) for v in u], "target": tau, "y_pred": yy, "z_pred": zz}); used.add(n)
-    rest = sorted([t + (tau,) for tau in targets for t in adm[tau] if t[1] not in used], key=lambda t: -t[0])
-    for yy, n, u, zz, tau in rest:
-        if len(props) >= n_prop:
-            break
-        props.append({"name": n, "u": [float(v) for v in u], "target": tau, "y_pred": yy, "z_pred": zz}); used.add(n)
+    first = [min(adm[tau]) for tau in targets if adm[tau]]
+    rest = sorted(t for tau in targets for t in adm[tau] if t not in first)
+    props = [{"name": n, "u": [float(v) for v in u], "target": gated[g]["target"], "y_pred": -ny, "z_pred": zz} for ny, g, n, u, zz in (first + rest)[:n_prop]]
     return {"proposals": props, "gated": gated, "argmax": {f"{tau:g}": s for tau, s in stars.items()}, "n_gated": len(gated),
             "params": {"m_d": m_d, "targets": list(targets), "n_cloud": n_cloud, "radius": radius, "seed": seed, "gate_cap": gate_cap, "n_per_target": n_per_target, "n_prop": n_prop,
                        "gate_round": gate_round, "n_grid": n_grid, "box_u": BOX}}
@@ -442,6 +444,13 @@ def selfcheck() -> dict:
         assert any(g["name"] == p["name"] and g["admissible"] for g in r1["gated"]), "proposal not gated admissible"
     assert len(r1["proposals"]) <= N_PROP and r1["n_gated"] <= GATE_CAP
     assert len({p["target"] for p in r1["proposals"][:3]}) == 3, "one proposal per target first"
+    names = [g["name"] for g in r1["gated"]]
+    assert len(set(names)) == len(names), "a point is gated at most once"
+    for tau, a in r1["argmax"].items():   # u*_tau is the first point gated under its own target (§5.11)
+        own = [g for g in r1["gated"] if f"{g['target']:g}" == tau]
+        assert not a or not own or own[0]["name"] == D.name(u_to_spec(a["u"])), "u* must be gated first"
+    r3 = propose(np.array([0, 0, 0, -1e-2, -1e-2, -1e-2, 0, 0, 0]), bz, lambda u: True, n_grid=41)   # downforce < 0 everywhere but the (infeasible) origin
+    assert not r3["proposals"] and not r3["gated"] and all(s is None or s.get("no_predicted_gain") for s in r3["argmax"].values()), "no proposals without a predicted gain"
     U = np.vstack([AXIAL_U, sobol_u(12, 5)])
     b, sd, rank, cond = fit9(U, predict9(by, U) + 1e-4 * rng.standard_normal(len(U)))
     assert rank == 9 and np.allclose(b, by, atol=5e-4), "fit9 must recover the surface"

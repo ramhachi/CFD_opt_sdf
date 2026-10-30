@@ -152,7 +152,7 @@
     ]
    },
    "random_control": {},
-   "wall_s": 18.1
+   "wall_s": 9.9
   },
   "rev0_registered": {
    "P_GAIN": 0.0325,
@@ -203,26 +203,26 @@
     ]
    },
    "random_control": {},
-   "wall_s": 18.6
+   "wall_s": 9.8
   },
   "rev1_box_unextended": {
-   "P_GAIN": 0.802,
+   "P_GAIN": 0.7945,
    "P_finalist_in_extension": 0.0,
-   "P_finalist_true_drag_positive": 0.0235,
-   "P_pool_limited_label": 0.096,
-   "P_rule_A_given_sealed": 0.8739635157545605,
-   "P_rule_B_given_sealed": 0.9192924267551134,
-   "mean_best_true_feasible_gain_over_J": 0.03888138240735059,
-   "mean_finalist_true_gain_over_J": 0.0387171100752767,
-   "mean_n_gated": 19.061,
-   "mean_sealed_minus_true_n": 1.3307005149634614e-06,
-   "mean_selection_minus_true_n": 0.00010865599448166706,
-   "mean_y_star_pred_over_J": 0.03866081136955728,
+   "P_finalist_true_drag_positive": 0.019,
+   "P_pool_limited_label": 0.101,
+   "P_rule_A_given_sealed": 0.88107202680067,
+   "P_rule_B_given_sealed": 0.9218313791178113,
+   "mean_best_true_feasible_gain_over_J": 0.038322830063523584,
+   "mean_finalist_true_gain_over_J": 0.03812091196192448,
+   "mean_n_gated": 18.9125,
+   "mean_sealed_minus_true_n": 3.407013247985967e-06,
+   "mean_selection_minus_true_n": 0.00010409802522891139,
+   "mean_y_star_pred_over_J": 0.038144918026769524,
    "outcomes": {
-    "GAIN": 0.802,
-    "NO_GAIN:DRAG_VIOLATION": 0.0295,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.073,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0955
+    "GAIN": 0.7945,
+    "NO_GAIN:DRAG_VIOLATION": 0.031,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.07,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.1045
    },
    "params": {
     "box": {
@@ -253,29 +253,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.9395,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.0605
+    "RANDOM_BELOW_MIN": 0.9325,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.0675
    },
-   "wall_s": 41.5
+   "wall_s": 21.4
   },
   "rev1_m_d_1.0e-3": {
-   "P_GAIN": 0.847,
-   "P_finalist_in_extension": 0.999409681227863,
-   "P_finalist_true_drag_positive": 0.064,
-   "P_pool_limited_label": 0.1395,
-   "P_rule_A_given_sealed": 0.978421052631579,
-   "P_rule_B_given_sealed": 0.9868421052631579,
-   "mean_best_true_feasible_gain_over_J": 0.05907391881012776,
-   "mean_finalist_true_gain_over_J": 0.05892109226104922,
-   "mean_n_gated": 20.8855,
-   "mean_sealed_minus_true_n": 6.375621949479763e-06,
-   "mean_selection_minus_true_n": 0.00011903028774852632,
-   "mean_y_star_pred_over_J": 0.06150639667606937,
+   "P_GAIN": 0.846,
+   "P_finalist_in_extension": 1.0,
+   "P_finalist_true_drag_positive": 0.0735,
+   "P_pool_limited_label": 0.1415,
+   "P_rule_A_given_sealed": 0.9779179810725552,
+   "P_rule_B_given_sealed": 0.9863301787592008,
+   "mean_best_true_feasible_gain_over_J": 0.05792514336439059,
+   "mean_finalist_true_gain_over_J": 0.058198832968872814,
+   "mean_n_gated": 20.7015,
+   "mean_sealed_minus_true_n": -5.1887203968927065e-06,
+   "mean_selection_minus_true_n": 0.00012696774350196317,
+   "mean_y_star_pred_over_J": 0.06077219964437664,
    "outcomes": {
-    "GAIN": 0.847,
-    "NO_GAIN:DRAG_VIOLATION": 0.0905,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.0125,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.05
+    "GAIN": 0.846,
+    "NO_GAIN:DRAG_VIOLATION": 0.092,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.013,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.049
    },
    "params": {
     "box": {
@@ -306,29 +306,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.775,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.225
+    "RANDOM_BELOW_MIN": 0.779,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.221
    },
-   "wall_s": 42.4
+   "wall_s": 21.8
   },
   "rev1_misfit_heavy": {
-   "P_GAIN": 0.746,
-   "P_finalist_in_extension": 0.9738605898123325,
-   "P_finalist_true_drag_positive": 0.044,
-   "P_pool_limited_label": 0.14,
-   "P_rule_A_given_sealed": 0.9577723378212974,
-   "P_rule_B_given_sealed": 0.9749082007343941,
-   "mean_best_true_feasible_gain_over_J": 0.06691555318259657,
-   "mean_finalist_true_gain_over_J": 0.06695504235021346,
-   "mean_n_gated": 19.4445,
-   "mean_sealed_minus_true_n": 3.5545042828337925e-07,
-   "mean_selection_minus_true_n": 0.0001398911587995689,
-   "mean_y_star_pred_over_J": 0.06886882388435893,
+   "P_GAIN": 0.7285,
+   "P_finalist_in_extension": 0.9766643788606726,
+   "P_finalist_true_drag_positive": 0.05,
+   "P_pool_limited_label": 0.141,
+   "P_rule_A_given_sealed": 0.9651307596513076,
+   "P_rule_B_given_sealed": 0.975093399750934,
+   "mean_best_true_feasible_gain_over_J": 0.06587732410712482,
+   "mean_finalist_true_gain_over_J": 0.06571986401997472,
+   "mean_n_gated": 19.262,
+   "mean_sealed_minus_true_n": 7.16726554532161e-06,
+   "mean_selection_minus_true_n": 0.00011412140636064957,
+   "mean_y_star_pred_over_J": 0.06793701132365998,
    "outcomes": {
-    "GAIN": 0.746,
-    "NO_GAIN:DRAG_VIOLATION": 0.0505,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.0205,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.183
+    "GAIN": 0.7285,
+    "NO_GAIN:DRAG_VIOLATION": 0.0545,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.02,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.197
    },
    "params": {
     "box": {
@@ -359,29 +359,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.717,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.283
+    "RANDOM_BELOW_MIN": 0.7375,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2625
    },
-   "wall_s": 30.5
+   "wall_s": 21.8
   },
   "rev1_noise_x1.5": {
-   "P_GAIN": 0.828,
-   "P_finalist_in_extension": 0.9993961352657005,
-   "P_finalist_true_drag_positive": 0.0655,
-   "P_pool_limited_label": 0.1495,
-   "P_rule_A_given_sealed": 0.9598944591029024,
-   "P_rule_B_given_sealed": 0.97467018469657,
-   "mean_best_true_feasible_gain_over_J": 0.056218154458313976,
-   "mean_finalist_true_gain_over_J": 0.056367048336094114,
-   "mean_n_gated": 20.547,
-   "mean_sealed_minus_true_n": 4.4781211297070587e-07,
-   "mean_selection_minus_true_n": 0.00020398540724619844,
-   "mean_y_star_pred_over_J": 0.05903957794724668,
+   "P_GAIN": 0.8325,
+   "P_finalist_in_extension": 0.9981981981981982,
+   "P_finalist_true_drag_positive": 0.064,
+   "P_pool_limited_label": 0.148,
+   "P_rule_A_given_sealed": 0.9618845950238222,
+   "P_rule_B_given_sealed": 0.9777660137638963,
+   "mean_best_true_feasible_gain_over_J": 0.05573501125831614,
+   "mean_finalist_true_gain_over_J": 0.05568214881414071,
+   "mean_n_gated": 20.592,
+   "mean_sealed_minus_true_n": 1.5375028939984455e-06,
+   "mean_selection_minus_true_n": 0.00020779050163161308,
+   "mean_y_star_pred_over_J": 0.05895748212468581,
    "outcomes": {
-    "GAIN": 0.828,
-    "NO_GAIN:DRAG_VIOLATION": 0.0955,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.024,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0525
+    "GAIN": 0.8325,
+    "NO_GAIN:DRAG_VIOLATION": 0.091,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.021,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0555
    },
    "params": {
     "box": {
@@ -412,24 +412,24 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.7575,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2425
+    "RANDOM_BELOW_MIN": 0.7665,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2335
    },
-   "wall_s": 31.0
+   "wall_s": 21.6
   },
   "rev1_null_downforce": {
    "P_GAIN": 0.0,
    "P_finalist_in_extension": null,
-   "P_finalist_true_drag_positive": 0.003,
+   "P_finalist_true_drag_positive": 0.005,
    "P_pool_limited_label": 0.0,
    "P_rule_A_given_sealed": null,
    "P_rule_B_given_sealed": null,
    "mean_best_true_feasible_gain_over_J": 0.0,
    "mean_finalist_true_gain_over_J": 0.0,
-   "mean_n_gated": 20.928,
+   "mean_n_gated": 21.0985,
    "mean_sealed_minus_true_n": null,
    "mean_selection_minus_true_n": null,
-   "mean_y_star_pred_over_J": 0.0024365932063484443,
+   "mean_y_star_pred_over_J": 0.0024465783287590513,
    "outcomes": {
     "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 1.0
    },
@@ -464,26 +464,26 @@
    "random_control": {
     "RANDOM_BELOW_MIN": 1.0
    },
-   "wall_s": 35.9
+   "wall_s": 25.5
   },
   "rev1_p_adm_0.25": {
-   "P_GAIN": 0.873,
-   "P_finalist_in_extension": 0.9994272623138603,
-   "P_finalist_true_drag_positive": 0.041,
-   "P_pool_limited_label": 0.108,
-   "P_rule_A_given_sealed": 0.9677077818951826,
-   "P_rule_B_given_sealed": 0.9820010587612493,
-   "mean_best_true_feasible_gain_over_J": 0.05559860008651933,
-   "mean_finalist_true_gain_over_J": 0.05547197492926882,
-   "mean_n_gated": 29.0605,
-   "mean_sealed_minus_true_n": -4.274771593514095e-06,
-   "mean_selection_minus_true_n": 0.00010956684498085254,
-   "mean_y_star_pred_over_J": 0.057928327235804926,
+   "P_GAIN": 0.896,
+   "P_finalist_in_extension": 0.9988839285714286,
+   "P_finalist_true_drag_positive": 0.0335,
+   "P_pool_limited_label": 0.0875,
+   "P_rule_A_given_sealed": 0.9721638655462185,
+   "P_rule_B_given_sealed": 0.9852941176470589,
+   "mean_best_true_feasible_gain_over_J": 0.05677617819024761,
+   "mean_finalist_true_gain_over_J": 0.05663009602968549,
+   "mean_n_gated": 28.9655,
+   "mean_sealed_minus_true_n": -1.5988328530631532e-06,
+   "mean_selection_minus_true_n": 9.598172319895171e-05,
+   "mean_y_star_pred_over_J": 0.05903934196001238,
    "outcomes": {
-    "GAIN": 0.873,
-    "NO_GAIN:DRAG_VIOLATION": 0.0545,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.017,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0555
+    "GAIN": 0.896,
+    "NO_GAIN:DRAG_VIOLATION": 0.042,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.014,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.048
    },
    "params": {
     "box": {
@@ -514,29 +514,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.769,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.231
+    "RANDOM_BELOW_MIN": 0.767,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.233
    },
-   "wall_s": 28.1
+   "wall_s": 20.0
   },
   "rev1_registered": {
-   "P_GAIN": 0.902,
+   "P_GAIN": 0.8965,
    "P_finalist_in_extension": 1.0,
-   "P_finalist_true_drag_positive": 0.032,
-   "P_pool_limited_label": 0.073,
-   "P_rule_A_given_sealed": 0.9714434060228453,
-   "P_rule_B_given_sealed": 0.980269989615784,
-   "mean_best_true_feasible_gain_over_J": 0.05818945544681864,
-   "mean_finalist_true_gain_over_J": 0.05797779977706469,
-   "mean_n_gated": 20.6015,
-   "mean_sealed_minus_true_n": 6.395099044495001e-06,
-   "mean_selection_minus_true_n": 0.00011920406152141816,
-   "mean_y_star_pred_over_J": 0.05823944496849292,
+   "P_finalist_true_drag_positive": 0.038,
+   "P_pool_limited_label": 0.0875,
+   "P_rule_A_given_sealed": 0.9752066115702479,
+   "P_rule_B_given_sealed": 0.9839876033057852,
+   "mean_best_true_feasible_gain_over_J": 0.05863630897615019,
+   "mean_finalist_true_gain_over_J": 0.05844075142239056,
+   "mean_n_gated": 20.6575,
+   "mean_sealed_minus_true_n": 3.12527137336284e-06,
+   "mean_selection_minus_true_n": 0.00012352719329545542,
+   "mean_y_star_pred_over_J": 0.05907151723766658,
    "outcomes": {
-    "GAIN": 0.902,
-    "NO_GAIN:DRAG_VIOLATION": 0.042,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.019,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.037
+    "GAIN": 0.8965,
+    "NO_GAIN:DRAG_VIOLATION": 0.056,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0155,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.032
    },
    "params": {
     "box": {
@@ -567,29 +567,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.7775,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2225
+    "RANDOM_BELOW_MIN": 0.7445,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2555
    },
-   "wall_s": 42.4
+   "wall_s": 21.6
   },
   "rev1_single_target": {
-   "P_GAIN": 0.884,
-   "P_finalist_in_extension": 0.998868778280543,
-   "P_finalist_true_drag_positive": 0.031,
-   "P_pool_limited_label": 0.1005,
-   "P_rule_A_given_sealed": 0.9775280898876404,
-   "P_rule_B_given_sealed": 0.985553772070626,
-   "mean_best_true_feasible_gain_over_J": 0.055419521715891804,
-   "mean_finalist_true_gain_over_J": 0.05608220618075805,
-   "mean_n_gated": 6.0365,
-   "mean_sealed_minus_true_n": -2.974212318869134e-06,
-   "mean_selection_minus_true_n": 0.00012572974624932575,
-   "mean_y_star_pred_over_J": 0.05912814593244603,
+   "P_GAIN": 0.8855,
+   "P_finalist_in_extension": 0.9988706945228685,
+   "P_finalist_true_drag_positive": 0.032,
+   "P_pool_limited_label": 0.0965,
+   "P_rule_A_given_sealed": 0.9855305466237942,
+   "P_rule_B_given_sealed": 0.9908896034297964,
+   "mean_best_true_feasible_gain_over_J": 0.056287065329402405,
+   "mean_finalist_true_gain_over_J": 0.05679508318462972,
+   "mean_n_gated": 6.059,
+   "mean_sealed_minus_true_n": 5.732352886437433e-06,
+   "mean_selection_minus_true_n": 0.0001221717585843213,
+   "mean_y_star_pred_over_J": 0.05952450378551757,
    "outcomes": {
-    "GAIN": 0.884,
-    "NO_GAIN:DRAG_VIOLATION": 0.037,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.0135,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0655
+    "GAIN": 0.8855,
+    "NO_GAIN:DRAG_VIOLATION": 0.039,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0085,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.067
    },
    "params": {
     "box": {
@@ -618,29 +618,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.7655,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2345
+    "RANDOM_BELOW_MIN": 0.7575,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.2425
    },
-   "wall_s": 21.2
+   "wall_s": 14.3
   },
   "rev1_space_scaled_0.6": {
-   "P_GAIN": 0.7005,
+   "P_GAIN": 0.701,
    "P_finalist_in_extension": 1.0,
-   "P_finalist_true_drag_positive": 0.029,
-   "P_pool_limited_label": 0.103,
-   "P_rule_A_given_sealed": 0.8305911029859842,
-   "P_rule_B_given_sealed": 0.8854357099329677,
-   "mean_best_true_feasible_gain_over_J": 0.034780083502114666,
-   "mean_finalist_true_gain_over_J": 0.034586224986146066,
-   "mean_n_gated": 20.678,
-   "mean_sealed_minus_true_n": 7.957580582651117e-06,
-   "mean_selection_minus_true_n": 0.00016282714366524007,
-   "mean_y_star_pred_over_J": 0.03521974793919452,
+   "P_finalist_true_drag_positive": 0.027,
+   "P_pool_limited_label": 0.097,
+   "P_rule_A_given_sealed": 0.841814837522992,
+   "P_rule_B_given_sealed": 0.8939301042305334,
+   "mean_best_true_feasible_gain_over_J": 0.03481594073483397,
+   "mean_finalist_true_gain_over_J": 0.03446959048582688,
+   "mean_n_gated": 20.4485,
+   "mean_sealed_minus_true_n": 9.723411036912703e-07,
+   "mean_selection_minus_true_n": 0.00017308717651284635,
+   "mean_y_star_pred_over_J": 0.03521262230888078,
    "outcomes": {
-    "GAIN": 0.7005,
-    "NO_GAIN:DRAG_VIOLATION": 0.026,
-    "NO_GAIN:GAIN_BELOW_MIN": 0.094,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.1795
+    "GAIN": 0.701,
+    "NO_GAIN:DRAG_VIOLATION": 0.028,
+    "NO_GAIN:GAIN_BELOW_MIN": 0.0865,
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.1845
    },
    "params": {
     "box": {
@@ -671,29 +671,29 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.9195,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.0805
+    "RANDOM_BELOW_MIN": 0.922,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.078
    },
-   "wall_s": 30.4
+   "wall_s": 21.7
   },
   "rev1_space_scaled_0.8": {
-   "P_GAIN": 0.8545,
-   "P_finalist_in_extension": 1.0,
-   "P_finalist_true_drag_positive": 0.0345,
-   "P_pool_limited_label": 0.092,
-   "P_rule_A_given_sealed": 0.9422459893048128,
-   "P_rule_B_given_sealed": 0.9641711229946524,
-   "mean_best_true_feasible_gain_over_J": 0.04669979472677511,
-   "mean_finalist_true_gain_over_J": 0.04647713577675957,
-   "mean_n_gated": 20.5955,
-   "mean_sealed_minus_true_n": 1.8686224771972158e-06,
-   "mean_selection_minus_true_n": 0.00013681882022709748,
-   "mean_y_star_pred_over_J": 0.046892724266219175,
+   "P_GAIN": 0.858,
+   "P_finalist_in_extension": 0.9988344988344988,
+   "P_finalist_true_drag_positive": 0.036,
+   "P_pool_limited_label": 0.0885,
+   "P_rule_A_given_sealed": 0.9352594970572499,
+   "P_rule_B_given_sealed": 0.9641519529159979,
+   "mean_best_true_feasible_gain_over_J": 0.046415053230203854,
+   "mean_finalist_true_gain_over_J": 0.04617279482298171,
+   "mean_n_gated": 20.7565,
+   "mean_sealed_minus_true_n": 9.263915267323424e-07,
+   "mean_selection_minus_true_n": 0.00013566688692008983,
+   "mean_y_star_pred_over_J": 0.046800214236979894,
    "outcomes": {
-    "GAIN": 0.8545,
-    "NO_GAIN:DRAG_VIOLATION": 0.047,
+    "GAIN": 0.858,
+    "NO_GAIN:DRAG_VIOLATION": 0.043,
     "NO_GAIN:GAIN_BELOW_MIN": 0.0335,
-    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.065
+    "NO_GAIN:GAIN_BELOW_MIN_AT_SELECTION": 0.0655
    },
    "params": {
     "box": {
@@ -724,10 +724,10 @@
     ]
    },
    "random_control": {
-    "RANDOM_BELOW_MIN": 0.8345,
-    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.1655
+    "RANDOM_BELOW_MIN": 0.8505,
+    "RANDOM_FEASIBLE_GAIN_AT_SELECTION": 0.1495
    },
-   "wall_s": 39.4
+   "wall_s": 21.6
   }
  },
  "x_star_n": 0.007184166586553256
