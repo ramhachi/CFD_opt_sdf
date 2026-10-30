@@ -129,14 +129,33 @@ def drop(T, g, s, ph=None):
         T["runs"][g][s].pop(p, None)
 
 
-def lose(T, kernel):
-    """The kernel is declared lost: its runs are not in the tables."""
+def _remove(T, kernel):
     for g, m in KERNEL_OF.items():
         for ph, k in m.items():
             if k == kernel and g in T["runs"]:
                 for s in T["runs"][g]:
                     T["runs"][g][s].pop(ph, None)
+
+
+def lose(T, kernel):
+    """The kernel is declared lost: its runs are not in the tables."""
+    _remove(T, kernel)
     T["lost_kernels"] = sorted({*T["lost_kernels"], kernel})
+
+
+def skip(T, kernels, reason):
+    """The kernels were never pushed (--not-pushed KERNEL=REASON, registration §5.11.19): no runs, not lost."""
+    for k in kernels:
+        _remove(T, k)
+    T["not_pushed"] = {**T["not_pushed"], **{k: reason for k in kernels}}
+
+
+CONF = ("f32a", "f32b", "f48k13", "f48k14")
+
+
+def no_f_groups(T):
+    for g in ("f32", "f48"):
+        T["runs"].pop(g, None)
 
 
 _GATE = {}
@@ -158,7 +177,7 @@ def make(stage="main", *, by=BY, bz=BZ, noise=(0.0, 0.0), n_random=19, manual=Tr
     roles = base_roles(n_random, manual)
     if roles_edit:
         roles_edit(roles, n_grid)
-    T = {"schema": "screen01-T-v1", "stage": "rs", "roles": roles, "runs": {"g1": {}}, "lost_kernels": [], "gating": []}
+    T = {"schema": "screen01-T-v1", "stage": "rs", "roles": roles, "runs": {"g1": {}}, "lost_kernels": [], "not_pushed": {}, "gating": []}
     g1 = {s: ["11", "12"] for s in roles if roles[s]["role"] not in ("parent_repeat",)}
     fill(T, "g1", {**g1, REPEAT: ["11"]}, by, bz, noise, seed)
     edits.get("g1", lambda T, al: None)(T, aliases(roles))
@@ -366,6 +385,17 @@ def _lose_one_phase(k, ph="11"):
     return f
 
 
+def _nc_g1(d):
+    return lambda T, al: [set_delta(T, "g1", al.nc, ph, d) for ph in ("11", "12")]
+
+
+def _parent_lost_at_12(T, al):
+    """The parent run at phase 12 is not ok; a non-finite design run and a not-ok NC run at phase 12 then have no valid parent run: they enter no estimator and are not listed."""
+    set_run(T, "g1", al.parent, "12", ok=False)
+    set_run(T, "g1", al.design[0], "12", downforce=None)
+    set_run(T, "g1", al.nc, "12", ok=False)
+
+
 _DUP = dict(by=_weak(0.1), edits=e(g1=_best_design(0.012), g2=_g2_df(0.001)))      # u*_1 = u*_1.5 (a slack drag margin): one point under two targets
 
 BRANCHES = {
@@ -418,7 +448,7 @@ BRANCHES = {
     "main_incomplete_f32_kernel": ("main", dict(edits=e(f=lambda T, al: lose(T, "f32b")))),
     "main_incomplete_f48_both": ("main", dict(edits=e(f=lambda T, al: (lose(T, "f48k13"), lose(T, "f48k14"))))),
     "main_incomplete_nc_f": ("main", dict(edits=e(f=lambda T, al: drop(T, "f32", al.nc)))),
-    "main_incomplete_f_not_run": ("main", dict(edits=e(f=lambda T, al: (T["runs"].pop("f32"), T["runs"].pop("f48"))))),
+    "main_incomplete_f_not_run": ("main", dict(edits=e(f=lambda T, al: (skip(T, CONF, "BUDGET"), no_f_groups(T))))),
     "main_invalid_nc_f": ("main", dict(edits=e(f=_nc_f(4e-3)))),
     "main_invalid_nondeterminism_f32a": ("main", dict(edits=e(f=_repeat("f32", 4e-4)))),
     "main_no_gain_below_min": ("main", dict(edits=e(f=_f(df32=[0.005] * 4, df48=0.005)))),
@@ -449,8 +479,8 @@ BRANCHES = {
     "main_nc_f_one_phase": ("main", dict(edits=e(f=lambda T, al: [drop(T, "f32", al.nc, p) for p in ("14", "15", "16")]))),
     "main_f32_three_phases": ("main", dict(edits=e(f=lambda T, al: drop(T, "f32", al.finalist, "16")))),
     "main_f32_both_kernels_lost": ("main", dict(edits=e(f=lambda T, al: (lose(T, "f32a"), lose(T, "f32b"))))),
-    "main_budget_f32b_not_run": ("main", dict(edits=e(f=lambda T, al: [drop(T, "f32", s, p) for s in list(T["runs"]["f32"]) for p in ("15", "16")]))),
-    "main_budget_and_lost": ("main", dict(edits=e(f=lambda T, al: ([drop(T, "f32", s, p) for s in list(T["runs"]["f32"]) for p in ("15", "16")], lose(T, "f48k13"))))),
+    "main_budget_f32b_not_run": ("main", dict(edits=e(f=lambda T, al: skip(T, ["f32b"], "BUDGET")))),
+    "main_budget_and_lost": ("main", dict(edits=e(f=lambda T, al: (skip(T, ["f32b"], "BUDGET"), lose(T, "f48k13"))))),
     "main_f48_one_phase_lost_data": ("main", dict(edits=e(f=lambda T, al: set_run(T, "f48", al.finalist, "14", ok=False)))),
     "main_rbest_single_phase": ("main", dict(edits=e(f=lambda T, al: [drop(T, "f32", al.rbest, p) for p in ("14", "15", "16")]))),
     "main_manual_missing_in_f": ("main", dict(edits=e(f=lambda T, al: drop(T, "f32", al.manual)))),
@@ -488,7 +518,21 @@ BRANCHES = {
                                                                       g2=lambda T, al: set_run(T, "g2", al.proposals[0], "12", ok=False)))),
     "main_incomplete_refine_degenerate_design": ("main", dict(by=_weak(0.1), roles_edit=_line_design)),
     "main_r3_one_f48_phase_paired": ("main", dict(edits=e(f=lambda T, al: (lose(T, "f48k14"), _f(df32=[0.020, 0.030, 0.020, 0.030], dr32=[1e-3, -4e-3, -4e-3, -4e-3], df48=[0.0195], dr48=[1e-3])(T, al))))),
-    "main_budget_f48_not_run": ("main", dict(edits=e(f=lambda T, al: T["runs"].pop("f48")))),
+    "main_budget_f48_not_run": ("main", dict(edits=e(f=lambda T, al: (skip(T, ["f48k13", "f48k14"], "BUDGET"), T["runs"].pop("f48"))))),
+    # ---- source review (adoption.md §3.1; registration §5.11.1, .18, .19) ----
+    "rs_nc_g1_not_consistent": ("rs", dict(edits=e(g1=_nc_g1(5e-3)))),
+    "rs_repeat_nondeterministic": ("rs", dict(edits=e(g1=lambda T, al: set_delta(T, "g1", al.repeat, "11", 5e-4, 0.0)))),
+    "fin_g1k11_lost": ("finalist", dict(edits=e(g1=lambda T, al: lose(T, "g1k11")))),
+    "fin_invalid_g1_g2_not_pushed": ("finalist", dict(edits=e(g1=_nc_g1(5e-3), g2=lambda T, al: (skip(T, ["g2"], "INVALID_G1"), T["runs"].pop("g2"))))),
+    "main_invalid_g1_without_F": ("main", dict(edits=e(g1=_nc_g1(5e-3), g2=lambda T, al: (skip(T, ["g2"], "INVALID_G1"), T["runs"].pop("g2")),
+                                                  f=lambda T, al: (skip(T, CONF, "INVALID_G1"), no_f_groups(T))))),
+    "main_budget_with_full_data": ("main", dict(edits=e(f=lambda T, al: skip(T, ["f48k14"], "BUDGET")))),
+    "main_two_causes_step2": ("main", dict(edits=e(g1=lambda T, al: (_nc_g1(5e-3)(T, al), set_delta(T, "g1", al.repeat, "11", 5e-4, 0.0))))),
+    "main_two_causes_step5": ("main", dict(edits=e(f=lambda T, al: (_nc_f(4e-3)(T, al), _repeat("f32", 4e-4)(T, al))))),
+    "main_two_causes_step7": ("main", dict(edits=e(f=_f(df32=[0.0195, -0.0045, 0.0195, -0.0045], dr32=[-3e-3] * 4, df48=[3e-4, 3e-4])))),
+    "main_axial_finalist": ("main", dict(edits=e(g1=lambda T, al: set_delta(T, "g1", al.axial[0], None, ddf=0.05, ddr=-1e-3), f=_f(df32=0.02, dr32=-2e-3, df48=0.02, dr48=-2e-3)))),
+    "main_design_finalist": ("main", dict(edits=e(g1=lambda T, al: set_delta(T, "g1", al.design[4], None, ddf=0.05, ddr=-1e-3), f=_f(df32=0.02, dr32=-2e-3, df48=0.02, dr48=-2e-3)))),
+    "rs_parent_lost_phase_unpaired_runs_not_listed": ("rs", dict(edits=e(g1=_parent_lost_at_12))),
 }
 
 
@@ -501,3 +545,197 @@ def branch(name) -> dict:
         stage, kw = BRANCHES[name]
         _CACHE[key] = make(stage, **kw)
     return copy.deepcopy(_CACHE[key])
+
+
+# ---- a whole study on disk: a tmp "repository" with freeze records, campaigns, verified tables, kernel files (analyzer pipeline tests) ----------------------------------
+import argparse  # noqa: E402
+import hashlib  # noqa: E402
+import importlib.metadata  # noqa: E402
+import json  # noqa: E402
+import platform  # noqa: E402
+import shutil  # noqa: E402
+import types as _types  # noqa: E402
+
+SC = S.SC
+TOOLS = {"campaign_schema.py": "a" * 64, "harness.py": "b" * 64}
+FINGERPRINT = "f" * 64
+UNC_STATES_REL = "docs/evidence/unc01_2026_10_20/states.json"       # a second states.json in freeze 1 (the real REUSED list holds it)
+PROFILE_REL = "docs/evidence/opt01_v1_2026_10_15/geom02_gate_profile_v2.json"
+CIDS = {"g1": "screen01", "g2": "screen01_g2", "f32": "screen01_f", "f48": "screen01_f48"}
+
+
+def sha_text(text) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def write_json(path, obj):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, sort_keys=True, indent=1) + "\n")
+
+
+def build_campaign(root, cid, T, group, kernel_root, extra=None):
+    """A minimal campaign JSON under root/docs/harness, one verified table per kernel and the kernel files of the runs of one group of T (the table carries the freeze hashes)."""
+    km, out_prefix = KERNEL_OF[group], f"{cid}_"
+    c = {"campaign_id": cid, "out_prefix": out_prefix, "kernels": {}, **(extra or {})}
+    tables = {}
+    for k in sorted(set(km.values())):
+        runs, forces = [], {}
+        for s, by in T["runs"].get(group, {}).items():
+            for ph, r in by.items():
+                if km.get(ph) != k:
+                    continue
+                name = f"{s}__k{ph}"
+                runs.append({"state": s, "name": name, "env": {}})
+                d = kernel_root / f"{out_prefix}{k}" / "states" / name
+                d.mkdir(parents=True, exist_ok=True)
+                (d / "flow_32.summary.json").write_text(json.dumps({"name": name, "k": k}))
+                (d / "flow_32.forces.csv").write_text(f"{name},{r['downforce']}\n")
+                forces[name] = {"downforce_n": r["downforce"] if r["ok"] else None, "drag_n": r["drag"] if r["ok"] else None, "forces_csv_sha256": SC.sha256_path(d / "flow_32.forces.csv"),
+                                "summary_sha256": SC.sha256_path(d / "flow_32.summary.json"), "solver_process_wall_seconds": 400.0, "julia_summary_wall_seconds": 390.0}
+        if runs:
+            c["kernels"][k] = {"case": {"case_id": "flow_32"}, "runs": runs}
+            tables[k] = forces
+    path = root / "docs" / "harness" / f"{cid}_campaign.json"
+    write_json(path, c)
+    entry = {"campaign_sha256": SC.sha256_path(path), "prerun_freeze_sha256": sha_text(cid + "prerun"), "smoke_verified_sha256": sha_text(cid + "smoke")}
+    files = []
+    for k, forces in tables.items():
+        t = {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "smoke": False, "integrity": {"pass": True, "failures": []}, "campaign_id": cid,
+             "campaign_sha256": entry["campaign_sha256"], "freeze_sha256": entry["prerun_freeze_sha256"], "harness_tool_sha256": TOOLS, "state_forces_n": {k: forces}}
+        tp = root.parent / "tables" / f"{cid}_{k}.json"
+        write_json(tp, t)
+        files.append(tp)
+    return path, files, entry
+
+
+class Disk:
+    """T of a branch as files: freeze records 1, 2, 2.1, 3 (written as the study proceeds), campaigns, per-kernel tables, kernel files, states.json, the frozen sources (copies) and a
+    stub P0 rows record, all under a tmp "repository" that replaces S.ROOT.  `stage_rs`, `stage_finalist`, `stage_main` run the analyzer steps and write their outputs once;
+    `args` is the CLI namespace.  Kernels of T["lost_kernels"] get a classification record, kernels of T["not_pushed"] a budget record or the frozen rs.json / finalist.json."""
+    def __init__(self, tmp_path, monkeypatch, name="main_gain", checker=None, T=None):
+        self.T, self.tmp = T or branch(name), tmp_path
+        self.root, self.kr = tmp_path / "repo", tmp_path / "kernels"
+        self.ev = self.root / S.EV_REL
+        self.ev.mkdir(parents=True)
+        for attr, val in (("ROOT", self.root), ("EV", self.ev), ("CHECKER", checker or _types.SimpleNamespace(check=lambda t: S.compute(t), compare=lambda a, b, stage: [k for k in a if S.canon(a[k]) != S.canon(b.get(k))]))):
+            monkeypatch.setattr(S, attr, val)
+        monkeypatch.setattr(SC, "validate_campaign", lambda c: None)
+        monkeypatch.setattr(P, "fingerprint", lambda: FINGERPRINT)
+        fin = S.compute(self.T) if self.T["stage"] == "rs" else S.compute({**self.T, "stage": "finalist"})
+        fin = {"finalist": None, "r_best": None, "g1_controls": fin["g1_controls"]} if self.T["stage"] == "rs" else fin
+        self.inv = fin["g1_controls"]["invalid_at_step_2"]
+        self.has_props = any(r["role"] == "proposal" for r in self.T["roles"].values())
+        self.pushed = bool(fin["finalist"]) and not self.inv and self.T["stage"] == "main"
+        self.finalist, self.r_best = fin["finalist"], fin["r_best"]
+        self.states = self.ev / "states.json"
+        write_json(self.states, {"schema": "screen01-states-v1", "parent": PARENT, "states": {n: {"role": r["role"], "order": r["order"], "u": r["u"], "spec": None if r["u"] is None else P.u_to_spec(r["u"])}
+                                                                                          for n, r in self.T["roles"].items() if r["role"] != "proposal"}})
+        files = {}
+        for rel in S.FROZEN_FILES:
+            dst = self.root / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            if rel == S.ROWS_REL:
+                dst.write_text("".join(json.dumps({"name": n, "slot": r["role"], "admissible": True, "phi_fortran_sha256": sha_text(n)}) + "\n" for n, r in self.T["roles"].items() if r["role"] in ("axial", "design")))
+            else:
+                shutil.copy(ROOT / rel, dst)
+            files[rel] = SC.sha256_path(dst)
+        files[S.rel(self.states)] = SC.sha256_path(self.states)
+        for rel in (UNC_STATES_REL, PROFILE_REL, S.POLICY_REL):
+            files[rel] = SC.sha256_path(ROOT / rel) if (ROOT / rel).exists() else sha_text(rel)
+        try:
+            from screen01_freeze import REUSED
+            assert UNC_STATES_REL in REUSED, "the real REUSED list no longer binds the UNC-01 states.json"
+        except ImportError:
+            pass
+        self.write("freeze1", {"kind": "freeze1", "file_sha256": files, "environment": {"python": platform.python_version(), **{m: importlib.metadata.version(m) for m in ("numpy", "scipy", "scikit-image")}},
+                               "harness_tool_sha256": TOOLS, "p0": {"fingerprint": FINGERPRINT}})
+        self.camp, self.tabs, self.entry = {}, {}, {}
+        extra32 = {"states": {PARENT: {"kind": "parent", **self.ident("p")}, **({self.finalist: {"kind": "candidate", "direction": "d1", "step_mm": 1.0, "sign": 1, **self.ident("f")}} if self.finalist else {})},
+                   "directions": {"d1": {"path": "d1.raw", "sha256_fortran_raw": "a" * 64}}, "domain": {"flow_origin_m": [0, 0, 0], "physical_box_max_m": [1, 1, 1]}, "baseline": {"path": "b.raw", "sha256_fortran_raw": "b" * 64}}
+        for g in ("g1", "g2", "f32", "f48"):
+            if g in ("g2",) and not (self.has_props and not self.inv) or g in ("f32", "f48") and not self.pushed:
+                continue
+            self.camp[g], self.tabs[g], self.entry[g] = build_campaign(self.root, CIDS[g], self.T, g, self.kr, extra32 if g == "f32" else None)
+        self.write("freeze2", {"kind": "freeze2", "file_sha256": {S.rel(self.ev / "freeze1.json"): SC.sha256_path(self.ev / "freeze1.json"), S.rel(self.camp["g1"]): SC.sha256_path(self.camp["g1"])},
+                               "campaign": self.entry["g1"]})
+        self.args = argparse.Namespace(states=self.states, g1=None, g2=None, f32=None, f48=None, rs=self.ev / "rs.json", finalist=self.ev / "finalist.json", kernel_root=self.kr, lost=[],
+                                       lost_declarations={}, not_pushed={}, not_pushed_records={}, workers=4, out=None)
+
+    @staticmethod
+    def ident(tag):
+        return {k: (sha_text(f"{tag}{k}") if k.endswith("sha256") else 0.1) for k in SC.STATE_IDENTITY_KEYS}
+
+    def write(self, name, rec):
+        write_json(self.ev / f"{name}.json", rec)
+
+    def freeze(self, name):
+        return json.loads((self.ev / f"{name}.json").read_text())
+
+    def group(self, g):
+        return [self.camp[g], *self.tabs[g]] if g in self.camp else None
+
+    def declare(self, stage):
+        """lost / not-pushed declarations of the kernels of the stage, each with its record."""
+        ks = {k for g in S.STAGE_GROUPS[stage] for k in S.KERNELS[g]}
+        lost = {}
+        for k in sorted(set(self.T["lost_kernels"]) & ks):
+            r = self.ev.parent / f"lost_{k}.json"
+            write_json(r, {"kind": "screen01_infra_classification", "kernel": k, "attempt": 2, "classification": "NOT_INFRASTRUCTURE", "signature": None, "evidence_sha256": {},
+                           "verify_failed": False, "table_sha256": SC.sha256_path(self.root / S.INFRA_REL)})
+            lost.update(S.parse_lost([f"{k}=NOT_INFRASTRUCTURE:{r}"]))
+        np_ = {}
+        for k, reason in self.T.get("not_pushed", {}).items():
+            if k not in ks:
+                continue
+            rec = None
+            if reason == "BUDGET":
+                rec = self.ev.parent / f"budget_{k}.json"
+                write_json(rec, {"kind": "screen01_budget_decision", "decision": "stop", "pending_estimate_s": {k: [5000]}, "T_s": 90000, "cap_s": 86400, "rule": "registration §4.3"})
+            np_[k] = {"reason": reason, "record": rec}
+        self.args.lost, self.args.lost_declarations, self.args.not_pushed = sorted(lost), lost, np_
+
+    def oracle(self, T, workers):
+        rows = {}
+
+        def ask(u):
+            n = sname(u)
+            rows[n] = {"name": n, "admissible": bool(default_oracle(u)), "gate_values": {"min_feature_width": 1.0}, "phi_fortran_sha256": sha_text(n)}
+            return rows[n]["admissible"]
+        return ask, rows
+
+    def stage_rs(self, oracle=None):
+        self.declare("rs")
+        self.args.g1 = self.group("g1")
+        rec = S.run_rs(self.args, oracle or self.oracle)
+        S.write_once(self.args.rs, S.dumps(rec))
+        inv = rec["comparable"]["g1_controls"]["invalid_at_step_2"]
+        extra = {"g2": self.entry["g2"]} if "g2" in self.entry else {"g2": "none (invalid_at_step_2)" if inv else "none (no proposal)"}
+        self.write("freeze2_1", {"kind": "freeze2_1", "file_sha256": {S.rel(self.ev / "freeze2.json"): SC.sha256_path(self.ev / "freeze2.json"), S.rel(self.args.rs): SC.sha256_path(self.args.rs),
+                                                                       **({S.rel(self.camp["g2"]): SC.sha256_path(self.camp["g2"])} if "g2" in self.camp else {})},
+                                 "rs_json_sha256": SC.sha256_path(self.args.rs), **extra})
+        return rec
+
+    def stage_finalist(self):
+        self.declare("finalist")
+        self.args.g2 = self.group("g2")
+        rec = S.run_finalist(self.args)
+        S.write_once(self.args.finalist, S.dumps(rec))
+        f3 = {"kind": "freeze3", "file_sha256": {S.rel(self.ev / "freeze2_1.json"): SC.sha256_path(self.ev / "freeze2_1.json")}, "finalist_json_sha256": SC.sha256_path(self.args.finalist),
+              "finalist": rec["finalist"], "r_best": rec["r_best"], "pushed": rec["pushed"]}
+        if rec["pushed"] and "f32" in self.entry:
+            f3["campaigns"] = {CIDS[g]: self.entry[g] for g in ("f32", "f48")}
+            f3["file_sha256"].update({S.rel(self.camp[g]): SC.sha256_path(self.camp[g]) for g in ("f32", "f48")})
+        self.write("freeze3", f3)
+        return rec
+
+    def stage_main(self, out=None):
+        self.declare("main")
+        self.args.g2 = self.group("g2")
+        self.args.f32, self.args.f48 = self.group("f32"), self.group("f48")
+        self.args.out = out or self.ev / "analysis.json"
+        return S.run_main(self.args)
+
+    def run_all(self):
+        self.stage_rs()
+        self.stage_finalist()
+        return self.stage_main()

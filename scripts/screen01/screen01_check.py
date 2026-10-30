@@ -5,6 +5,8 @@ Shapes follow INTERFACE.md. Choices the interface leaves open: fit {downforce:{c
 gated [[0-based owning target index, [u x3 rounded 6]]]; candidates {name: {delta_bar, P, se_eff, feasible}}; determinism {g1k11|f32a: {max_abs_diff, nondeterminism, judged}}.
 `data_loss` entries are `state@kernel-table-key@phase` (g1, g2, f32, f48) of the runs PRESENT in T["runs"] (s5.11.1: uniform for every role; a run without a valid parent run at its phase is unpaired and not listed).
 An extra key `gating_mismatch` (list of paths) is present only when T["gating"] disagrees with the regenerated gating (u, target_index, y_pred, z_pred by position, length, duplicate names, roles.proposals); compare() reports it.
+Rev. 2 (source review): `g1_controls` {NC_g1, determinism_g1k11, invalid_at_step_2} at every stage from `rs`; step 4 `BUDGET` iff a confirmation kernel is in T["not_pushed"] with BUDGET (tested first, whatever
+the other confirmation data show); a not-pushed kernel has no rows, `main` runs with the f32 / f48 groups absent.
 Readings where the text is still open (see the module's comments): the Delta_bar_DF,48 of the R3 ratio/E2 labels stays the Phi_48 mean (s5.11.11 redefines only the flow_32 side); an `ok = false` repeat is NOT_JUDGED even if its force is
 non-finite; a run whose own result is invalid but whose parent run at that phase is invalid too is not listed; DATA_G2 is not raised by a declared-lost g2 kernel beyond the proposals lacking phases.
 """
@@ -35,7 +37,7 @@ GATE_CAP, GATE_ROUND, N_PER_TARGET, N_PROP = 36, 4, 2, 4
 RESP = ("downforce", "drag")
 FREEZE1 = ("axial", "design", "manual", "ref", "random")
 PHASES = {"g1": (11, 12), "g2": (11, 12), "f32": (13, 14, 15, 16), "f48": (13, 14)}
-KERNELS = {"f32a": ("f32", (13, 14)), "f32b": ("f32", (15, 16)), "f48k13": ("f48", (13,)), "f48k14": ("f48", (14,))}
+CONFIRMATION_KERNELS = ("f32a", "f32b", "f48k13", "f48k14")
 
 
 # ---- helpers -------------------------------------------------------------------------------------------------------------------------------------
@@ -343,6 +345,11 @@ def _det(D, stage, k):  # raw parent_repeat vs raw parent of the same kernel and
     return {"max_abs_diff": m, "nondeterminism": bool(max(m.values()) > FLOOR["downforce"]), "judged": True}
 
 
+def _g1_controls(D):  # s5.11.18: the G1 chain controls (NC at G1, g1k11 repeat), from the g1 runs of T
+    nc, det = _nc(D, "g1"), _det(D, "g1", 11)
+    return {"NC_g1": nc, "determinism_g1k11": det, "invalid_at_step_2": bool(nc["label"] == "NOT_CONSISTENT" or det["nondeterminism"])}
+
+
 def _ctrl(D, f, o, none, lab):  # per-phase e_k = Delta_f,k - Delta_o,k (downforce), t_{0.95,n-1} interval
     if o is None:
         return none
@@ -362,8 +369,8 @@ def _passes(D, s):
 
 def _main(T, D, fin, ex):
     f, rb, M = fin["finalist"], fin["r_best"], D.one("manual")
-    NC = {"g1": _nc(D, "g1"), "f32": _nc(D, "f32")}
-    det = {"g1k11": _det(D, "g1", 11), "f32a": _det(D, "f32", 13)}
+    NC = {"g1": fin["g1_controls"]["NC_g1"], "f32": _nc(D, "f32")}
+    det = {"g1k11": fin["g1_controls"]["determinism_g1k11"], "f32a": _det(D, "f32", 13)}
     a, b = D.tab["f32"].get(D.parent, {}).get(11), D.tab["g1"].get(D.parent, {}).get(11)  # parent replay (f32 phase 11) vs the g1 parent at phase 11, raw forces
     gd = {x: abs(a[x] - b[x]) for x in RESP} if a is not None and b is not None and _valid(a) and _valid(b) else None
     drift = {"max_abs_diff": gd, "drift": bool(gd and max(gd.values()) > FLOOR["downforce"])}  # both responses against the downforce floor
@@ -386,9 +393,9 @@ def _main(T, D, fin, ex):
         ctrl["OPT_VS_RANDOM"] = _ctrl(D, f, rb, "RANDOM_NO_FEASIBLE", ("OPT_BEATS_RANDOM", "RANDOM_BEATS_OPT", "OPT_RANDOM_UNRESOLVED"))
         ctrl["OPT_VS_MANUAL"] = _ctrl(D, f, M, "MANUAL_NONE", ("OPT_BEATS_MANUAL", "MANUAL_BEATS_OPT", "OPT_MANUAL_UNRESOLVED"))
     # ---- s5.8 evaluation order
-    # F not completed (budget): a confirmation kernel that is neither declared lost nor has any run row (of any state) at its phases was never run (s5.11.15)
     lost = set(T.get("lost_kernels") or [])
-    unrun = [k for k, (st, ph) in KERNELS.items() if k not in lost and not any(x in rows for rows in D.tab[st].values() for x in ph)]
+    # F not completed (s5.11.15, 19): a confirmation kernel declared not pushed with BUDGET; tested first at step 4, whatever the other confirmation data show
+    budget = any(T.get("not_pushed", {}).get(k) == "BUDGET" for k in CONFIRMATION_KERNELS)
     if not (D.parent and D.d("g1", D.parent) and D.est("g1", D.one("nc") or "")):
         oc, cause = "SCREEN01_INCOMPLETE", ["DATA_G1"]                                                                              # 1
     elif NC["g1"]["label"] == "NOT_CONSISTENT" or det["g1k11"]["nondeterminism"]:
@@ -399,8 +406,8 @@ def _main(T, D, fin, ex):
         else:
             oc, cause = "SCREEN01_INCOMPLETE", (["DATA_G1"] if lost & {"g1k11", "g1k12"} or not ex["g1_ok"] else []) + (["DATA_REFINE"] if not ex["fit_ok"] else []) \
                 + (["DATA_G2"] if ex["fit_ok"] and not ex["g2_ok"] else [])  # all that apply, stage order (s5.11.7)
-    elif unrun or not full or not e48 or NC["f32"]["label"] is None:                                                                 # 4
-        oc, cause = "SCREEN01_INCOMPLETE", ["BUDGET" if unrun else "DATA_F"]
+    elif budget or not full or not e48 or NC["f32"]["label"] is None:                                                                # 4
+        oc, cause = "SCREEN01_INCOMPLETE", ["BUDGET" if budget else "DATA_F"]
     elif NC["f32"]["label"] == "NOT_CONSISTENT" or det["f32a"]["nondeterminism"]:                                                    # 5
         oc, cause = "SCREEN01_INVALID", (["NC_F"] if NC["f32"]["label"] == "NOT_CONSISTENT" else []) + (["NONDETERMINISM_F32A"] if det["f32a"]["nondeterminism"] else [])
     else:
@@ -415,17 +422,19 @@ def _main(T, D, fin, ex):
 def check(T: dict) -> dict:
     D = _D(T)
     S = _surface(D)
+    g1c = _g1_controls(D)
     if T["stage"] == "rs":
-        return _rs(T, D, S)
+        return {**_rs(T, D, S), "g1_controls": g1c}
     fin, ex = _finalist(T, D, S)
+    fin["g1_controls"] = g1c
     return fin if T["stage"] == "finalist" else _main(T, D, fin, ex)
 
 
 # ---- compare --------------------------------------------------------------------------------------------------------------------------------------
-_FIN = {"data_loss": True, "candidates": {"*": {"delta_bar": True, "P": True, "se_eff": True, "feasible": True}}, "finalist": True, "futility": True,
+_FIN = {"g1_controls": True, "data_loss": True, "candidates": {"*": {"delta_bar": True, "P": True, "se_eff": True, "feasible": True}}, "finalist": True, "futility": True,
         "search_complete": True, "pool_limited": True, "r_best": True, "K_opt": True, "K_rand": True, "proposals_from_gating": True}
 SPECS = {
-    "rs": {"data_loss": True, "fit": {"downforce": {"coef": True}, "drag": {"coef": True}, "rank": True, "cond": True, "residual_sd": True},
+    "rs": {"g1_controls": True, "data_loss": True, "fit": {"downforce": {"coef": True}, "drag": {"coef": True}, "rank": True, "cond": True, "residual_sd": True},
            "rs_fit_poor": True, "rs_not_fit": True, "u_star_1": True, "y_star_1": True, "pool_limited_pre": True,
            "targets": {"*": {"u_star": True, "y_pred": True, "z_pred": True}}, "gated": True, "stop_after": True, "proposals": True},
     "finalist": _FIN,

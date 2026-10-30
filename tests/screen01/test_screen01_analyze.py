@@ -584,9 +584,8 @@ def test_control_labels():
     assert S.compute(Y.make("main", n_random=18, n_grid=41))["controls"]["K_MISMATCH"] is True
 
 
-def test_amplitude_mismatch_label_and_exploration_controls():
+def test_exploration_controls_are_reported():
     d = res("main_gain")["detail"]
-    assert set(d["amplitude_median_u_inf"]) == {"opt", "random"} and isinstance(d["AMPLITUDE_MISMATCH"], bool)
     assert d["exploration_controls"]["OPT_VS_RANDOM"] in ("OPT_BEATS_RANDOM", "RANDOM_BEATS_OPT", "OPT_RANDOM_UNRESOLVED")
 
 
@@ -674,7 +673,7 @@ def test_budget_cli_and_write_once(tmp_path, monkeypatch, capsys):
 
 def make_infra(tmp_path, done=False, error=None, complete_states=0, log="[]"):
     d = tmp_path / "out"
-    d.mkdir(exist_ok=True)
+    d.mkdir(parents=True, exist_ok=True)
     if done:
         (d / "DONE").write_text("")
     if error is not None:
@@ -696,13 +695,74 @@ def make_infra(tmp_path, done=False, error=None, complete_states=0, log="[]"):
     (dict(error="ValueError: every visible worker GPU must be a Tesla T4"), "", False, ("INFRA_LOSS", "GPU_IDENTITY")),
     (dict(error="boom", log=json.dumps([{"data": "502 Bad Gateway"}])), "", False, ("INFRA_LOSS", "PLATFORM_ERROR")),
     (dict(error="boom"), "Service Unavailable", False, ("INFRA_LOSS", "PLATFORM_ERROR")),
-    (dict(error="RuntimeError: registered per-state or aggregate solver wall-time budget exceeded"), "", False, ("NOT_INFRASTRUCTURE", None)),    # default
-    (dict(error="RuntimeError: state did not complete: x (exit 1)", log="plain text log"), "", False, ("NOT_INFRASTRUCTURE", None)),
+    (dict(error="RuntimeError: registered per-state or aggregate solver wall-time budget exceeded"), "", False, ("RUN_LOSS", "WALL_CAP")),
+    (dict(error="RuntimeError: state did not complete: x (exit 1)", log="plain text log"), "", False, ("RUN_LOSS", "STATE_FAILED")),
+    (dict(error="RuntimeError: kernel time budget exhausted"), "", False, ("NOT_INFRASTRUCTURE", None)),                                  # default: no signature matches
+    (dict(error="boom", complete_states=3, log="plain text log"), "", False, ("NOT_INFRASTRUCTURE", None)),
 ])
 def test_infra_signature_table(tmp_path, kw, status, verify_failed, expected):
     d, lg = make_infra(tmp_path, **kw)
     r = S.classify_infra(d, lg, status, verify_failed)
     assert (r["classification"], r["signature"]) == expected
+
+
+def test_nonfinite_is_judged_on_the_verify_log_before_verify_failed(tmp_path):
+    d, lg = make_infra(tmp_path, done=True)
+    nf = "ValueError: state fields or forces are not finite"
+    assert S.classify_infra(d, lg, "", True, verify_text=nf) == {"classification": "RUN_LOSS", "signature": "NONFINITE"}
+    assert S.classify_infra(d, lg, "", True, verify_text="state process wall time exceeds budget") == {"classification": "INFRA_LOSS", "signature": "VERIFY_FAILED"}
+    assert S.classify_infra(d, lg, "", False, verify_text=nf) == {"classification": "COMPLETE", "signature": None}          # the verify log counts only when verify failed
+    d2, lg2 = make_infra(tmp_path / "x", error="Pkg.instantiate failed")                                                      # NONFINITE precedes the output-directory signatures
+    assert S.classify_infra(d2, lg2, "", True, verify_text="forces ... must be a finite number")["signature"] == "NONFINITE"
+
+
+def test_signature_table_file_is_the_revised_frozen_table():
+    t = S.infra_table()
+    ids = ["NONFINITE", "VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR", "WALL_CAP", "STATE_FAILED"]
+    assert t["evaluation_order"] == ids and [e["id"] for e in t["signatures"]] == ids and t["default"] == "NOT_INFRASTRUCTURE" and set(t["classes"]) == {"INFRA_LOSS", "RUN_LOSS"}
+    assert {e["id"]: e["class"] for e in t["signatures"]} == {"NONFINITE": "RUN_LOSS", "VERIFY_FAILED": "INFRA_LOSS", "SESSION_KILL": "INFRA_LOSS", "JULIA_INSTALL": "INFRA_LOSS",
+                                                             "GPU_IDENTITY": "INFRA_LOSS", "PLATFORM_ERROR": "INFRA_LOSS", "WALL_CAP": "RUN_LOSS", "STATE_FAILED": "RUN_LOSS"}
+    assert [e["id"] for e in t["signatures"] if e["pattern"] is None] == ["VERIFY_FAILED", "SESSION_KILL"]            # NONFINITE has a pattern, on the verify log (see the report)
+    assert "verify" in next(e for e in t["signatures"] if e["id"] == "NONFINITE")["source"] and all(e["meaning"] and e["source"] and e["condition"] for e in t["signatures"])
+    assert "whatever the classification" in t["rerun_rule"] and "does not change the rerun rule" in t["default_statement"] and "No third attempt" in t["rerun_rule"]
+    import re
+    for e in t["signatures"]:
+        if e["pattern"]:
+            re.compile(e["pattern"])
+    assert "registered per-state or aggregate solver wall-time budget exceeded" in next(e for e in t["signatures"] if e["id"] == "WALL_CAP")["pattern"]
+
+
+def test_classification_reads_its_patterns_from_the_table(tmp_path):
+    t = S.infra_table()
+    t2 = json.loads(json.dumps(t))
+    next(e for e in t2["signatures"] if e["id"] == "PLATFORM_ERROR")["pattern"] = "NEW_PLATFORM_TEXT"
+    d, lg = make_infra(tmp_path, error="NEW_PLATFORM_TEXT happened")
+    assert S.classify_infra(d, lg, table=t2)["signature"] == "PLATFORM_ERROR" and S.classify_infra(d, lg, table=t)["classification"] == "NOT_INFRASTRUCTURE"
+    bad = json.loads(json.dumps(t))
+    bad["signatures"].append(dict(bad["signatures"][0]))
+    p = tmp_path / "t.json"
+    p.write_text(json.dumps(bad))
+    with pytest.raises(ValueError, match="malformed signature table"):
+        S.infra_table(p)
+
+
+def test_infra_out_writes_the_classification_record_once(tmp_path, monkeypatch, capsys):
+    d, lg = make_infra(tmp_path, error="RuntimeError: registered per-state or aggregate solver wall-time budget exceeded")
+    out = tmp_path / "rec.json"
+    monkeypatch.setattr(sys, "argv", ["x", "infra", "--output-dir", str(d), "--log", str(lg), "--kernel", "g1k11", "--attempt", "2", "--out", str(out)])
+    S.main()
+    r = json.loads(out.read_text())
+    assert (r["kind"], r["kernel"], r["attempt"], r["classification"], r["signature"]) == ("screen01_infra_classification", "g1k11", 2, "RUN_LOSS", "WALL_CAP")
+    assert r["table_sha256"] == SC.sha256_path(S.ROOT / S.INFRA_REL) and r["evidence_sha256"]["ERROR.txt"] == SC.sha256_path(d / "ERROR.txt") and r["evidence_sha256"]["status"] is None
+    with pytest.raises(FileExistsError):
+        S.main()
+    vl = tmp_path / "verify.log"
+    vl.write_text("ValueError: state fields or forces are not finite")
+    d2, lg2 = make_infra(tmp_path / "y", done=True)
+    r2 = S.infra_record("f32a", 2, d2, lg2, verify_log=vl, verify_failed=True)
+    assert (r2["classification"], r2["signature"]) == ("RUN_LOSS", "NONFINITE") and r2["evidence_sha256"]["verify_log"] == SC.sha256_path(vl) and r2["verify_failed"] is True
+    with pytest.raises(ValueError, match="needs --kernel"):
+        S.infra_record(None, None, d2, lg2)
 
 
 def test_infra_cli(tmp_path, monkeypatch, capsys):
@@ -713,89 +773,6 @@ def test_infra_cli(tmp_path, monkeypatch, capsys):
 
 
 # ---- the harness-table loader --------------------------------------------------------------------------------------------------------------------
-def build_campaign(tmp_path, cid, T, group, kernel_root, extra=None):
-    """A minimal campaign JSON, per-kernel tables and the kernel files of the runs of one group of T."""
-    km = Y.KERNEL_OF[group]
-    out_prefix = f"{cid}_"
-    c = {"campaign_id": cid, "out_prefix": out_prefix, "kernels": {}, **(extra or {})}
-    tables = {}
-    for k in sorted(set(km.values())):
-        runs, forces = [], {}
-        for s, by in T["runs"].get(group, {}).items():
-            for ph, r in by.items():
-                if km.get(ph) != k:
-                    continue
-                name = f"{s}__k{ph}"
-                runs.append({"state": s, "name": name, "env": {}})
-                d = kernel_root / f"{out_prefix}{k}" / "states" / name
-                d.mkdir(parents=True, exist_ok=True)
-                (d / "flow_32.summary.json").write_text(json.dumps({"name": name, "k": k}))
-                (d / "flow_32.forces.csv").write_text(f"{name},{r['downforce']}\n")
-                forces[name] = {"downforce_n": r["downforce"], "drag_n": r["drag"], "forces_csv_sha256": SC.sha256_path(d / "flow_32.forces.csv"),
-                                "summary_sha256": SC.sha256_path(d / "flow_32.summary.json"), "solver_process_wall_seconds": 400.0, "julia_summary_wall_seconds": 390.0}
-        if runs:
-            c["kernels"][k] = {"case": {"case_id": "flow_32"}, "runs": runs}
-            tables[k] = forces
-    path = tmp_path / "docs" / "harness" / f"{cid}_campaign.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(c, sort_keys=True))
-    files = []
-    for k, forces in tables.items():
-        t = {"kind": SC.TABLE_KIND, "harness_version": SC.HARNESS_VERSION, "smoke": False, "integrity": {"pass": True, "failures": []}, "campaign_id": cid,
-             "campaign_sha256": SC.sha256_path(path), "state_forces_n": {k: forces}}
-        tp = tmp_path / "tables" / f"{cid}_{k}.json"
-        tp.parent.mkdir(parents=True, exist_ok=True)
-        tp.write_text(json.dumps(t))
-        files.append(tp)
-    return path, files, {"kind": "freeze", "file_sha256": {f"docs/harness/{path.name}": SC.sha256_path(path)}}
-
-
-@pytest.fixture
-def no_schema(monkeypatch):
-    monkeypatch.setattr(SC, "validate_campaign", lambda c: None)
-
-
-def test_loader_reads_verified_tables_and_checks_files_and_freeze(tmp_path, no_schema):
-    T = Y.branch("fin_base")
-    kr = tmp_path / "kernels"
-    camp, tabs, fz = build_campaign(tmp_path, "screen01", T, "g1", kr)
-    runs, meta = S.load_group("g1", camp, tabs, kr, [], fz)
-    assert runs[Y.PARENT]["11"]["downforce"] == T["runs"]["g1"][Y.PARENT]["11"]["downforce"] and set(runs[Y.PARENT]) == {"11", "12"} and set(runs[Y.REPEAT]) == {"11"}
-    assert meta["kernels_lost"] == [] and set(meta["table_sha256"]) == {t.name for t in tabs}
-    with pytest.raises(ValueError, match="no verified table and are not declared lost"):
-        S.load_group("g1", camp, tabs[:1], kr, [], fz)
-    runs, meta = S.load_group("g1", camp, tabs[:1], kr, ["g1k12"], fz)
-    assert meta["kernels_lost"] == ["g1k12"] and all(set(v) <= {"11"} for v in runs.values())
-    with pytest.raises(ValueError, match="declared lost / budget-stopped but have"):
-        S.load_group("g1", camp, tabs, kr, ["g1k12"], fz)
-    S.load_group("g1", camp, tabs[:1], kr, [], fz, stopped=["g1k12"])                                  # a budget-stopped kernel needs no table
-    with pytest.raises(ValueError, match="not the campaign frozen"):
-        S.load_group("g1", camp, tabs, kr, [], {"kind": "freeze", "file_sha256": {"docs/harness/screen01_campaign.json": "0" * 64}})
-    with pytest.raises(ValueError, match="is not a g2 campaign|not a"):
-        S.load_group("f48", camp, tabs, kr, [], fz)
-    d = kr / "screen01_g1k11" / "states" / f"{Y.PARENT}__k11" / "flow_32.forces.csv"
-    d.write_text("tampered\n")
-    with pytest.raises(ValueError, match="kernel output differs from the verified table"):
-        S.load_group("g1", camp, tabs, kr, [], fz)
-    with pytest.raises(ValueError, match="--kernel-root is required"):
-        S.load_group("g1", camp, tabs, None, [], fz)
-
-
-def test_loader_refuses_smoke_and_foreign_tables(tmp_path, no_schema):
-    T = Y.branch("fin_base")
-    kr = tmp_path / "kernels"
-    camp, tabs, fz = build_campaign(tmp_path, "screen01", T, "g1", kr)
-    t = json.loads(tabs[0].read_text())
-    t["smoke"] = True
-    tabs[0].write_text(json.dumps(t))
-    with pytest.raises(ValueError, match="smoke"):
-        S.load_group("g1", camp, tabs, kr, [], fz)
-    t["smoke"], t["campaign_sha256"] = False, "0" * 64
-    tabs[0].write_text(json.dumps(t))
-    with pytest.raises(ValueError, match="another campaign"):
-        S.load_group("g1", camp, tabs, kr, [], fz)
-
-
 def test_restrict_and_group_tables():
     T = Y.branch("main_gain")
     r = S.restrict(T, "rs")
@@ -808,158 +785,6 @@ def test_restrict_and_group_tables():
 
 
 # ---- the whole pipeline on disk: rs -> finalist -> main (synthetic tables, kernel files, freezes, fake checker) ------------------------------------
-class Disk:
-    def __init__(self, tmp_path, monkeypatch, name="main_gain", checker=None):
-        self.tmp, self.T = tmp_path, Y.branch(name)
-        self.ev = tmp_path / "ev"
-        self.ev.mkdir()
-        monkeypatch.setattr(S, "EV", self.ev)
-        monkeypatch.setattr(SC, "validate_campaign", lambda c: None)
-        monkeypatch.setattr(S, "SOURCES", ("analyze_screen01.py", "screen01_pool.py"))
-        monkeypatch.setattr(S, "CHECKER", checker or types.SimpleNamespace(check=lambda t: S.compute(t), compare=lambda a, b, stage: [k for k in a if S.canon(a[k]) != S.canon(b.get(k))]))
-        self.kr = tmp_path / "kernels"
-        states = {n: {"role": r["role"], "order": r["order"], "u": r["u"], "spec": None if r["u"] is None else P.u_to_spec(r["u"])} for n, r in self.T["roles"].items()
-                  if r["role"] != "proposal"}
-        self.states = self.ev / "states.json"
-        self.states.write_text(json.dumps({"schema": "screen01-states-v1", "parent": Y.PARENT, "states": states}, sort_keys=True))
-        self.camp, self.tabs, self.fz = {}, {}, {}
-        fin = S.compute(self.T)
-        ident = lambda n: {k: hashlib.sha256(f"{n}{k}".encode()).hexdigest() if k.endswith("sha256") else 0.1 for k in SC.STATE_IDENTITY_KEYS}   # noqa: E731
-        extra32 = {"states": {Y.PARENT: {"kind": "parent", **ident("p")}, fin["finalist"]: {"kind": "candidate", "direction": "d1", "step_mm": 1.0, "sign": 1, **ident("f")}},
-                   "directions": {"d1": {"path": "d1.raw", "sha256_fortran_raw": "a" * 64}}, "domain": {"flow_origin_m": [0, 0, 0], "physical_box_max_m": [1, 1, 1]},
-                   "baseline": {"path": "b.raw", "sha256_fortran_raw": "b" * 64}}
-        for g, cid in (("g1", "screen01"), ("g2", "screen01_g2"), ("f32", "screen01_f"), ("f48", "screen01_f48")):
-            if g in self.T["runs"]:
-                c, t, f = build_campaign(tmp_path, cid, self.T, g, self.kr, extra32 if g == "f32" else None)
-                self.camp[g], self.tabs[g], self.fz[g] = c, t, f
-        files = {f"scripts/screen01/{s}": SC.sha256_path(S.ROOT / "scripts/screen01" / s) for s in S.SOURCES}
-        files[f"docs/evidence/x/{self.states.name}"] = SC.sha256_path(self.states)
-        files["docs/gate_profile.json"] = "c" * 64
-        self.write("freeze1", {"kind": "freeze1", "file_sha256": files})
-        self.write("freeze2", {"kind": "freeze2", "file_sha256": self.fz["g1"]["file_sha256"]})
-        self.args = argparse.Namespace(states=self.states, g1=[self.camp["g1"], *self.tabs["g1"]], g2=None, f32=None, f48=None, rs=self.ev / "rs.json", finalist=self.ev / "finalist.json",
-                                       kernel_root=self.kr, lost=[], budget_stopped=[], workers=4, out=None)
-
-    def write(self, name, rec):
-        (self.ev / f"{name}.json").write_text(json.dumps(rec, sort_keys=True))
-
-    def oracle(self, T, workers):
-        rows = {}
-
-        def ask(u):
-            n = Y.sname(u)
-            rows[n] = {"name": n, "admissible": bool(Y.default_oracle(u)), "gate_values": {"min_feature_width": 1.0}, "phi_fortran_sha256": hashlib.sha256(n.encode()).hexdigest()}
-            return rows[n]["admissible"]
-        return ask, rows
-
-    def stage_rs(self):
-        rec = S.run_rs(self.args, self.oracle)
-        S.write_once(self.args.rs, S.dumps(rec))
-        self.write("freeze2_1", {"kind": "freeze2_1", "file_sha256": self.fz["g2"]["file_sha256"] if "g2" in self.fz else {}, "rs_json_sha256": SC.sha256_path(self.args.rs)})
-        return rec
-
-    def stage_finalist(self):
-        if "g2" in self.camp:
-            self.args.g2 = [self.camp["g2"], *self.tabs["g2"]]
-        rec = S.run_finalist(self.args)
-        S.write_once(self.args.finalist, S.dumps(rec))
-        f32 = self.fz.get("f32", {"file_sha256": {}})["file_sha256"] | self.fz.get("f48", {"file_sha256": {}})["file_sha256"]
-        self.write("freeze3", {"kind": "freeze3", "file_sha256": f32, "finalist_json_sha256": SC.sha256_path(self.args.finalist)})
-        return rec
-
-    def stage_main(self, out=None):
-        self.args.f32 = [self.camp["f32"], *self.tabs["f32"]] if "f32" in self.camp else None
-        self.args.f48 = [self.camp["f48"], *self.tabs["f48"]] if "f48" in self.camp else None
-        self.args.out = out or self.ev / "analysis.json"
-        return S.run_main(self.args)
-
-
-def test_pipeline_rs_finalist_main_gain_writes_once(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch)
-    rs = d.stage_rs()
-    assert rs["comparable"]["proposals"] and rs["proposals"] and rs["cross_check"]["discrepancies"] == []
-    assert all(g["phi_fortran_sha256"] and g["name"] and "admissible" in g for g in rs["gating"]) and [p["name"] for p in rs["proposals"]] == S.compute(d.T)["proposals_from_gating"]
-    assert set(rs["coefficients"]) >= {"fid_analysis_sha256", "tier_a_slope"} and rs["shape_update_allowed"] is False
-    fin = d.stage_finalist()
-    assert fin["comparable"]["finalist"] == fin["finalist"] == S.compute(d.T)["finalist"] and fin["r_best"] == S.compute(d.T)["r_best"] and fin["rs_json_sha256"] == SC.sha256_path(d.args.rs)
-    out = d.stage_main()
-    assert [p.name for p in out] == ["analysis.json", "analysis.md", "xv_handoff.json"]
-    ana = json.loads(out[d.args.out])
-    assert ana["outcome"] == "SCREEN01_GAIN" and ana["cause"] == [] and ana["cross_check"]["discrepancies"] == [] and ana["shape_update_allowed"] is False
-    h = json.loads(out[d.args.out.with_name("xv_handoff.json")])
-    assert h["finalist"] == ana["finalist"] and h["analysis_sha256"] == hashlib.sha256(out[d.args.out].encode()).hexdigest() and h["in_camber_extension"] is True
-    assert h["admissibility_row"]["name"] == h["finalist"] and h["state"]["direction_raw_sha256"] == "a" * 64 and h["selection_record"]["rs_json_sha256"] == SC.sha256_path(d.args.rs)
-    assert "SCREEN01_GAIN" in out[d.args.out.with_suffix(".md")]
-    for p, text in out.items():
-        S.write_once(p, text)
-    with pytest.raises(ValueError, match="already exists"):
-        d.stage_main()
-    with pytest.raises(FileExistsError):
-        S.write_once(d.args.rs, "again")
-
-
-def test_pipeline_no_handoff_without_gain_and_budget_stop_is_a_budget_cause(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch, "main_no_gain_below_min")
-    d.stage_rs()
-    d.stage_finalist()
-    out = d.stage_main()
-    assert [p.name for p in out] == ["analysis.json", "analysis.md"]
-    (tmp_path / "b").mkdir()
-    d = Disk(tmp_path / "b", monkeypatch, "main_incomplete_f_not_run")
-    d.stage_rs()
-    d.stage_finalist()
-    d.args.budget_stopped = ["f32a", "f32b", "f48k13", "f48k14"]
-    out = d.stage_main()
-    ana = json.loads(out[d.args.out])
-    assert ana["outcome"] == "SCREEN01_INCOMPLETE" and ana["cause"] == ["BUDGET"]
-
-
-def test_pipeline_refuses_unfrozen_or_inconsistent_inputs(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch)
-    d.stage_rs()
-    # rs.json differs from the frozen SHA
-    fz = json.loads((d.ev / "freeze2_1.json").read_text())
-    d.write("freeze2_1", {**fz, "rs_json_sha256": "0" * 64})
-    d.args.g2 = [d.camp["g2"], *d.tabs["g2"]]
-    with pytest.raises(ValueError, match="rs.json is not the one frozen"):
-        S.run_finalist(d.args)
-    # rs.json re-frozen after tampering with its comparable part: re-derivation refuses
-    bad = json.loads(d.args.rs.read_text())
-    bad["comparable"]["stop_after"] += 1
-    d.args.rs.write_text(S.dumps(bad))
-    d.write("freeze2_1", {**fz, "rs_json_sha256": SC.sha256_path(d.args.rs)})
-    with pytest.raises(ValueError, match="does not re-derive"):
-        S.run_finalist(d.args)
-    # a campaign that is not the frozen one
-    d.write("freeze2", {"kind": "freeze2", "file_sha256": {"docs/harness/screen01_campaign.json": "0" * 64}})
-    with pytest.raises(ValueError, match="not the campaign frozen"):
-        S.run_rs(d.args, d.oracle)
-
-
-def test_pipeline_refuses_changed_sources_and_a_failing_cross_check(tmp_path, monkeypatch):
-    bad = types.SimpleNamespace(check=lambda t: {**S.compute(t), "stop_after": -1}, compare=lambda a, b, stage: [k for k in a if S.canon(a[k]) != S.canon(b.get(k))])
-    d = Disk(tmp_path, monkeypatch, checker=bad)
-    with pytest.raises(ValueError, match="cross-check discrepancies"):
-        S.run_rs(d.args, d.oracle)
-    assert not d.args.rs.exists()
-    fz = json.loads((d.ev / "freeze1.json").read_text())
-    fz["file_sha256"]["scripts/screen01/analyze_screen01.py"] = "0" * 64
-    d.write("freeze1", fz)
-    with pytest.raises(ValueError, match="not the source frozen"):
-        S.run_rs(d.args, d.oracle)
-
-
-def test_pipeline_refuses_tables_for_a_group_nobody_needs(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch, "fin_no_proposals")
-    d.stage_rs()
-    d.args.g2 = [d.camp["g1"], *d.tabs["g1"]]
-    with pytest.raises(ValueError, match="not needed"):
-        S.run_finalist(d.args)
-    d.args.g2 = None
-    fin = S.run_finalist(d.args)
-    assert fin["comparable"]["finalist"] is None and fin["finalist"] is None and fin["comparable"]["futility"] == "NO_FEASIBLE_CANDIDATE"
-
-
 def test_real_oracle_evaluates_rounds_of_four_in_parallel(monkeypatch):
     T = Y.make("rs", n_grid=41)
     T0 = {**T, "gating": []}
@@ -974,30 +799,6 @@ def test_real_oracle_evaluates_rounds_of_four_in_parallel(monkeypatch):
     assert T1["gating"] == T["gating"]                                                                            # same record as the sequential fake oracle
     assert all(len(c) <= 4 for c in calls) and sum(len(c) for c in calls) == len({g["name"] for g in T1["gating"]}) >= 4
     assert set(rows) >= {g["name"] for g in T1["gating"]}
-
-
-def test_cli_finalist_and_main_write_the_outputs_once(tmp_path, monkeypatch, capsys):
-    d = Disk(tmp_path, monkeypatch)
-    d.stage_rs()
-    grp = lambda g: [str(d.camp[g]), *map(str, d.tabs[g])]   # noqa: E731
-    fin = d.ev / "finalist.json"
-    monkeypatch.setattr(sys, "argv", ["x", "finalist", "--states", str(d.states), "--g1", *grp("g1"), "--g2", *grp("g2"), "--rs", str(d.args.rs), "--kernel-root", str(d.kr), "--out", str(fin)])
-    S.main()
-    d.write("freeze3", {"kind": "freeze3", "file_sha256": {**d.fz["f32"]["file_sha256"], **d.fz["f48"]["file_sha256"]}, "finalist_json_sha256": SC.sha256_path(fin)})
-    out = d.ev / "analysis.json"
-    argv = ["x", "main", "--states", str(d.states), "--g1", *grp("g1"), "--g2", *grp("g2"), "--f32", *grp("f32"), "--f48", *grp("f48"), "--rs", str(d.args.rs), "--finalist", str(fin),
-            "--kernel-root", str(d.kr), "--out", str(out)]
-    monkeypatch.setattr(sys, "argv", argv)
-    S.main()
-    assert json.loads(out.read_text())["outcome"] == "SCREEN01_GAIN" and (d.ev / "analysis.md").exists() and (d.ev / "xv_handoff.json").exists()
-    with pytest.raises(ValueError, match="already exists"):
-        S.main()
-    with pytest.raises(FileExistsError):
-        monkeypatch.setattr(sys, "argv", ["x", "finalist", "--states", str(d.states), "--g1", *grp("g1"), "--g2", *grp("g2"), "--rs", str(d.args.rs), "--kernel-root", str(d.kr), "--out", str(fin)])
-        S.main()
-    monkeypatch.setattr(sys, "argv", ["x", "main", "--workers", "5", "--out", str(out)])
-    with pytest.raises(ValueError, match="at most 4 workers"):
-        S.main()
 
 
 # ---- the 2026-10-31 reconciliation (registration §5.2, §5.11): branches of crosscheck_reconciliation.md §3.3, each with its expected comparable values ----
@@ -1181,67 +982,478 @@ def test_ref_consistent_label_only():
 
 
 # ---- the INFRA_LOSS signature table (§9, §5.11.17) ----------------------------------------------------------------------------------------------
-def test_signature_table_file_is_the_frozen_table():
-    t = S.infra_table()
-    assert t["default"] == "NOT_INFRASTRUCTURE" and "never a reason to rerun" in t["default_statement"] and [e["id"] for e in t["signatures"]] == t["evaluation_order"]
-    assert {e["id"] for e in t["signatures"]} == {"VERIFY_FAILED", "SESSION_KILL", "JULIA_INSTALL", "GPU_IDENTITY", "PLATFORM_ERROR"}
-    assert all(e["meaning"] and e["source"] and e["condition"] for e in t["signatures"])
-    assert [e["id"] for e in t["signatures"] if e["pattern"] is None] == ["VERIFY_FAILED", "SESSION_KILL"]
-    import re
-    for e in t["signatures"]:
-        if e["pattern"]:
-            re.compile(e["pattern"])
+
+# ---- the whole study on disk (adoption.md §3.1; registration §10, §5.11.17-20): rs -> finalist -> main through freeze records, campaigns, tables and kernel files ----------
+Disk = Y.Disk
 
 
-def test_classification_reads_its_patterns_from_the_table(tmp_path):
-    t = S.infra_table()
-    t2 = json.loads(json.dumps(t))
-    next(e for e in t2["signatures"] if e["id"] == "PLATFORM_ERROR")["pattern"] = "NEW_PLATFORM_TEXT"
-    d, lg = make_infra(tmp_path, error="NEW_PLATFORM_TEXT happened")
-    assert S.classify_infra(d, lg, table=t2)["signature"] == "PLATFORM_ERROR" and S.classify_infra(d, lg, table=t)["classification"] == "NOT_INFRASTRUCTURE"
-    bad = json.loads(json.dumps(t))
-    bad["signatures"].append(dict(bad["signatures"][0]))
-    p = tmp_path / "t.json"
-    p.write_text(json.dumps(bad))
-    with pytest.raises(ValueError, match="malformed signature table"):
-        S.infra_table(p)
+def test_pipeline_rs_finalist_main_gain_writes_once(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    f1 = d.freeze("freeze1")["file_sha256"]
+    assert Y.UNC_STATES_REL in f1 and f"{S.EV_REL}/states.json" in f1 and len([k for k in f1 if k.endswith("states.json")]) == 2           # two states.json: looked up by repo-relative key
+    rs = d.stage_rs()
+    assert rs["comparable"]["proposals"] and rs["proposals"] and rs["cross_check"]["discrepancies"] == [] and rs["lost_signatures"] == {} and rs["not_pushed"] == {}
+    assert all(g["phi_fortran_sha256"] and g["name"] and "admissible" in g for g in rs["gating"]) and [p["name"] for p in rs["proposals"]] == S.compute(d.T)["proposals_from_gating"]
+    assert rs["comparable"]["g1_controls"]["invalid_at_step_2"] is False and rs["groups"]["g1"]["table_sha256"].keys() == {S.rel(t) for t in d.tabs["g1"]}   # table_sha256 keyed by repo-relative path
+    fin = d.stage_finalist()
+    assert fin["comparable"]["finalist"] == fin["finalist"] == S.compute(d.T)["finalist"] and fin["r_best"] == S.compute(d.T)["r_best"] and fin["pushed"] is True
+    assert fin["rs_json_sha256"] == SC.sha256_path(d.args.rs) and fin["comparable"]["g1_controls"] == rs["comparable"]["g1_controls"]
+    assert d.freeze("freeze3")["pushed"] is True and set(d.freeze("freeze3")["campaigns"]) == {"screen01_f", "screen01_f48"}
+    out = d.stage_main()
+    assert [p.name for p in out] == ["analysis.json", "analysis.md", "xv_handoff.json"]
+    ana = json.loads(out[d.args.out])
+    assert ana["outcome"] == "SCREEN01_GAIN" and ana["cause"] == [] and ana["cross_check"]["discrepancies"] == [] and ana["shape_update_allowed"] is False and ana["g1_controls"]["invalid_at_step_2"] is False
+    assert ana["detail"]["I_confirmation"]["f32"]["downforce"] == pytest.approx(ana["confirmation"]["f32"]["delta_bar"]["downforce"] / S.J_B48)
+    h = json.loads(out[d.args.out.with_name("xv_handoff.json")])
+    assert h["finalist"] == ana["finalist"] and h["analysis_sha256"] == hashlib.sha256(out[d.args.out].encode()).hexdigest() and h["in_camber_extension"] is True
+    assert h["admissibility_row"]["name"] == h["finalist"] and h["state"]["direction_raw_sha256"] == "a" * 64 and h["selection_record"]["rs_json_sha256"] == SC.sha256_path(d.args.rs)
+    assert "g1_controls" in md_of(out, d) and "invalid_at_step_2: False" in md_of(out, d)
+    for p, text in out.items():
+        S.write_once(p, text)
+    with pytest.raises(ValueError, match="already exists"):
+        d.stage_main()
+    with pytest.raises(FileExistsError):
+        S.write_once(d.args.rs, "again")
 
 
-def test_every_lost_declaration_cites_a_signature(tmp_path):
-    assert S.parse_lost(["g2=SESSION_KILL", "f48k13=PLATFORM_ERROR"]) == {"g2": "SESSION_KILL", "f48k13": "PLATFORM_ERROR"} and S.parse_lost([]) == {}
-    for bad in ("g2", "g2=", "g2=NOT_A_SIGNATURE", "g9=SESSION_KILL", "=SESSION_KILL"):
-        with pytest.raises(ValueError, match="expected KERNEL=SIGNATURE"):
-            S.parse_lost([bad])
-    fz1 = {"kind": "freeze1", "file_sha256": {f"scripts/screen01/{s}": SC.sha256_path(S.ROOT / "scripts/screen01" / s) for s in S.SOURCES}}
-    a = argparse.Namespace(lost=["g2"], lost_signatures={"g2": "SESSION_KILL"})
-    with pytest.raises(ValueError, match="not the INFRA_LOSS signature table frozen"):
-        S.frozen_sources(fz1, a)                                                                       # the table must be in freeze 1 when a kernel is declared lost
-    fz1["file_sha256"]["docs/evidence/screen01_2026_10_30/infra_signatures.json"] = SC.sha256_path(S.INFRA_FILE)
-    S.frozen_sources(fz1, a)
-    with pytest.raises(ValueError, match="must cite a signature"):
-        S.frozen_sources(fz1, argparse.Namespace(lost=["g2"], lost_signatures={}))
-    S.frozen_sources(fz1, argparse.Namespace(lost=[], lost_signatures={}))                              # no declaration: the table is not needed
-    rec = S.common_record({"lost_kernels": ["g2"]}, {}, {}, S.EV / "states.json" if (S.EV / "states.json").exists() else S.INFRA_FILE, a)
-    assert rec["lost_signatures"] == {"g2": "SESSION_KILL"} and rec["infra_signatures_sha256"] == SC.sha256_path(S.INFRA_FILE)
+def md_of(out, d):
+    return out[d.args.out.with_suffix(".md")]
 
 
-def test_cli_lost_without_a_signature_is_refused(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["x", "finalist", "--lost", "g2", "--out", "/nonexistent/x.json"])
-    with pytest.raises(ValueError, match="expected KERNEL=SIGNATURE"):
-        S.main()
+@pytest.mark.parametrize("name,outcome,cause", [("main_no_gain_no_feasible", "SCREEN01_NO_GAIN", ["NO_FEASIBLE_CANDIDATE"]), ("main_incomplete_refine", "SCREEN01_INCOMPLETE", ["DATA_G1", "DATA_REFINE"])])
+def test_main_without_a_finalist_binds_freeze_3_and_writes_once(tmp_path, monkeypatch, name, outcome, cause):
+    d = Disk(tmp_path, monkeypatch, name)
+    d.stage_rs()
+    fin = d.stage_finalist()
+    f3 = d.freeze("freeze3")
+    assert fin["finalist"] is None and fin["pushed"] is False and f3["finalist"] is None and f3["pushed"] is False and "campaigns" not in f3 and f3["finalist_json_sha256"] == SC.sha256_path(d.args.finalist)
+    assert set(d.camp) == {"g1", "g2"} or set(d.camp) == {"g1"}                                                                           # no confirmation campaign exists
+    out = d.stage_main()                                                                                                                  # no --f32 / --f48 argument
+    assert d.args.f32 is None and d.args.f48 is None and [p.name for p in out] == ["analysis.json", "analysis.md"]
+    ana = json.loads(out[d.args.out])
+    assert (ana["outcome"], ana["cause"]) == (outcome, cause) and ana["confirmation"] == {"f32": None, "f48": None}
+    for p, text in out.items():
+        S.write_once(p, text)
+    with pytest.raises(ValueError, match="already exists"):
+        d.stage_main()
 
 
-def test_analysis_md_reports_not_judged_and_the_fit_label(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch, "main_repeat_missing_f32a")
+def test_main_refuses_freeze_3_that_disagrees_with_finalist_json(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.stage_rs()
+    d.stage_finalist()
+    f3 = d.freeze("freeze3")
+    d.write("freeze3", {**f3, "pushed": False})
+    with pytest.raises(ValueError, match="freeze3.json and finalist.json disagree"):
+        d.stage_main()
+    d.write("freeze3", {**f3, "r_best": "v18__other"})
+    with pytest.raises(ValueError, match="freeze3.json and finalist.json disagree"):
+        d.stage_main()
+
+
+def test_lost_kernel_cites_its_classification_record_through_the_pipeline(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "fin_g1k11_lost")
+    rs = d.stage_rs()
+    fin = d.stage_finalist()
+    assert d.args.lost == ["g1k11"] and rs["lost_signatures"] == {"g1k11": "NOT_INFRASTRUCTURE"} and fin["lost_signatures"] == {"g1k11": "NOT_INFRASTRUCTURE"}
+    rec = d.ev.parent / "lost_g1k11.json"
+    assert rs["lost_records_sha256"] == {"g1k11": SC.sha256_path(rec)} and rs["infra_signatures_sha256"] == SC.sha256_path(d.root / S.INFRA_REL)
+    assert rs["lost_kernels"] == ["g1k11"] and fin["comparable"]["search_complete"] is False and fin["comparable"]["g1_controls"]["determinism_g1k11"]["judged"] is False
+    assert fin["groups"]["g1"]["kernels_lost"] == ["g1k11"]
+
+
+def test_lost_declaration_must_cite_a_matching_record(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "fin_g1k11_lost")
+    d.declare("rs")
+    good = d.args.lost_declarations["g1k11"]["record"]
+    rec = json.loads(Path(good).read_text())
+    bad = tmp_path / "bad.json"
+    table = S.infra_table()
+    for change, why in (({"kernel": "g1k12"}, "other kernel"), ({"attempt": 1}, "first attempt"), ({"signature": "WALL_CAP", "classification": "RUN_LOSS"}, "other signature"),
+                        ({"table_sha256": "0" * 64}, "other table"), ({"kind": "screen01_budget_decision"}, "other kind")):
+        bad.write_text(json.dumps({**rec, **change}))
+        with pytest.raises(ValueError, match="not the classification record"):
+            S.parse_lost([f"g1k11=NOT_INFRASTRUCTURE:{bad}"], table)
+    wall = json.loads(json.dumps(rec))
+    wall.update(signature="WALL_CAP", classification="RUN_LOSS")
+    bad.write_text(json.dumps(wall))
+    assert S.parse_lost([f"g1k11=WALL_CAP:{bad}"], table)["g1k11"]["signature"] == "WALL_CAP"                                           # every table id, not only INFRA_LOSS
+    wall["classification"] = "INFRA_LOSS"
+    bad.write_text(json.dumps(wall))
+    with pytest.raises(ValueError, match="not the classification record"):                                                               # the class is the table's
+        S.parse_lost([f"g1k11=WALL_CAP:{bad}"], table)
+    for text in ("g1k11", "g1k11=WALL_CAP", "g1k11=NOT_A_SIGNATURE:x", "g9=WALL_CAP:x", "g1k11=:x"):
+        with pytest.raises(ValueError, match="expected KERNEL=ID:RECORD"):
+            S.parse_lost([text], table)
+    d.args.lost_declarations = {}                                                                                                       # a kernel without a table and without a declaration
+    d.args.g1 = d.group("g1")
+    with pytest.raises(ValueError, match="every --lost declaration must cite"):
+        S.run_rs(d.args, d.oracle)
+
+
+# ---- --not-pushed (§5.11.19, §5.8 step 4) -------------------------------------------------------------------------------------------------------
+def test_budget_not_pushed_kernel_gives_incomplete_budget_whatever_the_other_data_show(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "main_budget_with_full_data")
     d.stage_rs()
     d.stage_finalist()
     out = d.stage_main()
-    md = out[d.args.out.with_suffix(".md")]
-    assert "determinism NOT_JUDGED (repeat absent or not ok): ['f32a']" in md and "rs_fit_label: RS_FIT_OK" in md
-    assert json.loads(out[d.args.out])["determinism"]["f32a"]["judged"] is False
+    ana = json.loads(out[d.args.out])
+    assert (ana["outcome"], ana["cause"]) == ("SCREEN01_INCOMPLETE", ["BUDGET"])
+    assert ana["confirmation"]["f32"]["P"] == 4 and ana["confirmation"]["f48"]["P"] == 1 and ana["G"]["decision"] == "PASS" and ana["R3"]["label"] == "R3_CONFIRMED"     # everything else is fine
+    rec = d.ev.parent / "budget_f48k14.json"
+    assert ana["not_pushed"] == {"f48k14": {"reason": "BUDGET", "record": S.rel(rec), "record_sha256": SC.sha256_path(rec)}} and ana["not_pushed_kernels"] == {"f48k14": "BUDGET"}
+    assert [p.name for p in out] == ["analysis.json", "analysis.md"]                                                                                                       # no handoff on INCOMPLETE
+    assert d.freeze("freeze3")["pushed"] is True
 
 
-def test_rs_json_carries_the_fit_label_and_the_new_shapes(tmp_path, monkeypatch):
-    d = Disk(tmp_path, monkeypatch)
+def test_not_pushed_declarations_are_verified(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "main_budget_with_full_data")
+    d.stage_rs()
+    d.stage_finalist()
+    d.declare("main")
+    good = d.ev.parent / "budget_f48k14.json"
+    rec = json.loads(good.read_text())
+    bad = tmp_path / "bad_budget.json"
+
+    def run(decl):
+        d.declare("main")
+        d.args.not_pushed = decl
+        d.args.g2 = d.group("g2")
+        d.args.f32, d.args.f48, d.args.out = d.group("f32"), d.group("f48"), d.ev / "analysis.json"
+        return S.run_main(d.args)
+    for change, msg in (({"decision": "go"}, "not a §4.3 budget record"), ({"pending_estimate_s": {"f32a": [5000]}}, "not a §4.3 budget record"), ({"kind": "other"}, "not a §4.3 budget record")):
+        bad.write_text(json.dumps({**rec, **change}))
+        with pytest.raises(ValueError, match=msg):
+            run({"f48k14": {"reason": "BUDGET", "record": bad}})
+    with pytest.raises(ValueError, match="only .* citing a screen01_budget_decision record"):
+        run({"g2": {"reason": "BUDGET", "record": good}})                                                    # BUDGET is for the four confirmation kernels
+    with pytest.raises(ValueError, match="only .* citing a screen01_budget_decision record"):
+        run({"f48k14": {"reason": "BUDGET", "record": None}})                                                # a BUDGET declaration needs its stop record
+    with pytest.raises(ValueError, match="do not report invalid_at_step_2"):
+        run({"f48k14": {"reason": "INVALID_G1", "record": None}})                                            # a clean G1: the kernel must be pushed
+    with pytest.raises(ValueError, match="have a verified table"):
+        both = tmp_path / "both.json"
+        both.write_text(json.dumps({**rec, "pending_estimate_s": {"f32a": [5000], "f48k14": [7280]}}))
+        run({"f48k14": {"reason": "BUDGET", "record": both}, "f32a": {"reason": "BUDGET", "record": both}})   # a declared kernel with a table
+    with pytest.raises(ValueError, match="registered kernel|expected KERNEL=BUDGET"):
+        S.parse_not_pushed(["f99=BUDGET:x"])
+    with pytest.raises(ValueError, match="expected KERNEL=BUDGET"):
+        S.parse_not_pushed(["f48k14=MAYBE:x"])
+    assert S.parse_not_pushed(["f48k14=BUDGET:r.json", "g2=INVALID_G1"]) == {"f48k14": {"reason": "BUDGET", "record": Path("r.json")}, "g2": {"reason": "INVALID_G1", "record": None}}
+    run({"f48k14": {"reason": "BUDGET", "record": good}})                                                      # the honest declaration passes
+
+
+def test_invalid_g1_stops_the_push_and_main_writes_the_invalid_outcome(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "main_invalid_g1_without_F")
     rs = d.stage_rs()
-    assert rs["detail"]["rs_fit_label"] == "RS_FIT_OK" and rs["comparable"]["rs_fit_poor"] is False and rs["lost_signatures"] == {} and rs["infra_signatures_sha256"] is None
+    assert rs["comparable"]["g1_controls"]["NC_g1"]["label"] == "NOT_CONSISTENT" and rs["comparable"]["g1_controls"]["invalid_at_step_2"] is True and set(d.camp) == {"g1"}
+    assert d.freeze("freeze2_1")["g2"] == "none (invalid_at_step_2)"
+    fin = d.stage_finalist()                                                                                   # g2 declared INVALID_G1 against the frozen rs.json; proposals have P = 0
+    assert fin["not_pushed"] == {"g2": {"reason": "INVALID_G1", "record": S.rel(d.args.rs), "record_sha256": SC.sha256_path(d.args.rs)}}
+    assert fin["pushed"] is False and fin["finalist"] is not None and fin["comparable"]["g1_controls"]["invalid_at_step_2"] is True and d.freeze("freeze3")["pushed"] is False
+    assert all(c["P"] == 0 for n, c in fin["comparable"]["candidates"].items() if d.T["roles"][n]["role"] == "proposal") and fin["comparable"]["search_complete"] is False
+    out = d.stage_main()
+    ana = json.loads(out[d.args.out])
+    assert (ana["outcome"], ana["cause"]) == ("SCREEN01_INVALID", ["NC_G1"]) and ana["not_pushed_kernels"] == {k: "INVALID_G1" for k in ("f32a", "f32b", "f48k13", "f48k14", "g2")}
+    assert ana["not_pushed"]["f32a"]["record"] == S.rel(d.args.finalist) and [p.name for p in out] == ["analysis.json", "analysis.md"]
+    # every un-pushed kernel must be declared; with a clean G1 (above) INVALID_G1 is refused
+    del d.T["not_pushed"]["f32b"]
+    with pytest.raises(ValueError, match="were not pushed because the G1 chain controls failed"):
+        d.stage_main()
+
+
+def test_not_pushed_invalid_g1_with_a_clean_rs_json_is_refused_at_finalist(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "fin_base")
+    d.stage_rs()
+    d.declare("finalist")
+    d.args.not_pushed = {"g2": {"reason": "INVALID_G1", "record": None}}
+    d.args.g2 = d.group("g2")
+    with pytest.raises(ValueError, match="do not report invalid_at_step_2"):
+        S.run_finalist(d.args)
+
+
+def test_a_campaign_given_for_an_unneeded_group_and_the_loss_of_both_g1_kernels(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch, "fin_no_proposals")
+    d.stage_rs()
+    d.declare("finalist")
+    d.args.g2 = d.group("g1")
+    with pytest.raises(ValueError, match="not needed"):
+        S.run_finalist(d.args)
+    d.args.g2 = None
+    assert S.run_finalist(d.args)["comparable"]["finalist"] is None
+    # both G1 kernels lost: `--g1 CAMPAIGN` with no tables is a complete argument; without --g1 the call is refused
+    d = Disk(tmp_path / "b", monkeypatch, "main_both_g1_kernels_lost")
+    d.declare("rs")
+    d.args.g1 = [d.camp["g1"]]
+    assert set(d.args.lost) == {"g1k11", "g1k12"}
+    rs = S.run_rs(d.args, d.oracle)
+    assert rs["comparable"]["rs_not_fit"] is True and rs["comparable"]["g1_controls"]["NC_g1"] == {"z": None, "label": None} and rs["lost_kernels"] == ["g1k11", "g1k12"]
+    d.args.g1 = None
+    with pytest.raises(ValueError, match="--g1 CAMPAIGN is required"):
+        S.run_rs(d.args, d.oracle)
+    d.args.g1 = [d.camp["g1"]]
+    S.write_once(d.args.rs, S.dumps(rs))
+    d.write("freeze2_1", {"kind": "freeze2_1", "file_sha256": {S.rel(d.ev / "freeze2.json"): SC.sha256_path(d.ev / "freeze2.json"), S.rel(d.args.rs): SC.sha256_path(d.args.rs)},
+                          "rs_json_sha256": SC.sha256_path(d.args.rs), "g2": "none (no proposal)"})
+    fin = d.stage_finalist()
+    assert fin["comparable"]["search_complete"] is False and fin["pushed"] is False
+    out = d.stage_main()
+    ana = json.loads(out[d.args.out])
+    assert (ana["outcome"], ana["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_G1"]) and ana["lost_signatures"] == {"g1k11": "NOT_INFRASTRUCTURE", "g1k12": "NOT_INFRASTRUCTURE"}
+
+
+# ---- g1_controls (§5.11.18) -----------------------------------------------------------------------------------------------------------------------
+def test_g1_controls_are_reported_at_rs_and_finalist():
+    z = abs(5e-3 - S.NC_REF) / math.hypot(S.NC_FLOOR / math.sqrt(2), S.NC_SE)
+    c = res("rs_nc_g1_not_consistent")["g1_controls"]
+    assert c["NC_g1"]["label"] == "NOT_CONSISTENT" and c["NC_g1"]["z"] == pytest.approx(z, rel=1e-9) and c["determinism_g1k11"]["nondeterminism"] is False and c["invalid_at_step_2"] is True
+    c = res("rs_repeat_nondeterministic")["g1_controls"]
+    assert c["NC_g1"]["label"] == "CONSISTENT" and c["determinism_g1k11"]["nondeterminism"] is True and c["determinism_g1k11"]["max_abs_diff"]["downforce"] == pytest.approx(5e-4, abs=1e-12) and c["invalid_at_step_2"] is True
+    c = res("rs_base")["g1_controls"]
+    assert c["invalid_at_step_2"] is False and c["NC_g1"]["label"] == "CONSISTENT" and c["determinism_g1k11"] == {"max_abs_diff": {"downforce": 0.0, "drag": 0.0}, "nondeterminism": False, "judged": True}
+    f = res("fin_invalid_g1_g2_not_pushed")
+    assert f["g1_controls"]["invalid_at_step_2"] is True and f["search_complete"] is False and f["incomplete_causes"] == ["DATA_G2"]
+    m = res("main_invalid_g1_without_F")                                                                          # the main-stage blocks are the same functions
+    assert m["g1_controls"] == {"NC_g1": m["NC"]["g1"], "determinism_g1k11": m["determinism"]["g1k11"], "invalid_at_step_2": True} and (m["outcome"], m["cause"]) == ("SCREEN01_INVALID", ["NC_G1"])
+    assert m["confirmation"] == {"f32": None, "f48": None} and m["G"] is None and m["detail"]["phases_used"]["finalist_confirmation"] == {}
+    two = res("main_two_causes_step2")
+    assert (two["outcome"], two["cause"]) == ("SCREEN01_INVALID", ["NC_G1", "NONDETERMINISM_G1K11"]) and two["g1_controls"]["invalid_at_step_2"] is True
+    two = res("main_two_causes_step5")
+    assert (two["outcome"], two["cause"]) == ("SCREEN01_INVALID", ["NC_F", "NONDETERMINISM_F32A"]) and two["g1_controls"]["invalid_at_step_2"] is False
+    two = res("main_two_causes_step7")
+    assert (two["outcome"], two["cause"]) == ("SCREEN01_INCONCLUSIVE", ["G_UNRESOLVED", "R3_UNRESOLVED"])
+
+
+def test_a_run_without_a_valid_parent_run_at_its_phase_is_not_listed():
+    T = Y.branch("rs_parent_lost_phase_unpaired_runs_not_listed")
+    r = S.compute(T)
+    assert r["data_loss"] == [f"{Y.PARENT}@g1@12"]                                    # the parent's own lost run is listed; the non-finite design run and the not-ok NC run at 12 are not
+    V, _ = S.valid_runs(T)
+    assert list(S.diffs(V, "g1", S.names(T["roles"], "design")[0], Y.PARENT)) == ["11"] and S.nc_stage(T, V, "g1")["label"] == "CONSISTENT"
+    assert all(e["phases"] == ["11"] for e in S.fit_stage(T, V)["est"].values()) and r["rs_not_fit"] is False
+
+
+# ---- binding to the freezes (§10): tables, chain, environment, re-derivation ------------------------------------------------------------------------
+def edit_json(path, **kw):
+    obj = json.loads(Path(path).read_text())
+    obj.update(kw)
+    Path(path).write_text(json.dumps(obj, sort_keys=True))
+
+
+def test_a_table_from_another_freeze_or_other_tools_is_refused(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.args.g1 = d.group("g1")
+    t0 = d.tabs["g1"][0]
+    saved = t0.read_text()
+    edit_json(t0, freeze_sha256="0" * 64)
+    with pytest.raises(ValueError, match="verified against another prerun freeze"):
+        S.run_rs(d.args, d.oracle)
+    t0.write_text(saved)
+    edit_json(t0, harness_tool_sha256={"harness.py": "c" * 64})
+    with pytest.raises(ValueError, match="harness tools differ from freeze 1's"):
+        S.run_rs(d.args, d.oracle)
+    t0.write_text(saved)
+    S.run_rs(d.args, d.oracle)                                                                      # restored: accepted
+
+
+def test_the_freeze_chain_the_environment_and_the_fingerprint_are_checked(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.args.g1 = d.group("g1")
+    monkeypatch.setattr(S.platform, "python_version", lambda: "0.0.0")
+    with pytest.raises(ValueError, match="environment .* differs from freeze 1's"):
+        S.run_rs(d.args, d.oracle)
+    monkeypatch.undo()
+    monkeypatch.setattr(S, "ROOT", d.root)
+    monkeypatch.setattr(S, "EV", d.ev)
+    monkeypatch.setattr(SC, "validate_campaign", lambda c: None)
+    monkeypatch.setattr(S, "CHECKER", types.SimpleNamespace(check=lambda t: S.compute(t), compare=lambda a, b, stage: [k for k in a if S.canon(a[k]) != S.canon(b.get(k))]))
+    monkeypatch.setattr(P, "fingerprint", lambda: "0" * 64)
+    with pytest.raises(ValueError, match="fingerprint\\(\\) differs from the frozen P0 fingerprint"):
+        S.run_rs(d.args, d.oracle)                                                                   # no refinement point is gated under other gate-stack code
+    monkeypatch.setattr(P, "fingerprint", lambda: Y.FINGERPRINT)
+    S.run_rs(d.args, d.oracle)
+    fz1 = d.freeze("freeze1")
+    d.write("freeze1", {**fz1, "status": "edited after freeze 2"})
+    with pytest.raises(ValueError, match="freeze2.json does not bind freeze1.json as it is on disk"):
+        S.run_rs(d.args, d.oracle)
+
+
+def test_a_frozen_file_is_looked_up_by_its_repo_relative_key(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.args.g1 = d.group("g1")
+    fz1 = d.freeze("freeze1")
+    key = f"{S.EV_REL}/states.json"
+    unc = fz1["file_sha256"].pop(Y.UNC_STATES_REL)
+    other = dict(fz1["file_sha256"])
+    other[key] = unc                                                                                 # the UNC-01 hash under the SCREEN key: not the file
+    for tampered, ok in ((other, False), (fz1["file_sha256"], True)):
+        fz = {**fz1, "file_sha256": tampered}
+        if ok:
+            S.check_frozen(fz, key, "states.json")
+        else:
+            with pytest.raises(ValueError, match="not the states.json frozen"):
+                S.check_frozen(fz, key, "states.json")
+    with pytest.raises(ValueError, match="not the frozen file"):
+        S.check_frozen({"kind": "freeze1", "file_sha256": {}}, "scripts/analyze_unc01.py", "frozen file")
+    assert S.rel(d.root / "docs/harness/x.json") == "docs/harness/x.json" and S.rel("/nonexistent/elsewhere.json") == "/nonexistent/elsewhere.json"
+    # every file the registration (§10) names is checked, not only the sources
+    for f in ("scripts/analyze_unc01.py", "scripts/fid01/fid01_designs.py", "scripts/fid01/fid01_build.py", S.REG_REL, f"{S.EV_REL}/source_review/adoption.md", "scripts/screen01/INTERFACE.md", S.INFRA_REL, S.ROWS_REL):
+        assert f in S.FROZEN_FILES
+        (d.root / f).write_text((d.root / f).read_text() + " ")
+        with pytest.raises(ValueError, match="not the frozen file"):
+            S.run_rs(d.args, d.oracle)
+        (d.root / f).write_text((d.root / f).read_text()[:-1])
+    S.run_rs(d.args, d.oracle)
+
+
+def test_rederivation_accepts_a_1e10_float_perturbation_and_refuses_a_name_change(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.stage_rs()
+
+    def refreeze():
+        fz = d.freeze("freeze2_1")
+        sha = SC.sha256_path(d.args.rs)
+        fz["rs_json_sha256"], fz["file_sha256"][S.rel(d.args.rs)] = sha, sha
+        d.write("freeze2_1", fz)
+    orig = d.args.rs.read_text()
+    rs = json.loads(orig)
+    rs["comparable"]["fit"]["downforce"]["coef"][0] *= 1 + 1e-10
+    d.args.rs.write_text(json.dumps(rs, sort_keys=True))
+    refreeze()
+    assert d.stage_finalist()["comparable"]["finalist"] is not None                                    # within the 1e-9 tolerance
+    (d.ev / "finalist.json").unlink()
+    rs["comparable"]["fit"]["downforce"]["coef"][0] *= 1 + 1e-6
+    d.args.rs.write_text(json.dumps(rs, sort_keys=True))
+    refreeze()
+    with pytest.raises(ValueError, match="rs does not re-derive|rs.json does not re-derive"):
+        d.stage_finalist()
+    rs = json.loads(orig)
+    rs["proposals"][0]["name"] = "v18__camber_m1_pitch_p1_reflex_p1"
+    d.args.rs.write_text(json.dumps(rs, sort_keys=True))
+    refreeze()
+    with pytest.raises(ValueError, match="proposal states differ"):
+        d.stage_finalist()
+    assert S.close({"a": [1.0, 2.0], "n": "x", "b": True, "i": 3}, {"a": [1.0 + 1e-10, 2.0], "n": "x", "b": True, "i": 3}) and not S.close({"i": 3}, {"i": 3.0 + 1e-3}) \
+        and not S.close({"b": True}, {"b": 1}) and not S.close({"n": "x"}, {"n": "y"}) and not S.close([1.0], [1.0, 2.0]) and not S.close({"a": 1.0}, {"b": 1.0})
+    assert not S.close({"i": 3}, {"i": 4}) and S.close({"f": 1e-12}, {"f": 2e-12}) and not S.close({"f": 5.0}, {"f": 5.0 + 1e-6})
+
+
+# ---- finalists that are axial / design states, the handoff, the gate error row ------------------------------------------------------------------------
+@pytest.mark.parametrize("name,role", [("main_axial_finalist", "axial"), ("main_design_finalist", "design")])
+def test_handoff_of_an_axial_or_design_finalist_reads_the_p0_rows(tmp_path, monkeypatch, name, role):
+    d = Disk(tmp_path, monkeypatch, name)
+    out = d.run_all()
+    ana = json.loads(out[d.args.out])
+    f = ana["finalist"]
+    assert d.T["roles"][f]["role"] == role and ana["outcome"] == "SCREEN01_GAIN"
+    h = json.loads(out[d.args.out.with_name("xv_handoff.json")])
+    assert h["admissibility_row"]["name"] == f and h["admissibility_row"]["slot"] == role and h["admissibility_row"]["phi_fortran_sha256"] == Y.sha_text(f)         # the P0 row, not rs.json
+    assert h["spec"] == P.u_to_spec(d.T["roles"][f]["u"]) and h["in_camber_extension"] is (d.T["roles"][f]["u"][1] < -1.0)
+    assert ana["detail"]["phases_used"]["finalist_exploration"] == ["11", "12"]                                                            # f_exp = g1
+
+
+def test_handoff_content_and_its_file_checks(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    out = d.run_all()
+    ana, h = json.loads(out[d.args.out]), json.loads(out[d.args.out.with_name("xv_handoff.json")])
+    assert h["selection_bias_inputs"] == {"K": 19, "E_max_K": pytest.approx(S.e_max_normals(19)), "sigma_disc": {"central": 5.61e-4, "upper": 1.4474126675928642e-3},
+                                          "retention": {"central": 0.655, "pessimistic": 0.57}, "xv_floor": S.XV_FLOOR}
+    assert h["chain_controls"] == {"NC": ana["NC"], "determinism": ana["determinism"], "generation_drift": ana["generation_drift"]} and h["selection_bias"] == ana["selection_bias"]
+    assert h["topology_policy_sha256"] == d.freeze("freeze1")["file_sha256"][S.POLICY_REL] and h["source_review_record_sha256"] == SC.sha256_path(d.root / f"{S.EV_REL}/source_review/adoption.md")
+    assert h["phases_used"] == ana["detail"]["phases_used"] and h["phases_used"]["finalist_confirmation"] == {"f32": ["13", "14", "15", "16"], "f48": ["13", "14"]}
+    assert h["phases_used"]["finalist_exploration"] == ["11", "12"] and set(h["phases_used"]) == {"finalist_confirmation", "r_best_confirmation", "manual_confirmation", "finalist_exploration"}
+    assert h["phases"]["confirmation_flow_32"] == [13, 14, 15, 16] and h["table_sha256"].keys() == {"g1", "g2", "f32", "f48"}
+    # the rows record is checked against freeze 1 before it is read
+    d2 = Disk(tmp_path / "b", monkeypatch, "main_axial_finalist")
+    d2.stage_rs()
+    d2.stage_finalist()
+    (d2.root / S.ROWS_REL).write_text((d2.root / S.ROWS_REL).read_text() + "\n")
+    with pytest.raises(ValueError, match="not the frozen file"):
+        d2.stage_main()
+
+
+def test_a_gate_row_with_an_error_makes_rs_refuse(tmp_path, monkeypatch):
+    d = Disk(tmp_path, monkeypatch)
+    d.args.g1 = d.group("g1")
+
+    def bad_oracle(T, workers):
+        rows = {}
+
+        def ask(u):
+            n = Y.sname(u)
+            rows[n] = {"name": n, "admissible": False, "error": "RuntimeError: boom", "phi_fortran_sha256": None}
+            return False
+        return ask, rows
+    with pytest.raises(ValueError, match="gate evaluation of a refinement point raised"):
+        S.run_rs(d.args, bad_oracle)
+    assert not d.args.rs.exists()
+
+
+def test_the_amplitude_mismatch_label_on_constructed_sets():
+    T = Y.branch("fin_base")
+    r = S.compute(T)
+    assert set(r["amplitude_median_u_inf"]) == {"opt", "random"} and isinstance(r["AMPLITUDE_MISMATCH"], bool)
+    opt = r["amplitude_median_u_inf"]["opt"]
+    for st in S.names(T["roles"], "random"):                                                          # every random state at |u|_inf = the optimizer median + 0.2 / + 0.3
+        T["roles"][st]["u"] = [opt + 0.2, 0.0, 0.0]
+    r = S.compute(T)
+    assert r["amplitude_median_u_inf"]["random"] == pytest.approx(opt + 0.2) and r["AMPLITUDE_MISMATCH"] is False                  # |0.2| <= 0.25
+    for st in S.names(T["roles"], "random"):
+        T["roles"][st]["u"] = [0.0, opt + 0.3, 0.0]
+    r = S.compute(T)
+    assert r["AMPLITUDE_MISMATCH"] is True                                                                                          # |0.3| > 0.25
+    T2 = Y.branch("main_gain_no_manual")                                                              # computed whenever both sets exist, also without a confirmation estimate
+    T2["roles"] = {n: x for n, x in T2["roles"].items() if x["role"] != "random"}
+    T2["runs"] = {g: {s: v for s, v in by.items() if s in T2["roles"]} for g, by in T2["runs"].items()}
+    assert S.compute(T2)["AMPLITUDE_MISMATCH"] is None and S.compute(T2)["amplitude_median_u_inf"]["random"] is None
+    mr = res("main_incomplete_f32_kernel")
+    assert isinstance(mr["AMPLITUDE_MISMATCH"], bool) and mr["G"] is None                              # ok3 false: the label is there all the same
+
+
+def test_axial_design_proposal_candidates_report_i_and_the_estimates_report_their_phases():
+    r = res("main_gain")
+    assert r["I_candidates"].keys() == r["candidates"].keys() and all(v is None or isinstance(v, float) for v in r["I_candidates"].values())
+    f = r["finalist"]
+    assert r["I_candidates"][f] == pytest.approx(r["candidates"][f]["delta_bar"]["downforce"] / S.J_B48)
+    assert r["detail"]["I_confirmation"]["f32"]["downforce"] == pytest.approx(r["confirmation"]["f32"]["delta_bar"]["downforce"] / S.J_B48)
+    assert r["detail"]["phases_used"]["finalist_confirmation"] == {"f32": ["13", "14", "15", "16"], "f48": ["13", "14"]} and r["detail"]["phases_used"]["r_best_confirmation"]["f32"] == ["13", "14", "15", "16"]
+    lost = res("main_incomplete_f32_kernel")
+    assert lost["detail"]["phases_used"]["finalist_confirmation"]["f32"] == ["13", "14"]                  # the phases after DATA_LOSS / kernel loss
+
+
+def test_cli_main_with_not_pushed_and_lost_arguments(tmp_path, monkeypatch, capsys):
+    d = Disk(tmp_path, monkeypatch, "main_budget_with_full_data")
+    d.stage_rs()
+    d.stage_finalist()
+    d.declare("main")
+    grp = lambda g: [str(d.camp[g]), *map(str, d.tabs[g])]   # noqa: E731
+    rec = d.args.not_pushed["f48k14"]["record"]
+    out = d.ev / "analysis.json"
+    monkeypatch.setattr(sys, "argv", ["x", "main", "--states", str(d.states), "--g1", *grp("g1"), "--g2", *grp("g2"), "--f32", *grp("f32"), "--f48", *grp("f48"), "--rs", str(d.args.rs),
+                                      "--finalist", str(d.args.finalist), "--kernel-root", str(d.kr), "--not-pushed", f"f48k14=BUDGET:{rec}", "--out", str(out)])
+    S.main()
+    assert json.loads(out.read_text())["cause"] == ["BUDGET"]
+    monkeypatch.setattr(sys, "argv", ["x", "main", "--lost", "g1k11", "--out", str(d.ev / "other.json")])
+    with pytest.raises(ValueError, match="expected KERNEL=ID:RECORD"):
+        S.main()
+
+
+# ---- the budget record of the G2 push (registration §4.3) -----------------------------------------------------------------------------------------
+def test_budget_before_the_g2_push_lists_all_five_unfinished_kernels(tmp_path, monkeypatch, capsys):
+    def log(name, wall):
+        p = tmp_path / name
+        p.write_text(json.dumps([{"time": 1.0, "data": "x"}, {"time": wall, "data": "y"}]))
+        return str(p)
+    five = ("g2", "f48k13", "f48k14", "f32a", "f32b")
+    r = S.budget([("g1k11", log("a", 16100.0)), ("g1k12", log("b", 15900.0))], [(k, None) for k in five])           # the confirmation campaigns do not exist yet: the registered estimates
+    assert set(r["pending_estimate_s"]) == set(five) and set(r["finished_session_wall_s"]) == {"g1k11", "g1k12"}
+    assert r["pending_estimate_s"] == {"g2": [4410], "f48k13": [7280], "f48k14": [7280], "f32a": [5240], "f32b": [4410]}                   # §4.2 at the registered run counts
+    assert r["T_s"] == 16100.0 + 15900.0 + 4410 + 2 * 7280 + 5240 + 4410 and r["decision"] == "go" and r["rule"] == "registration §4.3" and r["cap_s"] == 86400
+    out = tmp_path / "budget_g2.json"
+    monkeypatch.setattr(sys, "argv", ["x", "budget", "--finished", f"g1k11={log('c', 16100.0)}", f"g1k12={log('d', 15900.0)}", "--pending", *five, "--out", str(out)])
+    S.main()
+    rec = json.loads(out.read_text())
+    assert rec == r and "go" in capsys.readouterr().out
+    assert S.REG_RUNS["g2"] == (10, "flow_32") and all(S.REG_RUNS[k][0] * S.EST_S[S.REG_RUNS[k][1]] + S.SETUP_S == v[0] for k, v in r["pending_estimate_s"].items())
+    one = S.budget([("g1k11", log("e", 16100.0)), ("g1k12", log("f", 15900.0))], [("g2", None)])                                          # a record listing only g2 is a different record
+    assert set(one["pending_estimate_s"]) == {"g2"} and one["T_s"] < r["T_s"]

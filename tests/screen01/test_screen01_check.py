@@ -218,17 +218,16 @@ def test_step4_confirmation_data():
     T["runs"]["f32"]["A0"].pop("15")  # |Phi_s| = 3 suffices
     assert run(T)["outcome"] == "SCREEN01_GAIN"
     T = happy()
-    T["runs"]["f48"] = {}
-    assert run(T)["cause"] == ["BUDGET"]  # flow_48 never run
+    T["runs"]["f48"] = {}  # flow_48 absent and not declared not pushed: no BUDGET (the analyzer would refuse); both kernels declared lost: DATA_F
+    assert run(T)["cause"] == ["DATA_F"]
     T["lost_kernels"] = ["f48k13", "f48k14"]
-    assert run(T)["cause"] == ["DATA_F"]  # both kernels declared lost
+    assert run(T)["cause"] == ["DATA_F"]
     T = happy()
-    for s_ in list(T["runs"]["f32"]):  # f32b never pushed (budget): F not completed even though 2 + ... phases exist
+    for s_ in list(T["runs"]["f32"]):  # f32b missing: |Phi_s| = 2 -> DATA_F; declared lost the same
         for k in "15", "16":
             T["runs"]["f32"][s_].pop(k, None)
-    o = run(T)
-    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["BUDGET"])
-    T["lost_kernels"] = ["f32b"]  # declared lost: the same missing data is DATA_F
+    assert run(T)["cause"] == ["DATA_F"]
+    T["lost_kernels"] = ["f32b"]
     assert run(T)["cause"] == ["DATA_F"]
     T = happy()
     del T["runs"]["f48"]["A0"]["14"]  # one f48 kernel lost (the parent row stays: the kernel ran): P = 1, floor SE, continues
@@ -784,18 +783,126 @@ def test_R3_paired_labels_use_the_common_phases():
     assert o["R3"] is None and (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"]) and o["confirmation"]["f48"] is None
 
 
-def test_budget_is_any_run_row_of_the_kernel():
-    T = happy()  # f32b's parent rows are missing but A0's rows exist: the kernel was run -> DATA_F (A0 unpaired at 15, 16: |Phi_s| = 2), not BUDGET
-    for k in "15", "16":
-        del T["runs"]["f32"]["P"][k]
-    o = run(T)
-    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"]) and o["data_loss"] == []
+def test_budget_iff_a_confirmation_kernel_is_not_pushed_with_budget():
+    # a kernel declared not pushed (BUDGET) has no rows; BUDGET is tested first, before |Phi_s| < 3, missing flow_48 and missing NC-F
+    T = happy()
     for s_ in T["runs"]["f32"]:
         for k in "15", "16":
-            T["runs"]["f32"][s_].pop(k, None)  # now no row at all: never run
+            T["runs"]["f32"][s_].pop(k, None)
+    T["not_pushed"] = {"f32b": "BUDGET"}
+    o = run(T)
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["BUDGET"])
+    T["not_pushed"] = {}  # the same missing rows without a declaration: DATA_F (|Phi_s| = 2)
+    assert (run(T)["outcome"], run(T)["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"])
+    for kernel in ("f32a", "f32b", "f48k13", "f48k14"):  # each of the four confirmation kernels triggers it, with otherwise COMPLETE data (reachable only if the push order was violated)
+        T = happy()
+        T["not_pushed"] = {kernel: "BUDGET"}
+        o = run(T)
+        assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["BUDGET"]), kernel
+        assert o["G"] is not None and o["R3"] is not None  # the descriptive blocks are still reported from the data that exist
+    T = happy()  # BUDGET first: flow_48 absent, NC-F absent and |Phi_s| = 2 as well
+    T["runs"]["f48"], T["runs"]["f32"]["A0"] = {}, {k: v for k, v in T["runs"]["f32"]["A0"].items() if k in ("13", "14")}
+    del T["runs"]["f32"]["NC"]
+    T["not_pushed"] = {"f48k13": "BUDGET", "f48k14": "BUDGET"}
     assert run(T)["cause"] == ["BUDGET"]
-    T["runs"]["f32"]["R0"]["15"] = rn(1.0, 0.5)  # a single row of any state at the kernel's phases is enough
+    del T["not_pushed"]
     assert run(T)["cause"] == ["DATA_F"]
+    T = happy()  # INVALID_G1 kernels are not a BUDGET stop; the step-2 verdict decides before step 4 (below); with no g1 problem the key has no effect on step 4
+    T["not_pushed"] = {"f32a": "INVALID_G1"}
+    assert run(T)["outcome"] == "SCREEN01_GAIN"
+    T = happy()  # a declared-lost kernel is not BUDGET
+    T["lost_kernels"] = ["f32b"]
+    assert run(T)["cause"] != ["BUDGET"] and run(T)["outcome"] == "SCREEN01_GAIN"  # |Phi_s| = 4 is still there (rows kept): the key alone changes nothing at step 4
+
+
+def test_g1_controls_at_rs_and_finalist_stages():
+    dev = 3.5 * math.sqrt((3e-4 / math.sqrt(2)) ** 2 + NC_SE ** 2)
+    nc_ok = {"z": pytest.approx(0, abs=1e-9), "label": "CONSISTENT"}
+    for stage in ("rs", "finalist", "main"):
+        T = happy()
+        g = run(T, stage)["g1_controls"]
+        assert g == {"NC_g1": nc_ok, "determinism_g1k11": {"max_abs_diff": {"downforce": 0.0, "drag": 0.0}, "nondeterminism": False, "judged": True}, "invalid_at_step_2": False}
+        T = happy()  # z > 3.5
+        delta(T, "g1", "NC", [NC_REF + dev + 1e-5] * 2, [0, 0], (11, 12))
+        g = run(T, stage)["g1_controls"]
+        assert g["invalid_at_step_2"] is True and g["NC_g1"]["label"] == "NOT_CONSISTENT" and g["NC_g1"]["z"] > 3.5 and g["determinism_g1k11"]["nondeterminism"] is False
+        T = happy()  # z just below 3.5
+        delta(T, "g1", "NC", [NC_REF + dev - 1e-5] * 2, [0, 0], (11, 12))
+        assert run(T, stage)["g1_controls"]["invalid_at_step_2"] is False
+        T = happy()  # the repeat 3e-4 N off
+        setd(T, "g1", "REP", 11, 3e-4, 0.0)
+        g = run(T, stage)["g1_controls"]
+        assert g["invalid_at_step_2"] is True and g["determinism_g1k11"] == {"max_abs_diff": {"downforce": pytest.approx(3e-4, abs=1e-12), "drag": 0.0}, "nondeterminism": True, "judged": True}
+        assert g["NC_g1"]["label"] == "CONSISTENT"
+        T = happy()  # the repeat absent: not judged, no verdict
+        del T["runs"]["g1"]["REP"]
+        g = run(T, stage)["g1_controls"]
+        assert g["determinism_g1k11"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False} and g["invalid_at_step_2"] is False
+        T = happy()  # NC without a G1 phase: label null, no verdict at the controls block (step 1 handles the data)
+        del T["runs"]["g1"]["NC"]
+        g = run(T, stage)["g1_controls"]
+        assert g["NC_g1"] == {"z": None, "label": None} and g["invalid_at_step_2"] is False
+    # both blocks are comparable: compare() reports a difference at rs and finalist
+    T = happy()
+    T["gating"] = []  # the fixture's proposals are not the regenerated refinement record
+    a, b = run(T, "rs"), run(T, "rs")
+    a.pop("gating_mismatch", None), b.pop("gating_mismatch", None)
+    b["g1_controls"]["invalid_at_step_2"] = True
+    b["g1_controls"]["determinism_g1k11"]["judged"] = False
+    assert sorted(C.compare(a, b, "rs")) == ["g1_controls.determinism_g1k11.judged", "g1_controls.invalid_at_step_2"]
+    a, b = run(happy(), "finalist"), run(happy(), "finalist")
+    del b["g1_controls"]
+    assert C.compare(a, b, "finalist") == ["g1_controls"]
+
+
+def test_main_without_confirmation_groups():
+    # no finalist: the f32 / f48 groups are absent from T["runs"]; the step-3 outcome and the null blocks
+    T = happy()
+    for k in "11", "12":
+        T["runs"]["g1"]["A0"][k]["drag"] = PAR[1] + 1e-3  # no feasible candidate
+    T["runs"].pop("f32"), T["runs"].pop("f48")
+    o = C.check(T)
+    assert (o["finalist"], o["outcome"], o["cause"]) == (None, "SCREEN01_NO_GAIN", ["NO_FEASIBLE_CANDIDATE"])
+    assert (o["G"], o["D"], o["R3"], o["selection_bias"], o["confirmation"]) == (None, None, None, None, {"f32": None, "f48": None})
+    assert o["NC"]["f32"] == {"z": None, "label": None} and o["determinism"]["f32a"] == {"max_abs_diff": None, "nondeterminism": False, "judged": False}
+    assert o["generation_drift"] == {"max_abs_diff": None, "drift": False}
+    assert o["controls"] == {"OPT_VS_RANDOM": None, "OPT_VS_MANUAL": None, "RANDOM_FEASIBLE_GAIN": False, "K_MISMATCH": False}
+    # no finalist and G1 data missing: INCOMPLETE with the step-3 cause list
+    T2 = copy.deepcopy(T)
+    for s_ in T2["runs"]["g1"]:
+        T2["runs"]["g1"][s_].pop("12", None)
+    o = C.check(T2)
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_G1"])
+    # a finalist with invalid_at_step_2: F is not pushed (groups absent), the outcome is INVALID at step 2 with the step-2 causes
+    T = happy()
+    T["runs"].pop("f32"), T["runs"].pop("f48")
+    T["not_pushed"] = {k: "INVALID_G1" for k in ("f32a", "f32b", "f48k13", "f48k14")}
+    setd(T, "g1", "REP", 11, 3e-4, 0.0)
+    o = C.check(T)
+    assert o["finalist"] == "A0" and o["g1_controls"]["invalid_at_step_2"] is True
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INVALID", ["NONDETERMINISM_G1K11"])
+    assert o["G"] is None and o["D"] is None and o["R3"] is None and o["confirmation"] == {"f32": None, "f48": None}
+    delta(T, "g1", "NC", [NC_REF + 1e-2] * 2, [0, 0], (11, 12))  # both step-2 causes, in that order
+    assert C.check(T)["cause"] == ["NC_G1", "NONDETERMINISM_G1K11"]
+    # the same finalist without the step-2 problem and without any confirmation group, not declared: step 4 DATA_F (the analyzer would refuse the table set)
+    T = happy()
+    T["runs"].pop("f32"), T["runs"].pop("f48")
+    o = C.check(T)
+    assert (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"]) and o["g1_controls"]["invalid_at_step_2"] is False
+    T["not_pushed"] = {"f32a": "BUDGET", "f32b": "BUDGET", "f48k13": "BUDGET", "f48k14": "BUDGET"}
+    assert C.check(T)["cause"] == ["BUDGET"]
+
+
+def test_confirmation_runs_without_a_valid_parent_are_not_listed():
+    T = happy()
+    T["runs"]["f32"]["P"]["15"]["downforce"] = None            # the parent run is lost at 15: listed; the finalist's phase-15 run is unpaired
+    T["runs"]["f32"]["A0"]["15"]["ok"] = False                 # invalid, but no valid parent run at its phase: not listed
+    T["runs"]["f32"]["A0"]["16"]["ok"] = False                 # paired phase: listed
+    del T["runs"]["f48"]["P"]["14"]                            # no parent row at all: the f48 phase-14 runs are unpaired, none listed
+    T["runs"]["f48"]["R0"]["14"]["downforce"] = None
+    o = run(T)
+    assert o["data_loss"] == ["A0@f32@16", "P@f32@15"]
+    assert o["confirmation"]["f32"]["P"] == 2 and o["confirmation"]["f48"]["P"] == 1 and (o["outcome"], o["cause"]) == ("SCREEN01_INCOMPLETE", ["DATA_F"])
 
 
 def test_data_loss_is_uniform_and_unpaired_runs_are_not_listed():

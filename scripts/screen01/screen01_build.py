@@ -7,8 +7,11 @@ interface of the analyzer: scripts/screen01/INTERFACE.md).  Solver-free and dete
     python scripts/screen01/screen01_build.py campaign g2 --rs rs.json [--check]      # proposal states (states_g2.json, inputs/) + docs/harness/screen01_g2_campaign.json
     python scripts/screen01/screen01_build.py campaign f --finalist finalist.json [--check]   # docs/harness/screen01_f_campaign.json, screen01_f48_campaign.json
 
-Smokes (scripts/harness.py smoke CAMPAIGN --source-commit X --kernel K): screen01 -> g1k11 (its first run is the parent at phase 11); screen01_g2 -> g2 (parent, phase 11);
-screen01_f -> f32smk and screen01_f48 -> f48smk (smoke-only kernels: the parent alone at phase 20, no confirmation phase is touched; never pushed as formal kernels).
+Smokes: `scripts/harness.py smoke CAMPAIGN --source-commit X --kernel K` with the registered smoke kernel (SMOKE_KERNEL; registration §4.2): screen01 -> g1k11 (its first run is the
+parent at phase 11), screen01_g2 -> g2 (parent, phase 11), screen01_f -> f32smk, screen01_f48 -> f48smk (smoke-only kernels: the parent alone at phase 20, so no confirmation
+phase is touched; never pushed as formal kernels; their per-state cap is below every formal cap so the harness default also picks them).  The refusals are fail-closed by
+design: no M (MANUAL_NONE), a state that does not reproduce its P0 gated bytes, an invalid G1 chain control (registration §5.4, §5.11.18).  states.json embeds the P0 file
+hashes: after a P0 re-run delete the untracked states.json and raws, rebuild with `states`, commit before freeze 1.
 """
 from __future__ import annotations
 
@@ -36,9 +39,26 @@ RANK = ("parent", "axial", "design", "manual", "ref", "nc", "random")   # G1 run
 
 # registration §4.1 / §4.2: phases; caps = (per-state, aggregate, kernel timeout) in s; estimates come from fid01_build (415 / 2,340 s per run + 260 s per kernel)
 EXPLORATION, F32_PHASES, F48_PHASES, REPLAY, SMOKE_PHASE = (11, 12), ((13, 14), (15, 16)), (13, 14), 11, 20
-CAPS = {"g1": (900, 20000, 23300), "g2": (900, 6000, 9000), "f48": (6000, 9200, 12500), "f32a": (900, 7000, 10000), "f32b": (900, 6000, 9000)}
-SMOKE_CAPS = {"flow_32": (900, 900, 4200), "flow_48": (6000, 6000, 9300)}   # not registered numbers: the cap of a formal run of one state plus setup (validate_kernel)
-FORMAL = ("g1k11", "g1k12", "g2", "f48k13", "f48k14", "f32a", "f32b")
+MAX_RUNS = {"g1k11": 39, "g1k12": 38, "g2": 10, "f48k13": 3, "f48k14": 3, "f32a": 12, "f32b": 10}   # registered maximum run counts (§4.2)
+FORMAL = tuple(MAX_RUNS)
+PER_STATE = {"flow_32": 900, "flow_48": 6000}
+SMOKE_CAPS = {"flow_32": (890, 890, 4200), "flow_48": (5990, 5990, 9300)}   # per-state cap below every formal cap: the harness default smoke kernel is the smoke-only one (§4.2)
+SMOKE_KERNEL = {"screen01": "g1k11", "screen01_g2": "g2", "screen01_f": "f32smk", "screen01_f48": "f48smk"}   # the kernel each campaign's smoke table must verify
+
+
+def grid_of(kernel: str) -> str:
+    return "flow_48" if kernel.startswith("f48") else "flow_32"
+
+
+def cap_rule(kernel: str) -> tuple:
+    """(per-state cap, aggregate cap, kernel timeout) in s, registration §4.2: aggregate = ceil(1.5 x registered max run count x per-run estimate / 100) x 100, timeout = cap + 3,300.
+    Keyed by kernel, so a kernel with fewer runs (empty R-best, fewer proposals) keeps the registered cap."""
+    cap = -(-3 * MAX_RUNS[kernel] * FB.EST_S[grid_of(kernel)] // 200) * 100
+    return PER_STATE[grid_of(kernel)], cap, cap + 3300
+
+
+def max_estimate_s(kernel: str) -> int:
+    return MAX_RUNS[kernel] * FB.EST_S[grid_of(kernel)] + FB.SETUP_S
 
 
 def dir_rel(name: str) -> str:
@@ -84,7 +104,7 @@ def g1_plan() -> list:
     pools, rows, summ, dc = p0_record()
     m = summ["manual"][f"M_for_m_D_{P.M_D:g}"]
     if m is None:
-        raise SystemExit("MANUAL_NONE: the P0 record has no admissible hand design (registration §3.3)")
+        raise SystemExit("MANUAL_NONE: the P0 record has no admissible hand design (registration §3.3); the builder refuses by design (fail-closed: M exists in the registered P0 record)")
     groups = {"axial": [D.name(x) for x in pools["axial"]], "design": dc["design_points"], "manual": [m], "ref": [D.name(x) for x in pools["ref"]],
               "random": summ["rand3"]["control_set"]}
     if [len(groups[k]) for k in ("axial", "design", "random")] != [6, 9, P.K_RAND]:
@@ -164,12 +184,12 @@ def load_rows() -> dict:
 def g1_kernels(rows: dict) -> dict:
     """g1k11 (39 runs, the repeat last) and g1k12 (38); the parent first, one phase per kernel (§4.2)."""
     order = [n for role in RANK for n in by_role(rows, role)]
-    return {f"g1k{k}": B.kernel("screen01", f"g1k{k}", "flow_32", B.phase_runs(order, "flow_32", (k,)) + ([B.run(REPEAT, "flow_32", k)] if k == EXPLORATION[0] else []), *CAPS["g1"])
-            for k in EXPLORATION}
+    return {f"g1k{k}": B.kernel("screen01", f"g1k{k}", "flow_32", B.phase_runs(order, "flow_32", (k,)) + ([B.run(REPEAT, "flow_32", k)] if k == EXPLORATION[0] else []),
+                                *cap_rule(f"g1k{k}")) for k in EXPLORATION}
 
 
 def g2_kernels(proposals: list) -> dict:
-    return {"g2": B.kernel("screen01_g2", "g2", "flow_32", B.phase_runs([PARENT, *proposals], "flow_32", EXPLORATION), *CAPS["g2"])}
+    return {"g2": B.kernel("screen01_g2", "g2", "flow_32", B.phase_runs([PARENT, *proposals], "flow_32", EXPLORATION), *cap_rule("g2"))}
 
 
 def smoke_kernel(cid: str, case: str) -> dict:
@@ -182,10 +202,10 @@ def f_kernels(rows: dict, finalist: str, r_best: str | None) -> dict:
         raise SystemExit(f"finalist {finalist!r} / R-best {r_best!r} are not registered candidate / control states")
     cand = [PARENT, finalist, *([r_best] if r_best else [])]
     ctrl = cand + by_role(rows, "manual") + by_role(rows, "nc")
-    f48 = {f"f48k{k}": B.kernel("screen01_f48", f"f48k{k}", "flow_48", B.phase_runs(cand, "flow_48", (k,)), *CAPS["f48"]) for k in F48_PHASES}
+    f48 = {f"f48k{k}": B.kernel("screen01_f48", f"f48k{k}", "flow_48", B.phase_runs(cand, "flow_48", (k,)), *cap_rule(f"f48k{k}")) for k in F48_PHASES}
     f32 = {"f32a": B.kernel("screen01_f", "f32a", "flow_32", B.phase_runs(ctrl, "flow_32", F32_PHASES[0]) + [B.run(PARENT, "flow_32", REPLAY), B.run(REPEAT, "flow_32", F32_PHASES[0][0])],
-                            *CAPS["f32a"]),
-           "f32b": B.kernel("screen01_f", "f32b", "flow_32", B.phase_runs(ctrl, "flow_32", F32_PHASES[1]), *CAPS["f32b"])}
+                            *cap_rule("f32a")),
+           "f32b": B.kernel("screen01_f", "f32b", "flow_32", B.phase_runs(ctrl, "flow_32", F32_PHASES[1]), *cap_rule("f32b"))}
     return {"screen01_f": {**f32, "f32smk": smoke_kernel("screen01_f", "flow_32")}, "screen01_f48": {**f48, "f48smk": smoke_kernel("screen01_f48", "flow_48")}}
 
 
@@ -198,12 +218,22 @@ def campaign_text(cid: str, kernels: dict, rows: dict) -> tuple:
     return HARNESS / f"{cid}_campaign.json", jtext(c)
 
 
+def invalid_at_step_2(j: dict) -> bool:
+    """rs.json / finalist.json `comparable.g1_controls.invalid_at_step_2` (INTERFACE.md): true = the outcome is already SCREEN01_INVALID; a record without it is refused."""
+    g = j.get("comparable", {}).get("g1_controls")
+    if not isinstance(g, dict) or "invalid_at_step_2" not in g:
+        raise SystemExit("rs.json / finalist.json lack comparable.g1_controls.invalid_at_step_2 (registration §5.11.18)")
+    return bool(g["invalid_at_step_2"])
+
+
 def campaign_files(which: str, rs_path: Path | None = None, finalist_path: Path | None = None) -> dict:
     rows = load_rows()
     if which == "g1":
         return dict([campaign_text("screen01", g1_kernels(rows), rows)])
     if which == "g2":
         rs = json.loads(Path(rs_path).read_text())
+        if invalid_at_step_2(rs):
+            raise SystemExit("invalid_at_step_2: a G1 chain control failed, no G2 campaign is generated (registration §5.4, §5.11.18)")
         new, files = proposal_states(rs)
         if not new:
             return {}
@@ -212,6 +242,8 @@ def campaign_files(which: str, rs_path: Path | None = None, finalist_path: Path 
     fin = json.loads(Path(finalist_path).read_text())
     if not fin.get("finalist"):
         raise SystemExit("no finalist: F is not pushed (registration §5.4)")
+    if invalid_at_step_2(fin):
+        raise SystemExit("invalid_at_step_2: a G1 chain control failed, F is not pushed (registration §5.4, §5.11.18)")
     return dict(campaign_text(cid, ks, rows) for cid, ks in f_kernels(rows, fin["finalist"], fin.get("r_best")).items())
 
 
@@ -252,6 +284,8 @@ def main() -> None:
     files = states_files() if a.cmd == "states" else campaign_files(a.which, a.rs, a.finalist)
     emit(files, a.check)
     print("byte check passed" if a.check else "written", len(files), "files")
+    if a.cmd == "states":
+        print("note: states.json embeds the P0 file hashes; after a P0 re-run delete the untracked states.json / raws, rebuild and commit before freeze 1")
     if a.cmd == "campaign":
         print(json.dumps(summary(files), indent=1))
 
